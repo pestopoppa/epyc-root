@@ -530,6 +530,7 @@ Not measured:
   10.8 GB of live data plus a 10.9 GB WAL, so VACUUM cannot shrink it; only retention can. Recommendation: age out
   sessions older than N days for headless actor runs only. Blocks nothing else on this page.
   - PARKED 2026-09-27 (operator): the decision package above is complete: (a) keep `snapshot: false` per-call only; (b) age out headless-actor sessions older than N days. There is no operator ruling yet, and nothing has been applied; resume when the operator answers OP-59, by applying (a) and (b) as ruled.
+  - 2026-11-02 operator decision: (a) per-call only + (b) age out headless-actor sessions older than N days (decisions-batch2-4-20261102.json)
 - [ ] **OAB-16 — give scouts an inference-tap record.** OAB-8 scouts are direct completions that bypass the
   `LLMPrimitives` gates (contention, region lock, inference tap), so their tokens are missing from the tap's
   accounting. Emit one tap record per scout call (role, slot, prompt/decoded tokens, wall), tagged with the parent

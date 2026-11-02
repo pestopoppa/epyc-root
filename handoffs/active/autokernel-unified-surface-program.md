@@ -3274,6 +3274,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     provider reacquisition/duplicate child/current measurement acceptance. The additional HIGH
     validator event (22 upstream, three processes) awaits its own operator approval, distinct from
     approved descendant capture; low-risk independent work continues. See OP-AKU-HELD in the router.
+    - 2026-11-02 operator decision: Approve (decisions-batch2-4-20261102.json)
   - [ ] **AKU-07k — bind scheduled work through provider admission/accounting**: version the native
     StageRequest accounting binding with catalog/transition/selection/proposal digests, proposal ID,
     backend and scheduler stage class; include it in prospective request identity, launch contract,
@@ -4047,6 +4048,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       before launch. Recorded cost: ~255 attempts/arm to detect a keep-rate halving at 80% power, ~31
       GPU-h/arm on the screen surface, infeasible on CPU; a zero-keep surface is degenerate. Launch is
       operator-gated. intake-1375#02.
+  - 2026-11-02 operator decision: Keep launch gated; deliver the costed design only (decisions-batch2-4-20261102.json)
 - [x] **S3-AKU-12 — journal a per-target stagnation signal, OBSERVE-ONLY.** Record the slope of best-so-far
       effect over a trailing window and the consecutive measured_null count. No behaviour switch until
       S3-AKU-11 reports. intake-1375#03. ✅ 2026-09-15 — research `e1ee4cf0`: loop status publishes

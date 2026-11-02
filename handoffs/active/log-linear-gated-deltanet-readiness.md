@@ -208,6 +208,7 @@ with ~0.8 %. That is the shape of the branch, and no row of it is free.
 - [ ] Operator decision, once the oracle above exists: this checkpoint is a **795 M research model at f32 with a
       16K position limit** — it validates the port but is not itself deployable. Decide whether the port is
       justified by the checkpoint alone or should wait for a production-scale log-linear GDN.
+  - 2026-11-02 operator decision: Wait for a production-scale log-linear GDN (decisions-batch2-4-20261102.json)
 
 ## Implementation Plan (triggered when gate criteria met)
 

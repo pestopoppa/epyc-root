@@ -1022,6 +1022,7 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       the master index operator queue, `Open since 2026-09-07`.
       **★ THE DISCRIMINATOR IS THE PEAK, NOT THE TOTAL FOREIGN LOAD — SO (A) NEED ONLY COVER BUILDS.**
       HARNESS-1 quantified three A/A arms (same binary, same config, **bit-identical output — purely timing**):
+  - 2026-11-02 operator decision: (A) Serialize: take the region-lock `bench` role around build AND bench (compiles alone suffice, per the peak discriminator) (decisions-batch2-4-20261102.json)
 
       | arm | tw t/s | foreign CPU p50 | foreign CPU max | heaviest foreign |
       |---|---:|---:|---:|---|
@@ -3888,6 +3889,7 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
   - Next: a Q38FN prefill A/B at the shapes where the microbench gain lives (pp256 and larger ubatches, interleaved
     rounds), then a paired per-item task-quality eval for the output change. Fold only if prefill gains and quality is
     within tolerance. Done when that verdict is ledgered.
+  - 2026-11-02 operator decision: Run the prefill A/B plus a paired task-quality eval, then re-decide (decisions-batch2-4-20261102.json)
 
 ## Tasks filed 2026-10-06 — GDN raw gates and rows mode (cafe-llama intake-1925)
 

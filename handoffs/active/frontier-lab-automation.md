@@ -213,6 +213,7 @@ Approved scope and grounded audit: [decision-tools Stage 3 plan](../../research/
   - **Blocked, not dismissed**: AsyncGRPO requires vLLM server and trainer on **separate GPUs** (we have one MI210, no gfx90a partitioning), vLLM ≥ 0.22.0 + transformers ≥ 5.2.0, FSDP2-only, NCCL weight transfer, and **no PEFT/LoRA path** — full-parameter FT only. Operator decision, framed in the source entry.
   - Also a decision input for HS-4: **OpenCode is the only harness candidate with a first-party trainable adapter**; Hermes would require authoring the whole ResourceSession + proxy + sandbox layer.
   - Owner: [`harness-selection-and-integration.md`](harness-selection-and-integration.md), [`tool-use-eval-contract.md`](benchmark-suites.md#track-tool-use-eval-contract), [`agent-world-env-synthesis.md`](benchmark-suites.md#track-agent-world-env-synthesis).
+  - 2026-11-02 operator decision: Decline the bridge; keep the GPU-free half (decisions-batch2-4-20261102.json)
 
 ---
 
@@ -276,6 +277,7 @@ Operator-authorized 2026-07-25. Honest scorecard so far: **2 of 6 re-read entrie
   - `intake-577`/`intake-578`: change `verdict: superseded` → `already_integrated`, and copy the intake-576 pointer out of `verdict_justification` into the empty `notes:` field. **The audit's premise here was a field-lookup error on my side** — the successor *was* named, just not in `notes:`. But `superseded` is a technique-displacement verb in the rubric, and this was record-level dedup, which is why it read as unfalsifiable. Checked for a genuine successor: intake-751/752 (Nemotron-TwoTower) was already adjudicated **distinct**.
   - **Operator-review candidate** (derived from our own prior filing, not an external directive): `intake-804` recorded a follow-up 14 days ago that was never actioned — backfill `arxiv_id: 2607.05391` and the 9-author list onto intake-362#record / intake-363#record, and add RoboRewardBench 87.4 / MedAgentBench 73.3.
   - Record the `intake-783` ↔ `intake-537` edge (ID-22).
+  - 2026-11-02 operator decision: Backfill (decisions-batch2-4-20261102.json)
 
 - [x] **ID-26 — Two entries CONFIRMED correctly filed; closing with no action.** ✅ 2026-07-25
   - `intake-804` (LLM-as-a-Verifier) is a **true duplicate**: v2 is 23.5 h after v1 with a ~5 KB delta and no changelog, so there is no v2-specific content to recover. Genuinely integrated — `eval-tower-verification.md` doesn't merely cite it, it *rebuts* the paper's k=20 logprob-truncation caveat with llama.cpp source (`get_token_probabilities()`, full-vocab softmax, no truncation).
@@ -868,6 +870,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [ ] Split `learned-routing-controller` and `decision-aware-routing`: live rollout/backlog vs frozen-behind-unfired-gate expansion
 - [x] Stack-cluster soft-consolidation (corrected on verification — NOT a clean "retire 3"): superseded `standardized-stack-update-pipeline-finalization` (W4 co-tracked); kept `model-stack-update-pipeline-audit` LIVE (2 orphan boxes); flagged `model-stack-change-standardization-audit` as a repeatable runbook ✅ 2026-07-18
 - [ ] Stack-cluster HARD-archive (operator-gated): git-mv the superseded + runbook docs to `completed/`, migrate the audit's 2 orphan-live boxes (`ctx_model_max`, tap/policy-hint) into the SSoT, repoint the ~10 inbound index links
+  - 2026-11-02 operator decision: Approve the archive (decisions-batch2-4-20261102.json)
 - [x] Surface the SLIDERS reopen precondition (KB-RAG K7 certified 2026-06-13) as a fired-but-needs-operator-decision note ✅ 2026-07-18
 - [x] **Publish the current dispatch-inventory baseline ✅ 2026-07-29**: [`BACKLOG-DISPATCH-QUEUE.md`](../../coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md) reports **1,103 unchecked active-handoff tasks at sweep start** and **~232 none-lane, unblocked tasks dispatchable now**. This supersedes the historical `≈544` heuristic; it is an inventory count, not an exact audited live/stale partition. The exact partition remains open below.
 - [ ] **NEW 2026-07-29 — Extend the stale-open audit to an exact current live/stale partition, then present a derived dashboard field with audit date and source.** The original 22 audited handoffs now contain 208 open tasks (vs 173 at audit time); current lifecycle parsing identifies only 58 high-precision parked/superseded rows, so neither source can certify the remaining 949-or-fewer tasks as live.
@@ -1091,5 +1094,6 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
       nowhere in the file (the sole `conf` hit is `config_name` at :469; checked a second spelling before
       concluding absence). So the row stays open but is now scoped to (b) alone. Not patched here: RE-4 is
       the CPU lineage's, and that runner is measurement-instrument code.
+  - 2026-11-02 operator decision: Close as superseded by the backlog-refactor manifest (decisions-batch2-4-20261102.json)
 
 > All verdicts above are **observations** for backlog-hygiene decisions, not measurement-gating numbers. No production kernel, registry, or handoff checkbox was modified by this audit.

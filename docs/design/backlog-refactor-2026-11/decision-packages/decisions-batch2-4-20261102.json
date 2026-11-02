@@ -1,0 +1,1818 @@
+{
+ "schema": "brf-d7-decisions.v1",
+ "decided_at": "2026-11-02T20:30Z",
+ "decided_by": "operator (decision tool, ws58 session)",
+ "basis": "accepted the recommended option for every package in folds 9-26, 1002-1027 (batches 2-4; 90 choices) except the exceptions recorded per choice (status/note); recorded by BRF-T5-2",
+ "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+ "ratify_script_status": "not run yet; the operator runs it",
+ "decisions": [
+  {
+   "choice": "frontier-lab-automation#1",
+   "task_id": "ID-20",
+   "manifest_id": "5dd24a1560c0",
+   "fold": 9,
+   "dest": "frontier-lab-automation.md",
+   "question": "ID-20: decline the TRL + OpenEnv AsyncGRPO bridge and keep only the GPU-free half?",
+   "chosen": "A",
+   "chosen_text": "Decline the bridge; keep the GPU-free half",
+   "status": "approved",
+   "gated": [
+    "5dd24a1560c0"
+   ]
+  },
+  {
+   "choice": "frontier-lab-automation#2",
+   "task_id": "ID-25",
+   "manifest_id": "c1dce92fdded",
+   "fold": 9,
+   "dest": "frontier-lab-automation.md",
+   "question": "ID-25: backfill `arxiv_id: 2607.05391` and the 9-author list onto intake-362/363 (follow-up recorded by intake-804, never actioned)?",
+   "chosen": "A",
+   "chosen_text": "Backfill",
+   "status": "approved",
+   "gated": [
+    "c1dce92fdded"
+   ]
+  },
+  {
+   "choice": "frontier-lab-automation#3",
+   "task_id": null,
+   "manifest_id": "b474456cb8a8",
+   "fold": 9,
+   "dest": "frontier-lab-automation.md",
+   "question": "Stack-cluster HARD-archive: git-mv the superseded + runbook docs to completed/, migrate the two orphan-live boxes into the SSoT, repoint ~10 inbound links?",
+   "chosen": "A",
+   "chosen_text": "Approve the archive",
+   "status": "approved",
+   "gated": [
+    "b474456cb8a8"
+   ]
+  },
+  {
+   "choice": "frontier-lab-automation#4",
+   "task_id": null,
+   "manifest_id": "1810e7977e81",
+   "fold": 9,
+   "dest": "frontier-lab-automation.md",
+   "question": "Stale-open audit: extend to the remaining open handoffs, or close it as superseded?",
+   "chosen": "A",
+   "chosen_text": "Close as superseded by the backlog-refactor manifest",
+   "status": "approved",
+   "gated": [
+    "1810e7977e81"
+   ]
+  },
+  {
+   "choice": "kernel-champion-and-promotion#1",
+   "task_id": "AKX-ALL-15",
+   "manifest_id": "4179c24feea9",
+   "fold": 10,
+   "dest": "kernel-champion-and-promotion.md",
+   "question": "Fast-forward the shared orchestrator checkout to include device-busy fix `6ce26fc9` (AKX-ALL-15 G1 executor)?",
+   "chosen": "A",
+   "chosen_text": "Approve the fast-forward now",
+   "status": "approved",
+   "note": "Orchestrator checkout fast-forward approved; not performed by this commit.",
+   "gated": [
+    "4179c24feea9"
+   ]
+  },
+  {
+   "choice": "kernel-champion-and-promotion#2",
+   "task_id": "CH-28d",
+   "manifest_id": "af3725484c61",
+   "fold": 10,
+   "dest": "kernel-champion-and-promotion.md",
+   "question": "May `build_store.sh` adopt path-independent builds (prefix maps + pinned UI dist) in the fold recipe (CH-28d)?",
+   "chosen": "A",
+   "chosen_text": "Approve editing `build_store.sh` after the double-build `mode=exact` check",
+   "status": "approved",
+   "gated": [
+    "af3725484c61"
+   ]
+  },
+  {
+   "choice": "kernel-champion-and-promotion#3",
+   "task_id": "V6R-4b",
+   "manifest_id": "25cd905212ac",
+   "fold": 10,
+   "dest": "kernel-champion-and-promotion.md",
+   "question": "Ratify the forward-port rule (V6R-4b / OP-58) into CLAUDE.md § Experimental Kernel Workflow?",
+   "chosen": "A",
+   "chosen_text": "Ratify the proposed text as written",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "25cd905212ac"
+   ]
+  },
+  {
+   "choice": "mi210-serving-program#1",
+   "task_id": null,
+   "manifest_id": "6081d798aab4",
+   "fold": 11,
+   "dest": "mi210-serving-program.md",
+   "question": "If F1 justifies proceeding, amend the instrument era / skew gate (`:26` static-at-load and roadmap:254) to record that the skew verdict tested caching, not overlap?",
+   "chosen": "A",
+   "chosen_text": "Amend both records when F1 lands",
+   "status": "approved",
+   "gated": [
+    "6081d798aab4"
+   ]
+  },
+  {
+   "choice": "mi210-serving-program#2",
+   "task_id": null,
+   "manifest_id": "9fda0f8b091a",
+   "fold": 11,
+   "dest": "mi210-serving-program.md",
+   "question": "intake-576 (Nemotron Diffusion): implement or procure a maintained stock-v7 server/parser path, design diffusion-aware constrained decode, or keep it out?",
+   "chosen": "C",
+   "chosen_text": "Keep Nemotron Diffusion out of production roles",
+   "status": "approved",
+   "gated": [
+    "9fda0f8b091a"
+   ]
+  },
+  {
+   "choice": "mi210-serving-program#3",
+   "task_id": "GPS-PIN-1",
+   "manifest_id": "8305ebc4def9",
+   "fold": 11,
+   "dest": "mi210-serving-program.md",
+   "question": "Sign OP-81: the GPU host-thread pinning stack change (GPS-PIN-1, ratify script `ratify_stackchg_gpupin_20261022.sh`)?",
+   "chosen": "A",
+   "chosen_text": "Sign; owners reload pinned roles starting with :8083 and run the P1 probe",
+   "status": "approved; ratified 2026-10-22 (c7f62fb6a); GPS-PIN-1b (role reload) still owed, applies at the next operator-called stack bring-up",
+   "note": "GPS-PIN-1 ratified 2026-10-22 (c7f62fb6a). GPS-PIN-1b, the pinned-role reload, is still owed and applies at the next operator-called stack bring-up (production stack stays DOWN for now).",
+   "gated": [
+    "8305ebc4def9"
+   ]
+  },
+  {
+   "choice": "mi210-serving-program#4",
+   "task_id": "AXA-2",
+   "manifest_id": "32b1da682efd",
+   "fold": 11,
+   "dest": "mi210-serving-program.md",
+   "question": "AXA-2 teleport: how to treat the mid-stream quant change (Q4-CPU -> IQ2-GPU is a model swap)?",
+   "chosen": "B",
+   "chosen_text": "Same-quant only",
+   "status": "approved",
+   "gated": [
+    "32b1da682efd"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#1",
+   "task_id": "OAB-15",
+   "manifest_id": "3aacc295f9de",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "OAB-15 / OP-59: opencode store, (a) global `snapshot:false`? (b) a retention policy?",
+   "chosen": "A",
+   "chosen_text": "(a) per-call only + (b) age out headless-actor sessions older than N days",
+   "status": "approved",
+   "gated": [
+    "3aacc295f9de"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#2",
+   "task_id": "R23-1",
+   "manifest_id": "75820b54fd88",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "R23-1: file the llama-cli EOF fix upstream?",
+   "chosen": "A",
+   "chosen_text": "File upstream",
+   "status": "approved",
+   "gated": [
+    "75820b54fd88"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#3",
+   "task_id": "R23-47",
+   "manifest_id": "0c4189186da6",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "Ratify the P-KLD divergence-protocol annex (OP-38, `ratify_p_kld_divergence_protocol_20260915.sh`)?",
+   "chosen": "A",
+   "chosen_text": "Ratify",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "0c4189186da6"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#4",
+   "task_id": "R23-29",
+   "manifest_id": "f134678f1b81",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "R23-29: spend the 3 h Q4_K floor calibration, or run the ~15 min ungated llama-bench A/B first?",
+   "chosen": "A",
+   "chosen_text": "Ungated A/B first, calibrate only if it shows a signal",
+   "status": "approved",
+   "gated": [
+    "f134678f1b81"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#5",
+   "task_id": null,
+   "manifest_id": "82d844cf7518",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "Sign off P4 exit (rebuild the loop): run 11 met the bar by the letter?",
+   "chosen": "A",
+   "chosen_text": "Sign off and tick P4",
+   "status": "approved",
+   "gated": [
+    "82d844cf7518"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#6",
+   "task_id": "AK-PM-7",
+   "manifest_id": "5e87a51fb354",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "AK-PM-7: add a PORTABILITY class to registry entries?",
+   "chosen": "B",
+   "chosen_text": "Record the decision not to",
+   "status": "approved",
+   "gated": [
+    "5e87a51fb354"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#7",
+   "task_id": "AK-MMQ-H10a",
+   "manifest_id": "79906437ff6e",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "Push (fast-forward) research main to `eaf1ac36` (lane `lane/research-park-20260927`, fixed `window_ab.sh`)?",
+   "chosen": "A",
+   "chosen_text": "Approve the push",
+   "status": "approved",
+   "note": "Research-main fast-forward approved; not performed by this commit.",
+   "gated": [
+    "79906437ff6e",
+    "8a99ffa70c03"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#8",
+   "task_id": "AKU-07j",
+   "manifest_id": "0298a9723b4c",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "Approve the additional HIGH validator event for AKU-07j (OP-AKU-HELD)?",
+   "chosen": "A",
+   "chosen_text": "Approve",
+   "status": "approved",
+   "gated": [
+    "0298a9723b4c"
+   ]
+  },
+  {
+   "choice": "autokernel-loop#9",
+   "task_id": "S3-AKU-11",
+   "manifest_id": "60281b648049",
+   "fold": 12,
+   "dest": "autokernel-loop.md",
+   "question": "S3-AKU-11: launch the strategy-only ablation once costed (~255 attempts/arm, ~31 GPU-h/arm)?",
+   "chosen": "A",
+   "chosen_text": "Keep launch gated; deliver the costed design only",
+   "status": "approved",
+   "gated": [
+    "60281b648049"
+   ]
+  },
+  {
+   "choice": "harness-program#1",
+   "task_id": "UFH14-B4a",
+   "manifest_id": "e57a68353104",
+   "fold": 13,
+   "dest": "harness-program.md",
+   "question": "UFH14-B4a: sign the PFX-SEL-1 stack-change package after >=1 window of >=200 calls?",
+   "chosen": "A",
+   "chosen_text": "Sign when the baseline window exists",
+   "status": "approved; window not yet met",
+   "note": "The >=200-call window is not yet met; collection row ufh14-b4a-window-8083-20261102 is running.",
+   "gated": [
+    "e57a68353104"
+   ]
+  },
+  {
+   "choice": "harness-program#2",
+   "task_id": "UFH14-C1.",
+   "manifest_id": "ffa5ca3aff22",
+   "fold": 13,
+   "dest": "harness-program.md",
+   "question": "UFH14-C1 scope: should harnesses reach a multi-endpoint fleet (e.g. frontdoor) through the passthrough?",
+   "chosen": "A",
+   "chosen_text": "Keep 422 by design",
+   "status": "approved",
+   "gated": [
+    "ffa5ca3aff22"
+   ]
+  },
+  {
+   "choice": "harness-program#3",
+   "task_id": "HIL-6",
+   "manifest_id": "9be778684453",
+   "fold": 13,
+   "dest": "harness-program.md",
+   "question": "HIL-6: select architecture A, B or C per the HIL-4 decision package.",
+   "chosen": "B",
+   "chosen_text": "B (package recommendation)",
+   "status": "approved",
+   "gated": [
+    "9be778684453"
+   ]
+  },
+  {
+   "choice": "harness-program#4",
+   "task_id": "CT-12",
+   "manifest_id": "b1435e18d7c2",
+   "fold": 13,
+   "dest": "harness-program.md",
+   "question": "Change the default of `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY` from `source` (no body scan) to `warn`?",
+   "chosen": "B",
+   "chosen_text": "Switch to `warn`",
+   "status": "approved",
+   "note": "Default changes source -> warn (approved).",
+   "gated": [
+    "b1435e18d7c2",
+    "acba44456669",
+    "a5dc2a5a2acd"
+   ]
+  },
+  {
+   "choice": "harness-program#5",
+   "task_id": "UFH-12-PROD-ADOPT",
+   "manifest_id": "c760aad69c22",
+   "fold": 13,
+   "dest": "harness-program.md",
+   "question": "UFH-12-PROD-ADOPT: swap the validated R3 private EmbeddingGemma store into production?",
+   "chosen": "A",
+   "chosen_text": "Adopt via a stack change, folded into the CHAMPION so it ships with the v11 promotion",
+   "status": "approved: fold into the CHAMPION (ships with the v11 promotion); no exception, no separate swap",
+   "note": "Operator decision (relayed by ws58): the gemma-embedding2 arch exists only in v11, so adoption rides the v11 promotion. No exception and no standalone production swap.",
+   "gated": [
+    "c760aad69c22"
+   ]
+  },
+  {
+   "choice": "cpu-decode-roofline-program#1",
+   "task_id": null,
+   "manifest_id": "3c6895f119bf",
+   "fold": 16,
+   "dest": "cpu-decode-roofline-program.md",
+   "question": "MEAS-1 / OP-41: CPU co-tenancy between builds/benches and timing arms (fencing excluded). Choose A, B or C.",
+   "chosen": "A",
+   "chosen_text": "(A) Serialize: take the region-lock `bench` role around build AND bench (compiles alone suffice, per the peak discriminator)",
+   "status": "approved",
+   "gated": [
+    "3c6895f119bf",
+    "a8b5a6cb30ce"
+   ]
+  },
+  {
+   "choice": "cpu-decode-roofline-program#2",
+   "task_id": "XFER-4b",
+   "manifest_id": "c41fffea367f",
+   "fold": 16,
+   "dest": "cpu-decode-roofline-program.md",
+   "question": "XFER-4b: the iqk IQ4_NL/MXFP4 allowlist `8c4b282ae` was held out of the all-keeps fold; re-decide it?",
+   "chosen": "A",
+   "chosen_text": "Run the prefill A/B plus a paired task-quality eval, then re-decide",
+   "status": "approved",
+   "gated": [
+    "c41fffea367f"
+   ]
+  },
+  {
+   "choice": "numa-placement-and-contention#1",
+   "task_id": null,
+   "manifest_id": "462f9dd9b9ab",
+   "fold": 17,
+   "dest": "numa-placement-and-contention.md",
+   "question": "T12: re-decide `-c` provisioning (production 32768 = 12.5% of the trained window; architect_general 8192/request via slots: 2).",
+   "chosen": "B",
+   "chosen_text": "(B) Staged: raise `-c` only where the lineup's full-window KV sum fits RAM with stated margin (package recommendation)",
+   "status": "approved",
+   "note": "Staged -c raise approved.",
+   "gated": [
+    "462f9dd9b9ab"
+   ]
+  },
+  {
+   "choice": "numa-placement-and-contention#2",
+   "task_id": null,
+   "manifest_id": "615ec0285b76",
+   "fold": 17,
+   "dest": "numa-placement-and-contention.md",
+   "question": "RC-6a: ratify the `MEASUREMENT.md` P-REV-1 PR (copy-paste-ready blocks) that gates the decision-grade reviewer tier?",
+   "chosen": "A",
+   "chosen_text": "Ratify after the two kappa/estimand amendment candidates land",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "615ec0285b76"
+   ]
+  },
+  {
+   "choice": "numa-placement-and-contention#3",
+   "task_id": "WP-6",
+   "manifest_id": "09f1cb2d6b97",
+   "fold": 17,
+   "dest": "numa-placement-and-contention.md",
+   "question": "WP-6 / WP-7 full ratification of within-role placement (inference-gated).",
+   "chosen": "A",
+   "chosen_text": "Approve the measurement (>=8-sample vision_escalation re-bench) and ratify on its result",
+   "status": "approved",
+   "gated": [
+    "09f1cb2d6b97"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#1",
+   "task_id": null,
+   "manifest_id": "04d91e93c846",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "Restart the churn pipeline (grants revoked, dispatcher/keepers/watchdogs/filler_run13 stopped)?",
+   "chosen": "C",
+   "chosen_text": "Keep stopped",
+   "status": "approved (overrides the package recommendation A)",
+   "note": "Operator standing order: the churn pipeline stays stopped; grants stay revoked.",
+   "gated": [
+    "04d91e93c846"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#2",
+   "task_id": "RTG48-C49-COMMENTS-D9",
+   "manifest_id": "7c3a4f84efed",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "D9 acknowledgement: publish the two-file cadence comment correction (RTG48-C49, patch sha 9c191746...)?",
+   "chosen": "A",
+   "chosen_text": "Acknowledge",
+   "status": "approved",
+   "gated": [
+    "7c3a4f84efed"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#3",
+   "task_id": null,
+   "manifest_id": "2c2dcc042a45",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "R-23: if check (b) shows A-9 is now YES (thread attribution exists), reopen R-17's dissolution?",
+   "chosen": "A",
+   "chosen_text": "Run checks (a) and (b) first; decide only if (b) resolves YES",
+   "status": "approved",
+   "gated": [
+    "2c2dcc042a45"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#4",
+   "task_id": "AUD-10",
+   "manifest_id": "2fb7b3a1b87f",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "AUD-10: re-land the narrow single-branch `git clean` guard from `03e17111`, owned by mainD?",
+   "chosen": "A",
+   "chosen_text": "Re-land the clean branch only",
+   "status": "approved, landed",
+   "landed_in": "0774e400c",
+   "note": "Landed in 0774e400c.",
+   "gated": [
+    "2fb7b3a1b87f"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#5",
+   "task_id": "AUD-15",
+   "manifest_id": "5b85882ed97d",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "AUD-15 / R-8: gate the auto-loaded instruction surfaces (CLAUDE.md, agents/AGENT_INSTRUCTIONS.md, agents/shared/*.md) - F-19.",
+   "chosen": "A",
+   "chosen_text": "Add them to `check_trust_boundary_edit.sh`'s list (AUD-15)",
+   "status": "approved, landed",
+   "landed_in": "49368eaff",
+   "note": "Landed in 49368eaff.",
+   "gated": [
+    "5b85882ed97d",
+    "a9b4d787aa2b"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#6",
+   "task_id": null,
+   "manifest_id": "65b30170d77e",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "OP-9 + FW-3: may supervision lines be added to the HOST crontab (hub_supervisor.sh, fleet_watch.sh)?",
+   "chosen": "C",
+   "chosen_text": "No host supervision",
+   "status": "declined for now",
+   "note": "Operator did NOT approve host-crontab supervision lines (hub_supervisor.sh, fleet_watch.sh); revisit only on a new operator request.",
+   "gated": [
+    "65b30170d77e"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#7",
+   "task_id": "RTG52-D9-SOURCE",
+   "manifest_id": "7be5b6719b9c",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "D9 acknowledgement: integrate RTG52 target-selection and assignment-stdin source controls (private tip 33df2630, six files)?",
+   "chosen": "A",
+   "chosen_text": "Acknowledge",
+   "status": "approved, landed",
+   "landed_in": "1b48d9762",
+   "note": "Landed in 1b48d9762.",
+   "gated": [
+    "7be5b6719b9c"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#8",
+   "task_id": null,
+   "manifest_id": "d736379ec553",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "Session-bus contract: make `append` refuse at authoring time (align schema with the relay contract)?",
+   "chosen": "A",
+   "chosen_text": "Tighten the contract",
+   "status": "approved",
+   "gated": [
+    "d736379ec553"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#9",
+   "task_id": null,
+   "manifest_id": "f83eba9fb19b",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "Session-bus daemon: add automatic restart?",
+   "chosen": "B",
+   "chosen_text": "Leave restarts manual",
+   "status": "declined for now (follows OP-9/FW-3)",
+   "note": "Option A was to cover daemon auto-restart with the OP-9/FW-3 host-cron decision; that decision is declined, so there is no automatic restart.",
+   "gated": [
+    "f83eba9fb19b"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#10",
+   "task_id": null,
+   "manifest_id": "c2cbb12e4eb4",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "Install the pre-push serialization guard?",
+   "chosen": "A",
+   "chosen_text": "Install as-is (advisory)",
+   "status": "approved, landed",
+   "landed_in": "8e46a59e2",
+   "note": "Landed in 8e46a59e2.",
+   "gated": [
+    "c2cbb12e4eb4"
+   ]
+  },
+  {
+   "choice": "coordination-and-churn-pipeline#11",
+   "task_id": null,
+   "manifest_id": "1f33a4788705",
+   "fold": 18,
+   "dest": "coordination-and-churn-pipeline.md",
+   "question": "Present the CLAUDE.md/AGENTS.md and agents/shared/* wrap-up division-of-labour amendment for sign-off.",
+   "chosen": "A",
+   "chosen_text": "Sign with a narrow subagent exception (one writer, one request, one lease)",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "1f33a4788705"
+   ]
+  },
+  {
+   "choice": "autopilot-program#1",
+   "task_id": "AP-58",
+   "manifest_id": "a51c6751025c",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "AP-58: reseed the speed axis on ANY eligible in-era frontier measurement?",
+   "chosen": "A",
+   "chosen_text": "Reseed on any eligible in-era measurement",
+   "status": "approved",
+   "gated": [
+    "a51c6751025c"
+   ]
+  },
+  {
+   "choice": "autopilot-program#2",
+   "task_id": null,
+   "manifest_id": "aab81a1062a5",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "Autopilot: what to do with the 419 depressed update-path rows (old_q recorded)?",
+   "chosen": "A",
+   "chosen_text": "Materialise the 419 (memory_id, old_q, new_q, ts) as a read-only artifact and decide on it",
+   "status": "approved",
+   "gated": [
+    "aab81a1062a5"
+   ]
+  },
+  {
+   "choice": "autopilot-program#3",
+   "task_id": "AP-54b",
+   "manifest_id": "bf59236c91ba",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "AP-54: pick the wiki-fence arming mechanism (gates the AP-54b A/B).",
+   "chosen": "A",
+   "chosen_text": "Pick the mechanism once the fence and path recording land",
+   "status": "approved",
+   "gated": [
+    "bf59236c91ba"
+   ]
+  },
+  {
+   "choice": "autopilot-program#4",
+   "task_id": "AP-63d",
+   "manifest_id": "382ae70ac5c0",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "AP-63d: switch `parent_trial` consumers (config_diff, PEAF r^2, BSV-3 rows) from the same-species heuristic to `lineage.parent_trial_id`?",
+   "chosen": "A",
+   "chosen_text": "Switch to lineage.parent_trial_id",
+   "status": "approved",
+   "gated": [
+    "382ae70ac5c0"
+   ]
+  },
+  {
+   "choice": "autopilot-program#5",
+   "task_id": "AP-65",
+   "manifest_id": "1a02293c5bda",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "AP-65: should `_proxy_check` bind (violation at a threshold) instead of warning?",
+   "chosen": "A",
+   "chosen_text": "Make it a violation at a threshold from S3-AP-08 rotation-drop data",
+   "status": "approved",
+   "gated": [
+    "1a02293c5bda"
+   ]
+  },
+  {
+   "choice": "autopilot-program#6",
+   "task_id": null,
+   "manifest_id": "abfad8c243c3",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "Autopilot early abort: how many consecutive infra-failed rows abort an in-flight batch, and abort or continue-and-mark?",
+   "chosen": "A",
+   "chosen_text": "Abort after N consecutive infra failures, N=3",
+   "status": "approved",
+   "note": "N=3 set by the operator.",
+   "gated": [
+    "abfad8c243c3"
+   ]
+  },
+  {
+   "choice": "autopilot-program#7",
+   "task_id": null,
+   "manifest_id": "7e04aae01257",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "Ratify or reverse: operator applies can no longer run from a worktree (exit 2).",
+   "chosen": "A",
+   "chosen_text": "Ratify",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "7e04aae01257"
+   ]
+  },
+  {
+   "choice": "autopilot-program#8",
+   "task_id": "SEQ-B1",
+   "manifest_id": "44ae1f547a78",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "SEQ-B1: keep the joint promotion gate, or move the rate axis to advisory (human-amendment-only)?",
+   "chosen": "A",
+   "chosen_text": "Keep the joint gate",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "44ae1f547a78"
+   ]
+  },
+  {
+   "choice": "autopilot-program#9",
+   "task_id": null,
+   "manifest_id": "4ca6b654a912",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "Axis 1: goodput vs raw rate.",
+   "chosen": "B",
+   "chosen_text": "(b) Raw rate stays + a quality floor gates admission, plus fix `or 0.0` absent-vs-zero",
+   "status": "approved",
+   "gated": [
+    "4ca6b654a912"
+   ]
+  },
+  {
+   "choice": "autopilot-program#10",
+   "task_id": null,
+   "manifest_id": "e7dd93b2a9d6",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "W6d: weight the mix by production traffic instead of equal thirds?",
+   "chosen": "A",
+   "chosen_text": "Production-traffic-weighted",
+   "status": "approved",
+   "gated": [
+    "e7dd93b2a9d6"
+   ]
+  },
+  {
+   "choice": "autopilot-program#11",
+   "task_id": null,
+   "manifest_id": "54d3037a0833",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "P0.1: run or pause the autopilot candidate species?",
+   "chosen": "A",
+   "chosen_text": "Run",
+   "status": "approved",
+   "note": "Run approved (P0.1 run candidates).",
+   "gated": [
+    "54d3037a0833"
+   ]
+  },
+  {
+   "choice": "autopilot-program#12",
+   "task_id": null,
+   "manifest_id": "f1207a80a7bd",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "T2.2: should the reasoner's GPU residency raise the composite route's `cost_tier`?",
+   "chosen": "A",
+   "chosen_text": "Raise cost_tier for the composite route",
+   "status": "approved",
+   "gated": [
+    "f1207a80a7bd"
+   ]
+  },
+  {
+   "choice": "autopilot-program#13",
+   "task_id": null,
+   "manifest_id": "491fd493eb48",
+   "fold": 20,
+   "dest": "autopilot-program.md",
+   "question": "T0.1 approval: register the `scaffold_then_nothink` lever as a gated placeholder (T4.2)?",
+   "chosen": "A",
+   "chosen_text": "Approve; register as placeholder with kill_condition",
+   "status": "approved",
+   "gated": [
+    "491fd493eb48"
+   ]
+  },
+  {
+   "choice": "memory-program#1",
+   "task_id": null,
+   "manifest_id": "e87399d100cb",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "M-12f: exclude single-item questions from the Chronological Order score before CAS is a headline?",
+   "chosen": "A",
+   "chosen_text": "Exclude questions with <2 ground-truth items",
+   "status": "approved",
+   "gated": [
+    "e87399d100cb"
+   ]
+  },
+  {
+   "choice": "memory-program#2",
+   "task_id": "CFI-2",
+   "manifest_id": "cf9eb12d15db",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "CFI-2: reach 256-token blocks on the episodic path by widening memory-k or adding a stable memory-library prefix?",
+   "chosen": "B",
+   "chosen_text": "Stable memory-library prefix",
+   "status": "approved",
+   "gated": [
+    "cf9eb12d15db"
+   ]
+  },
+  {
+   "choice": "memory-program#3",
+   "task_id": null,
+   "manifest_id": "4cceb142a76e",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "M-27d.1: should eval/external rows be in the default recall pool or behind a `context.source` filter?",
+   "chosen": "A",
+   "chosen_text": "Behind a filter, via a flagged A/B",
+   "status": "approved",
+   "gated": [
+    "4cceb142a76e"
+   ]
+  },
+  {
+   "choice": "memory-program#4",
+   "task_id": null,
+   "manifest_id": "ac59e7fac97f",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "D-e1: raise the 12/8 REPL memory defaults?",
+   "chosen": "A",
+   "chosen_text": "Decide inside D-c1's real-workload measurement",
+   "status": "approved",
+   "gated": [
+    "ac59e7fac97f"
+   ]
+  },
+  {
+   "choice": "memory-program#5",
+   "task_id": null,
+   "manifest_id": "2e9b41cb0a9c",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "D-f2: fence findings, documents and tags too?",
+   "chosen": "A",
+   "chosen_text": "Fence them",
+   "status": "approved",
+   "gated": [
+    "2e9b41cb0a9c"
+   ]
+  },
+  {
+   "choice": "memory-program#6",
+   "task_id": null,
+   "manifest_id": "a1ad61d866f5",
+   "fold": 24,
+   "dest": "memory-program.md",
+   "question": "Add an importance-scored background consolidation pass to AutoMem?",
+   "chosen": "A",
+   "chosen_text": "Add as optional extension",
+   "status": "approved",
+   "gated": [
+    "a1ad61d866f5"
+   ]
+  },
+  {
+   "choice": "reviewer-control-plane#1",
+   "task_id": "GC-4b",
+   "manifest_id": "d10bb01c2ee7",
+   "fold": 25,
+   "dest": "reviewer-control-plane.md",
+   "question": "GC-4b: DeepSeek-V4.1-Flash residency policy (Engram tables resident vs mmap-streamed).",
+   "chosen": "A",
+   "chosen_text": "Decide after the port loads and Engram access is measured",
+   "status": "approved",
+   "gated": [
+    "d10bb01c2ee7"
+   ]
+  },
+  {
+   "choice": "reviewer-control-plane#2",
+   "task_id": null,
+   "manifest_id": "ad1d5cad4c94",
+   "fold": 25,
+   "dest": "reviewer-control-plane.md",
+   "question": "GC-external-1a: declare the tie/abstention estimand and report its rate?",
+   "chosen": "A",
+   "chosen_text": "Declare and report",
+   "status": "approved",
+   "gated": [
+    "ad1d5cad4c94"
+   ]
+  },
+  {
+   "choice": "reviewer-control-plane#3",
+   "task_id": "HG-4",
+   "manifest_id": "990dfadd68a7",
+   "fold": 25,
+   "dest": "reviewer-control-plane.md",
+   "question": "HG-4: set the escalation-precision human-audit sampling rate and cadence.",
+   "chosen": "A",
+   "chosen_text": "Set a rate and cadence",
+   "status": "approved",
+   "gated": [
+    "990dfadd68a7"
+   ]
+  },
+  {
+   "choice": "reviewer-control-plane#4",
+   "task_id": "LB-6b",
+   "manifest_id": "54d928f046ce",
+   "fold": 25,
+   "dest": "reviewer-control-plane.md",
+   "question": "LB-6b / OP-5b: pick the budget-gate threshold (quality gain per throughput cost).",
+   "chosen": "A",
+   "chosen_text": "Pick one of the drafted candidate thresholds",
+   "status": "approved",
+   "gated": [
+    "54d928f046ce",
+    "b28c12ee5bf0"
+   ]
+  },
+  {
+   "choice": "routing-program#1",
+   "task_id": null,
+   "manifest_id": "7fbcb4958021",
+   "fold": 26,
+   "dest": "routing-program.md",
+   "question": "fable5-02 \">=5% regret\": selector self-consistency regret or counterfactual outcome regret?",
+   "chosen": "A",
+   "chosen_text": "Counterfactual outcome regret (~8.1-8.4 pp)",
+   "status": "approved",
+   "gated": [
+    "7fbcb4958021"
+   ]
+  },
+  {
+   "choice": "routing-program#2",
+   "task_id": "EPD-1b",
+   "manifest_id": "724eb13073a5",
+   "fold": 26,
+   "dest": "routing-program.md",
+   "question": "EPD-1b: backfill historical outcome labels in the live memory store (`q_value > 0.5` -> success)?",
+   "chosen": "B",
+   "chosen_text": "No backfill; EP-5 filters to rows updated after 24b43990",
+   "status": "approved",
+   "gated": [
+    "724eb13073a5"
+   ]
+  },
+  {
+   "choice": "routing-program#3",
+   "task_id": null,
+   "manifest_id": "c1930211713c",
+   "fold": 26,
+   "dest": "routing-program.md",
+   "question": "Run a `--keep-enabled` bracket to actually enable live learned routing?",
+   "chosen": "A",
+   "chosen_text": "Run the bracket",
+   "status": "approved",
+   "note": "Bracket approved.",
+   "gated": [
+    "c1930211713c"
+   ]
+  },
+  {
+   "choice": "routing-program#4",
+   "task_id": "TD-30e",
+   "manifest_id": "2e6c9de59695",
+   "fold": 26,
+   "dest": "routing-program.md",
+   "question": "TD-30e: sign ONE ratification package for two instrument-era rows (OC1-coherence-gate-v1, CLS1 harness1 labels) in `instrument_eras.yaml`?",
+   "chosen": "A",
+   "chosen_text": "Sign the package",
+   "status": "approved, pending ratify script",
+   "ratify_script": "/mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh",
+   "note": "Applied through the operator ratify script /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (not run yet).",
+   "gated": [
+    "2e6c9de59695"
+   ]
+  },
+  {
+   "choice": "kv-cache-program#1",
+   "task_id": null,
+   "manifest_id": "ddf733cf9e17",
+   "fold": 1002,
+   "dest": "kv-cache-program.md",
+   "question": "Should Layer 1 prefill placement get a length threshold once R_cpu(L)/R_gpu(L,ub) are filled from PF1?",
+   "chosen": "A",
+   "chosen_text": "Add a length threshold derived from the PF1 crossover",
+   "status": "approved",
+   "gated": [
+    "ddf733cf9e17"
+   ]
+  },
+  {
+   "choice": "kv-cache-program#2",
+   "task_id": "HSF-5.P-NEXT",
+   "manifest_id": "e6a9fe8a6239",
+   "fold": 1002,
+   "dest": "kv-cache-program.md",
+   "question": "Give the go for HSF-5.P-NEXT GPU attribution (P6) per the REVIVAL CHECKLIST?",
+   "chosen": "B",
+   "chosen_text": "Keep deferred",
+   "status": "approved",
+   "gated": [
+    "e6a9fe8a6239"
+   ]
+  },
+  {
+   "choice": "kv-cache-program#3",
+   "task_id": "V11-FA-4b",
+   "manifest_id": "dd5fec0fbbfb",
+   "fold": 1002,
+   "dest": "kv-cache-program.md",
+   "question": "Set the exact scope of the V11-FA-4b model-level rocWMMA ON/OFF quality A/B (parent stays open \"owner decides exact task scope\").",
+   "chosen": "B",
+   "chosen_text": "Production shape only (q8_0 KV, drafter as served) plus the 200 scored items",
+   "status": "approved",
+   "gated": [
+    "dd5fec0fbbfb",
+    "f3f43b5c4730"
+   ]
+  },
+  {
+   "choice": "kv-cache-program#4",
+   "task_id": "KVU-12.4",
+   "manifest_id": "aafe475a984b",
+   "fold": 1002,
+   "dest": "kv-cache-program.md",
+   "question": "KVU-12.4: run one more ABA with a tighter anchor floor, or accept NO_DIFFERENCE?",
+   "chosen": "A",
+   "chosen_text": "Accept NO_DIFFERENCE and record the ~23% gap as inside the 12% floor",
+   "status": "approved",
+   "gated": [
+    "aafe475a984b",
+    "271bac03df38"
+   ]
+  },
+  {
+   "choice": "vidya-belief-substrate-program#1",
+   "task_id": "VB-SL2-STEPS",
+   "manifest_id": "3cd4e57b32bc",
+   "fold": 1004,
+   "dest": "vidya-belief-substrate-program.md",
+   "question": "VB-SL2-STEPS: give the `target_sample_steps_est` block its own `belief_measurements` rows?",
+   "chosen": "A",
+   "chosen_text": "Project it, labelled with its estimator string",
+   "status": "approved",
+   "gated": [
+    "3cd4e57b32bc"
+   ]
+  },
+  {
+   "choice": "vidya-belief-substrate-program#2",
+   "task_id": "VB-REFOCUS-PUSH-CORRECTION-FIX",
+   "manifest_id": "42799be0257c",
+   "fold": 1004,
+   "dest": "vidya-belief-substrate-program.md",
+   "question": "Go to push `f8/vidya-correction-fix` (`2c0c7334b`: adapter fix + 121 intake index blocks)?",
+   "chosen": "A",
+   "chosen_text": "Go, after cite-check on the merged tree and pending-corrections = 0",
+   "status": "approved",
+   "note": "Push approved (after cite-check on the merged tree and pending-corrections = 0); not performed by this commit.",
+   "gated": [
+    "42799be0257c"
+   ]
+  },
+  {
+   "choice": "vidya-belief-substrate-program#3",
+   "task_id": "VB-LOOP-TEXT",
+   "manifest_id": "da174e921f35",
+   "fold": 1004,
+   "dest": "vidya-belief-substrate-program.md",
+   "question": "VB-LOOP-TEXT: should device-only claims count as usable evidence for a model target?",
+   "chosen": "A",
+   "chosen_text": "Show them as a separate \"device-scope\" group",
+   "status": "approved",
+   "gated": [
+    "da174e921f35"
+   ]
+  },
+  {
+   "choice": "vidya-belief-substrate-program#4",
+   "task_id": "VB-AP-SPINUP-ORCH-CLONE",
+   "manifest_id": "ca4f3d06e5ac",
+   "fold": 1004,
+   "dest": "vidya-belief-substrate-program.md",
+   "question": "When to fast-forward the shared orchestrator clone before the autopilot spin-up (VB-AP-SPINUP-ORCH-CLONE)?",
+   "chosen": "A",
+   "chosen_text": "In the same step as the next autopilot start",
+   "status": "approved",
+   "note": "Rule approved: fast-forward the shared orchestrator clone in the same step as the next autopilot start.",
+   "gated": [
+    "ca4f3d06e5ac"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#1",
+   "task_id": null,
+   "manifest_id": "f98dff74e42a",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "Approve the Hy3 cases (Hy3-FP8 test vector; official IQ1_M ~90 GB as the GGUF path) for AngelSlim / architect-candidacy work?",
+   "chosen": "B",
+   "chosen_text": "Keep operator-gated (no Hy3 work)",
+   "status": "approved",
+   "gated": [
+    "f98dff74e42a",
+    "f2e3df3e2f6f"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#2",
+   "task_id": null,
+   "manifest_id": "83ff1e587b9e",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "A3-ff: design and ratify a new direct-generation behavior screen?",
+   "chosen": "B",
+   "chosen_text": "No screen; FF stays a scaffold tool",
+   "status": "approved",
+   "gated": [
+    "83ff1e587b9e"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#3",
+   "task_id": null,
+   "manifest_id": "de075c0db3b9",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "gemma4 on gfx90a: run the server-arm check of `-fa 0` (12.9% faster tg128)?",
+   "chosen": "A",
+   "chosen_text": "Run a server-arm check when worker_general moves to GPU",
+   "status": "approved",
+   "gated": [
+    "de075c0db3b9"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#4",
+   "task_id": null,
+   "manifest_id": "d0224244af9b",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "OpenMLE Sandbox: reconfigure the host to cgroup v1 (gate 2)?",
+   "chosen": "A",
+   "chosen_text": "Decide only after gate (1) images pull and run",
+   "status": "approved (wait for gate 1)",
+   "note": "Do not reconfigure the host to cgroup v1 until OpenMLE gate 1 passes.",
+   "gated": [
+    "d0224244af9b"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#5",
+   "task_id": "CS-8.STT7",
+   "manifest_id": "41bb2eb5ed62",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "CS-8.STT7: record the empty nemo-3.5 output on index 862 how?",
+   "chosen": "A",
+   "chosen_text": "Count as unparseable under the denominator control",
+   "status": "approved",
+   "gated": [
+    "41bb2eb5ed62"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#6",
+   "task_id": "P3-5",
+   "manifest_id": "f7e4c4f244f0",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "P3-5: choose the new bake-off arms (deleted tenants).",
+   "chosen": "A",
+   "chosen_text": "Qwen3.8-27B vs the A4 bridge as sequential control (package recommendation)",
+   "status": "approved",
+   "gated": [
+    "f7e4c4f244f0"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#7",
+   "task_id": null,
+   "manifest_id": "6ca412a24fdb",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "Capture search trajectories on deep-research eval runs (intake-877)?",
+   "chosen": "A",
+   "chosen_text": "Capture",
+   "status": "approved",
+   "gated": [
+    "6ca412a24fdb"
+   ]
+  },
+  {
+   "choice": "model-evaluation-queue#8",
+   "task_id": null,
+   "manifest_id": "3ce696ba405e",
+   "fold": 1010,
+   "dest": "model-evaluation-queue.md",
+   "question": "P6b: bench Qwen3.6-35B-A3B-MTP on a fresh experimental build?",
+   "chosen": "A",
+   "chosen_text": "Re-scope to the current (v10) champion and run",
+   "status": "approved",
+   "gated": [
+    "3ce696ba405e"
+   ]
+  },
+  {
+   "choice": "deepseek-v41-flash-evaluation#1",
+   "task_id": "DS41-W7.2",
+   "manifest_id": "536849e3996d",
+   "fold": 1011,
+   "dest": "deepseek-v41-flash-evaluation.md",
+   "question": "Delete `DeepSeek-V4.1-Flash-DSpark.gguf` (10 GB, no references) and record its graveyard row?",
+   "chosen": "A",
+   "chosen_text": "Approve the delete",
+   "status": "approved",
+   "note": "Deletion approved; this commit does not perform it (graveyard row recorded by the executing session).",
+   "gated": [
+    "536849e3996d"
+   ]
+  },
+  {
+   "choice": "deepseek-v41-flash-evaluation#2",
+   "task_id": "DS41-B3.1",
+   "manifest_id": "3dfb940c9a08",
+   "fold": 1011,
+   "dest": "deepseek-v41-flash-evaluation.md",
+   "question": "DS41-B3.1: does the -0.0 Engram gate case matter?",
+   "chosen": "A",
+   "chosen_text": "Accept +1 at -0.0",
+   "status": "approved",
+   "gated": [
+    "3dfb940c9a08"
+   ]
+  },
+  {
+   "choice": "deepseek-v41-flash-evaluation#3",
+   "task_id": "DS41-T3.3b",
+   "manifest_id": "ca9a66b85dec",
+   "fold": 1011,
+   "dest": "deepseek-v41-flash-evaluation.md",
+   "question": "DS41-T3.3b: put the authored template into the DS41 launch recipe?",
+   "chosen": "A",
+   "chosen_text": "Adopt after parity results",
+   "status": "approved",
+   "gated": [
+    "ca9a66b85dec"
+   ]
+  },
+  {
+   "choice": "deepseek-v41-flash-evaluation#4",
+   "task_id": "DS41-C34",
+   "manifest_id": "62df0de65687",
+   "fold": 1011,
+   "dest": "deepseek-v41-flash-evaluation.md",
+   "question": "DS41-C34: delete the partial build dir?",
+   "chosen": "A",
+   "chosen_text": "Delete",
+   "status": "approved",
+   "note": "Deletion approved; this commit does not perform it.",
+   "gated": [
+    "62df0de65687"
+   ]
+  },
+  {
+   "choice": "deepseek-v41-flash-evaluation#5",
+   "task_id": "DS41-C92",
+   "manifest_id": "9d93f21e4e84",
+   "fold": 1011,
+   "dest": "deepseek-v41-flash-evaluation.md",
+   "question": "DS41-C92: floor selection prefers the contaminated COR exact floor (4.533%) over the cleaner carried lineage floor; quarantine the record or re-order selection?",
+   "chosen": "B",
+   "chosen_text": "Re-order selection (carried lineage floor first after an anchor advance)",
+   "status": "approved",
+   "gated": [
+    "9d93f21e4e84"
+   ]
+  },
+  {
+   "choice": "model-architecture-readiness#1",
+   "task_id": null,
+   "manifest_id": "fd6c29184921",
+   "fold": 1027,
+   "dest": "model-architecture-readiness.md",
+   "question": "Log-linear gated DeltaNet: port on the 795M f32 research checkpoint (16K positions) or wait for a production-scale model?",
+   "chosen": "B",
+   "chosen_text": "Wait for a production-scale log-linear GDN",
+   "status": "approved",
+   "gated": [
+    "fd6c29184921"
+   ]
+  }
+ ],
+ "apply_after_fold": {
+  "why": "Boxes whose fold destination (folds 17-26) does not exist on origin/main yet; batches 3 and 4 have not landed. After each fold lands, add the dated sub-bullet to the box (found by task text or task id, not line).",
+  "annotation_text": "2026-11-02 operator decision: <chosen_text> (decisions-batch2-4-20261102.json)",
+  "boxes": [
+   {
+    "choice": "numa-placement-and-contention#1",
+    "manifest_id": "462f9dd9b9ab",
+    "task_id_or_src": "handoffs/active/numa-placement-defect-20260730.md:1023@3ac825873dfb",
+    "fold": 17,
+    "dest": "numa-placement-and-contention.md",
+    "current_location": [
+     "handoffs/active/numa-placement-defect-20260730.md",
+     1024
+    ]
+   },
+   {
+    "choice": "numa-placement-and-contention#2",
+    "manifest_id": "615ec0285b76",
+    "task_id_or_src": "handoffs/active/reboot-gated-inventory-and-staging.md:363@3ac825873dfb",
+    "fold": 17,
+    "dest": "numa-placement-and-contention.md",
+    "current_location": [
+     "handoffs/active/reboot-gated-inventory-and-staging.md",
+     364
+    ]
+   },
+   {
+    "choice": "numa-placement-and-contention#3",
+    "manifest_id": "09f1cb2d6b97",
+    "task_id_or_src": "handoffs/active/within-role-placement-state-machine.md:377@3ac825873dfb",
+    "fold": 17,
+    "dest": "numa-placement-and-contention.md",
+    "current_location": [
+     "handoffs/active/within-role-placement-state-machine.md",
+     377
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#1",
+    "manifest_id": "04d91e93c846",
+    "task_id_or_src": "handoffs/active/churn-pipeline.md:114@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/churn-pipeline.md",
+     114
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#2",
+    "manifest_id": "7c3a4f84efed",
+    "task_id_or_src": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:1505@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+     1505
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#3",
+    "manifest_id": "2c2dcc042a45",
+    "task_id_or_src": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:648@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+     648
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#4",
+    "manifest_id": "2fb7b3a1b87f",
+    "task_id_or_src": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:755@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+     755
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#5",
+    "manifest_id": "5b85882ed97d",
+    "task_id_or_src": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:820@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+     820
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#5",
+    "manifest_id": "a9b4d787aa2b",
+    "task_id_or_src": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:571@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+     571
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#6",
+    "manifest_id": "65b30170d77e",
+    "task_id_or_src": "handoffs/active/handoff-index-and-backlog-graph.md:212@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/handoff-index-and-backlog-graph.md",
+     212
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#7",
+    "manifest_id": "7be5b6719b9c",
+    "task_id_or_src": "handoffs/active/loop-owned-fleet-implementation.md:653@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/loop-owned-fleet-implementation.md",
+     653
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#8",
+    "manifest_id": "d736379ec553",
+    "task_id_or_src": "handoffs/active/session-bus-thin-dispatcher.md:1562@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/session-bus-thin-dispatcher.md",
+     1562
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#9",
+    "manifest_id": "f83eba9fb19b",
+    "task_id_or_src": "handoffs/active/session-bus-thin-dispatcher.md:1899@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/session-bus-thin-dispatcher.md",
+     1899
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#10",
+    "manifest_id": "c2cbb12e4eb4",
+    "task_id_or_src": "handoffs/active/session-bus-thin-dispatcher.md:2656@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/session-bus-thin-dispatcher.md",
+     2656
+    ]
+   },
+   {
+    "choice": "coordination-and-churn-pipeline#11",
+    "manifest_id": "1f33a4788705",
+    "task_id_or_src": "handoffs/active/wrap-up-division-of-labor-policy.md:431@3ac825873dfb",
+    "fold": 18,
+    "dest": "coordination-and-churn-pipeline.md",
+    "current_location": [
+     "handoffs/active/wrap-up-division-of-labor-policy.md",
+     431
+    ]
+   },
+   {
+    "choice": "autopilot-program#1",
+    "manifest_id": "a51c6751025c",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:174@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     175
+    ]
+   },
+   {
+    "choice": "autopilot-program#2",
+    "manifest_id": "aab81a1062a5",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:462@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     463
+    ]
+   },
+   {
+    "choice": "autopilot-program#3",
+    "manifest_id": "bf59236c91ba",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:724@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     726
+    ]
+   },
+   {
+    "choice": "autopilot-program#4",
+    "manifest_id": "382ae70ac5c0",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:768@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     770
+    ]
+   },
+   {
+    "choice": "autopilot-program#5",
+    "manifest_id": "1a02293c5bda",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:779@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     781
+    ]
+   },
+   {
+    "choice": "autopilot-program#6",
+    "manifest_id": "abfad8c243c3",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:915@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     917
+    ]
+   },
+   {
+    "choice": "autopilot-program#7",
+    "manifest_id": "7e04aae01257",
+    "task_id_or_src": "handoffs/active/autopilot-continuous-optimization.md:932@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-continuous-optimization.md",
+     934
+    ]
+   },
+   {
+    "choice": "autopilot-program#8",
+    "manifest_id": "44ae1f547a78",
+    "task_id_or_src": "handoffs/active/autopilot-sequential-allocation.md:184@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/autopilot-sequential-allocation.md",
+     184
+    ]
+   },
+   {
+    "choice": "autopilot-program#9",
+    "manifest_id": "4ca6b654a912",
+    "task_id_or_src": "handoffs/active/objective-task-rate-goodput.md:106@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/objective-task-rate-goodput.md",
+     106
+    ]
+   },
+   {
+    "choice": "autopilot-program#10",
+    "manifest_id": "e7dd93b2a9d6",
+    "task_id_or_src": "handoffs/active/objective-task-rate-goodput.md:210@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/objective-task-rate-goodput.md",
+     210
+    ]
+   },
+   {
+    "choice": "autopilot-program#11",
+    "manifest_id": "54d3037a0833",
+    "task_id_or_src": "handoffs/active/orchestration-robustness-audit-2026-07-11.md:155@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/orchestration-robustness-audit-2026-07-11.md",
+     155
+    ]
+   },
+   {
+    "choice": "autopilot-program#12",
+    "manifest_id": "f1207a80a7bd",
+    "task_id_or_src": "handoffs/active/scaffold-autopilot-cost-lever-deployment.md:117@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+     117
+    ]
+   },
+   {
+    "choice": "autopilot-program#13",
+    "manifest_id": "491fd493eb48",
+    "task_id_or_src": "handoffs/active/scaffold-autopilot-cost-lever-deployment.md:125@3ac825873dfb",
+    "fold": 20,
+    "dest": "autopilot-program.md",
+    "current_location": [
+     "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+     125
+    ]
+   },
+   {
+    "choice": "memory-program#1",
+    "manifest_id": "e87399d100cb",
+    "task_id_or_src": "handoffs/active/episodic-memory-integrity.md:567@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/episodic-memory-integrity.md",
+     567
+    ]
+   },
+   {
+    "choice": "memory-program#2",
+    "manifest_id": "cf9eb12d15db",
+    "task_id_or_src": "handoffs/active/episodic-memory-integrity.md:730@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/episodic-memory-integrity.md",
+     730
+    ]
+   },
+   {
+    "choice": "memory-program#3",
+    "manifest_id": "4cceb142a76e",
+    "task_id_or_src": "handoffs/active/episodic-memory-integrity.md:740@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/episodic-memory-integrity.md",
+     740
+    ]
+   },
+   {
+    "choice": "memory-program#4",
+    "manifest_id": "ac59e7fac97f",
+    "task_id_or_src": "handoffs/active/repl-session-memory-maturity.md:177@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/repl-session-memory-maturity.md",
+     177
+    ]
+   },
+   {
+    "choice": "memory-program#5",
+    "manifest_id": "2e9b41cb0a9c",
+    "task_id_or_src": "handoffs/active/repl-session-memory-maturity.md:356@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/repl-session-memory-maturity.md",
+     356
+    ]
+   },
+   {
+    "choice": "memory-program#6",
+    "manifest_id": "a1ad61d866f5",
+    "task_id_or_src": "handoffs/active/unified-trace-memory-service.md:323@3ac825873dfb",
+    "fold": 24,
+    "dest": "memory-program.md",
+    "current_location": [
+     "handoffs/active/unified-trace-memory-service.md",
+     323
+    ]
+   },
+   {
+    "choice": "reviewer-control-plane#1",
+    "manifest_id": "d10bb01c2ee7",
+    "task_id_or_src": "handoffs/active/glm52-reviewer-capability-gates.md:218@3ac825873dfb",
+    "fold": 25,
+    "dest": "reviewer-control-plane.md",
+    "current_location": [
+     "handoffs/active/glm52-reviewer-capability-gates.md",
+     218
+    ]
+   },
+   {
+    "choice": "reviewer-control-plane#2",
+    "manifest_id": "ad1d5cad4c94",
+    "task_id_or_src": "handoffs/active/reviewer-calibration-accounting.md:230@3ac825873dfb",
+    "fold": 25,
+    "dest": "reviewer-control-plane.md",
+    "current_location": [
+     "handoffs/active/reviewer-calibration-accounting.md",
+     230
+    ]
+   },
+   {
+    "choice": "reviewer-control-plane#3",
+    "manifest_id": "990dfadd68a7",
+    "task_id_or_src": "handoffs/active/reviewer-escalation-and-human-gate-policy.md:38@3ac825873dfb",
+    "fold": 25,
+    "dest": "reviewer-control-plane.md",
+    "current_location": [
+     "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+     38
+    ]
+   },
+   {
+    "choice": "reviewer-control-plane#4",
+    "manifest_id": "54d928f046ce",
+    "task_id_or_src": "handoffs/active/reviewer-latency-and-sampling-budget.md:27@3ac825873dfb",
+    "fold": 25,
+    "dest": "reviewer-control-plane.md",
+    "current_location": [
+     "handoffs/active/reviewer-latency-and-sampling-budget.md",
+     27
+    ]
+   },
+   {
+    "choice": "reviewer-control-plane#4",
+    "manifest_id": "b28c12ee5bf0",
+    "task_id_or_src": "handoffs/active/reviewer-latency-and-sampling-budget.md:25@3ac825873dfb",
+    "fold": 25,
+    "dest": "reviewer-control-plane.md",
+    "current_location": [
+     "handoffs/active/reviewer-latency-and-sampling-budget.md",
+     25
+    ]
+   },
+   {
+    "choice": "routing-program#1",
+    "manifest_id": "7fbcb4958021",
+    "task_id_or_src": "handoffs/active/decision-aware-routing.md:300@3ac825873dfb",
+    "fold": 26,
+    "dest": "routing-program.md",
+    "current_location": [
+     "handoffs/active/decision-aware-routing.md",
+     300
+    ]
+   },
+   {
+    "choice": "routing-program#2",
+    "manifest_id": "724eb13073a5",
+    "task_id_or_src": "handoffs/active/learned-routing-controller.md:212@3ac825873dfb",
+    "fold": 26,
+    "dest": "routing-program.md",
+    "current_location": [
+     "handoffs/active/learned-routing-controller.md",
+     212
+    ]
+   },
+   {
+    "choice": "routing-program#3",
+    "manifest_id": "c1930211713c",
+    "task_id_or_src": "handoffs/active/retrain-routing-models.md:125@3ac825873dfb",
+    "fold": 26,
+    "dest": "routing-program.md",
+    "current_location": [
+     "handoffs/active/retrain-routing-models.md",
+     125
+    ]
+   },
+   {
+    "choice": "routing-program#4",
+    "manifest_id": "2e6c9de59695",
+    "task_id_or_src": "handoffs/active/typed-decision-plane.md:562@3ac825873dfb",
+    "fold": 26,
+    "dest": "routing-program.md",
+    "current_location": [
+     "handoffs/active/typed-decision-plane.md",
+     562
+    ]
+   }
+  ]
+ },
+ "operator_actions": [
+  "Run /mnt/raid0/llm/tmp/ws58-csh/ratify_brf_batch_20261102.sh (V6R-4b, RC-6a, R23-47, TD-30e, wrap-up division-of-labour amendment, worktree-apply rule, SEQ-B1)"
+ ],
+ "extra": {
+  "churn-pipeline": "KEEP STOPPED (operator standing order; overrides the package recommendation A)",
+  "OP-9/FW-3 host crontab": "NOT approved (declined for now); the session-bus daemon auto-restart is therefore also no",
+  "autopilot early abort": "N=3",
+  "OpenMLE": "wait for gate 1 before any cgroup-v1 reconfiguration",
+  "C5-05": "approved; research 753639bd1 deleted the campaign.py CLI cluster; AK-PM-12 now cites python3 -m scripts.kernel_rnd.autokernel.lesson_submission",
+  "fold-3 implementation ticks": {
+   "LOOP-46": "ab8dedeab",
+   "LOOP-50": "f73933a2c",
+   "LOOP-53": "e4fb3a09b + ratify 612358902",
+   "NIB2-97": "a72113283",
+   "NIB2-89": "cdaa27c0f",
+   "containment-scanner merge": "f5a4865bd"
+  },
+  "production stack": "stays DOWN for now (compute first). GPS-PIN-1b and the other approved production changes apply at the next operator-called stack bring-up.",
+  "UFH-12-PROD-ADOPT": "fold into the CHAMPION so it ships with the v11 promotion; no exception, no separate swap"
+ }
+}

@@ -5402,6 +5402,7 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
       encode ENFORCEMENT (reject / regenerate) but not PORTABILITY. Read it, then either add a portability
       field or record the decision not to. **Reading-and-design only, no build**: that paper ships no
       ablation and no code, so nothing may be adopted on its authority alone. BLOCKED ON AK-PM-4.
+  - 2026-11-02 operator decision: Record the decision not to (decisions-batch2-4-20261102.json)
 - [ ] **AK-PM-8 — Gate any memory extension on an ablation this literature never ran.** Hold PROFILING
       CONSTANT while toggling memory — the `no_mem_agent` design from `intake-1228#record` is the one
       methodologically sound thing in that family, because it isolates memory from profiling rather than
@@ -5457,6 +5458,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
 - [ ] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the read side.** Partial source: Research `93c217ec5d743da8f81b430630a03ad3638d106a`; follow-up `32142f3be1dd84e8ea67c7cf63d453598d0252df`. [belief: cc]
   - REOPENED 2026-10-31 by operator audit: schema/validation only; no AK producer invokes the receipt path, no operational cap is configured, and no native receipt was captured. Wire the real producer, configure the per-workload cap, and capture a receipt before closing; the earlier completion claim is withdrawn. See [operator tick audit](../../artifacts/compute/codex3-tick-audit-20261031/tick-audit-20261031.md). [belief: cc]
   - 2026-10-31 repair: explicit campaign `submit-lesson` now invokes the native producer for labeled controls, with 200 tests and 15 subtests passing. The [committed control capture](https://github.com/pestopoppa/epyc-inference-research/tree/32142f3be1dd84e8ea67c7cf63d453598d0252df/artifacts/autokernel/ak-pm12-control-20261031) is not operational admission: its ceiling is arbitrary and its producer module bytes were not captured. A verified workload-specific ceiling is still missing, so operational submissions record UNKNOWN and this original task remains open. [belief: cc]
+  - 2026-11-02: the `campaign submit-lesson` entry point above is retired (research `753639bd1` deleted the `campaign.py` CLI cluster, C5-05). The AK-PM-12 write path now runs as `python3 -m scripts.kernel_rnd.autokernel.lesson_submission` (arguments and output unchanged). [no-belief: tooling]
       `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with
       it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,
       alpha=beta=1.2). Train-free, model-agnostic, no RL. Pair it with the two things every paper in the
@@ -5613,12 +5615,14 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
     end-to-end one. Acceptance: a re-run of the window's correctness+timing phases on the incumbent yields a CSV with
     timing columns for the MMQ kernels.
     - PARKED 2026-09-27 (operator): window_ab.sh (research `data/gfx90a-isa-audit-20260927-mmq-jcap/window_ab.sh`) is fixed at research `eaf1ac36` (lane `lane/research-park-20260927`; fast-forward of research main pending operator push): its perf output now carries per-kernel timing, and each arm fails independently with an end summary. The fixed script has NOT been run, so no CSV with MMQ timing columns exists yet (the J-cap A/B itself ran 2026-09-27 02:06Z and is recorded NEGATIVE under AK-MMQ-H10); resume by running window_ab.sh in a GPU window and checking that its kernel-perf CSV carries per-kernel time (mean, n) per arm for the MMQ kernels.
+    - 2026-11-02 operator decision: Approve the push (decisions-batch2-4-20261102.json)
   - [ ] **AK-MMQ-H10b — the MoE `--autokernel-harden` arm is non-deterministic on production.** The MoE arm aborted on
     the harden output-invariance check, and production arm A itself failed invariance on MoE. So the check cannot
     tell a candidate defect from baseline MoE non-determinism. Establish whether production MoE output varies across
     harden seeds (routing ties, atomics, split-K), then either pin the source of variance for the harden arm or scope
     the invariance check to dense shapes with a recorded reason. Raw: `/mnt/raid0/llm/tmp/mmq-jcap-ab-20260927T020637Z/`.
     - PARKED 2026-09-27 (operator): window_ab.sh at research `eaf1ac36` (lane `lane/research-park-20260927`; fast-forward of research main pending operator push) runs the MoE arm WITHOUT `--autokernel-harden`, because production arm A is itself non-deterministic on MoE, so the script sidesteps the invariance check rather than resolving it. The source of production MoE variance (routing ties, atomics, split-K) is not established, and the fixed script has not been run; resume by running window_ab.sh in a GPU window, then measuring production MoE output across harden seeds to either pin the variance source or record here the reason the check is dense-only.
+    - 2026-11-02 operator decision: Approve the push (decisions-batch2-4-20261102.json)
   - The third defect, `verify_ggml_linkage.sh` comparing unresolved paths, is filed as NIB2-85 (it affects every caller).
 - [ ] **AK-MMQ-H5 — nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128;
   occupancy 2 is infeasible at I=128 because the x tile alone is 38,912 B). Each cell sits on one side of the ROCm 6.2

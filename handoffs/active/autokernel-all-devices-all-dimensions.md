@@ -402,6 +402,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
       high. Fable seeds: `/mnt/raid0/llm/tmp/ak-gpu-seeds-20261004/inbox-gpu-multirow-gemv.md` (in the store inbox as
       `10-fable-gpu-multirow-gemv-20261004.md`). Done when both fixes are on research main and run 2 records at least
       one measured candidate, or a typed refusal that is not an anchor-gate failure.
+  - 2026-11-02 operator decision: Approve the fast-forward now (decisions-batch2-4-20261102.json)
 - [ ] **AKX-ALL-16 (G2): GPU serving profile as a planner input.** Branch `feat/ak-gpu-surface`. Fold the
   `rocprof_longctx.py` pattern (server under rocprofv3 for its whole life; windows cut by timestamp markers; holds
   `mi210_0`; 184-191 lane, `membind=3`) into `hotspots`. One anchor profile per anchor change, cached by anchor and

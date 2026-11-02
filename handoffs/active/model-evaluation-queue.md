@@ -576,6 +576,7 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 - [x] **TB-6 — A4 35B-A3B era bridge terminal** ✅ 2026-07-28 — the frozen-v8 `a4_bridge` surface is terminal at `11/11` measured cells, with zero skipped, invalid, or missing cells; its measured peak is `269.8` decode / `291.9` total tok/s at `np16/L2048`. This bridge is throughput-only observation evidence and authorizes no lineup, registry, or production action.
 - [x] **TB-6 prefill-to-depth RAG terminalization** ✅ 2026-07-28 — all four prepared frozen-v8/no-thinking LongHealth document-QA arms are terminal: Fable non-MTP, Fable MTP, Laguna UD-IQ2_M, and A4 each retained `18/18` measured `np*_D*` cells with `0` skips. Durable terminal markers and cell evidence are respectively `A3_ff_fable_non_mtp_q8/complete.txt`, `A3_ff_fable_mtp_q8/complete.txt`, `Laguna_ud_iq2_gpu_dflash_off/complete.txt`, and `A4_35b_a3b_v8_bridge/complete.txt` under `epyc-inference-research/artifacts/np_context_study_v8_20260727/`; every marker was paired with its 18 `results.json` records. This is throughput-only observation evidence and authorizes no lineup, registry, or production action.
 - [ ] **A3-ff behavioral/abliteration candidacy gate.** No ratified direct-generation refusal/behavior screen exists in the repository; the existing RewardBench reviewer protocol is not applicable. The first-read remains valid, but no role candidacy or lineup action is authorized unless the operator chooses to design and ratify a new screen. Note (2026-07-27): the operator frames FF as a **pre-processing/scaffold tool, not a wholesale role substitute** — its candidacy test moves to the reopened scaffold-generator A/B ([gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md)); this gate applies only if FF is ever proposed for a direct serving role.
+  - 2026-11-02 operator decision: No screen; FF stays a scaffold tool (decisions-batch2-4-20261102.json)
 
 ## 2026-07-27 fine-grain + remediation program (operator-directed discussion outcome)
 
@@ -847,6 +848,7 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
       ±0.9 stddev) while the bench launcher uses `-fa on`. **Forward-relevant, not a live defect**:
       `worker_general` is not GPU-served today (`device: null`), though the operator confirms it may be.
       Do not act without a server-arm check — FA interacts with MTP and long-context KV.
+  - 2026-11-02 operator decision: Run a server-arm check when worker_general moves to GPU (decisions-batch2-4-20261102.json)
 
 ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
 
@@ -864,6 +866,7 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
   passwords and two internal RFC1918 worker IPs that the project's own `docs/validation.md` claims the
   public release scrubbed, which corroborates it as an unscrubbed internal snapshot.
 - [ ] **Follow-on (opened 2026-08-11, trigger-fired): assess OpenMLE Sandbox reproduction feasibility** — re-opens the intake-940#record reproducibility finding via intake-1024#record. Gates, in order: (1) worker/controller images pull from external registry (network only, any main); (2) **cgroup v1 host reconfiguration = OPERATOR decision** (host reboots are operator-only); (3) actual reproduction run = inference-lane compute. File (2) as a decision package only if (1) succeeds and the images are runnable.
+  - 2026-11-02 operator decision: Decide only after gate (1) images pull and run [approved (wait for gate 1)] (decisions-batch2-4-20261102.json)
 
 ## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
 
@@ -896,10 +899,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
   - Relevance: the Hy3 model card references **Tencent AngelSlim** for its FP8 variant (`Hy3-FP8`) and compression toolchain — a concrete, current production model exercising the same AngelSlim path this stub tracks. Confirms AngelSlim is being applied to flagship-scale MoE, not just the Hy-MT2 MT family already noted here.
   - Delta from current approach: adds a large-MoE FP8 datapoint to the AngelSlim evaluation surface; watch whether AngelSlim FP8/sub-2-bit recipes for `hy_v3` land alongside the community GGUF port ([intake-808], `hy3-mtp` fork). See [[speculative-decoding-mtp-refresh]] for the Hy3 MTP/GGUF thread.
 - [ ] When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vector (operator-gated).
+  - 2026-11-02 operator decision: Keep operator-gated (no Hy3 work) (decisions-batch2-4-20261102.json)
 
 ##### Task update
 - [x] Watch-item resolved (2026-07-11 update): AngelSlim's official Hy3 GGUF (intake-824) shipped **vanilla IQ1_M/Q4_K_M for hy_v3, not Sherry/STQ1_0** — no new sub-2-bit AngelSlim recipe for a base we run; Sherry adoption remains QAT-gated as documented. ✅ 2026-07-16
 - [ ] Operator-review candidate: the official IQ1_M (~90 GB, fits the ~680 GB free-disk budget) is an authoritative GGUF path if the deferred, operator-gated Hy3 architect-candidacy bench is ever run — see [[speculative-decoding-mtp-refresh]].
+  - 2026-11-02 operator decision: Keep operator-gated (no Hy3 work) (decisions-batch2-4-20261102.json)
 
 ## Track: delta-mem-reproduction
 <!-- gate: none -->
@@ -1184,6 +1189,7 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
 
 - [x] **MD-9 external-anchor demotion:** BrowseComp/WideSearch/xbench-DS are now explicitly observation-grade, not reliable adoption anchors; their possible search-time contamination is comparable to the +5pp promotion margin. The local MD-8 sentinel remains a distinct non-verbatim, trajectory-auditable evaluation surface. ✅ 2026-07-29
 - [ ] Operator-review candidate: capture search trajectories (query, URL, snippet) on deep-research eval runs so question-context / answer leakage can be audited post hoc — our SearxNG JSON path already returns `engines[]`/`score`, making this nearly free. [intake-877]
+  - 2026-11-02 operator decision: Capture (decisions-batch2-4-20261102.json)
 
 ## Track: minimax-h3-video-generation-evaluation
 <!-- gate: none -->
@@ -1222,6 +1228,7 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
 - [x] **P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11
 - [x] **P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11
 - [ ] **P6b** Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`, with matched Q4 no-spec vs Q4-MTP artifacts; then the parent T3/T4 benches.
+  - 2026-11-02 operator decision: Re-scope to the current (v10) champion and run (decisions-batch2-4-20261102.json)
 - [ ] **P7 (optional): FR-Spec draft LM-head vocab-trim** (intake-740), only after P6b and only from the fresh v8 experimental surface. Build an EPYC-workload-matched frequency map, retain byte-exact temp-0 validation, and measure end-to-end before adopting; historical #22673/EAGLE3 reconciliation assumptions do not apply.
 
 ## Track: strand-rust-coder-rustevo2-verification

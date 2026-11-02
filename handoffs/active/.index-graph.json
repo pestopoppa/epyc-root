@@ -2446,7 +2446,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T21:13:51Z",
+  "generated_at": "2026-11-02T21:58:49Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2491,7 +2491,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 881,
+          "line": 884,
           "name": "angelslim-techniques-evaluation",
           "open": 3,
           "readiness": "ready"
@@ -2500,7 +2500,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 904,
+          "line": 909,
           "name": "delta-mem-reproduction",
           "open": 5,
           "readiness": "ready"
@@ -2509,7 +2509,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 931,
+          "line": 936,
           "name": "ernie-image-turbo-evaluation",
           "open": 6,
           "readiness": "ready"
@@ -2518,7 +2518,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1030,
+          "line": 1035,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 1,
           "readiness": "ready"
@@ -2527,7 +2527,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1056,
+          "line": 1061,
           "name": "lightning-attention-port",
           "open": 5,
           "readiness": "ready"
@@ -2536,7 +2536,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1127,
+          "line": 1132,
           "name": "minddr-deep-research-mode",
           "open": 8,
           "readiness": "ready"
@@ -2545,7 +2545,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1188,
+          "line": 1194,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 7,
           "readiness": "ready"
@@ -2554,7 +2554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1211,
+          "line": 1217,
           "name": "qwen-mtp-llamacpp-port",
           "open": 2,
           "readiness": "ready"
@@ -2563,7 +2563,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1227,
+          "line": 1234,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 3,
           "readiness": "ready"
@@ -2572,7 +2572,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1240,
+          "line": 1247,
           "name": "summary-token-attention-readiness",
           "open": 4,
           "readiness": "ready"
@@ -2581,7 +2581,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1254,
+          "line": 1261,
           "name": "tidar-one-pass-variant-b",
           "open": 3,
           "readiness": "ready"
@@ -3100,7 +3100,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 378,
+          "line": 380,
           "name": "agent-file-prose-compression",
           "open": 5,
           "readiness": "ready"
@@ -3109,7 +3109,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 484,
+          "line": 486,
           "name": "frontier-f2-self-running-lab",
           "open": 2,
           "readiness": "ready"
@@ -3118,7 +3118,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 567,
+          "line": 569,
           "name": "frontier-f3-data-flywheel",
           "open": 4,
           "readiness": "ready"
@@ -3127,7 +3127,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 760,
+          "line": 762,
           "name": "stale-open-audit-2026-07-18",
           "open": 6,
           "readiness": "ready"
@@ -3659,7 +3659,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 614,
+          "line": 616,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 4,
           "readiness": "ready"
@@ -3668,7 +3668,7 @@
           "blocked_by": [],
           "dispatchable": 14,
           "gates": [],
-          "line": 972,
+          "line": 975,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 14,
           "readiness": "ready"
@@ -3677,7 +3677,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1250,
+          "line": 1253,
           "name": "gpu-acceleration-path",
           "open": 9,
           "readiness": "ready"
@@ -3686,7 +3686,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1885,
+          "line": 1889,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 12,
           "readiness": "ready"
@@ -3695,7 +3695,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2170,
+          "line": 2175,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -3974,7 +3974,7 @@
       "track": "rocm verify profile backend"
     },
     {
-      "age_days": 96,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 29,
@@ -3983,7 +3983,7 @@
       "guarded": 0,
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-11-02",
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "open": 6,
       "priority": 0.2139,
@@ -4595,7 +4595,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 981,
+          "line": 982,
           "name": "multimodal-pipeline",
           "open": 10,
           "readiness": "ready"
@@ -5454,15 +5454,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 232,
-      "dispatchable": 125,
+      "closed": 239,
+      "dispatchable": 118,
       "domain": "routing-and-optimization",
       "guarded": 5,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-02",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 131,
+      "open": 124,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -5482,11 +5482,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 66,
+          "dispatchable": 61,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 67,
+          "open": 62,
           "readiness": "ready"
         },
         {
@@ -5527,11 +5527,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 47,
+          "dispatchable": 45,
           "gates": [],
           "line": 1426,
           "name": "refactoring-multirepo-2026-10",
-          "open": 47,
+          "open": 45,
           "readiness": "ready"
         },
         {
@@ -6481,7 +6481,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 653,
+          "line": 654,
           "name": "opencode-shell-integration",
           "open": 1,
           "readiness": "blocked"

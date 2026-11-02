@@ -170,6 +170,7 @@ before any carve is minted.
   - Regime-change input (2026-09-26, intake-1815#1, intake-1815#4): report each role's routed-traffic share (final role from the DAR-LAT-2 selection receipts, decision-aware-routing.md; admission-ledger dispatch counts) beside its allocated compute (device, NUMA instance count), and flag a role whose share and allocation diverge under sustained load. RouterWise's only material placement losses are whole-device-per-model isolation under skewed load at a small device budget; a load- or size-proportional fixed rule recovers most of its searched optimum (predicted score from profiled curves, not measured). Regime-change timescale only (Layer 2/3, minutes); never a per-request placement signal; no new telemetry (Axiom 1, :218).
 - [ ] **N-dwell / hysteresis** for GPU swaps (extend the parent's anti-thrash with `N ≥ C·(1−X)/X`)
 - [ ] **Prefill placement rule — fill R_cpu(L) and R_gpu(L, ub) from mi210-big-model-and-acceleration-roadmap.md PF1, then decide whether Layer 1 gets a length threshold** (design only; blocked on PF1)
+  - 2026-11-02 operator decision: Add a length threshold derived from the PF1 crossover (decisions-batch2-4-20261102.json)
 
 ## Key files / cross-links
 - Parent (reuse): `src/backends/concurrency_aware.py` (`ConcurrencyAwareBackend`), `ContentionGate`, `scripts/server/stack_numa.py` (`NUMA_CONFIG`), the KV-migration transaction (WP-3/WP-4), `src/metrics/migration_counters.py` — all in [within-role-placement-state-machine.md](within-role-placement-state-machine.md).
@@ -344,6 +345,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
     - *(2026-10-30, source-retirement custody.)* The abandoned HSF prototype source checkout was retired only after its exact branch, dirty patch, native evidence, and bundle were preserved and verified under `/mnt/raid0/llm/tmp/codex-ni-owner35-source-retirement-20261030/`. This is checkout archival, not feature landing or HSF-5.P acceptance; the separately protected current HSF/W5/YARN work remains untouched. See the dated root progress record for the full retirement receipt and limits.
     - [x] HSF-5.P-REPAIR-C5 (codex-ni, T2): port the mirror onto C5 `c72ec82f5`, save drains to the live position, opt-in knob default OFF, model-free restore round-trip test. No model inference/benchmark (model-free GPU-OPS validation authorized 07:36). Spec: findings doc section 6. — accepted C5 CPU/HIP builds and model-free GPU-OPS validation (429 cases; 1,391,627,616 D2H-poison/H2D bytes; CSV SHA-256 `442f99d366d79206d6cdfa7e0c0e082e2475e8f0f59972eb60de9ba50cd454a6`). Source seal `e87acfc5ee0fb855eab9e821d8201d1bfa6bdc21c97d078a63f6757b6b042083`; owner confirmed private fork push `bd35948cc073f78c23baf3ccc1e9e0c698cd64dd` after cutoff. This does not close HSF-5.P or authorize promotion. [belief: cc]
     - [ ] HSF-5.P-NEXT GPU attribution (P6), DEFERRED pending operator go: run per the REVIVAL CHECKLIST in the findings doc section 7.
+      - 2026-11-02 operator decision: Keep deferred (decisions-batch2-4-20261102.json)
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 

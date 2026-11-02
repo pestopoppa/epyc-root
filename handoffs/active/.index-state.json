@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 38,
       "oldest_advance": "2026-07-29",
-      "open": 698
+      "open": 691
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -762,10 +762,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 1,
-      "closed": 232,
+      "closed": 239,
       "guarded": 5,
       "last_advanced": "2026-11-02",
-      "open": 125,
+      "open": 118,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -778,13 +778,13 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 130,
+          "closed": 135,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 66
+          "open": 61
         },
         {
           "blocked": 0,
@@ -828,13 +828,13 @@
         },
         {
           "blocked": 0,
-          "closed": 84,
+          "closed": 86,
           "gates": [],
           "guarded": 0,
           "line": 1426,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
-          "open": 47
+          "open": 45
         },
         {
           "blocked": 0,
@@ -1177,7 +1177,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 378,
+          "line": 380,
           "markers": 1,
           "name": "agent-file-prose-compression",
           "open": 5
@@ -1187,7 +1187,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 484,
+          "line": 486,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 2
@@ -1197,7 +1197,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 567,
+          "line": 569,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 4
@@ -1207,7 +1207,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 760,
+          "line": 762,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 6
@@ -1311,7 +1311,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 653,
+          "line": 654,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 1
@@ -1603,7 +1603,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 614,
+          "line": 616,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 2
@@ -1613,7 +1613,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 972,
+          "line": 975,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 14
@@ -1623,7 +1623,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1250,
+          "line": 1253,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 9
@@ -1633,7 +1633,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 1,
-          "line": 1885,
+          "line": 1889,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 11
@@ -1643,7 +1643,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2170,
+          "line": 2175,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1697,7 +1697,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 881,
+          "line": 884,
           "markers": 1,
           "name": "angelslim-techniques-evaluation",
           "open": 2
@@ -1707,7 +1707,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 904,
+          "line": 909,
           "markers": 1,
           "name": "delta-mem-reproduction",
           "open": 5
@@ -1717,7 +1717,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 931,
+          "line": 936,
           "markers": 1,
           "name": "ernie-image-turbo-evaluation",
           "open": 6
@@ -1727,7 +1727,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1030,
+          "line": 1035,
           "markers": 1,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 1
@@ -1737,7 +1737,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1056,
+          "line": 1061,
           "markers": 1,
           "name": "lightning-attention-port",
           "open": 4
@@ -1747,7 +1747,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1127,
+          "line": 1132,
           "markers": 1,
           "name": "minddr-deep-research-mode",
           "open": 6
@@ -1757,7 +1757,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1188,
+          "line": 1194,
           "markers": 1,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 7
@@ -1767,7 +1767,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1211,
+          "line": 1217,
           "markers": 1,
           "name": "qwen-mtp-llamacpp-port",
           "open": 2
@@ -1777,7 +1777,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1227,
+          "line": 1234,
           "markers": 1,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 3
@@ -1787,7 +1787,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1240,
+          "line": 1247,
           "markers": 1,
           "name": "summary-token-attention-readiness",
           "open": 4
@@ -1797,7 +1797,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1254,
+          "line": 1261,
           "markers": 1,
           "name": "tidar-one-pass-variant-b",
           "open": 3
@@ -2198,7 +2198,7 @@
       "blocked": 1,
       "closed": 29,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-11-02",
       "open": 5,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2337,7 +2337,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 981,
+          "line": 982,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 10

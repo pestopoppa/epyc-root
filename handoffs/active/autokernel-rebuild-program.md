@@ -530,6 +530,7 @@ failure mode this program exists to end.
     charging a patch rejection to the hypothesis budget, and ignoring the noise floor each fail
     exactly the two tests that should catch them). It is **not** proven against a real planner on
     real hardware, and this handoff does not claim it is.
+  - 2026-11-02 operator decision: Sign off and tick P4 (decisions-batch2-4-20261102.json)
 
 - [ ] **P5 — Strip.** Only after P4 proves the replacement. Delete `FOOTPRINT.md` and
       `test_campaign_footprint.py` **first**, so later deletions stop costing a regeneration each.
@@ -1160,6 +1161,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       correctness fix → CH-7 manual admission, not a loop keep. Keep the harness's `-st` +
       slice-extraction as belt regardless. **Operator decision attached: file the fix upstream?**
       v9-era llama.cpp carries the same defect for anyone running llama-cli non-interactively.
+  - 2026-11-02 operator decision: File upstream (decisions-batch2-4-20261102.json)
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
       M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
       1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
@@ -1787,6 +1789,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           - `--kl-divergence` stores the reference as a lossy `uint16` window 16 nats wide (`:79-106`);
           - it drops reference entries below −16 nats from the sum (`:221-231`);
           - its `±` is a per-token SE (`:1769-1776`).
+        - 2026-11-02 operator decision: Ratify [approved, pending ratify script] (decisions-batch2-4-20261102.json)
 
           So "37.9σ" is not an interval under the annex.
         - **Correction to this row.** The 0.0649 is **B7's PLE IQ4_NL→Q8_0 swap measured against the
@@ -1858,6 +1861,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           n. **Champion-of-record HOLDS at `445e93a8`**; the six keeps stay on the tip as provisional and
           re-gateable. Record `loop-memory/serving/bundle-bff30cebee0d.json` (the n=10 record overwrote the n=5
           record; the n=5 numbers are preserved here).
+        - 2026-11-02 operator decision: (A) Serialize: take the region-lock `bench` role around build AND bench (compiles alone suffice, per the peak discriminator) (decisions-batch2-4-20261102.json)
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
         branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
@@ -2676,6 +2680,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       UNGATED llama-bench A/B (champion vs production on a Q4_K model, ~15 min) as a signal only —
       not claim-grade, but enough to decide whether the 3 h calibration is worth spending. Needs a
       GPU window: run 25 holds the mi210_0 claim.
+  - 2026-11-02 operator decision: Ungated A/B first, calibrate only if it shows a signal (decisions-batch2-4-20261102.json)
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
