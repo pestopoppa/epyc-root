@@ -31,3 +31,11 @@ The KPF-17a GPU qualification failure is being repaired by placing an existing s
 ## 10:01Z — Repair and republish KPF-17a GPU residency qualification
 
 Republished kvfork17a-gpu-20261102 after the failed VRAM residency sample: first supported case 83 retains its actual computed allocation for a 12-second observation on arm 0, followed by shared case 86 and all remaining cases. The prior failed dry-run output is preserved in out-failed-20261102; Python compilation, launcher shell syntax and bound-input verification passed. This is not a GPU result or qualification pass; keeper dry run remains pending. P3 worktree exists at c72ec82f5417bb2937310326120f149b665e8400 but remains unindexed.
+
+## 10:03Z — Complete KPF-40 hybrid slice pre-check and port plan
+
+KPF-40 completed: checked the v11 FA audit, C5 hybrid split and upstream #29510 head b3ad117508ebddf430106005515e9aec4be67444 (open, not draft); recorded slice eligibility, fallback constraints and a gated port plan in the handoff. The independent GPU-X source audit found no measured attention-only KV bytes/token in retained P0 timing outputs, so no crossover verdict is claimed.
+
+## 10:15Z — Land KPF-40 pre-check and resolve lane merge
+
+Preserved the completed KPF-40 pre-check across the origin/main update and resolved the generated index conflict. KPF-04 waits for KPF-18; KPF-17.4 CPU evidence already exists and its outstanding work is GPU adjudication. The LB2.1 real-row check awaits a migrated V2 session.
