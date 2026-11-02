@@ -1,0 +1,96 @@
+{
+  "task": "UFH14-B4b/B4c executable A/B protocol",
+  "as_of": "2026-11-02",
+  "scope": "Protocol preparation only. No compute, publication, live config changes, or code edits.",
+  "source": {
+    "workload_result": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/agentic-serving-harness-fixes/b4-workload-result.json",
+    "handoff": "handoffs/active/agentic-serving-harness-fixes.md:286-295",
+    "historical_runbook": "/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4bcd-RUNBOOK.md (missing; replaced by this protocol)",
+    "runner": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_orchestrator.py",
+    "runner_revision": "99301fa149af86a6f9743d2b0405c9234ba39586"
+  },
+  "cohort": {
+    "name": "T1 routing core + T2 delegation output-shape subset",
+    "files": [
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/direct_answer.txt",
+        "sha256": "83537827208c55ef7651520517752a269358460ff1bb230f42e35381a30291e9",
+        "scorer_viability": "good: answer_contains 4, no_llm_calls, max_turns, must_call_final are implemented and fit the prompt"
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/context_grep.txt",
+        "sha256": "48e984f8af559afa2d7ea9e8f1cf2cea13da8c012b8f48916d509a8fe28aa9a7",
+        "scorer_viability": "partial: uses_function(grep), turn/final and substring criterion are implemented. GT requires ERROR and error, but matching is case-insensitive, so these collapse to the same token and do not verify returned matching lines/context details."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/simple_delegate.txt",
+        "sha256": "7f7dea7b178fb3117277e0d25489bf98e343d2b86d0f092c4519108f9d58bead",
+        "scorer_viability": "good for delegation mechanics: function presence, counted llm_* entries, turns and final are implemented. Prompt metadata says llm_call_count: 1 but that metadata is not consumed; GT llm_calls_count min/max is consumed. It does not score summary quality."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t2_delegation/iterative_refine.txt",
+        "sha256": "8fa61f399e8ffe19e2b91f069ae293c10388efcfe6c7c1a4269a15f24fe7a339",
+        "scorer_viability": "good for iterative mechanics: GT llm_calls_count range, function presence, max_turns and final are implemented. It does not score whether the factorial handles edge cases; prompt metadata llm_call_min_count is ignored."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t2_delegation/structured_extract.txt",
+        "sha256": "4295b33e6f07bb6a179df8a4062e4b37fd4d40af4c7ea2a335eff1c5758bc201",
+        "scorer_viability": "good output-shape scorer: GT checks JSON parseability and name/email keys; the prompt asks for name, email, phone, and GT also checks identifying answer substrings. JSON checks are implemented. GT does not require a phone key, so phone extraction is only weakly asserted by substring 555."
+      }
+    ],
+    "ground_truth": [
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/ground_truth/t1_expected.json",
+        "sha256": "540760271c05bf9b5f7071c9359a4c400dd15b89d82b687eae6d3e19da465f40"
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/ground_truth/t2_expected.json",
+        "sha256": "8e524ed1b68f5260096eb5ddb84e21079d31dc044f8f5ebd97dc02e52ee89fe3"
+      }
+    ]
+  },
+  "design": {
+    "purpose": "Estimate separate effects of (B4b) moving the stable head after the builder-emitted ## Rules marker into a system message and (B4c) enabling prefix_stable_order. Measure task outcomes and serving cache metrics on an identical five-case frozen cohort.",
+    "arms": [
+      "A0: both flags off (baseline)",
+      "A1: B4b on, B4c off (only after B4b prerequisite lands)",
+      "A2: B4b off, B4c on (existing prefix_stable_order)",
+      "A3: both on (optional interaction arm; only after B4b prerequisite lands)"
+    ],
+    "controls": [
+      "Five-case cohort is fixed and same prompt order for every arm; pin prompt and ground-truth SHA-256 values from workload result.",
+      "Run control A0 both before and after each feature arm (A0-pre / treatment / A0-post) to expose drift; do not blend A0 repetitions across a server/API restart or model/config change.",
+      "Before quality cohort, perform a non-scored parser/config control confirming B4b prompt conversion preserves user payload exactly and B4c flag attestation reflects requested state on every API worker.",
+      "Use same model, serving endpoint, sampling settings, role, concurrency, cache policy, and tool environment across arms; capture source/config/model identity and run boundaries."
+    ],
+    "execution_sequence": [
+      "1. Freeze five prompt files and their two ground-truth files by the supplied SHA-256 manifest; record API, model, server, runner, and feature-flag state.",
+      "2. Verify the prerequisite listed in code_prerequisite. If absent, stop before any A/B and implement/test it on the owning orchestrator branch.",
+      "3. For each arm, capture baseline config attestation and serving-call log boundary; set only the arm-specific feature flag(s), verify every worker, then invoke the same five cases once in the listed order.",
+      "4. Record per-case answer, turns, functions, final status, latency, criteria results and intact serving_call.v1 rows, including record_id, record_sha256, ts_start/ts_end, dispatched, timings_source, request.prefix_fp, timings.cache_n/prompt_n/prompt_ms, role and server.port. Retain null fingerprints and report fingerprint coverage.",
+      "5. Explicitly restore both flags false after every treatment arm (including error/timeout) and attest all workers; then run A0-post.",
+      "6. Compute paired per-case pass/fail and latency deltas; compute prefix_cache_report.py for the exact arm windows and port, retaining raw JSON. Report B4b, B4c and interaction separately; no pooling across arms."
+    ],
+    "commands": [
+      "python3 scripts/benchmark/bench_orchestrator.py --suite t1_routing --dry-run  # parser/mock control only; not quality evidence",
+      "python3 scripts/analysis/prefix_cache_report.py --since <ARM_START_ISO_UTC> --until <ARM_END_ISO_UTC> --port <PORT> --json <ARM_REPORT.json>  # run in epyc-orchestrator; repeat per arm"
+    ],
+    "interpretation": "A0 vs A1 estimates B4b; A0 vs A2 estimates B4c; A0/A1/A2/A3 difference-of-differences estimates interaction. Treat one cohort pass as a screening observation; repeat in randomized/counterbalanced arm order with fresh cache boundaries before claiming a robust effect. No quality win may be inferred from cache metrics alone."
+  },
+  "code_prerequisite": {
+    "B4b": "Not executable today per handoff: add default-off feature stable_head_system_message to /mnt/raid0/llm/epyc-orchestrator/src/features.py and a builder-emitted, unambiguous split marker immediately after ## Rules in src/prompt_builders/builder.py (or structured builder equivalent); split only that region into [system,user] on the chat lane. Tests must establish off-mode byte-identical legacy behavior, on-mode exact split, preservation of user prompt/context, and no split when marker missing/duplicated. Ensure normal API/eval launcher can address runtime flag and report attested state.",
+    "B4c": "Feature prefix_stable_order already exists in src/features.py and is consumed by RootLMPrompt rendering; can be flipped through POST /config and verified via /config/attest, but benchmark runner config-from does not toggle runtime flags. An eval launcher adapter is needed to set/attest and restore the flag around each arm.",
+    "common_launcher": "bench_orchestrator.py accepts suite, config, dry-run but has no feature-flag arm support, no five-case selection option, no per-case raw serving record join, and its output quality scorer is a different test suite. Use/adapt the native eval-tower launcher so it can run an explicit case manifest and wrap each arm with config POST/attest/restore plus UTC boundaries; do not call dry-run or mock mode A/B evidence.",
+    "existing_candidate": "epyc-orchestrator/scripts/benchmark/bench_repl_prefix_stability.py captures a native REPL turn and renders legacy/stable prompt alternatives, but its own header says replay is single-slot and does not assess task quality. It can support prompt/cache replay only, not replace the quality A/B."
+  },
+  "scorer_limitations": [
+    "Runner has no semantic evaluator: string checks, even when implemented, can pass without full correctness (notably T1 grep and T2 iterative refinement).",
+    "Unsupported criteria visible in selected repository ground truth or prompt metadata include answer_structure, handles_error, no_code_injection, must_not_hang, llm_call_min_count, llm_batch_min_calls, and prompt-local llm_call_count; these are silently not applied by evaluate_criteria/run_test.",
+    "The chosen 5-case cohort is suitable for deterministic routing/delegation/output-format checks, not a broad claim of answer quality or adversarial safety.",
+    "The selected five-case workload result was prepared for bench_orchestrator.py, not proven to be wired into the orchestrator eval tower; its launcher must explicitly support the case manifest before this protocol is executable as specified.",
+    "The runner does not honor prompt-local call-count metadata and has unsupported criteria; passing its smoke controls does not validate runtime flag activation or semantic answer quality.",
+    "B4b changes message roles and may be affected by chat template semantics; the cohort exercises tool routing/delegation and extraction but does not establish general role/template compatibility."
+  ],
+  "decision_rule": "Report paired per-case quality outcomes and cache metrics (hit_tok higher is better; missed_prefill_share and prefill_s lower are better). Declare only descriptive A/B observations unless the full predeclared replicate count and measurement policy for the serving endpoint are supplied. A flag change is unsupported if any worker attestation disagrees or traffic falls outside the captured boundaries.",
+  "safety_boundary": "Preparation only: no compute run, POST /config, publication, or live configuration change performed."
+}

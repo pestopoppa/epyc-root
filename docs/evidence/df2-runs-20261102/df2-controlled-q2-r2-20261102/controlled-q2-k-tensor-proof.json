@@ -1,0 +1,564 @@
+{
+  "arm": "controlled-q2-k",
+  "attempt_id": "2ef733657cfc459191c544e87bdcdbc3",
+  "metadata_equal_except_quantizer_fields": true,
+  "output_sha256": "bbbcd5b66b571f438ff2018184648e37211a1d82c492d32834af2da2c7193755",
+  "source_sha256": "26af33a15b21475d668e4ee55639beea49932e7360b1144c6282721bcd127c14",
+  "tensors": {
+    "blk.0.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.0.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q2_K"
+    },
+    "blk.0.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.0.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q2_K"
+    },
+    "blk.0.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.0.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.0.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.0.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.0.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.0.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.0.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.1.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.1.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.1.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.1.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.1.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.1.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.2.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.2.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.2.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.2.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.2.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.2.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.3.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.3.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.3.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.3.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.3.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.3.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.attn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.attn_k.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.attn_k_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_output.weight": {
+      "shape": [
+        4096,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.4.attn_q.weight": {
+      "shape": [
+        5120,
+        4096
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.attn_q_norm.weight": {
+      "shape": [
+        128
+      ],
+      "type": "F32"
+    },
+    "blk.4.attn_v.weight": {
+      "shape": [
+        5120,
+        1024
+      ],
+      "type": "Q4_K"
+    },
+    "blk.4.ffn_conv_base": {
+      "shape": [
+        5120,
+        2,
+        2
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_conv_proj.weight": {
+      "shape": [
+        5120,
+        1280
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.ffn_down.weight": {
+      "shape": [
+        17408,
+        5120
+      ],
+      "type": "Q3_K"
+    },
+    "blk.4.ffn_gate.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "blk.4.ffn_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "blk.4.ffn_up.weight": {
+      "shape": [
+        5120,
+        17408
+      ],
+      "type": "Q2_K"
+    },
+    "enc.output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "fc.weight": {
+      "shape": [
+        25600,
+        5120
+      ],
+      "type": "Q2_K"
+    },
+    "output_norm.weight": {
+      "shape": [
+        5120
+      ],
+      "type": "F32"
+    },
+    "selector_hidden.weight": {
+      "shape": [
+        5120,
+        256
+      ],
+      "type": "Q2_K"
+    },
+    "selector_predecessor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "Q2_K"
+    },
+    "selector_successor.weight": {
+      "shape": [
+        256,
+        248320
+      ],
+      "type": "Q2_K"
+    }
+  }
+}

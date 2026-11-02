@@ -1,0 +1,58 @@
+diff --git a/tests/unit/test_repl_preview_validity.py b/tests/unit/test_repl_preview_validity.py
+new file mode 100644
+--- /dev/null
++++ b/tests/unit/test_repl_preview_validity.py
+@@ -0,0 +1,53 @@
++"""D-RI-PREVIEW-1.1 evidence retention and validity boundaries (no inference)."""
++import importlib.util
++import json
++import sys
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "run_repl_preview_validity", ROOT / "scripts/benchmark/run_repl_preview.py"
++)
++DRIVER = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = DRIVER
++SPEC.loader.exec_module(DRIVER)
++
++
++@pytest.mark.parametrize("bad_count,expected_valid,expected_rc", [(1, True, 0), (2, False, 2)])
++def test_reply_persistence_and_no_answer_threshold(tmp_path, monkeypatch, bad_count, expected_valid, expected_rc):
++    # Five samples make exactly one no-answer the 20% boundary; two exceed it.
++    bad = "```python\nFINAL(None)\n```"
++    good = "```python\nFINAL(965)\n```"
++    monkeypatch.setattr(DRIVER, "mock_reply", lambda rendering, i: bad if i < bad_count else good)
++    out, cells = tmp_path / "result.json", tmp_path / "cells"
++    rc = DRIVER.main(["--mock", "--n", "5", "--renderings", "current", "--cell-dir", str(cells), "--out", str(out)])
++    result = json.loads(out.read_text())
++    rows = [json.loads(line) for line in (cells / "mock_role__current.jsonl").read_text().splitlines()]
++    assert [row["reply"] for row in rows] == [bad] * bad_count + [good] * (5 - bad_count)
++    assert all(DRIVER.run_reply(row["reply"], DRIVER.fx_mod.build_fixture()["batch"])[0] == row["answer"] for row in rows[:3])
++    assert result["counts"]["mock_role|current"]["no_answer"] == bad_count
++    assert result["counts"]["mock_role|current"]["valid"] is expected_valid
++    assert result["valid"] is expected_valid
++    assert result["validity_max_no_answer_fraction"] == 0.2
++    assert rc == expected_rc
++
++
++def test_invalid_complete_result_never_emits_belief(tmp_path):
++    out = tmp_path / "result.json"
++    result = {"mock": False, "complete": True, "valid": False}
++    out.write_text(json.dumps(result))
++    status = DRIVER.belief_capture(result, out, [("worker", None, None)], {}, {}, "rid", str(tmp_path))
++    assert status["written"] is None
++    assert status["skipped"] == "invalid result"
++    assert status["error"] is None
++    assert not list(tmp_path.glob("*.beliefs.jsonl"))
++
++
++def test_old_cells_without_raw_reply_cannot_silently_resume(tmp_path):
++    cells = tmp_path / "cells"
++    cells.mkdir()
++    (cells / "mock_role__current.jsonl").write_text(json.dumps({"i": 0, "answer": None, "how": "bad_final"}) + "\n")
++    with pytest.raises((SystemExit, ValueError)):
++        DRIVER.main(["--mock", "--n", "1", "--renderings", "current", "--cell-dir", str(cells), "--out", str(tmp_path / "result.json")])

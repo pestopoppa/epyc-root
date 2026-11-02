@@ -100,3 +100,45 @@ class RepairTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PrepInGrantTests(unittest.TestCase):
+    """Operator 23:55Z: weight hashing / single-core prep inside the grant is refused at publish."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fx = Fixture()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.fx.cleanup()
+
+    def test_refuses_hash_and_prep_accepts_clean(self):
+        fx = self.fx
+        rid = "t-prep-20261101"
+        d = fx.job(rid)
+        self.assertIsNone(pr.prep_in_grant(os.path.join(d, "launch.sh")), "the fixture launcher is clean")
+        pr.lint(fx.spec(rid, d))  # clean launcher passes the lint
+        # 1. hashing the model inside --cmd (the sr6 shape, even when guarded by FILLER_DRYRUN)
+        bad = os.path.join(d, "launch-hash.sh")
+        src = open(os.path.join(d, "launch.sh")).read()
+        open(bad, "w").write(src.replace("--cmd \"", "--cmd \"if [ \\\"${FILLER_DRYRUN:-0}\\\" != 1 ]; then sha256sum -c --quiet $D/FULL-MODEL.sha256; fi && ", 1))
+        self.assertIn("sha256sum", open(bad).read())
+        hit = pr.prep_in_grant(bad)
+        self.assertIsNotNone(hit)
+        with self.assertRaises(rf.Refused) as cm:
+            pr.lint(fx.spec(rid, d, launcher=bad))
+        self.assertIn("verify/prepare inputs once before publishing, not inside the grant", str(cm.exception))
+        # 2. single-core prep in a script the launcher executes ($D/prep.py referenced from the launcher)
+        open(os.path.join(d, "prep.py"), "w").write("ids = tokenizer.encode(text)\n")
+        bad2 = os.path.join(d, "launch-tok.sh")
+        open(bad2, "w").write(src.replace("--cmd \"", "--cmd \"/usr/bin/python3 $D/prep.py && ", 1))
+        hit = pr.prep_in_grant(bad2)
+        self.assertIsNotNone(hit)
+        self.assertTrue(hit[0].endswith("prep.py"), hit)
+        with self.assertRaises(rf.Refused):
+            pr.lint(fx.spec(rid, d, launcher=bad2))
+        # a comment is not an offence
+        ok = os.path.join(d, "launch-comment.sh")
+        open(ok, "w").write("# sha256sum -c FULL-MODEL.sha256 was done at prep time\n" + src)
+        self.assertIsNone(pr.prep_in_grant(ok))

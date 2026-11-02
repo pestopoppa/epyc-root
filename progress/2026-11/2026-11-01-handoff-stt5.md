@@ -227,3 +227,35 @@ Independent review during this boundary found `build-guard.py` does not call `to
 ### Crisp HIP integration and Ultra ledger reviews consumed
 
 `HIP-INTEGRATE-27.md` records a separate held `scratch-candidate27` with 40 synthetic tests and 12 checksum entries passing; inventory SHA `d6464f78ff859f787346c746eb74352b0ffa2f0d2cb04dfbb13e38ca3ca93980`. Fence24 is unreviewed fixture material, and source/toolchain protected invocation, actual host transition, compiler identity and cutover remain unproven. `h-stt5-ultra-ledger27.md` found r1 READY still active at its inspection despite r2 cutover evidence not listing it; r2 uses a separate output namespace, and r1 must be reconciled before any r2 publication. The owner previously observed both logged orphan PIDs absent; this does not prove all exposure absent. The prior owner packet checksum check also failed and source catalog was missing. Delegated packet repair, owner cutover analysis and HIP independent review; registered `ULTRA-REPAIR-28.done`, `ULTRA-SCOPE-28.done`, `HIP-REVIEW-28.done`. No build, inference, qualification, READY or grant mutation.
+
+## 23:05Z — Unified EN validation collection filing
+
+Keeper row `stt5-unified-en-rebind-r1-20261101` ended rc=0 at 23:04:25Z with `TERMINAL-INCOMPLETE`: 2,359 ok chunks, 11 errors, zero unknown across 394 English validation utterances and six buffered settings. Progress SHA `3d898409e07f1d812481551ff4c3dd24040d6435738329698e17ff174866b57d` contains 2,359 nonfixture and two fixture records; 2,370 result/exposure pairs. All 12,365 source files plus validation manifest were copied and verified in `/mnt/raid0/llm/tmp/h-stt5-unified-custody-20261101/`; inventory SHA `8a43b895e1ec7f56e1f71154a035ff4ea742b84fb94396fc6526d08e0ca8090d`. `file_result.py` filed inconclusive and issued receipt after custody. No score, test verdict or promotion; keep all failures. A held offline-scoring draft has four synthetic checks but needs full scorer integration, delegated under `UNIFIED-SCORE-INTEGRATED.done`.
+
+## 23:15Z — v3-TC scorer dry-run failure and Unified filing
+
+`stt5-v3-tc-validation-score-r1-20261101` FAIL-1 at 22:47:18Z wrote zero units: launcher line 9 required unset `WS58_REGIONS`, launcher SHA `291da0e1444c57b2f27bce7a877241a66711dabd0a64092740ec89e9db35ba13`. Orphan warning PIDs 402441 and 402445 were absent in one later `ps -p` check; no signal sent. Delegated successor repair and independent audit (`V3-SCORE-FIX30.done`, `V3-SCORE-AUDIT30.done`) and Unified EN scoring integration (`UNIFIED-SCORE30.done`); no scoring, inference, qualification or READY mutation. This wrap-up also carries the prior Unified EN inconclusive result filing and custody changes, already in the lane.
+
+## 23:25Z — Voxtral dry-run failure and prior pending filings
+
+`stt5-voxtral-rebind-r1-20261101` FAIL-1 at 22:49:19Z wrote zero units: launcher line 15 required unset `WS58_REGIONS`, launcher SHA `4d27e4382ca5883d5c2639778c00e2ce5fd456d42b5def41705c978664215c1d`. Orphan warning PIDs 451637 and 451639 were absent in one later `ps -p` check; no signal sent. Delegated `VOX-FIX31.done`, `VOX-AUDIT31.done`, `V3-SCORE-REVIEW31.done`. No inference, qualification or READY mutation. This wrap-up also carries the prior uncommitted Unified EN inconclusive filing/custody and v3-TC scorer failure records.
+
+## 23:36Z — HIP, Ultra, v3 scorer and Voxtral reviews
+
+Consumed four distinct reports: `HIP-REVIEW-28.md` independently reproduced 40 synthetic tests but confirms the build guard never invokes the toolchain checker; candidate remains held. `h-stt5-ultra-repair29.md` reports a 16-entry scratch manifest pass but preserved external source paths and did not verify historical provenance; independent review requested, including potential launcher/manifest self-reference. `h-stt5-v3-score-audit30.md` confirms unset WS58_REGIONS before scorer; its assumption that keeper always supplies it conflicts with the failure and is not adopted. `h-stt5-vox-fix31.md` still requires WS58_REGIONS, so is not a fix and remains held; requested grant-derived correction and independent review. Registered `VOX-REVIEW32.done`, `ULTRA-REVIEW32.done`, `HIP-GUARD-32.done`. This boundary carries the prior uncommitted Unified filing, v3 and Voxtral dry-run notes. No target inference/scoring, qualification or READY mutation.
+
+## 23:37Z — Investigated blocked Voxtral qualification and delegated three bounded row repairs
+
+Investigated Voxtral FAIL-1: launcher requires unset WS58_REGIONS before the engine can derive the keeper grant allocation; no retry or inference was performed. Delegated bounded Ultra, HIP build, and v3 scorer repairs, with completion events registered as ULTRA-CODEX, HIP-CODEX, and SCORE-CODEX. Existing VOX-REVIEW32 event covers the separately prepared successor. Prior uncommitted handoff and progress records are preserved in this boundary.
+
+## 23:39Z — Record Crisp HIP packet audit and integrate concurrent main changes
+
+Crisp HIP audit found that the published source path is missing; the relocated source matches the pinned commit and manifest after path substitution. A retained build partial reports a disk reserve; a direct guard STOP fixture does not establish the rowflow stop boundary. The earlier boundary commit was rejected as non-fast-forward after origin/main advanced; this wrap integrates main and republishes the boundary.
+
+## 23:47Z — Consume scorer, Voxtral and Crisp HIP row repair reports
+
+Consumed SCORE-CODEX, VOX-CODEX and HIP-CODEX. The scorer candidate passes 10 model-free checks and avoids requiring WS58_REGIONS; independent review is registered before publication. The Voxtral candidate uses grant-derived CPUs and has static source/cutover checks, but needs fresh writer/exposure checks and independent review before successor publication. The Crisp HIP audit verifies 7,249 relocated source entries and identifies a missing published source path, stale CMake cache and unproven rowflow STOP; successor implementation is delegated. No row was published or compute run. The prior two lane commits remain queued for serialized push after earlier non-fast-forward rejections.
+
+## 23:48Z — Advance blocked speech rows and preserve Ultra cutover constraints
+
+Dispatched independent scorer and Voxtral candidate reviews and Crisp HIP successor repair; completion events SCORE-REVIEW3, VOX-REVIEW3 and HIP-REPAIR3 are registered. Ultra successor remains held: its r1 exposure history must be reconciled with the fixed 25-case cohort and cutover evidence must cover the r1 row before scheduling; the repair29 scratch packet seal alone does not verify its historical external sources. The serialized push lock remains held by codex-gen; no force-release was attempted. No row published or compute run.

@@ -620,6 +620,69 @@ _PANEL_SOURCE_CATALOG = _index((
               "directory strip cannot become a probe storm.",
     ),
     PanelSource(
+        panel="loop_spec",
+        kind=KIND_ARTIFACT,
+        payload_func="loop_spec_payload",
+        route="/api/loop_spec",
+        health_route="/api/loop_spec/health",
+        health_func="loop_spec_health",
+        producer="hand-derived from the loop's code; drift-checked by tests/test_loop_spec.py",
+        producer_repo="epyc-root",
+        evidence="docs/reference/loop-specs/*.loop.json (schema loop-spec.schema.json)",
+        timestamp_field="spec_revised",
+        absence_means=(
+            "no epyc.loop_spec.v1 file under docs/reference/loop-specs/. The files are "
+            "TRACKED IN THIS REPO, so absence is a broken working tree, never a cold "
+            "start; the /loop-spec page then says so instead of drawing an empty "
+            "diagram. A spec that fails validation is listed with its errors and "
+            "never drawn: a wrong diagram is worse than none."),
+        warn_s=14 * _DAY,
+        stale_s=30 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=True,
+        notes="JEV-5 phase A. spec_revised is when the spec was last re-derived from "
+              "code; the thresholds' code-equality is enforced by the test suite, so "
+              "age here means 'not re-read', not 'known wrong'.",
+    ),
+    PanelSource(
+        panel="knowledge",
+        kind=KIND_EXPORT,
+        payload_func="knowledge_payload",
+        route="/api/knowledge",
+        health_route="/api/knowledge/health",
+        health_func="knowledge_health",
+        producer="vidya adapters (scripts/vidya/cli.py ingest ...) appending to the belief ledger",
+        producer_repo="epyc-root",
+        evidence="/mnt/raid0/llm/state/vidya/ledger.jsonl (scripts/vidya/ledger_home.py)",
+        timestamp_field="newest frame pubinfo.created_at",
+        absence_means=(
+            "the canonical belief ledger does not exist on this host (VIDYA_LEDGER / "
+            "VIDYA_STATE_DIR unset and no /mnt/raid0/llm/state/vidya/ledger.jsonl): no "
+            "claim has ever been recorded HERE. It is not 'zero claims are true' and "
+            "the browser renders no counts."),
+        warn_s=3 * _DAY,
+        stale_s=14 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes="KT-3 read-only claim browser. Freshness dates the newest frame the "
+              "producers wrote, never the file mtime. Grades shown are the ones the "
+              "adapters recorded; this hub grades nothing.",
+    ),
+    PanelSource(
+        panel="knowledge_claim",
+        kind=KIND_DERIVED,
+        payload_func="knowledge_claim_payload",
+        route="/api/knowledge_claim",
+        producer="dashboard.knowledge.claim_detail (this hub) over the knowledge panel's ledger",
+        producer_repo="epyc-root",
+        evidence="one claim's frames in the canonical belief ledger",
+        timestamp_field="live-scan",
+        absence_means=(
+            "a 404 for one claim id, never a blank chain: an unknown id or an absent "
+            "ledger is answered with an explicit error."),
+        gates_health=False,
+    ),
+    PanelSource(
         panel="transport_probe",
         kind=KIND_LIVE,
         payload_func="transport_probe_payload",

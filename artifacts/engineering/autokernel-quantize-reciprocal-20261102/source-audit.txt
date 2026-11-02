@@ -1,0 +1,9 @@
+Candidate source audit — 2026-11-02
+
+Result: content and lineage checks pass; transfer is conditional on carrying the full source snapshot or the base Git objects.
+
+- Manifest SHA-256 matches its filename: `6bda06cb329eb4d5f6776850ff13f0885efe858be929e7af6fbd00d2e6637a3d`.
+- Sibling candidate diff SHA-256 matches its filename and manifest: `c883225be4f1824f19c3f93065db52498de4334d7ac57045cde3a28d35d51493`. Preserved replacement patch SHA-256 also matches manifest: `7ec6bfc98a4e907c05d474a8009739ebad4ecaedcbf8cee8f63df042349cc600`.
+- Candidate HEAD is frozen v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; its tree matches declared base `a7c564ffbac0a86ce648ef6f11c1748c81a6560d`. Candidate tree `079e43916de0dea8bab93ca11ade8d6ee8c146b7` contains exactly the manifest's 3,289 paths and modes/blob IDs, with only `ggml/src/ggml-cuda/quantize.cu` changed. Candidate blob and file SHA-256 match manifest (`9b7eb9eca7d1589b1df8a82f263d44b07f4a64af`, `05e76e6bc97200ebf183f2ecf374ba3ca34556588deacb4b9f98c026f6a4505d`).
+- Independently hashed every listed scratch file: 3,289/3,289 SHA-256 and Git blob checks pass; no missing files. Candidate status is exactly one tracked modification to that path, with no untracked files. `git diff --check` passes; sibling diff passes `git apply --cached --check` against the base index. No build or compute was run.
+- Transfer caveat: manifest plus the one-file diff is not a self-contained reconstruction package because the remaining base file bytes are not embedded. The full scratch working tree is present and can be transferred as a source snapshot, but its `.git/objects/info/alternates` points to absolute `/mnt/raid0/llm/llama.cpp/.git/objects`; the Git checkout is therefore not independently portable without those base objects or a fresh base clone. Package the full source snapshot (or provide base objects) for clone-free transfer.

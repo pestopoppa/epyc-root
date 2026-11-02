@@ -41,3 +41,10 @@ Detailed documentation for each lint pass in `lint_wiki.py`.
 **Logic**: Scan generated `wiki/*.md` article pages, excluding `INDEX.md` and `SCHEMA.md`. Pages with `**Category**` metadata must have one H1, `## Summary`, and either `## Source References` or `## References`. The pass warns when the filename slug does not match the category, or when recommended sections (`## Key Findings`, `## Open Questions`, `## Related Categories`) are absent. Pages without `**Category**` metadata are treated as legacy/reference pages and warned, not failed.
 **Config**: `wiki.yaml` → `lint.enabled_passes` includes `wiki_article_structure`.
 **Fix**: Repair the generated article before advancing `compile_sources.py --touch` or refreshing `wiki/source_manifest.json`. Add the missing metadata/sections, or explicitly keep the page as a legacy reference and accept the warning.
+
+## Passes 8-11: KT-1 knowledge-transparency passes (2026-11-02)
+
+`wiki_orphans`, `unsourced_bullets`, `conflicted_citations`, `contradictions` — see SKILL.md
+Operation 1 for semantics. `conflicted_citations` shells out to `vidya cite-check` so the lint and
+the gate cannot disagree; `unsourced_bullets` also scans `### Compiled Update` sections inside a
+KT-4 `## Compile Log`, so restructuring a page never hides its unsourced bullets.

@@ -6,6 +6,10 @@
     "verification-decision-needed": {
       "decision": "retired_from_public_claims",
       "reason": "no row-specific evidence bundle or protocol metadata; keep local historical reference only"
+    },
+    "historical-attestation-review": {
+      "decision": "retired_from_public_claims",
+      "reason": "no contemporaneous attestation binding the historical claim to its run; reconsider with a valid evidence bundle or a separately attested rerun"
     }
   },
   "rows": {}

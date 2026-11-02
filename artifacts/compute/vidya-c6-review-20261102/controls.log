@@ -1,0 +1,26 @@
+test_actual_retained_lexical_serialization_passes_provenance (test_arm_order.OrderControls.test_actual_retained_lexical_serialization_passes_provenance) ... ok
+test_aggregate_metadata_tamper (test_arm_order.OrderControls.test_aggregate_metadata_tamper) ... ok
+test_consistent_metadata_but_wrong_binary (test_arm_order.OrderControls.test_consistent_metadata_but_wrong_binary) ... ok
+test_death_pid_mismatch (test_arm_order.OrderControls.test_death_pid_mismatch) ... ok
+test_disk_metadata_tamper (test_arm_order.OrderControls.test_disk_metadata_tamper) ... ok
+test_duplicate_launch (test_arm_order.OrderControls.test_duplicate_launch) ... ok
+test_duplicate_tag (test_arm_order.OrderControls.test_duplicate_tag) ... ok
+test_epoch_reversal_with_matching_metadata (test_arm_order.OrderControls.test_epoch_reversal_with_matching_metadata) ... ok
+test_lexically_sorted_log_refused (test_arm_order.OrderControls.test_lexically_sorted_log_refused) ... ok
+test_log_and_metadata_consistent_same_build_refused (test_arm_order.OrderControls.test_log_and_metadata_consistent_same_build_refused) ... ok
+test_log_and_metadata_consistent_swapped_builds_refused (test_arm_order.OrderControls.test_log_and_metadata_consistent_swapped_builds_refused) ... ok
+test_missing_completion (test_arm_order.OrderControls.test_missing_completion) ... ok
+test_missing_tag (test_arm_order.OrderControls.test_missing_tag) ... ok
+test_no_new_grading (test_arm_order.OrderControls.test_no_new_grading) ... ok
+test_result_serialization_permutation_is_not_execution (test_arm_order.OrderControls.test_result_serialization_permutation_is_not_execution) ... ok
+test_swapped_execution_refused_even_with_complete_ordinals (test_arm_order.OrderControls.test_swapped_execution_refused_even_with_complete_ordinals) ... ok
+test_wrong_ordinal_label (test_arm_order.OrderControls.test_wrong_ordinal_label) ... ok
+test_wrong_probe_binding (test_arm_order.OrderControls.test_wrong_probe_binding) ... ok
+test_actual_main_preserves_partial75 (test_actual_main.MainControls.test_actual_main_preserves_partial75) ... ok
+test_actual_main_rejects_bad_execution (test_actual_main.MainControls.test_actual_main_rejects_bad_execution) ... ok
+test_actual_main_retained_native_and_result_writer (test_actual_main.MainControls.test_actual_main_retained_native_and_result_writer) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.056s
+
+OK

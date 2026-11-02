@@ -13,6 +13,7 @@ Use this skill when an Explore subagent or session would otherwise grep/find bli
 - `research/` (intake notes + deep-dives)
 - `progress/YYYY-MM/` (daily session summaries)
 - `docs/chapters/` (epyc-inference-research compiled chapters)
+- Agent memory is not yet indexed; see `/mnt/raid0/llm/tmp/ws58-kt5-memory-split-proposal.md` (KT-5).
 
 The retrieval index is ColBERT-backed (GTE-ModernColBERT-v1 ONNX INT8, 128-dim per-token, MaxSim ranking) — semantically richer than keyword grep, and aware of heading hierarchy.
 
