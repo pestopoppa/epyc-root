@@ -135,3 +135,7 @@ SR-7 capture now synchronizes the parent directory after each exclusive record c
 ## 10:29Z — Reject SR-6 prompt reuse by rendered content
 
 The SR-6 exposure reader validates the recorded rendered hash against the request, and the block controller rejects previously exposed content under a new ID as well as duplicate IDs or rendered hashes in a block. The guarded block also connects the existing admission and session-drain seams. All 78 preparation tests pass. The inventory must still be authoritative and concurrency excluded; grant ownership, full descendant drain, runtime seals and in-flight STOP remain unproved. No row or inference result is claimed.
+
+## 10:31Z — Prepare experimental G3 dispatch instrumentation
+
+Prepared an opt-in v10 flash-attention dispatch trace patch against the exact source pin; patch dry-run and five structural controls passed. It explicitly reports correlation unavailable, so it cannot attribute a dispatch to target verification or answer G3. No build, production-tree edit, inference or result occurred. The lane is unindexed and GitNexus impact is unavailable.
