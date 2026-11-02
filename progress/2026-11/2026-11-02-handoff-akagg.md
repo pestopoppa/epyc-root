@@ -91,3 +91,7 @@ Implemented marker-binding validator candidate with 18 synthetic controls plus s
 ## 09:46Z — Prepare CPU request capture and C3 model custody
 
 CPU pidfd-bound request capture, C3 pre-grant model custody and CH-27 private-store reconstruction remain in implementation. No calibration row or measurement claimed.
+
+## 09:49Z — Prepare C3 and CPU calibration launchers
+
+C3 model custody, CPU owning request capture and CH-27 store reconstruction are being integrated; no measurement or successor row claimed.
