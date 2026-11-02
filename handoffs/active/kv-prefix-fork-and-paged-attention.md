@@ -746,7 +746,7 @@ KPF-22..24 and KPF-26 need P1 live.
     `_FORK` off: record `prediction_abs_err_tokens/predictions`, `slot_prediction_hits/slot_predictions` and
     the `stale_drops` mix from `get_status()`; done when two windows are recorded (VB-KVU-PF). 2026-10-04: branch A
     is landed; branch B and both shadow windows are open.
-  - [ ] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI
+  - [x] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI ✅ 2026-11-02 [belief: cc]
     timings, checkpoint positions, `/props` fork capability, unique cells) into `reconcile`/`lookup`, and send
     `checkpoint_at` from the trunk-first path (KPF-21).
     - 2026-11-01 source audit: orchestrator `6d631212d181565d69236ee7d04d5928487e4382` on origin/main sends `checkpoint_at` in the gated trunk-first path; current prefix-index source maps the listed fields. This supersedes the 2026-10-04 source-status note below. Live server behavior and shadow metrics remain KPF-27d owner work; no live run is claimed. [no-belief: source audit only]

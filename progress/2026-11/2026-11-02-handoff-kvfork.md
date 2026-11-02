@@ -47,3 +47,15 @@ Closed KPF-21 using its explicit record-as-not-wired disposition: orchestrator o
 ## 10:21Z — Complete KPF-21 trunk-first disposition
 
 KPF-21 source evidence and its completed checkbox were retained after the initial index freshness check failed; refresh the generated index before landing. KPF-18-S1 follow-up depends on group-3 localization, and KPF-26.1h awaits actual KEEP_ON-window traffic. Corrected the belief source table to match the 52 WORKING-ALLOWED manual classifications.
+
+## 10:31Z — Complete KPF-27e interface mapping
+
+Closed KPF-27e on its existing 2026-11-01 source audit: orchestrator 6d631212d181565d69236ee7d04d5928487e4382 maps the listed P1 interface fields and sends checkpoint_at in gated trunk-first dispatch. Live shadow metrics remain KPF-27d; no runtime result claimed.
+
+## 10:35Z — Complete KPF-27e interface mapping
+
+KPF-27e's existing source audit establishes the specified P1 field mapping and gated checkpoint_at dispatch. Shadow-window metrics remain KPF-27d. Initial wrap-up required a generated-index refresh after the checkbox change.
+
+## 10:39Z — Land KPF-27e interface mapping
+
+KPF-27e field mapping and checkpoint_at dispatch are complete per existing source evidence. The generated handoff index conflict against current main was resolved and regenerated in merge commit 92096dcd8. KPF-27d still owns live shadow measurements.
