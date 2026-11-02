@@ -747,13 +747,16 @@ def dryrun_shape(d, opts, flags=None):
     # by shape: quarter -> one quarter; multi-quarter/host -> one quarter only when constrainable AND the model fits a
     # quarter's RAM, else the real shape (the reservation is capped to first unit + dryrun_timeout_s by dryrun_run);
     # quiet-host -> correctness-only on one quarter (the dry run proves plumbing, not timing; gpu-quiet is not needed)
-    if d.get("dryrun_whole_host") or not constrainable or (shape != "quarter" and shape != "quiet-host" and not fits_quarter):
-        return opts, False
+    # operator rule 2026-11-02: a dry run NEVER holds the whole host. A cpu option (no GPU) always narrows to ONE quarter,
+    # whatever the engine, RAM or dryrun_whole_host; a launcher that hard-codes its own cpu list is its own problem
+    # (noted in the FAIL memo). GPU-bearing options keep the previous rule (gpu-quiet only, as before).
+    gpu_legacy = shape != "quiet-host" and (d.get("dryrun_whole_host") or not constrainable or (shape != "quarter" and not fits_quarter))
     out = []
     for o in opts:
         qs = sorted(q for q in o if q in QUARTERS)
-        if len(qs) <= 1:
-            out.append(o)
+        if len(qs) <= 1 or (gpu_legacy and GPU in o):
+            if o not in out:
+                out.append(o)
             continue
         if shape == "quiet-host":
             o = frozenset(q for q in o if q != GPU)
@@ -762,7 +765,7 @@ def dryrun_shape(d, opts, flags=None):
             fs = frozenset(keep | {q})
             if fs not in out:
                 out.append(fs)
-    return out, any(len([q for q in o if q in QUARTERS]) > 1 for o in opts)
+    return out, any(len([q for q in o if q in QUARTERS]) > 1 and not (gpu_legacy and GPU in o) for o in opts)
 
 
 def grant_regions(d, option, one_quarter):
@@ -1241,6 +1244,9 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
             os.remove(running_path(flags, rid))
         except OSError:
             pass
+        if verdict == "FAIL" and one_quarter:
+            reason += (f" [dry run held ONE quarter, WS58_REGIONS={ws58_cpus(regions)}; a launcher whose own taskset/claim "
+                       "hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]")
         out.write(f"==== dry run {verdict}: {reason} ({now_iso()})\n"); out.close()
     cur_sha = sha256(lp) if os.path.isfile(lp) else None
     if verdict == "PASS" and cur_sha != lsha:
