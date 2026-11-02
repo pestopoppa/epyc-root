@@ -1,0 +1,25 @@
+{
+  "id": "kvfork174d-build-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Accept build-only receipt if rc=0, source is 6ec877068936588b6d63dbba5842bbd540b92031 parent 84d0a31603d495377dee24e1159bbbf02f1e2f21, source and reference options match, build binary and libraries are hashed, own ggml linkage and all three compiled knobs pass. Prospective diagnostic only; no historical image equivalence or inference verdict.",
+  "estimate_s": 2400,
+  "ram_gib": 32,
+  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17.4d",
+  "priority_rank": 45,
+  "dryrun_timeout_s": 2700,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "input/**",
+    "v3/**"
+  ],
+  "smoke_timeout_s": 300,
+  "notes": "Version 3: native 4-CPU smoke compiles the actual instrumented cache object. Dedicated writable source snapshot and configured options are checked before/after compilation and again at completion; same-UID mutate-and-restore during compilation is not excluded. Normal grant requires the full build and proof."
+}

@@ -91,3 +91,7 @@ Diagnosed the CPU successor cross-run preservation failure: its original and ext
 ## 11:34Z — Prepare paired KPF-17a CPU successor
 
 Diagnosed the CPU successor cross-run preservation failure: its original and extended outputs were produced at different thread counts. Prepared kvfork17a-cpu-paired to compare each original and extended case under identical grant and thread count, retaining earlier receipts separately; publication smoke started but its outcome was not yet observed. No new exactness verdict is claimed.
+
+## 11:37Z — Qualify paired CPU shared-trunk exactness and queue GPU smoke
+
+kvfork17a-cpu-paired publication smoke PASS with two case receipts; row grantable. The paired comparison runs the original and extended harness under the same grant and thread count; no full CPU verdict yet. Fixed preparation to copy the checked-in job, create required directories and refuse existing scratch; isolated fixture and Python AST equivalence checks passed. For kvfork17a-gpu-20261102, set smoke_timeout_s=1500 and invoked the publisher; GPU busy, smoke queued, no PASS or new qualification failure yet. Prior staged handoff findings and row artifacts are preserved in this commit.
