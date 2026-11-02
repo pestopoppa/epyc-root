@@ -73,3 +73,9 @@ The GPU review prepared an alternate source-attributed ERNIE DiT attention graph
 ### Reconcile ERNIE inference tasks
 
 The supplied dispatcher inventory predates published row `ernie-qwen-pip03-cpu-20261102`: its single status inspection returns `needs-dryrun`, with keeper qualification pending; no result to file. The 20-prompt typography job already captured 40 images and needs attributable review rather than duplicate inference. Delegated three independent bounded preparations with event receipts: GPU source-attributed trace build path, typography review workflow, and a separate ERNIE content-filter audit path isolated from Qwen production. The GPU trace recipe now names the ERNIE-specific patch and HIP guard; neither build nor inference has run. No new row or quality conclusion this boundary. [no-belief: preparation only]
+
+## 07:50Z — Prepare ERNIE typography review workflow
+
+### Typography review workflow
+
+Consumed the typography preparation result: `/mnt/raid0/llm/tmp/ernie-typography-human-review-20261102/review.html` and `reviews-template.csv` enumerate all 40 retained originals with prompts, requested text and hashes; review fields are blank and no human verdict is asserted. An independent check and durable-copy task is registered; preserve native PNGs at `/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/` through review. The limited capture cannot validate official 0.9655. GPU and content-filter preparation remain delegated; no inference, new row or checklist completion. [no-belief: preparation only]
