@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shlex
 import sys
 import tempfile
 import time
@@ -29,7 +30,9 @@ class EndToEndTests(unittest.TestCase):
             model = root / 'fake-model'; model.write_bytes(b'fake model')
             library = root / 'fake-library'; library.write_bytes(b'fake library')
             tokenizer = root / 'fake-tokenizer'
-            tokenizer.write_text('#!/bin/sh\ncat >/dev/null\nprintf "[1, 2, 3]\\n"\n')
+            received = root / 'tokenizer-stdin'
+            tokenizer.write_text('#!/bin/sh\ncat > ' + shlex.quote(str(received)) +
+                                 '\nprintf "[1, 2, 3]\\n"\n')
             tokenizer.chmod(0o700)
             paths = [str(p) for p in (full, short, model, library, tokenizer)] + [sys.executable, str(rw._WRAPPER)]
             identities = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths}
@@ -45,6 +48,8 @@ class EndToEndTests(unittest.TestCase):
                    'FILLER_STOPFILE':str(root/'stop'), 'FILLER_GRANTS_DIR':str(grants),
                    'FILLER_DRYRUN':'1', 'FILLER_DRYRUN_DIR':str(dry), 'FILLER_DRYRUN_RESULT_PATH':str(result)}
             self.assertEqual(rw.run(plan, env), str(result))
+            self.assertEqual(received.read_bytes(), short.read_bytes())
+            self.assertNotEqual(received.read_bytes(), full.read_bytes())
             data = json.loads(result.read_text())
             self.assertEqual((data['mode'], data['status'], data['verdict'], data['validated_token_count']),
                              ('qualification', 'completed', 'excluded_qualification', 3))
