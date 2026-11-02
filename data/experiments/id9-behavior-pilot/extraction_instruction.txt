@@ -1,0 +1,1 @@
+Extract a reusable named procedure from a retained successful AIME-I trace. Omit original constants, final answers and problem-specific conclusions. Never inspect held-out AIME-II solutions. Human-reviewed offline abstraction; no model inference was run.

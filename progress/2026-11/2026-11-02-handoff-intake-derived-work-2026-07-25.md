@@ -39,3 +39,7 @@ Consumed both registered preparation results. Preserved ID-4 native paired-arm c
 ## 01:45Z — Consume ID-9 implementation and ID-4 corpus results; review integration.
 
 Consumed ID-9 runner and launcher completion results and ID-4 real-corpus result. Updated the ID-4 preparation document with the snapshot counts, disjoint recorded IDs and the crucial lack of question-level oracles or proven task independence. Delegated independent runner and launcher review and an ID-4 oracle search; registered their result events. Initial offline tests reported 7 runner and 3 launcher tests passing. No compute launched or row published; implementation is not yet integrated.
+
+## 03:36Z — Preserve ID-9 prepared pilot inputs and advance row integration.
+
+Preserved ID-9 pilot inputs in data/experiments/id9-behavior-pilot and verified all ten manifest SHA-256 hashes. The 15-question AIME-II replay is historically evaluated, not a pristine unseen benchmark; six donor behaviors are manually curated. Dispatched runner/launcher integration fixes, concrete GPU spec preparation and an ID-4 retrieval-only pilot. No compute launched or row published.
