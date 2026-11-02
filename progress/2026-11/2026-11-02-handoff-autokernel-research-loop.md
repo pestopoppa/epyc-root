@@ -151,3 +151,7 @@ Prepared bounded model-free prototype work for authenticated sealed-descriptor t
 ## 01:11Z — Evaluate sealed descriptor transfer prototype
 
 Consumed memfd-proof-ready.txt: a disposable SCM_RIGHTS socketpair transfers a fully sealed memfd, validates kernel sender credentials and seals, rejects writes, and survives pass_fds into /bin/cat; three tests include wrong sender and unsealed refusal. This is model-free, parent-authorized only, and does not establish keeper lifecycle, per-grant authority, anti-replay, real benchmark execution or measurement comparability. Delegated disposable nonce/replay tests, keeper lifecycle review and measurement-protocol assessment; registered their outputs. No model read or inference run, no row published, no checkbox completed.
+
+## 01:12Z — Review sealed descriptor grant nonce demonstration
+
+Consumed memfd-nonce-proof.txt: the disposable receiver binds a one-use 256-bit nonce to a configured grant ID and kernel credentials and verifies all four seals; eight model-free tests pass, including replay, cross-grant, wrong-peer and unsealed refusal. Its grant identity and peer tuple are assumed out-of-band and replay state is process-local, so it does not supply an authenticated durable authority, actual model digest binding, holder lifecycle, keeper integration or a publishable calibration row. Delegated bounded concrete keeper lifecycle, native logits capture and calibration stop/resume reviews; registered output events. No model run, row publication or completed checkbox.
