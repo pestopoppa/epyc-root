@@ -27,3 +27,7 @@ The bounded runner and ledger commit was prepared and its six offline tests pass
 ## 10:11Z — Integrate Jet-Long lifecycle and recall aggregation
 
 Integrated Jet-Long CPU lifecycle and recall aggregation with the prior bounded runner: twelve offline tests pass, including foreign-listener rejection, fake server behavior and partial/terminal denominator accounting. No native inference or published row. Before publication, reconcile draft fixture fields with scorer (depth_fraction, needle_index, seed_index), seal framing and model identity, and finish descendant cleanup, runtime ggml linkage, provenance and keeper entry. Fixture and provenance work registered for follow-up.
+
+## 10:11Z — Land Jet-Long lifecycle and scorer after upstream merge
+
+Twelve offline runner, lifecycle and aggregation tests passed; merged concurrent origin changes before retrying the serialized push. No native inference or scientific result.
