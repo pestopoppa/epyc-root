@@ -11,3 +11,7 @@ Checked the prepared-output event paths: EV-CONF-2 probe row, EV-14a row wrapper
 ## 03:36Z — Prepare isolated EV-14a calibration worker
 
 Prepared /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py from the staged EV-14a driver, requiring explicit output directory, calibration ID, trial base and pin ID; it refuses existing output directories and returns failure for moved pin, empty suites or refused bands. Python syntax compilation passes. This is preparation, not a publishable row: role/pool readiness, complete expected suite validation, rowflow launcher, unique IDs and decision-grade contract remain to be integrated. Registered bounded ThinkPRM, EV-15c and ETV-T2 implementation assessments. No inference launched or row published. GitNexus status reports this lane unindexed and impact query could not disambiguate its repository; no repository code was edited by this boundary.
+
+## 03:37Z — Prepare EV-14a baseline pin and inference row launchers
+
+Corrected the prepared EV-14a worker so the recorded baseline pin timestamp is taken when the pin is made, rather than after the calibration run. Python syntax compilation passes. Prepared-worker path: /mnt/raid0/llm/tmp/eval-tower-ev14a-prep/run_ev14a_fresh.py. Dispatched bounded preparation of an EV-14a launcher and readiness checks, an EV-4b launcher and no-draft checks, and a patch for the probe slot parsing bug; their output files are registered as dispatcher events. The earlier preparation reports were not present at this boundary. No inference launched or row published.
