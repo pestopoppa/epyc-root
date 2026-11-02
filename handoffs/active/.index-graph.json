@@ -3589,6 +3589,36 @@
       "weight": 2
     },
     {
+      "from": "RTG-63",
+      "kind": "ref",
+      "to": "INF-26",
+      "weight": 2
+    },
+    {
+      "from": "RTG-63",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "RTG-63",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 2
+    },
+    {
+      "from": "RTG-63",
+      "kind": "ref",
+      "to": "RTG-28",
+      "weight": 2
+    },
+    {
+      "from": "RTG-63",
+      "kind": "ref",
+      "to": "UFH-07",
+      "weight": 2
+    },
+    {
       "from": "UFH-01",
       "kind": "ref",
       "to": "EVL-10",
@@ -3769,7 +3799,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:25:27Z",
+  "generated_at": "2026-11-02T18:32:07Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8978,15 +9008,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 2,
-      "dispatchable": 21,
+      "closed": 6,
+      "dispatchable": 17,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-02",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 21,
+      "open": 17,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,

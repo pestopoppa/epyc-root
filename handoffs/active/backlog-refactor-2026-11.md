@@ -30,9 +30,12 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
 
 ## T1 — route-1a folds (175 → 63, readiness-neutral; D1)
 
-- [ ] **BRF-T1-0** [non-inference] Re-run apply-time reconciliation of `backlog-refactor-plan-20261102.json` against current
+- [x] **BRF-T1-0** [non-inference] Re-run apply-time reconciliation of `backlog-refactor-plan-20261102.json` against current
   `origin/main`; emit the ordered fold list (one entry per fold commit) into scratch; tick when the list is
   committed into PLAN.md as an appendix. Zero inference.
+  ✅ 2026-11-02 `030991943` — [`fold-list-1a.json`](../../docs/design/backlog-refactor-2026-11/fold-list-1a.json)
+  + PLAN.md appendix: 26 folds / 4 batches, 176 → 77 handoffs (75 after RET), readiness diff ∅ by the real
+  `derive_readiness`; reconciliation: 0 ticked since pin, 6 kv-prefix boxes re-identified, RTG-63 carried new. [no-belief: tooling]
 - [ ] **BRF-T1-1** [roll-up] One fold commit per entry of the BRF-T1-0 list, each through the atomic gate.
   Per fold, add a box `BRF-T1-<n> fold <sources> → <target>` here before starting it and tick it in the fold
   commit itself. Non-dispatchable parent.
@@ -62,16 +65,17 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
 
 ## T4 — the 4 bounded pilots (D3)
 
-Each pilot carries its `sufficiency` block from the experiment manifest; owner as assigned at dispatch.
+Each pilot carries its `sufficiency` block from the experiment manifest; owners are the accountable handoffs from the experiment manifest (written 2026-11-02, BRF-T1-0 session).
 The 16 other packages stay provisional until owner-reviewed pilot results exist.
 
-- [ ] **BRF-T4-EXP01** [inference] EXP-01 speed-pair pilot. NEEDS-OWNER (assigned at dispatch from the manifest package owner).
+- [ ] **BRF-T4-EXP01** [inference] EXP-01 speed-pair pilot. Owner: [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md)
+  (INF-26, per v6 and the experiment manifest: T2/T3 hold the executable KT gates; [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md) STEP 2/3 are consumers and record the transfer).
   Stop rule: manifest `sufficiency` EXP-01 — pair against the completed control first; stop on answer or
-  futility at each checkpoint; quality pass not reducible (gate stays open).
-- [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. NEEDS-OWNER.
-  Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY.
-- [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. NEEDS-OWNER. Stop rule: manifest `sufficiency` EXP-09.
-- [ ] **BRF-T4-CAP04** [inference] CAP-04 pilot. NEEDS-OWNER. Stop rule: manifest `sufficiency` CAP-04.
+  futility at each checkpoint; quality pass not reducible (gate stays open). Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+- [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. Owner: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (PF1).
+  Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+- [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](tool-output-compression.md) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+- [ ] **BRF-T4-CAP04** [inference] CAP-04 pilot. Owner: [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1). Stop rule: manifest `sufficiency` CAP-04. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
 - [ ] **BRF-T4-R** [non-inference] NEEDS-OWNER Owner review of the four pilot results; promote or re-scope the 16 provisional packages.
 
 ## T5 — D7 decision-package delivery
