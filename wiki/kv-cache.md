@@ -1552,3 +1552,5 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 ### KV-row experimental reference (2026-11-02)
 
 A C5-derived opt-in reference gathers planned KV rows before flash attention. A model-free two-slice, 256-padded-row MI210 check matched an independent dense-softmax calculation; the run also recorded GPU residency. This verifies that reference case only: the fused row-aware kernels, serving-graph integration and performance gate remain open. [Run evidence](../artifacts/engineering/kpf41-model-free-20261102/) and [RTG-58](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
+
+The subsequent opt-in gfx90a vector prototype gathers noncontiguous KV rows directly and matched the independent reference for a single-query F16 KV case on MI210. Its result is limited to that case; serving integration, additional types and shapes, and performance evaluation remain open. [Original run evidence](../artifacts/engineering/kpf41-direct-20261102/).

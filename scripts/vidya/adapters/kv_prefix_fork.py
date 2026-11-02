@@ -303,7 +303,38 @@ def _validate_kpf30(row: Any) -> list[str]:
     return problems
 
 
+def _validate_kpf26_api(row: dict) -> list[str]:
+    problems = []
+    for key in ("run_id", "window_id", "host", "api_url", "role", "server_url", "start_utc", "end_utc", "rows", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "model_sha256", "prompt_set_sha256", "request_sha256",
+                "grant_sha256", "rows_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if not isinstance(row.get("argv"), list) or not row["argv"] or not all(isinstance(x, str) for x in row["argv"]):
+        problems.append("missing argv")
+    if row.get("http_status") != 200 or row.get("flags") != "unverified" or "arm" in row:
+        problems.append("invalid API observation scope")
+    trace = row.get("scout_trace")
+    if trace is not None and (not isinstance(trace, dict) or set(trace) != {"path", "sha256"}
+            or not isinstance(trace.get("path"), str) or not trace["path"]
+            or not isinstance(trace.get("sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", trace["sha256"])):
+        problems.append("invalid API scout trace binding")
+    counts = row.get("kpf26")
+    if (not isinstance(counts, dict) or set(counts) != {"tasks", "children", "completed"}
+            or any(type(counts.get(k)) is not int for k in ("tasks", "children", "completed"))
+            or counts["tasks"] != 1 or counts["children"] < 1
+            or not 0 <= counts["completed"] <= counts["children"]):
+        problems.append("invalid API scout counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
+    return problems
+
+
 def validate_row(row: Any) -> list[str]:
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf26.api-observation.v1":
+        return _validate_kpf26_api(row)
     if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.observation.v1":
         return _validate_kpf30(row)
     if not isinstance(row, dict):
@@ -508,6 +539,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
     present = _rows_present(row, sidecar)
+    if row["schema"] == "epyc.kpf26.api-observation.v1":
+        return _project_kpf26_api(row, sidecar, present)
     if row["schema"] == "epyc.kpf30.observation.v1":
         return _project_kpf30(row, sidecar, present)
     if row.get("kpf_task") == "KPF-26":
@@ -568,6 +601,56 @@ def project(native: Any) -> ClaimTuple:
         },
         applicability=_applicability(row),
     )
+
+
+def _project_kpf26_api(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """Project API-reported completion only, with no inference about flags or quality."""
+    counts = row["kpf26"]
+    if present:
+        try:
+            body = json.loads(_rows_path(row, sidecar).read_bytes())
+            report = body["scouts"]
+            scouts = report["scouts"]
+            if not isinstance(scouts, list) or any(not isinstance(c, dict) for c in scouts):
+                raise ValueError("invalid scouts")
+            observed = {"tasks": 1, "children": len(scouts),
+                        "completed": sum(c.get("status") == "ok" for c in scouts)}
+            if (report.get("schema") != "epyc.orchestrator.scouts.v1" or report.get("role") != row["role"]
+                    or not isinstance(report.get("url"), str)
+                    or report["url"].rstrip("/") != row["server_url"].rstrip("/")
+                    or report.get("requested") != observed["children"]
+                    or report.get("launched") != observed["children"]
+                    or report.get("completed") != observed["completed"]
+                    or observed["completed"] != observed["children"]):
+                raise ValueError("inconsistent API report")
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-26 API response") from exc
+        if observed != counts:
+            raise ProjectionError("KPF-26 API counts disagree with attested response")
+    trace = row.get("scout_trace")
+    trace_present = None
+    if trace:
+        sibling = sidecar.parent / Path(trace["path"]).name
+        trace_path = sibling if sibling.is_file() else Path(trace["path"])
+        trace_present = trace_path.is_file() and hashlib.sha256(trace_path.read_bytes()).hexdigest() == trace["sha256"]
+    return ClaimTuple(
+        measurement_id="kpf26-api-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf26_api_completed_scouts", value=counts["completed"], unit="scouts",
+        date=row["end_utc"], category=row["category"], metric_direction="higher_better",
+        claim=(f"KPF-26 API reported {counts['completed']} completed scouts of {counts['children']} "
+               "in one route smoke; flags unverified, no quality, fork or gate verdict"),
+        protocol_id="", reps=counts["children"], reps_basis="scouts reported in one API request",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf26-api:{row['run_id']}:win={row['window_id']}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "kpf26": counts, "run_id": row["run_id"],
+               "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
+               "model_sha256": row["model_sha256"], "grant_sha256": row["grant_sha256"],
+               "prompt_set_sha256": row["prompt_set_sha256"], "request_sha256": row["request_sha256"],
+               "flags": "unverified", "api_url": row["api_url"], "role": row["role"],
+               "server_url": row["server_url"], "record_sha256": row["record_sha256"],
+               "scout_trace": trace, "scout_trace_present": trace_present},
+        applicability=_applicability(row))
 
 
 def _project_kpf26(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
