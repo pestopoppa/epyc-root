@@ -116,6 +116,10 @@ After S4 or soak work, update this handoff with the exact run, sample size, turn
 
 ## Research Intake Update — 2026-07-21 (RLM sub-call budget contracts + a verifiable span scorer)
 
+### Scaffold A/B reporting contract — Main Model Token Efficiency
+
+For each arm, report **Main Model Token Efficiency** as `mean(reward) / mean(main-model trajectory tokens)`, normalized by the no-scaffold arm's value within the same suite, role, and task set (baseline = `1.0`). Include mean reward, mean main-model trajectory tokens, mean total trajectory tokens (main plus all sub-calls), wall-clock seconds, task set, role, and sample count beside the normalized value. Do not pool different task sets or role pins. Treat missing token counts as incomplete records, not zero; report zero-token cases separately. Interpret the ratio with reward and total-token/wall-clock columns: an improved main-model-only ratio alongside increased total tokens identifies cost relocation rather than total efficiency improvement. This is a reporting contract, not a measured A/B result or a runner implementation.
+
 - **[intake-868] SkyRL `examples/train/rlm`** (Apache-2.0, NovaSky-AI/Berkeley Sky Computing Lab) and **[intake-867]** its companion write-up.
   - Relevance: the training loop does not transfer (Ray + FSDP2 + vLLM engines, 4 GPUs), but the **REPL budget contracts are empirically-tuned and directly comparable to ours**: `rlm_query_batched` caps at **4 children per call**, a hard limit of **10 REPL rounds**, exactly **one repl block per response** (extras silently dropped), and a frozen-vs-policy switch for in-REPL sub-calls.
   - Highest-value portable artifact: `compute_metrics_multipaper` — a **character-interval precision/recall/F1** reward over verbatim extracted spans (merge/intersect interval arithmetic), ~60 lines, dependency-free, Apache-2.0. It scores character intervals rather than string equality, which **structurally sidesteps the comma-brittle substring-scorer bug class that has bitten us**. It is also a *verifiable* scorer, which intake-874/875 argue we should prefer over rubric judges wherever an objective anchor exists.
