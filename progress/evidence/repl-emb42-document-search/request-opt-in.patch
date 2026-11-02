@@ -25,19 +25,7 @@
                  raise ValueError("context_print_cap_bytes requires context_bundle")
 --- a/src/api/routes/chat_pipeline/repl_executor.py
 +++ b/src/api/routes/chat_pipeline/repl_executor.py
-@@ -405,6 +405,11 @@
-     _task_type = str(routing.task_ir.get("task_type", "chat"))
-     _tool_context = {"no_web": True} if _task_type in NO_WEB_TASK_TYPES else {}
- 
-+    if getattr(request, "document_search", False) and not (
-+        routing.document_result and routing.document_result.document_result
-+    ):
-+        raise ValueError("document_search requires a successfully parsed document")
-+
-     if routing.document_result and routing.document_result.document_result:
-         from src.repl_document import DocumentREPLEnvironment, DocumentContext
- 
-@@ -425,6 +430,7 @@
+@@ -425,6 +425,7 @@
          repl = DocumentREPLEnvironment(
              context=combined_context,
              document_context=doc_context,
@@ -45,3 +33,35 @@
              llm_primitives=primitives,
              tool_registry=state.tool_registry,
              script_registry=state.script_registry,
+--- a/src/api/routes/chat.py
++++ b/src/api/routes/chat.py
+@@ -815,7 +815,7 @@
+     start_time = time.perf_counter()
+ 
+     # Stage 0: zero-cost local resolution for deterministic prompts.
+-    if features().script_interception:
++    if features().script_interception and not request.document_search:
+         interception = try_intercept(request.prompt)
+         if interception.matched:
+             elapsed = time.perf_counter() - start_time
+@@ -839,6 +839,10 @@
+ 
+     # Stage 2: Input formalization
+     _preprocess(request, state, routing)
++    if request.document_search and not (
++        routing.document_result and routing.document_result.document_result
++    ):
++        raise HTTPException(status_code=422, detail="document_search requires a successfully parsed document")
+ 
+     # Stage 3: Mock mode (early return)
+     if routing.use_mock:
+@@ -1397,6 +1401,9 @@
+         raise HTTPException(
+             status_code=422, detail="context_bundle not supported on /chat/stream"
+         )
++    # Neither streaming implementation attaches the document-search environment.
++    if request.document_search:
++        raise HTTPException(status_code=422, detail="document_search not supported on /chat/stream")
+     # Unified streaming path — reuses pipeline stages from _handle_chat()
+     if features().unified_streaming:
+         from src.api.routes.chat_pipeline.stream_adapter import generate_stream
