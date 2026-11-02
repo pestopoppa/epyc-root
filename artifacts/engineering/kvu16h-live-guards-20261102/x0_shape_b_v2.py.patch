@@ -1,0 +1,8 @@
+--- x0_shape_b_v2.py.before
++++ x0_shape_b_v2.py.after
+@@ -110,0 +111,2 @@
++    if body.get("speculative.n_max") == 0:
++        raise RuntimeError("KVU-16h: no-draft requests require a separate server")
+@@ -176,0 +179,2 @@
++    if a.with_probe:
++        ap.error("KVU-16h: probe requires separate drafted and no-draft servers")

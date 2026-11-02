@@ -46,6 +46,9 @@ while [ $# -gt 0 ]; do
   shift
 done
 [ -n "$MODE" ] || { echo "need --dry-run or --execute" >&2; exit 64; }
+case ",$ORDER," in
+  *,p3,*) echo "REFUSING KVU-16h: P3 needs separate drafted and no-draft server lifecycles" >&2; exit 65 ;;
+esac
 [ "$PORT" != 8083 ] || { echo "REFUSING: scratch port only (8083 is production)" >&2; exit 64; }
 export GPU_SLOT_BIN="$BIN"   # slot_common.BIN default for every child
 LDP="$BIN:/opt/rocm/lib"

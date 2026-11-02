@@ -80,7 +80,8 @@ mix request-level no-draft and drafted traffic on one server. Use
 `q38_t7_safe.py` as the entry point: it refuses A/B until separate server
 lifecycles and warm-ups are implemented. Phase C delegates to the retained
 runner and still requires the applicable operator and compute authorization.
-The historical `q38_t7.py` remains unchanged and is not itself protected.
+The historical `q38_t7.py` now also refuses A/B before preflight or requests;
+the underlying historical result artifacts remain unchanged.
 
 ```bash
 /usr/bin/python3 $G/q38_t7.py --i-own-the-window            # phases A,B,C

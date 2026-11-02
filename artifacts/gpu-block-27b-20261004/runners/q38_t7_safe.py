@@ -5,8 +5,8 @@ The historical A/B phases send request-level ``speculative.n_max=0`` to the
 same drafted server as their DFlash2 arms. Until separate server lifecycles and
 warm-ups are implemented, refuse those phases before the original runner can
 perform preflight, create results, or contact a server. Phase C is unchanged.
-The original historical file is retained verbatim; invoking it directly does
-not pass through this guard.
+The historical result artifacts remain unchanged; the original file now also
+refuses its unsafe A/B entrypoints.
 """
 
 import argparse

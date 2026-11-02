@@ -1,8 +1,9 @@
 # Q38-T7 isolated-arm coordinator
 
 `q38_t7_isolated.py` and `q38_t7_runtime.py` are the prospective successor's
-coordinator and runtime contract. They retain the original source in `q38_t7.py`
-unchanged. The coordinator runs the drafted and no-draft arms sequentially,
+coordinator and runtime contract. The original `q38_t7.py` now refuses its unsafe
+A/B entrypoints; its underlying historical result artifacts remain unchanged.
+The coordinator runs the drafted and no-draft arms sequentially,
 requires verified cleanup between them, seals identical pair bodies, rejects
 request-level speculative overrides, and sends each arm its own warm request.
 For a cached measurement it requires a native cache count at least as large as
