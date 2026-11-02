@@ -70,3 +70,9 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `strategy-integration7.json`: scratch integration of digest-bound call intents, externally anchored byte binding and exact question/arm coverage passed ten offline tamper and missing/duplicate/unplanned-pair tests. It does not authenticate grant, server, model, score, external channel or measurement warrant and is not publishable.
 - Delegated independent bounded live producer, native belief adapter and model/tokenizer/server identity preparation (`live8`, `adapter8`, `identity8` events); no inference, publication or invented grading rule. Existing protocol and parked-lineage offline preparation events remain pending.
 - Prior wrap-up pushed `5290f910558ee6ef39e791da7d97be749dee7eea`, cherry empty. Existing unrelated untracked files remain untouched.
+
+## 09:18Z — Advance strategy measurement integration and identity witness
+
+- Reviewed `identity8.json`: scratch identity/token witness passed three offline synthetic tests for model/tokenizer/binary identity mismatch, request/response tampering and missing/inconsistent native usage; it accepts valid zero counts. It depends on independently captured process identity and preflight hashes and does not itself establish grant authority, GPU residency or a measurement warrant.
+- Strategy live producer, adapter and integration remain in progress under registered events. Delegated bounded integration and protocol preparation; do not publish incomplete capture or invent a grading rule. The existing frontdoor row is the erroneous parked-lineage republication and remains a safe-withdrawal task for its owner/keeper.
+- The prior wrap-up pushed `4d568ce78954ac503fa7365528654b1a21bac9c8`, cherry empty. No inference or row publication this turn.
