@@ -514,9 +514,16 @@ class CAF1Tests(_DSHBase):
         self.assertEqual(self.calls, [], "not before the file exists")
         target2 = os.path.join(self.flags, "subagent-out2.json")
         _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/sub2.json"), json.dumps({"path": target2, "note": "second"}))
+        # a registration for a file that ALREADY exists is a poll in disguise: ignored (renamed .preexisting), never an event
+        pre = os.path.join(self.flags, "already-there.json"); _w(pre, "{}")
+        hs.time.sleep(0.05)
+        _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/pre.json"), json.dumps({"path": pre, "note": "poll"}))
+        hs.time.sleep(0.05)
         _w(target, "{}"); _w(target2, "{}")
         reg, st = self.dispatch()
         self.assertIn("AWAITED 2 file(s) -> alpha", self.log_text())
+        self.assertTrue(os.path.exists(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/pre.json.preexisting")))
+        self.assertNotIn(pre, self.log_text())
         self.assertEqual(sum(1 for c in self.calls if "file(s) you were waiting for now exist" in c["prompt"]), 1, "coalesced into ONE turn")
         self.assertIn(target2, self.calls[-1]["prompt"])
         # CAF-6: duplicate run-end (.ended then .complete for the same row) is queued once

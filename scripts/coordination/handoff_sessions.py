@@ -1144,8 +1144,15 @@ def awaiting_events(flags, slug):
     exist. The registration is consumed (renamed .fired) when the event is queued."""
     for p in glob.glob(os.path.join(flags, "handoff-sessions", slug, "awaiting", "*.json")):
         d = bg.load_json(p) or {}
-        if d.get("path") and os.path.exists(str(d["path"])):
-            yield d, p
+        if not d.get("path") or not os.path.exists(str(d["path"])):
+            continue
+        try:  # a file that already existed when it was registered is a poll in disguise (118 AWAITED resumes/h): not an event
+            if os.path.getmtime(str(d["path"])) <= os.path.getmtime(p) and not d.get("allow_existing"):
+                os.replace(p, p + ".preexisting")
+                continue
+        except OSError:
+            continue
+        yield d, p
 
 
 def dryrun_prompt(slug, e, flags, rid, path):
