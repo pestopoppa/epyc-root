@@ -3,3 +3,7 @@
 ## 00:22Z — Advance three independent controller implementation tasks while inference-row preparation remains pending
 
 The previously registered controller null-arm draft and k228/k175 hook plans were absent at this boundary; their readiness reviews remain the latest available evidence, and no inference row can be truthfully published from those reviews alone. Dispatched three bounded, non-inference jobs to draft and test the remaining C5-7 counter-gate integration, prospective AR-RPUCG capture/replay, and C5-8 controller roster additions. Registered each completion report as an event, retaining the earlier awaited files. Draft patches require owner review and integration; no checkbox was completed and no compute launched.
+
+## 00:24Z — Recover prior unpublished boundary and advance inference row preparation
+
+The preceding wrap-up commit 08902776f8a2 was not published because the serialized push lock was held by another live session. None of the six previously registered draft or hook-plan reports existed at this boundary; no completed implementation or runnable row can be inferred. Dispatched bounded lane-local artifacts for the C5-6 matched null arm and the k228/k175 real-model hooks, and registered their completion events. No compute was launched and no result checkbox was ticked.
