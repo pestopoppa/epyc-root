@@ -55,3 +55,7 @@ Consumed fix-rpucg-snapshot.done and reviewed artifacts/agentic-rocm/rpucg-snaps
 ## 00:37Z — Recover selector draft publication and advance real-model capture prerequisites
 
 The previous wrap-up created 9ab3026e7027 but its serialized push failed, so this boundary carries that commit forward for publication. No governed inference row is yet backed by an exact real-model hook and manifest. Dispatched separate bounded searches for the exact k228 MLA and k175 MoE model surfaces, plus recovery of the interrupted C5-7 in-run evidence-provider patch; registered completion events. These are preparation, not GPU execution or completed tasks.
+
+## 00:38Z — Recover unpublished selector prototype while capture prerequisites are prepared
+
+The previous boundary could not publish commits 9ab3026e7027 and 3f9371a6bdfb after serialized push failed; this wrap-up retries publication. At this boundary none of the three new MLA search, MoE search or counter-seam completion markers was present, so no new inference row or implementation result is asserted. Their dispatcher events remain registered.
