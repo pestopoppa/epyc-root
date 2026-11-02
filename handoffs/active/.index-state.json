@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 721
+      "open": 722
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 663
+      "open": 664
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -492,7 +492,7 @@
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 15,
+      "open": 16,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -501,7 +501,7 @@
       },
       "row_id": "RTG-62",
       "state": "active",
-      "total": 42
+      "total": 43
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -1353,7 +1353,7 @@
     },
     "kv-prefix-fork-and-paged-attention.md": {
       "blocked": 1,
-      "closed": 98,
+      "closed": 105,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 56,
@@ -1365,7 +1365,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 155
+      "total": 162
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 400,
+      "open": 401,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 740
+      "total": 741
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -4375,7 +4375,7 @@
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
       "line": 63,
-      "next_action": "KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c",
+      "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
     "RTG-59": {

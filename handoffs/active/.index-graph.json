@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:57:38Z",
+  "generated_at": "2026-11-02T12:24:52Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 400,
+      "dispatchable": 401,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 404,
+      "open": 405,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -8823,14 +8823,14 @@
         "RTG-27",
         "RTG-57"
       ],
-      "closed": 98,
+      "closed": 105,
       "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-02",
-      "next_action": "KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c",
+      "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "open": 57,
       "priority": 1.0,
       "priority_basis": {
@@ -8943,14 +8943,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
-      "dispatchable": 15,
+      "dispatchable": 16,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "last_advanced": "2026-11-02",
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
-      "open": 15,
+      "open": 16,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
