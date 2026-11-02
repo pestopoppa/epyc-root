@@ -3945,7 +3945,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T10:10:11Z",
+  "generated_at": "2026-11-02T10:07:15Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6107,13 +6107,13 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 58,
+      "closed": 56,
       "domain": "inference-research",
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-11-02",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 33,
+      "open": 35,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -6936,13 +6936,13 @@
         "RTG-57",
         "RTG-58"
       ],
-      "closed": 55,
+      "closed": 56,
       "domain": "inference-research",
       "handoff": "autokernel-all-devices-all-dimensions.md",
       "id": "INF-81",
       "last_advanced": "2026-11-01",
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
-      "open": 60,
+      "open": 59,
       "priority": 0.9827,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep lb49-c5-graph-readonly-20261027: harness fix",

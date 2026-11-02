@@ -285,7 +285,11 @@
   section.graph .gtip .tna{margin-top:5px;color:#c9d1d9}
   section.graph .gtip .tmeta{margin-top:5px;color:var(--muted)}
   section.graph .node{cursor:pointer}
-  section.graph .dimmed{opacity:.08}
+  section.graph .dimmed{opacity:.15}
+  section.graph line.hl-up{stroke:#f0883e;stroke-width:2.2}
+  section.graph line.hl-down{stroke:#58a6ff;stroke-width:2.2}
+  section.graph .node.hl-up circle:first-child{stroke:#f0883e;stroke-width:3}
+  section.graph .node.hl-down circle:first-child{stroke:#58a6ff;stroke-width:3}
   section.graph .domlabel{font-size:11px;fill:var(--muted);text-anchor:middle;letter-spacing:.04em}
 /* pipeline section (scoped) */
 #pipeline-sec{--bg:#fff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;--card:#f6f8fa;--det-f:#dbeafe;--det-s:#1d4ed8;--ai-f:#ffedd5;--ai-s:#c2410c;--bad:#b91c1c;--ok:#15803d;--warn:#a16207;--hi:#fef9c3;color:var(--fg)}
@@ -1500,11 +1504,29 @@ async function loadGraph(){
           t.textContent=(pi.engine||"?")+(pi.slot?` #${pi.slot}`:""); c.appendChild(t); } }
     }
     c.addEventListener("mouseenter",()=>{
-      const keep=new Set([n.id,...(nbr[n.id]||[])]);
-      for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
+      // Dependency web. Edge {from,to,kind:"dep"}: `from` depends on `to`, so `to` BLOCKS `from`.
+      // upstream = transitive blockers (follow from->to); downstream = transitively blocked (to->from).
+      const walk=(dir)=>{ const seen=new Set(), st=[n.id];
+        while(st.length){ const x=st.pop();
+          for(const l of lines){ if(!l.isDep) continue;
+            const a=dir==="up"?l.from:l.to, b=dir==="up"?l.to:l.from;
+            if(a===x&&!seen.has(b)&&b!==n.id){ seen.add(b); st.push(b); } } }
+        return seen; };
+      const up=walk("up"), down=walk("down");
+      for(const k in circles){
+        const cl=circles[k].classList;
+        cl.remove("dimmed","hl-up","hl-down");
+        if(k===n.id) continue;
+        if(up.has(k)) cl.add("hl-up"); else if(down.has(k)) cl.add("hl-down"); else cl.add("dimmed");
+      }
       lines.forEach(l=>{
-        const on = l.from===n.id||l.to===n.id;
-        l.ln.setAttribute("stroke-opacity", on?(l.isDep?1:0.6):0);   // hover focus: hide the rest
+        const ln=l.ln; ln.classList.remove("hl-up","hl-down");
+        let on=0;
+        if(l.isDep){
+          if((l.from===n.id||up.has(l.from))&&up.has(l.to)){ ln.classList.add("hl-up"); on=1; }
+          else if((l.to===n.id||down.has(l.to))&&down.has(l.from)){ ln.classList.add("hl-down"); on=1; }
+        }
+        ln.setAttribute("stroke-opacity", on?1:(l.isDep?0.15:0));
       });
       const linked=[...(nbr[n.id]||[])];
       tip.innerHTML =
@@ -1530,8 +1552,9 @@ async function loadGraph(){
     });
     c.addEventListener("mouseleave",()=>{
       tip.hidden=true;
-      for(const k in circles) circles[k].classList.remove("dimmed");
-      lines.forEach(l=>l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0));
+      for(const k in circles) circles[k].classList.remove("dimmed","hl-up","hl-down");
+      lines.forEach(l=>{ l.ln.classList.remove("hl-up","hl-down");
+        l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0); });
     });
     c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
     gNode.appendChild(c); circles[n.id]=c;
