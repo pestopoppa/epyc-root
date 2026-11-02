@@ -425,6 +425,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
+    Source("kvu19a2-native", "kvu19a2_native",
+           _files("kvu19a2_native.beliefs.jsonl", "*/kvu19a2_native.beliefs.jsonl"),
+           note="Prospective per-launch GPU FA output NaN counts; original pre-hook observations do not project",
+           task="VB-KVU19A2-NATIVE-WRITE"),
     Source("repl-embedder-parity", "repl_embedder_parity",
            _files("repl_embedder_parity.beliefs.jsonl", "*/repl_embedder_parity.beliefs.jsonl"),
            note="EmbeddingGemma-2 vector-parity gate (REPL-EMB-2.5/2.6): per gated lane cos_min / cos_mean / "
