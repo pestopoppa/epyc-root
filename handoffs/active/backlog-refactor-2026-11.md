@@ -21,6 +21,12 @@ tests pass (4 known `/amd-ai-lab` nav failures listed) ∧ dashboard smoke count
 reconciliation record (board, graph nodes/edges/ready, queue rows, pipeline classes, zero orphaned
 `handoff_task` rows / session slugs) ∧ every retired ID carries a `Repoint-Reason:` trailer and a
 `.folded.json` entry (D5). Index rows are applied by the owning session (ruling (b)).
+**Migrate leg, exact command (BRF-T6-1; the plan defines no gate script, so this is the binding)**, run in the fold worktree
+on the staged fold commit; an empty file list is a gate FAILURE, never a vacuous pass (every fold touches its destination):
+`files=$(git diff --cached --name-only --diff-filter=AMR -- 'handoffs/active/*.md'); test -n "$files" && python3 scripts/handoffs/task_lint.py migrate $files`
+**Publish leg (BRF-T6-1)**: `scripts/coordination/rowflow/publish_row.py` resolves `handoff_task` (`<file>.md:<TASK-ID>` or
+`:<LINE>`) to the open box and refuses the row unless `task_lint.py publish` passes it (identity c, stop rule s, run-cited
+or provisional+pilot estimate, no NEEDS-*, no non-inference payload); tests `scripts/coordination/tests/test_rowflow_publish_lint_ws58.py`.
 **Stop rule (every fold)**: any gate leg red → revert the local fold commit, record the failing leg in
 this handoff, do not push; two consecutive reds on the same fold → stop T1 and re-plan that fold.
 

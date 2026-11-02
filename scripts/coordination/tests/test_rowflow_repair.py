@@ -16,6 +16,10 @@ import rowflow as rf  # noqa: E402
 from test_rowflow import Fixture  # noqa: E402
 
 
+GOOD_BOX = ("- [ ] **T-1** [inference] Measure Qwen3-8B Q4_K_M decode t/s on the v10 production build, CPU quarter Q0; "
+            "keep if t/s >= 10; est 600 s from run r1; stop rule: stop on answer or futility.")
+
+
 def run(argv):
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
@@ -28,7 +32,8 @@ class RepairTests(unittest.TestCase):
     def setUpClass(cls):
         cls.fx = Fixture()
         os.makedirs(os.path.join(cls.fx.root, "repo", "handoffs", "active"), exist_ok=True)
-        open(os.path.join(cls.fx.root, "repo", "handoffs", "active", "test.md"), "w").close()
+        with open(os.path.join(cls.fx.root, "repo", "handoffs", "active", "test.md"), "w") as f:
+            f.write(GOOD_BOX + "\n")
         pr.REPO = os.path.join(cls.fx.root, "repo")
 
     @classmethod

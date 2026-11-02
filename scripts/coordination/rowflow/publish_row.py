@@ -15,6 +15,11 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
 
 Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
 `file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
+Task lint (BRF-T6-1, D6 staged, operator 2026-11-02): handoff_task must also name the TASK (`file.md:<TASK-ID>` or
+`file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish` and the row is refused when the
+box fails the inference identity (field c), states no stop rule (field s), has an estimate that is neither run-cited nor
+`provisional` with a bounded pilot, carries NEEDS-* / a pending operator choice / a standing hold, or is a non-inference
+payload. The lint runs before the smoke, so a refused row costs no compute.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
 (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
 dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
@@ -138,6 +143,55 @@ def check_handoff(spec, repo=None):
             f"handoff_task {ht!r} names no handoffs/active/<file>.md; write \"handoff_task\": \"<file>.md:<ROW-ID>\" (or "
             f"\"<file>.md\") for the handoff whose task this row serves - the row belongs to that handoff, and its "
             f"dry-run FAIL/PASS and run-end reach that handoff's session (FILLERS, session pids and engines are not owners)")
+
+
+def _task_lint():
+    """task_lint.py: TASK_LINT_DIR, else a copy installed beside this file (compute-flags/bin/rowflow), else the repo's
+    scripts/handoffs (ROWFLOW_REPO), else the checkout this file lives in."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (os.environ.get("TASK_LINT_DIR"), here, os.path.join(REPO, "scripts", "handoffs"),
+              os.path.join(os.path.dirname(os.path.dirname(here)), "handoffs")):
+        if d and os.path.isfile(os.path.join(d, "task_lint.py")):
+            if d not in sys.path:
+                sys.path.insert(0, d)
+            import task_lint  # noqa: E402
+            return task_lint
+    raise rf.Refused("task_lint.py not found (set TASK_LINT_DIR or ROWFLOW_REPO); publish cannot lint the task box")
+
+
+def task_box(spec, repo=None):
+    """(file, line, box text, children) of the OPEN box handoff_task names: `<file>.md:<TASK-ID>` matches the bold ID at
+    the start of a checkbox; `<file>.md:<N>` is a 1-based line number."""
+    tl = _task_lint()
+    ht = str(spec.get("handoff_task") or "").strip()
+    f, _, task = ht.partition(":")
+    path = os.path.join(repo or REPO, "handoffs", "active", os.path.basename(f))
+    rf.need(task.strip(), f"handoff_task {ht!r} names no task: write \"<file>.md:<TASK-ID>\" so the publish gate can lint "
+                          f"the box this row serves (BRF-T6-1)")
+    task = task.strip()
+    rf.need(os.path.isfile(path), f"handoff_task {ht!r}: {path} does not exist")
+    lines = open(path, encoding="utf-8", errors="replace").read().split("\n")
+    idx = None
+    if task.isdigit():
+        idx = int(task) - 1
+        rf.need(0 <= idx < len(lines) and tl.L1.CHECKBOX.match(lines[idx]), f"handoff_task {ht!r}: line {task} is not a checkbox")
+    else:
+        rx = re.compile(r"^\s*[-*] \[.\]\s*\*\*" + re.escape(task) + r"(?![A-Za-z0-9.-])")
+        idx = next((i for i, l in enumerate(lines) if rx.match(l)), None)
+        rf.need(idx is not None, f"handoff_task {ht!r}: no checkbox **{task}** in {os.path.basename(f)}")
+    state = tl.L1.CHECKBOX.match(lines[idx]).group(2)
+    rf.need(state == " ", f"handoff_task {ht!r}: the box is [{state}], not open; a row serves an open task")
+    txt, ch = tl.L1.block(lines, idx)
+    return path, idx + 1, txt, ch
+
+
+def check_task_lint(spec, repo=None):
+    """BRF-T6-1: refuse the row unless its task box passes `task_lint.py publish`."""
+    path, ln, txt, ch = task_box(spec, repo)
+    why = _task_lint().publish_text(txt, ch)
+    rf.need(not why, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}): " + "; ".join(why)
+            + ". FIX the task box (identity: model, build, harness metric+direction, rule, region, run-cited est or "
+              "`est: provisional` + bounded `pilot:`; a stop rule), then re-run publish_row.py")
 
 
 def smoke_regions(lane, regions, flags):
@@ -324,6 +378,8 @@ def repair(rid, flags):
             spec.pop("result_format")  # the extension guess for a marker, not a declaration: lint refuses or rewrites
     elif cls != tc.FailClass.derivable_field_missing:
         return 3, f"UNKNOWN-FAILURE-CLASS {reason}" if d["source"] != "typed" else f"UNKNOWN-FAILURE-CLASS (typed {cls.value}) {reason}"
+    # no task re-lint here: --repair republishes a row that passed check_task_lint at publish and changes only
+    # lint-derivable fields (result_path/result_format/lane/scratch_root/keep), never handoff_task
     for note in lint(spec):
         print(f"LINT {note}")
     new = rf.publish(spec, flags, source=f"repair:{fails[-1]}")
@@ -358,6 +414,7 @@ def main(argv=None):
             spec = rf.spec_from_legacy(spec, a.flags)
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
         check_handoff(spec)
+        check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec))

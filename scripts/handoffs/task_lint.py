@@ -38,6 +38,8 @@ PENDING = re.compile(r'(operator|owner)[^.\n]{0,40}\b(to decide|must decide|deci
                      r'awaiting operator|pending operator|needs operator|OPERATOR DECISION|decide whether|choose between|implement or procure', re.I)
 EST = re.compile(r'\best(?:imate)?[:\s]\s*(provisional|~?\d+)', re.I)
 SUFF = re.compile(r'\bstop(?:[- ]rule|[- ]on[- ]answer|[- ]on[- ]futility|/continue)\b|\bsufficiency\b|\bfutility\b|\bstop contract\b', re.I)
+RUNCITE = re.compile(r'\best(?:imate)?[:\s]\s*~?\d[^;\n]{0,80}?\b(?:from|per|measured (?:in|on|by)|observed in|based on|cf\.?)\s+'
+                     r'(?:the |a |an )?(?:run|smoke|pilot|grant|dry[- ]run|RESULT|`[^`]+`|[\w./-]+\.json\b|[A-Z][A-Z0-9]+-[\w.-]+)', re.I)
 PILOT = re.compile(r'\bpilot\b.{0,80}\b(bounded|n\s?=\s?\d+|\d+\s?(?:items|rows|prompts|min|h)\b)', re.I)
 
 def own_block(text):
@@ -130,6 +132,9 @@ def publish_text(txt, ch=0):
     if r['tags']: why.append(f"NEEDS tags present {r['tags']}")
     if r['class'] != 'inference': why.append(f"class {r['class']} ({r['class_basis']}) — non-inference payload refused")
     if r['missing_c']: why.append(f"identity incomplete: {r['missing_c']}")
+    e = EST.search(own_block(txt))
+    if r['class'] == 'inference' and e and e.group(1).lstrip('~').isdigit() and not RUNCITE.search(own_block(txt)):
+        why.append('estimate not run-cited (write `est <N> s from run <id|RESULT path>`, or `est: provisional` + a bounded `pilot:`)')
     if 's' in r['fails']: why.append('no sufficiency/stop rule stated (inference task must say stop-on-answer / stop-on-futility, and gate-class = futility-only)')
     if r['rollup']: why.append('roll-up is non-dispatchable')
     if 'h' in r['fails'] or r['decision_kind'] == 'pending-choice': why.append('pending operator choice (field h) — route to the operator queue first')
