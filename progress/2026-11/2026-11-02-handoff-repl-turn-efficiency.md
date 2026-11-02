@@ -167,3 +167,7 @@ Filed override row inconclusive after real-phase rc=1 and HTTP 429; drained with
 ## 11:29Z — Integrate RLM budget source comparison
 
 Integrated the independent source comparison with the existing pinned-source report. The source comparison is complete; the checkbox remains open for its explicitly recorded policy decision and validation. Strategy row publication still requires trusted producer and capture integration. Independent critical-path work is in progress.
+
+## 11:30Z — Verify RLM budget comparison against primary source
+
+Checked the original Prime Intellect article against the RLM comparison and linked the primary source. It reports the depth, root output cap, tool scope, completion state and default REPL timeout; the 300/600-second ablation is plotted and its outcome was not independently extracted, so qualified the table. The box remains open for its recorded policy decision and validation.
