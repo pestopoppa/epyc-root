@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 722
+      "open": 724
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -1369,7 +1369,7 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 93,
+      "closed": 103,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 52,
@@ -1381,7 +1381,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 145
+      "total": 155
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 401,
+      "open": 403,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 741
+      "total": 743
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
