@@ -108,6 +108,12 @@ def main() -> int:
         if os.environ.get('FILLER_DRYRUN') == '1':
             return qualification(a,row)
         check_enrollment(a.plan,a.plan_sha256,row,a.output)
+        sys.path.insert(0,str(ROOT/'scripts/vidya'))
+        from adapters import m4_cpu_speed as reader
+        reader_config=reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json')
+        if (reader_config.producer_root != ROOT/'scripts/benchmark/m4_cpu_producer'
+                or reader_config.diagnostic_plan_sha256 != a.plan_sha256):
+            raise ValueError('diagnostic reader enrollment mismatch')
         plan=json.loads(a.plan.read_bytes())
         if plan.get('row_id')!=row or plan.get('status')!='REVIEWED_DIAGNOSTIC':
             raise ValueError('diagnostic plan not reviewed for this row')
@@ -149,6 +155,8 @@ def main() -> int:
                  '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),'--execute']
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
+        if reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json') != reader_config:
+            raise ValueError('diagnostic reader enrollment changed during work')
         if rc or _sha(a.grant)!=original or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('diagnostic interrupted or final grant changed')
         return 0
