@@ -16,3 +16,7 @@ At 13:04:39Z the r4 real-lane smoke passed under an acquired q0 claim, producing
 ## R18-A r4 execution — 2026-11-02
 
 The r4 real-lane smoke passed at 13:04:39Z. The row is RUNNING under grant `regions=0-23`, `holds=q0`, through 17:58Z, using the normal `region-lock` build role; grant file, launcher log and live lock status agree. The full three-surface symbol comparison has no result yet, and `PRODUCTION_RECIPE_IS_VERIFIABLE` remains false. [no-belief: operational run status only]
+
+## R18-A r4 complete comparison
+
+The independent r4 full result completed rc 0, non-partial, and the unchanged three-surface comparator passed: CPU 590/590, HIP host 1,332/1,332, gfx90a 6,141/6,141 names, all with zero added or removed; 135/135 code objects were recorded. The native comparison, full result, replay witness, before/after input digests, source and build provenance are retained in [the custody packet](../../artifacts/compute/r18a-r4-20261102/README.md). Comparison and candidate/anchor hashes were checked, as were the 141 replay witnesses against the manifest. The code flip and its validation, and producer-side belief capture and canary, remain open. [no-belief: native finding retained pending producer-side capture]
