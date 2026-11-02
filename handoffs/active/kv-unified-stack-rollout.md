@@ -696,9 +696,17 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   - *(2026-11-02 native prerequisite.)* Experimental llama fork
     `codex/kvu5-task-erase-20261102` at `c3c983600` prepares optional server-incarnation and
     expected-task checks on the slot owner loop; legacy erase stays unconditional. The first
-    model-free build was interrupted for an agreed GPU boundary and its tests have not passed yet.
+    initial model-free build was interrupted for an agreed GPU boundary; the later successful build
+    and guard test are recorded below.
     The orchestrator still lacks a reliable pre-output native-task join and drain integration;
     no live preemption is enabled. [no-belief: experimental source only]
+  - [x] **KVU-5 experimental conditional erase prerequisite** — llama fork
+    `codex/kvu5-task-erase-20261102` at `c3c983600` optionally compares the expected task and
+    server-incarnation token on the server task loop before erase; legacy unconditioned erase is
+    unchanged. The model-free guard test and isolated CPU server build pass. Endpoint behavior
+    with a real server, pre-output request-to-task binding and native drain/owner integration
+    remain open; this does not enable live preemption. ✅ 2026-11-02
+    [no-belief: experimental source/build and model-free controls]
 - [ ] **KVU-6 — cache-aware ordering on kvu servers** (audit #7 / T9).
   - [x] **KVU-6 admitted-ticket bypass accounting** — orchestrator `c1bd9953` snapshots each admitted
     ticket's observed bypass count alongside its wait, without changing selection; the existing flag-off

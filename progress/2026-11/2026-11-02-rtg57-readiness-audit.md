@@ -29,6 +29,8 @@ validation requires the applicable compute authorization.
   17 tests passed, including the research-backed cases; no real-loop canary is claimed.
 - Orchestrator through `f3d98dfd`: isolated owner, selection and drain-state foundation for
   KVU-5; 14 tests passed. No live preemption or retry is enabled.
+- Experimental llama fork `c3c983600`: task-and-incarnation-checked erase prerequisite; CPU server
+  build and model-free guard test passed. Real endpoint and owner/drain integration remain open.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;
   the earlier one-of-four equivalence result is unchanged. Three focused tests passed.
 - Research `db970501e`: prospective FA-4a matched-input finite/stress control with two offline
