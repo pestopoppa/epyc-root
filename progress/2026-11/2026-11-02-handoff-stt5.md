@@ -43,3 +43,11 @@ Previous wrap-up failed at observer census because the sparse lane omitted track
 ## 03:48Z — Review speech bench plan and build successor
 
 Consumed CS6 plan and CS8 build draft. CS6 has an ordered run list, measurands, exit criteria and explicitly provisional booking ranges; independent review requested before integration. CS8 journal passed three model-free tests but remains unpublishable due to STOP race, child drain, source/launcher seals and cutover; bounded implementations dispatched in scratch. Completion event files registered. Prior wrap-up push failed and subsequent commit failed because merge reapplied sparse patterns; lane sparse configuration now includes the tracked observer hook input, and observer census passes. No compute or row published. [no-belief: preparation and operational checks]
+
+## 09:26Z — File second GPU bench plan
+
+Filed reviewed CS-6 prospective bench-window plan with gate ordering, measurands, exits and provisional per-cell bookings; corrected arm A to 7–15 cells and 3.5–15 hours, and clarified CS-3 and controlled co-tenants. No measurement or ratification is claimed. CS8 build successor, Ultra rowflow migration and CS5 preparation continue in bounded scratch tasks with registered completion events. Prior wrap-up 876b3830c281 pushed and verified. GitNexus impact lookup for documentation failed because this lane lacks an index; blast radius is a new document and its handoff link. [no-belief: prospective run plan]
+
+## 09:28Z — Advance speech build and restore CS6 wrap
+
+CS6 prospective plan and checkbox were prepared in the prior boundary, but wrap failed on stale master rollup; index regeneration initiated. CS8 scratch supervisor now has ten model-free passing tests; escaped descendants, spawn race, actual namespace cutoff, source seals, lock and disk floor remain to resolve. Ultra diagnostic found 75 rc0 arm records but only 14 verdicts; nine comparator shape errors and two absent comparison files make it inconclusive. CS5 request-manifest validator has four model-free tests but requires real runners, verified inputs and CS3 integration. No compute or row publication. [no-belief: preparation and diagnostics]
