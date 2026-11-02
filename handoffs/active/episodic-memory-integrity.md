@@ -591,6 +591,15 @@ failure caught in amber.
   M-29 clauses apply (see "M-29 readout clauses (filed 2026-10-21)" below the M-23 sub-items).
   - [ ] **VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21):** [too-big: missing native request logs, adoption and role/model cell contract require owner integration] the M-23 A/B runner calls `scripts/vidya/adapters/skillbank_ab.write_belief_measurements(out_dir, run_id=..., producer=..., request_log_path=..., cells=[...])` once per run, one cell per role x model pin, before its first arm runs; carrier and reader landed in root `7335da327`.
 
+    - 2026-11-02 execution-order correction: the carrier's current `write_belief_measurements`
+      requires positive scored counts, adoption and a hash of the completed request log. It
+      cannot truthfully be called before the first arm. Before any arm, freeze the protocol,
+      suite, cells, detector, scorer and MDD in the run manifest and open the native request log;
+      after all arms and scoring finish, finalize that log and call the writer once with the
+      resulting cells. Do not invent completed measurements or change the log after hashing it.
+      The M-23 served-task runner has not been found; offline retrieval replay is not that runner.
+      This corrects the call timing above; the producer integration remains open. [belief: cc]
+
   **M-29 readout clauses (filed 2026-10-21; additions to M-23, whose own text is unchanged).** All descriptive or report-only; none is a gate.
   (1) Per role-model cell print the paired transition counts c (failed skill-off, passed skill-on) and b (passed skill-off, failed skill-on) with an exact two-sided McNemar p on the discordant pairs beside the net delta and the negative-cell share, and report b even when the net is positive (intake-1321#record); promotion stays per-role non-regression.
   (2) A skill-off REPLICATE arm (same pinned config, independent sampling) so the flip floor of an unchanged condition is measured, with a paired flip counted as a skill effect only if it exceeds that floor; an external replicate-noise figure (intake-2238#record) is an order-of-magnitude prior, never a substitute for measuring on the local served pin.
