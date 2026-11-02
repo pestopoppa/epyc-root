@@ -49,7 +49,8 @@ class IntegratedPublicationTests(unittest.TestCase):
 
     def test_incomplete_receipt_never_visible(self):
         result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
-                      elapsed_s=.1, stdout=b'[7]\n', stderr=b'')
+                      elapsed_s=.125, started_monotonic_s=1.0, ended_monotonic_s=1.125,
+                      stdout=b'[7]\n', stderr=b'')
         attempt = write_attempt(self.root, 'x', 'full', result, expected_input_bytes=3, ceiling_s=10)
         (attempt/'complete.json').unlink()
         with self.assertRaises(ValueError): publish_unit('full', 'x', attempt, self.full)
@@ -64,14 +65,16 @@ class IntegratedPublicationTests(unittest.TestCase):
 
     def test_relative_output_is_rejected(self):
         result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
-                      elapsed_s=.1, stdout=b'[7]\n', stderr=b'')
+                      elapsed_s=.125, started_monotonic_s=1.0, ended_monotonic_s=1.125,
+                      stdout=b'[7]\n', stderr=b'')
         attempt = write_attempt(self.root, 'x', 'full', result, expected_input_bytes=3, ceiling_s=10)
         with self.assertRaises(ValueError):
             publish_unit('full', 'x', attempt, 'relative.jsonl')
 
     def test_link_failure_keeps_partial_invisible(self):
         result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
-                      elapsed_s=.1, stdout=b'[7]\n', stderr=b'')
+                      elapsed_s=.125, started_monotonic_s=1.0, ended_monotonic_s=1.125,
+                      stdout=b'[7]\n', stderr=b'')
         attempt = write_attempt(self.root, 'x', 'full', result, expected_input_bytes=3, ceiling_s=10)
         with mock.patch('guarded_publication_draft.os.link', side_effect=OSError('injected')):
             with self.assertRaises(OSError): publish_unit('full', 'x', attempt, self.full)

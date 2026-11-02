@@ -1,5 +1,6 @@
 """Offline predicate draft for VKQ3 receipt units; not a rowflow launcher."""
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -33,10 +34,18 @@ def complete_diagnostic(mode, attempt_id, directory):
         status, verdict = result.get('status'), result.get('verdict')
         count = result.get('validated_token_count')
         if status == 'completed':
+            start = result.get('tokenizer_started_monotonic_s')
+            end = result.get('tokenizer_ended_monotonic_s')
+            elapsed = result.get('tokenizer_process_total_wall_s')
+            timing_valid = (all(type(v) in (int, float) and math.isfinite(v)
+                                for v in (start, end, elapsed))
+                            and 0 <= start <= end and elapsed >= 0
+                            and math.isclose(end - start, elapsed, rel_tol=1e-9, abs_tol=1e-9))
             valid = (type(result.get('returncode')) is int and result.get('returncode') == 0
                      and type(count) is int and (count > 0 if mode == 'qualification' else count >= 0)
                      and type(result.get('expected_input_bytes')) is int
-                     and result.get('input_bytes_written') == result['expected_input_bytes'])
+                     and result.get('input_bytes_written') == result['expected_input_bytes']
+                     and timing_valid)
             return valid and verdict == ('excluded_qualification' if mode == 'qualification' else 'synthetic_input_completed')
         return mode == 'full' and status in FAILURES and verdict == 'inconclusive' and count is None
     except (OSError, ValueError, TypeError):
