@@ -151,3 +151,7 @@ Hardened /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py to ve
 ## 10:09Z — Test CH-27 sealed prompt staging negative cases
 
 Added and ran four repeatable model-free tests for CH-27 long-context manifest staging: original manifest accepted; existing destination, altered sealed surface, symlink and tampered prompt manifest are refused. The tampered manifest test invokes the native FrozenPromptManifest parser, which detects its digest mismatch. Test: /mnt/raid0/llm/tmp/akagg/ch27-isolation/test_stage_longctx_manifest.py. No campaign rebooking, inference or floor claim.
+
+## 10:12Z — Harden atomic publication of CH-27 staged manifest
+
+CH-27 long-context staging now uses Linux renameat2 RENAME_NOREPLACE, so a concurrently created destination cannot be overwritten between its initial check and publication. Five model-free tests pass, including an existing empty destination at the atomic publish boundary; source /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py. Consumed NEMO and CH-26b reports: synthetic NEMO correlation remains UNKNOWN without a real graph trace; CPU scheduler event counting works with privileges but clean-window admission requires complete acquisition and loss/identity controls. No inference row was published.
