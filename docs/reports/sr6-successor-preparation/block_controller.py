@@ -19,7 +19,7 @@ class BlockError(RuntimeError):
 
 
 def execute_block(*, output, block, sampler, sampler_sha256,
-                  admission_check, spawn, verify_ready_and_identity, post):
+                  admission_check, spawn, verify_ready_and_identity, post, drain=None):
     """Capture one planned block at most once under injected lifecycle adapters.
 
     Before any spawn, an exclusive, fsynced block-start marker makes any
@@ -36,7 +36,7 @@ def execute_block(*, output, block, sampler, sampler_sha256,
     if not isinstance(prompts, list) or not prompts or any(not isinstance(p, dict) for p in prompts):
         raise BlockError('invalid prompts')
     ids = [p.get('id') for p in prompts]
-    if any(not isinstance(p, str) or not SAFE_ID.fullmatch(p) for p in ids):
+    if any(not isinstance(p, str) or not SAFE_ID.fullmatch(p) for p in ids) or len(set(ids)) != len(ids):
         raise BlockError('invalid prompt identity')
     if (not isinstance(arms, list) or len(arms) != len(ARMS)
             or any(not isinstance(arm, str) for arm in arms) or set(arms) != ARMS):
@@ -45,7 +45,10 @@ def execute_block(*, output, block, sampler, sampler_sha256,
         attempts = inventory(output)
     except (OSError, ValueError) as exc:
         raise BlockError('exposure inventory invalid') from exc
-    if any(attempt['prompt_id'] in ids for attempt in attempts):
+    hashes = [p.get('rendered_sha256') for p in prompts]
+    if any(not isinstance(h, str) or not HEX.fullmatch(h) for h in hashes) or len(set(hashes)) != len(hashes):
+        raise BlockError('invalid or duplicate rendered prompt identity')
+    if any(attempt['prompt_id'] in ids or attempt['rendered_sha256'] in hashes for attempt in attempts):
         raise BlockError('prompt already exposed in this inventory')
     if (not isinstance(sampler, dict) or not sampler or not isinstance(sampler_sha256, str)
             or not HEX.fullmatch(sampler_sha256)):
@@ -84,7 +87,7 @@ def execute_block(*, output, block, sampler, sampler_sha256,
                         raise BlockError('request failed; entire block abandoned')
                     count += 1
             with_server(arm=arm, admission_check=admission_check, spawn=spawn,
-                        verify_ready_and_identity=verify_ready_and_identity, run=run)
+                        verify_ready_and_identity=verify_ready_and_identity, run=run, drain=drain)
         return {'state': 'CAPTURED_ONLY', 'attempts': count, 'verdict': None,
                 'limitations': ['adapters, exposure inventory and output root require independent verification',
                                 'response validity, token identity, residency and tree drain are unverified']}

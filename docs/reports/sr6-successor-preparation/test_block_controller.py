@@ -50,11 +50,23 @@ class TestBlockController(unittest.TestCase):
         with self.assertRaises(BlockError): execute_block(**self.kw)
         self.assertFalse(self.spawns)
     def test_unrelated_exposure_does_not_prevent_fresh_prompt(self):
-        prompt = dict(self.kw['block']['prompts'][0], id='other')
+        prompt = dict(self.kw['block']['prompts'][0], id='other', rendered='different', rendered_sha256=digest(b'different'))
         capture_request(self.kw['output'], window='other', block=2, arm='mtp3',
                         prompt=prompt, sampler={'temperature': 0.3},
                         server_record_sha256='a'*64, post=lambda _: (200, b'ok'))
         self.assertEqual(execute_block(**self.kw)['state'], 'CAPTURED_ONLY')
+    def test_same_rendered_prompt_with_new_id_refused(self):
+        prompt = dict(self.kw['block']['prompts'][0], id='other')
+        capture_request(self.kw['output'], window='other', block=2, arm='mtp3',
+                        prompt=prompt, sampler={'temperature': 0.3},
+                        server_record_sha256='a'*64, post=lambda _: (200, b'ok'))
+        with self.assertRaises(BlockError): execute_block(**self.kw)
+        self.assertFalse(self.spawns)
+    def test_duplicate_rendered_prompt_in_block_refused(self):
+        prompt = dict(self.kw['block']['prompts'][0], id='other', seed=6)
+        self.kw['block']['prompts'].append(prompt)
+        with self.assertRaises(BlockError): execute_block(**self.kw)
+        self.assertFalse(self.spawns)
     def test_invalid_inventory_refuses_before_spawn(self):
         (self.kw['output']/'bad.exposure.json').write_text('{')
         with self.assertRaises(BlockError): execute_block(**self.kw)

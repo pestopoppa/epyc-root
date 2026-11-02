@@ -131,3 +131,7 @@ Added SR-6 grant-window admission seam and session cleanup preparation, and SR-7
 ## 10:28Z — Make SR-7 capture records durable before exposure
 
 SR-7 capture now synchronizes the parent directory after each exclusive record creation, and refuses to launch if that sync fails. All 18 preparation tests pass. The lane is unindexed so GitNexus impact is unavailable. This does not establish authoritative inventory, admission, or a runnable inference row. An SR-6 review also identified rendered-prompt reuse under a changed ID; the repair is delegated.
+
+## 10:29Z — Reject SR-6 prompt reuse by rendered content
+
+The SR-6 exposure reader validates the recorded rendered hash against the request, and the block controller rejects previously exposed content under a new ID as well as duplicate IDs or rendered hashes in a block. The guarded block also connects the existing admission and session-drain seams. All 78 preparation tests pass. The inventory must still be authoritative and concurrency excluded; grant ownership, full descendant drain, runtime seals and in-flight STOP remain unproved. No row or inference result is claimed.
