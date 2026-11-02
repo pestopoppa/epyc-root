@@ -119,3 +119,11 @@ Dispatcher reported dry-run PASS for handoff-kvu-16i-c5-replay-20261101 (one JSO
 ## 09:44Z — File KVU-16i candidate replay diagnostic
 
 Filed handoff-kvu-16i-c5-replay-20261101 as pass: 48 requests, 21 modeled H1 transitions, T7A sampled growth 0.055225 GiB, whole-run peak less load peak 0.999577 GiB. Candidate-only diagnostic; historical warm-up differs. The KVU-16i-v11 promotion checkbox remains open because its promotion and registry-change conditions are not met.
+
+## 09:47Z — Repair CPU allocation for CLS-RECT live row
+
+Republished inf70-cls-rect-live-20261101 with a launcher that uses the granted FILLER_CPUS and FILLER_THREADS rather than hardcoded 0-95 and 48. Preserved its 100 GiB reservation. Shell syntax validated; the keeper must run the dry run before the row is grantable. The prior signalled termination has not been conclusively attributed.
+
+## 09:47Z — Repair CPU allocation for CLS-RECT live row
+
+Republished inf70-cls-rect-live-20261101 with a launcher that uses the granted FILLER_CPUS and FILLER_THREADS rather than hardcoded 0-95 and 48. Preserved its 100 GiB reservation. Shell syntax validated; the keeper must run the dry run before the row is grantable. The prior signalled termination has not been conclusively attributed.
