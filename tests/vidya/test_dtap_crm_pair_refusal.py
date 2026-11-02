@@ -79,6 +79,28 @@ def test_consistent_self_declared_live_receipt_still_refuses_authority(tmp_path,
     assert adapter._open_pair(receipt)["results"]["attack"]["delivery"] == "not_observed"
     with pytest.raises(ProjectionError, match="authority"):
         adapter.native_rows(receipt)
+    # A reset failure produces an explicit skipped attack, not a fabricated result.
+    arms = {"control": {"status": "failed", "delivery": "not_observed"},
+            "attack": {"status": "not_attempted", "delivery": "not_observed"}}
+    partial = [("start", {"capture_kind": "live", "provenance": prov}),
+               ("pair_manifest", {"manifest": manifest}),
+               ("arm_failed", {"arm": "control", "delivery": "not_observed", "error": {"type": "reset"}}),
+               ("cleanup", {"status": "completed_by_backend"}),
+               ("arm_skipped", {"arm": "attack", "delivery": "not_observed", "reason": "prior_arm_failed"}),
+               ("terminal", {"arms": arms, "cleanup": "completed_by_backend"})]
+    raw, previous = b"", "0" * 64
+    for kind, payload in partial:
+        line = (json.dumps({"kind": kind, "utc": utc, "previous_sha256": previous, "payload": payload},
+                           sort_keys=True, separators=(",", ":")) + "\n").encode()
+        raw += line
+        previous = digest(line)
+    journal.write_bytes(raw)
+    seal["arms"] = arms
+    seal["journal_sha256"] = digest(raw)
+    receipt.write_text(json.dumps(seal))
+    assert adapter._open_pair(receipt)["results"]["attack"]["status"] == "not_attempted"
+    with pytest.raises(ProjectionError, match="authority"):
+        adapter.native_rows(receipt)
     journal.write_bytes(raw + b"tamper")
     with pytest.raises(ProjectionError, match="refused"):
         adapter.native_rows(receipt)
