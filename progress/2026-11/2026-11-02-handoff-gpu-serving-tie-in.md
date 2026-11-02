@@ -91,3 +91,7 @@ Parallel source reviews: P1-2 is dependent on the corrected-placement remeasurem
 ## 10:36Z — Prepare E5 placement, gold scorer controls and replacement tenant decision
 
 Dispatched bounded independent preparation of corrected-placement E5, known-gold scorer controls, and replacement tenant options. Results and patches are stored under /mnt/raid0/llm/tmp/gpu-serving-tie-in and registered for resumption. No inference or production changes. Existing uncommitted gold_binding.py was preserved.
+
+## 10:38Z — Review E5 placement and gold binding controls
+
+Reviewed the static E5 manifest auditor: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy; P-BENCH-PLACEMENT-1 rejects those cells. The audit is static and establishes no runtime placement or cache state. Reviewed a PASS_TO_PASS fixture update for the uncommitted gold-binding change: 14 model-free controls passed in a scratch copy, without scorer validation. Lane code changes require GitNexus impact analysis; the index is unavailable and scripts/gitnexus-analyze.sh was refused by CPU admission. Existing P3-5 arm-selection package already covers the operator decision.
