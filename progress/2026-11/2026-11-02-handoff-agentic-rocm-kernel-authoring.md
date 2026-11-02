@@ -135,3 +135,7 @@ The prior RPUCG v2 review patch was published in 5bee3d8f9cb4314a3dfd73533e61181
 ## 09:43Z — Advance capture, native counter and panel-contract implementations
 
 The preceding wrap-up commit 55a69febfad3 was not published because serialized_push returned rc=4; this boundary carries it forward. Existing C5-7 and RPUCG drafts remain partial and do not justify completion ticks or row publication. Assigned bounded implementation work on same-run PMC binding, discovery of an exact k175 runtime, and the S3 panel contract with completion events. No compute was run.
+
+## 09:44Z — Prepare panel contract amendment and continue capture implementation
+
+Prepared the reviewed S3-INF03-01 amendment as patches/agentic-rocm/s3-inf03-01-campaign-contract.patch. It states whole-agent scope and declines a ninth greedy arm in the fixed panel, preserving the separate fixed-actor trigger. The authoritative contract is in the research repository, outside this lane, so the patch is not yet integrated and the box remains open. Assigned bounded C5-7 and k228/k175 implementation work. No inference row published or compute run.
