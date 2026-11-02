@@ -135,3 +135,7 @@ Completed a controlled S0 reproducer: the retained guard returned 32 lock-lost r
 ## 11:31Z — Submitted DCA paired row for smoke; publisher queued it because the GPU was busy.
 
 - YARN-DCA-E1: submitted `yarn-e1-dca-pair-gpu-20261102-v1`; publisher queued smoke because the GPU was busy. No smoke PASS or row readiness is claimed; result awaits the allocator. A2 review confirmed the earlier smoke PASS and existing publication. Jet-Long build preflight found incompatible df options; isolated repair is in progress.
+
+## 11:32Z — Investigated the incomplete Jet-Long experimental build and assigned its repair and row preparation; evaluated CPU cutoff tests.
+
+- JETLONG-LONGCTX-RUN: the isolated build helper df preflight was corrected; a CPU build attempt reached 76% but exited without a binary or completion receipt. Source build repair and row preparation are underway. YARN-CPU-V3-HARNESS: 14 offline cutoff-policy tests passed, but the redirected 128K cohort cannot satisfy real CPU window acceptance and no matched pair or window-end result is claimed. DCA paired smoke was queued on the busy GPU in the previous boundary and is not yet declared ready.
