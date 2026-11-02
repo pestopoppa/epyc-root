@@ -215,3 +215,7 @@ C3 r9 production recipe names only the Bolt model; its existing pre-grant receip
 ## 10:43Z — Harden C3 receipt coverage checker and review CH-26 trace proposal
 
 Reviewed CH-26 trace design: nine synthetic controls reject missing/lost event streams and invalid markers but intentionally return unproven; live collection and attribution are still needed. C3 receipt coverage checker now rejects an empty recipe set and relative extra paths; 13 model-free tests pass. A prior concern that GPU smoke must necessarily use four CPUs was premature: publish_row preserves the GPU row regions; R15 derivation remains under review.
+
+## 10:44Z — Check current C3 Bolt model identity against pre-grant seal
+
+C3 r9 Bolt model currently matches the existing receipt by device/inode/size/mtime/ctime via model_custody.identity; the receipt digest is 91d63363e782c8a3d5f4be42816eba8e0d42dd2530bd07a7d0d2dc440599af75. This is pre-grant hash plus metadata continuity, not a runtime-byte verification. Native publication remains pending the analysis pin, recipe pointer, and smoke-path repairs. CH-26 marker and CH-27 readback results remain model-free.
