@@ -159,3 +159,7 @@ Filed handoff-rte-log1-ownercheck-20261101 inconclusive: rc=4, own-port-8070-alr
 ## 11:25Z — Compare RLM and EPYC REPL budgets
 
 Compared recursion, output cap, timeout, root tool exposure, termination, and turn-token budget against orchestrator source commit 9e138e3a3e22ecf8c57cd5bf50beed571d107b54; documented differences and separate timeout configuration surfaces in docs/design/repl-prefix-experiment/rlm-budget-comparison.md. Source comparison only; no live settings or performance claims.
+
+## 11:27Z — File override diagnostic and correct budget comparison scope
+
+Filed override row inconclusive after real-phase rc=1 and HTTP 429; drained with no survivors, no diagnostic or normal-routing acceptance established. Restored the RLM budget comparison checkbox to open: the source comparison was documented, but its explicit handoff checkpoint also requires a designed and validated policy decision.
