@@ -175,3 +175,7 @@ Retained the revised rollback harness source as an explicitly unvalidated candid
 ## 10:46Z — Review CAFE-4 target verification semantics
 
 Independent v10 source review found that candidate v2 decodes and rewinds the sampled boundary before D+1 verification, unlike the server. Its drafter is synthetic rather than MTP and the state-specific fault control remains absent. Strict partial acceptance and suffix retention are present; no inference, recurrent-state result or task completion is claimed. Boundary and MTP repairs are delegated.
+
+## 10:55Z — Correct COPYSPEC sweep corpus attribution and advance SR-6 runner controls
+
+Corrected the COPYSPEC trimmed sweep corpus and class-specific acceptance attribution against its retained summary; repeated-5-gram fractions remain unknown. SR-6 preparation adds runtime manifest, process linkage, readiness and lifecycle seams; 105 model-free tests pass. No runnable row or inference result: in-flight STOP, descendant containment, sealed workload/exposure history, model identity and sampler pins remain to be integrated and proved.
