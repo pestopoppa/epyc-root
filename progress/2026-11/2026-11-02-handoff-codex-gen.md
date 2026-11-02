@@ -115,3 +115,7 @@ Correction to the earlier CH-26b pass and tick in this progress file: later nati
 ## 09:38Z — Record handoff-kvu-16i-c5 replay dry-run pass
 
 Dispatcher reported dry-run PASS for handoff-kvu-16i-c5-replay-20261101 (one JSONL unit, rc 0); the row is grantable. The dry-run record reports two orphan processes for its owner to address. Earlier automatic repair attempts for inf70-cls-rect-live-20261101 and codex-ni-s18-qwenvl-cpu-r2-20261101 returned UNKNOWN-FAILURE-CLASS; investigations were delegated, and no completion has been reported.
+
+## 09:44Z — File KVU-16i candidate replay diagnostic
+
+Filed handoff-kvu-16i-c5-replay-20261101 as pass: 48 requests, 21 modeled H1 transitions, T7A sampled growth 0.055225 GiB, whole-run peak less load peak 0.999577 GiB. Candidate-only diagnostic; historical warm-up differs. The KVU-16i-v11 promotion checkbox remains open because its promotion and registry-change conditions are not met.
