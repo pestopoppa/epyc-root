@@ -59,11 +59,13 @@ def _grant(path: Path, expected_region: str, deadline: float, *, require_host_ho
         holds = values['holds'].split(',')
         if len(holds) != 5 or set(holds) != {'q0', 'q1', 'q2', 'q3', 'gpu-quiet'}:
             raise ValueError('full host and GPU-quiet holds required')
-    elif keys == required | {'holds', 'schema', 'id', 'kind'}:
+    elif keys in (required | {'holds', 'schema', 'id', 'kind'}, required | {'holds', 'schema', 'id', 'kind', 'admission_class'}):
         if (not allow_dryrun or os.environ.get('FILLER_DRYRUN') != '1'
                 or values['schema'] != 'epyc.rowflow.dryrun-grant.v1'
                 or values['kind'] != 'rowflow-dryrun'
-                or expected_row_id is None or values['id'] != _row_id(expected_row_id)):
+                or expected_row_id is None or values['id'] != _row_id(expected_row_id)
+                or ('admission_class' in values and values['admission_class'] not in
+                    {'correctness','diagnostic','block-correctness','block-timing-pairable','block-timing-quiet','filler'})):
             raise ValueError('unbound synthetic rowflow grant')
     elif keys not in (required, required | {'holds'}):
         raise ValueError('invalid fixture grant fields')

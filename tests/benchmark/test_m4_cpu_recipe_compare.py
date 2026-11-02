@@ -71,3 +71,35 @@ def test_guarded_entry_refuses_empty_or_changed_enrollment(tmp_path,monkeypatch)
     path.write_text('{"changed":true}')
     with pytest.raises(ValueError,match='plan or row enrollment mismatch'):
         entry_mod.check_enrollment(path,sha(path),'row',out)
+
+def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch):
+    import argparse,os,threading,time
+    from datetime import datetime,timedelta,timezone
+    spec=importlib.util.spec_from_file_location('m4_recipe_qual_test',ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py')
+    q=importlib.util.module_from_spec(spec);sys.modules[spec.name]=q;spec.loader.exec_module(q)
+    dd=tmp_path/'dryrun';(dd/'grants').mkdir(parents=True);attempt=dd/'native-attempts'/'attempt-test';attempt.mkdir(parents=True)
+    flags=tmp_path/'flags';flags.mkdir();result=attempt/'native-result.json';stop=dd/'stop';row='inf22-q38-test'
+    now=datetime.now(timezone.utc);grant=dd/'grants'/f'{row}.grant'
+    grant.write_text('regions=0-3 start='+ (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ') +' end='+ (now+timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%MZ')+f' holds=q0 schema=epyc.rowflow.dryrun-grant.v1 id={row} kind=rowflow-dryrun admission_class=block-timing-quiet')
+    deadline=int(time.time()+90)
+    for k,v in {'FILLER_DRYRUN':'1','FILLER_SMOKE':'1','FILLER_DRYRUN_DIR':str(dd),
+                'FILLER_DRYRUN_RESULT_PATH':str(result),'FILLER_FLAGS_DIR':str(flags),
+                'FILLER_STOPFILE':str(stop),'FILLER_CPUS':'0-3','FILLER_DEADLINE':str(deadline)}.items():monkeypatch.setenv(k,v)
+    monkeypatch.setattr(q,'check_enrollment',lambda *args:None)
+    a=argparse.Namespace(plan=tmp_path/'plan',plan_sha256='ignored',grant=grant,stop=stop,hold=flags,
+        deadline=deadline,owner_pid=os.getppid(),owner_birth=q.watch.m4_cgroup_guard.birth(os.getppid()))
+    def stop_after_unit():
+        end=time.monotonic()+10
+        while not result.exists() and time.monotonic()<end:time.sleep(.02)
+        if result.exists():stop.touch()
+    worker=threading.Thread(target=stop_after_unit);worker.start()
+    try: assert q.qualification(a,row)==75
+    finally:worker.join(timeout=12)
+    assert json.loads(result.read_text())['measurement'] is False
+    assert json.loads((dd/'m4-recipe-qualification-watch/watch-result.json').read_text())['containment_empty'] is True
+
+def test_qualification_worker_refuses_real_environment(monkeypatch):
+    spec=importlib.util.spec_from_file_location('m4_recipe_qual_reject',ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py')
+    q=importlib.util.module_from_spec(spec);sys.modules[spec.name]=q;spec.loader.exec_module(q)
+    monkeypatch.delenv('FILLER_DRYRUN',raising=False)
+    with pytest.raises(ValueError,match='guarded smoke'):q.qualification_worker()
