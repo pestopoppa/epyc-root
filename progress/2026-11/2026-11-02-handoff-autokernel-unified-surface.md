@@ -191,3 +191,7 @@ Consumed the Goodhart and GPU quantize preparation reviews. S3-AKU-13 has a comm
 ## 00:54Z — Prepare GPU model identity
 
 Consumed GPU row-preparation and model-identity reviews. Existing manifests associate Qwen3.8-27B-Q8_0.gguf with SHA-256 a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348, but do not prove current bytes. Dispatched one-time model digest verification before publication; event registered. A diagnostic GPU row still requires a content-verified full HIP candidate build, sealed recipe and active-window dispatch witness; performance additionally needs a matched floor. No row published and no inference or build run. The previous frame wrapup committed dcd5a9471b54 but failed to push after lock retries; this wrapup retries publication.
+
+## 00:56Z — Verify GPU candidate model identity
+
+Consumed the GPU model verification: current Qwen3.8-27B-Q8_0.gguf SHA-256 matches a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348, with matching file descriptor and path identity before and after the read. Preserved the complete receipt at artifacts/engineering/autokernel-quantize-reciprocal-20261102/model-identity-verification.json. This pins input bytes at verification time; a later row must recheck file identity without hashing inside its grant. Candidate HIP build, sealed invocation and active-window dispatch proof remain prerequisites. Three bounded preparation reviews have registered result events. No inference, build or row publication. Prior wrapup succeeded at 34ebb290ec74bbea2041def61f83cd0170f9eb09.
