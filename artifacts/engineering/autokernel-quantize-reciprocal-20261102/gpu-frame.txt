@@ -27,3 +27,18 @@ Required before runnable row / compute
 Limitations
 -----------
 This audit establishes no numerical correctness, speed, dispatch coverage, build freshness, model digest, current anchor identity, floor provenance, or GPU execution. Historical floor provenance is incomplete in the files located; 0.638% is a supported historical calibration value, not proven current for a newly rebuilt v10-derived candidate. The 27B model choice is a reasoned frame proposal, not an explicit model named by P1b. No compute was run and no repository files were modified.
+
+Additional historical frame evidence (2026-11-02)
+-------------------------------------------------
+Research `data/autokernel-gpu-controls/x4-load-fe881-bff30.json` (SHA-256
+`a09969e60e7e563ffd06f37c7bca6436ba6c5b7b81b43a62bcdf3145168d504a`)
+contains a 2026-09-07 comparison of candidate and champion
+`bff30cebee0de4440dd7a6ef3607e59b970268ce` against anchor
+`fe881991f4652fdcd97b825583730e263fa7de0e` which records model
+`/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf`, surface `tg128`, 20 pairs,
+`median_over_median`, and `noise_floor_pct: 0.638`. This directly associates
+the historical model with use of that floor, strengthening the proposed model
+frame. It is a comparison using the floor, not the native calibration receipt;
+it neither proves that receipt's provenance nor admits this value for a v10
+candidate. The file does not establish the model content digest for a new run.
+A matched current floor and the other prerequisites above remain necessary.
