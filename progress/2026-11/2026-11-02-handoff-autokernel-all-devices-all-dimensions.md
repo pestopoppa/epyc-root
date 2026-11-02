@@ -63,3 +63,7 @@ Implemented scratch-only lock_exec.py using no-follow open, regular-file and ino
 ## 10:34Z — Verify floor lock through native process chain
 
 Model-free scratch test demonstrated original device_held detects a live locked grandparent across two child processes that close inherited descriptors and refuses the unlocked intermediate; test /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/cpu-device-prototype/test_nested_ancestor.py. Inspection also found R4 full_job.py edge() hashes model-weight edges in the granted job; successor must prepare and bind input verification before publication. Process identity, canonical lock, region/quiet claim and STOP integration remain unqualified.
+
+## 10:36Z — Prepare floor model-edge identities outside grant
+
+Precomputed historical R4 64 MiB head/tail identities for three Q38FN shards and the MTP model outside any grant, recording stable device/inode/size/mtime/ctime around hashing. Added scratch validator of a digest-bound record, exact path order and unchanged metadata without model reads; actual four files passed and bad digest/path order refused. Files: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/input-prep/. These are edge hashes, not full-file identities; metadata checks do not establish immutability or close TOCTOU, and packet integration and qualification remain outstanding.
