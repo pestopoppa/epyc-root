@@ -103,3 +103,7 @@ R23-68: recorded the historical 2026-09-14 AutoKernel loop pytest baseline at re
 ## 10:43Z — Complete R23-68 historical baseline record and review R18-B timing evidence
 
 R23-68 is recorded in docs/reference/autokernel-loop-pytest-baseline-2026-09-14.md with a historical-only label and host TMPDIR prerequisite. R18-B remains open: scratch build-timing patch applicability is shown only against research local HEAD 99301fa149af86a6f9743d2b0405c9234ba39586, 229 commits behind its origin/main; pool.py captures the timestamp during provenance construction, after build completion. The historical binary identity and mechanism remain unproven.
+
+## 10:51Z — Register AutoKernel prospective measurement sources and prepare prompt-class measurement
+
+Registered prospective write-side capture and shared-ClaimTuple projection work for the published R18-D, R23-3 and R23-4 measurement wrappers, including R23-6 prompt classes; no historical warrant or completed wiring is claimed. R23-6 row preparation identified host uptime 1,739,126 seconds: measurement/protocols/kernel-research.md requires operator-controlled reboot once uptime reaches one week before any search measurement. No benchmark smoke was run. R22-5 scratch preparation corrected the candidate boundary axis from matrix output rows to attention KV context length; source/build-path integration remains in progress.
