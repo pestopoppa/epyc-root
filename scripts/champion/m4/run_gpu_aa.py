@@ -64,7 +64,7 @@ def validate_plans(aa, native):
             raise ValueError('unique absolute watcher paths required')
         watches.add(watch)
         sweep = entry['sweep']
-        keys = {'question_pool', 'prompt_limit', 'prompt_seed', 'tier', 'threads', 'context_size', 'ubatch_size', 'kv_type', 'n_predict', 'warmup_prompts', 'warmup_n_predict', 'startup_timeout', 'request_timeout', 'port_base', 'extra_server_args', 'no_mlock', 'no_ttft', 'allow_host_health_warning'}
+        keys = {'question_pool', 'prompt_limit', 'prompt_seed', 'tier', 'threads', 'context_size', 'ubatch_size', 'kv_type', 'n_predict', 'warmup_prompts', 'warmup_n_predict', 'startup_timeout', 'request_timeout', 'port_base', 'extra_server_args', 'no_mlock', 'no_ttft', 'allow_host_health_warning', 'skip_clean_check'}
         if not isinstance(sweep, dict) or set(sweep) != keys:
             raise ValueError('sweep configuration not fully bound')
         for k in ('prompt_limit', 'threads', 'context_size', 'ubatch_size', 'n_predict', 'startup_timeout', 'request_timeout', 'port_base'):
@@ -73,7 +73,7 @@ def validate_plans(aa, native):
         for k in ('prompt_seed', 'tier', 'warmup_prompts', 'warmup_n_predict'):
             if type(sweep[k]) is not int or sweep[k] < 0:
                 raise ValueError('invalid nonnegative sweep parameter')
-        if any(type(sweep[k]) is not bool for k in ('no_mlock', 'no_ttft', 'allow_host_health_warning')):
+        if any(type(sweep[k]) is not bool for k in ('no_mlock', 'no_ttft', 'allow_host_health_warning', 'skip_clean_check')):
             raise ValueError('explicit boolean sweep controls required')
         if not isinstance(sweep['extra_server_args'], list) or not all(isinstance(x, str) and x for x in sweep['extra_server_args']):
             raise ValueError('invalid server arguments')
@@ -114,9 +114,14 @@ def command(entry, cell, work):
         cmd.extend((flag, str(sweep[field])))
     for arg in sweep['extra_server_args']:
         cmd.append('--extra-server-arg=' + arg)
-    for field, flag in (('no_mlock','--no-mlock'),('no_ttft','--no-ttft'),('allow_host_health_warning','--allow-host-health-warning')):
+    for field, flag in (('no_mlock','--no-mlock'),('no_ttft','--no-ttft'),('allow_host_health_warning','--allow-host-health-warning'),('skip_clean_check','--skip-clean-check')):
         if sweep[field]: cmd.append(flag)
     return cmd
+
+
+def validate_runtime_mode(selected, qualification_only):
+    if any(e['sweep']['skip_clean_check'] and not qualification_only for e,c in selected):
+        raise RuntimeError('clean-runtime bypass is limited to qualification')
 
 
 def check_champion(aa):
@@ -184,6 +189,7 @@ def main():
     if aa.get('native_plan_sha256') != trust.plan_sha256:
         raise RuntimeError('native plan is not independently bound')
     selected = validate_plans(aa, native)
+    validate_runtime_mode(selected, qualification_only)
     expected_champion = check_champion(aa)
     if any(cell['source_commit'] != expected_champion for _, cell in selected):
         raise RuntimeError('native source is not the bound champion')

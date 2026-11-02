@@ -23,7 +23,7 @@ def fixture():
     sweep = {'question_pool':'/prompts', 'prompt_limit':8, 'prompt_seed':42, 'tier':1, 'threads':8,
              'context_size':65536, 'ubatch_size':512, 'kv_type':'q8_0', 'n_predict':256,
              'warmup_prompts':2, 'warmup_n_predict':32, 'startup_timeout':900, 'request_timeout':900,
-             'port_base':18070, 'extra_server_args':[], 'no_mlock':True,'no_ttft':True,'allow_host_health_warning':True}
+             'port_base':18070, 'extra_server_args':[], 'no_mlock':True,'no_ttft':True,'allow_host_health_warning':True,'skip_clean_check':False}
     cell = {'role':'critic','arm':'BASELINE','source_commit':'c'*40,'model':'/model', 'recipe':{},
             'argv':['/bin/server','-m','/model'], 'environment':{},'device':'gpu0','np':4,
             'files':{'binary':{'path':'/bin/server','sha256':'a'},'model':{'path':'/model','sha256':'b'},'prompt':{'path':'/prompts','sha256':'c'}},
@@ -249,3 +249,27 @@ def test_targeted_watch_audit_rejects_missing_or_live(tmp_path,monkeypatch):
     birth=Path('/proc/self/stat').read_text().rsplit(')',1)[1].split()[19]
     (wd/'server-pids.txt').write_text(f'{os.getpid()} {birth}\n')
     with pytest.raises(RuntimeError,match='still alive'):target.audit_watches(plan)
+
+
+def test_targeted_smoke_requires_claimed_parent_not_dryrun(monkeypatch):
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    spec=importlib.util.spec_from_file_location('aa_targeted_claim',ROOT/'scripts/champion/m4/targeted_smoke.py')
+    target=importlib.util.module_from_spec(spec);spec.loader.exec_module(target)
+    raw_read=Path.read_bytes
+    def read(path):
+        if str(path).endswith('/cmdline'):
+            return b'\0'.join([b'python',b'-m',b'src.runtime.region_lock_cli',b'run',b'--cpu-list',b'72-95',b'--gpu-quiet',b'exclusive',b''])
+        if str(path).endswith('/environ'):
+            return b'FILLER_DRYRUN=1\0'
+        return raw_read(path)
+    monkeypatch.setattr(Path,'read_bytes',read)
+    with pytest.raises(RuntimeError,match='no-lock'):
+        target.parent_claim()
+
+
+def test_clean_runtime_bypass_is_qualification_only():
+    aa,native=fixture()
+    for e in aa['cells']:e['sweep']['skip_clean_check']=True
+    pairs=mod.validate_plans(aa,native)
+    with pytest.raises(RuntimeError,match='qualification'):mod.validate_runtime_mode(pairs,False)
+    mod.validate_runtime_mode(pairs,True)
