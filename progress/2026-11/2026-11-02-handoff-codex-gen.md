@@ -135,3 +135,7 @@ Republished codex-ni-s18-qwenvl-cpu-r2-20261101 with synthetic grant validation 
 ## 09:49Z — Repair QwenVL synthetic grant region validation
 
 Republished codex-ni-s18-qwenvl-cpu-r2-20261101 with synthetic grant validation derived from canonical rowflow dry-run shape and allowed concrete regions. The 13 admission classification tests pass, including rejection of invalid claims. Keeper dry-run outcome is pending. The saved files preserve the repaired scratch launcher job and tests.
+
+## 09:55Z — Route GPU residency qualification repair
+
+Marked kvfork17a-gpu-20261102 too-big in WORK-codex-gen-code.md for owner routing: its small GPU exactness workload showed per-process HIP/KFD residency but the keeper sampled only 13,131,776 bytes against its fixed 64 MiB floor; safe qualification needs review of evidence and measurement effects. No GPU proof requirement was weakened.
