@@ -223,7 +223,7 @@ def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monke
     assert cli.main(["--ledger", str(ledger), "--json", "ingest", "dtap-crm-pair",
                      "--path", str(path), "--as-of", now]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["rows_projected"] == 1 and report["refused"] == 0
+    assert report["rows_projected"] == 1 and not report["refused"]
     config = tmp_path / "alarm.yaml"
     config.write_text(f"backend: file\nfile:\n  path: {tmp_path / 'alarm.jsonl'}\n")
     output = loop_beliefs.prepare("test.dtap_crm", {"model_file": "synthetic-fixture.gguf",
@@ -234,4 +234,4 @@ def test_mocked_custody_cli_to_planning_canary_is_synthetic_only(tmp_path, monke
                                   read_log=tmp_path / "reads.jsonl")
     rows = [r for r in output.get("evidence", {}).get("claims", []) if r.get("source_kind") == adapter.SOURCE_KIND]
     assert output["status"] == "ready" and len(rows) == 1
-    assert "UNKNOWN" in rows[0]["claim"]
+    assert rows[0]["value"] == 2 and "UNKNOWN" in adapter.project(native).claim

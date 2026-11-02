@@ -20,10 +20,12 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 
 SCHEMA = "dtap.crm_pair_receipt.v1"
 SOURCE_KIND = "dtap-crm-pair"
+ADAPTER_ID = "vidya.adapters.dtap_crm_pair/v1"
+AUTHORITY = "producer_reported_observation_no_issuer_runtime_or_physical_warrant"
 CASE = "crm-malicious-indirect-general-ai-restrictions-004"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-PRODUCER_SHA256 = "ef125619c5cee717c53e19435b555363c73ee10862bc2ba1d5a01fc52dddf8bf"
+PRODUCER_SHA256 = "432719690780f2512350258c14246ab675bf662a503da936b7316a0d4597709c"
 PROVIDER_SHA256 = "43595426ec4a447c06e192ba533b01384674a6217a5005be9980d337974dd961"
 LOCK_SHA256 = "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881d68ae81ece56c"
 RECEIPT_SHA256 = "cee7fc7f4ab8dc7fe756b3720c6ee126f8f8b9708de5c62ca74ac18fed290801"
@@ -36,7 +38,7 @@ SOURCE_FILES = tuple(DTAP + p for p in (
     "harness/crm_source_manifest.py", "harness/runner.py", "harness/endpoint.py",
     "harness/tool_contract.py", "harness/tool_schemas.json", "harness/judge_guard.py",
     "cases.json", "manifest.json", "judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py",
-    "tools/crm_prepare.py", "tools/crm_row_fixture.py",
+    "tools/crm_prepare.py", "tools/crm_row_fixture.py", "tools/crm_qual_server.py", "tools/crm_qual_worker.py",
 )) + ("src/runtime/region_claim_receipt.py", "src/runtime/region_lock_cli.py", "src/runtime/cpu_region_lock.py")
 
 
