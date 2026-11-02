@@ -67,3 +67,7 @@ Model-free scratch test demonstrated original device_held detects a live locked 
 ## 10:36Z — Prepare floor model-edge identities outside grant
 
 Precomputed historical R4 64 MiB head/tail identities for three Q38FN shards and the MTP model outside any grant, recording stable device/inode/size/mtime/ctime around hashing. Added scratch validator of a digest-bound record, exact path order and unchanged metadata without model reads; actual four files passed and bad digest/path order refused. Files: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/input-prep/. These are edge hashes, not full-file identities; metadata checks do not establish immutability or close TOCTOU, and packet integration and qualification remain outstanding.
+
+## 10:38Z — Integrate prepared model edges in floor draft
+
+Created scratch-only successor full_job.py replacing the in-job edge reader with a digest-bound precomputed four-model record and metadata validator; removed the old edge() function. Both files compile; structural and actual-file metadata controls pass. Draft: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/input-packet-draft/. The model edges are not full hashes and metadata checks cannot eliminate TOCTOU; original source manifest, process identity and lock/STOP/reader contracts must be rebound and qualified before publication.

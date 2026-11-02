@@ -71,7 +71,7 @@ class WrapupTests(unittest.TestCase):
         json.dump(rec, open(p, "w"))
         out, err = io.StringIO(), io.StringIO()
         with patch.object(wu, "run_push", fake_push), patch.object(wu, "run_index_check", lambda lane: (0, "ok")), \
-                patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
+                patch.object(wu, "run_index_regen", lambda lane: (0, "")), patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
             rc = wu.main(["--json", p, "--lane", self.lane, "--flags", self.flags, *extra])
         return rc, out.getvalue(), err.getvalue()
 
@@ -105,6 +105,22 @@ class WrapupTests(unittest.TestCase):
         self.assertEqual(rep["state"], "progress")
         self.assertIn("wrapped_at", rep)
         self.assertEqual(rep["ticks"], ["D-1 — first task."])
+
+    def test_generated_index_conflict_takes_origin_and_lands(self):
+        gen = "handoffs/active/.index-state.json"
+        for d, v in ((self.seed, "base"),):
+            open(os.path.join(d, gen), "w").write(v + "\n")
+            _git(d, "add", gen); _git(d, "commit", "-q", "-m", "gen"); _git(d, "push", "-q", "origin", "main")
+        _git(self.lane, "fetch", "-q", "origin"); _git(self.lane, "merge", "-q", "--ff-only", "origin/main")
+        open(os.path.join(self.lane, gen), "w").write("lane\n")
+        _git(self.lane, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "lane gen", "--", gen)
+        open(os.path.join(self.seed, gen), "w").write("origin\n")
+        _git(self.seed, "commit", "-q", "-am", "origin gen"); _git(self.seed, "push", "-q", "origin", "main")
+        rc, out, err = self._run(self.rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertIn("generated conflicts took origin", err + out)
+        self.assertEqual(open(os.path.join(self.lane, gen)).read(), "origin\n")
+        self.assertEqual(_git(self.lane, "cherry", "origin/main").strip(), "")
 
     def _assert_no_commit(self, rc, err, needle):
         self.assertEqual(rc, 1)

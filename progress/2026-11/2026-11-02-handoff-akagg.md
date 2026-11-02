@@ -199,3 +199,7 @@ C3 draft custody receipt covers Bolt only; the L target and draft and smoke mode
 ## 10:36Z — Implement C3 pre-grant receipt coverage check
 
 Prepared /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to reject missing or malformed model-custody entries without opening weights. Six model-free tests pass, including alias deduplication, a missing role, wrong schema or assurance, bad digest and bad signature. Integration and a completed seal remain prerequisites to a publishable successor.
+
+## 10:38Z — Adapt C3 canonical engine-path regression to successor draft
+
+Applied the C3 canonical-path producer regression to an isolated successor copy at /mnt/raid0/llm/tmp/akagg/c3-canonical-v9 and adapted it to the current verifier, which does not export the older constant; 5 model-free tests pass. The copy still points its manifests to v8 and is not sealed or publishable. CH-26b identical reruns cannot prove residency because its native observer unconditionally reports it unproven; CH-27 private scratch floors fail native registry admission.

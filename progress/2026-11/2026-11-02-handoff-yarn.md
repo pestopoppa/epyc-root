@@ -91,3 +91,11 @@ Integrated A2 source/input packet digest and containment verification; two offli
 ## 10:35Z — Land A2 packet verifier after upstream merge
 
 The two offline A2 packet verification tests passed. Concurrent upstream changes were merged before retrying the serialized push; no inference or scientific result.
+
+## 10:37Z — Enforce Jet-Long prototype CPU affinity
+
+Integrated exact grant CPU affinity before exec, CPU allocation propagation from keeper admission, and captured-PID thread checks at startup and around requests. Thirty-eight offline tests pass, including a fake server verifying inherited affinity. Native entry remains disabled: descendant coverage, in-flight cancellation, continuous observation and build/model custody remain. No native inference or row publication.
+
+## 10:37Z — Land Jet-Long affinity enforcement after upstream merge
+
+The prototype affinity integration passed 38 offline tests. Merged concurrent upstream changes before serialized push retry; no inference or scientific result.
