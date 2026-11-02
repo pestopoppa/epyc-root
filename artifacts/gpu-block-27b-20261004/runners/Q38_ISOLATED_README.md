@@ -10,6 +10,17 @@ the predeclared threshold. The warm and measured messages must share the declare
 prefix. Every response and request-body hash is returned, including on partial
 failure; no Q38 quality or speed verdict is inferred here.
 
+`q38_t7_payloads.py` constructs the original phase-A workload settings and
+phase-B generation and needle settings from supplied frozen prefixes, scores
+with the retained original grader and degeneracy detector, and renders the A/B
+tables. It requires complete arm/request custody, matching body hashes, cleanup,
+cache witnesses and response/tokenizer data; incomplete input is UNKNOWN and
+missing timing makes speed invalid. The plan has its own content hash. Phase B
+warms both servers independently, so those timings are a prospective protocol,
+not the original shared-server historical timings. The supplied transport must
+bind token IDs to the actual response and tokenizer and retain native streams;
+the fake envelope used by tests does not establish this production proof.
+
 `test_q38_t7_isolated_http.py` starts two **fake** HTTP server subprocesses in
 sequence, routes real local HTTP calls, and verifies independent warmups,
 matching body hashes, correct arm modes, refusal on mismatched mode or cache

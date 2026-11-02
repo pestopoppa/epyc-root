@@ -30,6 +30,8 @@ class Pair:
     body: dict
     warm_body: dict | None = None
     min_cached_tokens: int | None = None
+    arms: tuple[str, ...] = ('drafted', 'nodraft')
+    nodraft_body: dict | None = None
 
 
 def _reject_override(value: Any) -> None:
@@ -91,7 +93,17 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
         raise InvalidRun('nonempty unique pair keys required')
     sealed = []
     for pair in pairs:
+        if not pair.arms or len(set(pair.arms)) != len(pair.arms) or not set(pair.arms) <= {'drafted', 'nodraft'}:
+            raise InvalidRun('pair has invalid arms')
         body = _body_bytes(pair.body)
+        nodraft = _body_bytes(pair.nodraft_body) if pair.nodraft_body is not None else body
+        if pair.nodraft_body is not None:
+            # Only generation limits may differ: prompt, sampling and all other
+            # request controls remain identical between the paired arms.
+            d, n = copy.deepcopy(pair.body), copy.deepcopy(pair.nodraft_body)
+            d.pop('max_tokens', None); n.pop('max_tokens', None)
+            if d != n:
+                raise InvalidRun('arm request differs outside max_tokens')
         if pair.warm_body is None:
             if pair.min_cached_tokens is not None:
                 raise InvalidRun('cache threshold requires warm request')
@@ -100,9 +112,11 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
             warm = _body_bytes(pair.warm_body)
             if not _same_warmed_prefix(pair.warm_body, pair.body):
                 raise InvalidRun('measured prompt must begin with the warm prefix')
+            if pair.nodraft_body is not None and not _same_warmed_prefix(pair.warm_body, pair.nodraft_body):
+                raise InvalidRun('no-draft prompt must begin with the warm prefix')
             if type(pair.min_cached_tokens) is not int or pair.min_cached_tokens <= 0:
                 raise InvalidRun('positive native cache threshold required')
-        sealed.append((pair.key, body, warm, pair.min_cached_tokens))
+        sealed.append((pair.key, body, nodraft, warm, pair.min_cached_tokens, pair.arms))
     records, cleanup, failure = [], {}, None
     for arm in ('drafted', 'nodraft'):
         server = None
@@ -111,7 +125,10 @@ def run_pairs(runtime: Runtime, recipes: dict, pairs: list[Pair]) -> dict:
                 raise InvalidRun('STOP before launch')
             server = runtime.start(arm, copy.deepcopy(recipes[arm]))
             runtime.verify(server, arm, copy.deepcopy(recipes[arm]))
-            for key, body, warm, threshold in sealed:
+            for key, drafted_body, nodraft_body, warm, threshold, arms in sealed:
+                if arm not in arms:
+                    continue
+                body = drafted_body if arm == 'drafted' else nodraft_body
                 if runtime.stopping():
                     raise InvalidRun('STOP before request')
                 if warm is not None:
