@@ -35,3 +35,7 @@ Independent review found RRF prototype issues: silent top_k truncation, host-spe
 ## 00:21Z — Address independent prototype reviews
 
 Consumed all three independent reviews. Requested RRF fixes for budget truncation, portable test paths, SQLite URI escaping and deterministic provider build order. Requested catalog fixes for ignored session_id privacy scope, empty/duplicate inventories, inventory identity binding and real synthetic navigation testing where safe. Requested an interim private projector importer using a module-local source name, validated timestamps and changed-content collision handling, without editing HIGH-impact EventSource. This interim path does not satisfy the explicit EventSource requirement; UTM-LB2.2 remains open. Each bounded job writes a dispatcher event; no compute or inference row was launched.
+
+## 00:22Z — Document catalog prototype privacy scope
+
+Reviewed and retained the catalog README privacy clarification: session_id is ignored and the whole selected database must be safe for the model. The README explicitly records outstanding catalog validation and SQLite limitations. Runtime fixes were not made: the lane is unindexed and the host denied GitNexus reindex CPU admission. The other bounded remediation jobs continue; previous wrapper push was rejected after origin/main advanced and the lane has been merged for retry.
