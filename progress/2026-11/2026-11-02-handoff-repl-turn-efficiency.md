@@ -51,3 +51,9 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `park-review4.json`: PFX v3 failed on a separate five-second `/slots` HTTP request timeout, not the overall 300-second loop. Omega v2 returned HTTP 500 because `ProgressLogger.flush` could not write `/workspace/logs/progress/`; the error record is not a qualifying unit. Both lineages are parked at three failures, so no retry or re-admission.
 - Consumed `strategy4.json`: scratch paired evaluator passed two offline tests but requires a preregistered loss threshold and independently verified captures. It confers no measurement warrant; live producer, custody, tokenizer witness, adapter and protocol remain. Further bounded preparation delegated with event `strategy5`.
 - Frontdoor inspection confirms the erroneous READY row still belongs to codex-ni; owner/keeper must coordinate its safe withdrawal, not rely on `.withdrawn` display marker. No other owner's manifest edited. Previous wrap-up successfully pushed `a0e77623f94a65823412f89c6375c86f488e0070`.
+
+## 01:55Z — Review strategy schedule and advance measurement prerequisites
+
+- Consumed `strategy5.json`: the scratch schedule auditor passed three offline tests and finds the 16-question, three-arm rotation uses its six permutations 3, 3, 3, 3, 2 and 2 times (48 planned calls); report this imbalance in the prospective protocol. It establishes neither custody nor measurement warrant. Live runner, independently protected custody, tokenizer witness, adapter and protocol remain. Delegated bounded producer and custody preparation, with dispatcher events `strategy6` and `strategy-custody6`.
+- Delegated model-free timeout repair design for parked PFX, event `pfx-offline6`; no retry or re-admission while parked. GPU RUS successor remains subject to keeper qualification.
+- Prior wrap-up pushed `3d6fd6b0d866e631c2cfcafc002d36331f103841` with empty cherry. No inference or publication this turn.
