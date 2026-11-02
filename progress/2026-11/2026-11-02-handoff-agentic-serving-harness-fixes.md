@@ -31,3 +31,15 @@ Consumed F2 mechanics and B4b workload scans. Prepared and syntax-checked /mnt/r
 ## 00:28Z — Prepare F2 quiet-host row specification
 
 Consumed F2 resource analysis: full row is representable with mi210_0,184-191, GPU-exclusive, claim CPUs 72-95, 64 GiB and a 6000 s minimum; quiet sampler remains necessary. Wrote provisional /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow-20261102/row-spec.DRAFT.json with descriptive decision rule and separate native dryrun output. The successor remains NOT READY pending dryrun implementation, sealing and review; do not publish or launch. Delegated seal review, independent spec review and B4 evaluation cohort selection; registered result files. No compute or live API mutation, published rows or handoff ticks.
+
+## 00:29Z — Apply F2 row specification review
+
+Consumed independent F2 spec review and updated /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow-20261102/row-spec.DRAFT.json with the precise predeclared ABBA decision rule, quiet-sampling thresholds, full completion gate, 1500 s native dryrun timeout and retained raw evidence patterns. Draft points at the successor packet, not the original paths cited by the review. It remains NOT READY until native dryrun, seal, and offline checks are complete. Delegated completion of native dryrun implementation, a separate evidence/engine-dependency review and B4 workload selection; registered their result paths. No compute, live API mutation, publication or handoff ticks.
+
+## 00:30Z — Preserve F2 wire evidence and select B4 candidate cases
+
+Consumed both awaited results. Added attempts/run-*/**/*.jsonl.gz to the F2 draft keep list, preserving compressed proxy wire bodies; packet remains NOT READY until dryrun implementation, seal and static validation. Preserved the candidate five-case B4 cohort and hashes in artifacts/engineering/ufh14-b4-eval-20261102/cohort-preparation.json. Its deterministic scorer checks limited routing, delegation and output shape and cannot support a broad quality claim; known mismatched and unsupported criteria are recorded. Delegated completion of F2 dryrun, source seal coverage and B4 paired protocol; registered result files. No compute, live API change, row publication or task tick.
+
+## 00:31Z — Preserve F2 wire evidence and select B4 candidate cases
+
+Consumed both awaited results. Added attempts/run-*/**/*.jsonl.gz to the F2 draft keep list, preserving compressed proxy wire bodies; packet remains NOT READY until dryrun implementation, seal and static validation. Preserved the candidate five-case B4 cohort and hashes in artifacts/engineering/ufh14-b4-eval-20261102/cohort-preparation.json. Its deterministic scorer checks limited routing, delegation and output shape and cannot support a broad quality claim; known mismatched and unsupported criteria are recorded. Delegated completion of F2 dryrun, source seal coverage and B4 paired protocol; registered result files. No compute, live API change, row publication or task tick.
