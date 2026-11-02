@@ -20,6 +20,14 @@ warms both servers independently, so those timings are a prospective protocol,
 not the original shared-server historical timings. The supplied transport must
 bind token IDs to the actual response and tokenizer and retain native streams;
 the fake envelope used by tests does not establish this production proof.
+`q38_t7_transport.py` now retains and hashes raw HTTP/SSE, requires a complete
+stream, measures first text-event latency, and accepts a tokenizer-attestation
+provider. The scorer re-parses stream evidence and binds the re-tokenized text
+and token IDs to the plan's tokenizer digest. These IDs are re-tokenized output,
+as in the original classifier, not server-native generation IDs. Missing or
+mismatched provenance is UNKNOWN. The optional MTP table consumes hash-bound
+historical rows and labels its arithmetic ratio as descriptive across different
+cache protocols; it supplies no controlled comparison or promotion authority.
 
 `test_q38_t7_isolated_http.py` starts two **fake** HTTP server subprocesses in
 sequence, routes real local HTTP calls, and verifies independent warmups,

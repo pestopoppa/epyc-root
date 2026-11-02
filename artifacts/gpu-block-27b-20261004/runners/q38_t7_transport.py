@@ -126,7 +126,9 @@ class HttpTransport:
             text = fields['reasoning'] + '\n' + fields['content']
         else:
             decoded = json.loads(raw)
-            result.update(body=decoded, timings=decoded.get('timings') if isinstance(decoded, dict) else None)
+            result.update(body=decoded, raw_body=raw.decode('utf-8'),
+                          raw_body_sha256=hashlib.sha256(raw).hexdigest(),
+                          timings=decoded.get('timings') if isinstance(decoded, dict) else None)
             choices = decoded.get('choices') if isinstance(decoded, dict) else None
             message = choices[0].get('message') if isinstance(choices, list) and len(choices) == 1 else None
             text = message.get('content') if isinstance(message, dict) else None
@@ -136,5 +138,5 @@ class HttpTransport:
                 raise ValueError('tokenizer proof missing')
             result['token_ids'] = proof.get('token_ids')
             result['tokenizer_provenance'] = {k: proof.get(k) for k in
-                                              ('method', 'text_sha256', 'tokenizer_sha256')}
+                                              ('method', 'text_sha256', 'tokenizer_sha256', 'token_ids_sha256')}
         return result

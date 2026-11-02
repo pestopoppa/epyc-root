@@ -18,6 +18,7 @@ import degeneracy as detector
 import lib_gpublock as lib
 import q38_t7 as original
 from q38_t7_isolated import Pair
+from q38_t7_transport import parse_sse
 
 
 @dataclass(frozen=True)
@@ -116,8 +117,20 @@ def _result(response: dict, *, stream: bool, tokenizer_sha256: str,
         raise ValueError('missing or failed native response')
     if stream:
         content, reasoning, finish = response.get('content'), response.get('reasoning'), response.get('finish')
+        raw = response.get('raw_stream')
+        if not isinstance(raw, str) or hashlib.sha256(raw.encode()).hexdigest() != response.get('raw_stream_sha256'):
+            raise ValueError('raw stream hash mismatch')
+        parsed = parse_sse(raw.encode())
+        if any(parsed[key] != response.get(key) for key in ('content', 'reasoning', 'finish', 'timings')):
+            raise ValueError('stream fields differ from native events')
     else:
         payload = response.get('body')
+        raw = response.get('raw_body')
+        if (not isinstance(raw, str) or hashlib.sha256(raw.encode()).hexdigest() != response.get('raw_body_sha256')
+                or json.loads(raw) != payload):
+            raise ValueError('raw response custody mismatch')
+        if not isinstance(payload, dict) or payload.get('timings') != response.get('timings'):
+            raise ValueError('response timings differ from native body')
         choices = payload.get('choices') if isinstance(payload, dict) else None
         if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
             raise ValueError('missing native chat choice')
@@ -137,7 +150,9 @@ def _result(response: dict, *, stream: bool, tokenizer_sha256: str,
         text_digest = hashlib.sha256(text.encode()).hexdigest()
         if (not isinstance(proof, dict) or proof.get('method') != 'retokenized_text'
                 or proof.get('text_sha256') != text_digest
-                or proof.get('tokenizer_sha256') != tokenizer_sha256):
+                or proof.get('tokenizer_sha256') != tokenizer_sha256
+                or proof.get('token_ids_sha256') != hashlib.sha256(
+                    json.dumps(tokens, separators=(',', ':')).encode()).hexdigest()):
             raise ValueError('tokenizer provenance missing or mismatched')
         if stream and (response.get('stream_complete') is not True
                        or not isinstance(response.get('raw_stream_sha256'), str)
@@ -255,7 +270,34 @@ def score(plan: Plan, run: dict, ground_truth: dict[str, dict]) -> dict:
             'historical_timing_comparable': False}
 
 
-def render_markdown(report: dict) -> str:
+def parse_mtp_comparator(raw: bytes) -> dict:
+    """Read the original MTP row schema; retain its content identity and era."""
+    source = json.loads(raw)
+    if not isinstance(source, dict) or not isinstance(source.get('rows'), list) or not source['rows']:
+        raise ValueError('missing MTP rows')
+    groups = {}
+    for row in source['rows']:
+        if not isinstance(row, dict) or type(row.get('target')) is not int or row['target'] <= 0:
+            raise ValueError('invalid MTP target')
+        variant = row.get('variant')
+        if not isinstance(variant, str) or not variant:
+            raise ValueError('missing MTP variant')
+        speed, acc = row.get('decode_tps'), row.get('draft_acc')
+        if any(v is not None and (type(v) not in (int, float) or not math.isfinite(v)) for v in (speed, acc)):
+            raise ValueError('invalid MTP numeric result')
+        if (speed is not None and speed < 0) or (acc is not None and not 0 <= acc <= 1):
+            raise ValueError('invalid MTP speed or acceptance')
+        group = groups.setdefault(row['target'], {'drafted': [], 'nodraft': [], 'acc': []})
+        if variant == 'drafted':
+            group['drafted'].append(speed)
+            if acc is not None:
+                group['acc'].append(acc)
+        else:
+            group['nodraft'].append(speed)
+    return {'source_sha256': hashlib.sha256(raw).hexdigest(), 'groups': groups}
+
+
+def render_markdown(report: dict, *, mtp_comparator: bytes | None = None) -> str:
     """Report original A/B observables without claiming the old cache protocol."""
     if report.get('status') != 'COMPLETE':
         return f"# Q38-T7 isolated A/B\n\nUNKNOWN: {report.get('reason', 'incomplete')}\n"
@@ -291,6 +333,24 @@ def render_markdown(report: dict) -> str:
                      f"{row.get('prompt_n')} | {row.get('cache_n')} | {row.get('prefill_tps')} | "
                      f"{row.get('ttft_s')} | {row.get('decode_tps')} | {row.get('predicted_n')} | "
                      f"{row.get('draft_acc')} | {label} | {row.get('busy_before')} |")
+    if mtp_comparator is not None:
+        mtp = parse_mtp_comparator(mtp_comparator)
+        lines += ['', '## Historical MTP reference — descriptive, different cache protocol', '',
+                  f"Source SHA-256: {mtp['source_sha256']}", '',
+                  '| target | current drafted tok/s | historical MTP tok/s | arithmetic ratio | '
+                  'current draft acceptance | MTP acceptance | current no-draft tok/s |',
+                  '|---:|---:|---:|---:|---:|---:|---:|']
+        for target in sorted({row['target'] for row in report['B']['rows']}):
+            rows = [row for row in report['B']['rows'] if row['target'] == target]
+            current = original.mean([r['decode_tps'] for r in rows if r['variant'] == 'drafted'])
+            current_acc = original.mean([r['draft_acc'] for r in rows if r['variant'] == 'drafted'])
+            no_draft = original.mean([r['decode_tps'] for r in rows if r['variant'].startswith('no-draft')])
+            history = mtp['groups'].get(target, {})
+            historical = original.mean(history.get('drafted', []))
+            historical_acc = original.mean(history.get('acc', []))
+            ratio = round(current / historical, 2) if current is not None and historical else None
+            lines.append(f'| {target} | {current} | {historical} | {ratio} | '
+                         f'{current_acc} | {historical_acc} | {no_draft} |')
     lines += ['', f"Eyeball review: {verdict['eyeball_required']}",
-              'Original pre-KVU MTP and phase C are not measured by this successor.']
+              'Historical MTP and phase C are not measured by this successor.']
     return '\n'.join(lines) + '\n'
