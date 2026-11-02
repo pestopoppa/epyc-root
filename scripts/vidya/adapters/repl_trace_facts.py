@@ -4,7 +4,7 @@ Only the exclusive, finalized native coverage stream is admitted. The source
 hash is producer-declared and is not proof of loaded code. The sealed stream
 contains no originals, so query and corpus custody remain unknown: this source
 reports recorded facts, not a real-session attestation, recall or follow rate.
-It intentionally has no automatic discovery or ingestion registration.
+It is ingested only from an explicitly named sidecar; no automatic discovery.
 """
 from __future__ import annotations
 
@@ -65,7 +65,9 @@ def project(native):
     return ClaimTuple(
         measurement_id='trace-fact-' + native['stream_sha256'] + '-' + str(native['ordinal']),
         metric='recorded_trace_event', value=1, date=event['ts'], category='CANDIDATE',
-        claim='Prospective v2 trace event recorded; source and session identity are producer-declared; original query and corpus custody are unknown',
+        claim=('Prospective v2 trace event recorded; source and session identity are producer-declared; '
+               'original query and corpus custody are unknown; source_sha256=' + native['source_sha256'] +
+               '; event=' + json.dumps(event, sort_keys=True, separators=(',', ':'))),
         metric_direction='higher_better', protocol_id='', reps=1,
         reps_basis='one recorded event, not an independent replication', unit='event',
         attestation_path=native['stream_path'],

@@ -1,15 +1,10 @@
-import importlib.util
 from datetime import datetime, timezone
-from pathlib import Path
 
 import pytest
 from claim_tuple import ProjectionError, grade
 from scripts.vidya.producers.repl_trace_capture import TraceCapture
 
-ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location('trace_facts_test', ROOT / 'scripts/vidya/adapters/repl_trace_facts.py')
-adapter = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(adapter)
+from adapters import repl_trace_facts as adapter
 
 
 def capture(path):

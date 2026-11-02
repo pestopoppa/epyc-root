@@ -23,10 +23,16 @@ def main() -> int:
     parser.add_argument('--originals', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    info = args.originals.stat()
-    if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
-        parser.error('originals must be an owner-only regular file owned by the current user')
-    data = json.loads(args.originals.read_text(encoding='utf-8'))
+    parent = args.output.parent.stat()
+    if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.getuid() or parent.st_mode & 0o077:
+        parser.error('output directory must be owner-only and owned by the current user')
+    # Validate and read the same open file; never follow an originals symlink.
+    fd = os.open(args.originals, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, 'r', encoding='utf-8') as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
+            parser.error('originals must be an owner-only regular file owned by the current user')
+        data = json.load(stream)
     if not isinstance(data, dict) or set(data) != {'queries', 'sessions'} or not all(
         isinstance(data[k], dict) for k in ('queries', 'sessions')
     ):
