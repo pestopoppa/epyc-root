@@ -71,3 +71,11 @@ Prior custody record is on origin/main as 9c31286f9. Rechecked the owned handoff
 ## 09:41Z — Validate CPU collector candidate controls
 
 The prospective CPU request-phase collector is present in /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate/collector.py. Model-free test_collector.py passed 7/7 on 2026-11-02; the companion structural verifier previously passed 9/9. This is candidate instrumentation only: integration, independently reviewed protocol and owning verifier remain necessary before any quiet-host claim or successor row. GPU packet and CH-27 reports remain registered in awaiting/. No row, result or tick claimed.
+
+## 09:42Z — Review CPU collector admission limits
+
+Reviewed /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate/collector.py: the candidate explicitly records collector_visibility=unverified and disclaims exclusive access and actual CPU execution; seven passing synthetic tests do not establish quiet-host evidence. GPU packet, CPU collector, CH-27 campaign and promotion completion events remain registered. Previous progress record is on origin/main as 0c5e42c41 before this turn fast-forward. No row or measurement claimed.
+
+## 09:43Z — Implement pre-grant model custody and CPU collector identity controls
+
+C3 R15 lock candidate passed six synthetic tests; pre-grant model custody with fail-closed mutation detection is being implemented before resealing. CPU collector passed seven and structural verifier nine synthetic controls; cross-sample identity and protocol-bound cadence are being integrated. Neither is yet an admissible row.
