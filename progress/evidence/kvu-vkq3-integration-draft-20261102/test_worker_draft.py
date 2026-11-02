@@ -79,6 +79,29 @@ class WorkerDraftTest(unittest.TestCase):
         self.assertEqual((data['status'], data['validated_token_count']), ('completed', 3))
         self.assertTrue((directory / 'complete.json').exists())
 
+    def test_default_containment_cancels_and_reaps_child(self):
+        import json
+        from unittest import mock
+        import contained_supervisor_draft
+        marker = Path(self.tmp.name, 'child.pid')
+        script = ('import os, signal, sys; '
+                  'open(sys.argv[1], "w").write(str(os.getpid())); '
+                  'signal.pause()')
+        args = self.args()
+        args.update(argv=[sys.executable, '-c', script, str(marker)],
+                    env=dict(os.environ), deadline_monotonic=time.monotonic()+10,
+                    now=time.monotonic, stopped=marker.exists)
+        with mock.patch.object(contained_supervisor_draft, 'supervise',
+                               wraps=contained_supervisor_draft.supervise) as actual:
+            directory = run_attempt(**args)
+        command = actual.call_args.args[0]
+        self.assertEqual(Path(command[1]).name, 'pdeath_exec_draft.py')
+        data = json.loads((directory / 'result.json').read_text())
+        self.assertEqual((data['status'], data['cleanup']), ('cancelled', True))
+        pid = int(marker.read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(pid, 0)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -127,3 +127,7 @@ Prepared VKQ3 synthetic input at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthet
 ## 10:17Z — Added private sanitized stderr custody to VKQ3 diagnostic receipts.
 
 VKQ3 diagnostic receipt now durably records a bounded private category-only stderr excerpt and labels interrupted or overflow captures as potentially incomplete rather than claiming a true stream tail. Twenty offline receipt, worker and publication tests pass. Launcher, runtime binding and full engine integration remain unverified; no inference ran and no row was published.
+
+## 10:18Z — Wired VKQ3 worker to direct-child parent-death supervisor and prepared distinct qualification input.
+
+VKQ3 worker draft now defaults to the direct-child parent-death supervisor; seven offline tests pass, including wrapper invocation and cancellation/reaping. Descendant cleanup, interpreter and wrapper provenance and real rowflow/chroot integration remain unproven. Prepared distinct qualification input as ASCII `synthetic qualification control: amber cedar river 20261102` followed by LF: 60 bytes, SHA-256 af67718fefc2257d854467d8d36537640bf1a65131a5d01458e83bc9994543cd at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthetic-qualification.txt. No inference ran or row was published.
