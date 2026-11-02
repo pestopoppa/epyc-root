@@ -123,3 +123,7 @@ Published autokernel-r22-5-v10-cpu-compile-20261102-v1: publish_row.py smoke PAS
 ## 11:26Z — File failed R22-5 CPU compile and prepare repair
 
 Filed autokernel-r22-5-v10-cpu-compile-20261102-v1 as fail: granted run rc=1, full target build rc=2, results contain only the completed smoke object and no linked binary. GCC 15 reports missing fixed-width integer types in ggml-cpu/iqk/iqk_common.h; the matrix integration and correctness remain unproven. A private scratch successor with an explicit <cstdint> include is being prepared. R22-5 remains open.
+
+## 11:27Z — File incomplete R23-3 serving comparison
+
+Filed autokernel-r23-3-v10-serving-20261102 inconclusive: rc=1; granted run produced nine baseline observations, three prompts times three repeats, and no observations for the three remaining arms. An earlier smoke produced two baseline observations. The prescribed four-arm comparison is incomplete, so no correction or relative speed claim follows. Preserved observation copies in /mnt/raid0/llm/tmp/autokernel-rebuild/r233-filed-evidence; R23-3 stays open. Failure repair is delegated.
