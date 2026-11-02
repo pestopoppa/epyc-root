@@ -127,3 +127,7 @@ The previous wrap-up committed 98ac1d8c773b but its serialized push failed under
 ## 09:20Z — Recover reviewed RPUCG v2 patch and retry publication
 
 Recovered research/rpucg-snapshot-v2-reviewed.patch from the preserved isolated review copy after the prior commit hook refused publication; the recovered SHA-256 is 36533eaf26a67343e00c3508b386c3696229a66aa401a227aeec3da83d5ea6df and all eight isolated tests pass. The observer census passes for the current staged patch. This remains an unintegrated validator and is not an RPUCG selector A/B. No inference row published or compute run.
+
+## 09:41Z — Advance three inference launcher prerequisites
+
+The prior RPUCG v2 review patch was published in 5bee3d8f9cb4314a3dfd73533e6118132a0b68cd; its eight isolated tests do not establish an actual selector A/B. Assigned bounded k228, k175 and zero-profiler implementation work, with completion events registered. Their matching model/runtime hooks and controller feedback mode remain prerequisites for real rows. No row was published and no compute run.
