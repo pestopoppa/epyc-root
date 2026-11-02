@@ -58,6 +58,7 @@ import glob
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -245,6 +246,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
 - Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
   only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
+- **Scratch never goes in the lane** (disk incident 2026-11-02 00:55Z, 130 GiB leaked): you and your sub-agents write
+  scratch to `/mnt/raid0/llm/tmp/{slug}/...` (or the row's scratch_root). The lane is sparse (no `artifacts/`); wrapup.py
+  REFUSES to land while untracked files sit under `artifacts/` in the lane; the lane is reaped when you pause and
+  recreated on resume, so anything not committed and pushed is gone.
 - **NEVER wait in a turn** (CAF-1, operator 2026-11-01): no `sleep`, no polling of grants/dry-run/queue files, no
   `wait_agent`/`list_agents`/status loops, no watching a sub-agent. Publish or delegate, wrap up, END THE TURN. The
   dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, its `dryrun/<id>/PASS.json|FAIL-n.json`,
@@ -433,19 +438,71 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
     _git(repo, "fetch", "-q", "origin", "main")
     if not os.path.exists(os.path.join(d, ".git")):
         os.makedirs(LANES_DIR, exist_ok=True)
+        # SPARSE lane (ws58 00:55Z, 71 lanes x 1-2 GiB leaked 130 GiB): no checkout first, then everything but artifacts/
         if _git(repo, "rev-parse", "--verify", "--quiet", f"refs/heads/{lane_branch(slug)}").returncode == 0:
-            r = _git(repo, "worktree", "add", d, lane_branch(slug))
+            r = _git(repo, "worktree", "add", "--no-checkout", d, lane_branch(slug))
         else:
-            r = _git(repo, "worktree", "add", "-b", lane_branch(slug), d, "origin/main")
+            r = _git(repo, "worktree", "add", "--no-checkout", "-b", lane_branch(slug), d, "origin/main")
         if r.returncode:
             raise RuntimeError(f"worktree add {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
+        sparse_lane(d)
+        r = _git(d, "checkout", "-q")
+        if r.returncode:
+            raise RuntimeError(f"sparse checkout of {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
         return d, "created"
+    if not os.path.exists(os.path.join(repo, ".git", "worktrees", os.path.basename(d), "info", "sparse-checkout")) and \
+            not _git(d, "config", "--get", "core.sparseCheckout").stdout.strip() == "true":
+        sparse_lane(d)  # an old full lane: drop artifacts/ from its working tree (tracked files only; scratch stays visible)
     if _git(d, "merge", "--ff-only", "origin/main").returncode == 0:
         return d, "fast-forwarded"
     if _git(d, "merge", "--no-edit", "origin/main").returncode == 0:
         return d, "merged"
     _git(d, "merge", "--abort")
     return d, "merge-conflict"
+
+
+LANE_EXCLUDE = ("artifacts/",)      # ~800 MB of every full checkout; sessions never need it in the lane
+DISK_FLOOR_GIB = 170                # no new lane below this much free space
+
+
+def sparse_lane(d):
+    """Non-cone sparse checkout: everything except LANE_EXCLUDE."""
+    _git(d, "sparse-checkout", "init", "--no-cone")
+    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE])
+
+
+def free_gib(path="/mnt/raid0/llm") -> float:
+    try:
+        return shutil.disk_usage(path).free / 2**30
+    except OSError:
+        return float("inf")
+
+
+def lane_clean_and_landed(d) -> bool:
+    if not os.path.isdir(d):
+        return False
+    if _git(d, "status", "--porcelain").stdout.strip():
+        return False
+    r = _git(d, "cherry", "origin/main")
+    return r.returncode == 0 and not any(l.startswith("+") for l in r.stdout.splitlines())
+
+
+def reap_lanes(flags, reg, repo=None):
+    """Lanes of sessions that are not live (suspended/yielded/done/failed) are removed when clean and landed (never --force,
+    never prune); they are recreated on the next resume. A dirty lane is left for one wrap-up resume (logged once)."""
+    repo = repo or ROOT
+    for slug, e in (reg.get("sessions") or {}).items():
+        if alive(e.get("pid")) or e.get("status") in ("live", "retry", "unpushed"):
+            continue
+        d = lane_dir(slug)
+        if not os.path.exists(d):
+            continue
+        if lane_clean_and_landed(d):
+            r = _git(repo, "worktree", "remove", d)
+            log(flags, f"LANE-REAPED {slug} {d}: rc={r.returncode} {(r.stderr or '').strip()[:120]} (clean, landed; recreated on resume)")
+        elif not e.get("lane_dirty_logged"):
+            e["lane_dirty_logged"] = now_iso()
+            log(flags, f"LANE-DIRTY {slug} {d}: uncommitted or unlanded work; kept for one wrap-up resume")
 
 
 def remove_lane(flags, slug, repo=None):
@@ -821,6 +878,9 @@ def mark_yields(flags, reg, data, cap):
             log(flags, f"UNYIELD {slug}: handoff back in the top {cap}")
 
 
+st_disk_logged = {}
+
+
 def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None, data=None):
     """Start sessions for the best handoffs that need one until live == cap. Returns the new live count."""
     if not reg.get("auto_start", True):
@@ -835,6 +895,11 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     if live >= cap:
         return live
     started = []
+    if free_gib() < DISK_FLOOR_GIB:
+        if time.time() - st_disk_logged.get("t", 0) > 600:
+            log(flags, f"AUTO-START-THROTTLED disk: {free_gib():.0f} GiB free < {DISK_FLOOR_GIB}; no new lanes")
+            st_disk_logged["t"] = time.time()
+        return live
     pinned = set(reg.get("pinned") or [])
     st = load(state_path(flags), {})
     starts = [t for t in (st.get("starts") or []) if time.time() - t < 3600]
@@ -1243,6 +1308,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
     start_watchdog(flags, st, now)
+    reap_lanes(flags, reg, repo)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
