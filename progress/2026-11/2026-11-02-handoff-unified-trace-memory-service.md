@@ -39,3 +39,7 @@ Consumed all three independent reviews. Requested RRF fixes for budget truncatio
 ## 00:22Z — Document catalog prototype privacy scope
 
 Reviewed and retained the catalog README privacy clarification: session_id is ignored and the whole selected database must be safe for the model. The README explicitly records outstanding catalog validation and SQLite limitations. Runtime fixes were not made: the lane is unindexed and the host denied GitNexus reindex CPU admission. The other bounded remediation jobs continue; previous wrapper push was rejected after origin/main advanced and the lane has been merged for retry.
+
+## 00:22Z — Preserve RRF review fixes
+
+Consumed RRF and catalog remediation results. RRF prototype now refuses top_k beyond candidate depth, uses configurable test checkout, deterministic provider build order and declared tie policy, and safe URI handling with explicit rejection of ?/# paths affected by existing trace navigation. Agent reports four synthetic tests and git apply --check passed; independent review is registered. It remains unwired and has no real vector provider or experimental provenance. Catalog runtime remediation remains pending because lane indexing was refused by host CPU admission; privacy documentation is already committed. An independent read-only trace URI assessment is registered. Interim LB2 work is separately awaiting its completion event. No inference or row publication.

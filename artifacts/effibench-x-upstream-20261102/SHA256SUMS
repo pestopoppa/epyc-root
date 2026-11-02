@@ -1,0 +1,4 @@
+01d4648f04f8878046e91a4978db28bec5a82a56914e98d81c979a1e422f2f02  patches/01-deprecated-openjdk-image.patch
+25a661d901234d2f6a2f70ebd915452796667eb919e17f5896bc63bef83f83e3  patches/02-time-sleep-attributeerror.patch
+3082db854bd577dee487602e0516121d6da03f62a772df9f9a4e11439f095b3c  patches/03-fail-open-to-zero-metric.patch
+dd720cfec91c2f6fa5a88aaf006ce3fd2a0d9e9261a899c71ac7a792cb0581e1  patches/04-is-passed-empty-output-fail-open.patch

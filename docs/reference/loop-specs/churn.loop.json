@@ -1,0 +1,768 @@
+{
+ "schema": "epyc.loop_spec.v1",
+ "loop_id": "churn",
+ "title": "Backlog churn loop (rowflow + allocator + dispatcher)",
+ "canonical_doc": "docs/guides/agent-workflows/backlog-churn-flow.md",
+ "spec_revised": "2026-11-02T00:54:29Z",
+ "summary": "Non-inference tasks that unblock inference rows are worked first; each unblocked inference row is published (launcher + spec), dry-run on its real lane, then granted by the one allocator. Per-handoff sessions are auto-started in rank order, paused only while waiting on a queued/running row, and wrap up at every task boundary. Do not stop until all non-inference tasks are exhausted and inference rows armed.",
+ "machines": [
+  {
+   "id": "row",
+   "title": "Inference row (epyc.row.v3)",
+   "actor": "rowflow.py status / keeper v11 (deterministic, no LLM)",
+   "cadence": "evaluated every keeper tick (120 s)",
+   "code": [
+    "scripts/coordination/rowflow/rowflow.py:status",
+    "scripts/coordination/rowflow/rowflow.py:publish",
+    "scripts/coordination/rowflow/publish_row.py"
+   ],
+   "initial": "needs-dryrun",
+   "states": [
+    {
+     "id": "needs-dryrun",
+     "kind": "wait",
+     "meaning": "published; no dry run for the current launcher sha"
+    },
+    {
+     "id": "dryrun-running",
+     "kind": "work",
+     "meaning": "the allocator started a dry run on a real region under a short grant"
+    },
+    {
+     "id": "failed",
+     "kind": "fail",
+     "meaning": "last dry run FAILed for this exact launcher/spec/rowflow sha: dryrun/<id>/FAIL-n.json is the owner's one fix task; not retried until something changes"
+    },
+    {
+     "id": "parked",
+     "kind": "park",
+     "terminal": true,
+     "meaning": "MAX_FAILS failed dry runs in the lineage; operator-escalations/<lineage>.md; only the operator un-parks"
+    },
+    {
+     "id": "stale",
+     "kind": "wait",
+     "meaning": "a dry run passed but the launcher changed since; a new dry run is needed"
+    },
+    {
+     "id": "grantable",
+     "kind": "wait",
+     "meaning": "dry run PASSED for the current launcher sha; waiting for the allocator to place it"
+    },
+    {
+     "id": "armed",
+     "kind": "wait",
+     "meaning": "poller alive, grant written from the tick snapshot"
+    },
+    {
+     "id": "running",
+     "kind": "work",
+     "meaning": "grants/<id>.grant open, no .ended/.complete, poller pid alive"
+    },
+    {
+     "id": "done",
+     "kind": "done",
+     "terminal": true,
+     "meaning": "grants/<id>.ended|.complete or filing-done/<id>.FILED present; owner resumed to file the verdict"
+    }
+   ],
+   "transitions": [
+    {
+     "from": "needs-dryrun",
+     "to": "dryrun-running",
+     "on": "allocator assigns a free region from the tick snapshot",
+     "log": "DRYRUN-START"
+    },
+    {
+     "from": "stale",
+     "to": "dryrun-running",
+     "on": "allocator assigns a free region",
+     "log": "DRYRUN-START"
+    },
+    {
+     "from": "dryrun-running",
+     "to": "grantable",
+     "on": "first measured unit lands in result_path in result_format; exit rc 0/75 (GPU: VRAM in use)",
+     "thresholds": [
+      "STOP_GRACE_S"
+     ]
+    },
+    {
+     "from": "dryrun-running",
+     "to": "failed",
+     "on": "no unit / bad rc / no VRAM",
+     "reason": "DRYRUN-FAIL"
+    },
+    {
+     "from": "dryrun-running",
+     "to": "needs-dryrun",
+     "on": "disk floor below dryrun_disk_policy.json",
+     "reason": "DISK-WAIT"
+    },
+    {
+     "from": "failed",
+     "to": "needs-dryrun",
+     "on": "launcher, spec or rowflow.py sha changes (owner fix / publish_row.py --repair)"
+    },
+    {
+     "from": "failed",
+     "to": "parked",
+     "on": "lineage fail count reaches MAX_FAILS",
+     "reason": "PARKED-LINEAGE",
+     "thresholds": [
+      "ROW_MAX_FAILS"
+     ]
+    },
+    {
+     "from": "grantable",
+     "to": "stale",
+     "on": "launcher sha changes"
+    },
+    {
+     "from": "grantable",
+     "to": "armed",
+     "on": "allocator places it (starved lane first, then priority_rank) and writes the grant",
+     "log": "GRANT"
+    },
+    {
+     "from": "armed",
+     "to": "running",
+     "on": "grant window starts; job claims the region"
+    },
+    {
+     "from": "running",
+     "to": "grantable",
+     "on": "poller pid dead, no .ended: grant moved to grants/stale-<ts>/",
+     "log": "HEAL stale-grant",
+     "reason": "STALE-GRANT"
+    },
+    {
+     "from": "armed",
+     "to": "grantable",
+     "on": "region held by another job before START: grant withdrawn",
+     "log": "HEAL conflict",
+     "reason": "GRANT-CONFLICT"
+    },
+    {
+     "from": "running",
+     "to": "done",
+     "on": "grants/<id>.ended|.complete written"
+    },
+    {
+     "from": "needs-dryrun",
+     "to": "failed",
+     "on": "launcher missing or spec has no result_path",
+     "reason": "SPEC-INCOMPLETE"
+    }
+   ]
+  },
+  {
+   "id": "allocator",
+   "title": "Allocator tick (rowflow.py allocate)",
+   "actor": "ws58-calendar-keeper-v11.sh -> rowflow.py allocate",
+   "cadence": "every 120 s",
+   "code": [
+    "scripts/coordination/rowflow/rowflow.py:allocate",
+    "scripts/coordination/tests/test_allocator.py"
+   ],
+   "initial": "snapshot",
+   "states": [
+    {
+     "id": "snapshot",
+     "kind": "work",
+     "meaning": "read region-lock, open grants (holds=) and live dry runs ONCE"
+    },
+    {
+     "id": "assign",
+     "kind": "work",
+     "meaning": "place dry runs and grants together: starved lane first, priority_rank, grantable before dry run; a region is never handed twice"
+    },
+    {
+     "id": "heal",
+     "kind": "work",
+     "meaning": "withdraw stale/conflicting grants; record UNDERUSED owner fix tasks; never kill a started job"
+    },
+    {
+     "id": "alert",
+     "kind": "alert",
+     "meaning": "same HEAL/CONFLICT/UNDERUSED/violation 3 ticks running -> ws58-keeper-alerts.jsonl"
+    },
+    {
+     "id": "sleep",
+     "kind": "wait",
+     "meaning": "wait for the next tick"
+    }
+   ],
+   "transitions": [
+    {
+     "from": "snapshot",
+     "to": "assign",
+     "on": "snapshot taken",
+     "log": "SNAPSHOT"
+    },
+    {
+     "from": "assign",
+     "to": "heal",
+     "on": "assignments written",
+     "log": "GRANT / DRYRUN-START / IDLE-WHY"
+    },
+    {
+     "from": "heal",
+     "to": "alert",
+     "on": "a condition repeated ALERT_REPEATS ticks",
+     "reason": "ALERT-REPEATED",
+     "thresholds": [
+      "ALERT_REPEATS"
+     ]
+    },
+    {
+     "from": "heal",
+     "to": "sleep",
+     "on": "no repeated condition"
+    },
+    {
+     "from": "alert",
+     "to": "sleep",
+     "on": "alert appended"
+    },
+    {
+     "from": "sleep",
+     "to": "snapshot",
+     "on": "tick elapsed",
+     "thresholds": [
+      "KEEPER_TICK_S"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "session",
+   "title": "Per-handoff session",
+   "actor": "handoff_sessions.py dispatch --loop",
+   "cadence": "every 60 s",
+   "code": [
+    "scripts/coordination/handoff_sessions.py:dispatch_once",
+    "scripts/coordination/handoff_sessions.py:work_state",
+    "scripts/coordination/backlog_gen.py"
+   ],
+   "initial": "unstarted",
+   "states": [
+    {
+     "id": "unstarted",
+     "kind": "wait",
+     "meaning": "handoff listed under 'needs a handoff session' in backlog_gen rank order"
+    },
+    {
+     "id": "live",
+     "kind": "work",
+     "meaning": "engine pid alive in tmux window h-<slug>, working in lane worktree worktrees/mains/h-<slug>"
+    },
+    {
+     "id": "suspended",
+     "kind": "wait",
+     "meaning": "turn ended with a landed WRAPPED <sha>; dispatcher decides OPEN / PAUSE / DONE"
+    },
+    {
+     "id": "paused",
+     "kind": "pause",
+     "meaning": "suspended and every open item waits on a queued/running row; holds no slot; window killed"
+    },
+    {
+     "id": "yield",
+     "kind": "yield",
+     "meaning": "handoff fell below top-max_live; finishes current task, not resumed for new work (run-end events still reach it)"
+    },
+    {
+     "id": "unpushed",
+     "kind": "wait",
+     "meaning": "WRAPPED sha not on origin/main; re-prompted with PUSH_PROMPT"
+    },
+    {
+     "id": "retry",
+     "kind": "wait",
+     "meaning": "transient engine error; 'go on' after backoff"
+    },
+    {
+     "id": "failed",
+     "kind": "fail",
+     "meaning": "transient retries exhausted"
+    },
+    {
+     "id": "done",
+     "kind": "done",
+     "terminal": true,
+     "meaning": "no open - [ ] left (or file left handoffs/active/); slot freed, lane removed"
+    }
+   ],
+   "transitions": [
+    {
+     "from": "unstarted",
+     "to": "live",
+     "on": "live < max_live and handoff is best-ranked without a session",
+     "log": "AUTO-START",
+     "thresholds": [
+      "MAX_LIVE"
+     ]
+    },
+    {
+     "from": "live",
+     "to": "suspended",
+     "on": "turn ends with WRAPPED <sha> on origin/main",
+     "log": "TURN-END"
+    },
+    {
+     "from": "live",
+     "to": "unpushed",
+     "on": "WRAPPED sha not on origin/main",
+     "log": "UNPUSHED",
+     "reason": "UNPUSHED",
+     "thresholds": [
+      "MAX_PUSH_RETRIES"
+     ]
+    },
+    {
+     "from": "live",
+     "to": "retry",
+     "on": "turn ended with a transient error and no wrap-up",
+     "log": "TRANSIENT",
+     "reason": "TRANSIENT",
+     "thresholds": [
+      "TRANSIENT_BACKOFF_S"
+     ]
+    },
+    {
+     "from": "retry",
+     "to": "live",
+     "on": "backoff elapsed; GO_ON_PROMPT"
+    },
+    {
+     "from": "retry",
+     "to": "failed",
+     "on": "backoff schedule exhausted",
+     "reason": "RETRIES-EXHAUSTED"
+    },
+    {
+     "from": "unpushed",
+     "to": "live",
+     "on": "push re-prompt (slot available)"
+    },
+    {
+     "from": "suspended",
+     "to": "live",
+     "on": "advanceable row, own inference task or non-inference task open: 'continue: next task'",
+     "log": "OPEN"
+    },
+    {
+     "from": "suspended",
+     "to": "paused",
+     "on": "every open item waits on a queued/running row",
+     "log": "PAUSE",
+     "reason": "WAITING-ON-ROW"
+    },
+    {
+     "from": "paused",
+     "to": "live",
+     "on": "grants/<id>.ended|.complete: resumed with result_path + decision_rule (filing slot)",
+     "log": "RUN-END",
+     "thresholds": [
+      "FILING_SLOTS"
+     ]
+    },
+    {
+     "from": "suspended",
+     "to": "done",
+     "on": "nothing open and no rows waiting",
+     "log": "DONE",
+     "reason": "HANDOFF-EXHAUSTED"
+    },
+    {
+     "from": "live",
+     "to": "yield",
+     "on": "handoff outranked below top-max_live",
+     "log": "YIELD",
+     "reason": "OUTRANKED"
+    },
+    {
+     "from": "yield",
+     "to": "suspended",
+     "on": "rank recovers",
+     "log": "UNYIELD"
+    },
+    {
+     "from": "unstarted",
+     "to": "unstarted",
+     "on": "cwd not inside the project",
+     "log": "REFUSED-CWD",
+     "reason": "REFUSED-CWD"
+    },
+    {
+     "from": "suspended",
+     "to": "suspended",
+     "on": "last task not wrapped: no new work",
+     "log": "UNWRAPPED",
+     "reason": "UNWRAPPED"
+    },
+    {
+     "from": "live",
+     "to": "suspended",
+     "on": "session replies IDLE: <reason>; re-asked later",
+     "reason": "SELF-IDLE",
+     "thresholds": [
+      "IDLE_REPORT_COOLDOWN_S"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "backlog",
+   "title": "Backlog generator",
+   "actor": "ws58-backlog-gen-v1.sh -> backlog_gen.py",
+   "cadence": "every 10 min",
+   "code": [
+    "scripts/coordination/backlog_gen.py"
+   ],
+   "initial": "rank",
+   "states": [
+    {
+     "id": "rank",
+     "kind": "work",
+     "meaning": "score non-inference tasks by sum of lane_weight over the inference rows they unblock (transitive); lane_weight = 1/(1+ready rows in lane); then [S]<[M]<[L]"
+    },
+    {
+     "id": "route",
+     "kind": "work",
+     "meaning": "[S] tasks -> BACKLOG-codex-gen.md; everything else -> BACKLOG-handoff-<slug>.md or 'needs a handoff session'"
+    },
+    {
+     "id": "write",
+     "kind": "work",
+     "meaning": "write BACKLOG files + needs_session ranking the dispatcher consumes"
+    }
+   ],
+   "transitions": [
+    {
+     "from": "rank",
+     "to": "route",
+     "on": "scores computed",
+     "thresholds": [
+      "CANDIDATE_WEIGHT",
+      "CANDIDATE_CAP"
+     ]
+    },
+    {
+     "from": "route",
+     "to": "write",
+     "on": "routing decided"
+    },
+    {
+     "from": "write",
+     "to": "rank",
+     "on": "10 min elapsed"
+    }
+   ]
+  }
+ ],
+ "thresholds": [
+  {
+   "id": "ROW_MAX_FAILS",
+   "value": 3,
+   "unit": "failed dry runs per lineage",
+   "source": "scripts/coordination/rowflow/rowflow.py:MAX_FAILS",
+   "meaning": "park the lineage and escalate to the operator"
+  },
+  {
+   "id": "BACKLOG_MAX_FAILS",
+   "value": 3,
+   "unit": "failed dry runs per lineage",
+   "source": "scripts/coordination/backlog_gen.py:MAX_FAILS",
+   "meaning": "backlog renders the row as parked"
+  },
+  {
+   "id": "STOP_GRACE_S",
+   "value": 600,
+   "unit": "s",
+   "source": "scripts/coordination/rowflow/rowflow.py:STOP_GRACE_S",
+   "meaning": "job may finish its current item before honouring the stop file; after that it is truncated and PASSES with a warning"
+  },
+  {
+   "id": "RAM_MARGIN_GIB",
+   "value": 64,
+   "unit": "GiB",
+   "source": "scripts/coordination/rowflow/rowflow.py:RAM_MARGIN_GIB",
+   "meaning": "allocator keeps this much RAM free (earlyoom fires at 40 GiB)"
+  },
+  {
+   "id": "UNDERUSED_PCT",
+   "value": 5.0,
+   "unit": "% of held quarter CPUs",
+   "source": "scripts/coordination/rowflow/rowflow.py:UNDERUSED_PCT",
+   "meaning": "below this for UNDERUSED_S -> owner fix task, never killed"
+  },
+  {
+   "id": "UNDERUSED_S",
+   "value": 600,
+   "unit": "s",
+   "source": "scripts/coordination/rowflow/rowflow.py:UNDERUSED_S",
+   "meaning": "window for UNDERUSED"
+  },
+  {
+   "id": "ALERT_REPEATS",
+   "value": 3,
+   "unit": "ticks",
+   "source": "scripts/coordination/rowflow/rowflow.py:ALERT_REPEATS",
+   "meaning": "a HEAL/CONFLICT/UNDERUSED/violation repeated this many ticks becomes an ALERT"
+  },
+  {
+   "id": "SNAPSHOT_MAX_BYTES",
+   "value": 268435456,
+   "unit": "bytes",
+   "source": "scripts/coordination/rowflow/rowflow.py:SNAPSHOT_MAX_BYTES",
+   "meaning": "a larger launcher snapshot is a refusal"
+  },
+  {
+   "id": "KEEPER_TICK_S",
+   "value": 120,
+   "unit": "s",
+   "source": "docs/guides/agent-workflows/backlog-churn-flow.md",
+   "meaning": "allocator cadence (keeper v11)"
+  },
+  {
+   "id": "MAX_LIVE",
+   "value": 5,
+   "unit": "sessions",
+   "source": "registry:handoff-sessions.json:max_live",
+   "meaning": "live session cap (paused sessions hold no slot)"
+  },
+  {
+   "id": "FILING_SLOTS",
+   "value": 1,
+   "unit": "sessions",
+   "source": "scripts/coordination/handoff_sessions.py:FILING_SLOTS",
+   "meaning": "slot above max_live reserved for run-end filing resumes"
+  },
+  {
+   "id": "PAUSE_S",
+   "value": 1800,
+   "unit": "s",
+   "source": "scripts/coordination/handoff_sessions.py:PAUSE_S",
+   "meaning": "pause interval"
+  },
+  {
+   "id": "IDLE_COOLDOWN_S",
+   "value": 2700,
+   "unit": "s",
+   "source": "scripts/coordination/handoff_sessions.py:IDLE_COOLDOWN_S",
+   "meaning": "cooldown after an idle pass"
+  },
+  {
+   "id": "IDLE_REPORT_COOLDOWN_S",
+   "value": 1800,
+   "unit": "s",
+   "source": "scripts/coordination/handoff_sessions.py:IDLE_REPORT_COOLDOWN_S",
+   "meaning": "a session that said IDLE: <reason> is re-asked after this long"
+  },
+  {
+   "id": "MAX_PUSH_RETRIES",
+   "value": 6,
+   "unit": "re-prompts",
+   "source": "scripts/coordination/handoff_sessions.py:MAX_PUSH_RETRIES",
+   "meaning": "unpushed wrap-up re-prompts"
+  },
+  {
+   "id": "MAX_REQUEUE",
+   "value": 3,
+   "unit": "redeliveries",
+   "source": "scripts/coordination/handoff_sessions.py:MAX_REQUEUE",
+   "meaning": "run-end event redelivered at most this often without filing-done/<id>.FILED"
+  },
+  {
+   "id": "TRANSIENT_BACKOFF_S",
+   "value": "120,240,480",
+   "unit": "s",
+   "source": "scripts/coordination/handoff_sessions.py:TRANSIENT_BACKOFF_S",
+   "meaning": "'go on' retries after a transient engine error"
+  },
+  {
+   "id": "DRYRUN_EVENT_MAX_AGE_S",
+   "value": 1800,
+   "unit": "s",
+   "source": "scripts/coordination/handoff_sessions.py:DRYRUN_EVENT_MAX_AGE_S",
+   "meaning": "older dry-run results are not events (restart safety)"
+  },
+  {
+   "id": "CANDIDATE_WEIGHT",
+   "value": 0.5,
+   "unit": "x lane_weight",
+   "source": "scripts/coordination/backlog_gen.py:CANDIDATE_WEIGHT",
+   "meaning": "an unpublished inference task counts as half a row"
+  },
+  {
+   "id": "CANDIDATE_CAP",
+   "value": 8,
+   "unit": "tasks",
+   "source": "scripts/coordination/backlog_gen.py:CANDIDATE_CAP",
+   "meaning": "at most this many own inference tasks score per handoff"
+  }
+ ],
+ "stop_reasons": [
+  {
+   "id": "DRYRUN-FAIL",
+   "kind": "fail",
+   "machine": "row",
+   "condition": "dry run produced no measured unit, bad rc, or (GPU) no VRAM in use",
+   "artifact": "dryrun/<id>/FAIL-n.json",
+   "clears_when": "launcher/spec/rowflow sha changes"
+  },
+  {
+   "id": "PARKED-LINEAGE",
+   "kind": "park",
+   "machine": "row",
+   "condition": "lineage reached ROW_MAX_FAILS failed dry runs",
+   "artifact": "operator-escalations/<lineage>.md",
+   "clears_when": "operator un-parks the lineage",
+   "thresholds": [
+    "ROW_MAX_FAILS"
+   ]
+  },
+  {
+   "id": "SPEC-INCOMPLETE",
+   "kind": "fail",
+   "machine": "row",
+   "condition": "launcher missing or migrated manifest lacks result_path",
+   "clears_when": "a complete spec is published"
+  },
+  {
+   "id": "DISK-WAIT",
+   "kind": "wait",
+   "machine": "row",
+   "condition": "disk below dryrun_disk_policy.json floor: a WAIT, never a FAIL",
+   "clears_when": "disk recovers"
+  },
+  {
+   "id": "FETCH-REFUSED",
+   "kind": "refuse",
+   "machine": "row",
+   "condition": "spec kind is fetch|prepare|inputs|download|copy: inputs are session preparation, not a compute row",
+   "clears_when": "owner prepares inputs and publishes a compute row"
+  },
+  {
+   "id": "STALE-GRANT",
+   "kind": "alert",
+   "machine": "allocator",
+   "condition": "grant whose poller pid is dead with no .ended",
+   "artifact": "grants/stale-<ts>/"
+  },
+  {
+   "id": "GRANT-CONFLICT",
+   "kind": "alert",
+   "machine": "allocator",
+   "condition": "granted onto a region another job holds (before START: withdrawn; after: CONFLICT logged, never killed)"
+  },
+  {
+   "id": "UNDERUSED",
+   "kind": "alert",
+   "machine": "allocator",
+   "condition": "< UNDERUSED_PCT of a held quarter busy for UNDERUSED_S",
+   "artifact": "dryrun/<id>/UNDERUSED.json",
+   "thresholds": [
+    "UNDERUSED_PCT",
+    "UNDERUSED_S"
+   ]
+  },
+  {
+   "id": "IDLE-WHY",
+   "kind": "wait",
+   "machine": "allocator",
+   "condition": "a region stayed free: no fitting row, or the fitting row needs a busy region / RAM short",
+   "thresholds": [
+    "RAM_MARGIN_GIB"
+   ]
+  },
+  {
+   "id": "ALERT-REPEATED",
+   "kind": "alert",
+   "machine": "allocator",
+   "condition": "any HEAL/CONFLICT/UNDERUSED/IDLE-VIOLATION seen ALERT_REPEATS ticks running",
+   "artifact": "ws58-keeper-alerts.jsonl",
+   "thresholds": [
+    "ALERT_REPEATS"
+   ]
+  },
+  {
+   "id": "WAITING-ON-ROW",
+   "kind": "pause",
+   "machine": "session",
+   "condition": "every open item in the handoff waits on a queued/running inference row (the ONLY legal pause)",
+   "clears_when": "run-end event for that row"
+  },
+  {
+   "id": "HANDOFF-EXHAUSTED",
+   "kind": "stop",
+   "machine": "session",
+   "condition": "no open - [ ] and no rows waiting",
+   "clears_when": "the handoff grows open tasks again (fresh session, same slug)"
+  },
+  {
+   "id": "OUTRANKED",
+   "kind": "yield",
+   "machine": "session",
+   "condition": "handoff rank fell below top-MAX_LIVE",
+   "clears_when": "rank recovers (UNYIELD)",
+   "thresholds": [
+    "MAX_LIVE"
+   ]
+  },
+  {
+   "id": "UNWRAPPED",
+   "kind": "refuse",
+   "machine": "session",
+   "condition": "last task has no landed WRAPPED <sha>: no new work dispatched"
+  },
+  {
+   "id": "UNPUSHED",
+   "kind": "wait",
+   "machine": "session",
+   "condition": "WRAPPED sha not on origin/main",
+   "thresholds": [
+    "MAX_PUSH_RETRIES"
+   ]
+  },
+  {
+   "id": "TRANSIENT",
+   "kind": "wait",
+   "machine": "session",
+   "condition": "engine turn ended with a transient error and no wrap-up",
+   "thresholds": [
+    "TRANSIENT_BACKOFF_S"
+   ]
+  },
+  {
+   "id": "RETRIES-EXHAUSTED",
+   "kind": "fail",
+   "machine": "session",
+   "condition": "transient backoff schedule exhausted"
+  },
+  {
+   "id": "REFUSED-CWD",
+   "kind": "refuse",
+   "machine": "session",
+   "condition": "spawn cwd not /workspace or one of its worktrees"
+  },
+  {
+   "id": "SELF-IDLE",
+   "kind": "pause",
+   "machine": "session",
+   "condition": "session replied IDLE: <reason>",
+   "clears_when": "re-asked after IDLE_REPORT_COOLDOWN_S",
+   "thresholds": [
+    "IDLE_REPORT_COOLDOWN_S"
+   ]
+  },
+  {
+   "id": "USAGE-LIMIT",
+   "kind": "wait",
+   "machine": "session",
+   "condition": "engine output matches the usage/rate-limit pattern (USAGE_RX)"
+  }
+ ]
+}

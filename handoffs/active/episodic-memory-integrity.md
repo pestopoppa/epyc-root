@@ -489,6 +489,17 @@ failure caught in amber.
         instruction the memory-off arm lacks.
         *2026-09-16 (B2, merged `cfbfa448`):* arms are selected with `BEAM_CONTEXT_MODE=full|rag|trace`
         and scored with `score_beam_run --arm full|rag|trace`.
+    - 2026-11-02 evidence recovery: research `benchmarks/results/runs/20260918_195111`,
+      `20260918_221626`, and `20260918_232546` contain reader, judged, scored and belief
+      artifacts for full, rag and trace respectively (400 questions each). The saved judge is
+      Gemma 4 26B and the reader is Qwen 3.6 35B; per-row context modes identify each arm.
+      The saved 10-ability macro scores (0.624526, 0.625852, 0.649611) are **not** the
+      specified five-ability headline. The five abilities are not enumerated in this task or
+      the saved score files; trace their original definition before computing the headline.
+      Recorded truncations are 2/400, 3/400 and 3/400 respectively. Run directories lack
+      receipts establishing matched reader prompts/settings, both-role ingestion, matched
+      retrieval budgets/chunking and runtime dataset digest verification. Recover those
+      receipts before treating the M-12c controls or this checkbox as satisfied. [belief: cc]
   - [ ] **M-12c — pre-run do-not-copy checklist, seven items** (intake-1337#record, each traceable to
         a site in MemPalace issue #125): (1) report BEAM's own fold, never a binarised
         micro-average; (2) ingest BOTH roles, never user turns only; (3) no synthesis

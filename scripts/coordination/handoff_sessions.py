@@ -58,6 +58,7 @@ import glob
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -245,6 +246,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
   manifest. Never pkill/pgrep by name; kill only PIDs you captured.
 - Git: work ONLY in your lane worktree; never commit in {ROOT}; never `git add -A`/`git add .`; pathspec-limited commits
   only; push only through serialized_push.py (lane -> main). Never `git worktree prune`, never `git gc`.
+- **Scratch never goes in the lane** (disk incident 2026-11-02 00:55Z, 130 GiB leaked): you and your sub-agents write
+  scratch to `/mnt/raid0/llm/tmp/{slug}/...` (or the row's scratch_root). The lane is sparse (no `artifacts/`); wrapup.py
+  REFUSES to land while untracked files sit under `artifacts/` in the lane; the lane is reaped when you pause and
+  recreated on resume, so anything not committed and pushed is gone.
 - **NEVER wait in a turn** (CAF-1, operator 2026-11-01): no `sleep`, no polling of grants/dry-run/queue files, no
   `wait_agent`/`list_agents`/status loops, no watching a sub-agent. Publish or delegate, wrap up, END THE TURN. The
   dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, its `dryrun/<id>/PASS.json|FAIL-n.json`,
@@ -298,8 +303,26 @@ def filing_step(flags, rid, filing):
             f"tick the handoff with evidence) and `touch {flags}/filing-done/{rid}.FILED` — the receipt acks this event.")
 
 
+def related_ids(flags, rid):
+    """SA-3: the ids a resumed owner needs for a targeted delta instead of a cold re-read: row, manifest, handoff task,
+    lineage, grant end file(s), prior dry-run FAIL/PASS records, verdict record."""
+    mp, m = manifest_for(flags, rid)
+    fails = sorted(glob.glob(os.path.join(flags, "dryrun", rid, "FAIL-*.json")))
+    rel = {"row": rid, "manifest": mp, "handoff_task": m.get("handoff_task"), "lineage": (m.get("lineage") or bg.id_stem(rid)),
+           "result_path": m.get("result_path"), "decision_rule": m.get("decision_rule"),
+           "ends": [p for p in (os.path.join(flags, "grants", rid + ".ended"), os.path.join(flags, "grants", rid + ".complete")) if os.path.exists(p)],
+           "prior_fail": fails[-1] if fails else None, "pass": os.path.join(flags, "dryrun", rid, "PASS.json") if os.path.exists(os.path.join(flags, "dryrun", rid, "PASS.json")) else None,
+           "verdict": os.path.join(flags, "filing-done", rid + ".verdict.json") if os.path.exists(os.path.join(flags, "filing-done", rid + ".verdict.json")) else None}
+    return rel
+
+
+def related_line(rel):
+    return ("Related: " + "; ".join(f"{k}={v}" for k, v in rel.items() if v and k not in ("decision_rule", "result_path")))[:900]
+
+
 def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
     mp, m = manifest_for(flags, rid)
+    rel = related_ids(flags, rid)
     try:
         endline = open(endfile).read().strip()[:400]
     except OSError:
@@ -313,9 +336,9 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
         pass
     return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
-2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`;
-   manifest {mp or '(not found; look in ' + flags + '/ready/<id>.json or ready/armed/<id>.json)'} (schema {m.get('schema', 'epyc.row.v2|v3')});
-   result_path: {m.get('result_path')}; handoff_task: {m.get('handoff_task')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
+2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`; manifest {mp or '(none)'} (schema {m.get('schema', 'epyc.row.v3')});
+   result_path: {m.get('result_path')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
+   {related_line(rel)}
 {filing_step(flags, rid, filing)}
    Row state any time: `python3 scripts/coordination/rowflow/rowflow.py status <id>` (needs-dryrun, dryrun-running,
    failed [owner fix task in {flags}/dryrun/<id>/FAIL-*.json], parked, grantable, armed, running, done).
@@ -415,19 +438,71 @@ def ensure_lane(slug: str, repo=None) -> tuple[str, str]:
     _git(repo, "fetch", "-q", "origin", "main")
     if not os.path.exists(os.path.join(d, ".git")):
         os.makedirs(LANES_DIR, exist_ok=True)
+        # SPARSE lane (ws58 00:55Z, 71 lanes x 1-2 GiB leaked 130 GiB): no checkout first, then everything but artifacts/
         if _git(repo, "rev-parse", "--verify", "--quiet", f"refs/heads/{lane_branch(slug)}").returncode == 0:
-            r = _git(repo, "worktree", "add", d, lane_branch(slug))
+            r = _git(repo, "worktree", "add", "--no-checkout", d, lane_branch(slug))
         else:
-            r = _git(repo, "worktree", "add", "-b", lane_branch(slug), d, "origin/main")
+            r = _git(repo, "worktree", "add", "--no-checkout", "-b", lane_branch(slug), d, "origin/main")
         if r.returncode:
             raise RuntimeError(f"worktree add {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
+        sparse_lane(d)
+        r = _git(d, "checkout", "-q")
+        if r.returncode:
+            raise RuntimeError(f"sparse checkout of {d} failed: {(r.stderr or r.stdout).strip()[:300]}")
         return d, "created"
+    if not os.path.exists(os.path.join(repo, ".git", "worktrees", os.path.basename(d), "info", "sparse-checkout")) and \
+            not _git(d, "config", "--get", "core.sparseCheckout").stdout.strip() == "true":
+        sparse_lane(d)  # an old full lane: drop artifacts/ from its working tree (tracked files only; scratch stays visible)
     if _git(d, "merge", "--ff-only", "origin/main").returncode == 0:
         return d, "fast-forwarded"
     if _git(d, "merge", "--no-edit", "origin/main").returncode == 0:
         return d, "merged"
     _git(d, "merge", "--abort")
     return d, "merge-conflict"
+
+
+LANE_EXCLUDE = ("artifacts/",)      # ~800 MB of every full checkout; sessions never need it in the lane
+DISK_FLOOR_GIB = 170                # no new lane below this much free space
+
+
+def sparse_lane(d):
+    """Non-cone sparse checkout: everything except LANE_EXCLUDE."""
+    _git(d, "sparse-checkout", "init", "--no-cone")
+    _git(d, "sparse-checkout", "set", "--no-cone", "/*", *[f"!/{x}" for x in LANE_EXCLUDE])
+
+
+def free_gib(path="/mnt/raid0/llm") -> float:
+    try:
+        return shutil.disk_usage(path).free / 2**30
+    except OSError:
+        return float("inf")
+
+
+def lane_clean_and_landed(d) -> bool:
+    if not os.path.isdir(d):
+        return False
+    if _git(d, "status", "--porcelain").stdout.strip():
+        return False
+    r = _git(d, "cherry", "origin/main")
+    return r.returncode == 0 and not any(l.startswith("+") for l in r.stdout.splitlines())
+
+
+def reap_lanes(flags, reg, repo=None):
+    """Lanes of sessions that are not live (suspended/yielded/done/failed) are removed when clean and landed (never --force,
+    never prune); they are recreated on the next resume. A dirty lane is left for one wrap-up resume (logged once)."""
+    repo = repo or ROOT
+    for slug, e in (reg.get("sessions") or {}).items():
+        if alive(e.get("pid")) or e.get("status") in ("live", "retry", "unpushed"):
+            continue
+        d = lane_dir(slug)
+        if not os.path.exists(d):
+            continue
+        if lane_clean_and_landed(d):
+            r = _git(repo, "worktree", "remove", d)
+            log(flags, f"LANE-REAPED {slug} {d}: rc={r.returncode} {(r.stderr or '').strip()[:120]} (clean, landed; recreated on resume)")
+        elif not e.get("lane_dirty_logged"):
+            e["lane_dirty_logged"] = now_iso()
+            log(flags, f"LANE-DIRTY {slug} {d}: uncommitted or unlanded work; kept for one wrap-up resume")
 
 
 def remove_lane(flags, slug, repo=None):
@@ -803,6 +878,9 @@ def mark_yields(flags, reg, data, cap):
             log(flags, f"UNYIELD {slug}: handoff back in the top {cap}")
 
 
+st_disk_logged = {}
+
+
 def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, keeper_log=None, data=None):
     """Start sessions for the best handoffs that need one until live == cap. Returns the new live count."""
     if not reg.get("auto_start", True):
@@ -817,13 +895,33 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     if live >= cap:
         return live
     started = []
-    real = [h for h in cands if h.get("rows")]          # stuck rows with fix tasks / rows needing a launcher
-    heur = [h for h in cands if not h.get("rows")]      # only "own unpublished inference tasks" (heuristic)
-    heur_live = sum(1 for e in S.values() if alive(e.get("pid")) and e.get("auto_start") and not (e["auto_start"].get("rows")))
-    order = real + ([] if real else [h for h in heur][:max(0, HEURISTIC_SLOTS - heur_live)])
+    if free_gib() < DISK_FLOOR_GIB:
+        if time.time() - st_disk_logged.get("t", 0) > 600:
+            log(flags, f"AUTO-START-THROTTLED disk: {free_gib():.0f} GiB free < {DISK_FLOOR_GIB}; no new lanes")
+            st_disk_logged["t"] = time.time()
+        return live
+    pinned = set(reg.get("pinned") or [])
+    st = load(state_path(flags), {})
+    starts = [t for t in (st.get("starts") or []) if time.time() - t < 3600]
+    # SA-1 (intake ws58-jev-20261102, operator D9-ack 2026-11-02): admit ONLY handoffs with a real ready/stuck row, or pinned
+    # ones; heuristic "own inference tasks" never start a session (that path produced ~40 starts/30 min and 0 ready rows).
+    order = [h for h in cands if h.get("rows") or h["handoff"] in pinned or (h.get("slug") or "") in pinned]
     for h in order:
         if live >= cap:
             break
+        slug0 = h.get("slug") or slug_for(h["handoff"], S)
+        prev = S.get(slug0) or {}
+        last = max(_parse(prev.get("done_at") or ""), _parse(prev.get("last_end") or ""), _parse((prev.get("auto_start") or {}).get("at") or ""))
+        if last and time.time() - last < AUTO_START_COOLDOWN_S:
+            if time.time() - _parse(prev.get("throttle_logged") or "") > AUTO_START_COOLDOWN_S:
+                log(flags, f"AUTO-START-THROTTLED {slug0}: per-handoff cooldown ({int((time.time() - last) / 60)} min since its last end/start < {AUTO_START_COOLDOWN_S // 60})")
+                prev["throttle_logged"] = now_iso()
+                S[slug0] = prev
+            continue
+        if len(starts) >= MAX_STARTS_PER_HOUR:
+            log(flags, f"AUTO-START-THROTTLED {slug0}: global cap {MAX_STARTS_PER_HOUR} starts/hour reached")
+            break
+        starts.append(time.time())
         slug = h.get("slug") or slug_for(h["handoff"], S)
         e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
         if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
@@ -841,6 +939,8 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
         started.append(slug)
         log(flags, f"AUTO-START {slug} handoff={h['handoff']} engine={e['engine']} pid={e.get('pid')} score={h['score']} "
                    f"rows={','.join(h['rows'][:6]) or '-'} priority={h.get('row_id') or '-'} rank={h.get('priority_rank')} live={live}/{cap}")
+    st["starts"] = starts
+    save(state_path(flags), st)
     if started:
         save(reg_path(flags), reg)  # the registry must name the new sessions before their backlogs are rendered
         for slug in started:
@@ -855,7 +955,9 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
-HEURISTIC_SLOTS = 2                 # at most this many live auto-started sessions chosen on heuristic "own inference tasks"
+WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
+AUTO_START_COOLDOWN_S = 30 * 60     # SA-1: a handoff is not restarted within this long of its last end/start
+MAX_STARTS_PER_HOUR = 10            # SA-1: global auto-start cap
 STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
 STARVED_ALARM_EVERY_S = 30 * 60
 PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
@@ -887,6 +989,21 @@ def context_size(session_id, engine="codex"):
     except OSError:
         return None
     return last
+
+
+def start_watchdog(flags, st, now):
+    """SA-2: zero-token counters over the last hour - AUTO-STARTs and DONEs (dispatcher state) vs ready rows produced
+    (dryrun/*/PASS.json mtime). Starts without any effect -> AUTO-START-NO-EFFECT alarm (once per hour)."""
+    starts = [t for t in (st.get("starts") or []) if now - t < 3600]
+    dones = [t for t in (st.get("dones") or []) if now - t < 3600]
+    st["dones"] = dones
+    produced = [p for p in glob.glob(os.path.join(flags, "dryrun", "*", "PASS.json")) if now - os.path.getmtime(p) < 3600]
+    st["watchdog"] = {"starts_h": len(starts), "dones_h": len(dones), "ready_rows_h": len(produced), "at": now_iso()}
+    if len(starts) >= WATCHDOG_MIN_STARTS and not produced and now - st.get("watchdog_alarm", 0) >= 3600:
+        log(flags, f"AUTO-START-NO-EFFECT {len(starts)} auto-start(s) and {len(dones)} done(s) in the last hour produced 0 ready rows (dry-run PASS); "
+                   f"the starts are not converting - check the real-row gate and the briefs")
+        st["watchdog_alarm"] = now
+    return st["watchdog"]
 
 
 def inventory_alarm(flags, st, data, now):
@@ -925,6 +1042,35 @@ def dead_push_lock(flags, st, now):
             log(flags, f"PUSH-LOCK-DEAD {p}: holder {d.get('agent')} pid {pid} is dead since <= {d.get('acquired') or d.get('at') or '?'}; every push is blocked. "
                        f"NOT released automatically: `serialized_push.py --force-release {d.get('agent')}` is the operator's/holder's call.")
             st.setdefault("push_lock_report", {})[p] = now
+
+
+TYPED_SHADOW_PORT = 8102          # worker_fast; the shadow runs only while this server answers (zero cost otherwise)
+
+
+def typed_shadow(flags, slug, e, state, st, now, repo=None):
+    """JEV-3 (shadow only, approved intake ws58-jev-20261102): a typed label beside work_state's heuristic, logged as
+    TYPED-SHADOW; never drives behaviour. Skipped (no model call, no subprocess) unless worker_fast is listening."""
+    probe = st.setdefault("typed_probe", {"at": 0, "up": False})
+    if now - probe["at"] > 300:
+        import socket
+        try:
+            with socket.create_connection(("127.0.0.1", TYPED_SHADOW_PORT), timeout=0.3):
+                probe.update(at=now, up=True)
+        except OSError:
+            probe.update(at=now, up=False)
+    if not probe["up"]:
+        return
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn"))
+        import typed_shadow as ts
+        b = open(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")).read() if os.path.exists(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")) else ""
+        sh = ts.classify_work_state(b, open_tasks(e.get("handoff", ""), repo))
+        label = sh["label"].value if sh.get("label") is not None else None
+        reason = sh["stop_reason"].value if sh.get("stop_reason") is not None else None
+        log(flags, f"TYPED-SHADOW {slug}: heuristic={state} typed={label} reason={reason} source={sh['source']}"
+                   + ("" if label is None or label == state else " DISAGREE"))
+    except Exception as ex:  # shadow never breaks the dispatcher
+        log(flags, f"TYPED-SHADOW {slug}: unavailable ({ex!r})")
 
 
 def is_generalist(e) -> bool:
@@ -1126,7 +1272,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if kind == "run-end" and any(ev["slug"] == slug and ev["rid"] == rid for ev in st.get("queue") or []):
                 log(flags, f"DEDUPE {rid} -> {slug}: a run-end for this row is already queued; dropped {key}")  # CAF-6
                 continue
-            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind})
+            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
+                                               "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
             S[slug]["await_event"], S[slug]["noop_reason"] = False, None
             log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
     for slug, e in S.items():  # CAF-1: files a session registered as awaited - ALL fired files of a slug ride in ONE event
@@ -1159,10 +1306,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             continue
         ws, why = work_state(flags, slug, e, repo)
         e["_work"] = (ws, why)
+        if not is_generalist(e):
+            typed_shadow(flags, slug, e, ws, st, now, repo)
         if ws == "done":
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
             remove_lane(flags, slug, repo)
+            st.setdefault("dones", []).append(now)
             log(flags, f"DONE {slug}: {why}; slot freed; tmux window {window_name(slug)} killed")
         else:
             idle_window = ws == "pause" or bool(e.get("yield"))  # operator: no window clutter while paused/yielded
@@ -1188,6 +1338,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             return ""
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
+    start_watchdog(flags, st, now)
+    reap_lanes(flags, reg, repo)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
     cap = int(reg.get("max_live", 5))
