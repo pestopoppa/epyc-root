@@ -46,7 +46,10 @@ def verify(plan: dict, *, current_champion: str, enrolled: bool) -> dict:
     if binding_doc.get('status') != 'SOURCE_BOUND_ONLY' or binding_doc.get('errors') != []:
         raise ValueError('scope resolver has not bound source')
     scopes = json.loads(scope.read_bytes()).get('cpu')
-    entries = json.loads(native_plan.read_bytes()).get('models')
+    native_doc = json.loads(native_plan.read_bytes())
+    if not isinstance(plan.get('row_id'), str) or native_doc.get('row_id') != plan['row_id']:
+        raise ValueError('entry and native plan row identities differ')
+    entries = native_doc.get('models')
     if not isinstance(scopes, list) or not isinstance(entries, list) or not scopes:
         raise ValueError('scope or recipe plan missing')
     scoped = [(x.get('role'), x.get('model_path')) for x in scopes]

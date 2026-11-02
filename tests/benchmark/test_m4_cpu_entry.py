@@ -97,3 +97,29 @@ def test_real_entry_stops_running_fixture_at_deadline(tmp_path):
     assert result.returncode == 2 and marker.exists()
     assert not (output/'FIXTURE-COMPLETE.json').exists()
     assert json.loads((output/'watch-result.json').read_text())['containment_empty'] is True
+
+
+@pytest.mark.parametrize('defect', ['missing_holds', 'missing_gpu', 'wrong_row', 'duplicate_holds'])
+def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, defect):
+    args, output, marker, grant, stop, hold = setup_entry(tmp_path)
+    plan_path = Path(args[args.index('--plan') + 1])
+    plan = json.loads(plan_path.read_text())
+    plan.update(schema='epyc.m4.cpu_entry_plan.v1', mode='owned-execute', region='0-95',
+                row_id='m4-unique-test', stopfile=str(stop))
+    plan_path.write_text(json.dumps(plan))
+    args[args.index('--plan-sha256') + 1] = hashlib.sha256(plan_path.read_bytes()).hexdigest()
+    now = datetime.now(timezone.utc)
+    line = ('regions=0-95 start=' + (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+            + ' end=' + (now+timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%MZ'))
+    if defect == 'missing_gpu': line += ' holds=q0,q1,q2,q3'
+    elif defect == 'duplicate_holds': line += ' holds=q0,q1,q2,q3,q3,gpu-quiet'
+    elif defect == 'wrong_row': line += ' holds=q0,q1,q2,q3,gpu-quiet'
+    grant.write_text(line)
+    env = dict(os.environ, FILLER_ID=('other-row' if defect == 'wrong_row' else plan['row_id']), FILLER_STOPFILE=str(stop))
+    result = subprocess.run(args, env=env, capture_output=True, text=True, timeout=15)
+    assert result.returncode == 2 and not marker.exists()
+    assert not (output/'NATIVE-CAPTURE-COMPLETE.json').exists()
+    if defect in ('missing_holds','missing_gpu','duplicate_holds'):
+        assert 'holds' in result.stderr
+    else:
+        assert 'bound canonical' in result.stderr
