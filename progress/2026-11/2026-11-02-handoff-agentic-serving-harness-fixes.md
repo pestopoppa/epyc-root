@@ -183,3 +183,11 @@ Delegated construction of an independent B4c paired evaluation packet, with fixe
 ## 01:08Z — Prepare independent B4c paired evaluation
 
 Delegated construction of an independent B4c paired evaluation packet, with fixed cases, per-worker flag attestation, rollback, quality/cache correlation and rowflow integration; the parked RTE-LOG-1 lineage must not be retried. Registered its result event. F2 packet remediation, B1g packet, B4b and B1e patches, completed-chat row, and captured index check have registered outstanding result events. No inference row was published in this boundary.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
+
+## 01:10Z — Verify F2 model identities before publication
+
+Started a single pre-publication full SHA-256 verification of the F2 canonical 27B and DFlash2 weights against the packet-pinned size and digest. The verifier records device, inode, size, mtime and ctime before/after each read, fails closed on changed inputs or hash mismatch, and atomically writes f2-model-verified.json with explicit per-model and overall status. Registered that receipt as a dispatcher event and informed the packet preparer to reuse it rather than hashing inside a grant. No model inference or row publication occurred. F2 engine migration and the other registered preparation results remain pending; DEPLOY-EC-2d evidence remains in the lane pending index-gate recovery.
