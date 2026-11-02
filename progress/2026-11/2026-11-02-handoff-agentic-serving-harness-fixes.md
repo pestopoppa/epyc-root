@@ -135,3 +135,7 @@ Consumed B4d patch result: no patch or source change made. GitNexus impact _exec
 ## 00:54Z — Record B4d high-impact edit stop
 
 Consumed B4d patch result: no patch or source change made. GitNexus impact _execute_turn in orchestrator reported HIGH, with 12 direct dependants, 2 affected processes and 3 affected modules. The index is stale (indexed 84f6f6f versus observed source 9e138e3); refresh and reassess in an authorized orchestrator worktree before editing, and observe the required HIGH-impact stop and warning. B1e and B4b patch results and GPU packet remediation remain registered as future events. No inference row was published and no handoff box completed.
+
+## 00:55Z — Recover lane publication and review remaining work
+
+Continued recovery of unpublished lane commits after serialized pushes lost a race against origin/main. Merged latest origin/main and attempted to acquire the serialized push lease so a fetch, merge and push can run under one lock; the live ws58-docs push held it and acquisition refused without waiting. The standard wrap-up will retry its push. B1e and B4b treatment patch results and GPU remediation remain registered; delegated bounded current-state reviews for DEPLOY-EC and LB6, with result events registered. B4d remains stopped on the HIGH-impact GitNexus result recorded in the preceding boundary. No row published and no box completed.
