@@ -1,0 +1,37 @@
+--- a/src/ggml_extend.hpp
++++ b/src/ggml_extend.hpp
+@@ -1345,7 +1345,8 @@
+                                                       ggml_tensor* mask = nullptr,
+                                                       bool skip_reshape = false,
+                                                       bool flash_attn   = false,
+-                                                      float kv_scale    = 1.0f) {  // avoid overflow
++                                                      float kv_scale    = 1.0f,
++                                                      bool trace_ernie_dit = false) {  // avoid overflow
+     int64_t L_q;
+     int64_t L_k;
+     int64_t C;
+@@ -1455,6 +1456,13 @@
+                 kqv = ggml_view_3d(ctx, kqv, d_head, n_head, L_q, kqv->nb[1], kqv->nb[2], 0);
+             }
+         }
++    }
++
++    // Graph-construction evidence only; not proof a kernel executed.
++    if (trace_ernie_dit) {
++        LOG_INFO("EPYC_ERNIE_DIT_FA_GRAPH_V1 requested=%d selected=%s L_q=%lld L_k=%lld n_head=%lld d_head=%lld N=%lld",
++                 flash_attn ? 1 : 0, kqv != nullptr ? "flash" : "fallback",
++                 (long long)L_q, (long long)L_k, (long long)n_head, (long long)d_head, (long long)N);
+     }
+ 
+     if (kqv == nullptr) {
+--- a/src/ernie_image.hpp
++++ b/src/ernie_image.hpp
+@@ -183,7 +183,7 @@
+             k = ggml_cont(ctx->ggml_ctx, ggml_permute(ctx->ggml_ctx, k, 0, 2, 1, 3));  // [N, heads, S, head_dim]
+             k = ggml_reshape_3d(ctx->ggml_ctx, k, k->ne[0], k->ne[1], k->ne[2] * k->ne[3]);
+ 
+-            x = ggml_ext_attention_ext(ctx->ggml_ctx, ctx->backend, q, k, v, num_heads, attention_mask, true, ctx->flash_attn_enabled);  // [N, S, hidden_size]
++            x = ggml_ext_attention_ext(ctx->ggml_ctx, ctx->backend, q, k, v, num_heads, attention_mask, true, ctx->flash_attn_enabled, 1.0f, true);  // [N, S, hidden_size]
+             x = to_out_0->forward(ctx, x);
+             return x;
+         }

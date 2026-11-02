@@ -115,3 +115,15 @@ Recorded the independently tested discovery-only C5-8 patch and its precise limi
 ## 00:56Z — Consume C5-12 selector review and advance integration
 
 Consumed the C5-12 selector review and documented the 3/3 isolated tests, unsourced deterministic tie policy, missing common-score and production integration, and correct source comparison in artifacts/agentic-rocm/c5-12-selector-review-20261102.md. C5-12 remains open. Dispatched bounded controller integration work and registered its completion event. No inference row published or compute run.
+
+## 00:57Z — Advance fixed feedback-ablation prerequisite for controller rows
+
+Assigned a bounded C5-11 task to identify a real enumerated task subset and draft the matched three-feedback-arm protocol needed by the controller comparison; registered its completion event. The RPUCG snapshot patch has uncommitted in-progress changes and was excluded from this boundary. Existing row prerequisites remain unresolved; no row was published and no compute run.
+
+## 00:58Z — Recover prior wrap-up after serialized push contention
+
+The previous wrap-up committed 98ac1d8c773b but its serialized push failed under lock contention. A single status check showed a live kernel-backed push lock held by ws58-hub-pages; it was not disturbed. This boundary retries publication of the lane through wrapup.py. The in-progress RPUCG snapshot patch remains excluded. No inference row published or compute run.
+
+## 09:20Z — Recover reviewed RPUCG v2 patch and retry publication
+
+Recovered research/rpucg-snapshot-v2-reviewed.patch from the preserved isolated review copy after the prior commit hook refused publication; the recovered SHA-256 is 36533eaf26a67343e00c3508b386c3696229a66aa401a227aeec3da83d5ea6df and all eight isolated tests pass. The observer census passes for the current staged patch. This remains an unintegrated validator and is not an RPUCG selector A/B. No inference row published or compute run.

@@ -1,0 +1,29 @@
+{
+  "candidate_results": {
+    "B3": {
+      "draft_count_presence": 15,
+      "draft_width": 3,
+      "gain_pct": {
+        "aggregate": 11.574636048127317,
+        "code": 18.404336664251343,
+        "prose": 12.049833818049738,
+        "rag": 2.1611682728980064
+      },
+      "matched_token_identity": 15,
+      "matched_total": 15
+    }
+  },
+  "floors_pct": {
+    "aggregate": 18.142856242580695,
+    "code": 21.19413311166174,
+    "prose": 16.5175548140698,
+    "rag": 24.209004252605503
+  },
+  "grant_id": "sr6-qwen36-width-diagnostic-20261101",
+  "plan_sha256": "42b3fbf0c139ff2f8a8f0203ba05a4be0dc0a99666c971b412a27bfbfdfac7de",
+  "prompt_manifest_sha256": "3cda64879d67ffcf7a1960aa0b526d9f21cef8bfc3440a88c56032479cf14e2e",
+  "raw_terminal_sha256": "6b0290b85705af3acc9c867b46a6b0336c885749eeae01be9dfb34ff121eaa05",
+  "schema": "sr6.observational-analysis.v1",
+  "scope": "single private full-target timing window; draft-mtp only; observational; no registry change or promotion authority",
+  "source_catalog_sha256": "42fc31aa7b8ac6adfae8e346ba7b6707766b1e33e509f35d78a0bc40c08d3eb2"
+}

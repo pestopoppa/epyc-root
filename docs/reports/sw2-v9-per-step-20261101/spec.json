@@ -1,0 +1,25 @@
+{
+  "id": "sw2-v9-per-step-successor-20261101",
+  "owner": "handoff-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/sw2-v9-per-step-successor-20261101/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/sw2-v9-per-step-successor-20261101/observations.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "On one server and slot with distinct cache-disabled prompts, per-step native LLAMA_TRACE accepted A/N widths must be at or below request cap. Require response echo, positive per-step records and sum of widths equal native draft_n for each request; attribution incomplete or mismatch is UNKNOWN. Require a positive >1 width on a cap-7 control to establish the instrument can discriminate. One observed violation is OVER_CAP; absence cannot support a universal claim. Dry-run is separate; no redraw of exposed interrupted sequence.",
+  "estimate_s": 900,
+  "handoff_task": "speculative-decoding-mtp-refresh.md SW-2 per-step lower-cap effect on archived v9",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/sw2-v9-per-step-successor-20261101",
+  "keep": [
+    "**/*.json",
+    "**/*.jsonl",
+    "**/*.log",
+    "**/*.py",
+    "**/*.sh",
+    "**/*.txt",
+    "**/*SHA256SUMS",
+    "runtime-libs/**",
+    "observations.jsonl"
+  ],
+  "kind": "compute"
+}

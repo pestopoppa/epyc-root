@@ -1,0 +1,15 @@
+--- a/src/ggml_extend.hpp
++++ b/src/ggml_extend.hpp
+@@ -1456,6 +1456,12 @@
+             }
+         }
+     }
++
++    // Diagnostic graph-construction trace. This records the selected graph branch,
++    // not kernel execution; retain it with the request and GPU residency evidence.
++    LOG_INFO("EPYC_FA_GRAPH_V1 requested=%d selected=%s L_q=%lld L_k=%lld n_head=%lld d_head=%lld N=%lld",
++             flash_attn ? 1 : 0, kqv != nullptr ? "flash" : "fallback",
++             (long long)L_q, (long long)L_k, (long long)n_head, (long long)d_head, (long long)N);
+ 
+     if (kqv == nullptr) {
+         // if (flash_attn) {

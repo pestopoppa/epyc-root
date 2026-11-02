@@ -11,3 +11,15 @@ Consumed all three readiness investigations. The existing stub does not run the 
 ## 00:18Z — Specify replay fidelity and J8 measurement gates
 
 Consumed metrics-spec.txt and replay-review.txt. Added a concrete replay and reporting contract to the handoff: exact fixture and oracle state, verifier fixtures, complete paired coverage, attempt-based failure denominators and explicitly unavailable token telemetry. The replay draft is still in progress; requested a metrics patch draft and registered completion events for both notes files. No inference or benchmark was run and no handoff task was completed.
+
+## 00:59Z — Advance BEP-5 and inference readiness
+
+Reviewed the inference-first state: no row is open; J8 requires the known-patch replay and usable telemetry first. Previously requested replay and metrics draft outputs have not yet appeared. Dispatched bounded assessments of BEP-5, the optional LM repair lane, and row publication readiness; completion files are registered in awaiting/. No inference launched or row published. Prior wrap-up logs reported push failures, but this lane is now synchronized with origin/main containing the earlier handoff updates under commit 643f8d5d7.
+
+## 01:20Z — Record repair and row readiness
+
+Consumed repair-gap.txt and row-readiness.txt: no BEP inference row is ready; the residual repair worker and a dedicated launcher do not yet exist. Recorded repair design constraints and row classification in the handoff; delegated a concrete repair design, typed offline replay draft, and investigation of the previous commit-hook failure. No inference was launched or row published. Previous wrapup left its progress entry staged after the observer pre-commit check failed; retained it for this path-limited wrapup.
+
+## 07:39Z — Repair sparse lane commit prerequisite
+
+Consumed commit-guard-findings.txt: the observer census rejected a valid registry entry because the lane sparse checkout excluded its tracked ratifier script. Added that one path to this lane sparse-checkout patterns; python3 scripts/coordination/observer_census.py now passes (26 observers). A subsequent prior wrapup encountered an index check failure, so its diagnosis and the outstanding replay and repair drafts have registered completion events. Preserved previously staged progress and the BEP-4 handoff update for this wrapup.

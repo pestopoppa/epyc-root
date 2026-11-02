@@ -19,3 +19,7 @@ Reviewed the uninstalled synthetic tokenizer supervisor draft repair: incomplete
 ## 00:19Z — Complete VKQ3 filing publication recovery
 
 Recovered the filing and tokenizer draft publication using serialized_push.py after lock contention; origin/main verified to carry lane HEAD f94d90585f7f. GPU qualification repair remains delegated. No inference was run.
+
+## 09:18Z — Publish KVU quarter partial result
+
+Restored the quarter-run filing and native partial archive after the lane sparse-checkout and untracked-artifact guard prevented the prior wrap. Run ended rc=75 disk-floor with only the starting anchor complete and unified incomplete; comparison remains UNKNOWN. No inference was run.

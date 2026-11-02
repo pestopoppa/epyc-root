@@ -47,3 +47,15 @@ Preserved ID-9 pilot inputs in data/experiments/id9-behavior-pilot and verified 
 ## 03:39Z — Preserve ID-4 corpus provenance and advance CPU and GPU preparation.
 
 Preserved the ID-4 snapshot manifest and readiness limitations in data/experiments/id4-distiller-corpus; verified the readiness document digest against the manifest. Raw snapshot and journals remain in the session corpus directory. The corpus does not prove question-level independence or supply correctness oracles, so it cannot support a quality verdict. Dispatched retrieval-only CPU preparation, ID-9 integration repair and model identity preparation. No compute was launched or row published.
+
+## 04:12Z — Register prospective ID-9 measurement wiring and advance row preparation.
+
+Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-WIRE before any decision use; the source remains unwired and no historical warrant is asserted. Dispatched bounded ID-9 integration, GPU spec and ID-4 retrieval-pilot preparation with completion events. No inference was launched or row published.
+
+## 04:13Z — Register prospective ID-9 measurement wiring and advance row preparation.
+
+Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-WIRE before any decision use; the source remains unwired and no historical warrant is asserted. Dispatched bounded ID-9 integration, GPU spec and ID-4 retrieval-pilot preparation with completion events. No inference was launched or row published. Regenerated handoff index state and graph after the first check detected stale generated metadata.
+
+## 04:16Z — Consume GPU code and draft and CPU pilot preparation results.
+
+Consumed GPU draft, GPU offline integration and CPU retrieval-pilot results. Added a draft ID-9 row-preparation.json bound to the preserved pilot inputs and existing local model/kernel paths; its model SHA remains unpinned and it is not a publishable row. GPU code review, concrete config/spec and CPU query review remain delegated. The CPU lexical pilot is diagnostic and cannot establish quality or adoption. No inference, qualification or row publication occurred.

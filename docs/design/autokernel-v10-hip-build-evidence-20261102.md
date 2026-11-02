@@ -24,3 +24,10 @@ output digests, and linkage in the candidate build receipt. The production
 provenance records an empty trailing RUNPATH element: the candidate must avoid
 or explicitly account for it. No production files were changed and no build or
 inference was run.
+
+The same cache records the `Unix Makefiles` generator and
+`CMAKE_BUILD_RPATH_USE_ORIGIN=ON`. Release flags for C, C++ and HIP are
+`-O3 -DNDEBUG`; `GGML_BACKEND_DL=OFF`, `GGML_LLAMAFILE=ON`, and
+`GGML_CCACHE=ON` while its cache lookup reports `NOTFOUND`. These are recorded
+configuration values, not evidence that the current host has the historical
+compiler versions or that a new build will reproduce the production binary.

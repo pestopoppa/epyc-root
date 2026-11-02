@@ -1,5 +1,12 @@
 # NUMA Topology Cutover — RESUME DOCUMENT
 
+> **Current navigation (2026-11-01):** The opening cutover instructions and all dated
+> “in flight” notices below describe historical state, not current machine status. P0-3
+> was closed in the 2026-10-29 audit (see its checked task below); do not repeat its
+> stack restart or matrix run on the strength of this document. Continue with the
+> remaining open tasks and the session-per-handoff row workflow; verify live state
+> independently before any operational action. Historical result paths may no longer exist.
+
 > **THIS IS A RESUME DOCUMENT, NOT A NARRATIVE.** A production topology cutover is
 > **applied in the working tree, uncommitted, and its commit is BLOCKED**, with
 > **measurement runs in flight** on the machine. If the owning session died, read
