@@ -163,6 +163,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
     Source("ufh12-gs-coverage", "ufh12_gs_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-GS", note="prospective proxy-query and stored-token record coverage; explicit --path only"),
     Source("repl-trace-coverage", "repl_trace_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-TRACE-WRITE", note="prospective trace event coverage only; explicit --path only"),
+    Source("repl-trace-facts", "repl_trace_facts", lambda path: [path] if path.is_file() else [], task="VB-UFH12-REPL-TRACE-CUSTODY", note="prospective sealed event observations, explicit file only; originals custody unknown"),
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
     Source("df2-row-exact-akx", "df2_row_exact", _files("belief-native.json", "*/belief-native.json"), task="VB-DF2-ROW-EXACT-WRITE", note="producer-time DF2 output and diagnostic observations; explicit --path only"),

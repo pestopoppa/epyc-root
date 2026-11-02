@@ -563,6 +563,7 @@ _FILE_SOURCES = (
     "ufh12-irt-paired",
     "ufh12-gs-coverage",
     "repl-trace-coverage",
+    "repl-trace-facts",
     "rtg57-vkq-comparison", "rtg57-vkq-oracle",
     "df2-row-exact-akx",
     "hg5-request-event",
