@@ -7,9 +7,9 @@
 **Status**: NEW 2026-05-27 — actionable as soon as approved for launch (single standalone bench)
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: benchmark_methodology, training_distillation, local_inference
-**Priority**: MEDIUM — gate task; cheap (~half day); blocks higher-priority [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md)
+**Priority**: MEDIUM — gate task; cheap (~half day); blocks higher-priority [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md)
 **Depends on**: nothing
-**Blocks**: [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) (Phase 1 = this handoff's exit signal)
+**Blocks**: [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md) (Phase 1 = this handoff's exit signal)
 
 ## Objective
 
@@ -18,7 +18,7 @@ Independently verify the Fortytwo Network's two founder-call claims about [Stran
 1. **"#1 on RustEvo2"** — claimed in the 2026-05-26 sales call with Ivan Nikitin; not on the model card; not in their arxiv paper (intake-615).
 2. **"Beats GPT-5 Codex on Rust" after "simplest possible fine-tune" of Qwen2.5-Coder-14B-Instruct on a swarm-generated 191k-sample dataset in 8 days** — same source.
 
-If the #1 claim holds, that is the strongest external evidence we'd have that the **swarm-as-dataset-generator** pipeline (the actual technique we'd consider harvesting in [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md)) produces deployable artifacts on the first try. If the model lands mid-pack, the founder's claim is marketing and the dataset-distillation pipeline is not worth our compute.
+If the #1 claim holds, that is the strongest external evidence we'd have that the **swarm-as-dataset-generator** pipeline (the actual technique we'd consider harvesting in [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md)) produces deployable artifacts on the first try. If the model lands mid-pack, the founder's claim is marketing and the dataset-distillation pipeline is not worth our compute.
 
 ## Research Context
 
@@ -232,7 +232,7 @@ Note whether **Qwen2.5-Coder-14B-Instruct itself** outperforms our gemma4-26B-A4
 - One eval log per model in `progress/2026-MM/2026-MM-DD-rustevo2/` (artefacts directory created at run time).
 - Score table appended to this handoff at the end.
 - A one-line disposition pushed back into intake-616's `notes:` field via index update, citing this handoff.
-- If GO: update [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) status from `stub / gated on task 1` to `active`.
+- If GO: update [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md) status from `stub / gated on task 1` to `active`.
 
 ## Open questions
 
@@ -242,7 +242,7 @@ Note whether **Qwen2.5-Coder-14B-Instruct itself** outperforms our gemma4-26B-A4
 ## Cross-references
 
 - **Source intakes**: intake-614 (Fortytwo Network), intake-615 (arxiv:2510.24801), intake-616 (Strand-Rust-Coder-14B-v1)
-- **Downstream handoff (gated on this result)**: [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md)
+- **Downstream handoff (gated on this result)**: [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md)
 - **Methodology references**: canonical-baseline protocol (memory `feedback_canonical_baseline_protocol.md`), OMP env stack (memory `feedback_omp_env_stack_required.md`), no-concurrent-inference rule (memory `feedback_no_concurrent_inference.md`), llama-bench fa-default (memory `feedback_llama_bench_fa_default.md`), drop-caches re-warm (memory `feedback_drop_caches_numa_eviction.md`)
 - **Index entries**: this handoff is registered in [`research-evaluation-index.md`](research-evaluation-index.md) Subsystem Status
 

@@ -47,6 +47,16 @@
   "tidar-one-pass-variant-b.md": {
    "target": "model-evaluation-queue.md",
    "track": "tidar-one-pass-variant-b"
+  },
+  "model-stack-change-standardization-audit.md": {
+   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
+  },
+  "swarm-dataset-distillation.md": {
+   "target": "handoffs/completed/swarm-dataset-distillation.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
   }
  },
  "ids": {
@@ -93,6 +103,17 @@
   "UFH-04": {
    "target": "EVL-02",
    "track": "minddr-deep-research-mode"
+  },
+  "RTG-18": {
+   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
+   "track": null,
+   "retired": "D4 2026-11-02",
+   "checklist": "docs/guides/agent-workflows/stack-change-checklist.md"
+  },
+  "RTG-39": {
+   "target": "handoffs/completed/swarm-dataset-distillation.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
   }
  }
 }

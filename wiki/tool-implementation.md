@@ -1786,7 +1786,7 @@ Source references: [original output and publication](../artifacts/ni08/inf50-nat
 
 **Confidence: verified for the authored source contract only.** RTG-39 now has a13-field provenance contract separating recorded observations from generated targets, a frozen teacher from a trainable student, and packing lineage from verifier evidence. It carries masks, splits, licenses and source identities without creating records, training a model or producing a ClaimTuple. The reviewed paper does not show a KL advantage over sampled next-token targets; prompt improvement, same-task retention and OOD transfer retain separate metrics and budgets. Its unspecified checkpoint sizes and absolute training costs remain unsized. Broader distillation and domain choice retain their existing gates.
 
-Source references: [authored contract](../docs/design/experience-distillation-data-contract.md), [RTG-39 source findings and gates](../handoffs/blocked/swarm-dataset-distillation.md), [MAIN published acceptance](../artifacts/ni08/rtg39-source-contract-acceptance-20261007/README.md), [official paper](https://arxiv.org/html/2607.21051v1).
+Source references: [authored contract](../docs/design/experience-distillation-data-contract.md), [RTG-39 source findings and gates](../handoffs/completed/swarm-dataset-distillation.md), [MAIN published acceptance](../artifacts/ni08/rtg39-source-contract-acceptance-20261007/README.md), [official paper](https://arxiv.org/html/2607.21051v1).
 
 
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence

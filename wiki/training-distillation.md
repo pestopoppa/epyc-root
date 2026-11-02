@@ -114,12 +114,12 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 ### New (2026-05-28, OPD diagnostics and training-only agent RL references)
 
 - **OPD research now has a clearer "when does it help" diagnostic, but it remains training-side.** Intake-639 adds a per-token gradient-alignment framework for on-policy distillation, giving token/question/teacher granularity for where teacher guidance aligns with the ideal student-success gradient. This complements OPSDC/OPD survey notes but requires gradient access, so it is a future training-pipeline reference, not an inference-stack task. Source: [reasoning-compression.md](../handoffs/active/reasoning-compression.md).
-- **TIP is the canonical post-OPSDC token-selection refinement; SDAR is only a future agent-RL pointer.** TIP scores tokens with entropy plus teacher-student divergence and reports Qwen3-8B to 4B MATH-500 improvement at 50% retention, while SDAR layers a sigmoid-gated OPSD auxiliary loss on GRPO for multi-turn agent RL. Both are GPU/training-time techniques; swarm-dataset-distillation remains a data assembly and verification track, not a policy-training track. Sources: [reasoning-compression.md](../handoffs/active/reasoning-compression.md), [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md).
+- **TIP is the canonical post-OPSDC token-selection refinement; SDAR is only a future agent-RL pointer.** TIP scores tokens with entropy plus teacher-student divergence and reports Qwen3-8B to 4B MATH-500 improvement at 50% retention, while SDAR layers a sigmoid-gated OPSD auxiliary loss on GRPO for multi-turn agent RL. Both are GPU/training-time techniques; swarm-dataset-distillation remains a data assembly and verification track, not a policy-training track. Sources: [reasoning-compression.md](../handoffs/active/reasoning-compression.md), [swarm-dataset-distillation.md](../handoffs/completed/swarm-dataset-distillation.md).
 
 ### New (2026-05-27, swarm-as-dataset-generator gate)
 
-- **Swarm-as-dataset-generator is gated on an external artifact, not accepted from the founder claim.** The Fortytwo-derived dataset-distillation handoff is deliberately stubbed until Strand-Rust-Coder-14B independently clears RustEvo2. A strong or qualified result promotes the pipeline; weak/no-go keeps the idea parked. This prevents spending weeks on fan-out, pairwise ranking, and fine-tuning based only on marketing evidence. Sources: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md), [strand-rust-coder-rustevo2-verification.md](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification).
-- **If promoted, the pipeline reuses existing EPYC infrastructure rather than inventing a separate swarm stack.** Candidate generation should reuse the bulk-inference campaign fan-out, ranking should reuse the autopilot Bradley-Terry machinery, and evaluation must use a held-out domain suite that the BT judge never sees. Fine-tuning remains GPU-gated; EPYC's CPU role is generation, ranking, verification, and deployment of a quantized specialist. Source: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md).
+- **Swarm-as-dataset-generator is gated on an external artifact, not accepted from the founder claim.** The Fortytwo-derived dataset-distillation handoff is deliberately stubbed until Strand-Rust-Coder-14B independently clears RustEvo2. A strong or qualified result promotes the pipeline; weak/no-go keeps the idea parked. This prevents spending weeks on fan-out, pairwise ranking, and fine-tuning based only on marketing evidence. Sources: [swarm-dataset-distillation.md](../handoffs/completed/swarm-dataset-distillation.md), [strand-rust-coder-rustevo2-verification.md](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification).
+- **If promoted, the pipeline reuses existing EPYC infrastructure rather than inventing a separate swarm stack.** Candidate generation should reuse the bulk-inference campaign fan-out, ranking should reuse the autopilot Bradley-Terry machinery, and evaluation must use a held-out domain suite that the BT judge never sees. Fine-tuning remains GPU-gated; EPYC's CPU role is generation, ranking, verification, and deployment of a quantized specialist. Source: [swarm-dataset-distillation.md](../handoffs/completed/swarm-dataset-distillation.md).
 
 ### New (2026-04-22, DD4)
 
@@ -202,7 +202,7 @@ The 2026-07-02 cross-model LoRA-transfer / hypernetwork-adapter cluster (intake-
 - [Eval Tower Verification handoff](/workspace/handoffs/active/eval-tower-verification.md) -- Aletheia scale-dependent RLVR recipes, SWE-RM TTS vs RL effectiveness, ECE/AUC metrics, ThinkPRM deployment plan
 - [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, TMLR 2026, reasoning-driven seedless framework, double-critic rejection sampling, calibrated Elo complexity scoring, taxonomy-based coverage (1.72 vs 0.83), mechanism design principles (no silver bullet, quality>quantity, complexity requires calibration), student-teacher saturation bounds
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Skill effectiveness scoring integration with confidence calibration
-- [Swarm-as-Dataset-Generator handoff](../handoffs/active/swarm-dataset-distillation.md) -- gated narrow-domain SFT distillation pipeline using bulk fan-out plus Bradley-Terry ranking
+- [Swarm-as-Dataset-Generator handoff](../handoffs/completed/swarm-dataset-distillation.md) -- gated narrow-domain SFT distillation pipeline using bulk fan-out plus Bradley-Terry ranking
 - [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification) -- gate benchmark for the Fortytwo public artifact before dataset-distillation promotion
 - [Doc-to-LoRA Prototype (completed)](../handoffs/completed/08-doc-to-lora-prototype.md) -- Finding 1 (llama.cpp LoRA hot-swap IMPLEMENTED, verified), Finding 7 (zero orchestrator LoRA wiring, verified), reopen-trigger (GPU + REPL-uncovered need), and the 2026-06-20 Code2LoRA addendum
 - [intake-707 Code2LoRA](../research/intake_index.yaml) (arXiv:2606.06492) -- hypernetwork-generated repo-specific LoRA adapters; net-new vs DocToLoRA = Evo/GRU per-diff variant + RepoPeftBench (604 repos, static+evolution). Hypernetwork training GPU-gated; external preprint, credibility 1
@@ -251,7 +251,7 @@ Experience Distillation is therefore SFT on a **hindsight-conditioned,
 regenerated corpus** — structurally the same shape as our own P2→P3→P4 pipeline,
 with a concrete data-construction recipe attached. It is a **recipe source, not a
 refutation**.
-[`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) §Premise correction
+[`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) §Premise correction
 
 **Two qualifiers that must travel with any number lifted from it:**
 
@@ -332,7 +332,7 @@ relative to a baseline you can independently locate.
 
 ### Source References
 
-- [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
+- [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
 - [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
 - [`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)

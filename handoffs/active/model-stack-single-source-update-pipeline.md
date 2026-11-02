@@ -13,7 +13,7 @@ preserve completed chronology compacted out of this active handoff.
 **Related**:
 [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md),
 [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md),
-[model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md),
+[model-stack-change-standardization-audit.md](../completed/model-stack-change-standardization-audit.md),
 [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md),
 [model-capability-descriptors.md](model-capability-descriptors.md)
 

@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 17,
-      "handoffs": 55,
+      "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 685
+      "open": 684
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1698,22 +1698,6 @@
       "state": "active",
       "total": 15
     },
-    "model-stack-change-standardization-audit.md": {
-      "blocked": 0,
-      "closed": 0,
-      "guarded": 11,
-      "last_advanced": "2026-08-11",
-      "open": 0,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "undispatchable-tasks",
-        "candidate": false,
-        "evidence": "0 blocked + 11 guarded box(es) remain unresolved despite 0 open"
-      },
-      "row_id": "RTG-18",
-      "state": "active",
-      "total": 11
-    },
     "model-stack-single-source-update-pipeline.md": {
       "blocked": 0,
       "closed": 48,
@@ -2545,22 +2529,6 @@
       "row_id": "INF-51",
       "state": "active",
       "total": 8
-    },
-    "swarm-dataset-distillation.md": {
-      "blocked": 0,
-      "closed": 2,
-      "guarded": 0,
-      "last_advanced": "2026-10-07",
-      "open": 1,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-39",
-      "state": "blocked",
-      "total": 3
     },
     "thesis-experiment-orchestrator-vs-strongest-model.md": {
       "blocked": 0,
@@ -3920,21 +3888,12 @@
       "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
       "track": "model capability descriptors"
     },
-    "RTG-18": {
-      "deps": [],
-      "handoff": "model-stack-change-standardization-audit.md",
-      "id": "RTG-18",
-      "index": "routing-and-optimization-index.md",
-      "line": 29,
-      "next_action": "Keep as the per-change update checklist \u2014 run it at every model-stack change; never dispatch or flip its boxes",
-      "track": "model stack change standardization audit"
-    },
     "RTG-19": {
       "deps": [],
       "handoff": "model-stack-single-source-update-pipeline.md",
       "id": "RTG-19",
       "index": "routing-and-optimization-index.md",
-      "line": 30,
+      "line": 29,
       "next_action": "SSU-F8 owner confirmation; enumerate remaining W4 migrations from per-consumer source evidence",
       "track": "model stack single source update pipeline"
     },
@@ -3943,7 +3902,7 @@
       "handoff": "model-stack-update-pipeline-audit.md",
       "id": "RTG-20",
       "index": "routing-and-optimization-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient",
       "track": "model stack update pipeline audit"
     },
@@ -3952,7 +3911,7 @@
       "handoff": "multi-file-coding-completion-capability.md",
       "id": "RTG-21",
       "index": "routing-and-optimization-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "MF-NDG-1 / MF-RR-1 \u2014 preserve extraction and completion metadata before rate checks",
       "track": "multi file coding completion capability"
     },
@@ -3961,7 +3920,7 @@
       "handoff": "non-inference-backlog.md",
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
       "track": "non inference backlog"
     },
@@ -3970,7 +3929,7 @@
       "handoff": "objective-task-rate-goodput.md",
       "id": "RTG-23",
       "index": "routing-and-optimization-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "W3e \u2014 merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence)",
       "track": "objective task rate goodput"
     },
@@ -3979,7 +3938,7 @@
       "handoff": "orchestration-robustness-audit-2026-07-11.md",
       "id": "RTG-24",
       "index": "routing-and-optimization-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "P0.1 operator run/pause decision on autopilot candidate species",
       "track": "orchestration robustness audit 2026 07 11"
     },
@@ -3988,7 +3947,7 @@
       "handoff": "prompt-construction-determinism.md",
       "id": "RTG-27",
       "index": "routing-and-optimization-index.md",
-      "line": 37,
+      "line": 36,
       "next_action": "D3 \u2014 Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1\u20133",
       "track": "prompt construction determinism"
     },
@@ -3997,7 +3956,7 @@
       "handoff": "reasoning-effort-levels.md",
       "id": "RTG-28",
       "index": "routing-and-optimization-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
       "track": "reasoning effort levels"
     },
@@ -4006,7 +3965,7 @@
       "handoff": "retrain-routing-models.md",
       "id": "RTG-29",
       "index": "routing-and-optimization-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
       "track": "retrain routing models"
     },
@@ -4017,7 +3976,7 @@
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "index": "routing-and-optimization-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
       "track": "routing intelligence"
     },
@@ -4026,7 +3985,7 @@
       "handoff": "scaffold-autopilot-cost-lever-deployment.md",
       "id": "RTG-32",
       "index": "routing-and-optimization-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "T0.1 \u2014 Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row",
       "track": "scaffold autopilot cost lever deployment"
     },
@@ -4035,7 +3994,7 @@
       "handoff": "searxng-search-backend.md",
       "id": "RTG-33",
       "index": "routing-and-optimization-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364",
       "track": "searxng search backend"
     },
@@ -4044,7 +4003,7 @@
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 43,
+      "line": 42,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -4053,7 +4012,7 @@
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "index": "routing-and-optimization-index.md",
-      "line": 44,
+      "line": 43,
       "next_action": "REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review",
       "track": "shape keyed contention gating"
     },
@@ -4062,7 +4021,7 @@
       "handoff": "stack-change-governance-pipeline.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 45,
+      "line": 44,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -4071,27 +4030,16 @@
       "handoff": "standardized-stack-update-pipeline-finalization.md",
       "id": "RTG-38",
       "index": "routing-and-optimization-index.md",
-      "line": 46,
+      "line": 45,
       "next_action": "W4 swap-CI \u2014 prove representative stack changes move generated descriptors, priors and gate execution together",
       "track": "standardized stack update pipeline finalizat"
-    },
-    "RTG-39": {
-      "deps": [
-        "EVL-02"
-      ],
-      "handoff": "swarm-dataset-distillation.md",
-      "id": "RTG-39",
-      "index": "routing-and-optimization-index.md",
-      "line": 47,
-      "next_action": "After Strand Phase B clears, obtain the operator\u2019s narrow-domain choice for P1",
-      "track": "swarm dataset distillation"
     },
     "RTG-40": {
       "deps": [],
       "handoff": "tri-role-coordinator-architecture.md",
       "id": "RTG-40",
       "index": "routing-and-optimization-index.md",
-      "line": 48,
+      "line": 46,
       "next_action": "TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing",
       "track": "tri role coordinator architecture"
     },
@@ -4100,7 +4048,7 @@
       "handoff": "unified-trace-memory-service.md",
       "id": "RTG-41",
       "index": "routing-and-optimization-index.md",
-      "line": 49,
+      "line": 47,
       "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing",
       "track": "unified trace memory service"
     },
@@ -4109,7 +4057,7 @@
       "handoff": "within-role-placement-state-machine.md",
       "id": "RTG-42",
       "index": "routing-and-optimization-index.md",
-      "line": 50,
+      "line": 48,
       "next_action": "WP-8 \u2014 teach compute_max_safe_concurrency the largest-dimension rule for quarters-only eval fan-out (WP-6/WP-7 await the operator)",
       "track": "within role placement state machine"
     },
@@ -4118,7 +4066,7 @@
       "handoff": "wp12-fleet-layer-design.md",
       "id": "RTG-43",
       "index": "routing-and-optimization-index.md",
-      "line": 51,
+      "line": 49,
       "next_action": "Post-soak \u00a75 cleanup \u2014 retire the legacy per-role build path; waits on the operator retiring the ORCHESTRATOR_FLEET_LAYER rollback",
       "track": "wp12 fleet layer design"
     },
@@ -4127,7 +4075,7 @@
       "handoff": "x-mas-text-routing.md",
       "id": "RTG-45",
       "index": "routing-and-optimization-index.md",
-      "line": 52,
+      "line": 50,
       "next_action": "Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload",
       "track": "x mas text routing"
     },
@@ -4136,7 +4084,7 @@
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
       "index": "routing-and-optimization-index.md",
-      "line": 53,
+      "line": 51,
       "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending",
       "track": "handoff index and backlog graph"
     },
@@ -4145,7 +4093,7 @@
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
-      "line": 54,
+      "line": 52,
       "next_action": "Re-eyeball the tap's live ACTIVE/streaming token counters under real traffic; Phase 1b awaits operator parity",
       "track": "dashboard architecture restructure"
     },
@@ -4156,7 +4104,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 55,
+      "line": 53,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -4168,7 +4116,7 @@
       "handoff": "fleet-fanout-measurement.md",
       "id": "RTG-49",
       "index": "routing-and-optimization-index.md",
-      "line": 56,
+      "line": 54,
       "next_action": "FM-7 journal delegation accounting + FM-8 subagent types/dispatch hook (parallel), then FM-9 doctrine diff; FM-2 Stage 1 after",
       "track": "fleet fanout measurement"
     },
@@ -4180,7 +4128,7 @@
       "handoff": "wrap-up-division-of-labor-policy.md",
       "id": "RTG-51",
       "index": "routing-and-optimization-index.md",
-      "line": 57,
+      "line": 55,
       "next_action": "Reconcile the Phase-5 instruction migration matrix and prepare protected policy signoff; retain the real Auditor canary",
       "track": "wrap up division of labor policy"
     },
@@ -4192,7 +4140,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 58,
+      "line": 56,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -4201,7 +4149,7 @@
       "handoff": "qwen-chat-template-evaluation.md",
       "id": "RTG-54",
       "index": "routing-and-optimization-index.md",
-      "line": 59,
+      "line": 57,
       "next_action": "Prepare CT-12.3d deployed orchestrator escaped-cost check; review CT-21 scorer cause and prospective measurement",
       "track": "qwen chat template evaluation"
     },
@@ -4212,7 +4160,7 @@
       "handoff": "promptforge-mutation-safety-contract.md",
       "id": "RTG-55",
       "index": "routing-and-optimization-index.md",
-      "line": 60,
+      "line": 58,
       "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
       "track": "promptforge mutation safety"
     },
@@ -4221,7 +4169,7 @@
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 61,
+      "line": 59,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -4234,7 +4182,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 62,
+      "line": 60,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -4247,7 +4195,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 63,
+      "line": 61,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -4256,7 +4204,7 @@
       "handoff": "model-artifact-integrity.md",
       "id": "RTG-59",
       "index": "routing-and-optimization-index.md",
-      "line": 64,
+      "line": 62,
       "next_action": "SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d",
       "track": "model artifact integrity"
     },
@@ -4265,7 +4213,7 @@
       "handoff": "loop-state-offraid-backup.md",
       "id": "RTG-60",
       "index": "routing-and-optimization-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "Filesystem agent: BK-1 nightly off-RAID0 snapshot of AK/AutoPilot/vidya loop state to /mnt/micron, then BK-2..5",
       "track": "loop state offraid backup"
     },
@@ -4274,7 +4222,7 @@
       "handoff": "refactoring-multirepo-2026-10.md",
       "id": "RTG-61",
       "index": "routing-and-optimization-index.md",
-      "line": 65,
+      "line": 63,
       "next_action": "Repair CI report compatibility and runtime isolation, then rerun baseline",
       "track": "multi-repo refactoring"
     },
@@ -4283,7 +4231,7 @@
       "handoff": "churn-pipeline.md",
       "id": "RTG-62",
       "index": "routing-and-optimization-index.md",
-      "line": 66,
+      "line": 64,
       "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
       "track": "churn pipeline"
     },
@@ -4292,7 +4240,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 67,
+      "line": 65,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

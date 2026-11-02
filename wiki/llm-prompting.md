@@ -171,7 +171,7 @@ different from ours but the ordering is the finding — when an approach couples
 prompting change to an algorithmic change, attribute carefully before adopting
 the algorithm. Full context in
 [Training & Distillation](training-distillation.md).
-[`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) §Premise correction
+[`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) §Premise correction
 
 ### Run-level policy as an editable natural-language document
 
@@ -205,7 +205,7 @@ plateau finding is scoped to the gate it was measured on.
 
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
-- [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
+- [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — session record of the dive that produced the prompting-over-objective correction
 
 ## Compiled Update — 2026-08-23: prompt construction and sampling are deterministic by design — and a chat template is executable code in the prompt-construction position

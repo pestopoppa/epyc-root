@@ -1,3 +1,6 @@
+> **Retired 2026-11-02 (backlog refactor D4)** — row RTG-18 is retired. The reusable per-change checklist now lives at
+> [`docs/guides/agent-workflows/stack-change-checklist.md`](../../docs/guides/agent-workflows/stack-change-checklist.md); this file is the historical audit.
+
 # Model Stack Change Standardization Audit
 
 **Status**: READY FOR MAIN IMPLEMENTATION
@@ -231,24 +234,24 @@ Use this sequence for future stack changes. Steps marked "no inference" should b
 > rows (`multimodal-pipeline.md § Review cadence` is the one other true recurring checklist, and
 > none of its boxes are in the queue).
 
-- [ ] Identify the change type: role model swap, shared-server consolidation, role retirement, tier change, port/slot change, context change, acceleration/draft/MTP change, or benchmark-only candidate addition.
-- [ ] Update structured inputs only:
+- Identify the change type: role model swap, shared-server consolidation, role retirement, tier change, port/slot change, context change, acceleration/draft/MTP change, or benchmark-only candidate addition.
+- Update structured inputs only:
   - `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*` for live deployment topology.
   - `epyc-orchestrator/orchestration/model_descriptors.yaml` for physical model identity and measured/candidate evidence.
   - `epyc-inference-research/orchestration/model_registry.yaml` only for comprehensive benchmark/candidate history, with measurement-status semantics.
   - `scripts/server/stack_manifest.py` only where launcher metadata still lacks generated ownership.
-- [ ] Compile descriptors, preserving gaps instead of inventing values.
-- [ ] Compile stack priors.
-- [ ] Sync procedure role enums (`python3 scripts/registry/sync_procedure_role_enums.py --check`).
-- [ ] Run loose guard, all-surface guard, and strict guard.
-- [ ] Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
-- [ ] Run simulated model-swap tests:
+- Compile descriptors, preserving gaps instead of inventing values.
+- Compile stack priors.
+- Sync procedure role enums (`python3 scripts/registry/sync_procedure_role_enums.py --check`).
+- Run loose guard, all-surface guard, and strict guard.
+- Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
+- Run simulated model-swap tests:
   - shared mmap swap (`frontdoor`/`coder_escalation` style)
   - role retirement (`architect_coding` style)
   - HOT/WARM tier change (`architect_general` or `ingest_long_context` style)
-- [ ] Update only generated operator summaries or explicitly historical docs.
-- [ ] Before launch, require fresh generated priors and a guard pass or an explicit diagnostic override.
-- [ ] After launch, compare running PIDs/ports/flags/binaries against stack priors and restart stale processes if needed.
+- Update only generated operator summaries or explicitly historical docs.
+- Before launch, require fresh generated priors and a guard pass or an explicit diagnostic override.
+- After launch, compare running PIDs/ports/flags/binaries against stack priors and restart stale processes if needed.
 
 **Last run (2026-07-14) recorded:**
 

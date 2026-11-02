@@ -1,3 +1,6 @@
+> **Retired 2026-11-02 (backlog refactor D4)** — row RTG-39 and the 7-line active compatibility pointer are retired; this ledger moved
+> from `handoffs/blocked/`. Its 1 open box(es) are retired unexecuted with the handoff (carried here verbatim, not migrated).
+
 # Swarm-as-Dataset-Generator — Narrow-Domain SFT Distillation
 
 **Status**: BLOCKED STUB / gated on [`strand-rust-coder-rustevo2-verification.md`](../active/strand-rust-coder-rustevo2-verification.md) Phase B outcome
@@ -154,4 +157,4 @@ This is a source for experience-derived SFT, not direct evidence for RTG-39's se
 
 ## Progress checklist
 
-- [ ] BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1
+- BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1
