@@ -91,3 +91,7 @@ The preceding wrap-up created commit 536573f996c5 but failed to push; this attem
 ## 00:47Z — Review interrupted in-run counter evidence prototype
 
 Inspected the interrupted C5-7 scratch prototype in artifacts/agentic-rocm/.c57-work. It adds a parent-owned counter provider inside a claimed measurement window after workload and anchor identities are available, while passing provider evidence to the existing gate; the scratch test file has no corresponding changes. Requested an independent C6/trust-boundary review and focused mock-provider tests before preserving or applying any patch. No native profiler producer, GPU run, or inference row is claimed. Other row-preparation completion events remain outstanding.
+
+## 00:49Z — Assess four inference-row prerequisites and document concrete capture and controller gaps
+
+Assessed the matched eight-arm panel, zero-profiler null arm, k228 and k175 capture readiness. None has a publishable governed launcher: the panel needs missing licensed implementations and a fixed feedback protocol; the null arm needs an explicit tested feedback mode and matched protocol; both captures need matching real-model hooks, clean pinned source and bound inventories. The capture provider already owns CPU/GPU claims, which the row launcher must reconcile. Recorded actionable prerequisites in artifacts/agentic-rocm/row-readiness-20261102.md. No row was published or compute run.
