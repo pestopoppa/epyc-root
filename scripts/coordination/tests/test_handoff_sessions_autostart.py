@@ -115,13 +115,17 @@ class AutoStartTests(AutoStartFixture):
         self.assertIn("rows=row-gpu-1", log)
         self.assertNotIn("AUTO-START zed", log, "heuristic-only handoffs wait while a real-row handoff needs a session")
         self.assertNotIn("AUTO-START alpha", log)
-        # the stub pid is dead: the next pass reaps the turn, parses the session id; mid now HAS a session, so no real-row
-        # handoff is left without one -> heuristic handoffs may take up to HEURISTIC_SLOTS (2): zed (rank 1) then alpha
+        # SA-1: heuristic-only handoffs (zed, alpha: no real row) NEVER start a session
         reg, _ = self.dispatch()
         S = reg["sessions"]
         self.assertEqual(S["mid"]["session_id"], "claude-sess-1")
-        self.assertIn("zed", S)
-        self.assertIn("alpha", S)
+        self.assertNotIn("zed", S)
+        self.assertNotIn("alpha", S)
+        # ... unless pinned
+        reg["pinned"] = ["handoffs/active/zed.md"]
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, _ = self.dispatch()
+        self.assertIn("zed", reg["sessions"])
         self.assertNotIn("closed", S, "a handoff with no open task never gets a session")
 
     def test_suspended_session_does_not_count_as_live_and_done_frees_slot(self):
@@ -667,3 +671,40 @@ class InventoryTests(_DSHBase):
         self.assertIn("holder codex-x pid 99999977 is dead", self.log_text())
         self.assertIn("NOT released automatically", self.log_text())
         self.assertTrue(os.path.exists(os.path.join(lockdir, "push-abc.json")))
+
+
+class SA1Tests(AutoStartFixture):
+    def test_rows_empty_never_starts_and_just_done_handoff_is_throttled(self):
+        # rows=[] fixture: no ready row anywhere -> no auto-start at all, even with free slots
+        for p in ["row-gpu-1"]:
+            os.remove(os.path.join(self.flags, "ready", p + ".json"))
+        reg, _ = self.dispatch()
+        self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
+        self.assertEqual(self.calls, [])
+        # a just-done handoff with a real row again is NOT restarted within the cooldown; AUTO-START-THROTTLED is logged
+        _w(os.path.join(self.flags, "ready", "row-gpu-1.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-gpu-1", "owner": "o", "lane": "gpu",
+                                                                           "regions": "mi210_0", "priority_rank": 3, "handoff_task": "handoffs/active/mid.md:INF-5"}))
+        reg["sessions"]["mid"] = {"handoff": "handoffs/active/mid.md", "engine": "codex", "session_id": "old", "status": "done",
+                                  "pid": None, "done_at": hs.now_iso()}
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, _ = self.dispatch()
+        self.assertEqual(reg["sessions"]["mid"]["status"], "done")
+        self.assertEqual(self.calls, [])
+        self.assertIn("AUTO-START-THROTTLED mid: per-handoff cooldown", self.log_text())
+        # after the cooldown it restarts (same slug, restarted_from_done)
+        reg["sessions"]["mid"]["done_at"] = "2026-11-01T00:00:00Z"
+        reg["sessions"]["mid"]["throttle_logged"] = "2026-11-01T00:00:00Z"
+        hs.save(hs.reg_path(self.flags), reg)
+        reg, _ = self.dispatch()
+        self.assertEqual(reg["sessions"]["mid"]["status"], "live")
+        self.assertEqual(reg["sessions"]["mid"]["restarted_from_done"], "old")
+        # global cap: with starts already at the cap, nothing more starts this hour
+        st = hs.load(hs.state_path(self.flags), {})
+        st["starts"] = [hs.time.time()] * hs.MAX_STARTS_PER_HOUR
+        hs.save(hs.state_path(self.flags), st)
+        _w(os.path.join(self.flags, "ready", "row-z.json"), json.dumps({"schema": "epyc.row.v3", "id": "row-z", "owner": "o", "lane": "cpu",
+                                                                       "regions": "any-cpu-quarter", "priority_rank": 3, "handoff_task": "handoffs/active/zed.md:INF-1"}))
+        n = len(self.calls)
+        reg, _ = self.dispatch()
+        self.assertNotIn("zed", reg["sessions"])
+        self.assertIn("global cap", self.log_text())
