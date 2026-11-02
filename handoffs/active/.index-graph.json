@@ -3769,7 +3769,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T17:39:21Z",
+  "generated_at": "2026-11-02T18:05:37Z",
   "nodes": [
     {
       "age_days": 95,
@@ -8976,6 +8976,30 @@
     },
     {
       "age_days": 0,
+      "blocked": 0,
+      "blocked_by": [],
+      "closed": 1,
+      "dispatchable": 22,
+      "domain": "routing-and-optimization",
+      "guarded": 0,
+      "handoff": "backlog-refactor-2026-11.md",
+      "id": "RTG-63",
+      "last_advanced": "2026-11-02",
+      "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
+      "open": 22,
+      "priority": 0.0,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 173,
+      "readiness": "ready",
+      "state": "active",
+      "track": "backlog refactor 2026-11"
+    },
+    {
+      "age_days": 0,
       "blocked": 12,
       "blocked_by": [
         "RTG-09"
@@ -9370,13 +9394,14 @@
     ],
     "method": "override file > backlog-priority.json > derived heuristic (no authored priority field exists in the index rows)",
     "open_rows_missing_from_file": [
-      "RTG-62"
+      "RTG-62",
+      "RTG-63"
     ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 172,
-      "heuristic": 2,
+      "heuristic": 3,
       "override": 1
     },
     "tiers": {
@@ -9393,7 +9418,7 @@
   "readiness_counts": {
     "blocked": 41,
     "no_open": 1,
-    "ready": 133
+    "ready": 134
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",

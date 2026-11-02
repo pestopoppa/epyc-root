@@ -64,6 +64,7 @@
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d | — |
 | RTG-61 | multi-repo refactoring | [refactoring-multirepo-2026-10.md](refactoring-multirepo-2026-10.md) | Repair CI report compatibility and runtime isolation, then rerun baseline | — |
 | RTG-62 | churn pipeline | [churn-pipeline.md](churn-pipeline.md) | SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3 | — |
+| RTG-63 | backlog refactor 2026-11 | [backlog-refactor-2026-11.md](backlog-refactor-2026-11.md) | BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list | — |
 
 ## Cross-domain
 
