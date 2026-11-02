@@ -167,3 +167,7 @@ Connected the sampled bench claim to keeper admission and guarded SR-6 capture; 
 ## 10:43Z — Prepare SR-6 window capture and review CAFE-4 semantics
 
 Added the sealed-plan SR-6 window coordinator, with 95 preparation tests passing; it still needs authenticated roots and packets, concrete runtime and server controls, complete drain and a launcher. An independent CAFE-4 source review found missing strict partial-accept coverage, a non-server-equivalent rollback, a non-state-specific fault control and unbounded oracle memory; repair is delegated. Neither task has an inference result or publishable row.
+
+## 10:44Z — Preserve revised CAFE-4 source candidate
+
+Retained the revised rollback harness source as an explicitly unvalidated candidate. It requires strict partial acceptance, models suffix removal and a subsequent sampled-token decode, caps oracle float storage at 256 MiB and returns UNKNOWN for the non-state-specific fault. Seven structural checks and a syntax-only compile against v10 headers passed on the source before adding the warning comment. Independent semantic review, source provenance, recurrent snapshot evidence, a state-specific fault and native validation remain; no row or result is claimed.
