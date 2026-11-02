@@ -3,3 +3,7 @@
 ## 00:23Z — Prepare current-model GPU row and efficiency and calculator implementations
 
 Reconciled the dispatcher inventory with the previous investigations: historical A1–A4 GPU/Phase 1 rows are superseded by the 2026-10-28 current-model retarget; the SWE scorer requires OD-1/OD-2, and L-Q4P requires its stated trigger. No unqualified historical row was published. Dispatched bounded current-model GPU row preparation, EffiBench-X instrument work and deterministic calculator implementation; each has a registered completion file. Earlier ThinkingCap weight, suite, launcher-integration, template and protocol work remains represented by registered result files.
+
+## 00:24Z — Reconstruct patched EffiBench-X instrument on pinned upstream
+
+Reconstructed upstream EffiBench-X at 21b6668a49a342c843e679cc5ed16081064a5768 and cleanly applied all four previously acceptance-tested patches in scratch. Diff SHA-256 b87733644b59545737a3a50ce0a5350265a0b80680fd21cb8a09ee6fce6c6534; git diff --check and compilation of the six changed files passed. Durable integration, DATED filtering and two exclusions remain. The current-model GPU, EffiBench-X and calculator subagent artifacts remain registered as completion events; no inference row was published.
