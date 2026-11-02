@@ -1,0 +1,51 @@
+--- a/scripts/kernel_rnd/autokernel/controller/arena_adapter.py
++++ b/scripts/kernel_rnd/autokernel/controller/arena_adapter.py
+@@ -117,6 +117,18 @@
+         ControllerSpec("argus", "agentic_gpu_optimization",
+                        ("planner", "actor", "critic", "exploit")),
+     )
++}
++
++
++# Archetypes registered for design discovery only. Their implementations and
++# pinned executable sources have not been provisioned; they are deliberately
++# absent from CONTROLLERS so ArenaTask refuses them before any launch. This
++# does not alter the fixed historical eight-arm panel.
++DISCOVERY_ARCHETYPES = {
++    "hawkeye": ControllerSpec(
++        "hawkeye", "curated_static_supervision", ("planner", "actor", "critic")),
++    "swizzleperf": ControllerSpec(
++        "swizzleperf", "persistent_history_critique", ("planner", "actor", "critic")),
+ }
+ 
+ 
+@@ -534,7 +546,7 @@
+ 
+ 
+ __all__ = [
+-    "AGENT_KERNEL_ARENA_PIN", "GEAK_V1_PIN", "CONTROLLERS", "TARGET_GPU_MODEL",
++    "AGENT_KERNEL_ARENA_PIN", "GEAK_V1_PIN", "CONTROLLERS", "DISCOVERY_ARCHETYPES", "TARGET_GPU_MODEL",
+     "TARGET_GFX_ARCH", "ArenaAdapterError", "ArenaTask", "PreparedArenaTask",
+     "architecture_environment", "detect_gfx_arch", "inspect_vendor_source", "launch",
+     "prepare_task", "register_agentkernelarena_adapter", "run_preflight",
+--- a/scripts/kernel_rnd/autokernel/controller/test_arena_adapter.py
++++ b/scripts/kernel_rnd/autokernel/controller/test_arena_adapter.py
+@@ -50,6 +50,18 @@
+         )
+         self.assertTrue(all(row.evidence_scope == "whole_agent_task_only"
+                             for row in A.CONTROLLERS.values()))
++
++    def test_discovery_archetypes_are_catalogued_but_cannot_launch(self):
++        self.assertEqual(set(A.DISCOVERY_ARCHETYPES), {"hawkeye", "swizzleperf"})
++        self.assertEqual(A.DISCOVERY_ARCHETYPES["hawkeye"].family,
++                         "curated_static_supervision")
++        self.assertEqual(A.DISCOVERY_ARCHETYPES["swizzleperf"].family,
++                         "persistent_history_critique")
++        for controller_id in A.DISCOVERY_ARCHETYPES:
++            self.assertNotIn(controller_id, A.CONTROLLERS)
++            with self.subTest(controller_id=controller_id):
++                with self.assertRaisesRegex(A.ArenaAdapterError, "unknown controller"):
++                    self.task(controller_id=controller_id)
+ 
+     def test_prepare_binds_gfx90a_and_runs_final_prompt_hygiene(self):
+         prepared = A.prepare_task(
