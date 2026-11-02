@@ -63,3 +63,7 @@ Integrated stop-file checks at keeper admission, server lifecycle and both sides
 ## 10:25Z — Add Jet-Long build custody verifier
 
 Added an offline build custody packet verifier and tests; the combined Jet-Long prototype suite passes 30 tests. The verifier checks packet paths, hashes, source tree/archive, recorded build statuses and gitlinks, but cannot prove self-reported source-to-build custody. Fixture full reconstruction passed 150 arrays and checksum verification; the packet remains draft pending documented protocol and native prompt_n qualification. Controlled descendant cleanup is not yet sufficient for production. No inference or published row.
+
+## 10:26Z — Validate keeper CPU allocation and preserve fixture protocol
+
+Integrated strict CPU-list and dry-run flag validation into draft keeper admission; 31 offline tests pass. Preserved the fixture protocol draft with exact hashes and disclosed raw-token construction, shared-haystack seed overlap and unverified native prompt_n; it is not yet registered or authorized for inference. Native entry remains disabled. No inference or published row.

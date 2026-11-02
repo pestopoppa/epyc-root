@@ -5,11 +5,32 @@ This is not a launcher. It validates the keeper's exported values, but does not
 replace the engine's grant or resource claim and never grants work itself.
 """
 import math
+import re
 from pathlib import Path
 
 
 class AdmissionError(ValueError):
     pass
+
+
+def parse_cpus(value):
+    """Parse a nonempty Linux CPU-list with no reversed or overlapping ranges."""
+    if not isinstance(value, str) or not value or len(value) > 4096:
+        raise AdmissionError('invalid CPU allocation')
+    cpus = set()
+    for part in value.split(','):
+        if not re.fullmatch(r'(0|[1-9][0-9]*)(-(0|[1-9][0-9]*))?', part):
+            raise AdmissionError('invalid CPU allocation')
+        ends = part.split('-')
+        first, last = int(ends[0]), int(ends[-1])
+        # Bound expansion to avoid treating untrusted input as an allocation.
+        if last < first or last > 1048575 or last - first > 65535:
+            raise AdmissionError('invalid CPU allocation')
+        segment = set(range(first, last + 1))
+        if cpus.intersection(segment):
+            raise AdmissionError('overlapping CPU allocation')
+        cpus.update(segment)
+    return frozenset(cpus)
 
 
 def validate(env, *, now, minimum_cell_s, startup_s, cleanup_s, result_path):
@@ -20,8 +41,7 @@ def validate(env, *, now, minimum_cell_s, startup_s, cleanup_s, result_path):
         stop = Path(env['FILLER_STOPFILE'])
     except (KeyError, TypeError, ValueError) as exc:
         raise AdmissionError('missing or invalid keeper envelope') from exc
-    if not cpus or not all(c in '0123456789,-' for c in cpus):
-        raise AdmissionError('invalid CPU allocation')
+    parse_cpus(cpus)
     if not stop.is_absolute() or stop.exists():
         raise AdmissionError('missing absolute stop path or already stopped')
     limits = (now, minimum_cell_s, startup_s, cleanup_s)
@@ -36,7 +56,10 @@ def validate(env, *, now, minimum_cell_s, startup_s, cleanup_s, result_path):
     budget_s = deadline - now
     if budget_s < minimum_cell_s + startup_s + cleanup_s:
         raise AdmissionError('insufficient time for a complete cell and cleanup')
-    dry = env.get('FILLER_DRYRUN') == '1'
+    dry_flag = env.get('FILLER_DRYRUN', '0')
+    if dry_flag not in ('0', '1'):
+        raise AdmissionError('invalid dry-run flag')
+    dry = dry_flag == '1'
     selected = env.get('FILLER_DRYRUN_RESULT_PATH') if dry else result_path
     if not selected or not Path(selected).is_absolute():
         raise AdmissionError('missing absolute result path')
