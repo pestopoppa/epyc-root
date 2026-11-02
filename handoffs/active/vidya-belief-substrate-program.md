@@ -2510,6 +2510,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   (2) the probe's `acc_peak` ≤ 238 is for the named prompts on the architect only. Grade via `claim_tuple.grade()`;
   no new ladder. Row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and
   an adapter projects the harness summaries.
+- [ ] **VB-CPU-FA-VKQ2-WRITE — wire the prospective exact decode comparison.** Project the native hybrid and legacy arm records with their depth, source and binary identities, model receipt, grant, CPU placement, output and cleanup; qualification records are excluded. Reuse the existing shared grading ladder, and pass the planning-context canary before calling the loop wired. [no-belief: prospective task]
 - [ ] **VB-DF2-REPLAY — write side for CPU-only DF2 n-gram replays (DF2-14, DF2-19)** (filed 2026-10-20, agent df2-19;
   CLAUDE.md *Belief Kernel*). No adapter row exists for these replays, and none is written here.
   - Source: `epyc-root` `artifacts/research/df2-19-20261020/` (`results.json` carries the outcomes, chosen gates, seed count and corpus sizes;
