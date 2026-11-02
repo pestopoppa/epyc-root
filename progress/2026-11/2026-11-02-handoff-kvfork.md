@@ -67,3 +67,7 @@ Prepared KPF-20 v3 with a pinned isolated scratch source and committed-source me
 ## 11:01Z — Repair and preserve KPF row preparations
 
 KPF-20 v3 isolates and hash-binds its retained checkout and rejects untracked files. KPF-17.4d build v2 now validates exact host compiler provenance, CMake option equality and cooperative process stopping; six tests pass. Neither row has a smoke PASS: all four CPU quarters were held by the INF-70 workload at inspection. The earlier commit was stopped by a non-collectable test, now fixed.
+
+## 11:11Z — Detect omitted KPF-64 family bursts
+
+The retained F replay attempted 267 of 442 frozen manifest requests: eight children (175 requests) never ran because their parent retained only 16 turns while their parent_turn indices are 94–110. F DONE is insufficient evidence of complete sample coverage; no complete F-FB verdict is claimed. A fail-closed replay preflight and local source recovery investigation are underway. All CPU quarters and GPU were busy when publisher admission was checked; no new smoke PASS.
