@@ -51,3 +51,9 @@ Consumed `/mnt/raid0/llm/tmp/codex-ni-hil15b-r7-rowflow-successor-20261102/FINAL
 ## 04:12Z — Restore sparse checkout required by commit hook
 
 The first wrap-up attempt was blocked because the observer census requires a tracked operator ratifier omitted by the sparse checkout. Added that tracked path to the sparse checkout and verified the census passes; the preceding readiness assessment is retained above.
+
+## 04:12Z — Advance HIL-13 offline baseline using retained traces
+
+### HIL-13 retained-cohort assessment
+
+Reviewed `/mnt/raid0/llm/tmp/harness-improvement-loop/hil13-assessment.md`. The retained q2-v3 units 11–20 expose 30 trace databases and matching per-run L2 reports; preliminary existing-report counts are 26 passed and 4 failed. This is a selected subset, not the entire 60-run pilot, and the figures must be checked with a fresh source-pinned scan and exact joins before filing. HIL-12 item 3 requires both failure-signature and unclassified shares; category-specific denominators and overlaps must be retained. A bounded offline rescan was delegated to write `/mnt/raid0/llm/tmp/harness-improvement-loop/hil13-offline/DONE`; independent acceptance and cohort review will write `/mnt/raid0/llm/tmp/harness-improvement-loop/hil13-acceptance.md`. Both paths are registered as dispatcher events. No inference was launched and HIL-13 remains open pending review and durable filing.
