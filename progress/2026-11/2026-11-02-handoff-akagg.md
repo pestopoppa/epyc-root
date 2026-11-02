@@ -135,3 +135,7 @@ Model seal and request capture integrations have not produced completion records
 ## 10:01Z — Implement retained-trace boundary admission
 
 Retained-trace boundary admission checker is being prepared alongside GPU model seal, CPU capture and CH-27 preflight. No measurement or row claimed.
+
+## 10:03Z — Investigate C3 GPU lock re-entry, CH-26b CPU residency evidence and CH-27 private campaign custody
+
+Investigated pending inference repairs: C3 r4 self-contends on inherited FD9 and its successor must verify the exact engine path and current engine digest; a scratch repair is in progress. CH-26b r2 is already filed inconclusive: native CPU residency logic reports placement and contention unproven, and the retained census exceeded its 2048 bound, so an identical rerun cannot qualify the floor. CH-27 private campaign preparation still has unsealed prompt manifests and shared store, worker and history paths; its native re-anchor planner also requires a behind state. No compute run or new row was published. Scratch findings: /mnt/raid0/llm/tmp/akagg/cpu-fix-report.json.
