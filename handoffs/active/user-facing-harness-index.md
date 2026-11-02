@@ -23,7 +23,6 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts | UFH-01 |
 | UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision | UFH-07, INF-78, EVL-37, UFH-01 |
-| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e1: read first post-reload write_outside_root audit record + POST-d proofs; then e2 web_fetch_guard, e3 containment | — |
 
 ## Cross-domain
 

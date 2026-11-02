@@ -16,6 +16,10 @@
    "target": "eval-tower-program.md",
    "track": "bulk-inference-campaign"
   },
+  "capability-registry-and-promotion.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "capability-registry-and-promotion"
+  },
   "conversation-stack.md": {
    "target": "speech-and-multimodal.md",
    "track": null
@@ -80,10 +84,26 @@
    "target": "model-evaluation-queue.md",
    "track": "minimax-h3-video-generation-evaluation"
   },
+  "model-artifact-integrity.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-artifact-integrity"
+  },
+  "model-exec-containment.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-exec-containment"
+  },
   "model-stack-change-standardization-audit.md": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "model-stack-single-source-update-pipeline.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-stack-single-source-update-pipeline"
+  },
+  "model-stack-update-pipeline-audit.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-stack-update-pipeline-audit"
   },
   "multimodal-pipeline.md": {
    "target": "speech-and-multimodal.md",
@@ -117,6 +137,14 @@
    "target": "eval-tower-program.md",
    "track": "scoring-infra-standardization"
   },
+  "stack-change-governance-pipeline.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": null
+  },
+  "standardized-stack-update-pipeline-finalization.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "standardized-stack-update-pipeline-finalization"
+  },
   "strand-rust-coder-rustevo2-verification.md": {
    "target": "model-evaluation-queue.md",
    "track": "strand-rust-coder-rustevo2-verification"
@@ -133,6 +161,10 @@
   "tidar-one-pass-variant-b.md": {
    "target": "model-evaluation-queue.md",
    "track": "tidar-one-pass-variant-b"
+  },
+  "wp12-fleet-layer-design.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "wp12-fleet-layer-design"
   }
  },
  "ids": {
@@ -224,20 +256,44 @@
    "target": "EVL-02",
    "track": "ernie-image-turbo-evaluation"
   },
+  "RTG-06": {
+   "target": "RTG-36",
+   "track": "capability-registry-and-promotion"
+  },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
    "track": null,
    "retired": "D4 2026-11-02",
    "checklist": "docs/guides/agent-workflows/stack-change-checklist.md"
   },
+  "RTG-19": {
+   "target": "RTG-36",
+   "track": "model-stack-single-source-update-pipeline"
+  },
+  "RTG-20": {
+   "target": "RTG-36",
+   "track": "model-stack-update-pipeline-audit"
+  },
   "RTG-27": {
    "target": "EVL-14",
    "track": "prompt-construction-determinism"
+  },
+  "RTG-38": {
+   "target": "RTG-36",
+   "track": "standardized-stack-update-pipeline-finalization"
   },
   "RTG-39": {
    "target": "handoffs/completed/swarm-dataset-distillation.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "RTG-43": {
+   "target": "RTG-36",
+   "track": "wp12-fleet-layer-design"
+  },
+  "RTG-59": {
+   "target": "RTG-36",
+   "track": "model-artifact-integrity"
   },
   "RTG-60": {
    "target": "RTG-22",
@@ -254,6 +310,10 @@
   "UFH-11": {
    "target": "RTG-22",
    "track": "amd-ai-lab-website-publication"
+  },
+  "UFH-16": {
+   "target": "RTG-36",
+   "track": "model-exec-containment"
   }
  }
 }

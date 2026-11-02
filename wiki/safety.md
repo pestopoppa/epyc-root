@@ -25,7 +25,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **SEC-ART-POST-b ticked: the four `template_diff_reviewed` entries (frontdoor, worker_vision, architect_critic, architect_general) are operator-signed** (receipt root `522f7fd33`, ratified 13:58Z). A follow-up, NIB2-103, notes that research `data/template_reviews` lacks a README/SHA256SUMS.
 
-Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md) (SEC-ART-POST-b) · [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-103) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) (SEC-ART-POST-b) · [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-103) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): model artifact pins are enforced at start, and exec containment awaits a live tool call
 
@@ -34,7 +34,7 @@ Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.
 - **SEC-ART-1 / 1.1 landed.** `safe_download.py` records the resolved HF commit sha and per-file sha256 into a ledger; the registry schema gained `hf_repo` / `hf_revision` / `sha256`. All 16 lineup roles are pinned (re-verified against the HF tree API and full sha256 of both on-disk GGUFs), and a missing pin is FATAL at `stack_commands.cmd_start` (`validate_or_raise`; `reload` unaffected; blast radius LOW), with an env opt-out. Research `7b157602` and orchestrator `26d0d033` merged; the shared research clone was fast-forwarded (ff-only, operator-approved) so `start` reads the pinned master.
 - **Exec containment is applied but unproven live.** The API (restarted 16:19:44Z 10-23) carries `EXEC_WRITE_FLAGS=1`, `WEB_FETCH_GUARD=0`, `EXEC_CONTAINMENT=0`; it has served only `/health` since. `tool_call_audit.jsonl` holds 6 pre-reload records (2 ok, 4 refused). Proofs (1)-(4) wait on the production stack serving plus a first tool-calling request.
 
-Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md), [model-exec-containment](../handoffs/active/model-exec-containment.md)
+Sources: [model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity), [model-exec-containment](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the last two lineup GGUFs are pinned and the registry default flips to strict (on branches)
 
@@ -43,18 +43,18 @@ Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.
 - **SEC-ART-1.1: all 16 lineup roles pinned, 0 exempt.** Research `7b157602` pins `draft_qwen25` and `draft_qwen3_coder_0_75b` (community uploaders, size-matched to the HF LFS entry, 5 sequential metadata reads, no downloads) and fixes a duplicate YAML key that broke strict loading. Orchestrator `26d0d033` makes a missing lineup pin an ERROR by default (opt-out `REGISTRY_ARTIFACT_PINS_STRICT=0`). Merge order matters: research first, then orchestrator, or `start` recompiles without the drafter pins and the strict default refuses. Runtime `pins_strict` stays false until the SEC-ART-2 registration creates the launcher fingerprint ledger.
 - **Secrets hygiene.** `/mnt/raid0/llm/hf-cache/token` was mode 664 and is now 600 (contents never read); the named `cache/huggingface/token` no longer exists, and an HF-header temp file remains mode 644 pending chmod or delete. Token rotation is an operator decision.
 
-Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md).
+Sources: [model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md).
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 17, workspace-f8): lineup GGUF fingerprints are registered, and the launch-time check waits on the lean-registry pins
 
 **Confidence: verified** (`sec-art-fingerprints` RUN_RECORD.json: `check_rc` 0, 6/6 rows, `not_ok` empty).
 
-- **SEC-ART-POST-a PASSED 2026-10-23T00:04Z.** Every lineup GGUF was full-hashed once: 6 rows, ~167 GiB read, one hashing core at `nice -n 19 ionice -c3` in the build role. `check` (stat fingerprint only) returns rc 0. The ledger is `/mnt/raid0/llm/cache/artifact_fingerprints.json`, sha256 `37e9c439…675d` ([model-artifact-integrity](../handoffs/active/model-artifact-integrity.md)).
+- **SEC-ART-POST-a PASSED 2026-10-23T00:04Z.** Every lineup GGUF was full-hashed once: 6 rows, ~167 GiB read, one hashing core at `nice -n 19 ionice -c3` in the build role. `check` (stat fingerprint only) returns rc 0. The ledger is `/mnt/raid0/llm/cache/artifact_fingerprints.json`, sha256 `37e9c439…675d` ([model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity)).
 - **The launcher does not yet read the pins.** SEC-ART-2 (refuse a role whose GGUF does not match its pin) stays open until SEC-ART-POST-f puts them in the lean registry the launcher reads. `pins_strict` is then flipped through stack-change. Until then, a swapped GGUF is detectable by `check` but not refused at launch.
 
 ### Source References (2026-10-23 wrap-up sweep 17)
 
-- [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md) (SEC-ART-POST-a, SEC-ART-2)
+- [model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) (SEC-ART-POST-a, SEC-ART-2)
 - [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
 - [workspace-f8 progress, 2026-10-22](../progress/2026-10/2026-10-22-workspace-f8.md) (night: fingerprint job armed)
 
@@ -63,10 +63,10 @@ Sources: [model-artifact-integrity](../handoffs/active/model-artifact-integrity.
 
 **Confidence: verified** (git, handoff checkbox state). This section corrects and extends the sweep-15 safety section below.
 
-- **SEC-EXEC-POST-e1 is landed, not just branched.** `exec_write_flags` in `PRODUCTION_FEATURE_WAVE_OVERRIDES` is on orchestrator **main** `a73af3cc`, staged by the operator. It goes live at the operator's next API reload; the box stays open for the live proof (`write_outside_root` in `tool_call_audit.jsonl`) ([model-exec-containment](../handoffs/active/model-exec-containment.md)).
-- **The root-own / `chattr +i` question is filed as SEC-ART-POST-g, a decision package.** Option (a) root-owns the store and makes each file immutable; every later publish then needs the operator. Option (b) relies on the launch-time digest once SEC-ART-POST-f and `template_pins_strict` are on. The recommendation is (b) now and (a) after POST-f. Before this it was named in two notes but had no checkbox, so a form-screen could not see it ([model-artifact-integrity](../handoffs/active/model-artifact-integrity.md)).
+- **SEC-EXEC-POST-e1 is landed, not just branched.** `exec_write_flags` in `PRODUCTION_FEATURE_WAVE_OVERRIDES` is on orchestrator **main** `a73af3cc`, staged by the operator. It goes live at the operator's next API reload; the box stays open for the live proof (`write_outside_root` in `tool_call_audit.jsonl`) ([model-exec-containment](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment)).
+- **The root-own / `chattr +i` question is filed as SEC-ART-POST-g, a decision package.** Option (a) root-owns the store and makes each file immutable; every later publish then needs the operator. Option (b) relies on the launch-time digest once SEC-ART-POST-f and `template_pins_strict` are on. The recommendation is (b) now and (a) after POST-f. Before this it was named in two notes but had no checkbox, so a form-screen could not see it ([model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity)).
 
-Sources: [model-exec-containment](../handoffs/active/model-exec-containment.md) (SEC-EXEC-POST-e1) · [model-artifact-integrity](../handoffs/active/model-artifact-integrity.md) (SEC-ART-POST-g) · [workspace-f8 progress, Night](../progress/2026-10/2026-10-22-workspace-f8.md).
+Sources: [model-exec-containment](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) (SEC-EXEC-POST-e1) · [model-artifact-integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) (SEC-ART-POST-g) · [workspace-f8 progress, Night](../progress/2026-10/2026-10-22-workspace-f8.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): guard refusals are only inferred from transcripts, a lesson's effect needs a never-lessoned control, and trace-derived data has a private-root gate
 
@@ -87,7 +87,7 @@ Sources: [model-exec-containment](../handoffs/active/model-exec-containment.md) 
 - [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md) — M1/M2 sample results
 - [handoffs/active/frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md) — F3-LB1 privacy gate and PII scan
 - [docs/guides/agent-workflows/cleanup-reference-check.md](../docs/guides/agent-workflows/cleanup-reference-check.md) — reaper precondition rule
-- [handoffs/active/model-exec-containment.md](../handoffs/active/model-exec-containment.md) — token revoke declined
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — token revoke declined
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — containment lapses
 
 ## Latest source review — 2026-10-07
@@ -416,7 +416,7 @@ Sources: [promptforge-mutation-safety-contract](../handoffs/active/promptforge-m
 - **Cache-friendly injection, a safety-neutral change with a flag.** `fc02209d` packs SkillBank and routing-context blocks into content-addressed blocks of at least 256 tokens behind `ORCHESTRATOR_CACHE_FRIENDLY_INJECTION` (default OFF, flag-off output pinned to the legacy strings, 18 new tests); only a 12-character sha256 prefix is logged.
 - **Control-vector caveat.** v10 control vectors are additive only and qwen4exp has no `build_cvec` call, so a vector loaded on Q38FN silently does nothing; a published coder post-train headline (LCB 83 to 90) is very likely a cap or baseline artifact.
 
-Sources: [Model exec containment](../handoffs/active/model-exec-containment.md), [Model artifact integrity](../handoffs/active/model-artifact-integrity.md), [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-evaluation.md), [Progress intake backdoor-cvec](../progress/2026-10/2026-10-21-intake-backdoor-cvec.md), [Progress inj-fix](../progress/2026-10/2026-10-21-inj-fix.md), [Progress cachefriendly-inject](../progress/2026-10/2026-10-21-cachefriendly-inject.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
+Sources: [Model exec containment](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment), [Model artifact integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity), [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-evaluation.md), [Progress intake backdoor-cvec](../progress/2026-10/2026-10-21-intake-backdoor-cvec.md), [Progress inj-fix](../progress/2026-10/2026-10-21-inj-fix.md), [Progress cachefriendly-inject](../progress/2026-10/2026-10-21-cachefriendly-inject.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
 
 ## Compiled Update — 2026-10-21 (sweep 5): CT-18's first static-attack ASR numbers
 
@@ -451,8 +451,8 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 
 ### Source References (2026-10-22 wrap-up sweep 12)
 
-- [handoffs/active/model-artifact-integrity.md](../handoffs/active/model-artifact-integrity.md) — SEC-ART landings and POST-a..e
-- [handoffs/active/model-exec-containment.md](../handoffs/active/model-exec-containment.md) — SEC-EXEC landings, POST-c..e decision package
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) — SEC-ART landings and POST-a..e
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — SEC-EXEC landings, POST-c..e decision package
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 17.3 (PII hook on the disassembly file)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 13, workspace-f8): template-pin coverage is complete, but the pins do not reach the launcher yet
@@ -466,8 +466,8 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 
 ### Source References (2026-10-22 wrap-up sweep 13)
 
-- [handoffs/active/model-artifact-integrity.md](../handoffs/active/model-artifact-integrity.md) — SEC-ART-POST-a..f
-- [handoffs/active/model-exec-containment.md](../handoffs/active/model-exec-containment.md) — SEC-SECRETS-1 history-scan result
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) — SEC-ART-POST-a..f
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — SEC-SECRETS-1 history-scan result
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — late-evening section
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 15, workspace-58): the template store is published, the HF token is revoked, and the exec guards go on in stages
@@ -486,8 +486,8 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 
 ### Source References (2026-10-22 wrap-up sweep 15)
 
-- [handoffs/active/model-artifact-integrity.md](../handoffs/active/model-artifact-integrity.md) — SEC-ART-6, SEC-ART-POST-e
-- [handoffs/active/model-exec-containment.md](../handoffs/active/model-exec-containment.md) — SEC-EXEC-6, SEC-EXEC-POST-c, SEC-EXEC-POST-e1..e3
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity) — SEC-ART-6, SEC-ART-POST-e
+- [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — SEC-EXEC-6, SEC-EXEC-POST-c, SEC-EXEC-POST-e1..e3
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -498,7 +498,7 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 - **Hook false positive fixed.** The PII `account_number` rule (12-19 digits) blocked llama-bench `model_n_params` values in any repo. After the operator D9 ack, `n_params` joined the self-describing keys; fixture eval is FA 0/23, FR 0/32 (was FR 1/32).
 - **Memory telemetry for the next OOM.** A 30 s sampler (`mem_sampler.py`, 4 tests) was written because the earlyoom incident left no memory sample on disk; it is not running until the host cron starts it.
 
-Sources: [Model artifact integrity](../handoffs/active/model-artifact-integrity.md), [Model exec containment](../handoffs/active/model-exec-containment.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [Progress 3c4ca599](../progress/2026-10/2026-10-23-3c4ca599.md)
+Sources: [Model artifact integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity), [Model exec containment](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [Progress 3c4ca599](../progress/2026-10/2026-10-23-3c4ca599.md)
 
 ## Compiled Update — 2026-10-29: PromptForge mutation-safety items reconciled
 

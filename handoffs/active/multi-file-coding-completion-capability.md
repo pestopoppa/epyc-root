@@ -12,7 +12,7 @@ related:
 
 # Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap
 
-> **Fable 5 review (2026-06-12)**: the edit-transaction rollout decision is a first-cohort member of [capability-registry-and-promotion.md](capability-registry-and-promotion.md) (autopilot-promotable A/B surface per fable5-findings-04).
+> **Fable 5 review (2026-06-12)**: the edit-transaction rollout decision is a first-cohort member of [capability-registry-and-promotion.md](stack-lifecycle-program.md#track-capability-registry-and-promotion) (autopilot-promotable A/B surface per fable5-findings-04).
 
 ## Diagnosis
 

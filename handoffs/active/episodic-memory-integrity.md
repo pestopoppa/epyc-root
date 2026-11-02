@@ -15,7 +15,7 @@ coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are fol
 **Categories**: agent_architecture, memory_augmented, routing_intelligence
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
 **Related**: [learned-routing-controller.md](learned-routing-controller.md) (EPD-1/2/3 label defects),
-[standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md)
+[standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization)
 (SS-BENCH-GATE)
 
 ## Objective

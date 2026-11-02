@@ -1,6 +1,6 @@
 #!/bin/bash
 # ratify_sec_art_post_b_20261023.sh -- operator sign-off of the four SEC-ART-5 chat-template diff reviews
-# (SEC-ART-POST-b, handoffs/active/model-artifact-integrity.md).
+# (SEC-ART-POST-b, handoffs/active/stack-lifecycle-program.md).
 #
 #   Review / dry run (default; writes nothing durable, pushes nothing):
 #     bash scripts/operator/ratify_sec_art_post_b_20261023.sh --dry-run
@@ -449,7 +449,7 @@ doc = {
     "signature_channel": "operator-run script (--attest typed confirmation + typed review-digest sha256)",
     "decision": ("SEC-ART-POST-b: the operator read the upstream -> served chat-template diffs and the agent-prepared "
                  "security review digest, and signs server_mode.<role>.chat_template.template_diff_reviewed for the "
-                 "roles below (handoffs/active/model-artifact-integrity.md)."),
+                 "roles below (handoffs/active/stack-lifecycle-program.md)."),
     "signed_roles": roles,
     "already_signed_before_this_run": e["ALREADY"].split(),
     "review_digest": {"path": e["DIGEST_PATH"], "sha256": e["DIGEST"],
@@ -486,5 +486,5 @@ RATIFIED $GATE_ID by $SIGNER.
   root:     $RECEIPT_REL + $INDEX_REL (in the pushed root commit)
 NOTHING WAS RELOADED.
 Next: bash $SCRIPT_REL --verify ; then the owning session ticks SEC-ART-POST-b in
-handoffs/active/model-artifact-integrity.md (cite this receipt).
+handoffs/active/stack-lifecycle-program.md (cite this receipt).
 EOF

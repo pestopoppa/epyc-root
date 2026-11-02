@@ -1031,7 +1031,7 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   cross-process disjointness from region flocks — NOT a role-level concurrency cap of N. A
   `--workers 1` API serializes each role fully. Model the current-arm baseline accordingly and
   record the API worker count in the arm's attestation. Fix task filed in
-  [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) (C10-F1 follow-up).
+  [wp12-fleet-layer-design.md](stack-lifecycle-program.md#track-wp12-fleet-layer-design) (C10-F1 follow-up).
 - [x] ✅ 2026-07-28 VERIFIED ALREADY IMPLEMENTED (stale checkbox — `server_numa_np_sweep.py` multi-instance N×K harness + orchestrator `affinity_preflight.py --cell-manifest` mode landed `6a55aeed`/`52978844`/`29779bcc`; hard per-cell gate confirmed: preflight before requests, non-zero exit aborts cell, `decision_grade` requires `live_affinity_verified`; 105+27 targeted tests pass at committed HEAD; all 190 committed manifests validate) — **C3 (execution-blocking) — build the multi-server harness + cell-manifest affinity gate.**
   `server_numa_np_sweep.py` (or extend `server_np_sweep.py`): per-instance taskset pinning +
   correct per-shape numactl policy (interleave only for full/gemma-MTP), multi-launch/teardown

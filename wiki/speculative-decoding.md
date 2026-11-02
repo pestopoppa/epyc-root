@@ -2853,7 +2853,7 @@ production-shape measurement (Q38-T7) is still owed.
 
 - [Qwen3.8-27B replaces Qwen3.6](../handoffs/active/qwen38-27b-replace-qwen36.md) — the DFlash2 selection box, Q38-T7 (owed) and Q38-T8 (load-time VRAM peak).
 - [DFlash2 block-drafter build](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the IN PRODUCTION banner and how the ruling stayed prose.
-- [Stack-change governance pipeline](../handoffs/active/stack-change-governance-pipeline.md) — STACKCHG-DFLASH2, DRAFT-SEL-1, DRAFT-SEL-2, SCG-RULING-TO-FIELD.
+- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — STACKCHG-DFLASH2, DRAFT-SEL-1, DRAFT-SEL-2, SCG-RULING-TO-FIELD.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-dflash2-ruling-never-compiled, INC-20261003-urgent-fix-slowed-by-bundling.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the fast path, the bring-up and the VRAM sampler.
 - [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — CH-17 and V6R-4d.2.

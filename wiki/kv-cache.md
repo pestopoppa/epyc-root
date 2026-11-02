@@ -1453,7 +1453,7 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 **Confidence: scoped to cited native records and source controls.**
 
 - KPF-18 code review found shared-prefix physical layout and extent-dependent attention partitioning consistent with the fork discrepancy, while missing cell/dispatch observations prevent causal attribution. Prospective recurrent-state tests and history-aware reuse are proposals, not measured fixes. ([KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md))
-- KVU admission telemetry now records same-ticket long-prefill ownership and observed lease-verdict wait in source controls, not a total queue-wait or live-serving distribution. A 384 MiB mask entry is distinct from the 48.565 GiB capped runtime peak. ([KVU](../handoffs/active/kv-unified-stack-rollout.md); [prefill gates](../handoffs/active/shape-keyed-contention-gating.md); [inference changes](../handoffs/active/stack-change-governance-pipeline.md))
+- KVU admission telemetry now records same-ticket long-prefill ownership and observed lease-verdict wait in source controls, not a total queue-wait or live-serving distribution. A 384 MiB mask entry is distinct from the 48.565 GiB capped runtime peak. ([KVU](../handoffs/active/kv-unified-stack-rollout.md); [prefill gates](../handoffs/active/shape-keyed-contention-gating.md); [inference changes](../handoffs/active/stack-lifecycle-program.md))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

@@ -441,7 +441,7 @@ re-inherited MTP. Fixed by STACKCHG-DFLASH2-20261003 (signed 2026-10-03T04:39:55
 `d3233170` + `5265e09d`); :8083 serves DFlash2 as PID 3793153. Rules fed:
 - an operator recipe ruling becomes a registry field plus a compile check, never handoff prose: DRAFT-SEL-1 (master
   `drafters`, topology `drafter_selection`, compile fails closed) and SCG-RULING-TO-FIELD, both in
-  `handoffs/active/stack-change-governance-pipeline.md`;
+  `handoffs/active/stack-lifecycle-program.md`;
 - every kernel freeze re-selects each role's spec-decode recipe: CH-17 in
   `handoffs/active/autokernel-champion-aggregate.md`;
 - the other roles with legacy drafter fields: DRAFT-SEL-2.
@@ -456,7 +456,7 @@ fast path (operator-terminal relaunch with the target argv, PID 3737649, 04:30Z:
 acceptance 450/490, vs ~37-41 tok/s on MTP), with the permanent package behind it. Rules fed:
 - for an urgent production fix, offer the fast path first and the permanent package behind it, and do not bundle
   an unrelated move without the operator choosing to: SCG-FASTPATH in
-  `handoffs/active/stack-change-governance-pipeline.md`;
+  `handoffs/active/stack-lifecycle-program.md`;
 - a pending operator decision is put to the operator as options when it arises, never waited on in silence
   (`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*; already canonical, restated here as the cause).
 

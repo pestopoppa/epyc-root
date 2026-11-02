@@ -291,7 +291,7 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 > [scorer-drift](scorer-fork-drift-audit-2026-07-22.md) (research-repo pre-B7 scorer open),
 > [dashboard](autopilot-dashboard-fidelity-audit-2026-07-22.md) (H1/H2 panels open). ESC-8
 > landmine [DEPLOYED](../completed/esc8-stack-restart-landmine-audit-2026-07-22.md). WP-12 fleet layer
-> [FLIPPED LIVE 2026-07-23](wp12-fleet-layer-design.md) (merge `4ca6859a`, flag `a172d2dd`
+> [FLIPPED LIVE 2026-07-23](stack-lifecycle-program.md#track-wp12-fleet-layer-design) (merge `4ca6859a`, flag `a172d2dd`
 > attested in serving; rollback = flag-0 reload; **open**: case-10 live gate pending operator
 > inference grant + post-soak §5 cleanup — WP-13 interim retained as rollback substrate). First decision-grade
 > calibration rows (EV-4c; **SUSPENDED 2026-09-16, spec-dec contaminated, pending EV-CONF-2**, see

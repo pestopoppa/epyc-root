@@ -142,7 +142,7 @@ The durable rule is that stack-dependent quantities must flow through generated 
 
 The same rule applies to learned or distilled routing artifacts. Agent-config and MemRL distillation action spaces should be compiled from live stack priors, with historical labels preserved through era metadata, rather than letting a stale role roster leak into new policies. This keeps q_scorer, seeding rewards, GraphRouter, AutoPilot journals, and future distillation datasets on one model-stack contract.
 
-Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
+Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-update-pipeline-audit), [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
 
 ## 2026-06-20 Update - Stack-Prior Contract Freshness
 
@@ -150,7 +150,7 @@ The generated stack-prior contract is now treated as a source-hash freshness con
 
 The follow-up full gate passed with `summary: ok`, `guard: ok`, `guard_all_surfaces: ok`, `guard_strict: ok`, `runtime_attestation: ok`, and promotion gate `174 passed in 5.78s`. Operationally, this makes cost-aware consumers safer during non-model source changes: a stale generated contract now blocks before q_scorer, seeding, GraphRouter, launch/preflight, or operator summaries can silently rely on out-of-date stack source provenance.
 
-Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), `epyc-orchestrator` `e6d5ce6`.
+Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), `epyc-orchestrator` `e6d5ce6`.
 
 ## 2026-06-20 Update - Launch-Map Auxiliary Classification
 
@@ -176,7 +176,7 @@ tests) and `stack_change_pipeline.py check --run-promotion-gate` returned
 reopen already-audited routing/scoring consumers without a new duplicated
 model, role, serving, or runtime fact.
 
-Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md), `epyc-orchestrator` `471a4d2`.
+Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [progress 2026-06-20](../progress/2026-06/2026-06-20.md), `epyc-orchestrator` `471a4d2`.
 
 ## 2026-06-20 Update - Economic Ledger Digest Wiring
 
@@ -517,7 +517,7 @@ such, not a new measurement.
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
 - [Decision-Aware Routing](/workspace/handoffs/active/decision-aware-routing.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
 - [Bulk Inference Campaign](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
-- [Model Stack Update Pipeline Audit](../handoffs/active/model-stack-update-pipeline-audit.md) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
+- [Model Stack Update Pipeline Audit](../handoffs/active/stack-lifecycle-program.md#track-model-stack-update-pipeline-audit) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
 - [AVB Offline Reward Stack](../research/deep-dives/2026-06-20-avb-offline-reward-stack.md) -- tiny CPU reference-grounded MSE answer-quality regressor as an OFFLINE quality-oracle label source; binary q_reward ladder + disabled ClaudeAsJudge gap (code-verified); NEXT-A2/A3 verifier debiasing anchor; paraphrase-blindness risk; self-reported metrics are observations only. [intake-706], [intake-716], [intake-717], [intake-719]
 - [OptiLLM & Test-Time-Compute Techniques](../research/deep-dives/optillm-test-time-techniques.md) -- method-selection axis home (P21.B, GATED/not-built); OpenRouter Fusion typed-judge schema + model-discretionary invocation + recursion-depth bounding as `n`-free portable ideas; OptiLLM as self-hostable MoA analogue; `n`-degraded panel caveat. [intake-601], [intake-712], [intake-714]
 - [Frontier F7 — Economic Ledger](../handoffs/completed/frontier-f7-economic-ledger.md) -- cost ledger (cloud spend, local inference-hours, operator decision throughput) aggregated from existing logs; W2 digest economics section live in code; W3 operator-review-only standing rules tying planner spend / gate-latency back to routing investment.

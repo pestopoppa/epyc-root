@@ -73,7 +73,7 @@ The existing FT-2 trigger, contingent on FT-1 PROMOTE, scales to 3–5M on-polic
 
 After the applicable keep verdict, prepare adoption through the existing [stack-change skill](../../../.claude/skills/stack-change/SKILL.md) and [derivation graph](../../../.claude/skills/stack-change/DERIVATION.md). Draft the complete multi-repo change and preflight in scratch; one operator signature precedes applying the serving change. The source master is research `orchestration/model_registry.yaml`; DRAFT-SEL-1 lists acceptable `roles.<model_role>.drafters`, while orchestrator `orchestration/stack_topology.yaml` selects the drafter for each server. Repoint the appropriate `drafters.dflash2.draft_model` only through that package; retain the incumbent file as rollback. Do not hand-edit the generated lean registry, priors, launch projection or production argv.
 
-The [stack-change handoff](../../../handoffs/active/stack-change-governance-pipeline.md) owns compile/projection, capacity, runtime attestation and promotion checks. Complete its serving proof after signed apply; use actual kernel-store binary and loaded-library identity plus a real completion. Documentation or a green process-health response cannot substitute for serving proof.
+The [stack-change handoff](../../../handoffs/active/stack-lifecycle-program.md) owns compile/projection, capacity, runtime attestation and promotion checks. Complete its serving proof after signed apply; use actual kernel-store binary and loaded-library identity plus a real completion. Documentation or a green process-health response cannot substitute for serving proof.
 
 ## Review and delivery packet
 

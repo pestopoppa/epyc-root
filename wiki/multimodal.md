@@ -661,7 +661,7 @@ Related speech-kernel context unchanged: both speech kernels remain frozen at `p
 
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the same-session speech-kernel verification correction.
-- [`capability-registry-and-promotion.md`](../handoffs/active/capability-registry-and-promotion.md) — the parallel "the applicator already existed" premise correction, same shape.
+- [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the parallel "the applicator already existed" premise correction, same shape.
 
 ## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
 
@@ -1485,7 +1485,7 @@ CPU throughput and quality at the new placement are **unmeasured** (S-18).
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the cold-CPU note, S-18, S-19, S-20.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the vision move and the 27.9 s refusal.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
-- [Stack-change governance pipeline](../handoffs/active/stack-change-governance-pipeline.md) — STACKCHG-DFLASH2.
+- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — STACKCHG-DFLASH2.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-17: voice routing is unimplemented.
 
 ## Compiled Update — 2026-10-20: the conversation stack gains turn-taking instruments, and the vision embedders have nothing to screen yet

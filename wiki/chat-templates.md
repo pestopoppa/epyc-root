@@ -13,7 +13,7 @@
 `src/chat_completions_roles.py`,
 `progress/2026-05/2026-05-22.md`, `progress/2026-05/2026-05-23.md`,
 `progress/2026-06/2026-06-15.md`,
-`handoffs/active/model-stack-single-source-update-pipeline.md`
+`handoffs/active/stack-lifecycle-program.md`
 
 ---
 
@@ -386,7 +386,7 @@ path. No community template repository mentions it.
 - `scripts/server/stack_numa.py`
 - `progress/2026-05/2026-05-22.md`
 - `progress/2026-05/2026-05-23.md`
-- `handoffs/active/model-stack-single-source-update-pipeline.md`
+- `handoffs/active/stack-lifecycle-program.md`
 - `handoffs/active/qwen-chat-template-evaluation.md` (2026-08-21) — the fleet sweep, the defect
   matrix, and the template-swap decision
 - `progress/2026-08/2026-08-21-research-intake.md` (2026-08-21)
@@ -724,4 +724,4 @@ Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harn
 
 **Confidence: scoped to cited records and source controls.**
 
-- The CT-12.4 reconstructed seven golden cases are persisted with lineage; seven replayed, while a mutated template failed all seven. These fixture controls are not a new live-template comparison. ([chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md); [Qwen MTP](../handoffs/active/model-evaluation-queue.md#track-qwen-mtp-llamacpp-port); [stack governance](../handoffs/active/stack-change-governance-pipeline.md))
+- The CT-12.4 reconstructed seven golden cases are persisted with lineage; seven replayed, while a mutated template failed all seven. These fixture controls are not a new live-template comparison. ([chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md); [Qwen MTP](../handoffs/active/model-evaluation-queue.md#track-qwen-mtp-llamacpp-port); [stack governance](../handoffs/active/stack-lifecycle-program.md))

@@ -24,7 +24,7 @@ ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 ROOT_SOURCE_PIN = "83004c1137015a9fc8d0cf411e648432bc51a1c9"
 ROOT_TASKS = {
     "handoffs/active/speculative-decoding-mtp-refresh.md",
-    "handoffs/active/stack-change-governance-pipeline.md",
+    "handoffs/active/stack-lifecycle-program.md",
 }
 ROOT_TASK_IDS = {"SW-5", "SW-6", "SCG-ENVOVR-EXPIRED"}
 SELECTIONS = [
