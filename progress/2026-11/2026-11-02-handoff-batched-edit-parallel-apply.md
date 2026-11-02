@@ -23,3 +23,7 @@ Consumed repair-gap.txt and row-readiness.txt: no BEP inference row is ready; th
 ## 07:39Z — Repair sparse lane commit prerequisite
 
 Consumed commit-guard-findings.txt: the observer census rejected a valid registry entry because the lane sparse checkout excluded its tracked ratifier script. Added that one path to this lane sparse-checkout patterns; python3 scripts/coordination/observer_census.py now passes (26 observers). A subsequent prior wrapup encountered an index check failure, so its diagnosis and the outstanding replay and repair drafts have registered completion events. Preserved previously staged progress and the BEP-4 handoff update for this wrapup.
+
+## 09:22Z — Prepare replay and staged acceptance implementation
+
+Consumed the five-task replay fixture manifest and BEP-5 scope audit. The current edit transaction mutates the live tree with rollback and optional verification; the general staged review, scope/base preconditions and whole-repo acceptance gate remain open. Dispatched a scratch-only typed PatchSet replay implementation plus BEP-5 and metrics designs in separate lane files, with completion events registered. No inference row is decision-ready or was published. The preceding wrapup failed its observer hook after sparse-checkout exclusion recurred; re-included its tracked ratifier and reran the observer census successfully (26 registered).
