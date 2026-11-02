@@ -7,3 +7,5 @@ RTG-58 implementation: orchestrator `f678231c` repairs LPM fairness (111 related
 Further source: orchestrator `b35d368a` fixes scout-stage trunk-prefill capability and captures serving evidence (71 tests); C5-derived `326c80e1a` adds KPF-41 row planning and compact masks (fixtures, ASan/UBSan and syntax compile). Live serving validation and graph/backend consumption remain open.
 
 KPF-62 candidate `0cfbd5704` now has the deterministic grouped selector and a full linked CPU build on host Micron; store/reorder/selector/G3 model-free checks pass. KPF-41 candidate `516226d3f` passed opt-in model-free gfx90a gather/attention parity with own-process KFD/VRAM evidence. Both parent features and their production-shape gates remain open.
+
+KPF-62 selector is connected to opt-in offline G3 on C5 candidate `e81bcdb18`, with full linked Micron build and model-free tests; no quality verdict. KPF-26 real scout executor and native projection are on orchestrator `9301fb7b` and root `84e495d78`; corpus, :8000 route replay, live gate and planning canary remain. KPF-41 direct gfx90a vec candidate `411a7d932` linked in /dev/shm; exclusive GPU parity awaits the current INF-65 claim.
