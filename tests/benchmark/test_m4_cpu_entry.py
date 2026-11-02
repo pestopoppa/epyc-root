@@ -88,3 +88,12 @@ def test_native_dispatcher_runs_without_execute_and_refuses_unbound_scope(tmp_pa
     assert result.returncode == 2 and not marker.exists()
     assert not (output/'FIXTURE-COMPLETE.json').exists()
     assert json.loads((output/'watch-result.json').read_text())['containment_empty'] is True
+
+
+def test_real_entry_stops_running_fixture_at_deadline(tmp_path):
+    args, output, marker, *_ = setup_entry(tmp_path,sleep=10)
+    args[args.index('--deadline')+1] = str(time.time()+0.7)
+    result = subprocess.run(args,capture_output=True,text=True,timeout=15)
+    assert result.returncode == 2 and marker.exists()
+    assert not (output/'FIXTURE-COMPLETE.json').exists()
+    assert json.loads((output/'watch-result.json').read_text())['containment_empty'] is True
