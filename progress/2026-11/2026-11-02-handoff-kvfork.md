@@ -71,3 +71,19 @@ KPF-20 v3 isolates and hash-binds its retained checkout and rejects untracked fi
 ## 11:11Z — Detect omitted KPF-64 family bursts
 
 The retained F replay attempted 267 of 442 frozen manifest requests: eight children (175 requests) never ran because their parent retained only 16 turns while their parent_turn indices are 94–110. F DONE is insufficient evidence of complete sample coverage; no complete F-FB verdict is claimed. A fail-closed replay preflight and local source recovery investigation are underway. All CPU quarters and GPU were busy when publisher admission was checked; no new smoke PASS.
+
+## 11:24Z — Publish KPF-17a CPU successor
+
+Filed kvfork17a-cpu-20261102 inconclusive (rc 75 disk floor, 68 original cases recorded). Published kvfork17a-cpu-successor: four-CPU smoke PASS with eight fresh cases and 68 validated imports; no complete CPU or shared-trunk verdict. KPF-20 reached three failed smokes and remains parked under the lineage rule. KPF-64.3 preflight patch fails closed on eight missing bursts; local snapshot recovers the original parent but the missing prompts exceed the frozen cap. Build-v3 is a reviewed preparation, not yet published; its repeated source verification needs reconciliation with the no in-grant preparation rule.
+
+## 11:27Z — Publish KPF-17.4d instrumented build row and file KPF-17a successor
+
+Filed kvfork17a-cpu-successor inconclusive (rc 1, 86 original case receipts retained, no extended case receipt or COMPLETE). Published kvfork174d-build-20261102 with four-CPU smoke PASS compiling one real unit. KPF-64.3 replay guard prepared; the revised experiment awaits the operator decision.
+
+## 11:32Z — Prepare paired KPF-17a CPU successor
+
+Diagnosed the CPU successor cross-run preservation failure: its original and extended outputs were produced at different thread counts. Prepared kvfork17a-cpu-paired to compare each original and extended case under identical grant and thread count, retaining earlier receipts separately; publication smoke started but its outcome was not yet observed. No new exactness verdict is claimed.
+
+## 11:33Z — Prepare paired KPF-17a CPU successor
+
+Diagnosed the CPU successor cross-run preservation failure: its original and extended outputs were produced at different thread counts. Prepared kvfork17a-cpu-paired to compare each original and extended case under identical grant and thread count, retaining earlier receipts separately; publication smoke started but its outcome was not yet observed. No new exactness verdict is claimed.
