@@ -35,3 +35,7 @@ Consumed both registered preparation results. Preserved ID-4 native paired-arm c
 ## 01:42Z — Consume ID-4 and ID-9 preparation results and advance runnable experiments.
 
 Consumed both registered preparation results. Preserved ID-4 native paired-arm comparison plan in docs/design/knowledge-distiller-comparison-preparation.md and linked it from the handoff; a real corpus, family split, multiquery harness and held-out comparison remain. ID-9 has prepared disjoint AIME-I donor/AIME-II replay inputs and an offline-validated 150-request plan in the session preparation directory; this is historically evaluated AIME-II, not a pristine unseen suite. Dispatched bounded ID-9 runner and grant-aware launcher plus ID-4 corpus work; registered completion events. No inference or compute row was launched or published.
+
+## 01:45Z — Consume ID-9 implementation and ID-4 corpus results; review integration.
+
+Consumed ID-9 runner and launcher completion results and ID-4 real-corpus result. Updated the ID-4 preparation document with the snapshot counts, disjoint recorded IDs and the crucial lack of question-level oracles or proven task independence. Delegated independent runner and launcher review and an ID-4 oracle search; registered their result events. Initial offline tests reported 7 runner and 3 launcher tests passing. No compute launched or row published; implementation is not yet integrated.
