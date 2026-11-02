@@ -75,3 +75,7 @@ VKQ3 grant, identity and parent-death integration is in progress in scratch; it 
 ## 09:57Z — Review VKQ3 grant guard against keeper contract
 
 Reviewed the unpublished VKQ3 grant guard against filler_run15.sh: it accepts any nonempty grant and assumes 0-95 CPUs in qualification, but the keeper dry-runs a multi-quarter job on one quarter. Both must be fixed before integration or publication. Containment and runner work continue separately; no inference was run. [no-belief: source contract review only]
+
+## 09:58Z — Bind VKQ3 guard repair to keeper grant contract
+
+The VKQ3 grant repair is being implemented against the keeper serializer: the fixed row ID is bound by grant filename, while regions, start and end are parsed from the grant; the full CPU shape and quarter-sized qualification must be validated independently. No new row or inference result exists. [no-belief: implementation in progress]
