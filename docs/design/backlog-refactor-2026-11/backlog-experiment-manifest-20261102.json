@@ -1,0 +1,2737 @@
+{
+ "schema": "backlog-experiment-manifest.v1",
+ "owner_rule": "one ACCOUNTABLE handoff per package = the handoff whose task defines the primary acceptance clause and already holds the launcher/corpus custody; it binds an executing session at scheduling time through the existing claim mechanism (handoff-sessions.json slug + rowflow publish_row by that session), owns identity, controls, capture, scheduling and the consolidated result; each consumer owner accepts its own clause; implementation consumers are never ticked because the measurement finished",
+ "pinned_sha": "3ac825873dfb8a8ef8d729133dff42c73b5d074d",
+ "generated": "2026-11-02",
+ "packages": [
+  {
+   "id": "EXP-01",
+   "name": "Trellis quantization comparison (IQ4_KT vs Q4_K_M; IQ2_KT vs IQ2_XXS)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "TQ3 STEP 2",
+     "src": "handoffs/active/tq3-quantization-evaluation.md:232@3ac825873dfb",
+     "acceptance_clause": "paired speed + task-quality inside ik_llama.cpp as scratch instrument; decision on speed/quality without porting",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "TQ3 STEP 3",
+     "src": "handoffs/active/tq3-quantization-evaluation.md:233@3ac825873dfb",
+     "acceptance_clause": "IQ4_KT \u226595% of Q4_K_M tg128 under canonical protocol AND paired per-item task-eval win (PPL/KLD fidelity context only)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "IQK T2",
+     "src": "handoffs/active/iqk-iquant-enablement.md:156@3ac825873dfb",
+     "acceptance_clause": "gate trellis in ik_llama.cpp, not our tree \u2014 same comparison, same instrument",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "IQK T3",
+     "src": "handoffs/active/iqk-iquant-enablement.md:157@3ac825873dfb",
+     "acceptance_clause": "port only if T2 wins: same \u226595% tg128 + paired task-eval rule",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "Q38FN-lane quants only (operator low-bit rule)",
+    "artifacts": "exact GGUFs named in TQ3 STEP 2 (IQ4_KT, Q4_K_M, IQ2_KT, IQ2_XXS)",
+    "build": "/mnt/raid0/llm/ik_llama.cpp reference instrument (read-only, not a serving path)",
+    "harness": "canonical protocol (MEASUREMENT.md); paired per-item task eval",
+    "placement": "CPU quarter, quiet",
+    "instrument_class": "llama-bench timing + task-eval"
+   },
+   "cohort": {
+    "items": "canonical task-eval set, item hashes pinned at publish",
+    "denominator": "all items, no exclusions",
+    "exposure": "none yet"
+   },
+   "arms": {
+    "controls": [
+     "Q4_K_M",
+     "IQ2_XXS"
+    ],
+    "interventions": [
+     "IQ4_KT",
+     "IQ2_KT"
+    ],
+    "sampling_unit": "process-launch pair (speed) / item (quality)",
+    "order": "interleaved ABAB"
+   },
+   "capture": [
+    "tg128/pp512 per launch",
+    "per-item outputs + correctness",
+    "PPL/KLD side table",
+    "provenance: GGUF sha, build id, host state"
+   ],
+   "analyses": [
+    {
+     "consumer": "STEP 2 / T2",
+     "metric": "tg128 ratio (higher better), per-item flips",
+     "rule": "report; gate is STEP 3/T3"
+    },
+    {
+     "consumer": "STEP 3 / T3",
+     "metric": "ratio \u22650.95 AND paired flips > 0 (sign test, predeclared)",
+     "rule": "port decision"
+    }
+   ],
+   "reuse_conditions": "identical GGUFs, same canonical protocol, same item set; a different quant or a kernel change invalidates",
+   "stopping_rule": "both rules decided on one paired set; more runs cannot change a failed \u226595% speed rule",
+   "remaining_cells": [
+    "speed pairs n\u2265 pilot-derived (pilot: 3 launches/arm to size n)",
+    "quality: one paired pass"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing \u2014 new generation"
+   },
+   "do_not_fuse": [
+    "do not fold other quants into the same acceptance"
+   ],
+   "order_tier": "pilot-then-run",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "report; gate is STEP 3/T3",
+    "evidence_already_usable": "missing \u2014 new generation",
+    "units_strata_control": "process-launch pair (speed) / item (quality)",
+    "minimum_coverage": [
+     "speed pairs n\u2265 pilot-derived (pilot: 3 launches/arm to size n)",
+     "quality: one paired pass"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "iqk-iquant-enablement.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "pilot \u2014 accountable owner per the measurement-sufficiency audit (KT gates T2/T3); tq3 STEP 2/3 are consumers"
+   },
+   "pilot": {
+    "identity": {
+     "model": "Q38FN-lane GGUFs: IQ4_KT, Q4_K_M, IQ2_KT, IQ2_XXS \u2014 sha256 pinned in the publish spec from the files on disk at publish time",
+     "build": "/mnt/raid0/llm/ik_llama.cpp at its pinned commit (read-only instrument; tq3\u2026:232), reference build id recorded",
+     "inputs": "canonical protocol prompts + a 24-item slice of the task-eval set, item hashes frozen",
+     "control": "Q4_K_M (speed) and the same 24 items on Q4_K_M (quality)"
+    },
+    "bounds": {
+     "cells": "2 pairs \u00d7 3 launches/arm (speed) + 24 items \u00d7 2 quants (quality)",
+     "cap": "one CPU quarter, \u2264 90 min wall, hard stop at grant end"
+    },
+    "validity_checks": [
+     "tg128 A/A on Q4_K_M: record the observed spread of this instrument (ik_llama.cpp on this quarter) as the preliminary variance \u2014 no imported threshold from another instrument; 3 launches/arm cannot set a floor",
+     "verify_ggml_linkage.sh proves the ik_llama ggml (three-generation hazard)",
+     "mechanism fired: IQ*_KT dequant path present in the binary (strings) and selected (ggml op log)"
+    ],
+    "outputs": [
+     "duration per launch",
+     "variance (sd of tg128 per arm)",
+     "capture completeness (all 4 quants \u00d7 metrics \u00d7 provenance fields)",
+     "consumer coverage: which of STEP 2/3, T2/T3 clauses the pilot slice can already answer"
+    ],
+    "decision": "owner reviews: EXPAND with n sized from the observed pilot variance (the pilot yields validity, duration and preliminary variance \u2014 never a final rejection); REVISE if a quant fails to load or the mechanism did not fire; INCONCLUSIVE otherwise. The \u226595% rule is a THROUGHPUT ratio (tg128 IQ4_KT/Q4_K_M), decided only by the full paired set",
+    "ownership_note": "per the measurement-sufficiency audit: the executable KT gates (T2/T3) are assigned to INF-26 iqk-iquant-enablement.md as accountable owner; tq3 STEP 2/3 are consumers and tq3 records the transfer",
+    "sufficiency": {
+     "question": "report; gate is STEP 3/T3",
+     "expected_effect_vs_noise": ">=5% tg128 ratio shortfall decides; task-eval paired flips | noise: launch sd of ik_llama unknown -> pilot measures it",
+     "checkpoints": "each launch/cell; paired readout after the control arm completes; preliminary variance reported at every look",
+     "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+     "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+     "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+     "class": "exploratory/decision-support"
+    }
+   },
+   "provisional": false,
+   "sufficiency": {
+    "question": "report; gate is STEP 3/T3",
+    "expected_effect_vs_noise": ">=5% tg128 ratio shortfall decides; task-eval paired flips | noise: launch sd of ik_llama unknown -> pilot measures it",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "speed pairs",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: paired ratio vs 95% band; stop-on-futility early, gate needs the full paired set"
+    },
+    {
+     "cell": "quality pass",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: paired per-item flips need the full item set for the gate; pilot can only show futility"
+    }
+   ]
+  },
+  {
+   "id": "EXP-02",
+   "name": "Q38FN floor package (authorized C5 calibration window)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "CH-27",
+     "src": "handoffs/active/autokernel-champion-aggregate.md:202@3ac825873dfb",
+     "acceptance_clause": "re-measured serving / 64k decode / 64k prefill floors on the current champion store image (old 2.483/1.365/1.106% superseded) before judging keeps",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "AK-Q38FN-64K-FLOOR",
+     "src": "master-handoff-index.md OP-AK-HOLD row",
+     "acceptance_clause": "64K decode + prefill floor records with unit, n, interval",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "AKX-AUTO-11 registry checks",
+     "src": "handoffs/active/autokernel-all-devices-all-dimensions.md:129@3ac825873dfb",
+     "acceptance_clause": "floor registry entries match the measured cells (serving \u2260 bench floors)",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "Qwen3.8-Flash-Next (Q38FN) served quant",
+    "build": "C5 champion store image named in the authorization \u2014 NOT a newer champion",
+    "harness": "serving gate + llama-bench 64K cells",
+    "placement": "authorized window (quiet)",
+    "instrument_class": "floor calibration, unit=session|process per FLOOR-UNIT-1"
+   },
+   "cohort": {
+    "items": "floor protocol fixed prompts",
+    "denominator": "n \u2265 24 per cell + interval",
+    "exposure": "CH-27 ran dry only"
+   },
+   "arms": {
+    "controls": [
+     "A/A same binary"
+    ],
+    "interventions": [],
+    "sampling_unit": "per FLOOR-UNIT-1 unit, recorded",
+    "order": "serving, 64K decode, 64K prefill \u2014 three cells, not interchangeable"
+   },
+   "capture": [
+    "per-cell samples with unit/harness/contention/host-state hash",
+    "store digest"
+   ],
+   "analyses": [
+    {
+     "consumer": "CH-27",
+     "metric": "floor %, interval",
+     "rule": "replaces superseded floors"
+    },
+    {
+     "consumer": "AK-Q38FN-64K-FLOOR",
+     "metric": "same cells",
+     "rule": "registry write"
+    }
+   ],
+   "reuse_conditions": "same store image, same unit, same contention model; a newer champion requires a new window (authorization does not extend)",
+   "stopping_rule": "three cells measured once at n\u226524; done",
+   "remaining_cells": [
+    "serving floor",
+    "64K decode floor",
+    "64K prefill floor"
+   ],
+   "evidence_inventory": {
+    "retained": "old floors (superseded, invalid-generation for the current champion)",
+    "status": "invalid-generation \u2192 new cells under the existing authorization; blocked by OP-AK-HOLD standing constraint"
+   },
+   "do_not_fuse": [
+    "no generic AK search in this window"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "replaces superseded floors",
+    "evidence_already_usable": "invalid-generation \u2192 new cells under the existing authorization; blocked by OP-AK-HOLD standing constraint",
+    "units_strata_control": "per FLOOR-UNIT-1 unit, recorded",
+    "minimum_coverage": [
+     "serving floor",
+     "64K decode floor",
+     "64K prefill floor"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "autokernel-champion-aggregate.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional \u2014 authorized C5 window, prep = repair -> dry-run -> rebook"
+   },
+   "pilot": null,
+   "provisional": true,
+   "authorization": {
+    "verbatim": "CH-27 bounded recal run on C5 c72ec82f5 (operator decision 2026-10-25 via decision tool): the AK hold is lifted ONLY for ONE bounded Q38FN floor-recalibration window (serving / 64k decode / 64k prefill floors) on champion C5 c72ec82f5. No AK search. The hold stays in force for everything else. Launcher prepared (not armed): /mnt/raid0/llm/tmp/cal-1025/ch27-q38fn-floors/. Done when the floors are written for the C5 anchor.",
+    "src": "handoffs/active/autokernel-champion-aggregate.md:207@3ac825873dfb",
+    "preparation": "CH-27a: repair (or explain) the C5 CPU store image recipe-digest mismatch -> re-run the ch27_run dry plan to actionable=true -> re-book the single bounded window (free space \u2265155 GiB admission; preserve the one-window guard)",
+    "decision_needed": "none \u2014 already issued; D8 withdrawn"
+   },
+   "sufficiency": {
+    "question": "replaces superseded floors",
+    "expected_effect_vs_noise": "floor shift of >=1 pp vs superseded 2.48/1.37/1.11% | noise: A/A sd per FLOOR-UNIT-1 unit",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "NOT permitted for the gate verdict \u2014 gate-class cell; only operational decisions on partial evidence",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "gate-class (floors (FLOOR-UNIT-1 n>=24)): futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided; a post-hoc stop leaves the gate incomplete",
+    "class": "gate-class"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "serving floor",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: FLOOR-UNIT-1 n>=24"
+    },
+    {
+     "cell": "64K decode floor",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: n>=24"
+    },
+    {
+     "cell": "64K prefill floor",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: n>=24"
+    }
+   ]
+  },
+  {
+   "id": "EXP-03",
+   "name": "Speculative cross-slot parity campaign (np>1)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "DF2-12.1",
+     "src": "handoffs/active/dflash2-block-drafter-experimental-build.md:827@3ac825873dfb",
+     "acceptance_clause": "np>1 parity on every production speculative role as one temp-0 cross-slot token-identity check; exposure result",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CH-37",
+     "src": "handoffs/active/autokernel-champion-aggregate.md:1269@3ac825873dfb",
+     "acceptance_clause": "defect-trigger evidence for the recurrent-state/np>1 slot-contamination fix fold (issues 26695 \u2026)",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "every production speculative role (27B DFlash2, Q36 MTP \u2026)",
+    "build": "frozen candidate image, pinned",
+    "harness": "temp-0 identity harness",
+    "placement": "GPU + CPU roles as served",
+    "instrument_class": "correctness (token identity)"
+   },
+   "cohort": {
+    "items": "fixed prompt set incl. low-entropy + planted canary",
+    "denominator": "all prompts \u00d7 roles"
+   },
+   "arms": {
+    "controls": [
+     "solo",
+     "speculation-off",
+     "cold slot"
+    ],
+    "interventions": [
+     "concurrent",
+     "slot-reuse"
+    ],
+    "sampling_unit": "prompt\u00d7slot",
+    "order": "predeclared"
+   },
+   "capture": [
+    "token ids per slot",
+    "draft acceptance",
+    "slot/seq ids",
+    "failures"
+   ],
+   "analyses": [
+    {
+     "consumer": "DF2-12.1",
+     "metric": "identity mismatches (lower better)",
+     "rule": "zero mismatches = PASS"
+    },
+    {
+     "consumer": "CH-37",
+     "metric": "trigger reproduced yes/no",
+     "rule": "fold decision"
+    }
+   ],
+   "reuse_conditions": "same image and roles; G2-CONC is NOT satisfied by this package (needs the final promotion binary and its full gate set)",
+   "stopping_rule": "one frozen campaign; a mismatch stops the fold",
+   "remaining_cells": [
+    "one campaign per frozen image"
+   ],
+   "evidence_inventory": {
+    "retained": "R3/DF2-20 recovery evidence (not a parity image)",
+    "status": "retained-needing-replay for diagnostics; parity = new generation"
+   },
+   "do_not_fuse": [
+    "G2-CONC"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 1,
+   "stop_contract": {
+    "question_decision": "zero mismatches = PASS",
+    "evidence_already_usable": "retained-needing-replay for diagnostics; parity = new generation",
+    "units_strata_control": "prompt\u00d7slot",
+    "minimum_coverage": [
+     "one campaign per frozen image"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "dflash2-block-drafter-experimental-build.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "zero mismatches = PASS",
+    "expected_effect_vs_noise": "any mismatch | noise: deterministic at temp 0",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "NOT permitted for the gate verdict \u2014 gate-class cell; only operational decisions on partial evidence",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "gate-class (correctness gate (zero mismatches)): futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided; a post-hoc stop leaves the gate incomplete",
+    "class": "gate-class"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "parity campaign",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: correctness gate must cover every role/slot; a mismatch stops early (scoped counterexample)"
+    }
+   ]
+  },
+  {
+   "id": "EXP-04",
+   "name": "CPU/GPU prefill crossover (Q38FN)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "PF1",
+     "src": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md:235@3ac825873dfb",
+     "acceptance_clause": "crossover prompt length CPU-vs-MI210 for the served over-HBM MoE; artifact = served recipe",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "HSF prefill placement rule",
+     "src": "handoffs/active/heterogeneous-slot-fabric-residency.md:75@3ac825873dfb",
+     "acceptance_clause": "teleport=re-prefill v1 rule consumes the crossover; does not authorize deployment",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "NPD reopen trigger",
+     "src": "handoffs/active/numa-prefill-decode-disaggregation.md:78@3ac825873dfb",
+     "acceptance_clause": "reopen NPD-1 or close the GPU branch per the crossover",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "Q38FN UD-IQ4_XS as served",
+    "build": "production v10 store + current GPU build",
+    "harness": "prefill timing matrix",
+    "placement": "CPU quarter vs MI210",
+    "instrument_class": "timing"
+   },
+   "cohort": {
+    "items": "prompt lengths \u00d7 GPU microbatch settings",
+    "denominator": "full matrix"
+   },
+   "arms": {
+    "controls": [
+     "CPU prefill"
+    ],
+    "interventions": [
+     "GPU prefill per microbatch"
+    ],
+    "sampling_unit": "launch",
+    "order": "interleaved"
+   },
+   "capture": [
+    "TTFT/prefill t/s per cell",
+    "VRAM/KFD in-window",
+    "provenance"
+   ],
+   "analyses": [
+    {
+     "consumer": "PF1",
+     "metric": "crossover length",
+     "rule": "report"
+    },
+    {
+     "consumer": "HSF",
+     "metric": "same",
+     "rule": "placement rule input only"
+    },
+    {
+     "consumer": "NPD",
+     "metric": "same",
+     "rule": "reopen/close"
+    }
+   ],
+   "reuse_conditions": "same model/quant/builds; KV-transfer cost is NOT measured here",
+   "stopping_rule": "matrix complete once; no re-run unless build changes",
+   "remaining_cells": [
+    "one matrix"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "KV transfer cost",
+    "deployment"
+   ],
+   "order_tier": "pilot-then-run",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "report",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "launch",
+    "minimum_coverage": [
+     "one matrix"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "mi210-big-model-and-acceleration-roadmap.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "pilot"
+   },
+   "pilot": {
+    "identity": {
+     "model": "Qwen3.8-Flash-Next UD-IQ4_XS, sha256 of all 3 shards from the manifest (PF1 text)",
+     "build": "A0: kernels/production/cpu (v10 store, ffc1bac82ee, llama-server 10303); A1/A2: kernels/production/gpu from the SAME v10 kernel store \u2014 pinned by store digest, NOT \"current GPU build\"",
+     "inputs": "frozen prompt manifest at L \u2208 {2K, 8K} for the pilot, -n 0",
+     "control": "A0 CPU incumbent via canonical_recipe.py at L=2048 (P-BENCH-PREFILL-1 cell) + the A1-with-offload-disabled control (GGML_OP_OFFLOAD_MIN_BATCH=2147483647)"
+    },
+    "bounds": {
+     "cells": "2 L \u00d7 {A0, A1@-ub 2048, A2, A1-disabled} \u00d7 r=3",
+     "cap": "whole-host CPU comparison (A0 = canonical_recipe on the production CPU shape, region claim 0-95) with the MI210 otherwise idle, per PF1: whole-host request, min 4 h window class; pilot uses \u2264 60 min of it; VRAM/KFD sampled in-window"
+    },
+    "validity_checks": [
+     "non-zero VRAM during A1/A2 and KFD process count (HIP residency proof)",
+     "A1-disabled control \u2248 A0 within CI (separates binary from offload)",
+     "per-cell raw outputs + region claim present"
+    ],
+    "outputs": [
+     "duration per cell",
+     "variance per arm",
+     "capture completeness (all fields of the P3-3 rigor controls)",
+     "consumer coverage: PF1 rule testable at the 2 L; HSF and NPD clauses need the full L set"
+    ],
+    "decision": "owner (mi210 roadmap, PF1) reviews: EXPAND to the full L \u00d7 -ub matrix (r=5, CIs, reversed-order replicate \u2014 the PF1 gate) if residency and control checks pass; REVISE if the disabled control diverges from A0 or capture is incomplete; INCONCLUSIVE otherwise. The 8K screen cannot exclude a crossover at 16K/32K or another -ub, so it never yields a negative PF1 verdict",
+    "sufficiency": {
+     "question": "report",
+     "expected_effect_vs_noise": ">=10% GPU-vs-CPU prefill speedup at some L | noise: r=3 pilot spread; r=5 gate",
+     "checkpoints": "each launch/cell; paired readout after the control arm completes; preliminary variance reported at every look",
+     "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+     "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+     "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+     "class": "exploratory/decision-support"
+    }
+   },
+   "provisional": false,
+   "sufficiency": {
+    "question": "report",
+    "expected_effect_vs_noise": ">=10% GPU-vs-CPU prefill speedup at some L | noise: r=3 pilot spread; r=5 gate",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "crossover matrix",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: 8K/32K screen first; drop -ub cells whose paired effect is clearly outside; gate still needs r=5 + replicate"
+    }
+   ]
+  },
+  {
+   "id": "EXP-05",
+   "name": "Corrected placement matrix (E5 Stage-B residual)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "E5 RE-MEASURE",
+     "src": "handoffs/active/batched-decode-measurement.md:847@3ac825873dfb",
+     "acceptance_clause": "24 remaining manifests on corrected placement; gemma4 group COMPLETE 8/8 decision_grade \u2014 DO NOT RE-RUN; qwen36_27b_q8 EXCLUDED by operator ruling",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "T3",
+     "src": "handoffs/active/numa-placement-defect-20260730.md:854@3ac825873dfb",
+     "acceptance_clause": "27 confounded E5 cells re-run on declared placement",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "P1-2",
+     "src": "handoffs/active/gpu-serving-tie-in-program.md:100@3ac825873dfb",
+     "acceptance_clause": "post-reboot Stage-B throughput conclusion (scope corrected 2026-11-02)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "S-04",
+     "src": "handoffs/active/reboot-gated-inventory-and-staging.md:303@3ac825873dfb",
+     "acceptance_clause": "contemporaneous Stage-B readiness capture",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "S-05",
+     "src": "handoffs/active/reboot-gated-inventory-and-staging.md:304@3ac825873dfb",
+     "acceptance_clause": "corrected re-measurement grid generated per the five binding requirements",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "W1 qwen36_q8_0, W2 gemma, W4 qwen3_next_80b",
+    "build": "production store (post-v11 if promoted first)",
+    "harness": "batched_decode A7 harness + placement witnesses (affinity, membind, cache-drop, pages-by-node)",
+    "placement": "quiet host, declared shapes incl. 0-95 interleave",
+    "instrument_class": "throughput"
+   },
+   "cohort": {
+    "items": "31-cell Stage-B grid minus banked",
+    "denominator": "original grid; banked cells retained"
+   },
+   "arms": {
+    "controls": [
+     "single-instance E1"
+    ],
+    "interventions": [
+     "NUMA split \u00d7 np"
+    ],
+    "sampling_unit": "cell",
+    "order": "reconciled list first"
+   },
+   "capture": [
+    "cells.jsonl per cell with placement witness",
+    "summary.csv"
+   ],
+   "analyses": [
+    {
+     "consumer": "E5",
+     "metric": "agg decode t/s",
+     "rule": "R1-R4 re-derived"
+    },
+    {
+     "consumer": "T3",
+     "metric": "same cells",
+     "rule": "confound removed"
+    }
+   ],
+   "reuse_conditions": "cells carry placement witnesses; old decision-grade labels without witnesses are not accepted",
+   "stopping_rule": "grid complete; S-05 is the reconciliation that fixes the cell list",
+   "remaining_cells": [
+    "cells = adjudication output (banked Gemma cells failing the placement witness + Qwen manifests from the reconciled 20, after the launcher is rebuilt)"
+   ],
+   "evidence_inventory": {
+    "retained": "A7 gemma4 group dir present (28 files) BUT batched-decode-measurement.md:852: all four C1b cells declare numactl_policy=none for straddling half-machine cpusets and their affinity artifacts show shared model pages across N0-N3 \u2014 decision_grade labels do NOT prove corrected-placement compliance; A7 manifest dir holds 20 (not 24) Qwen manifests (12 qwen36_q8_0 + 8 qwen3_next_80b), an inventory count; launcher /mnt/raid0/llm/tmp/a7-fire-20260813 is MISSING on disk",
+    "status": "retained-needing-adjudication: (1) preserve the A7 records (KEEP), (2) adjudicate each banked Gemma cell against the corrected-placement witness set into THREE dispositions \u2014 VALID (witnesses present and compliant) | DEMONSTRATED-INVALID (a witness shows non-compliance, e.g. pages shared across N0-N3 under a straddling cpuset with policy=none) | UNRESOLVED-MISSING-EVIDENCE (runtime-policy or cache-drop witness absent: not established, NOT invalid); the historical conclusion of each cell stays accurate as recorded, (3) reconcile the 20 Qwen manifests against the five binding requirements, (4) regeneration candidates = DEMONSTRATED-INVALID cells plus UNRESOLVED cells whose decision needs the witness, plus reconciled Qwen manifests; no blanket do-not-rerun, no 24-cell ceiling"
+   },
+   "do_not_fuse": [
+    "no cell regenerated before its adjudication record exists"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 3,
+   "stop_contract": {
+    "question_decision": "R1-R4 re-derived",
+    "evidence_already_usable": "retained-needing-adjudication: (1) preserve the A7 records (KEEP), (2) adjudicate each banked Gemma cell against the corrected-placement witness set into THREE dispositions \u2014 VALID (witnesses present and compliant) | DEMONSTRATED-INVALID (a witness shows non-compliance, e.g. pages shared across N0-N3 under a straddling cpuset with policy=none) | UNRESOLVED-MISSING-EVIDENCE (runtime-policy or cache-drop witness absent: not established, NOT invalid); the historical conclusion of each cell stays accurate as recorded, (3) reconcile the 20 Qwen manifests against the five binding requirements, (4) regeneration candidates = DEMONSTRATED-INVALID cells plus UNRESOLVED cells whose decision needs the witness, plus reconciled Qwen manifests; no blanket do-not-rerun, no 24-cell ceiling",
+    "units_strata_control": "cell",
+    "minimum_coverage": [
+     "cells = adjudication output (banked Gemma cells failing the placement witness + Qwen manifests from the reconciled 20, after the launcher is rebuilt)"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "batched-decode-measurement.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional \u2014 adjudication first"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "R1-R4 re-derived",
+    "expected_effect_vs_noise": "per-cell placement witness; R1-R4 ordering | noise: cell-level replicate sd",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "NOT permitted for the gate verdict \u2014 gate-class cell; only operational decisions on partial evidence",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "gate-class (E5 R1-R4 re-derivation (protocol fixes grid)): futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided; a post-hoc stop leaves the gate incomplete",
+    "class": "gate-class"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "adjudication-defined cells",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: regenerate only demonstrated-invalid + decision-needed unresolved cells; per-cell stop"
+    }
+   ]
+  },
+  {
+   "id": "EXP-06",
+   "name": "Parser pipeline comparison \u2014 755-page English output bank",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "PIP02-PHASEC-ENGLISH-RUN",
+     "src": "handoffs/active/document-parser-table-bench.md:75@3ac825873dfb",
+     "acceptance_clause": "ODL + PaddleOCR-VL-1.6 on 755 pages, same scorer/GT; table TEDS with structure-only TEDS; persisted via odl_bench compare-existing",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "PIP02-PHASEC-CUSTODY",
+     "src": "handoffs/active/document-parser-table-bench.md:76@3ac825873dfb",
+     "acceptance_clause": "legacy cutover: 690 pages protected-scope UNKNOWN, 65 no observed start \u2014 eligibility before selecting pages",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "ODL rebaseline (English share)",
+     "src": "handoffs/active/opendataloader-pipeline-integration.md:60@3ac825873dfb",
+     "acceptance_clause": "real Paddle comparison on the same bank; the 1,651-page multilingual corpus is separate",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "PaddleOCR-VL-1.6 vs ODL",
+    "build": "pinned",
+    "harness": "odl_bench + OmniDocBench GT",
+    "placement": "CPU quarter",
+    "instrument_class": "deterministic scoring over stored outputs"
+   },
+   "cohort": {
+    "items": "755 EN pages",
+    "denominator": "755; exposure history per page from custody review",
+    "exclusions": "ineligible per custody"
+   },
+   "arms": {
+    "controls": [
+     "ODL"
+    ],
+    "interventions": [
+     "Paddle"
+    ],
+    "sampling_unit": "page",
+    "order": "eligible unexposed pages only"
+   },
+   "capture": [
+    "page.md per arm",
+    "region responses + hashes",
+    "start/result witnesses"
+   ],
+   "analyses": [
+    {
+     "consumer": "Phase C",
+     "metric": "TEDS (higher better) + structure-only",
+     "rule": "predeclared gate"
+    },
+    {
+     "consumer": "ODL rebaseline",
+     "metric": "text/reading-order/structure",
+     "rule": "comparison report"
+    }
+   ],
+   "reuse_conditions": "same GT, same scorer version, same page set",
+   "stopping_rule": "bank complete \u2192 all metrics deterministic",
+   "remaining_cells": [
+    "only eligible unexposed pages after custody reconciliation"
+   ],
+   "evidence_inventory": {
+    "retained": "/mnt/raid0/llm/tmp/pip02-phaseb-20261028/results (present) + r7 group14 partial hashes",
+    "status": "retained-needing-replay (custody) + partial new generation"
+   },
+   "do_not_fuse": [
+    "1,651-page multilingual extension"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "predeclared gate",
+    "evidence_already_usable": "retained-needing-replay (custody) + partial new generation",
+    "units_strata_control": "page",
+    "minimum_coverage": [
+     "only eligible unexposed pages after custody reconciliation"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "document-parser-table-bench.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional \u2014 custody first"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "predeclared gate",
+    "expected_effect_vs_noise": "TEDS delta per predeclared gate | noise: page-level scoring is deterministic",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "eligible pages",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: TEDS is deterministic per page; stop when the predeclared gate band is clearly settled on the eligible subset, report coverage"
+    }
+   ]
+  },
+  {
+   "id": "EXP-07",
+   "name": "Public STT screen (FLEURS manifests)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "CS-8.STT5",
+     "src": "handoffs/active/conversation-stack.md:682@3ac825873dfb",
+     "acceptance_clause": "accuracy screen on public anchors; ranks and rejects only; predeclared run-plan",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-8.STT8",
+     "src": "handoffs/active/conversation-stack.md:950@3ac825873dfb",
+     "acceptance_clause": "end-to-end speech-model STT arms on the same manifests",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-8.STT3 control",
+     "src": "handoffs/active/conversation-stack.md:679@3ac825873dfb",
+     "acceptance_clause": "whisper parity gate before any runner number is used",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-8.LEX2",
+     "src": "handoffs/active/conversation-stack.md:776@3ac825873dfb",
+     "acceptance_clause": "lexicon-boost trial on the Nemotron streaming arm \u2014 report only; separate arm",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-26.LID1",
+     "src": "handoffs/active/conversation-stack.md:765@3ac825873dfb",
+     "acceptance_clause": "language-ID comparison masked to {en,it,de,fr}; can reuse existing autodetect tags without inference",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "candidate STT runners (Parakeet, Nemotron, Crisp, Voxtral \u2026) + whisper large-v3-turbo baseline",
+    "build": "experimental speech trees (never the frozen production trees)",
+    "harness": "frozen FLEURS audio + reference manifests, identical baseline transcripts",
+    "placement": "CPU (STT2 builds) / gfx90a (STT4)",
+    "instrument_class": "WER + rank-delta"
+   },
+   "cohort": {
+    "items": "FLEURS clips, PCM-SHA-256 bound",
+    "denominator": "all clips incl. empty/incomplete predictions"
+   },
+   "arms": {
+    "controls": [
+     "whisper baseline (shared)"
+    ],
+    "interventions": [
+     "each candidate arm",
+     "LEX2 boost",
+     "cropped audio / VAD prompt (distinct inputs)"
+    ],
+    "sampling_unit": "clip",
+    "order": "baseline once, candidates added"
+   },
+   "capture": [
+    "hypotheses per clip",
+    "timings",
+    "LID tags",
+    "runner build ids"
+   ],
+   "analyses": [
+    {
+     "consumer": "STT5",
+     "metric": "WER lower better; rank",
+     "rule": "reject-only"
+    },
+    {
+     "consumer": "LID1",
+     "metric": "LID accuracy",
+     "rule": "report"
+    }
+   ],
+   "reuse_conditions": "same manifest + baseline transcripts; private CS-4 confirmation stratum is separate",
+   "stopping_rule": "screen done when every arm scored on the full denominator",
+   "remaining_cells": [
+    "new candidate arms only"
+   ],
+   "evidence_inventory": {
+    "retained": "validation banks present: codex3-cs8-stt5-validation-parakeet-r2-20261030/validation-results (5,536 files), codex3-stt5-nemo-rescore-v3-20261101 (13), cs8l-ratings (75)",
+    "status": "retained-needing-replay (scorer fix, then re-score banked hypotheses)"
+   },
+   "do_not_fuse": [
+    "private confirmation",
+    "VAD/prompt interventions as arms not fusion"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 3,
+   "stop_contract": {
+    "question_decision": "reject-only",
+    "evidence_already_usable": "retained-needing-replay (scorer fix, then re-score banked hypotheses)",
+    "units_strata_control": "clip",
+    "minimum_coverage": [
+     "new candidate arms only"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "conversation-stack.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional \u2014 re-score first"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "reject-only",
+    "expected_effect_vs_noise": "WER rank changes | noise: clip-level WER spread; denominator fixed",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "new candidate arms",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: rank/reject arms on a paired clip subset vs the banked baseline; stop-on-futility per arm"
+    }
+   ]
+  },
+  {
+   "id": "EXP-08",
+   "name": "BEAM128K memory campaign",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "M-12b",
+     "src": "handoffs/active/episodic-memory-integrity.md:484@3ac825873dfb",
+     "acceptance_clause": "BEAM 128K second, abstention excluded from headline",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "UTM-B2",
+     "src": "handoffs/active/unified-trace-memory-service.md:411@3ac825873dfb",
+     "acceptance_clause": "FTS5 store + navigation.py (RRF k=60) as memory backend arm",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "UTM-B3",
+     "src": "handoffs/active/unified-trace-memory-service.md:416@3ac825873dfb",
+     "acceptance_clause": "ingest FILTER recorded as first-class experimental factor",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "UTM-V6 (BEAM cells)",
+     "src": "handoffs/active/unified-trace-memory-service.md:393@3ac825873dfb",
+     "acceptance_clause": "umbrella matrix references these cells; mandatory no-memory control",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "frontdoor as served",
+    "build": "production",
+    "harness": "BEAM128K instrument",
+    "placement": "CPU",
+    "instrument_class": "accuracy"
+   },
+   "cohort": {
+    "items": "BEAM128K items",
+    "denominator": "all; abstention counted separately"
+   },
+   "arms": {
+    "controls": [
+     "no-memory"
+    ],
+    "interventions": [
+     "append-log retrieval",
+     "FTS5+RRF",
+     "filter variants"
+    ],
+    "sampling_unit": "item",
+    "order": "predeclared"
+   },
+   "capture": [
+    "answers",
+    "retrieved spans",
+    "filter factor"
+   ],
+   "analyses": [
+    {
+     "consumer": "M-12b",
+     "metric": "accuracy",
+     "rule": "headline excl. abstention"
+    },
+    {
+     "consumer": "UTM-V6",
+     "metric": "same cells",
+     "rule": "matrix fill"
+    }
+   ],
+   "reuse_conditions": "same control, same items, same filter record",
+   "stopping_rule": "one campaign; UTM-V6 non-BEAM cells remain separate",
+   "remaining_cells": [
+    "one campaign"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "other UTM-V6 instruments"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 1,
+   "stop_contract": {
+    "question_decision": "headline excl. abstention",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "item",
+    "minimum_coverage": [
+     "one campaign"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "episodic-memory-integrity.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "headline excl. abstention",
+    "expected_effect_vs_noise": "accuracy delta vs no-memory control | noise: item-level binomial",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "BEAM campaign",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: paired vs no-memory control; stop when effect clearly inside/outside band; abstention counted"
+    }
+   ]
+  },
+  {
+   "id": "EXP-09",
+   "name": "Spill / evidence retention corpus",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "TOC-SP-3",
+     "src": "handoffs/active/tool-output-compression.md:552@3ac825873dfb",
+     "acceptance_clause": "verified-quote receipt replaces the unverified 4,000-char summary; model comparison on the frozen failing-log corpus",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "REPL-EMB-3.1",
+     "src": "handoffs/active/repl-embedding-retrieval.md:293@3ac825873dfb",
+     "acceptance_clause": "replace _spill_output summary",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "REPL-EMB-3.2",
+     "src": "handoffs/active/repl-embedding-retrieval.md:297@3ac825873dfb",
+     "acceptance_clause": "A/B replacement vs current summary: latency, accuracy, re-fetches",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "worker role as served",
+    "build": "production",
+    "harness": "frozen failing-log corpus",
+    "placement": "CPU",
+    "instrument_class": "accuracy + latency"
+   },
+   "cohort": {
+    "items": "failing logs, frozen",
+    "denominator": "all"
+   },
+   "arms": {
+    "controls": [
+     "current summary (verify it exists as a real control first)"
+    ],
+    "interventions": [
+     "verified-quote",
+     "deterministic shape header",
+     "pointer-only"
+    ],
+    "sampling_unit": "log",
+    "order": "predeclared"
+   },
+   "capture": [
+    "raw answers",
+    "evidence selections",
+    "latency"
+   ],
+   "analyses": [
+    {
+     "consumer": "TOC-SP-3",
+     "metric": "quote verification rate",
+     "rule": "replace if \u2265 control"
+    },
+    {
+     "consumer": "REPL-EMB-3.2",
+     "metric": "latency/accuracy/re-fetch",
+     "rule": "A/B"
+    }
+   ],
+   "reuse_conditions": "same corpus and arms; TOC-SP-5 (zero-inference audit) is NOT part of this package",
+   "stopping_rule": "one corpus pass",
+   "remaining_cells": [
+    "one pass"
+   ],
+   "evidence_inventory": {
+    "retained": "data/bep_sandbox (26 files, present) is the per-turn corpus for TOC-SP-5 only",
+    "status": "missing for SP-3"
+   },
+   "do_not_fuse": [
+    "TOC-SP-5"
+   ],
+   "order_tier": "pilot-then-run",
+   "duplicate_run_instructions_replaced": 1,
+   "stop_contract": {
+    "question_decision": "replace if \u2265 control",
+    "evidence_already_usable": "missing for SP-3",
+    "units_strata_control": "log",
+    "minimum_coverage": [
+     "one pass"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "tool-output-compression.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "pilot"
+   },
+   "pilot": {
+    "identity": {
+     "model": "worker role as served (registry pin at publish, model+quant sha)",
+     "build": "production stack, environment.py @ 5d4ad2c0 (TOC-SP-3 text)",
+     "inputs": "frozen failing-log corpus: 12 logs, PCM-free text, sha-pinned",
+     "control": "RESOLVED: the nominal control is the CURRENT `_spill_output` summary path (last-4,000-chars, n_tokens=512, unverified) executed on the same 12 logs \u2014 the pilot first proves this path exists and runs unchanged (environment.py:746-838 at the pinned sha) before any arm is scored; if it does not run, the control is head/tail fail-open and the package is REVISED"
+    },
+    "bounds": {
+     "cells": "12 logs \u00d7 4 arms (current summary control, verified-quote, deterministic shape-header, pointer-only) \u2014 the source requires four",
+     "cap": "one CPU quarter, \u2264 45 min"
+    },
+    "validity_checks": [
+     "control path executed unchanged (code sha match)",
+     "quote byte-verification fires on \u22651 planted-mismatch log (mechanism fired)",
+     "raw answers + evidence selections captured for every cell"
+    ],
+    "outputs": [
+     "duration",
+     "variance (per-log score spread)",
+     "capture completeness",
+     "consumer coverage: TOC-SP-3 clause answerable; REPL-EMB-3.2 latency/re-fetch needs the online arm"
+    ],
+    "decision": "owner (tool-output-compression, TOC-SP-3) reviews: EXPAND to the full corpus if control verified and mechanism fired; REVISE control if the nominal path is absent; STOP if verified-quote never beats control on the pilot",
+    "sufficiency": {
+     "question": "replace if \u2265 control",
+     "expected_effect_vs_noise": "quote-verification rate vs control | noise: 12-log pilot spread",
+     "checkpoints": "each launch/cell; paired readout after the control arm completes; preliminary variance reported at every look",
+     "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+     "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+     "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+     "class": "exploratory/decision-support"
+    }
+   },
+   "provisional": false,
+   "sufficiency": {
+    "question": "replace if \u2265 control",
+    "expected_effect_vs_noise": "quote-verification rate vs control | noise: 12-log pilot spread",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "4-arm pass",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: 12-log pilot then expand only if arms are within the band"
+    }
+   ]
+  },
+  {
+   "id": "EXP-10",
+   "name": "Reviewer anchors and score vectors",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "RC-8",
+     "src": "handoffs/active/reviewer-calibration-accounting.md:29@3ac825873dfb",
+     "acceptance_clause": "baseline FA/FR of self-review in shadow on corpus v1 (read transcripts before trusting numbers)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RM-2 A1 anchor",
+     "src": "handoffs/active/reviewer-model-ablations.md:37@3ac825873dfb",
+     "acceptance_clause": "A0 gates-only / A1 self-review anchor arms",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "LB-7 anchors",
+     "src": "handoffs/active/reviewer-latency-and-sampling-budget.md:28@3ac825873dfb",
+     "acceptance_clause": "full plane vs single-augmented-LLM A0/A1 on the same tasks",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RM-3/RM-4",
+     "src": "handoffs/active/reviewer-model-ablations.md:42@3ac825873dfb",
+     "acceptance_clause": "screening / confirmation protocols consume the same anchor responses",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RM-11a",
+     "src": "handoffs/active/reviewer-model-ablations.md:69@3ac825873dfb",
+     "acceptance_clause": "cross-family vs same-family verifier gain",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RC-10 / SC43",
+     "src": "handoffs/active/reviewer-calibration-accounting.md:63@3ac825873dfb",
+     "acceptance_clause": "logprob-expectation confidence vs ledger \u2014 needs full score vectors captured prospectively",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "architect alias reviewer + ablation arms",
+    "build": "production",
+    "harness": "P-REV-1 runner, corpus v1",
+    "placement": "CPU/GPU as served",
+    "instrument_class": "calibration"
+   },
+   "cohort": {
+    "items": "corpus v1 (48-row decision-grade slice + extensions)",
+    "denominator": "all rows"
+   },
+   "arms": {
+    "controls": [
+     "A0",
+     "A1"
+    ],
+    "interventions": [
+     "ablation arms",
+     "cross-family"
+    ],
+    "sampling_unit": "row",
+    "order": "anchors once"
+   },
+   "capture": [
+    "full score vectors + logprobs",
+    "verdicts",
+    "latency per call"
+   ],
+   "analyses": [
+    {
+     "consumer": "RC-8",
+     "metric": "FA/FR",
+     "rule": "baseline"
+    },
+    {
+     "consumer": "RC-10",
+     "metric": "ECE/AUC from vectors",
+     "rule": "analysis"
+    }
+   ],
+   "reuse_conditions": "vectors captured at generation; the old scalar-only ledger cannot supply them",
+   "stopping_rule": "anchors generated once per corpus version",
+   "remaining_cells": [
+    "anchor generation (vectors)"
+   ],
+   "evidence_inventory": {
+    "retained": "RM-2.fast result (scalar), nearmiss-corpus-v1 present (7 files)",
+    "status": "retained scalar = unexposed vectors \u2192 new generation with capture"
+   },
+   "do_not_fuse": [
+    "independent problem-solving reviewers stay separate arms"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 3,
+   "stop_contract": {
+    "question_decision": "baseline",
+    "evidence_already_usable": "retained scalar = unexposed vectors \u2192 new generation with capture",
+    "units_strata_control": "row",
+    "minimum_coverage": [
+     "anchor generation (vectors)"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "reviewer-calibration-accounting.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "baseline",
+    "expected_effect_vs_noise": "FA/FR per arm | noise: row-level paired",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "NOT permitted for the gate verdict \u2014 gate-class cell; only operational decisions on partial evidence",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "gate-class (P-REV-1 calibration gate): futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided; a post-hoc stop leaves the gate incomplete",
+    "class": "gate-class"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "anchor vectors",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: anchors are generated once for the corpus version; capture, not comparison"
+    }
+   ]
+  },
+  {
+   "id": "EXP-11",
+   "name": "Reviewer shadow prologue (RD-12 paired replay)",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "RCP-W2",
+     "src": "handoffs/active/bulk-inference-campaign.md:645@3ac825873dfb",
+     "acceptance_clause": "50-question eval-tower replay shadow-OFF then ON, paired, seed42; OFF re-anchors post-bc8d3303 throughput",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RD-12",
+     "src": "handoffs/active/inference-batch-loop.md:196@3ac825873dfb",
+     "acceptance_clause": "reviewer-plane rider",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "LB-1",
+     "src": "handoffs/active/reviewer-latency-and-sampling-budget.md:20@3ac825873dfb",
+     "acceptance_clause": "attribute the latency regression on the RD-12 replay baseline",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "TM-8",
+     "src": "handoffs/active/inference-batch-loop.md:196@3ac825873dfb",
+     "acceptance_clause": "self-attested until emit-path markers land",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "lineup as relaunched (RCP-W1)",
+    "build": "production",
+    "harness": "eval-tower replay",
+    "placement": "full stack",
+    "instrument_class": "throughput + latency"
+   },
+   "cohort": {
+    "items": "50 questions",
+    "denominator": "50 paired"
+   },
+   "arms": {
+    "controls": [
+     "shadow-OFF"
+    ],
+    "interventions": [
+     "shadow-ON"
+    ],
+    "sampling_unit": "question",
+    "order": "OFF then ON"
+   },
+   "capture": [
+    "per-call latency, prompt counts, queueing",
+    "review_ledger rows"
+   ],
+   "analyses": [
+    {
+     "consumer": "LB-1",
+     "metric": "latency attribution",
+     "rule": "report"
+    },
+    {
+     "consumer": "RCP-W2",
+     "metric": "throughput delta",
+     "rule": "baseline"
+    }
+   ],
+   "reuse_conditions": "same 50 questions and seed; RCP-W3 (nearmiss corpus) is a different cohort and verdict",
+   "stopping_rule": "execute once and retain",
+   "remaining_cells": [
+    "one paired replay"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "RCP-W3"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 3,
+   "stop_contract": {
+    "question_decision": "report",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "question",
+    "minimum_coverage": [
+     "one paired replay"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "bulk-inference-campaign.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "report",
+    "expected_effect_vs_noise": "latency attribution shares | noise: paired 50 questions",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "NOT permitted for the gate verdict \u2014 gate-class cell; only operational decisions on partial evidence",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "gate-class (throughput baseline (RCP-W2)): futility-only until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided; a post-hoc stop leaves the gate incomplete",
+    "class": "gate-class"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "paired replay",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: 50-question paired baseline is the unit; already minimal"
+    }
+   ]
+  },
+  {
+   "id": "EXP-12",
+   "name": "Web retrieval package D",
+   "kind": "fusion",
+   "consumers": [
+    {
+     "task": "AR-3 Package D",
+     "src": "harness/web research handoffs (Package D)",
+     "acceptance_clause": "web_research sentinel suite 50q",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "SX-5",
+     "src": "handoffs/active/searxng-search-backend.md:208@3ac825873dfb",
+     "acceptance_clause": "load validation via the 50q sentinel; engine failure rates + latency (Phase 6b)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "SX-6",
+     "src": "handoffs/active/searxng-search-backend.md:130@3ac825873dfb",
+     "acceptance_clause": "default engine-profile swap decision",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "ColBERT S5/S6",
+     "src": "handoffs/active/colbert-reranker-web-research.md:45@3ac825873dfb",
+     "acceptance_clause": "GO rule >20% irrelevant with \u226550 synthesized pages \u2192 S5 implement, S6 A/B (only identical cells transfer)",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "frontdoor + reranker ONNX",
+    "build": "production",
+    "harness": "frozen queries, fetched-page snapshots",
+    "placement": "CPU",
+    "instrument_class": "relevance + latency"
+   },
+   "cohort": {
+    "items": "50 web queries (MindDR 20-item sentinel is a different cohort)",
+    "denominator": "50"
+   },
+   "arms": {
+    "controls": [
+     "current pipeline"
+    ],
+    "interventions": [
+     "S5 rerank"
+    ],
+    "sampling_unit": "query",
+    "order": "snapshots frozen first"
+   },
+   "capture": [
+    "queries",
+    "page snapshots",
+    "search failures",
+    "trajectories"
+   ],
+   "analyses": [
+    {
+     "consumer": "SX-5",
+     "metric": "engine failure rate",
+     "rule": "report"
+    },
+    {
+     "consumer": "S6",
+     "metric": "relevance A/B",
+     "rule": "GO/NO-GO"
+    }
+   ],
+   "reuse_conditions": "same frozen snapshots; MindDR cohort does not transfer",
+   "stopping_rule": "one package run",
+   "remaining_cells": [
+    "one run"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "MindDR 20-item sentinel"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "report",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "query",
+    "minimum_coverage": [
+     "one run"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "colbert-reranker-web-research.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "report",
+    "expected_effect_vs_noise": "irrelevance share >20% | noise: query-level",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "package run",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: GO rule >20% irrelevant on >=50 pages \u2014 stop as soon as the share is clearly across the threshold"
+    }
+   ]
+  },
+  {
+   "id": "CAP-01",
+   "name": "DS41 routing trace (RT-10 capture \u2192 RT-6/RT-7 offline)",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "RT-10",
+     "src": "handoffs/active/moe-routing-tap-and-locality-measurement.md:126@3ac825873dfb",
+     "acceptance_clause": "DS41 tap hook + trace with expert ids, token order, phase, workload, speculative-block labels",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RT-6",
+     "src": "handoffs/active/moe-routing-tap-and-locality-measurement.md:112@3ac825873dfb",
+     "acceptance_clause": "offline expert-placement replay (numpy, no inference)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RT-7",
+     "src": "moe-routing-tap\u2026 RT-7",
+     "acceptance_clause": "locality/skew/residency/stationarity analyses",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "DS41 port + Q38FN",
+    "build": "experimental DS41 port",
+    "harness": "tap",
+    "placement": "CPU",
+    "instrument_class": "trace capture"
+   },
+   "cohort": {
+    "items": "workload prompts",
+    "denominator": "all tokens"
+   },
+   "arms": {
+    "controls": [],
+    "interventions": [],
+    "sampling_unit": "token",
+    "order": "one capture"
+   },
+   "capture": [
+    "expert selections",
+    "token order",
+    "phase",
+    "spec block labels"
+   ],
+   "analyses": [
+    {
+     "consumer": "RT-6",
+     "metric": "placement replay",
+     "rule": "own"
+    },
+    {
+     "consumer": "RT-7",
+     "metric": "locality/skew",
+     "rule": "own"
+    }
+   ],
+   "reuse_conditions": "trace shape per RT-2.1; trunk-only trace cannot answer drafter/MTP timing",
+   "stopping_rule": "capture once per build",
+   "remaining_cells": [
+    "one DS41 capture"
+   ],
+   "evidence_inventory": {
+    "retained": "data/moe-routing-rt1-q38fn-20261023 (present) = retained-and-valid for Q38FN RT-6/RT-7",
+    "status": "Q38FN replayable now; DS41 missing"
+   },
+   "do_not_fuse": [
+    "drafter timing"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "own",
+    "evidence_already_usable": "Q38FN replayable now; DS41 missing",
+    "units_strata_control": "token",
+    "minimum_coverage": [
+     "one DS41 capture"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "moe-routing-tap-and-locality-measurement.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "own",
+    "expected_effect_vs_noise": "n/a capture | noise: n/a",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "DS41 capture",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: capture"
+    }
+   ]
+  },
+  {
+   "id": "CAP-02",
+   "name": "Harness recordings (HIL)",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "HIL-13",
+     "src": "handoffs/active/harness-improvement-loop.md:105@3ac825873dfb",
+     "acceptance_clause": "L2 scan over recorded traces (zero inference)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "HIL-15",
+     "src": "handoffs/active/harness-improvement-loop.md:115@3ac825873dfb",
+     "acceptance_clause": "dependency analyses",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "HIL-16a",
+     "src": "handoffs/active/harness-improvement-loop.md:154@3ac825873dfb",
+     "acceptance_clause": "recording verification offline",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "HIL-18a",
+     "src": "handoffs/active/harness-improvement-loop.md:147@3ac825873dfb",
+     "acceptance_clause": "ranking over spectrum replays",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "HIL-16b",
+     "src": "handoffs/active/harness-improvement-loop.md:159@3ac825873dfb",
+     "acceptance_clause": "targeted/no-hint/placebo/wrong-step continuations \u2014 NEW intervention arms",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "production lineup",
+    "build": "production",
+    "harness": "ORCHESTRATOR_REPLAY_RECORDING + STEP_EVENT + OBSERVED_DEPENDENCY flags",
+    "placement": "full stack",
+    "instrument_class": "recording"
+   },
+   "cohort": {
+    "items": "failed tasks",
+    "denominator": "recorded set"
+   },
+   "arms": {
+    "controls": [],
+    "interventions": [
+     "HIL-16b arms"
+    ],
+    "sampling_unit": "task",
+    "order": "one instrumented collection"
+   },
+   "capture": [
+    "model turns",
+    "tool events",
+    "outcomes",
+    "dependencies",
+    "CAS blobs",
+    "session/task joins"
+   ],
+   "analyses": [
+    {
+     "consumer": "HIL-13",
+     "metric": "scan",
+     "rule": "own"
+    },
+    {
+     "consumer": "HIL-16a",
+     "metric": "prefix byte-equality",
+     "rule": "own"
+    }
+   ],
+   "reuse_conditions": "one collection with all flags; HIL-16b needs new arms",
+   "stopping_rule": "collection complete",
+   "remaining_cells": [
+    "HIL-16b arms"
+   ],
+   "evidence_inventory": {
+    "retained": "/mnt/raid0/llm/tmp/hil18a-spectrum-out (5 files), hil15c-20261024 (4) present; HIL-16a ticked = recordings exist \u2192 verify offline",
+    "status": "retained-needing-replay"
+   },
+   "do_not_fuse": [],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 3,
+   "stop_contract": {
+    "question_decision": "own",
+    "evidence_already_usable": "retained-needing-replay",
+    "units_strata_control": "task",
+    "minimum_coverage": [
+     "HIL-16b arms"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "harness-improvement-loop.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "own",
+    "expected_effect_vs_noise": "n/a capture | noise: n/a",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "HIL-16b arms",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: stage by task with a futility rule (audit HIL-18), final test preserved"
+    }
+   ]
+  },
+  {
+   "id": "CAP-03",
+   "name": "Judge response bank",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "CJ-13",
+     "src": "handoffs/active/canonical-judge-suite-revamp.md:573@3ac825873dfb",
+     "acceptance_clause": "two-cheap-readers agreement + human-disagreement cost; no adoption decision",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "EV-15a",
+     "src": "handoffs/active/eval-tower-verification.md:839@3ac825873dfb",
+     "acceptance_clause": "eight read-out formulas over the same outputs",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CJ-16",
+     "src": "handoffs/active/canonical-judge-suite-revamp.md:598@3ac825873dfb",
+     "acceptance_clause": "local judge-cascade shadow \u2014 needs actual sequential latency (separate calls)",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "typed judge + local LLM judge",
+    "build": "production",
+    "harness": "frozen candidate-answer bank",
+    "placement": "CPU/GPU",
+    "instrument_class": "judge outputs with token probabilities"
+   },
+   "cohort": {
+    "items": "candidate answers, frozen",
+    "denominator": "all"
+   },
+   "arms": {
+    "controls": [
+     "typed judge"
+    ],
+    "interventions": [
+     "LLM judge",
+     "cascade"
+    ],
+    "sampling_unit": "answer",
+    "order": "bank first"
+   },
+   "capture": [
+    "judge outputs",
+    "token probabilities at generation",
+    "latency"
+   ],
+   "analyses": [
+    {
+     "consumer": "CJ-13",
+     "metric": "agreement",
+     "rule": "report"
+    },
+    {
+     "consumer": "EV-15a",
+     "metric": "formula read-outs",
+     "rule": "deterministic"
+    }
+   ],
+   "reuse_conditions": "changing the judge = rerate, not regenerate candidates; commit-first/biased-rubric variants need separate calls",
+   "stopping_rule": "bank + one rating pass",
+   "remaining_cells": [
+    "rating passes per judge variant"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "CJ-16 latency"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "report",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "answer",
+    "minimum_coverage": [
+     "rating passes per judge variant"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "canonical-judge-suite-revamp.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "report",
+    "expected_effect_vs_noise": "agreement rate | noise: answer-level",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "rating passes",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: rate a paired subset; expand only if agreement is near the decision band"
+    }
+   ]
+  },
+  {
+   "id": "CAP-04",
+   "name": "Reasoning budget curve",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "TB-1",
+     "src": "handoffs/active/reasoning-effort-levels.md:103@3ac825873dfb",
+     "acceptance_clause": "per-model budget curve on a truncation-inducing suite",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "TB-2",
+     "src": "handoffs/active/reasoning-effort-levels.md:109@3ac825873dfb",
+     "acceptance_clause": "single mostly-ok setting \u226590%",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "TB-3",
+     "src": "handoffs/active/reasoning-effort-levels.md:113@3ac825873dfb",
+     "acceptance_clause": "audit ceilings vs knees",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "TB-4",
+     "src": "handoffs/active/reasoning-effort-levels.md:116@3ac825873dfb",
+     "acceptance_clause": "budget \u00d7 effort interaction",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "E-2",
+     "src": "handoffs/active/reasoning-effort-levels.md:331@3ac825873dfb",
+     "acceptance_clause": "effort curve per pinned model",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "E-3",
+     "src": "handoffs/active/reasoning-effort-levels.md:340@3ac825873dfb",
+     "acceptance_clause": "rescue-rate from paired outcomes",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "each stack model, pinned",
+    "build": "production",
+    "harness": "truncation-inducing suite per population",
+    "placement": "as served",
+    "instrument_class": "accuracy vs budget"
+   },
+   "cohort": {
+    "items": "suite items; OlympiadBench and GPQA are different populations",
+    "denominator": "per suite"
+   },
+   "arms": {
+    "controls": [
+     "per-suite control only"
+    ],
+    "interventions": [
+     "budget levels",
+     "effort levels"
+    ],
+    "sampling_unit": "item\u00d7level",
+    "order": "generate at each budget (no post-hoc truncation)"
+   },
+   "capture": [
+    "full generations per level",
+    "rescue flags"
+   ],
+   "analyses": [
+    {
+     "consumer": "TB-1",
+     "metric_rule": "accuracy vs budget on BOTH denominators \u2014 overall (all items) and finished-only (budget-independent ceiling) \u2014 plus truncation rate; knee = truncation <5% and plateau"
+    },
+    {
+     "consumer": "TB-2",
+     "metric_rule": "does one budget capture \u226590% of each model max-budget accuracy; quality-per-token"
+    },
+    {
+     "consumer": "TB-3",
+     "metric_rule": "deterministic: registry reasoning_budget/max_tokens_multiplier vs measured knee per role \u2014 flags roles below knee"
+    },
+    {
+     "consumer": "TB-4",
+     "metric_rule": "effort \u00d7 budget interaction from the crossed 2\u00d72\u00d710 GPQA cell only (a screen: sign and rough size of the interaction); if the crossed cell is dropped for budget reasons TB-4 is explicitly UNCOVERED until expansion \u2014 separate budget (OlympiadBench) and effort (GPQA) sweeps cannot identify it"
+    },
+    {
+     "consumer": "E-2",
+     "metric_rule": "accuracy vs mean tokens per level on the pinned GPQA items \u2192 Pareto frontier per (model, quant)"
+    },
+    {
+     "consumer": "E-3",
+     "metric_rule": "rescue rate: items the cheaper level got wrong that the higher level rescued, vs token cost"
+    }
+   ],
+   "reuse_conditions": "controls shared only inside the same suite + identity; a long-budget answer truncated afterward is NOT a short-budget generation",
+   "stopping_rule": "curve per model once",
+   "remaining_cells": [
+    "per-model sweep"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "cross-population pooling"
+   ],
+   "order_tier": "pilot-then-run",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "own",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "item\u00d7level",
+    "minimum_coverage": [
+     "per-model sweep"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "reasoning-effort-levels.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "pilot"
+   },
+   "pilot": {
+    "identity": {
+     "model": "frontdoor + architect models at their registry pins (model, quant sha) \u2014 one pair for the pilot",
+     "build": "production stack",
+     "inputs": "olympiadbench_hard 20 pinned items (id,seed) for TB-*; GPQA-Diamond pinned file artifacts/architect-bench-gpu-20260720/questions_gpqa_diamond_cot.json 20 items for E-*",
+     "control": "max budget 32k (TB) / current production level (E) on the same items"
+    },
+    "bounds": {
+     "cells": "2 models \u00d7 3 budgets {8k, 16k, 32k} \u00d7 20 items (TB, olympiadbench_hard) + 1 model \u00d7 2 levels \u00d7 20 items (E, GPQA) + a SMALL CROSSED cell on ONE common suite: 1 model \u00d7 2 effort levels \u00d7 2 budgets {8k, 32k} \u00d7 10 GPQA items (TB-4 interaction screen; generated fresh at each budget)",
+     "cap": "as served, \u2264 2.5 h; generate at EVERY budget \u2014 reuse of a lower-budget completed generation only if its equivalence for that comparison is demonstrated; resume by (id, seed, budget) so budgets are never conflated"
+    },
+    "validity_checks": [
+     "truncation flag recorded per generation (a truncated or non-terminating answer is disqualified, not scored)",
+     "generations produced at each budget (no post-hoc truncation)",
+     "per-suite controls kept separate (OlympiadBench \u2260 GPQA)"
+    ],
+    "outputs": [
+     "duration",
+     "variance",
+     "capture completeness (full generations, token counts, truncation, parse-fail, empty)",
+     "consumer coverage per clause below"
+    ],
+    "analyses_all_consumers": {
+     "TB-1": "accuracy vs budget on BOTH denominators \u2014 overall (all items) and finished-only (budget-independent ceiling) \u2014 plus truncation rate; knee = truncation <5% and plateau",
+     "TB-2": "does one budget capture \u226590% of each model max-budget accuracy; quality-per-token",
+     "TB-3": "deterministic: registry reasoning_budget/max_tokens_multiplier vs measured knee per role \u2014 flags roles below knee",
+     "TB-4": "effort \u00d7 budget interaction from the crossed 2\u00d72\u00d710 GPQA cell only (a screen: sign and rough size of the interaction); if the crossed cell is dropped for budget reasons TB-4 is explicitly UNCOVERED until expansion \u2014 separate budget (OlympiadBench) and effort (GPQA) sweeps cannot identify it",
+     "E-2": "accuracy vs mean tokens per level on the pinned GPQA items \u2192 Pareto frontier per (model, quant)",
+     "E-3": "rescue rate: items the cheaper level got wrong that the higher level rescued, vs token cost"
+    },
+    "decision": "owner (reasoning-effort-levels, TB-1) reviews: EXPAND to all stack models and 5 budgets if truncation capture works and variance is bounded; REVISE if resume conflates budgets or re-runs non-truncated items; INCONCLUSIVE otherwise. A budget knee below the production ceiling settles TB-3 for that role only \u2014 it does NOT settle E-2/E-3 (effort axis, different suite)",
+    "sufficiency": {
+     "question": "own",
+     "expected_effect_vs_noise": "knee shift >=1 budget step; rescue rate | noise: item-level binomial, paired by item",
+     "checkpoints": "each launch/cell; paired readout after the control arm completes; preliminary variance reported at every look",
+     "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+     "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+     "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+     "class": "exploratory/decision-support"
+    }
+   },
+   "provisional": false,
+   "sufficiency": {
+    "question": "own",
+    "expected_effect_vs_noise": "knee shift >=1 budget step; rescue rate | noise: item-level binomial, paired by item",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "per-model sweep",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: knee found from 3 budgets on 20 items when truncation drops below 5% clearly; expand only ambiguous models"
+    }
+   ]
+  },
+  {
+   "id": "CAP-05",
+   "name": "Frontdoor memory/routing experiment",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "M-12k",
+     "src": "handoffs/active/episodic-memory-integrity.md:591@3ac825873dfb",
+     "acceptance_clause": "frontdoor answer-quality arm beside Tulving/BEAM",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RI-17",
+     "src": "handoffs/active/routing-intelligence.md:80@3ac825873dfb",
+     "acceptance_clause": "live routing vs rules-only on the same frozen workload (quality, cost, latency)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CFI-1",
+     "src": "handoffs/active/episodic-memory-integrity.md:729@3ac825873dfb",
+     "acceptance_clause": "cache-friendly injection on/off \u2014 separate arm",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "RI-20",
+     "src": "handoffs/active/routing-intelligence.md:310@3ac825873dfb",
+     "acceptance_clause": "prompt-section change \u2014 separate arm",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "frontdoor",
+    "build": "production",
+    "harness": "frozen quality workload",
+    "placement": "as served",
+    "instrument_class": "quality/cost/latency"
+   },
+   "cohort": {
+    "items": "frozen workload",
+    "denominator": "all"
+   },
+   "arms": {
+    "controls": [
+     "validated common control"
+    ],
+    "interventions": [
+     "memory off",
+     "rules only",
+     "prompt absent",
+     "CFI on",
+     "RI-20 prompt"
+    ],
+    "sampling_unit": "request",
+    "order": "predeclared; interventions never conflated"
+   },
+   "capture": [
+    "answers",
+    "routing decisions",
+    "tokens",
+    "latency"
+   ],
+   "analyses": [
+    {
+     "consumer": "M-12k",
+     "metric": "quality",
+     "rule": "own"
+    },
+    {
+     "consumer": "RI-17",
+     "metric": "quality/cost/latency",
+     "rule": "own"
+    }
+   ],
+   "reuse_conditions": "one validated control; \"memory off\", \"rules only\", \"prompt absent\" are distinct arms",
+   "stopping_rule": "one campaign",
+   "remaining_cells": [
+    "one campaign"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 1,
+   "stop_contract": {
+    "question_decision": "own",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "request",
+    "minimum_coverage": [
+     "one campaign"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "routing-intelligence.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "own",
+    "expected_effect_vs_noise": "quality/cost delta vs control | noise: request-level paired",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "campaign",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: paired vs validated control; stop-on-answer allowed"
+    }
+   ]
+  },
+  {
+   "id": "CAP-06",
+   "name": "Turn-taking trace bank",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "CS-45.1",
+     "src": "handoffs/active/conversation-stack.md:601@3ac825873dfb",
+     "acceptance_clause": "tail-length stratum ranking",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-47",
+     "src": "handoffs/active/conversation-stack.md:617@3ac825873dfb",
+     "acceptance_clause": "turn-end arm bake-off on CPU, predeclared",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-22.V1",
+     "src": "handoffs/active/conversation-stack.md:755@3ac825873dfb",
+     "acceptance_clause": "VAD arm grid at matched operating points",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-22.T1",
+     "src": "handoffs/active/conversation-stack.md:761@3ac825873dfb",
+     "acceptance_clause": "text-only end-of-turn arm over interim transcripts",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CS-49",
+     "src": "handoffs/active/conversation-stack.md:636@3ac825873dfb",
+     "acceptance_clause": "live barge-in/AEC \u2014 LIVE intervention, not replayable",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "VAD/STT runners",
+    "build": "pinned (CS-45 pins)",
+    "harness": "CS-45 manifest",
+    "placement": "CPU",
+    "instrument_class": "timeline capture"
+   },
+   "cohort": {
+    "items": "CS-45 clips",
+    "denominator": "manifest"
+   },
+   "arms": {
+    "controls": [
+     "Silero v6 pinned"
+    ],
+    "interventions": [
+     "detectors",
+     "thresholds (offline replay when timeline suffices)"
+    ],
+    "sampling_unit": "clip",
+    "order": "bank once"
+   },
+   "capture": [
+    "audio",
+    "labels",
+    "probability streams",
+    "interim transcripts",
+    "timestamps"
+   ],
+   "analyses": [
+    {
+     "consumer": "CS-47",
+     "metric": "turn-end latency/accuracy",
+     "rule": "own"
+    },
+    {
+     "consumer": "CS-22.V1",
+     "metric": "VAD operating points",
+     "rule": "own"
+    }
+   ],
+   "reuse_conditions": "threshold replay only when it does not change segmentation/resets/STT inputs",
+   "stopping_rule": "bank complete",
+   "remaining_cells": [
+    "new generation only for threshold changes that alter segmentation",
+    "CS-49 live"
+   ],
+   "evidence_inventory": {
+    "retained": "cs-47-20261020 (389 files), cs-46 export, cs45/results/derived (50) present",
+    "status": "retained-and-valid for offline threshold replay"
+   },
+   "do_not_fuse": [
+    "CS-49"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "own",
+    "evidence_already_usable": "retained-and-valid for offline threshold replay",
+    "units_strata_control": "clip",
+    "minimum_coverage": [
+     "new generation only for threshold changes that alter segmentation",
+     "CS-49 live"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "conversation-stack.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "own",
+    "expected_effect_vs_noise": "turn-end latency/accuracy | noise: clip-level",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "threshold-changing arms",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: offline replay first; generate only where segmentation changes"
+    },
+    {
+     "cell": "CS-49 live",
+     "pilot_plus_error_replaces_full_run": "no",
+     "how": "no: live intervention"
+    }
+   ]
+  },
+  {
+   "id": "CAP-07",
+   "name": "Prefill-cost capture",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "KVU-16g",
+     "src": "handoffs/active/kv-unified-stack-rollout.md:427@3ac825873dfb",
+     "acceptance_clause": "decode-aware prefill budget (Sarathi-style) on experimental tree",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "PB-QCOST-1",
+     "src": "handoffs/active/gpu-serving-tie-in-program.md:436@3ac825873dfb",
+     "acceptance_clause": "fit quadratic prefill cost model on iteration records",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "YARN-E1-MEM",
+     "src": "handoffs/active/yarn-context-extension-research.md:108@3ac825873dfb",
+     "acceptance_clause": "+15 GiB KFD overshoot attribution \u2014 different images/flags, NOT folded",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "served roles",
+    "build": "production + experimental",
+    "harness": "prospective iteration records (prompt size, cached ctx, phase, allocation, time)",
+    "placement": "as served",
+    "instrument_class": "passive capture"
+   },
+   "cohort": {
+    "items": "live iterations",
+    "denominator": "all"
+   },
+   "arms": {
+    "controls": [],
+    "interventions": [],
+    "sampling_unit": "iteration",
+    "order": "fit existing samples offline first"
+   },
+   "capture": [
+    "iteration records"
+   ],
+   "analyses": [
+    {
+     "consumer": "PB-QCOST-1",
+     "metric": "fit residuals",
+     "rule": "own; VB-PBQ-1 ticked"
+    },
+    {
+     "consumer": "KVU-16g",
+     "metric": "n1/n4 validation + held-out residual",
+     "rule": "additional cells"
+    }
+   ],
+   "reuse_conditions": "same record schema; YARN-E1-MEM excluded",
+   "stopping_rule": "fit first; cells only if residuals demand",
+   "remaining_cells": [
+    "n1/n4 validation",
+    "held-out residual test"
+   ],
+   "evidence_inventory": {
+    "retained": "PB-QCOST records (VB-PBQ-1 ticked, ingested) = retained-and-valid",
+    "status": "replay first"
+   },
+   "do_not_fuse": [
+    "YARN-E1-MEM"
+   ],
+   "order_tier": "deterministic-tail-first",
+   "duplicate_run_instructions_replaced": 1,
+   "stop_contract": {
+    "question_decision": "own; VB-PBQ-1 ticked",
+    "evidence_already_usable": "replay first",
+    "units_strata_control": "iteration",
+    "minimum_coverage": [
+     "n1/n4 validation",
+     "held-out residual test"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "gpu-serving-tie-in-program.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "own; VB-PBQ-1 ticked",
+    "expected_effect_vs_noise": "fit residual | noise: iteration records",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "n1/n4 validation",
+     "pilot_plus_error_replaces_full_run": "yes-reduce",
+     "how": "yes-reduce: run only if the offline fit residuals demand"
+    },
+    {
+     "cell": "held-out residual",
+     "pilot_plus_error_replaces_full_run": "same",
+     "how": "same"
+    }
+   ]
+  },
+  {
+   "id": "CAP-08",
+   "name": "Coding-model response matrix",
+   "kind": "capture",
+   "consumers": [
+    {
+     "task": "AMSB-C390-1",
+     "src": "handoffs/active/architect-model-selection-bench.md:861@3ac825873dfb",
+     "acceptance_clause": "Coder390 Q8_0-MTP vs 27B Q8_0 same-harness A/B, tool-free",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "EvalPerf",
+     "src": "handoffs/active/architect-model-selection-bench.md:627@3ac825873dfb",
+     "acceptance_clause": "run EvalPerf against the local endpoint (inference; own instrument)",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "EffiBench-X",
+     "src": "handoffs/active/architect-model-selection-bench.md:622@3ac825873dfb",
+     "acceptance_clause": "adopt as efficiency instrument, 308 dated problems \u2014 adoption decision",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "GSO",
+     "src": "handoffs/active/architect-model-selection-bench.md:626@3ac825873dfb",
+     "acceptance_clause": "two llama-cpp-python optimization tasks",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "CJ-2 LCB",
+     "src": "handoffs/active/canonical-judge-suite-revamp.md:248@3ac825873dfb",
+     "acceptance_clause": "post-cutoff date window",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "Strand RustEvo2 Phase B",
+     "src": "handoffs/active/strand-rust-coder-rustevo2-verification.md:258@3ac825873dfb",
+     "acceptance_clause": "USER APPROVAL REQUIRED",
+     "verdict": "own \u2014 ticked only by this clause"
+    },
+    {
+     "task": "SWE-bench scorer",
+     "src": "handoffs/active/gpu-serving-tie-in-program.md:180@3ac825873dfb",
+     "acceptance_clause": "validate FAIL_TO_PASS scorer on gold patches \u2014 non-inference",
+     "verdict": "own \u2014 ticked only by this clause"
+    }
+   ],
+   "identity": {
+    "models": "incumbent coder + candidates",
+    "build": "production",
+    "harness": "shared acquisition, contamination filter, sandbox/oracle",
+    "placement": "as served",
+    "instrument_class": "per-benchmark"
+   },
+   "cohort": {
+    "items": "per benchmark; populations kept distinct",
+    "denominator": "per instrument"
+   },
+   "arms": {
+    "controls": [
+     "incumbent response cells (exact, shared)"
+    ],
+    "interventions": [
+     "candidates"
+    ],
+    "sampling_unit": "problem",
+    "order": "infrastructure once"
+   },
+   "capture": [
+    "programs",
+    "sandbox results",
+    "timings"
+   ],
+   "analyses": [
+    {
+     "consumer": "each benchmark",
+     "metric": "its own",
+     "rule": "never pooled"
+    }
+   ],
+   "reuse_conditions": "share infra + exact incumbent cells only; C390, LCB, RustEvo2, SWE, EffiBench, EvalPerf, GSO stay distinct populations/instruments",
+   "stopping_rule": "per-instrument",
+   "remaining_cells": [
+    "candidate cells per instrument"
+   ],
+   "evidence_inventory": {
+    "retained": "none",
+    "status": "missing"
+   },
+   "do_not_fuse": [
+    "pooled acceptance"
+   ],
+   "order_tier": "qualified-cells",
+   "duplicate_run_instructions_replaced": 2,
+   "stop_contract": {
+    "question_decision": "never pooled",
+    "evidence_already_usable": "missing",
+    "units_strata_control": "problem",
+    "minimum_coverage": [
+     "candidate cells per instrument"
+    ],
+    "looks_method": "planned looks at each bounded unit; dependence of arms on the shared control retained in the analysis; no early GATE verdict unless the governing protocol permits (FLOOR-UNIT-1 n>=24 for floors)",
+    "stop_continue_inconclusive": "stop on answer or futility within scope; a failing cell is not a failure of every cell; partial results recorded as operational decisions, never relabelled gate results",
+    "cap": "per package schedule",
+    "records_safe_resume": "incremental per-unit records with identity; resume by unit identity, never conflating arms/budgets",
+    "gate_or_diagnostic": "gate only where the protocol names it; otherwise diagnostic",
+    "provisional_status_note": "provisional status does not stop independent authorized evidence reuse, adjudication or preparation"
+   },
+   "owner": {
+    "accountable_handoff": "architect-model-selection-bench.md",
+    "binding": "executing session bound at scheduling via handoff-sessions.json slug + rowflow publish by that session",
+    "status": "provisional"
+   },
+   "pilot": null,
+   "provisional": true,
+   "sufficiency": {
+    "question": "never pooled",
+    "expected_effect_vs_noise": "per-instrument pass rate | noise: problem-level",
+    "checkpoints": "after each bounded unit (pilot: each launch/cell); paired against the completed control arm first (RTG-58 pattern)",
+    "stop_on_answer": "permitted: stop when the paired effect is clearly inside/outside the predeclared band at a planned look, with coverage of all strata and drift within bound",
+    "stop_on_futility": "permitted always: stop when no remaining unit can move the decision across the band (predeclared), record as futility, keep the gate open",
+    "formal_gate_caveat": "exploratory/decision-support: an early stop is an operational decision, labelled as such, never relabelled a gate result",
+    "class": "exploratory/decision-support"
+   },
+   "remaining_cells_sufficiency": [
+    {
+     "cell": "candidate cells per instrument",
+     "pilot_plus_error_replaces_full_run": "yes-reduce per instrument",
+     "how": "yes-reduce per instrument: stop-on-futility on a paired problem subset; never pooled"
+    }
+   ]
+  }
+ ],
+ "replays": [
+  {
+   "id": "RPL-C6",
+   "task": "C6 diagnostics (CH-30/C6-Q4-MMVQ-FIX)",
+   "src": "handoffs/active/autokernel-champion-aggregate.md:7@3ac825873dfb",
+   "action": "repair parser/completion consumers; replay retained evidence against UNCHANGED predicates only",
+   "coverage": "evidence: retained C6 diagnostic captures under /mnt/raid0/llm/tmp/codex-c6-*-20261102 and the CAS review package inputs (autokernel-champion-aggregate.md:6-:28); replaces ONLY the clauses whose predicate is unchanged (parser/completion consumer repair + re-read of the same captures); NEVER qualification of the modified combined MMVQ/MMQ candidate (C6-Q4-MMVQ-FIX :7) \u2014 that stays new generation",
+   "evidence": "retained-needing-replay (candidate)",
+   "substitutes_run": "candidate"
+  },
+  {
+   "id": "RPL-NEMO",
+   "task": "NEMO-PROF-RESEG",
+   "src": "handoffs/active/autokernel-champion-aggregate.md:161@3ac825873dfb",
+   "action": "retained resegmentation (accepted 2026-10-31) is DIAGNOSTIC ONLY: the traces lack per-token server timestamps and graph-launch markers, so the original boundary-source criterion stays unproved; prospective capture with timestamps/markers is required on the next legitimate profiling run",
+   "evidence": "retained-needing-prospective-capture: /mnt/raid0/llm/tmp/cal-1025/nemo-gpu-prof (59 files, 307M) kept as historical diagnostic",
+   "substitutes_run": false
+  },
+  {
+   "id": "RPL-EXL3",
+   "task": "EXL3-6c5a",
+   "src": "handoffs/active/exl3-cpu-mi210-implementation.md:141@3ac825873dfb",
+   "action": "RETAINED HISTORICAL CONCLUSIONS, not a measurement substitution: the nine-file copy in root git (d735d5d2deae8fcfeb26b13346cf2be3b65c8cf1: artifacts/cpu-window2-20261004/step1_exl3_full/) preserves the PPL (QUALITY_NOT_WORSE), p1 smoke (FAIL) and ggml-linkage conclusions as historical evidence with their dates. The 10-31 inventory (research 23689fecc) records that the native epyc.exl3.measurement.v1 writer REQUIRES the run-bound E model identity and prohibits backfill, and that identity plus the 10-04 raw speed vectors are missing \u2014 so NO native measurement rows are emitted, partial or otherwise. EXL3-6c5a stays open as a prospective-capture obligation on the next EXL3 run; EXL3-6c5b (p1 top-2 margin, ~10 min, correctness class) is the one small new cell",
+   "evidence": "historical conclusions retained-and-valid as conclusions (OBSERVATION Judged/Located); native measurement warrant missing and not backfillable; research data/exl3-6c5-quality MISSING on disk",
+   "substitutes_run": false
+  },
+  {
+   "id": "RPL-KPF",
+   "task": "KPF-64 family / rejudged historical cells",
+   "src": "handoffs/active/kv-prefix-fork-and-paged-attention.md:327@3ac825873dfb",
+   "action": "reuse the COMPLETED offline re-judgments; localize the retained fork effect before repeating dependent groups",
+   "coverage": "evidence: the rejudged KPF-64 family cells and KPF-18 group-3 historical-image records (kv-prefix-fork-and-paged-attention.md:327-:474; FB72 49-record paired comparison per the sufficiency audit \u2014 informative but selected/observational); replaces the clauses that ask for re-judgment of EXISTING captures only; clauses needing fresh COMPARABLE captures (final-image qualification, performance tails, F72 cache behavior under load) are NOT covered and stay new generation",
+   "evidence": "mixed: completed offline re-judgment (valid) + fresh captures required",
+   "substitutes_run": "candidate (partial)"
+  },
+  {
+   "id": "RPL-KB",
+   "task": "KB G11 / G13 (+PREFIX-3 separate)",
+   "src": "handoffs/active/internal-kb-rag.md:976@3ac825873dfb",
+   "action": "disagreement analysis on the filed collections before another encode",
+   "coverage": "evidence: G11 R2 collections \u2014 70 K7 certification queries \u00d7 200 frozen real KB documents, mirror FP32 vs INT8 and upstream (internal-kb-rag.md:976-:1002, 59/70 recorded); replaces the G11 parity clause and the G13 truncation-quantification clause; PREFIX-3 (incorrect encoding path) is NOT covered \u2014 corrected generation",
+   "evidence": "retained-and-valid for G11/G13 (candidate pending the disagreement analysis); PREFIX-3 invalid-generation",
+   "substitutes_run": "candidate"
+  },
+  {
+   "id": "RPL-STT",
+   "task": "CS-8.STT5 banked hypotheses",
+   "src": "handoffs/active/conversation-stack.md:682@3ac825873dfb",
+   "action": "fix scorers, re-score banked hypotheses, keep empty/incomplete predictions in the original denominator",
+   "coverage": "evidence: codex3-cs8-stt5-validation-parakeet-r2-20261030/validation-results (5,536 files), codex3-stt5-nemo-rescore-v3-20261101 (13), cs8l-ratings (75); replaces the CS-8.STT5 scoring clause for the Parakeet and Nemotron arms already banked; new candidate arms (STT8) and the private CS-4 confirmation stratum are NOT covered",
+   "evidence": "retained-and-valid banks (candidate pending scorer fix)",
+   "substitutes_run": "candidate"
+  },
+  {
+   "id": "DONE-HIL16A",
+   "task": "HIL-16a verification",
+   "src": "handoffs/active/harness-improvement-loop.md:154@3ac825873dfb",
+   "action": "ALREADY COMPLETED 2026-10-24: filler s5-hil16a-verify re-ran replay_flip_run.py verify on every HIL-15b recording (80/80 clean, 11 failed-task recordings clean, ok=true). Not a substituted run; nothing to replay. HIL-16b intervention arms (targeted/no-hint/placebo/wrong-step) remain new generation",
+   "evidence": "retained-and-valid: /mnt/raid0/llm/tmp/hil15b-flagon-out (513 files, 6.6M) + hil18a-spectrum-out (852 files, 9.8M)",
+   "substitutes_run": "already-done"
+  },
+  {
+   "id": "RPL-AP",
+   "task": "autopilot/coordination lineage, allocator, feedback, usage analyses",
+   "src": "handoffs/active/autopilot-continuous-optimization.md:866@3ac825873dfb",
+   "action": "reuse immutable journals + transcript snapshots",
+   "coverage": "evidence: orchestration/autopilot_journal.jsonl + autopilot_journal_1.jsonl (read ALL shards) and autopilot_checkpoints; replaces lineage, allocator, feedback-synthesizer and usage ANALYSIS clauses (e.g. P17.BT-5a retrospective synthesizer, AP-ME-1 budgets); does NOT cover AP-DGM-PROV/SEQ-SHINKA counterfactual replay (menus/identities missing)",
+   "evidence": "retained-and-valid (candidate per analysis)",
+   "substitutes_run": "candidate"
+  },
+  {
+   "id": "RPL-VIDYA",
+   "task": "VB-* capture/canary",
+   "src": "handoffs/active/vidya-belief-substrate-program.md:75@3ac825873dfb",
+   "action": "attach capture + canary to each producer's NEXT legitimate qualified run; never run inference to populate a hook",
+   "evidence": "unexposed until the producer runs",
+   "substitutes_run": false
+  },
+  {
+   "id": "NOREPLAY-APDGM",
+   "task": "AP-DGM-PROV / SEQ-SHINKA-1",
+   "src": "handoffs/active/autopilot-sequential-allocation.md:415@3ac825873dfb",
+   "action": "NOT a replay: original menus, identities and counterfactual outcomes are missing \u2192 prospective capture (RTG-02 prospective-capture row)",
+   "evidence": "missing",
+   "substitutes_run": false
+  }
+ ],
+ "do_not_fuse": [
+  "KPF residual campaign: historical-image/layout controls, group3 localization, final-image qualification, performance tails are separate stages",
+  "GDN: numerical fidelity \u2192 timing \u2192 short-prompt fallback; prove the chunked path dispatched",
+  "Final kernel promotion: historical C6, diagnostic parity and final-candidate qualification are not interchangeable",
+  "Long context: shared corpus custody only; original denominators, matched A0/A1 exposure, model identities, mechanisms stay distinct",
+  "Speech vs vision: S-18/S-19 do not share FLEURS generation",
+  "Cross-harness eval: shared fixtures/oracles, separate harness baselines and executed-tool evidence",
+  "Image/video: retained images support deterministic audits only; changed generation paths need new images",
+  "Training (MindDR RL, AW env generation, fine-tuning) is a distinct execution class",
+  "A profiling run is not an uncontaminated timing run: isolate expensive tracing unless overhead is qualified",
+  "Shared controls are dependent: multiple comparisons against one control are not independent baselines; primary decisions predeclared, exploratory readouts labelled"
+ ],
+ "execution_order": [
+  "1 deterministic tails + replays (RPL-*, packages with order_tier deterministic-tail-first)",
+  "2 bounded discrimination pilots (order_tier pilot-then-run): instrument validity, fired controls, variance, duration",
+  "3 remaining qualified cells grouped by compatible model residency/setup (order_tier qualified-cells): Q38FN-resident group {EXP-02, EXP-04, CAP-01}, frontdoor-resident group {CAP-05, EXP-08, EXP-09, EXP-12}, speculative/GPU group {EXP-03, CAP-03}, reviewer group {EXP-10, EXP-11}, coder group {CAP-08}",
+  "4 file consolidation around this structure (route 1a atomic folds; splits follow experimental decomposition)"
+ ],
+ "rules": [
+  "each consumer is ticked only by its own acceptance clause and verdict",
+  "remaining_cells list only missing/invalid/new generation",
+  "no GPU-hour or percentage savings claimed; counts only"
+ ]
+}
