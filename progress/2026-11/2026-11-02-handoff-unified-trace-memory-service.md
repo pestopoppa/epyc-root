@@ -47,3 +47,7 @@ Consumed RRF and catalog remediation results. RRF prototype now refuses top_k be
 ## 00:23Z — Review RRF safeguards and trace URI handling
 
 Consumed RRF remediation and URI reviews. The four earlier source-level findings were addressed; real-provider tie behavior and a pinned, no-unexpected-skips CI gate are still unverified. Navigation _connect_readonly interpolates raw paths into a SQLite URI: %, ? and # can alter interpretation, affecting get_records and ms.expand. The reported LOW impact uses a stale index and omits observed dynamic consumers, so no orchestrator source edit was made. Requested the prototype also reject percent paths and assigned separate adapter/provenance preparation; completion events registered. Existing search connection read-only semantics are a distinct concern. No inference or row publication.
+
+## 00:24Z — Preserve RRF percent URI safeguard
+
+Consumed percent-path safeguard result. The RRF prototype rejects %, ? and # in private database paths until the shared navigation URI helper is corrected; a synthetic decoded-path decoy remains untouched. Agent reports four focused tests and git apply --check passed with pinned research source and configured orchestrator checkout. This is a temporary guard; no provider, adapter, inference result or claim of production fix. BEAM adapter and LB2 interim preparation still have registered completion events. Prior wrapup push was rejected after origin/main advanced; its progress commit is incorporated in the current lane.
