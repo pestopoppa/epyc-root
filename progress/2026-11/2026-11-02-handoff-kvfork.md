@@ -19,3 +19,7 @@ Published CPU and GPU KPF-17a rows; qualification and scientific verdict remain 
 ## 09:55Z — Prepare remaining KPF-17a GPU validation and KPF-17.4d image-specific controls
 
 KPF-17a CPU row kvfork17a-cpu-20261102 is published and needs keeper dry run. GPU harness preparation is delegated; KPF-17.4d(b) needs the historical-image layout witness and a runnable reviewed control. KPF-LB2.1 still has no real V2 rows in the inspected snapshots. P3 worktree discovery and impact preparation continue; completion files are registered under the session awaiting directory.
+
+## 09:57Z — Repair KPF-17a GPU qualification and prepare remaining controls
+
+KPF-17a GPU qualification failed: five result units were produced but sampled VRAM peaked at 13,131,776 bytes; the failure also reported orphan PIDs 1279599 and 1279600. Launcher diagnosis and repair are delegated, as are P3 index preparation and KPF-17.4d(b) control preparation; their completion files are registered. No GPU result is accepted. CPU row kvfork17a-cpu-20261102 still needs qualification.
