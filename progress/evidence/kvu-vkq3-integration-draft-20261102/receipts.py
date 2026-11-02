@@ -105,6 +105,8 @@ def write_attempt(root, attempt_id, mode, result, *, expected_input_bytes, ceili
               'returncode': result['returncode'], 'input_bytes_written': result['input_bytes_written'],
               'expected_input_bytes': expected_input_bytes, 'ceiling_s': ceiling_s,
               'tokenizer_process_total_wall_s': result['elapsed_s'],
+              'tokenizer_started_monotonic_s': result.get('started_monotonic_s'),
+              'tokenizer_ended_monotonic_s': result.get('ended_monotonic_s'),
               'stdout_bytes': len(output), 'stdout_sha256': hashlib.sha256(output).hexdigest(),
               'stderr_captured_bytes': len(stderr), 'stderr_tail_file': 'stderr-sanitized-tail.txt',
               'stderr_tail_scope': ('fully_drained_capture' if result['status'] in ('completed', 'nonzero_exit')
