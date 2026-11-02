@@ -1,0 +1,26 @@
+{
+  "id": "handoff-kvu-kvu19a2-capture-build-20261102",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kvu19a2-capture-build-20261102/launch.sh",
+  "lane": "cpu",
+  "regions": "0-23",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kvu19a2-capture-build-20261102/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Compile only: bind capture harness executable digest to preserved source, headers, compiler and base ggml libraries. No GPU execution or nondeterminism verdict. Smoke compilation is a qualification artifact, not the full build.",
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "ram_gib": 8,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:KVU-19a-2",
+  "priority_rank": 25,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kvu19a2-capture-build-20261102",
+  "dryrun_native_result": true,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "headers/**",
+    "fa_harness.cpp",
+    "build-*/**"
+  ]
+}
