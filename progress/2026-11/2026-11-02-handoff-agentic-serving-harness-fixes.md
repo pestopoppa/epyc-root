@@ -167,3 +167,7 @@ Consumed index-cause2.txt: the index check serially scans git history for roughl
 ## 01:03Z — Prepare B1g forced-answer evaluation packet
 
 Consumed B1g row preparation. The feature computes its 0.65 trigger from the budget remaining at graph start, and without a valid deadline the on arm never triggers. A defensible paired evaluation requires per-worker flag attestation and rollback, actual per-request forced-turn exposure, fixed paired cases, deadlines and per-suite rescue/regression denominators with infra and scoring failures retained; no valid row has yet been published. Delegated construction of the concrete packet and registered its result. The prior wrap-up committed d7783b1070cc but its push failed as origin/main advanced; this wrap retries publication. DEPLOY-EC-2d handoff evidence remains pending the captured index gate result.
+
+## 01:05Z — Resolve F2 warmup prerequisite
+
+Confirmed F2 prerequisite F1 is already complete: its four slot-specific warmups produced cache_n=56,794 for each member of the all-four-warm group. The existing F2 packet still requires canonical engine migration and pre-grant model verification; its repair is already delegated, and the preparer was sent the confirmed warmup. The captured index-check completion and other registered packet/patch events remain outstanding; the DEPLOY-EC-2d evidence is still uncommitted pending that gate. No inference row published in this boundary.
