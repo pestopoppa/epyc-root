@@ -171,3 +171,7 @@ Consumed B1g row preparation. The feature computes its 0.65 trigger from the bud
 ## 01:05Z — Resolve F2 warmup prerequisite
 
 Confirmed F2 prerequisite F1 is already complete: its four slot-specific warmups produced cache_n=56,794 for each member of the all-four-warm group. The existing F2 packet still requires canonical engine migration and pre-grant model verification; its repair is already delegated, and the preparer was sent the confirmed warmup. The captured index-check completion and other registered packet/patch events remain outstanding; the DEPLOY-EC-2d evidence is still uncommitted pending that gate. No inference row published in this boundary.
+
+## 01:06Z — Publish F2 prerequisite recovery
+
+Recovered the preceding F2 progress commit 24d19fc76532 after its push raced origin/main: acquired the serialized push lease, fetched and merged under the lease, and published merge 51c682a8fa7d; serialized push reported cherry empty. The F2 packet, paired evaluations and captured index check remain registered for dispatcher events. DEPLOY-EC-2d evidence remains pending in the lane until its index gate is resolved. No row published.
