@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 import signal
 import subprocess
@@ -91,6 +92,32 @@ time.sleep(60)
                 self.assertEqual(child.call_count, 1)
                 self.assertTrue(seq.STOP['flag'])
             seq.STOP['flag'] = False
+
+    def test_sequencer_real_child_runs_p3_coordinator_against_fake_servers(self):
+        # Exercise the sequencer's real child launch and the actual P3 coordinator.
+        # The child substitutes the fake server/transport fixture, never a model.
+        child_code = ("import json,sys; from test_p3_isolated import P3IsolatedTests; "
+                      "rc,result=P3IsolatedTests().run_pair(); "
+                      "open(sys.argv[1], 'w').write(json.dumps(result)); "
+                      "raise SystemExit(rc)")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            args = SimpleNamespace(results=root, budget_min=100, p3_phase='a1', port=18183)
+            run = {'items': []}
+            seq.STOP['flag'] = False
+            def fake_argv(arm, label, budget, dry):
+                return [sys.executable, '-B', '-c', child_code, str(root / (arm + '.json'))]
+            with patch.object(seq, 'ARGS', args, create=True), \
+                 patch.object(seq, 'gpu_clear', return_value={'kfd_holders': {}}), \
+                 patch.object(seq, 'p3_argv', side_effect=fake_argv):
+                self.assertEqual(seq.run_p3_pair(1, run, lambda: None), 0)
+            self.assertEqual([item['arm'] for item in run['items']], ['on', 'off'])
+            for arm in ('on', 'off'):
+                result = json.loads((root / (arm + '.json')).read_text())
+                self.assertTrue(result['dedicated_server_per_variant'])
+                self.assertEqual(len(result['rows']), 12)
+                self.assertEqual(len(result['variant_runs']), 2)
+                self.assertTrue(all(r['server']['teardown']['verified_dead'] for r in result['variant_runs']))
 
     def test_double_lifecycle_estimate_and_timeout(self):
         self.assertEqual(seq.P3_EST, {'on': 30.0, 'off': 33.0})
