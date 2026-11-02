@@ -1,31 +1,31 @@
 {
   "by_type": {
-    "docs": 251,
+    "docs": 252,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 1146,
+    "progress": 1147,
     "research": 275
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-01T15:52:43Z",
   "last_touch": {
     "advanced": {
-      "added": 4,
+      "added": 2,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-02T00:32:20Z",
+    "at": "2026-11-02T13:51:58Z",
     "scope_paths": [
-      "research/deep-dives/intake-digests/2026-11-02-ids-2617-2621.md",
-      "research/deep-dives/ws58-jev-20261102/*"
+      "docs/design/inf70-r2362-evidence-20261102/AUDIT.md",
+      "progress/2026-11/2026-11-02-r18a-handoff-audit.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-02T00:32:20Z",
+  "scan_time": "2026-11-02T13:51:58Z",
   "schema_version": 1,
-  "source_set_hash": "384dd37600dc8320077c3d6fb98c8cf9b37b1ab8f586e648c70cd7d9f196f125",
+  "source_set_hash": "02524685c7a4f271cf163c3a083989f0acdbe95a5a58a3bff7c462cc0ecfadd5",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -236,14 +236,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b9f0d5080416e34d7e79451be715c7a15bb3dd259169f77b288051ddccc6b808",
-      "modified": "2026-11-01T15:45:21Z",
-      "path": "handoffs/active/browser-agent-surface.md",
-      "size": 2691,
-      "title": "Browser Agent Surface \u2014 interactive, goal-driven web actions",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "5b6515a35460ec9d5fc2aa48efc7cfa337f24506a33f885c0fb60c5699764d40",
       "modified": "2026-11-01T15:45:21Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
@@ -340,14 +332,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5ae0bf03e4b9214130aa1c8efc4c41469c50c611ec7c708c28330781a2c1db90",
-      "modified": "2026-11-01T15:45:21Z",
-      "path": "handoffs/active/cpu-shape-specialized-gemv-decode.md",
-      "size": 31158,
-      "title": "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "08b97b371c86661df10320c08d50fc9376dfadab3893579dc87af3e090370f7d",
       "modified": "2026-11-01T15:45:21Z",
       "path": "handoffs/active/dashboard-architecture-restructure.md",
@@ -385,14 +369,6 @@
       "path": "handoffs/active/delta-mem-reproduction.md",
       "size": 29934,
       "title": "\u03b4-mem Reproduction + Frozen-Memory Topology Spike",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "edb17642e4c673d6ab3690e6a38535593189e32d492b1323a744714ec48a7ff5",
-      "modified": "2026-11-01T15:45:21Z",
-      "path": "handoffs/active/design-backlog-triage-2026-07-23.md",
-      "size": 81196,
-      "title": "Design-Backlog Triage (2026-07-23)",
       "type": "handoff-active"
     },
     {
@@ -585,14 +561,6 @@
       "path": "handoffs/active/frontier-f6-upstream-publication.md",
       "size": 23186,
       "title": "Frontier F6 \u2014 Upstream & Publication Leverage",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "1fba00ec506f907b8224260746b816dc441e03609870035870d8136152754ebe",
-      "modified": "2026-11-01T15:45:21Z",
-      "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "size": 23847,
-      "title": "Fuzzy Workflow Authoring GUI \u2014 deterministic flow, fuzzy steps, one canvas",
       "type": "handoff-active"
     },
     {
@@ -14620,6 +14588,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "0611036e0501c51b0340cb805e6f727d81c3181e437f0e53d9811e0752f4bdee",
+      "modified": "2026-11-02T13:17:10Z",
+      "path": "progress/2026-11/2026-11-02-r18a-handoff-audit.md",
+      "size": 4635,
+      "title": "R18-A handoff readiness audit \u2014 2026-11-02",
+      "type": "progress"
+    },
+    {
       "content_hash": "f815807fdfa9f0c1c10a770847eaaca7c1ee24dc514c2ed467215dced66cd60d",
       "modified": "2026-11-01T15:45:21Z",
       "path": "docs/audits/r18-cuid-path-hash-forensics-20261031.md",
@@ -14977,6 +14953,14 @@
       "path": "docs/design/inf70-cpu-fold-into-champion-20260907.md",
       "size": 9170,
       "title": "Fold plan: INF-70 CPU kernel work \u2192 the AutoKernel champion aggregate (2026-09-07)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "8717a480fd507bad0619f82f67256c6d645013e8e1c5bdfa867f8951b8eded86",
+      "modified": "2026-11-02T13:37:47Z",
+      "path": "docs/design/inf70-r2362-evidence-20261102/AUDIT.md",
+      "size": 5761,
+      "title": "R23-62 replay: estimand, order and contention",
       "type": "docs"
     },
     {
@@ -16626,9 +16610,41 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "b9f0d5080416e34d7e79451be715c7a15bb3dd259169f77b288051ddccc6b808",
+      "modified": "2026-11-01T15:45:21Z",
+      "path": "handoffs/active/browser-agent-surface.md",
+      "size": 2691,
+      "title": "Browser Agent Surface \u2014 interactive, goal-driven web actions",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "5ae0bf03e4b9214130aa1c8efc4c41469c50c611ec7c708c28330781a2c1db90",
+      "modified": "2026-11-01T15:45:21Z",
+      "path": "handoffs/active/cpu-shape-specialized-gemv-decode.md",
+      "size": 31158,
+      "title": "CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "edb17642e4c673d6ab3690e6a38535593189e32d492b1323a744714ec48a7ff5",
+      "modified": "2026-11-01T15:45:21Z",
+      "path": "handoffs/active/design-backlog-triage-2026-07-23.md",
+      "size": 81196,
+      "title": "Design-Backlog Triage (2026-07-23)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "1fba00ec506f907b8224260746b816dc441e03609870035870d8136152754ebe",
+      "modified": "2026-11-01T15:45:21Z",
+      "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "size": 23847,
+      "title": "Fuzzy Workflow Authoring GUI \u2014 deterministic flow, fuzzy steps, one canvas",
+      "type": "handoff-active"
     }
   ],
-  "total_new": 2075,
+  "total_new": 2077,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
