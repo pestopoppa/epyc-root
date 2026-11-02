@@ -71,3 +71,7 @@ Consumed r18b-reviewed-ready.txt and r23sweep-final-review.txt. Independent R18-
 ## 10:20Z — Prepare executable identity checks for calibration
 
 R18-D candidate review produced /mnt/raid0/llm/tmp/autokernel-rebuild/r18d-identity-fixed.txt and separate scratch r18d-witness-review with executable device/inode checks and PID-reuse and wrong-executable negative controls; four model-free tests pass. The existing candidate still has a failing PID-identity fixture and must not be published as-is. The active inference row was not modified and no GPU run was launched.
+
+## 10:21Z — Correct run-18 draft build timing semantics
+
+Prepared corrected scratch patch /mnt/raid0/llm/tmp/autokernel-rebuild/r18b-build-timing-reviewed.patch. Pool records UTC after successful fresh anchor build; source-continuation records successful build-command completion before correctness gates and uses built_at=null if the build directory already existed, retaining build_directory_was_absent and build_command_completed_at separately. No timestamp proves artifact contents or historical identity. Thirty-three model-free tests and four subtests pass. The patch is not integrated into research, and R18-B forensics remains open.
