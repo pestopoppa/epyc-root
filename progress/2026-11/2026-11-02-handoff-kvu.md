@@ -171,3 +171,7 @@ An isolated Python process ran the model-free qualification lifecycle from the p
 ## 10:34Z — Harden draft bundle verification and reconcile KVU-16a evidence
 
 VKQ3 draft adds atomic manifest publication and a separate pinned-file verifier; nine offline tests pass. The verifier is unwired and does not establish trusted provenance, protected custody or controlled imports. KVU-16a old package is stale, and the current derived ubatch-512 value is not the historical ubatch-2048 measurement; recorded the distinction in the handoff.
+
+## 10:36Z — Merge origin/main and apply VKQ3 execution-boundary review to ongoing implementation
+
+Merged current origin/main into the lane after the prior serialized push failed. VKQ3 review identified that verification must precede imports in a trusted bootstrap and that point-in-time hashes alone cannot protect later execution; bounded implementation and verifier work are underway.
