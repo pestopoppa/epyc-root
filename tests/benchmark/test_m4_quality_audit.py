@@ -15,7 +15,7 @@ def make_run(tmp_path):
     prompts = {'q1': 'first', 'q2': 'second'}
     plan = {'schema': 'epyc.m4.quality_audit_plan.v1', 'seed': 42, 'max_tokens': 64, 'runner_sha256': 'a'*64,
             'roles': {'worker_general': {'model_path': '/models/worker.gguf', 'suites': {
-                'mmlu_pro': [{'id': q, 'prompt_sha256': hashlib.sha256(p.encode()).hexdigest()} for q, p in prompts.items()]}}}}
+                'mmlu_pro': [{'id': q, 'prompt_sha256': hashlib.sha256(p.encode()).hexdigest(), 'expected': 'A'} for q, p in prompts.items()]}}}}
     plan_path = tmp_path / 'plan.json'
     plan_path.write_text(json.dumps(plan))
     runs = tmp_path / 'runs'
@@ -23,7 +23,7 @@ def make_run(tmp_path):
         directory = runs / 'worker_general' / arm / 'mmlu_pro'
         directory.mkdir(parents=True)
         rows = [{'id': q, 'suite': 'mmlu_pro', 'arm': f'worker_general-{arm}', 'runner_source_sha256': 'a'*64, 'seed': 42, 'correct': True, 'truncated': False,
-                 'effective_request': {'endpoint': 'chat', 'temperature': 0.0}, 'finish_reason': 'stop',
+                 'effective_request': {'endpoint': 'chat', 'temperature': 0.0}, 'finish_reason': 'stop', 'expected': 'A',
                  'prompt': p, 'prompt_fingerprint': {'sha256': hashlib.sha256(p.encode()).hexdigest()}}
                 for q, p in prompts.items()]
         (directory / 'per_question.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
@@ -46,7 +46,7 @@ def test_clean_native_pair(tmp_path):
     assert all(row['n'] == 2 and row['correct'] == 2 for row in result['rows'])
 
 
-@pytest.mark.parametrize('mutation', ['wrong_plan', 'changed_prompt', 'duplicate', 'wrong_seed', 'missing_finish', 'summary_mismatch', 'missing_arm', 'wrong_arm', 'wrong_runner'])
+@pytest.mark.parametrize('mutation', ['wrong_plan', 'changed_prompt', 'duplicate', 'wrong_seed', 'missing_finish', 'summary_mismatch', 'missing_arm', 'wrong_arm', 'wrong_runner', 'wrong_answer'])
 def test_refuses_unbound_or_inconsistent_capture(tmp_path, mutation):
     plan, sha, root = make_run(tmp_path)
     directory = root / 'worker_general' / 'candidate' / 'mmlu_pro'
@@ -54,6 +54,7 @@ def test_refuses_unbound_or_inconsistent_capture(tmp_path, mutation):
     if mutation == 'wrong_plan': sha = '0'*64
     elif mutation == 'changed_prompt': rewrite(path, lambda rows: rows[0].update(prompt='different'))
     elif mutation == 'duplicate': rewrite(path, lambda rows: rows[1].update(id='q1'))
+    elif mutation == 'wrong_answer': rewrite(path, lambda rows: rows[0].update(expected='B'))
     elif mutation == 'wrong_arm': rewrite(path, lambda rows: rows[0].update(arm='worker_general-baseline'))
     elif mutation == 'wrong_runner': rewrite(path, lambda rows: rows[0].update(runner_source_sha256='b'*64))
     elif mutation == 'wrong_seed': rewrite(path, lambda rows: rows[0].update(seed=7))
