@@ -119,3 +119,7 @@ Consumed the C5-12 selector review and documented the 3/3 isolated tests, unsour
 ## 00:57Z — Advance fixed feedback-ablation prerequisite for controller rows
 
 Assigned a bounded C5-11 task to identify a real enumerated task subset and draft the matched three-feedback-arm protocol needed by the controller comparison; registered its completion event. The RPUCG snapshot patch has uncommitted in-progress changes and was excluded from this boundary. Existing row prerequisites remain unresolved; no row was published and no compute run.
+
+## 00:58Z — Recover prior wrap-up after serialized push contention
+
+The previous wrap-up committed 98ac1d8c773b but its serialized push failed under lock contention. A single status check showed a live kernel-backed push lock held by ws58-hub-pages; it was not disturbed. This boundary retries publication of the lane through wrapup.py. The in-progress RPUCG snapshot patch remains excluded. No inference row published or compute run.
