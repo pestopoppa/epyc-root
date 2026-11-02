@@ -47,3 +47,11 @@ Preserved ID-9 pilot inputs in data/experiments/id9-behavior-pilot and verified 
 ## 03:39Z — Preserve ID-4 corpus provenance and advance CPU and GPU preparation.
 
 Preserved the ID-4 snapshot manifest and readiness limitations in data/experiments/id4-distiller-corpus; verified the readiness document digest against the manifest. Raw snapshot and journals remain in the session corpus directory. The corpus does not prove question-level independence or supply correctness oracles, so it cannot support a quality verdict. Dispatched retrieval-only CPU preparation, ID-9 integration repair and model identity preparation. No compute was launched or row published.
+
+## 04:12Z — Register prospective ID-9 measurement wiring and advance row preparation.
+
+Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-WIRE before any decision use; the source remains unwired and no historical warrant is asserted. Dispatched bounded ID-9 integration, GPU spec and ID-4 retrieval-pilot preparation with completion events. No inference was launched or row published.
+
+## 04:13Z — Register prospective ID-9 measurement wiring and advance row preparation.
+
+Registered ID-9 paired replay as a prospective source and added VB-ID9-BEHAVIOR-WIRE before any decision use; the source remains unwired and no historical warrant is asserted. Dispatched bounded ID-9 integration, GPU spec and ID-4 retrieval-pilot preparation with completion events. No inference was launched or row published. Regenerated handoff index state and graph after the first check detected stale generated metadata.

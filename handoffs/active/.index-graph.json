@@ -828,7 +828,7 @@
       "from": "EVL-27",
       "kind": "ref",
       "to": "INF-31",
-      "weight": 4
+      "weight": 5
     },
     {
       "from": "EVL-29",
@@ -3939,7 +3939,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T03:55:04Z",
+  "generated_at": "2026-11-02T04:13:48Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4990,7 +4990,7 @@
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 372,
+      "open": 373,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
