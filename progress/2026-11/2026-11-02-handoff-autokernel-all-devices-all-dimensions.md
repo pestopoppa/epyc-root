@@ -83,3 +83,7 @@ Implemented scratch-only bounded ancestor locator and model-free process-chain c
 ## 10:43Z — Prepare production-shaped floor successor and inspect GPU candidate gate prerequisites
 
 Delegated bounded preparation of the AKX-ALL-8 floor successor and AKX-ALL-29.5a guard-band gate; scratch reports are registered for resumption. AKX-ALL-29.2a implementation is already recorded, but its parent remains open pending scheduler-owned candidate timing evidence. No measurement, floor, or gate verdict claimed.
+
+## 10:45Z — Prepare CPU floor and GPU claim measurement rows
+
+Delegated independent row preparation for AKX-ALL-8, AK-Q38FN-64K-FLOOR and AKX-ALL-3. The scheduler derives quiet-host for CPU class with exclusive GPU quiet and all four quarters; the separate device-flock witness and full native reader remain required for the AKX-ALL-8 successor. Awaiting scratch reports; no row published or measurement claimed.

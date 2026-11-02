@@ -39,3 +39,7 @@ The prospective v2 trace coverage producer and registered ingest adapter passed 
 ## 10:36Z — Document search request opt-in draft
 
 Prepared a draft request opt-in patch for REPL-EMB-4.2, requiring explicit REPL mode and a parsed document and refusing context bundle combination. This draft is not integrated or deployed; its compatibility and bundle-aware read path remain under review. [no-belief: draft only]
+
+## 10:45Z — Fix document search draft refusal paths
+
+Corrected the draft document-search request patch: reject missing parsed documents with HTTP 422 after preprocessing, prevent local-script interception from bypassing the opt-in, and reject document_search on both streaming implementations before an SSE response. The patch applies cleanly to sampled APP source in a scratch copy; end-to-end route tests and bundle-attached document reads remain open. No APP source was changed or deployed. [no-belief: draft integration only]
