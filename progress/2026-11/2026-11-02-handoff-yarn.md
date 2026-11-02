@@ -51,3 +51,7 @@ Integrated the deliberately disabled Jet-Long coordinator and keeper-envelope ad
 ## 10:19Z — Land Jet-Long keeper admission after upstream merge
 
 Twenty offline tests passed for the prototype suite. Concurrent upstream changes were merged before retrying the serialized push; native entry remains disabled.
+
+## 10:21Z — Preserve exact-token Jet-Long fixture generator
+
+The corrected fixture preparation reports generation_validation_rc=0 for all 150 raw-token arrays, including exact lengths, content, position, identity and aggregator matrix checks; the packet remains draft pending scientific protocol and native server prompt_n qualification. Preserved its exact generator snapshot, generator, validator, vocabulary tokenizer source and offline tests; 24 prototype tests pass. No native inference or published row.
