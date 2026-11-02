@@ -81,9 +81,19 @@ FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates
                "rely on AGENTS.md/CLAUDE.md being loaded. Never re-read or re-verify what the scripts (wrapup.py, file_result.py, "
                "publish_row.py) already guarantee. Every subagent gets ONE bounded job (<=40 tool calls) and ends; never spawn a "
                "subagent to watch, poll, wait or monitor anything (2026-11-01: single luna subagents made ~1000 calls each).")
-NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops - publish or "
-                "delegate, wrap up, end the turn; the dispatcher resumes you on the event (grant end, dry-run result, or a file you "
-                "registered under handoff-sessions/<slug>/awaiting/).")
+NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops; the "
+                "dispatcher resumes you on the event (grant end, dry-run result, or a file you registered under "
+                "handoff-sessions/<slug>/awaiting/).")
+#: Operator ruling 1 (2026-11-02): the only three points at which a turn may end.
+TURN_END_LINE = ("A turn ends ONLY at one of: (a) a row is published (publish_row.py smoke PASS); (b) every remaining task is "
+                 "blocked only by rows you already readied; (c) the handoff is done. Never end a turn in the middle of making "
+                 "an inference task ready - finish making it ready, then persist. A new prerequisite or blocker you discover is "
+                 "work for THIS turn: do it now (fan out subagents); never stop at listing prerequisites or at \"not yet a "
+                 "runnable row\".")
+#: Operator ruling 2 (2026-11-02): the worker persist is light; index files are regenerated centrally (index_regen.py).
+PERSIST_LINE = ("Persist = wrapup.py only: it ticks your boxes with the evidence sha, appends your progress file, commits your "
+                "paths (plus beliefs/wiki notes only if you produced findings) and pushes, then writes report.json. Never run "
+                "index_state.py, regenerate the master rollup or prune - one central writer owns the generated index files.")
 
 
 REPORT_LINE = (
@@ -94,11 +104,11 @@ REPORT_LINE = (
     "a task you are doing genuinely splits, or a result creates a follow-up the operator would need to act on. When a result "
     "lands, tick its box in the same turn.\n"
     "Report next=done ONLY after the completion wrap-up has LANDED: extract findings to docs, `git mv` the handoff to "
-    "handoffs/completed/, delete its index row, run `python3 scripts/handoffs/index_state.py --check` (exit 0), then land. "
+    "handoffs/completed/, delete its domain-index row, then land (never index_state.py; the central writer regenerates). "
     "The dispatcher retires you only once the file is gone from handoffs/active/ on origin/main.\n"
     "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
     "launcher + publish_row.py, whose smoke IS the dry run on 4 CPUs and the only compute you run yourself - it must PASS; "
-    "long benchmark runs go through rows) and end the turn only at a task boundary. Your wrap-up JSON (-> report.json) "
+    "long benchmark runs go through rows). " + TURN_END_LINE + " " + PERSIST_LINE + " Your wrap-up JSON (-> report.json) "
     "MUST carry `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
     "\"blocked\", `blocked_by`: [<row ids>] - every remaining task waits on those rows and each is already readied (dry-run "
     "PASS, armed, granted or running). You are resumed at once unless next=blocked on readied rows (then when one ends or FAILs "
@@ -185,7 +195,7 @@ def brief_text(slug: str, e: dict, flags: str) -> str:
             goal = open(os.path.join(flags, f"GOAL-{GENERALIST}.md"), errors="replace").read()
         except OSError:
             goal = "(GOAL-codex-gen.md missing)"
-        return (goal + f"\n\n## Managed-session contract (dispatcher)\n{FANOUT_LINE}\n{lane_line(slug)}\n"
+        return (goal + f"\n\n## Managed-session contract (dispatcher)\n{FANOUT_LINE}\n{TURN_END_LINE}\n{PERSIST_LINE}\n{lane_line(slug)}\n"
                 f"Your backlog: `{flags}/BACKLOG-{GENERALIST}.md`; rows/tasks labelled 'yours' are yours. Wrap up with ONE JSON -> "
                 f"`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
                 f"`WRAPPED <sha>` is your LAST line. One turn = ALL ready items, via sub-agents; never a one-item turn.\n")
@@ -246,13 +256,15 @@ context (rows, open boxes, your handoff's rank), not an order.
   "blocked_by": ["<row ids, when next is blocked>"], "trailers": ["Co-Authored-By: ...", "Claude-Session: ..."]}} and run
   `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}`. It merges origin/main into your
   lane, appends the progress entry (`progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`), ticks the boxes BY TEXT with the
-  belief tag, runs `index_state.py --check`, makes the pathspec commit with your trailers, pushes the lane to main through
+  belief tag, makes the pathspec commit with your trailers, pushes the lane to main through
   `serialized_push.py`, proves `git cherry origin/main` empty, writes `{flags}/handoff-sessions/{slug}/report.json` (the
   DSH-1 record, with `wrapped_sha`) and prints `WRAPPED <sha>` as its last line - make that the LAST line of your reply.
   You never run progress/tick/commit/push/cherry by hand. The dispatcher reads report.json first and will NOT resume you
   for new work until that sha is on origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED`
   exists (DSH-2; `file_result.py` touches it).
-- At a milestone, or when your context is large, wrap up and also say `FRESH-SESSION-REQUESTED`.
+- When your context is large, persist at the next allowed turn end and also say `FRESH-SESSION-REQUESTED`.
+- {TURN_END_LINE}
+- {PERSIST_LINE}
 - **Pause rule**: you are paused ONLY when every remaining task in the handoff waits on rows you already readied (dry-run
   PASS, armed, granted or running): report `next: blocked` + `blocked_by`. The dispatcher verifies each id in rowflow; a
   row that is not ready gets you resumed to make it ready. You are resumed when one of them ends or FAILs its dry run.
@@ -268,7 +280,7 @@ context (rows, open boxes, your handoff's rank), not an order.
   REFUSES to land while untracked files sit under `artifacts/` in the lane; the lane is reaped when you pause and
   recreated on resume, so anything not committed and pushed is gone.
 - **NEVER wait in a turn** (CAF-1, operator 2026-11-01): no `sleep`, no polling of grants/dry-run/queue files, no
-  `wait_agent`/`list_agents`/status loops, no watching a sub-agent. Publish or delegate, wrap up, END THE TURN. The
+  `wait_agent`/`list_agents`/status loops, no watching a sub-agent. The
   dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, or any file you register in `{flags}/handoff-sessions/{slug}/awaiting/<name>.json` as {{"path": "<file that will
   appear>", "note": "<what it means>"}} (a sub-agent's output file, a build artifact). A turn that polls is a defect.
 
@@ -382,7 +394,7 @@ LAST line.
 
 def continue_prompt(slug, e, flags, why="", delta=""):
     return f"""[{VERSION}] go on: {why or 'the next task in your handoff'}. Your handoff {e.get('handoff') or 'codex-gen backlog'} has open work;
-fan independent items out to sub-agents and land them before wrapping up. {FANOUT_LINE}
+fan independent items out to sub-agents and land them before persisting. {TURN_END_LINE} {FANOUT_LINE}
 {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
 `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
@@ -1091,7 +1103,7 @@ def decide(flags, slug, e, repo=None, allrows=None) -> tuple[str, str]:
             return "pause", "codex-gen reported done (resumed by its next event)"
         n = open_tasks(e.get("handoff") or "", repo)
         if n == 0 and active_on_main(e.get("handoff"), repo or ROOT):
-            return "continue", "finish the completion wrap-up: findings to docs, git mv the handoff to handoffs/completed/, delete its index row, index_state.py --check, land; then report done"
+            return "continue", "finish the completion wrap-up: findings to docs, git mv the handoff to handoffs/completed/, delete its domain-index row, land; then report done"
         return ("done", "next=done; handoff archived on origin/main") if n == 0 else \
             ("continue", f"you reported next=done but the handoff has {n} open box(es) - finish or tick them")
     if nxt == "blocked":
@@ -1139,8 +1151,37 @@ def awaiting_prompt(slug, e, flags, data):
     return f"""[{VERSION}] {len(items)} file(s) you were waiting for now exist:
 {lines}
 {FANOUT_LINE} {lane_line(slug)}
-Consume ALL of them in this one turn, continue your task, wrap up; print `WRAPPED <sha>` as your LAST line.
+Consume ALL of them in this one turn and continue your task. {TURN_END_LINE} Then persist; print `WRAPPED <sha>` as your LAST line.
 {REPORT_LINE}"""
+
+
+INDEX_REGEN_INTERVAL_S = 600  # ruling 3 (2026-11-02): the ONE central writer of the generated index files
+
+
+def maybe_regen_index(flags, now=None, spawn=None):
+    """Start index_regen.py detached at most every INDEX_REGEN_INTERVAL_S (stamp under flags); never blocks the pass."""
+    stamp = os.path.join(flags, "handoff-sessions", "index-regen.started")
+    now = now or time.time()
+    try:
+        if now - os.path.getmtime(stamp) < INDEX_REGEN_INTERVAL_S:
+            return False
+    except OSError:
+        pass
+    os.makedirs(os.path.dirname(stamp), exist_ok=True)
+    with open(stamp, "w") as fh:
+        fh.write(f"{now:.0f}\n")
+    os.utime(stamp, (now, now))
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index_regen.py")
+    cmd = [sys.executable, "-I", script, "--flags", flags, "--min-interval", str(INDEX_REGEN_INTERVAL_S - 30)]
+    if spawn:
+        spawn(cmd)
+        return True
+    try:
+        out = open(os.path.join(flags, "index-regen.log"), "a")
+        subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, start_new_session=True, cwd=flags)
+    except OSError as ex:
+        log(flags, f"INDEX-REGEN spawn failed: {ex!r}")
+    return True
 
 
 def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=None, keeper_log=None):
@@ -1152,6 +1193,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     pilots = bg.load_pilots(reg_path(flags))
     ensure_generalist(reg)
     S = reg.get("sessions") or {}
+    if repo == ROOT and runner is None:  # the live dispatcher only; test fixtures never push
+        maybe_regen_index(flags, now)
     # 1. reap finished turns (and our own zombie children)
     try:
         while os.waitpid(-1, os.WNOHANG)[0]:
