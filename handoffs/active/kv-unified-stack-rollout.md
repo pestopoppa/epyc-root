@@ -1,13 +1,14 @@
 # Unified KV (`--kv-unified`) stack rollout and shared-pool serving
 
-**Status**: ACTIVE. The GPU-residency package (OP-54) is **applied and serving-proven** (2026-09-24 ~18:45–18:55Z,
-orch `0a564a1f`, research `75ee1b8e`): :8083 runs `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub 2048
---cache-ram 65536`, STT/TTS run on CPU cores 0-23 / 24-39. The overflow branch and the gate fix are merged. What is
-left: the depth-4 production confirmation (KVU-1b / M-3b),
-the opencode limit (KVU-1a, operator), and the follow-ups below.
+**Status**: ACTIVE; source review and preparation only under the operator's 2026-11-02 stop. All previous
+compute grants were revoked and no inference may run until the operator changes that instruction. The OP-54
+configuration and serving proof below are **historical 2026-09-24 evidence**, not the current live argv. Later
+KVU-16 records a 393216-token pool and DFlash2; verify the actual process, effective configuration and binaries
+before any live-state claim. KVU-1b/M-3b were superseded by DFlash2 and must not be dispatched.
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r13-20261030/` (active READY/native evidence; retain), `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-attempt2-fix/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-original-nan-audit/` · worktrees: none
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
-**Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
+**Priority**: HIGH. The historical 98,304-token cap motivated the rollout; later pool changes supersede that
+number. Remaining work covers capacity truth, correct and efficient attention, and safe stack integration.
 **Categories**: inference_serving, kv_cache, orchestration, stack_lifecycle
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md) (row RTG-57)
 **Depends on**: RTG-19 (single-source stack pipeline; its SSU-F3 capacity accounting is done, 2026-09-23), RTG-36 (stack-change governance),
@@ -21,13 +22,81 @@ on KVU-1.
 
 ## Start here
 
-Live front as of 2026-10-24 (sections A and B are largely done; their history stays in place under Tasks):
+Use the **2026-11-02 execution contract** below before the historical task texts. A dated READY, armed,
+running, scheduled or live assertion elsewhere is a record of that time, not permission or evidence of
+current state. Re-resolve the task text, current source, peer ownership and latest receipts before dispatch.
+RTG-58 owns prefix-fork work and INF-65 owns the champion candidate; coordinate interfaces and evidence,
+not duplicate implementation. Sections A–E retain acceptance details and historical observations.
 
-1. **C — kernel candidate (v11, guarded)**: KVU-LB1.d always-F32 VKQ, V11-FA-4/-6, fold-c1-p3, CPU-FA-VKQ-2 (see section C).
-2. **D — measurement follow-ups**: HPR-b 64k holdout (`hpr-b-64k-holdout`, armed, resumable); KVU-16g-1 row-5c A/B;
-   KVU-19b-rework-c2-cal; **KVU-12.3b** (busy-subset re-check, trigger: stack back + >= 100 resumed turns at >= 3 busy slots).
-3. **E — speech residency** items as listed.
-4. The 2026-09-24 rationale, evidence and first-session record moved to the completed sibling (see Completed Scope).
+### Execution contract and implementation sequence — 2026-11-02
+
+**Boundary.** The stop applies to inference, including smoke tests and calls to a serving model; prior grants
+do not survive it. Prepare source, review artifacts and decisions without inference. Tests, builds and other
+compute require the applicable calendar authority; no production kernel or speech tree is modified. After
+the stop is lifted, obtain a new appropriate grant, recheck current claims and peer ownership, and bind each
+run to its actual source, binary, mapped libraries, model, argv, controls and observation window. A READY
+packet or a process name is not evidence of a completed or qualified run.
+
+1. **Capacity and stack accounting (KVU-1d, 16a, 16i).** Reconcile the current research master and generated
+   lean registry, stack package and :8083 production shape. The 2026-11-02 load receipt samples 47.812553 GiB
+   own VRAM less 12.75 GiB observed target KV = 35.062553 GiB; two post-health samples are not a proven
+   lifetime or runtime peak. Compare its actual argv, build, model, drafter and window against the recipe;
+   preserve the earlier 38.03 GiB historical value and the separate runtime-peak obligation. Rebuild the stale
+   hygiene package on current heads and validate its evidence and generated outputs. Record the outstanding
+   SSU-F3 claim-tuple work without inventing measurement warrant. Registry application and any operator
+   ratification follow their actual stack-change gates; do not silently overwrite a value from this sample.
+2. **Admission and serving integration (KVU-1a, 15b, 5, 6, 10, 14).** Check current source and serving records
+   before implementing. KVU-1a needs its explicitly designated operator action; 15b needs attributable real
+   cache-credit misses. For 5 define cancellation, request identity, idempotent requeue, priority and starvation
+   tests against the existing admission path. For 6 first reconcile RTG-58 KPF-22's bounded prefix ordering and
+   existing slot selection; verify same-ticket fairness and flag-off coverage and implement only missing clauses.
+   KVU-15b needs at least 200 credited calls across two windows. Roll out per current role inventory
+   through stack governance. KVU-14 opens only if G5 establishes its stated cross-session-eviction trigger.
+3. **Prefill scheduling (KVU-16g, 16h-runner, 16i-v11).** Audit the existing candidate and runner coverage;
+   give no-draft arms independent server lifetimes and verify each runner's actual argv. Repair the P3
+   region-lock identity mismatch and four-CPU qualification; the prior rc1 is inconclusive. Preserve the
+   declared OFF byte-identity and np4 TPOT tests and stack-package gates. Complete runtime capacity evidence
+   on the actual v11 candidate before selecting a runtime value or enabling flags.
+4. **GPU attention (KVU-19a-2, 19b, 22, V11-FA-3/4/5/6/8).** KVU-19a and 19b commit 1 are already folded;
+   the recorded commit-1 P3 result is complete and commit 2 was dropped. Reconcile candidate ancestry and
+   avoid rebuilding dropped work. For 19a-2 seal the source/build, verify mapped HIP libraries and repair the
+   capture qualification before repeating matched-input controls. For FA-4a predeclare the exact synthetic
+   input and nonfinite-outcome comparison; the 228-key diagnostic is not an equivalence verdict. For FA-4b
+   retain the scorer-profile repair and existing four-cell results, add explicit nonfinite/garbage counts and
+   predeclare a statistically adequate successor for the unresolved cells. Audit the current FA-3 code object
+   before repeating any historical arm. Carry #29510 as the specified comparison and #27870 through the
+   champion's candidate gates, coordinating INF-65: C5 already carries #27870 and has OFF 2978/2978 plus
+   df29 0/10 recorded; reconcile candidate identity instead of rerunning the old 640-case instruction.
+   Remeasure 19b's contended gap against a clean baseline before profiling. Draft upstream findings only from supported evidence;
+   posting requires explicit authorization.
+5. **CPU attention (CPU-FA-VKQ-2/3, KVU-LB1.d).** Reconcile the 16k/64k hybrid-versus-legacy packet's actual
+   publication and final-byte qualification: the committed row specification calls itself an unpublished
+   draft despite a later READY assertion; a live READY entry and a four-CPU smoke receipt exist, but do not
+   establish a full run. Verify final packet identity, interruption semantics and runtime estimate: 20 cells
+   with 1800-second caps can exceed the four-hour booking. Pin executable, libraries, model, and the F16/F32
+   override precedence.
+   VKQ-1 is superseded; send VKQ-2 results to the current candidate/carrier decision. For VKQ-3 preserve the
+   interrupted exposed prompt and UNKNOWN, repair and qualify the tokenizer/supervisor successor before any
+   new prospective work. LB1.d's T96 six-arm run is incomplete and its prior admission failed: qualify a
+   successor and source-side belief capture, compare actual role shapes, then choose a carrier only after the
+   separate correctness, performance and stack-change gates.
+6. **CPU context and checkpoint policy (KVU-12, 12.1, 12.3b, 12.4–12.6, HPR-B-SIM-FIX-2).** Keep the
+   original evidence and declared criteria. The November 2 np8 quarter run stopped at the disk floor; it is
+   UNKNOWN, not a comparison. Plan the approved quarter pair and the occupancy/length separation with bounded
+   resources and exposure accounting; declined 128k and pool-full cells remain declined. For 12.6 implement
+   48k/96k in both length and bank-mode producers, capture actual occupancy and resume depth, and predeclare
+   comparable cells and noise. Reconcile 12.4's proposed verdict before a rerun: the sum gap is within its
+   threshold but the per-stream gap is outside; the declared rule requires both outside for SPLIT_BETTER,
+   so the proposed NO_DIFFERENCE is not an equivalence claim. The old 12.5 SPLIT_BETTER was rejected because
+   it used the full host and omitted a wave-range term. For the 64k dense/coarse holdout retain five completed cells and the exposed interrupted sixth;
+   inspect native failure and design an explicitly predeclared continuation that never redraws exposed units.
+   Neither the old READY note nor a successful smoke completes the holdout. 12.3b is trigger-only until the
+   stated busy-traffic sample exists.
+7. **Speech and closure (KVU-11c, program gates).** Develop any qwentts thread flag in an experimental tree;
+   validate and promote only as a new speech-kernel version before removing the shim through the stack-change
+   path. Retain the operator's speech-placement decision and INF-79 ownership. Close each box only on its own
+   acceptance evidence or a documented supersession; preserve partials, failures and unknowns. Reconcile the
+   handoff, downstream references and generated index before archiving.
 
 
 ## Completed Scope
@@ -87,6 +156,9 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     PID 3737649 minus 6.38 GiB KV, `vram_non_kv_drafter: dflash2`); the load-time peak was sampled at bring-up
     (43.49 GiB card-total, `qwen38-27b-replace-qwen36.md` Q38-T8). The 32.80 UNVALIDATED line is gone. Still open
     here: recording the reading through SSU-F3's claim tuple.
+  - **2026-11-02 dispatch correction:** the old 32.80 replacement instruction is historical. The current
+    16a accounting and its shape/claim reconciliation govern; do not substitute a historical value or
+    manufacture a measurement tuple for the current recipe.
 - [x] **KVU-1e — M-4: np4 aggregate under concurrent load, live.** ✅ 2026-09-24 — live :8083 (np4, kvu, depth
   4), fixed-length 1024-token generations (`ignore_eos`), 2 waves per level: aggregate 40.2 / 39.9 tok/s at
   concurrency 1, 71.4 / 67.8 at 2, 95.3 / 93.1 at 4; per-request median 40.5 / 40.2, 36.4 / 34.9, 27.6 / 26.1.
@@ -209,6 +281,9 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     12.75 GiB KV pool ≈ 38.03 GiB (`evidence/vram_during_reload.log`). Land the measured value in the research master
     with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
     and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
+    - **2026-11-02 dispatch correction:** the fixed 38.03 target above refers to the older ubatch-2048
+      measurement. Reconcile current ubatch-512 evidence and package first as specified in the execution
+      contract; matching numbers alone do not establish matching shapes or a runtime peak.
     - *(2026-11-02, shape-matched load row.)* `handoff-kvu-16a-load-20261102` rc=0: production-store GPU, np4, pool 393216, ubatch 512, Q8 KV; two post-health own-PID HIP/KFD samples and verified cleanup. Maximum sampled own VRAM was 47.812553 GiB; observed target KV was 12.75 GiB, leaving 35.062553 GiB. [Native result and samples](../../progress/evidence/kvu16a-load-result-20261102/result.json). Registry reconciliation, production-shape review and stack-change validation remain; this row does not complete the box. [no-belief: native load result; registry application pending]
     - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
       STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
@@ -1273,6 +1348,10 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-22, workspace-f8; redo ran 19:10Z-05:19Z, ended rc 125 = the s4 cap; `/mnt/raid0/llm/tmp/kvu12-redo-20261021/`.)* **s4 (unified np8 pool 1,048,576, L128k, depth live): rc 125, hit its 12,000 s cap (12,004 s), no result.** Bank block: `k6_bank_build_unified` done (4,944 s) and `k6_bank_mtpoff_np8_L64k` done (679 s); `k6_bank_np8_pool524288_and_poolfull` SKIPPED for time (needed 10,844 s, 4,227 s left). **np8 L64k unified-vs-split pair: CONFOUNDED, no verdict.** The unified cell (5,526 s) ran with `gpu_busy_frac` 0.4654 and a foreign KFD process (early GPU release, foreign GPU jobs); the split cell (5,090 s) ran at 0.0. Unequal GPU state across the pair, so the gap cannot be attributed to unified vs split. Box stays open.
   - [ ] **KVU-12.5 re-run — np8 L64k pair on a GPU-idle host (parts (b) s4 and (c) pool-full DECLINED 2026-10-22, see note).** (a) np8 L64k unified and split back to back under gpu-quiet, `gpu_busy_frac` 0.0 and zero foreign KFD pids on both (sampler as in the redo); (b) s4 with a cap of at least 14,000 s (the redo ran 12,004 s without finishing, so the 1.795 factor underestimated it) or drop s4 if the np8 pair is enough for the decision; (c) pool524288/poolfull bank cell (~10,844 s). Needed only if the np8 claim is still wanted; KVU-12.6 (the L32k -> L64k collapse) is the more useful np8 question.
     - [ ] **KVU-12.5 np8 A/B pair** (operator decision 2026-10-25 via decision tool): file a clean np8 L64k unified vs split pair on one CPU quarter, GPU idle on both arms; parts (b) and (c) stay declined. Originally marked complete 2026-10-27, reopened 2026-11-01 because the retained run used the full host, not a quarter; see the owner review below. Quarter successor estimate ~39,600 s; prior ~1–2 h estimate was unsupported.
+    - **2026-11-02 dispatch correction:** the 10-27 q3/24-thread description and proposed SPLIT_BETTER below
+      are superseded: the retained run used CPUs 0–95 / 96 threads and omitted a within-launch wave-range
+      term. The [owner review](../../artifacts/compute/kvu12-5-ratification-20261101/README.md) rejected that
+      verdict. The subsequent quarter run stopped incomplete; review exposed units before a successor.
       - *(2026-10-27, workspace-58 results harvest)* Verdict SPLIT_BETTER (PROPOSED until KVU-12 owner ratifies). Medians unified vs split: decode sum 10.49 vs 20.63 tok/s (-49.2%, threshold 25.0%), per stream 1.41 vs 2.54 (-44.5%, threshold 23.9%), TTFT +2.2% (threshold 3%); GPU idle both arms (busy 0.0, 0 foreign KFD); q3, -t 24, not comparable to the 10-21 redo. Artifact `/mnt/raid0/llm/tmp/cal-1025/kvu12-5-np8/VERDICT.json`.
     - *(2026-11-02, quarter successor result.)* `handoff-kvu12-5-quarter-20261101` ended rc=75 (`disk-floor`). The target start anchor completed, while the unified arm was partial and neither the split arm nor middle/end anchors produced terminal events. The qualification control is excluded. Verdict **UNKNOWN** under the predeclared completeness rule; no unified/split comparison or deployment claim. [Preserved native partial and end record](../../progress/evidence/kvu12-5-quarter-result-20261102/). The np8 A/B task remains open. [no-belief: incomplete target measurement]
     - [x] **KVU-12.5 quarter successor row published** ✅ 2026-11-01 — `handoff-kvu12-5-quarter-20261101` published to keeper for qualification, q3/24 threads with GPU quiet, three same-window anchors, 45,000 s estimated minimum. Source/region-lock seals and 16 offline tests pass; independent static review passed. No target-model control or measurement has run. [Spec and source](../../artifacts/compute/kvu12-5-quarter-prep-20261101/SPEC-DRAFT.json). [no-belief: publication and offline validation only]
