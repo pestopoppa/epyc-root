@@ -55,8 +55,10 @@ cmake --build "$scratch/build" --target llama-server --parallel "${AKX_BUILD_JOB
 (
   cd "$scratch"
   find build/bin -type f \( -name 'llama-server' -o -name '*.so' -o -name '*.so.*' \) -print0 | sort -z | xargs -0 -r sha256sum
+  find build -type f -name '*.gcno' -print0 | sort -z | xargs -0 -r sha256sum
   sha256sum source-commit.txt compiler-sha256.txt cc-version.txt cxx-version.txt cmake-version.txt build/CMakeCache.txt build/compile_commands.json configure.log build.log
 ) > "$scratch/BUILD-RECEIPT.sha256.tmp"
 [[ -s "$scratch/BUILD-RECEIPT.sha256.tmp" ]] || refuse 'empty receipt'
+python3 "$(dirname -- "$0")/verify_build_receipt.py" "$scratch" "$scratch/BUILD-RECEIPT.sha256.tmp" "$commit"
 mv "$scratch/BUILD-RECEIPT.sha256.tmp" "$scratch/BUILD-RECEIPT.sha256"
 printf 'CPU coverage build complete: %s\n' "$scratch/BUILD-RECEIPT.sha256"
