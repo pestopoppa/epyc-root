@@ -1044,6 +1044,35 @@ def dead_push_lock(flags, st, now):
             st.setdefault("push_lock_report", {})[p] = now
 
 
+TYPED_SHADOW_PORT = 8102          # worker_fast; the shadow runs only while this server answers (zero cost otherwise)
+
+
+def typed_shadow(flags, slug, e, state, st, now, repo=None):
+    """JEV-3 (shadow only, approved intake ws58-jev-20261102): a typed label beside work_state's heuristic, logged as
+    TYPED-SHADOW; never drives behaviour. Skipped (no model call, no subprocess) unless worker_fast is listening."""
+    probe = st.setdefault("typed_probe", {"at": 0, "up": False})
+    if now - probe["at"] > 300:
+        import socket
+        try:
+            with socket.create_connection(("127.0.0.1", TYPED_SHADOW_PORT), timeout=0.3):
+                probe.update(at=now, up=True)
+        except OSError:
+            probe.update(at=now, up=False)
+    if not probe["up"]:
+        return
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn"))
+        import typed_shadow as ts
+        b = open(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")).read() if os.path.exists(os.path.join(flags, f"BACKLOG-handoff-{slug}.md")) else ""
+        sh = ts.classify_work_state(b, open_tasks(e.get("handoff", ""), repo))
+        label = sh["label"].value if sh.get("label") is not None else None
+        reason = sh["stop_reason"].value if sh.get("stop_reason") is not None else None
+        log(flags, f"TYPED-SHADOW {slug}: heuristic={state} typed={label} reason={reason} source={sh['source']}"
+                   + ("" if label is None or label == state else " DISAGREE"))
+    except Exception as ex:  # shadow never breaks the dispatcher
+        log(flags, f"TYPED-SHADOW {slug}: unavailable ({ex!r})")
+
+
 def is_generalist(e) -> bool:
     return bool(e.get("generalist")) or not e.get("handoff")
 
@@ -1277,6 +1306,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             continue
         ws, why = work_state(flags, slug, e, repo)
         e["_work"] = (ws, why)
+        if not is_generalist(e):
+            typed_shadow(flags, slug, e, ws, st, now, repo)
         if ws == "done":
             e["status"], e["done_at"] = "done", now_iso()
             kill_window(slug)
