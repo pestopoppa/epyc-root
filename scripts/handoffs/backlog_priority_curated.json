@@ -41,7 +41,6 @@
   "INF-61": 0.35,
   "EVL-02": 0.35,
   "EVL-10": 0.35,
-  "EVL-44": 0.35,
   "EVL-50": 0.35,
   "RTG-02": 0.35,
   "RTG-11": 0.35,
@@ -69,7 +68,6 @@
   "INF-33": 0.25,
   "INF-56": 0.25,
   "EVL-16": 0.25,
-  "EVL-25": 0.25,
   "EVL-36": 0.25,
   "REV-07": 0.25,
   "RTG-14": 0.25,
@@ -77,7 +75,6 @@
   "INF-09": 0.2,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
-  "EVL-24": 0.2,
   "RTG-03": 0.2,
   "RTG-07": 0.2,
   "RTG-23": 0.2,
@@ -144,7 +141,11 @@
   "PIP-04#document-parser-table-bench": 0.2,
   "PIP-04#opendataloader-pipeline-integration": 0.25,
   "PIP-04#searxng-search-backend": 0.2,
-  "PIP-04#sliders-local-validation": 0.2
+  "PIP-04#sliders-local-validation": 0.2,
+  "EVL-29#agent-file-prose-compression": 0.2,
+  "EVL-29#frontier-f2-self-running-lab": 0.2,
+  "EVL-29#frontier-f3-data-flywheel": 0.25,
+  "EVL-29#stale-open-audit-2026-07-18": 0.35
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -157,7 +158,6 @@
   "RTG-17": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
   "INF-37": "operator decision or approval pending",
-  "EVL-01": "operator decision or approval pending",
   "EVL-15": "operator decision or approval pending",
   "EVL-21": "operator decision or approval pending",
   "RTG-24": "operator decision or approval pending",
@@ -182,7 +182,8 @@
   "RTG-36#wp12-fleet-layer-design": "",
   "EVL-08#mathsmith-hc-formalizer-eval": "operator decision or approval pending",
   "PIP-04#searxng-search-backend": "external: upstream PR / artifact / disk reclaim",
-  "PIP-04#sliders-local-validation": "operator decision or approval pending"
+  "PIP-04#sliders-local-validation": "operator decision or approval pending",
+  "EVL-29#agent-file-prose-compression": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",

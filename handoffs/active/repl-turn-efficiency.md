@@ -211,7 +211,7 @@ The static premise is verified, with a different mechanism than SkyRL: the front
 
 ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed)
 
-_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md)._
 
 - [x] **Standing caution on RLM-shaped fan-out.** intake-803 was filed keeping the promotional half of its source and dropping every negative — including the load-bearing one: in Needle-in-Haystack the plain LLM's tokens are almost entirely **prefill** while the RLM's are largely **decode**, because the RLM writes code to solve *and* writes code again to emit its answer. RLM structurally converts **compute-bound prefill into bandwidth-bound decode** — directionally adverse on this box. Also dropped: *"In all cases, the RLM increases the time required to finish the job significantly"* — a **universal wall-clock regression** across all four environments. ✅ 2026-11-02 [belief: cc]
 - [ ] Adopt **Main Model Token Efficiency** (mean reward / mean main-model trajectory tokens, normalized to the no-scaffold arm) as a reported metric for scaffold A/Bs, paired with total-token and wall-clock columns — so a scaffold cannot score a win by relocating cost onto sub-calls rather than reducing it.

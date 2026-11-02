@@ -85,7 +85,7 @@ Sources: [model-exec-containment](../handoffs/active/stack-lifecycle-program.md#
 - [docs/design/guard-denial-ledger-proposal.md](../docs/design/guard-denial-ledger-proposal.md) — ledger schema, hooks, rollout
 - [docs/design/dev-harness-its-pilot-spec.md](../docs/design/dev-harness-its-pilot-spec.md) — registry, segments, controls, threats
 - [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md) — M1/M2 sample results
-- [handoffs/active/frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md) — F3-LB1 privacy gate and PII scan
+- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — F3-LB1 privacy gate and PII scan
 - [docs/guides/agent-workflows/cleanup-reference-check.md](../docs/guides/agent-workflows/cleanup-reference-check.md) — reaper precondition rule
 - [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — token revoke declined
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — containment lapses
@@ -141,7 +141,7 @@ HG-9's detection/repair split is an accepted source-backed topology option with 
 - [handoffs/active/qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md)
 - [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md)
 - [progress/2026-10/2026-10-22-ct18-final.md](../progress/2026-10/2026-10-22-ct18-final.md)
-- [handoffs/active/frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md)
+- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 
 ## Compiled Update — 2026-09-17 (evening): the v10 re-pin is ratified, so the leak cleanup has no debt left
 

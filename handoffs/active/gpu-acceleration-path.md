@@ -570,7 +570,7 @@ Batch intake of the AMD ROCm software stack, assessed against the active MI210 (
 
 ## 2026-07-25 — intake Stage-2a dive: intake-578 stale-catalog correction
 
-_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md)._
 
 - [x] **intake-578 stale-catalog correction recorded ✅ 2026-07-29**: epyc-root `c942728e` recorded the reversed Nemotron premise; audit evidence is in [`progress/2026-07/2026-07-25.md`](../../progress/2026-07/2026-07-25.md) lines 80–82. The content-control blocker (task 517) remains open.
 

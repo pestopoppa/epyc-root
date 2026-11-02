@@ -4,7 +4,7 @@
       "blocked": 56,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 1009
+      "open": 1008
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -14,7 +14,7 @@
     },
     "research-evaluation-index.md": {
       "blocked": 18,
-      "handoffs": 22,
+      "handoffs": 18,
       "oldest_advance": "2026-07-29",
       "open": 769
     },
@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 6,
       "oldest_advance": "2026-10-03",
-      "open": 90
+      "open": 91
     }
   },
   "duplicates": {},
@@ -55,22 +55,6 @@
       "row_id": "INF-02",
       "state": "active",
       "total": 11
-    },
-    "agent-file-prose-compression.md": {
-      "blocked": 0,
-      "closed": 0,
-      "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 5,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-01",
-      "state": "active",
-      "total": 5
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
@@ -93,7 +77,7 @@
       "closed": 61,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 29,
+      "open": 30,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -102,7 +86,7 @@
       },
       "row_id": "UFH-14",
       "state": "active",
-      "total": 90
+      "total": 91
     },
     "attention-matching-kv-compaction.md": {
       "blocked": 0,
@@ -330,7 +314,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 20,
+      "closed": 21,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -342,7 +326,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 32
+      "total": 33
     },
     "batched-decode-measurement.md": {
       "blocked": 1,
@@ -730,10 +714,10 @@
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
-      "closed": 41,
+      "closed": 42,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 20,
+      "open": 19,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1110,38 +1094,6 @@
       "state": "active",
       "total": 9
     },
-    "frontier-f2-self-running-lab.md": {
-      "blocked": 0,
-      "closed": 12,
-      "guarded": 0,
-      "last_advanced": "2026-10-07",
-      "open": 2,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-24",
-      "state": "active",
-      "total": 14
-    },
-    "frontier-f3-data-flywheel.md": {
-      "blocked": 0,
-      "closed": 12,
-      "guarded": 0,
-      "last_advanced": "2026-10-22",
-      "open": 4,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-25",
-      "state": "active",
-      "total": 16
-    },
     "frontier-f6-upstream-publication.md": {
       "blocked": 0,
       "closed": 1,
@@ -1157,6 +1109,74 @@
       "row_id": "EVL-27",
       "state": "active",
       "total": 7
+    },
+    "frontier-lab-automation.md": {
+      "blocked": 0,
+      "closed": 75,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 29,
+      "owner_index": "research-evaluation-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "EVL-29",
+      "state": "active",
+      "total": 104,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 38,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 12
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 378,
+          "markers": 1,
+          "name": "agent-file-prose-compression",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 12,
+          "gates": [],
+          "guarded": 0,
+          "line": 484,
+          "markers": 1,
+          "name": "frontier-f2-self-running-lab",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 12,
+          "gates": [],
+          "guarded": 0,
+          "line": 567,
+          "markers": 1,
+          "name": "frontier-f3-data-flywheel",
+          "open": 4
+        },
+        {
+          "blocked": 0,
+          "closed": 13,
+          "gates": [],
+          "guarded": 0,
+          "line": 760,
+          "markers": 1,
+          "name": "stale-open-audit-2026-07-18",
+          "open": 6
+        }
+      ]
     },
     "gemma-challenge-kernel-techniques-v7.md": {
       "blocked": 0,
@@ -1301,22 +1321,6 @@
       "row_id": "INF-23",
       "state": "active",
       "total": 31
-    },
-    "intake-derived-work-2026-07-25.md": {
-      "blocked": 0,
-      "closed": 38,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 12,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-29",
-      "state": "active",
-      "total": 50
     },
     "internal-interaction-lifecycle.md": {
       "blocked": 0,
@@ -2301,7 +2305,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 980,
+          "line": 981,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 10
@@ -2405,22 +2409,6 @@
           "open": 1
         }
       ]
-    },
-    "stale-open-audit-2026-07-18.md": {
-      "blocked": 0,
-      "closed": 13,
-      "guarded": 0,
-      "last_advanced": "2026-08-12",
-      "open": 6,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-44",
-      "state": "active",
-      "total": 19
     },
     "streaming-llm-baseline.md": {
       "blocked": 0,
@@ -2617,21 +2605,12 @@
   },
   "row_id_collisions": {},
   "rows": {
-    "EVL-01": {
-      "deps": [],
-      "handoff": "agent-file-prose-compression.md",
-      "id": "EVL-01",
-      "index": "research-evaluation-index.md",
-      "line": 13,
-      "next_action": "AFC-P5.E3 \u2014 run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
-      "track": "agent file prose compression"
-    },
     "EVL-02": {
       "deps": [],
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
       "index": "research-evaluation-index.md",
-      "line": 14,
+      "line": 13,
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
       "track": "model evaluation queue"
     },
@@ -2640,7 +2619,7 @@
       "handoff": "autopilot-decision-plane-audit-2026-07-22.md",
       "id": "EVL-03",
       "index": "research-evaluation-index.md",
-      "line": 15,
+      "line": 14,
       "next_action": "EV-CONF-2 \u2014 build an answer-span/salient-token confidence source, then re-baseline math AUROC before any math-domain use",
       "track": "autopilot decision plane audit 2026 07 22"
     },
@@ -2651,7 +2630,7 @@
       "handoff": "autopilot-sequential-allocation.md",
       "id": "EVL-04",
       "index": "research-evaluation-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes",
       "track": "autopilot sequential allocation"
     },
@@ -2660,7 +2639,7 @@
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
       "index": "research-evaluation-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
       "track": "canonical judge suite revamp"
     },
@@ -2669,7 +2648,7 @@
       "handoff": "episodic-memory-integrity.md",
       "id": "EVL-10",
       "index": "research-evaluation-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2678,7 +2657,7 @@
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "index": "research-evaluation-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "track": "eval tower verification"
     },
@@ -2687,7 +2666,7 @@
       "handoff": "evidence-plane-instrument-repair.md",
       "id": "EVL-15",
       "index": "research-evaluation-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "W5 \u2014 Promote core_v2 once the operator rules on the E4/core autopilot_quality era row; then collect alarm-free W6 audit evidence",
       "track": "evidence plane instrument repair"
     },
@@ -2696,7 +2675,7 @@
       "handoff": "evidence-plane-ledger-and-sequential-verdicts.md",
       "id": "EVL-16",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "W8b \u2014 Continue live W8 candidate attempts; confirm a keepable replayable candidate, then collect sequential and promotion-eval evidence",
       "track": "evidence plane ledger and sequential verdict"
     },
@@ -2705,7 +2684,7 @@
       "handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
       "id": "EVL-20",
       "index": "research-evaluation-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "F1 \u2014 per-split GPU/CPU timing under static -cmoe on one MoE model; report",
       "track": "fable5 window2 findings 02 heterogeneous gpu"
     },
@@ -2714,43 +2693,25 @@
       "handoff": "fable5-window2-findings-03-portfolio-and-master-queue.md",
       "id": "EVL-21",
       "index": "research-evaluation-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
       "track": "fable5 window2 findings 03 portfolio and mas"
-    },
-    "EVL-24": {
-      "deps": [],
-      "handoff": "frontier-f2-self-running-lab.md",
-      "id": "EVL-24",
-      "index": "research-evaluation-index.md",
-      "line": 24,
-      "next_action": "W3 \u2014 Collect real shadow/reviewed lab verdicts and use scripts/lab/promote_job.py as the only job-promotion path",
-      "track": "frontier f2 self running lab"
-    },
-    "EVL-25": {
-      "deps": [],
-      "handoff": "frontier-f3-data-flywheel.md",
-      "id": "EVL-25",
-      "index": "research-evaluation-index.md",
-      "line": 25,
-      "next_action": "W3 \u2014 run a GRPO pass that demonstrates learning: a movable reward, completion cap above natural length, pre-registered pass rule",
-      "track": "frontier f3 data flywheel"
     },
     "EVL-27": {
       "deps": [],
       "handoff": "frontier-f6-upstream-publication.md",
       "id": "EVL-27",
       "index": "research-evaluation-index.md",
-      "line": 26,
+      "line": 23,
       "next_action": "W1 \u2014 Build the D2 CPU sparse prompt-processing path per llama-cpp-dsa-contribution.md (D1 superseded by #23346); profile, then PR",
       "track": "frontier f6 upstream publication"
     },
     "EVL-29": {
       "deps": [],
-      "handoff": "intake-derived-work-2026-07-25.md",
+      "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
-      "line": 27,
+      "line": 24,
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
@@ -2759,7 +2720,7 @@
       "handoff": "repl-session-memory-maturity.md",
       "id": "EVL-36",
       "index": "research-evaluation-index.md",
-      "line": 28,
+      "line": 25,
       "next_action": "D-f1 live lease validation at its inference-owner boundary",
       "track": "repl session memory maturity"
     },
@@ -2768,25 +2729,16 @@
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "index": "research-evaluation-index.md",
-      "line": 29,
+      "line": 26,
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
-    },
-    "EVL-44": {
-      "deps": [],
-      "handoff": "stale-open-audit-2026-07-18.md",
-      "id": "EVL-44",
-      "index": "research-evaluation-index.md",
-      "line": 30,
-      "next_action": "Recast x-mas-text-routing to telemetry-watch; internal-kb-rag stays active (KB-WM-6, KB-GS-1..4 open since 09-17)",
-      "track": "stale open audit 2026 07 18"
     },
     "EVL-47": {
       "deps": [],
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 31,
+      "line": 27,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2795,7 +2747,7 @@
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "index": "research-evaluation-index.md",
-      "line": 32,
+      "line": 28,
       "next_action": "L2 \u2014 quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD)",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
@@ -2808,7 +2760,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 33,
+      "line": 29,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2819,7 +2771,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 34,
+      "line": 30,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },

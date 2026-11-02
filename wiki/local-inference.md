@@ -634,7 +634,7 @@ Applied to ThinkingCap, this showed a **stock MTP head on a LoRA-modified trunk*
 vs modified-trunk mismatch, with the differing set matching the adapter's 256 target modules exactly.
 
 _Sources: `handoffs/active/speculative-decoding-mtp-refresh.md` § 2026-07-25;
-`handoffs/active/intake-derived-work-2026-07-25.md` ID-15/ID-16._
+`handoffs/active/frontier-lab-automation.md` ID-15/ID-16._
 
 ## Compiled Update — 2026-10-20: DeepSeek-V4.1-Flash moves to the 1017 finetune, and the disk reclaim reshapes what is servable
 

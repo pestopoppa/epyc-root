@@ -1,5 +1,9 @@
 {
  "files": {
+  "agent-file-prose-compression.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "agent-file-prose-compression"
+  },
   "agent-world-env-synthesis.md": {
    "target": "benchmark-suites.md",
    "track": "agent-world-env-synthesis"
@@ -80,6 +84,14 @@
    "target": "eval-tower-program.md",
    "track": "fable5-window2-findings-01-optimizer-integrity"
   },
+  "frontier-f2-self-running-lab.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "frontier-f2-self-running-lab"
+  },
+  "frontier-f3-data-flywheel.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "frontier-f3-data-flywheel"
+  },
   "frontier-f4-continuity-backup.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "frontier-f4-continuity-backup"
@@ -91,6 +103,10 @@
   "inference-batch-loop.md": {
    "target": "eval-tower-program.md",
    "track": "inference-batch-loop"
+  },
+  "intake-derived-work-2026-07-25.md": {
+   "target": "frontier-lab-automation.md",
+   "track": null
   },
   "integration-test-coverage.md": {
    "target": "engineering-hygiene-backlog.md",
@@ -221,6 +237,10 @@
    "target": "stack-lifecycle-program.md",
    "track": null
   },
+  "stale-open-audit-2026-07-18.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "stale-open-audit-2026-07-18"
+  },
   "standardized-stack-update-pipeline-finalization.md": {
    "target": "stack-lifecycle-program.md",
    "track": "standardized-stack-update-pipeline-finalization"
@@ -260,6 +280,10 @@
   }
  },
  "ids": {
+  "EVL-01": {
+   "target": "EVL-29",
+   "track": "agent-file-prose-compression"
+  },
   "EVL-07": {
    "target": "EVL-14",
    "track": "bulk-inference-campaign"
@@ -279,6 +303,14 @@
   "EVL-19": {
    "target": "EVL-14",
    "track": "fable5-window2-findings-01-optimizer-integrity"
+  },
+  "EVL-24": {
+   "target": "EVL-29",
+   "track": "frontier-f2-self-running-lab"
+  },
+  "EVL-25": {
+   "target": "EVL-29",
+   "track": "frontier-f3-data-flywheel"
   },
   "EVL-26": {
    "target": "RTG-22",
@@ -323,6 +355,10 @@
   "EVL-43": {
    "target": "PIP-04",
    "track": "sliders-local-validation"
+  },
+  "EVL-44": {
+   "target": "EVL-29",
+   "track": "stale-open-audit-2026-07-18"
   },
   "EVL-45": {
    "target": "EVL-02",
