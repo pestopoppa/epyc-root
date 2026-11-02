@@ -52,6 +52,17 @@ Recommended environment variables:
 - Record task start, key decisions, and task end.
 - For system changes, log rollback commands before execution.
 
+## Decision-focused reporting
+
+- Lead with the question asked, the decision supported and its practical consequence. When an
+  operational question is answered with sufficient evidence, say so and advance the work; do not
+  repeatedly foreground limitations that cannot change that decision. Keep the supporting evidence,
+  scope and measurement details in the durable record.
+- Include a limitation in the response when it could materially change the decision, interpretation,
+  or next action. State uncertainty honestly and distinguish an operational conclusion from a formal
+  gate verdict; never suppress a material limitation or claim a gate passed without its requirements.
+  Do not require exact identity or complete coverage when the actual decision does not require it.
+
 ## Reporting Units
 
 - **A count of scheduler records is not a count of work.** Any queue-depth, backlog-size or
