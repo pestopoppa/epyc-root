@@ -118,7 +118,8 @@ judicious review. The edit preserves existing task text and history. [no-belief:
 EVL-46 remains active. Pushed candidate tips: ROOT `codex/evl46-readiness-20261102`
 (this checkpoint), APP `codex/evl46-seed-ledger-20261102` @ `d8441118`, APP draft
 `codex/evl46-live-worker-20261102` @ `ec063054`, and research
-`codex/evl46-scorer-isolation-20261102` @ `4068180c9`. They are not deployed to main.
+`codex/evl46-scorer-isolation-20261102` @ `4068180c9`. The orchestrator and research
+candidates were subsequently promoted to main; the live worker remains unqualified.
 Three scheduler rows passed dry-run and are grantable: `evl46-opencode-schema-20261102`,
 `evl46-crm-fullentry-fixture-20261102`, and `evl46-crm-reader-64-tests-20261102`.
 `evl46-crm-live-source-tests-20261102` is published but needs dry-run. None is model
