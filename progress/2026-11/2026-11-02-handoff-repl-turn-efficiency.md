@@ -155,3 +155,7 @@ Added workload-specific guidance to agent-loop-design: intake-803 reports a shif
 ## 11:24Z — File refused owner-check run
 
 Filed handoff-rte-log1-ownercheck-20261101 inconclusive: rc=4, own-port-8070-already-listening before launch; available result records are dryrun=true only. The live acceptance item remains open. The separate override row has a different scratch root.
+
+## 11:25Z — Compare RLM and EPYC REPL budgets
+
+Compared recursion, output cap, timeout, root tool exposure, termination, and turn-token budget against orchestrator source commit 9e138e3a3e22ecf8c57cd5bf50beed571d107b54; documented differences and separate timeout configuration surfaces in docs/design/repl-prefix-experiment/rlm-budget-comparison.md. Source comparison only; no live settings or performance claims.
