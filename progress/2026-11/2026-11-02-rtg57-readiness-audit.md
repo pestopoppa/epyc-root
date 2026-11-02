@@ -24,6 +24,9 @@ validation requires the applicable compute authorization.
   103 offline tests pass. Runtime custody and decision tolerance still need work.
 - Research `e12529f1d`: original-build and runtime identity capture around occupancy samples;
   111 offline and real-fake-process controls passed. Real target measurement remains open.
+- Research `ebe52f756` and root `2a3a5262e`: original-run occupancy-gap capture and existing-family
+  projection, with a synthetic private-ledger planning canary. Independent integrated root check:
+  17 tests passed, including the research-backed cases; no real-loop canary is claimed.
 - Orchestrator through `f3d98dfd`: isolated owner, selection and drain-state foundation for
   KVU-5; 14 tests passed. No live preemption or retry is enabled.
 - Research `bda6ad1cf`: sealed FA-4b response-integrity replay accounted for 2,400 responses;

@@ -89,6 +89,11 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
   KVU measurement family and shared grade. Do not substitute nominal tokens for physical occupancy or
   invent historical warrant. Prove a planning-context canary before calling the source wired.
   [no-belief: prospective source-wiring task]
+  - 2026-11-02 source checkpoint: research `ebe52f756` writes an original-run matched occupancy-gap
+    carrier, and root `2a3a5262e` projects it through the existing KVU adapter and shared grade. The
+    synthetic private-ledger planner canary passes and forged inputs refuse; actual target measurement
+    and a real-loop canary remain open. Raw occupied cells have no invented better direction.
+    [no-belief: prospective source and synthetic controls]
 
 - [ ] **VB-S0-LOCK-REPRO-WIRE — prospectively capture S0 lock-guard reproduction observations.** At native creation bind the exact guard and authenticated CLI/interpreter, owner identity, private lock FD identities, syscall trace window, per-check outcomes and bracketing probes, and incomplete/refusal dispositions. Project using the existing diagnostic observation carrier and `claim_tuple.grade()`; no new grading ladder or retrospective measurement warrant. Prove the planning-context canary before calling the source wired. The 2026-11-02 pre-hook control is a committed conclusion only. [no-belief: prospective source-wiring task]
 
