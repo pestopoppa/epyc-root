@@ -303,6 +303,7 @@ paths). Findings ordered by leverage:
   `k_x_step`/`IQK_MAX_NY` tiling inherited from ik's Zen4 tuning, unexamined). None of these
   gate v8 promotion; they are the next iqk perf tranche.
   - **Locator correction 2026-10-20 (factual, box text not rewritten):** the NEW-6(b) gate site is `iqk_mul_mat.cpp:297-306 @ffc1bac82` (IQ2_XXS/IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S return `type` unchanged in `is_dequant_better`). The `:246-254` locator in (b) is stale: that range is the dispatch loop.
+  - **NEW-6(b) evidence correction 2026-11-02:** the blanket “un-root-caused” wording above is stale for IQ4_XS: the INF-70 node trace identified gross errors in its IQ4_XS → Q8_K_R16 repack at `nrc_y >= 32 && npt >= 16`, and `99425578d` excluded IQ4_XS; the later C9 stale-binary investigation confirmed that exclusion was absent from the binary under test. See `progress/2026-09/2026-09-03-inf70-audit.md` sections “P0 ROOT-CAUSED” and “C9 ROOT CAUSE”. Production `ffc1bac82` also excludes the five IQ2/IQ3 types, but that IQ4_XS finding alone does not establish a per-type cause or justify enabling their paths. Trace each converter, repacked layout and consumer against the reference and existing tests before designing qualification; NEW-6 remains open. [belief: cc]
 - [x] **NEW-7 (evidence hygiene, do before container restart):** ✅ 2026-07-25 — durable
   exact-tip CPU/HIP/sanitizer CTest evidence is under
   `epyc-inference-research/data/kernel-v8-candidate/{exact-tip-build,final-focused,sanitize-final}/`;
