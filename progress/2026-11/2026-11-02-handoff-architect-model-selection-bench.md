@@ -7,3 +7,7 @@ Reconciled the dispatcher inventory with the previous investigations: historical
 ## 00:24Z — Reconstruct patched EffiBench-X instrument on pinned upstream
 
 Reconstructed upstream EffiBench-X at 21b6668a49a342c843e679cc5ed16081064a5768 and cleanly applied all four previously acceptance-tested patches in scratch. Diff SHA-256 b87733644b59545737a3a50ce0a5350265a0b80680fd21cb8a09ee6fce6c6534; git diff --check and compilation of the six changed files passed. Durable integration, DATED filtering and two exclusions remain. The current-model GPU, EffiBench-X and calculator subagent artifacts remain registered as completion events; no inference row was published.
+
+## 00:25Z — Publish reconstructed EffiBench-X preparation after origin advanced
+
+Merged the concurrent origin/main update after serialized push rejected the earlier attempt; retrying publication of the EffiBench-X preparation commit.
