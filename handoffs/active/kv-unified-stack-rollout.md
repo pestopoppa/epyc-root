@@ -261,6 +261,12 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     - 2026-10-03 (workspace-ec): the field half is done. Since orch 0f0bfa19, every serving record carries
       `kv_admission.cache_credited_tokens` and `cache_credit_source`, on the primitives and passthrough lanes. The
       count still waits for KVU-15c's live proof and then ≥ 200 credited calls.
+    - *(2026-11-02 record check.)* Current inspected `serving_calls.jsonl` has 195 records total,
+      14 for :8083: seven zero credit, six unknown credit, and one positive credit with cache count.
+      The latter is the already documented live-proof call (18,829 credited vs 22,178 cached), not
+      a representative window. A separate October 30 scratch log has 48 :8083 calls with credit fields
+      missing. This inspection does not establish completeness of all historical logs, and does not
+      meet the required 200 credited calls/two windows. Do not derive a miss rate from it. [belief: cc]
     - *(2026-10-21 triage)* open (no evidence found); agentic-serving-harness-fixes.md:522 says window records are not a baseline.
 - [x] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** ✅ 2026-10-03 (workspace-ec) — LIVE. SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17 (`artifacts/operator/stack-change-kvpool-20261003/`; live evidence in `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/{apply,evidence}/`). Bring-up after workspace-89's "F12 done": `reload architect_critic` → PID 4052768 at 13:14:35Z, argv `-c 393216 … --spec-draft-n-max 7` (`evidence/argv_8083_live_post_relaunch.txt`); server log "slot context (393216) exceeds the training context (262144) - capping", `n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'`, no clamp-to-7 warning. Load-peak VRAM 50.78 GiB (`evidence/vram_during_reload.log`). API reload → PID 4054223; `context_limits` per_request 262144, kv_unified True, shared_pool True, pool_tokens 393216. Alias completion via :8000 `coder_escalation` correct with draft acceptance logged (`apply/completion.json`). `stack_change_pipeline check --run-promotion-gate` all ok incl. runtime_attestation (`apply/check-final.out`). The 4 × 90k concurrency probe is NOT a pass — see KVU-16b/16c; full-pool concurrent residency is UNPROVEN, not disproven. :8083 has been stopped for the INF-80 X0 window since 13:55Z (KVU-16e restores it).
   - Original scope:
