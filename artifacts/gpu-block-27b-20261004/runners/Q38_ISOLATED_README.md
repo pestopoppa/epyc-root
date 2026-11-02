@@ -23,8 +23,17 @@ signals only its captured child, and requires a caller-supplied descendant-drain
 verifier before reporting cleanup. The fake-HTTP test exercises this owner;
 unverified cleanup remains sticky.
 
-There is deliberately no production CLI, native-verifier implementation,
-production transport or durable journal. Before target use, implement and qualify those
+`q38_t7_native_verify.py` verifies captured birth identity and argv, pinned
+executable and mapped-library hashes, no unpinned ggml mapping, and ownership of
+the expected IPv4 loopback listener. Library pathname device/inode must match
+the live mapping before and after hashing; this does not by itself establish
+immutable same-UID file custody. It also checks an attested exclusive cgroup
+has an empty subtree. Its membership, effective draft-mode and exclusive-cgroup
+ownership attestations remain required external proofs; neither current cgroup
+membership nor a fake test establishes exclusive custody or effective mode.
+
+There is deliberately no production CLI, concrete cgroup-placement or mode
+attestor, production transport or durable journal. Before target use, implement and qualify those
 against the host's child/descendant ownership, process and socket identity,
 recipe/binary/model/library binding, STOP and drain, durable no-redraw exposure,
 native cache receipts and rowflow contracts. `Runtime`'s injected verifiers
