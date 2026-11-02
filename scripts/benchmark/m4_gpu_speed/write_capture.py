@@ -76,7 +76,8 @@ def grant_proof(cell, env):
         if int(env["FILLER_END"]) != end or not start <= time.time() < deadline < end:
             raise ValueError("outside grant or deadline")
         stop = Path(env["FILLER_STOPFILE"])
-        if not stop.is_absolute() or str(stop) != grant["stopfile"] or stop.exists() or list(Path(hold_dir).glob("HOLD_*")):
+        if (not stop.is_absolute() or str(stop) != grant["stopfile"] or stop.exists()
+                or not Path(hold_dir).is_dir() or list(Path(hold_dir).glob("HOLD_*"))):
             raise ValueError("STOP, HOLD or invalid STOP path")
     except (OSError, UnicodeError, ValueError, KeyError) as exc:
         raise ProjectionError(f"actual grant refusal: {exc}") from exc

@@ -153,6 +153,10 @@ def test_write_side_preflight_and_emission(tmp_path, monkeypatch):
     with pytest.raises(FileExistsError):
         write_capture.write(trust=trust, cell=bound, key='c', row=row, requests_path=Path(doc['requests_path']),
                             output_path=output, process=doc['process'], mapped=doc['mapped_ggml'], cleanup=doc['cleanup'], grant_bytes=grant_bytes, env=env)
+    monkeypatch.setattr(enrollment, 'HOLD_DIR', str(tmp_path/'absent-holds'))
+    with pytest.raises(ProjectionError, match='actual grant refusal'):
+        write_capture.grant_proof(bound, env)
+    monkeypatch.setattr(enrollment, 'HOLD_DIR', str(tmp_path))
     (tmp_path / 'STOP').touch()
     with pytest.raises(ProjectionError, match='actual grant refusal'):
         write_capture.grant_proof(bound, env)
