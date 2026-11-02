@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""JEV-3 shadow typed judgment: unavailable -> label None (never a guess); a mocked typed result maps onto the enums;
-replay over a temp dryrun tree prints agree/disagree counts and writes nothing. Hermetic: typed_decisions is mocked."""
+"""JEV-3 replace: typed judgment decides; unavailable -> label None (never a guess) and only then the regex fallback;
+replay over a temp dryrun tree prints answered/unavailable counts and writes nothing. Hermetic: typed_decisions is mocked."""
 import contextlib
 import io
 import json
@@ -13,7 +13,7 @@ from unittest import mock
 
 _TESTS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "churn"))
-import typed_shadow as ts  # noqa: E402
+import typed_classify as ts  # noqa: E402
 
 FAIL_RC = {"at": "2026-11-01T22:43:16Z", "elapsed_s": 5, "id": "r1", "first_unit_at": None,
            "ended": "rc=3 time=2026-11-01T22:43:14Z reason=job-rc-3:exited",
@@ -55,6 +55,32 @@ class HeuristicTests(unittest.TestCase):
 
 
 class TypedTests(unittest.TestCase):
+    def setUp(self):
+        p = mock.patch.object(ts, "_require_listening", return_value=None)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def test_port_closed_is_unavailable(self):
+        mock.patch.stopall()
+        with mock.patch.object(ts, "PORT", 1):
+            r = ts.decide_fail(FAIL_MARKER)
+        self.assertEqual((r["source"], r["label"]), ("regex-fallback", ts.FailClass.marker_result_path))
+        self.assertIn("not listening", r["unavailable"])
+
+    def test_decide_typed_wins_including_unknown(self):
+        with mock.patch.object(ts, "_typed_answers", mocked_answers({"fail_class": "unknown"})):
+            r = ts.decide_fail(FAIL_MARKER)
+        self.assertEqual((r["source"], r["label"], r["unavailable"]), ("typed", ts.FailClass.unknown, None))
+        with mock.patch.object(ts, "_typed_answers", mocked_answers({"work_state": "done", "stop_reason": "no_open_boxes"})):
+            w = ts.decide_work_state("- [blocked] r rank=1 **t**\n", 1)
+        self.assertEqual((w["source"], w["label"]), ("typed", ts.WorkState.done))
+
+    def test_decide_falls_back_only_when_unavailable(self):
+        with mock.patch.object(ts, "_typed_answers", side_effect=RuntimeError("down")):
+            w = ts.decide_work_state("- [blocked] r rank=1 **t**\n", 1)
+        self.assertEqual((w["source"], w["label"], w["stop_reason"]), ("regex-fallback", ts.WorkState.continue_, ts.StopReason.has_fix_tasks))
+        self.assertIn("down", w["unavailable"])
+
     def test_unavailable_import_gives_none_label(self):
         with mock.patch.object(ts, "_typed_importable", return_value=True), \
                 mock.patch.object(ts, "_load_typed", side_effect=ImportError("No module named 'src'")):
@@ -65,11 +91,10 @@ class TypedTests(unittest.TestCase):
         with mock.patch.object(ts, "_typed_importable", return_value=True), mock.patch.object(ts, "_load_typed", side_effect=ImportError("x")):
             w = ts.classify_work_state("- [blocked] r rank=1 **t**\n", 1)
         self.assertEqual((w["source"], w["label"], w["stop_reason"]), ("unavailable", None, None))
-        self.assertEqual(w["heuristic"]["label"], ts.WorkState.continue_)  # heuristic still recorded beside it
 
     def test_unavailable_with_bogus_orch_root(self):
         with mock.patch.object(ts, "ORCH_ROOT", "/nonexistent/orch"), mock.patch.object(ts, "_PRIMITIVES", None), \
-                mock.patch.dict(os.environ, {"TYPED_SHADOW_PYTHON": "/nonexistent/py"}), \
+                mock.patch.dict(os.environ, {"TYPED_CLASSIFY_PYTHON": "/nonexistent/py"}), \
                 mock.patch.dict(sys.modules, {k: None for k in ("src", "src.typed_decisions")}):
             r = ts.classify_fail(FAIL_RC)
         self.assertEqual(r["source"], "unavailable")
@@ -77,7 +102,7 @@ class TypedTests(unittest.TestCase):
 
     def test_no_worker_interpreter_is_unavailable(self):
         with mock.patch.object(ts, "_typed_importable", return_value=False), \
-                mock.patch.dict(os.environ, {"TYPED_SHADOW_PYTHON": "/nonexistent/venv/python3"}):
+                mock.patch.dict(os.environ, {"TYPED_CLASSIFY_PYTHON": "/nonexistent/venv/python3"}):
             r = ts.classify_fail(FAIL_RC)
         self.assertEqual((r["source"], r["label"]), ("unavailable", None))
         self.assertIn("no separate interpreter", r["detail"])
@@ -90,7 +115,7 @@ class TypedTests(unittest.TestCase):
                         "print(json.dumps({\"ok\": True, \"answers\": {q[\"id\"]: {\"value\": q[\"options\"][0], "
                         "\"probabilities\": {}, \"confidence\": None} for q in r[\"catalogue\"]}}))'\n")
             os.chmod(shim, 0o755)
-            with mock.patch.object(ts, "_typed_importable", return_value=False), mock.patch.dict(os.environ, {"TYPED_SHADOW_PYTHON": shim}):
+            with mock.patch.object(ts, "_typed_importable", return_value=False), mock.patch.dict(os.environ, {"TYPED_CLASSIFY_PYTHON": shim}):
                 r = ts.classify_fail(FAIL_RC)
         self.assertEqual((r["source"], r["label"]), ("typed", ts.FailClass.marker_result_path))
 
@@ -139,19 +164,20 @@ class ReplayTests(unittest.TestCase):
                     rc = ts.main(["replay", "--flags", d])
             self.assertEqual(rc, 0)
             self.assertEqual(len(rows), 3)
-            self.assertEqual([r["agree"] for r in rows], [False, True, False])
-            self.assertIn("records=3 agree=1 disagree=2 typed_unavailable=0", out.getvalue())
+            self.assertEqual([r["source"] for r in rows], ["typed"] * 3)
+            self.assertIn("records=3 typed_answered=3 typed_unavailable=0", out.getvalue())
             self.assertEqual(self._snapshot(d), before)
             self.assertEqual(sorted(os.listdir(d)), ["dryrun"])
 
     def test_replay_unavailable_counts(self):
         with tempfile.TemporaryDirectory() as d:
             self._tree(d)
-            with mock.patch.object(ts, "_typed_importable", return_value=True), mock.patch.object(ts, "_load_typed", side_effect=ImportError("nope")):
+            with mock.patch.object(ts, "_require_listening", return_value=None), \
+                    mock.patch.object(ts, "_typed_importable", return_value=True), mock.patch.object(ts, "_load_typed", side_effect=ImportError("nope")):
                 out = io.StringIO()
                 with contextlib.redirect_stdout(out):
                     ts.main(["replay", "--flags", d])
-            self.assertIn("records=3 agree=0 disagree=0 typed_unavailable=3", out.getvalue())
+            self.assertIn("records=3 typed_answered=0 typed_unavailable=3", out.getvalue())
             self.assertIn("ImportError: nope", out.getvalue())
 
     def test_fail_cli(self):
@@ -163,7 +189,7 @@ class ReplayTests(unittest.TestCase):
                 with contextlib.redirect_stdout(out):
                     ts.main(["fail", p])
             j = json.loads(out.getvalue())
-            self.assertEqual((j["heuristic"]["label"], j["typed"]["label"]), ("marker_result_path", "job_rc"))
+            self.assertEqual((j["source"], j["label"]), ("typed", "job_rc"))
 
 
 if __name__ == "__main__":
