@@ -39,3 +39,7 @@ Consumed EffiBench regression result: all eight previously authored tests passed
 ## 00:34Z — Pin current GPQA and EffiBench inputs
 
 Consumed three preparation reports. Full GPQA-CoT pin questions_gpqa_diamond_cot.json SHA-256 14e807dd11736b022f337466efc0fb5c95bf6e521a4514a09d0f25916524ecee, historical protocol n198 seed42 cap8192 repeat1. Current Qwen3.8-27B DFlash2 registry and selected server use draft max 7; the separate experiment recipe value 8 is not the serving setting. EffiBench dataset revision 49babbec95f0897d5f06276aaf274f9f1dcd036b contains 20 test Parquet shards; data was not yet materialized. Dispatched bounded dataset preparation, GPU launcher/row draft and placement audit; registered completion files.
+
+## 00:36Z — Review current-model GPQA launcher and prepare keeper-safe fixes
+
+Consumed GPU draft and audit. The current-arm draft pins Qwen3.8-27B Q8/DFlash2 max7 and GPQA-CoT n198 seed42 cap8192, and bash -n passes. It is not publishable yet: the one rocm-smi snapshot is before inference, output is not keeper-row scoped, the spec is not a rowflow spec and lifecycle/grant handling requires review. Dispatched independent bounded work for overlapping PID-keyed residency evidence, real keeper row/lifecycle contract, and runner CLI/context audit. No inference or qualification was performed.

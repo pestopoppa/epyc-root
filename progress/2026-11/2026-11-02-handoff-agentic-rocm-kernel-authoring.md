@@ -39,3 +39,11 @@ Consumed panel-contract.done and reviewed artifacts/agentic-rocm/s3-panel-contra
 ## 00:33Z — Validate and preserve standalone C5-12 selection draft
 
 Reviewed and preserved artifacts/agentic-rocm/c5-12.patch, a standalone deterministic three-of-five proposal selector. git apply --check passes against the inspected research tree; an isolated application passes three focused unit tests (selection, tie handling, and invalid inputs). It is not integrated into a controller and does not implement the model split, findings digest, or prediction test, so C5-12 remains open. GitNexus impact could not resolve the new symbol because the lane is unindexed and repository selection is ambiguous; no target source was modified. No inference row was published.
+
+## 00:34Z — Advance exact model matching, controller registration and selector snapshot validation
+
+No completion marker was available for the pending real-model capture or controller implementations; the current evidence does not support publishing a runnable inference row. Dispatched bounded work to identify concrete real-model surfaces for k228/k175, draft truthful Hawkeye/SwizzlePerf registration, and implement fixture-tested prospective RPUCG snapshot validation; registered completion events. These are preparation, not completed runs or integrated research code. No GPU work launched.
+
+## 00:35Z — Review model capture assessment, controller roster draft and prospective selector validator
+
+Consumed hawkeye-adapter.done, tensor-model-search.done and selector-dataset.done. Preserved the bounded local model assessment: inspected V4.1 Flash uses top-6 sqrtsoftplus and Qwen3.8 Flash top-10, while V4.1 sparse attention is not established as the required k228 MLA surface; neither is a proven exact producer. Reviewed the discovery-only Hawkeye/SwizzlePerf patch, whose agent reported 13 adapter tests passed and which independently passes git apply --check; it refuses execution and does not alter the historical panel. Preserved the draft without claiming target integration or C5-8 completion. Rejected the initial RPUCG snapshot validator as overrestrictive: it requires all ancestry nodes to pass correctness, whereas the handoff requires passing correctness for eligible evaluated candidates. Requested a corrected draft and tests. No inference row published.
