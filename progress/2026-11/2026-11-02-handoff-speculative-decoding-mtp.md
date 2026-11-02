@@ -199,3 +199,7 @@ Filed `sr6-qwen36-width-w1-20261102` and `sr6-qwen36-width-w2-20261102` inconclu
 ## 11:24Z — Qualify replacement rows for both failed SR-6 windows
 
 The previously filed W1 and W2 native attempts stopped at the region-lock checksum before worker execution; SR-6 remains open. Published replacement rows `sr6-qwen36-width-w1-retry-20261102` and `sr6-qwen36-width-w2-retry-20261102` after four-CPU smoke passes, reusing their sealed prompt partitions, the shared exposure root, and distinct server evidence directories. W1's first retry smoke detected a changed launch-sealed port; restoring port 18979 resolved it. W2's first retry smoke detected a missing smoke directory; creating it resolved that. Both preliminary smoke failures were before native target execution. The previously published W3 remains separate; no performance or registry conclusion follows.
+
+## 11:29Z — Annotate ngram claims with available corpus and repetition provenance
+
+Advanced NG5 by adding adjacent corpus and repeated-5-gram provenance for the retracted claims and explicitly marking missing provenance for corrected and other observations. NG5 remains open: the registry and full index coverage still need correction. SR-6 has three previously published windows; SR-7's candidate launcher is not ready and no new inference row was published. GitNexus reindex was refused by CPU admission; no code symbols were edited. git diff --check passed.
