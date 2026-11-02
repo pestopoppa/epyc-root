@@ -508,6 +508,11 @@ failure caught in amber.
         `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget and
         identical chunking for the control and the arm under test; (7) prompt-match all arms,
         including the closed-book instruction.
+    - 2026-11-02 staged-input check: `/mnt/raid0/llm/data/eval/beam/data/100K-00000-of-00001.parquet`
+      hashes to `c0519be25907005ba873c927c50877471d550873039d96c041554d0075a78ace`, matching
+      the staged `PROVENANCE.txt` for revision `3205395e897e7318c7b094ef4e6047b9b82dbb03`.
+      This verifies the file now; it is not a receipt that the 2026-09-18 runs checked its digest
+      or satisfied the other checklist items. [belief: cc]
   - [ ] **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
         (a) Tulving: the authors' shipped 12-arm results at
         `/mnt/raid0/llm/data/eval/tulving_episodic/episodic-memory-benchmark/epbench/data/result_lenient_all_book_200.csv`
