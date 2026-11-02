@@ -63,3 +63,7 @@ The previous boundary could not publish commits 9ab3026e7027 and 3f9371a6bdfb af
 ## 00:39Z — Prepare selector identity binding and recover pending lane publication
 
 At this boundary no completion report existed for the MLA surface, MoE surface or C5-7 counter-seam work. Assigned a bounded improvement to the prospective RPUCG snapshot prototype so evaluator and recipe identities are content-bound rather than unverified strings; completion event registered. Previous wrap-up attempts failed to publish the lane; this attempt carries those pending commits forward. No GPU computation, row publication, or completed result checkbox.
+
+## 00:40Z — Validate selector snapshot evaluator and recipe identity bindings
+
+Consumed rpucg-identity.done and reviewed the revision to artifacts/agentic-rocm/rpucg-snapshot.patch: the caller now supplies evaluator and recipe bytes, which must match SHA-256 identities sealed in the snapshot. Independently applied the patch in isolated scratch and passed six focused tests, including missing and changed content. This is still an unintegrated prospective prototype: an authenticated source for bytes, proof of actual runtime use, a capture producer and the selector A/B remain outstanding. This wrap-up also retries publishing the lane commits left by previous serialized push failures.

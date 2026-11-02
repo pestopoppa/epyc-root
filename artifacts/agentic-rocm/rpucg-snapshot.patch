@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/scripts/kernel_rnd/autokernel/controller/rpucg_snapshot.py
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,91 @@
 +"""Admission checks for prospective nonpromotable selector snapshots.
 +
 +A valid record is not evidence of counterfactual performance or a live switch.
@@ -14,7 +14,7 @@
 +SHA256 = re.compile(r'^[0-9a-f]{64}$')
 +
 +
-+def validate_snapshot(raw, expected_sha256):
++def validate_snapshot(raw, expected_sha256, *, evaluator_bytes, recipe_bytes):
 +    if not isinstance(raw, bytes) or not SHA256.fullmatch(expected_sha256):
 +        raise ValueError('raw bytes and expected sha256 required')
 +    if hashlib.sha256(raw).hexdigest() != expected_sha256:
@@ -34,6 +34,12 @@
 +    for name in ('task_id', 'evaluator_id', 'recipe_id', 'tie_rule'):
 +        if not nonempty(obj.get(name)):
 +            raise ValueError('missing identity or tie rule: ' + name)
++    for name, content in (('evaluator', evaluator_bytes), ('recipe', recipe_bytes)):
++        expected = obj.get(name + '_sha256')
++        if (not isinstance(content, bytes) or not isinstance(expected, str)
++                or not SHA256.fullmatch(expected)
++                or hashlib.sha256(content).hexdigest() != expected):
++            raise ValueError(name + ' content does not match sealed identity')
 +    n = obj.get('inspiration_count')
 +    if isinstance(n, bool) or not isinstance(n, int) or n < 1:
 +        raise ValueError('invalid inspiration count')
@@ -88,7 +94,7 @@
 +    return obj
 --- /dev/null
 +++ b/scripts/kernel_rnd/autokernel/controller/test_rpucg_snapshot.py
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,76 @@
 +import copy
 +import hashlib
 +import json
@@ -100,6 +106,8 @@
 +    return {'schema':'epyc.rpucg.snapshot.v1', 'promotable':False,
 +            'task_id':'task', 'evaluator_id':'eval', 'recipe_id':'recipe',
 +            'tie_rule':'id', 'inspiration_count':1,
++            'evaluator_sha256':hashlib.sha256(b'evaluator').hexdigest(),
++            'recipe_sha256':hashlib.sha256(b'recipe').hexdigest(),
 +            'candidates':[{'id':'a', 'source_sha256':'a'*64, 'creation_order':0,
 +                'chain_id':'c', 'parent_ids':[], 'correctness_passed':True, 'normalized_reward':1},
 +                {'id':'b', 'source_sha256':'b'*64, 'creation_order':1,
@@ -110,10 +118,26 @@
 +
 +def admit(obj):
 +    raw=json.dumps(obj).encode()
-+    return validate_snapshot(raw,hashlib.sha256(raw).hexdigest())
++    return validate_snapshot(raw,hashlib.sha256(raw).hexdigest(), evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
 +
 +
 +class TestAdmission(unittest.TestCase):
++    def test_identity_bytes_must_match(self):
++        obj = snapshot()
++        for key in ('evaluator_sha256', 'recipe_sha256'):
++            for bad in (None, '0' * 64, 'not-a-hash'):
++                copy_obj = copy.deepcopy(obj)
++                if bad is None:
++                    del copy_obj[key]
++                else:
++                    copy_obj[key] = bad
++                with self.subTest(key=key, value=bad), self.assertRaises(ValueError):
++                    admit(copy_obj)
++        raw = json.dumps(obj).encode()
++        for evaluator, recipe in ((b'changed', b'recipe'), (b'evaluator', b'changed')):
++            with self.subTest(evaluator=evaluator, recipe=recipe), self.assertRaises(ValueError):
++                validate_snapshot(raw, hashlib.sha256(raw).hexdigest(), evaluator_bytes=evaluator, recipe_bytes=recipe)
++
 +    def test_valid(self):
 +        self.assertEqual(admit(snapshot())['incumbent_choice_ids'], ['b'])
 +    def test_failed_ineligible_ancestor_is_represented(self):
@@ -130,9 +154,9 @@
 +            admit(obj)
 +
 +    def test_bad_digest_and_duplicate_keys(self):
-+        with self.assertRaises(ValueError): validate_snapshot(b'{}', '0'*64)
++        with self.assertRaises(ValueError): validate_snapshot(b'{}', '0'*64, evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
 +        raw=b'{"schema":1,"schema":2}'
-+        with self.assertRaises(ValueError): validate_snapshot(raw,hashlib.sha256(raw).hexdigest())
++        with self.assertRaises(ValueError): validate_snapshot(raw,hashlib.sha256(raw).hexdigest(), evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
 +    def test_incomplete_and_invented_inputs_refused(self):
 +        changes=[lambda x:x['candidates'][1].update(parent_ids=['absent']),
 +                 lambda x:x['candidates'][0].update(parent_ids=['b']),
