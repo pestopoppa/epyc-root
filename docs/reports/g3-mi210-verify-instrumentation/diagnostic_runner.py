@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Bounded one-server diagnostic capture; no scientific verdict is generated."""
+import argparse, datetime, hashlib, json, os, pathlib, signal, subprocess, sys, threading, time, urllib.request
+from residency_evidence import analyze_residency
+
+
+def gpu_sample():
+    record = {"observation_start": time.time()}
+    try:
+        proc = subprocess.run(["rocm-smi", "--showmeminfo", "vram", "--showproductname", "--json"], capture_output=True, text=True, timeout=5)
+        record.update(rocm_smi_rc=proc.returncode, rocm_smi=proc.stdout)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        record["rocm_smi_error"] = repr(exc)
+    record["time"] = time.time()
+    return record
+
+
+
+def digest(p):
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for block in iter(lambda: f.read(4 * 1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read_samples(path):
+    try:
+        return [json.loads(line) for line in path.read_text().splitlines()], None
+    except (OSError, ValueError) as exc:
+        return [], repr(exc)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('config', type=pathlib.Path)
+    a = ap.parse_args()
+    c = json.loads(a.config.read_text())
+    out = pathlib.Path(c['output']); out.mkdir(parents=True, exist_ok=False)
+    receipt = pathlib.Path(c['build_receipt']).resolve()
+    if not (receipt / 'BUILD_COMPLETE').is_file(): raise ValueError('incomplete build receipt')
+    subprocess.run(['sha256sum', '-c', str(receipt / 'artifacts.sha256')], check=True, stdout=(out / 'artifact-check.txt').open('w'))
+    subprocess.run(['sha256sum', '-c', str(receipt / 'source.patch.sha256')], check=True, stdout=(out / 'patch-check.txt').open('w'))
+    server = pathlib.Path(c['server']).resolve()
+    build = pathlib.Path((receipt / 'build-path').read_text().strip()).resolve()
+    if build not in server.parents or str(server) not in (receipt / 'artifacts.sha256').read_text(): raise ValueError('server is not the receipt build artifact')
+    preflight = pathlib.Path(c['model_preflight']).resolve()
+    if digest(preflight) != c['model_preflight_sha256']: raise ValueError('model preflight digest mismatch')
+    model_info = json.loads(preflight.read_text())['model']
+    model = pathlib.Path(c['model']).resolve()
+    st = model.stat()
+    actual = dict(dev=st.st_dev, ino=st.st_ino, size=st.st_size, mtime_ns=st.st_mtime_ns, ctime_ns=st.st_ctime_ns)
+    if str(model) != model_info['path'] or actual != model_info['stat'] or c['model_sha256'] != model_info['sha256']: raise ValueError('model preflight stat or hash identity mismatch')
+    # Fixed marker must be specified after source review; it must occur in a built backend.
+    backend = pathlib.Path(c['backend']).resolve()
+    if build not in backend.parents or str(backend) not in (receipt / 'artifacts.sha256').read_text(): raise ValueError('backend not in receipt')
+    if c['trace_marker'].encode() not in backend.read_bytes(): raise ValueError('trace marker missing')
+    if not c['trace_marker']: raise ValueError('empty trace marker')
+    if not c['requests']: raise ValueError('empty request list')
+    if not 1 <= c['timeout_seconds'] <= 1800: raise ValueError('invalid timeout')
+    if not c['url'].startswith('http://127.0.0.1:'): raise ValueError('loopback URL required')
+    env = os.environ.copy(); env['LD_LIBRARY_PATH'] = str(backend.parent); env['GGML_G3_FATTN_TRACE'] = '1'
+    with (out / 'linkage.txt').open('w') as linkage:
+        subprocess.run(['/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh', str(server), str(build)], env=env, stdout=linkage, stderr=subprocess.STDOUT, check=True)
+    argv = [str(server), *c['server_args']]
+    (out / 'manifest.json').write_text(json.dumps({'config': c, 'argv': argv, 'model_sha256': c['model_sha256'], 'backend_sha256': digest(backend), 'server_sha256': digest(server), 'trace_mode': 'graph replay disabled; diagnostic only'}, indent=2) + '\n')
+    stop = pathlib.Path(os.environ['FILLER_STOPFILE'])
+    grant_deadline = int(os.environ['FILLER_DEADLINE'])
+    if stop.exists() or time.time() >= grant_deadline: raise RuntimeError('grant stopped or expired')
+    c['timeout_seconds'] = min(c['timeout_seconds'], max(0, int(grant_deadline - time.time())))
+    if c['timeout_seconds'] < 1: raise RuntimeError('grant expired')
+    done = threading.Event()
+    baseline = gpu_sample()
+    (out / 'residency-baseline.json').write_text(json.dumps(baseline) + '\n')
+    request_windows = []
+    with (out / 'server.log').open('wb') as log:
+        proc = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+        def sample():
+            with (out / 'residency.jsonl').open('w') as f:
+                while not done.is_set():
+                    record = gpu_sample()
+                    record.update(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), pid=proc.pid, alive=proc.poll() is None)
+                    try: record['maps'] = pathlib.Path(f'/proc/{proc.pid}/maps').read_text()
+                    except OSError: record['maps'] = None
+                    record['kfd_pid_present'] = pathlib.Path(f'/sys/class/kfd/kfd/proc/{proc.pid}').exists()
+                    record['observation_end'] = time.time()
+                    f.write(json.dumps(record) + '\n'); f.flush(); done.wait(1)
+        sampler = threading.Thread(target=sample, daemon=True); sampler.start()
+        result = {'status': 'partial', 'requests': []}; deadline = time.monotonic() + c['timeout_seconds']
+        try:
+            for payload in c['requests']:
+                while True:
+                    if stop.exists(): raise InterruptedError('STOP')
+                    if proc.poll() is not None: raise RuntimeError('server exited')
+                    if time.monotonic() >= deadline: raise TimeoutError('deadline')
+                    try:
+                        with urllib.request.urlopen(c['url'].rsplit('/', 1)[0] + '/health', timeout=2) as response:
+                            if response.status == 200: break
+                    except (OSError, ValueError): time.sleep(.5)
+                if stop.exists(): raise InterruptedError('STOP')
+                req = urllib.request.Request(c['url'], data=json.dumps(payload).encode(), headers={'Content-Type':'application/json'})
+                # A watcher must stop the server even while a request blocks.
+                def watch():
+                    while not done.wait(.2):
+                        if stop.exists() or time.monotonic() >= deadline:
+                            try: os.killpg(proc.pid, signal.SIGTERM)
+                            except ProcessLookupError: pass
+                            return
+                watcher = threading.Thread(target=watch, daemon=True); watcher.start()
+                request_start = time.time()
+                try:
+                    with urllib.request.urlopen(req, timeout=max(1, deadline-time.monotonic())) as response:
+                        result['requests'].append(json.load(response))
+                finally:
+                    request_windows.append([request_start, time.time()])
+                if stop.exists(): raise InterruptedError('STOP')
+            result['status'] = 'complete'
+        except Exception as e: result['error'] = repr(e)
+        finally:
+            if stop.exists(): result['status'] = 'partial'; result['error'] = 'STOP'
+            try: os.killpg(proc.pid, signal.SIGTERM)
+            except ProcessLookupError: pass
+            try: proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL); proc.wait(timeout=10)
+            done.set(); sampler.join(timeout=8)
+            try:
+                os.killpg(proc.pid, 0)
+                os.killpg(proc.pid, signal.SIGKILL)
+                for _ in range(50):
+                    try: os.killpg(proc.pid, 0)
+                    except ProcessLookupError: break
+                    time.sleep(.1)
+                else: raise RuntimeError('process group did not drain')
+                drained = True
+            except ProcessLookupError: drained = True
+            except RuntimeError: drained = False
+            samples, sample_error = read_samples(out / 'residency.jsonl')
+            residency = []
+            for start, end in request_windows:
+                try:
+                    residency.append(analyze_residency(baseline=baseline, samples=samples,
+                        card=c['rocm_card'], pid=proc.pid, backend=backend,
+                        expected_sha256=c['backend_sha256'], start=start, end=end))
+                except (OSError, ValueError, KeyError) as exc:
+                    residency.append({'status': 'UNKNOWN', 'reasons': [repr(exc)]})
+            if not request_windows:
+                residency.append({'status': 'UNKNOWN', 'reasons': ['no request observation window']})
+            if sample_error:
+                residency.append({'status': 'UNKNOWN', 'reasons': ['unreadable residency capture: ' + sample_error]})
+            result['residency'] = residency
+            result['residency_scope'] = 'HTTP request window only; trace overlap and device isolation remain unproven'
+            result['request_windows'] = request_windows
+            result.update(server_exit=proc.returncode, process_group_drained=drained)
+            if not drained: result['status'] = 'partial'
+            (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+    return 0 if result['status'] == 'complete' else 75
+
+if __name__ == '__main__': sys.exit(main())
