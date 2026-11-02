@@ -107,3 +107,11 @@ VKQ3 worker now checks attempt identity and private receipt custody before start
 ## 10:09Z — Connected VKQ3 diagnostic worker to the existing grant guard in an offline bridge.
 
 VKQ3 grant bridge draft derives worker mode and deadline from the existing grant guard and tests grant revocation, invalid CPU shape and dry-run mode; three offline tests pass. The bridge is not a launcher: signal routing, process-tree containment, authoritative engine integration and runtime identity binding remain. Review found rowflow can count unit.jsonl before the separate completion marker: the launcher must validate the receipt then atomically publish a separate result file. No inference ran and no row was published.
+
+## 10:11Z — Implemented offline VKQ3 completion validation and atomic rowflow result publication.
+
+VKQ3 offline publication draft validates matching completion receipt before atomically exposing a separate rowflow result, including the native dry-run path; eleven completion and integration tests pass, including marker absence and injected link failure. Two publication helpers need reconciliation; actual engine, runtime binding and process containment remain unverified, and no row was published. KVU-16h operative runners are outside this lane and tracked historical sources must be preserved.
+
+## 10:12Z — Added cancellation signal handling to the VKQ3 grant bridge draft.
+
+VKQ3 grant bridge draft routes SIGINT and SIGTERM to the grant guard and restores prior handlers even on exception. Four offline tests pass, including a delivered SIGTERM. Handler coverage ends when the guarded attempt returns and does not yet cover subsequent publication; parent-death containment, runtime binding and real engine integration remain. No row published or inference run.
