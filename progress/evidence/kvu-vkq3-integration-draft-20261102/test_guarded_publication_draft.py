@@ -55,6 +55,20 @@ class IntegratedPublicationTests(unittest.TestCase):
         with self.assertRaises(ValueError): publish_unit('full', 'x', attempt, self.full)
         self.assertFalse(self.full.exists())
 
+    def test_qualification_rejects_aliased_full_path_before_running(self):
+        self.env.update(FILLER_DRYRUN='1', FILLER_DRYRUN_RESULT_PATH=str(self.root/'subdir'/'..'/'full.jsonl'))
+        with mock.patch('guarded_publication_draft.run_guarded_attempt') as run:
+            with self.assertRaises(ValueError):
+                run_and_publish(env=self.env, full_result_path=self.full, **self.args)
+            run.assert_not_called()
+
+    def test_relative_output_is_rejected(self):
+        result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
+                      elapsed_s=.1, stdout=b'[7]\n', stderr=b'')
+        attempt = write_attempt(self.root, 'x', 'full', result, expected_input_bytes=3, ceiling_s=10)
+        with self.assertRaises(ValueError):
+            publish_unit('full', 'x', attempt, 'relative.jsonl')
+
     def test_link_failure_keeps_partial_invisible(self):
         result = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=3,
                       elapsed_s=.1, stdout=b'[7]\n', stderr=b'')
