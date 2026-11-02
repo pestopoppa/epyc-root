@@ -115,3 +115,7 @@ A2 is the 27B GPU control, not the generated CPU label. The existing /mnt/raid0/
 ## 10:46Z — Prepare A2 GPU and Jet-Long CPU launchers and proof-helper adoption
 
 A2, Jet-Long CPU row, and E1 proof adoption are delegated with outputs registered under the yarn awaiting directory. A2 integration review found the ownership checker returns a record while the request wrapper requires literal True; the integration must adapt it explicitly and verify ownership around requests. Server-only reaping is not descendant-cleanup proof. No row or native result was claimed.
+
+## 11:06Z — Draft upstream FlashAttention int32 offset report
+
+Drafted the upstream FlashAttention offset report in artifacts/dca-yarn-kernel-20261004/fa-int64/UPSTREAM-ISSUE-DRAFT.md. It identifies tile/MMA/vec products in pinned upstream snapshot 11fe02151 and separates those unmeasured paths from the historical downstream WMMA GPU result (champion 1/4, candidate 4/4). Includes an upstream reproduction plan and does not claim current-upstream status. The draft was not posted. [no-belief: source-grounded report draft, no new measurement]

@@ -221,9 +221,10 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 - [x] **YARN-FA-INT64-fold — fold the three FA-INT64-OFFSET commits into the champion before any run past 512K ✅ 2026-10-29 (audit: kernel-manifests/llama-v11-manifest.md V11-017 FA-INT64-OFFSET commits 2152c39b1, 3c9b0bb4f IN champion @ dd3d9721c (G-ANC)) [no-belief: audit-reconciliation]
   cells.** (filed 2026-10-04, workspace-ec) Use the guarded CAS fold route with workspace-89: G0, `test-backend-ops`
   on ROCm0, and the `mask_ne0` cases. Done when the champion tip carries them.
-- [ ] **YARN-FA-INT64-up — draft (never post) the upstream report for master's int32 FA offsets.** (filed 2026-10-04,
+- [x] **YARN-FA-INT64-up — draft (never post) the upstream report for master's int32 FA offsets.** (filed 2026-10-04, ✅ 2026-11-02 [no-belief: source-grounded report draft, no new measurement]
   workspace-ec) Master `11fe02151` still multiplies int32 strides in tile, MMA and vec; the WMMA half is moot upstream
   (#26046). Done when the draft sits in the artifact dir for the operator.
+  - Draft for operator review: [`UPSTREAM-ISSUE-DRAFT.md`](../../artifacts/dca-yarn-kernel-20261004/fa-int64/UPSTREAM-ISSUE-DRAFT.md). The draft limits its upstream source claim to `11fe02151`; the historical GPU failure was measured on downstream WMMA, not upstream tile/MMA/vec. It has not been posted.
 - [x] **YARN-FN-FIX — Flash-Next fused decode must honour the rope parameters (in flight).** ✅ 2026-10-04 `qwen4exp-fused.cpp:1709-1717`
   hardcodes `freq_scale=1, ext_factor=0, n_ctx_orig=0`. Pass the model's real `freq_scale`, `ext_factor`,
   `n_ctx_orig_yarn`, `attn_factor` and `beta_*` through to the fused path. This is latent at native length as well,
