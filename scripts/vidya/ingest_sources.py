@@ -101,10 +101,10 @@ def _np_ctx_kvu_units(path: Path) -> list[Path]:
     """A directory holding ``summary.jsonl`` or ``requests.jsonl`` is one unit, else its children that do are; a
     named ``requests.jsonl`` file is its own unit."""
     if path.is_file():
-        return [path] if path.name == "requests.jsonl" else []
+        return [path] if path.name in ("requests.jsonl", "belief_measurements.jsonl") else []
     if not path.is_dir():
         return []
-    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file()  # noqa: E731
+    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file() or (p / "belief_measurements.jsonl").is_file()  # noqa: E731
     if held(path):
         return [path]
     return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
