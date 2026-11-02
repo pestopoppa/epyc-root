@@ -78,3 +78,8 @@ KEEP /mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030	-	579
 KEEP /mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101	46M	-	EXP-06 PIP02-PHASEC-CUSTODY v8 exposure snapshot (last readable record; /mnt/micron campaign roots not visible in the 2026-11-02 session namespace)
 KEEP /mnt/raid0/llm/tmp/codex3-cs26-lid1-20261030	-	-	EXP-07 CS-26.LID1 frozen crop manifest (9,150 cases) + v2 packet
 KEEP /mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results	742M	-	CAP-01 RT-6 raw Q38FN routing traces (27 hash-verified shards); protected by the parent /mnt/raid0/llm/tmp/roi-prep-20261023/KEEP; no marker added inside the trace tree
+
+# T3 additions, third pass (ws58, 2026-11-02, BRF-T3-2 CAP-02): further inputs read by the CAP-02 scans. KEEP markers already exist on each.
+KEEP /mnt/raid0/llm/tmp/hil16a-verify-out	-	-	CAP-02 HIL-16a filed verify result (80/80 clean) compared with the offline re-verify
+KEEP /mnt/raid0/llm/tmp/hil15d-20261024	-	-	CAP-02 hil15d_eval.py + filed result (no_final_step replication on the HIL-18a replays)
+KEEP /mnt/raid0/llm/tmp/fillers-3c4ca599/jobs/hil15b_tasks.json	-	-	CAP-02 task set (sha256 833d307b) that sets tool_required for the L2 scan; protected by the parent /mnt/raid0/llm/tmp/fillers-3c4ca599/KEEP

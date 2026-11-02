@@ -1,0 +1,679 @@
+{
+ "S1_l2_scan_hil15b": {
+  "rc": 0,
+  "report_excerpt": {
+   "category_precision_vs_outcome": {
+    "invalid_invocation": {
+     "fn": 11,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 69,
+     "tp": 0
+    },
+    "loop": {
+     "fn": 11,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 69,
+     "tp": 0
+    },
+    "premature_wrap_up": {
+     "fn": 10,
+     "fp": 0,
+     "precision": 1.0,
+     "recall": 0.0909,
+     "tn": 69,
+     "tp": 1
+    },
+    "tool_error": {
+     "fn": 11,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 69,
+     "tp": 0
+    },
+    "truncation": {
+     "fn": 11,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 69,
+     "tp": 0
+    },
+    "zero_step_violation": {
+     "fn": 4,
+     "fp": 34,
+     "precision": 0.15,
+     "recall": 0.6,
+     "tn": 32,
+     "tp": 6
+    }
+   }
+  },
+  "report_top_keys": [
+   "categories_implemented",
+   "categories_judge_only_unimplemented",
+   "category_precision_vs_outcome",
+   "category_rates",
+   "coverage",
+   "crosswalk",
+   "domain_split",
+   "first_visible_deviation",
+   "header",
+   "length_distribution",
+   "loop_counter_source",
+   "loop_ratio",
+   "n",
+   "reads",
+   "step_events",
+   "step_ratio_per_role"
+  ],
+  "stderr": [
+   "step-bearing runs: 80 (80 with a joined outcome)",
+   "tool_required set on 80 traces from /mnt/raid0/llm/tmp/brf-t3-cap02-20261102/scr/in/hil15b_tasks.json"
+  ],
+  "vs_filed_hil15c_report": {
+   "first_mismatches": [],
+   "leaves_compared": 182,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  },
+  "vs_filed_original_l2_report_pre13e693a4": {
+   "first_mismatches": [
+    "/category_precision_vs_outcome: key only in recomputed",
+    "/category_rates/premature_wrap_up/failed/ci95_task_resampled[0]: 0.0 vs 0.1818",
+    "/category_rates/premature_wrap_up/failed/ci95_task_resampled[1]: 0.2727 vs 0.7273",
+    "/category_rates/premature_wrap_up/failed/fires: 1 vs 5",
+    "/category_rates/premature_wrap_up/failed/rate: 0.0909 vs 0.4545",
+    "/category_rates/premature_wrap_up/passed/ci95_task_resampled[0]: 0.0 vs 0.3768",
+    "/category_rates/premature_wrap_up/passed/ci95_task_resampled[1]: 0.0 vs 0.6087",
+    "/category_rates/premature_wrap_up/passed/fires: 0 vs 34",
+    "/category_rates/premature_wrap_up/passed/rate: 0.0 vs 0.4928",
+    "/category_rates/zero_step_violation/failed/ci95_task_resampled[0]: 0.3 vs 0.1818",
+    "/category_rates/zero_step_violation/failed/ci95_task_resampled[1]: 0.9 vs 0.7273",
+    "/category_rates/zero_step_violation/failed/fires: 6 vs 5"
+   ],
+   "leaves_compared": 146,
+   "max_abs_float_diff": 34,
+   "mismatches": 28
+  }
+ },
+ "S1b_l2_scan_hil18a": {
+  "outcomes": {
+   "fail": 32,
+   "pass": 88
+  },
+  "replays_in_manifest": 120,
+  "report": {
+   "categories_implemented": [
+    "tool_error",
+    "truncation",
+    "loop",
+    "premature_wrap_up",
+    "zero_step_violation",
+    "invalid_invocation"
+   ],
+   "categories_judge_only_unimplemented": [
+    "fabricated_fact",
+    "instruction_not_followed"
+   ],
+   "category_precision_vs_outcome": {
+    "invalid_invocation": {
+     "fn": 32,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 88,
+     "tp": 0
+    },
+    "loop": {
+     "fn": 32,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 88,
+     "tp": 0
+    },
+    "premature_wrap_up": {
+     "fn": 32,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 88,
+     "tp": 0
+    },
+    "tool_error": {
+     "fn": 32,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 88,
+     "tp": 0
+    },
+    "truncation": {
+     "fn": 32,
+     "fp": 0,
+     "precision": null,
+     "recall": 0.0,
+     "tn": 88,
+     "tp": 0
+    },
+    "zero_step_violation": {
+     "fn": 0,
+     "fp": 17,
+     "precision": 0.6458,
+     "recall": 1.0,
+     "tn": 52,
+     "tp": 31
+    }
+   },
+   "category_rates": {
+    "invalid_invocation": {
+     "failed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 32,
+      "rate": 0.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 88,
+      "rate": 0.0
+     }
+    },
+    "loop": {
+     "failed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 32,
+      "rate": 0.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 88,
+      "rate": 0.0
+     }
+    },
+    "premature_wrap_up": {
+     "failed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 32,
+      "rate": 0.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 88,
+      "rate": 0.0
+     }
+    },
+    "tool_error": {
+     "failed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 32,
+      "rate": 0.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 88,
+      "rate": 0.0
+     }
+    },
+    "truncation": {
+     "failed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 32,
+      "rate": 0.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0,
+       0.0
+      ],
+      "fires": 0,
+      "n": 88,
+      "rate": 0.0
+     }
+    },
+    "zero_step_violation": {
+     "failed": {
+      "ci95_task_resampled": [
+       1.0,
+       1.0
+      ],
+      "fires": 31,
+      "n": 31,
+      "rate": 1.0
+     },
+     "passed": {
+      "ci95_task_resampled": [
+       0.0244,
+       0.7073
+      ],
+      "fires": 17,
+      "n": 69,
+      "rate": 0.2464
+     }
+    }
+   },
+   "coverage": {
+    "denominator_failed": 32,
+    "mechanical_signature": 31,
+    "share_mechanical_signature": 0.9688,
+    "share_unclassified": 0.0312,
+    "unclassified": 1
+   },
+   "crosswalk": {
+    "fabricated_fact": {
+     "agentrx": [],
+     "epyc_addition": false,
+     "judge_only": true,
+     "trail": [
+      "Language-only",
+      "Tool-related"
+     ]
+    },
+    "instruction_not_followed": {
+     "agentrx": [
+      "Instruction/Plan Adherence Failure"
+     ],
+     "epyc_addition": false,
+     "judge_only": true,
+     "trail": [
+      "Instruction Non-compliance"
+     ]
+    },
+    "invalid_invocation": {
+     "agentrx": [
+      "Invalid Invocation"
+     ],
+     "epyc_addition": false,
+     "trail": [
+      "Formatting Errors"
+     ]
+    },
+    "loop": {
+     "agentrx": [],
+     "epyc_addition": true,
+     "trail": [
+      "Resource Abuse"
+     ]
+    },
+    "premature_wrap_up": {
+     "agentrx": [],
+     "epyc_addition": true,
+     "trail": [
+      "Goal Deviation"
+     ]
+    },
+    "tool_error": {
+     "agentrx": [
+      "System Failure"
+     ],
+     "epyc_addition": false,
+     "trail": [
+      "Rate Limiting",
+      "Authentication Errors",
+      "Service Errors",
+      "Resource Not Found",
+      "Timeout Issues"
+     ]
+    },
+    "truncation": {
+     "agentrx": [],
+     "epyc_addition": true,
+     "trail": [
+      "Resource Exhaustion"
+     ]
+    },
+    "zero_step_violation": {
+     "agentrx": [
+      "Instruction/Plan Adherence Failure"
+     ],
+     "epyc_addition": false,
+     "trail": [
+      "Instruction Non-compliance"
+     ]
+    }
+   },
+   "domain_split": {
+    "counts": {
+     "none_wrong_outcome": 32
+    },
+    "denominator_failed": 32
+   },
+   "first_visible_deviation": {
+    "by_category": {
+     "zero_step_violation": 31
+    },
+    "first_equals_last_event": 31,
+    "n_failed_with_event": 31
+   },
+   "header": "This report reads only status, exception, category and count fields (and the declared per-step structured fields). There is no decision-to-provenance edge in the recorded traces (intake-2315#record): each 'first visible deviation' is a first-event label, not a counterfactual root cause.",
+   "length_distribution": {
+    "failed": {
+     "mean": 0.062,
+     "n": 32,
+     "p10": 0,
+     "p50": 0,
+     "p90": 0
+    },
+    "passed": {
+     "mean": 1.42,
+     "n": 88,
+     "p10": 0,
+     "p50": 2,
+     "p90": 2
+    }
+   },
+   "loop_counter_source": "src.graph.helpers",
+   "loop_ratio": {
+    "by_role_model_arm": {
+     "frontdoor|None|None": {
+      "mean": 0.0083,
+      "n": 60
+     }
+    },
+    "note": "read within task across paired arms; never pooled with-loop versus without-loop (intake-2338#record)",
+    "within_task_paired_arms": {}
+   },
+   "n": {
+    "failed": 32,
+    "passed": 88,
+    "traces": 120,
+    "unknown_outcome": 0
+   },
+   "reads": [
+    "outcome",
+    "status",
+    "exception",
+    "role",
+    "model_pin",
+    "arm",
+    "task_key",
+    "step_cap",
+    "ctx_limit",
+    "step fields in l2.model.STEP_FIELDS"
+   ],
+   "step_events": {
+    "not_captured": [
+     "exit_status",
+     "tokens_in",
+     "ctx_limit",
+     "step_cap"
+    ],
+    "runs": 120,
+    "with_joined_outcome": 120
+   },
+   "step_ratio_per_role": {
+    "rows": {
+     "frontdoor": {
+      "failed_n": 1,
+      "passed_n": 59,
+      "ratio_failed_over_passed": 0.944
+     }
+    },
+    "step_cap": null,
+    "zero_step_traces_excluded": true
+   }
+  },
+  "step_bearing": 120
+ },
+ "S2_hil15c_eval": {
+  "rc": 0,
+  "summary": {
+   "failed_with_tool_dependency": 6,
+   "labels_failed": 11,
+   "labels_total": 80,
+   "no_tool_fail": 5,
+   "no_tool_runs": 40,
+   "runs_with_tool_dependency": 40,
+   "step_bearing": 80
+  },
+  "vs_filed": {
+   "first_mismatches": [],
+   "leaves_compared": 81,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  }
+ },
+ "S2_hil15d_eval": {
+  "rc": 0,
+  "summary": {
+   "runs_without_steps_dropped": 0
+  },
+  "vs_filed": {
+   "first_mismatches": [],
+   "leaves_compared": 209,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  }
+ },
+ "S3_hil15_auc": {
+  "failed_total": 11,
+  "runs_total": 80,
+  "table": {
+   "auc_out_of_fold": {
+    "size": 0.1078,
+    "size+composition": 0.1078,
+    "size+composition+degree_matched_counterfeit": 0.1078,
+    "size+composition+observed_dependency": 0.1078
+   },
+   "deltas": {
+    "counterfeit_minus_composition": {
+     "ci95_task_resampled": [
+      0.0,
+      0.0
+     ],
+     "delta_auc": 0.0
+    },
+    "observed_dependency_minus_composition": {
+     "ci95_task_resampled": [
+      0.0,
+      0.0
+     ],
+     "delta_auc": 0.0
+    },
+    "observed_dependency_minus_size": {
+     "ci95_task_resampled": [
+      0.0,
+      0.0
+     ],
+     "delta_auc": 0.0
+    }
+   },
+   "edge_definition": "observed (intervention-validated needs HIL-16 replay)",
+   "n_failed": 6,
+   "n_runs": 40,
+   "n_tasks": 11
+  },
+  "tasks_total_in_run": 20,
+  "vs_filed": {
+   "first_mismatches": [],
+   "leaves_compared": 17,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  }
+ },
+ "S4_hil18a_spectrum": {
+  "human_overlap_sample": "not supplied (--human absent): HIL-12 item 6 sample is a labelled-set obligation, not stored evidence",
+  "join": {
+   "outcome_unknown": 0,
+   "replays_started": 120,
+   "with_steps": 120,
+   "without_steps": []
+  },
+  "l2_agreement_pooled": {},
+  "per_task_pass_fail": {
+   "chain6-hard": [
+    19,
+    1
+   ],
+   "lcg5-hard": [
+    10,
+    10
+   ],
+   "quad6-hard": [
+    17,
+    3
+   ],
+   "runs-hard": [
+    2,
+    18
+   ]
+  },
+  "pre13e693a4_scanner_vs_filed": {
+   "first_mismatches": [],
+   "leaves_compared": 164,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  },
+  "ranking_subtree_current_vs_filed": {
+   "first_mismatches": [],
+   "leaves_compared": 136,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0
+  },
+  "target_tasks": 10,
+  "tasks_reported": 4,
+  "tasks_skipped": [
+   {
+    "n_fail": 0,
+    "n_pass": 20,
+    "reason": "pass-rate not strictly in (0,1) or fewer than 20 labelled replays",
+    "task_key": "primes-hard"
+   },
+   {
+    "n_fail": 0,
+    "n_pass": 20,
+    "reason": "pass-rate not strictly in (0,1) or fewer than 20 labelled replays",
+    "task_key": "strtrap-hard"
+   }
+  ],
+  "usable_tasks": [
+   "chain6-hard",
+   "lcg5-hard",
+   "quad6-hard",
+   "runs-hard"
+  ],
+  "vs_filed": {
+   "first_mismatches": [
+    "/l2_agreement_pooled/zero_step_violation: key only in filed",
+    "/tasks[0]/l2_agreement/by_category/zero_step_violation: key only in filed",
+    "/tasks[0]/l2_agreement/unclassified: 1 vs 0",
+    "/tasks[1]/l2_agreement/by_category/zero_step_violation: key only in filed",
+    "/tasks[1]/l2_agreement/unclassified: 10 vs 0",
+    "/tasks[2]/l2_agreement/by_category/zero_step_violation: key only in filed",
+    "/tasks[2]/l2_agreement/unclassified: 3 vs 0",
+    "/tasks[3]/l2_agreement/by_category/zero_step_violation: key only in filed",
+    "/tasks[3]/l2_agreement/unclassified: 18 vs 1"
+   ],
+   "leaves_compared": 154,
+   "max_abs_float_diff": 17,
+   "mismatches": 9
+  }
+ },
+ "S5_hil16a_verify": {
+  "agrees_with_filed": true,
+  "failed_task_recordings_clean": 11,
+  "filed_failed_clean": 11,
+  "filed_recordings": 80,
+  "filed_unclean": [],
+  "recordings": 80,
+  "turns": 203,
+  "unclean": {}
+ },
+ "inputs": {
+  "filed_auc_table.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/auc_table.json",
+   "sha256": "80e70b11559f364aa50cdb33144efc3ee59df66a6b9a03c667de164a95f4f252"
+  },
+  "filed_hil15c_eval.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15c-20261024/hil15c_eval.json",
+   "sha256": "0d0f638d9129172fb5b8dec63a3b73a3fbc7db267c5815a453868d6f141b6518"
+  },
+  "filed_hil15d_eval.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15d-20261024/hil15d_eval.json",
+   "sha256": "c034b75d2d8c9d8c2c5968c3f8e78fc2a96cff3c264a7565bd520ef961e4d362"
+  },
+  "filed_hil16a_verify.json": {
+   "path": "/mnt/raid0/llm/tmp/hil16a-verify-out/check-20261023T234638Z/result.json",
+   "sha256": "ac81bb4175f081fdc5daff9fc85fa85ba71f688f64602aa0c7ada56707688a1e"
+  },
+  "filed_l2_report.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/l2_report.json",
+   "sha256": "87dbb241ac03cfb9315e140764049a9bcb61de101983b6daae672cf1e42d8e47"
+  },
+  "filed_l2_report_hil15c.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/l2_report_hil15c.json",
+   "sha256": "20405bf9a99b46f018c805d247d9f0ccb9017b0d705b58e738c611212fd08ec6"
+  },
+  "filed_spectrum_report.json": {
+   "path": "/mnt/raid0/llm/tmp/hil18a-spectrum-out/run/driver/spectrum_report.json",
+   "sha256": "2cd4dfb0b2027d31f35827de47693dc8c0580dd5bab559697bd5f9964abcc6fa"
+  },
+  "hil15b_events.sqlite": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/events.sqlite",
+   "sha256": "e5ce10958c6d7de69c0c838f341df3dc56b465247e6b905bda075c112563053c"
+  },
+  "hil15b_labels.json": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/labels.json",
+   "sha256": "eada26fdd134d078c13d0ccb8393f7a4f9604c4b74137f41a87997306d5ddff5"
+  },
+  "hil15b_outcomes.jsonl": {
+   "path": "/mnt/raid0/llm/tmp/hil15b-flagon-out/run-20261023T220108Z/driver/progress/outcomes.jsonl",
+   "sha256": "ace5470c75a90f8df9ffa3a671b5ca78903499402762eeea6c52bc3b84ab75ba"
+  },
+  "hil15b_tasks.json": {
+   "path": "/mnt/raid0/llm/tmp/fillers-3c4ca599/jobs/hil15b_tasks.json",
+   "sha256": "833d307be3958dfe2f99db4b4588a0013be9b778ef31952388f3bb22b1b501f5"
+  },
+  "hil18a_events.sqlite": {
+   "path": "/mnt/raid0/llm/tmp/hil18a-spectrum-out/run/driver/events.sqlite",
+   "sha256": "6f7416d5d23b242b1e41c5e6363f3cd60c51c4bc7026f8d8bc8678b642feafbe"
+  },
+  "hil18a_replays.jsonl": {
+   "path": "/mnt/raid0/llm/tmp/hil18a-spectrum-out/run/driver/replays.jsonl",
+   "sha256": "c68478a57cc4de53634c11beefee19d6daa2297f01d25f3ecee7ffcbded2a5e8"
+  }
+ },
+ "inputs_unchanged_after": true,
+ "orchestrator_code": "95d663e50e35b2636c7a945ec1dc05df50a1a846 (git archive src+scripts+config; filed L2 scan used 13e693a4, an ancestor)",
+ "schema": "brf-t3/cap02-rescan/1"
+}

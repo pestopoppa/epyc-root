@@ -34,7 +34,7 @@
       "blocked": 17,
       "handoffs": 12,
       "oldest_advance": "2026-08-12",
-      "open": 122
+      "open": 121
     }
   },
   "duplicates": {},
@@ -1225,10 +1225,10 @@
     },
     "harness-improvement-loop.md": {
       "blocked": 1,
-      "closed": 36,
+      "closed": 37,
       "guarded": 0,
       "last_advanced": "2026-10-31",
-      "open": 16,
+      "open": 15,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",

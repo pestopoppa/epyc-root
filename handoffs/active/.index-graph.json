@@ -3805,7 +3805,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:53:16Z",
+  "generated_at": "2026-11-02T19:00:33Z",
   "nodes": [
     {
       "age_days": 95,
@@ -9202,15 +9202,15 @@
       "blocked_by": [
         "UFH-01"
       ],
-      "closed": 36,
-      "dispatchable": 16,
+      "closed": 37,
+      "dispatchable": 15,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-improvement-loop.md",
       "id": "UFH-08",
       "last_advanced": "2026-10-31",
       "next_action": "Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts",
-      "open": 17,
+      "open": 16,
       "priority": 0.9422,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-ufh08-hil15b-v2-publish-20261025: missing launcher: no accepted so",
