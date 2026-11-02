@@ -28,6 +28,7 @@ A source replay corrected the R23-62 window-3 historical comparison to 12.0184 t
 - **Every measurement declares a stop contract before launch**: the question/decision, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility rules, and the valid evidence it reuses first. Incremental records are saved so a stop loses nothing; runs never go to completion for their own sake.
 - **Caveat**: formal-gate cells (promotion/ratification) stay **futility-only** at interim looks until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN — an interim look can kill a gate cell, never pass it.
 - **Case**: RTG-58 replaced two planned 4–5 h comparisons with one long and two short runs and got an unambiguous answer.
+- **Per-cell cache reset (BRF-T3 E5)**: a decision-grade timing cell needs a per-cell page-cache reset plus a witness on its result row. The E5 harness had dropped caches only between model groups, so the C1b cells inherited the C1 cells' warm interleaved layout. Manifests now state `cache_reset: per_cell`. Host-wide `drop_caches` runs only under a whole-host hold; otherwise a scoped `numa_evict` runs, which does not guarantee a cold cache. Code and note: research `scripts/lib/cell_cache_reset.py`, `docs/protocols/numa-placement-measurement-protocol.md` §1.2. Evidence: [T3 progress](../progress/2026-11/2026-11-02-ws58-brf-t3.md).
 
 ### Source References (2026-11-02 ws58)
 - [measurement-sufficiency.md](../docs/guides/agent-workflows/measurement-sufficiency.md) — canonical guide
