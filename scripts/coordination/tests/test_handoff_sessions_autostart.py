@@ -94,14 +94,12 @@ class AutoStartTests(AutoStartFixture):
     def test_ranking_engine_brief_backlog_and_log(self):
         reg, _ = self.dispatch()
         S = reg["sessions"]
-        # max_live=2: the gpu-unblocking handoff first (score 1.0), then the best backlog-priority rank (zed, rank 1);
-        # alpha (rank 9) is NOT started although it sorts first alphabetically
-        self.assertEqual(sorted(k for k in S if k != "codex-gen"), ["mid", "zed"], S.keys())
+        # gate (operator 23:35Z): only the handoff with a REAL stuck row (mid) is started; zed/alpha are heuristic-only
+        self.assertEqual(sorted(k for k in S if k != "codex-gen"), ["mid"], S.keys())
         self.assertTrue(S["codex-gen"]["generalist"], "codex-gen is an ordinary managed session, always registered")
-        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(len(self.calls), 1)
         self.assertIn("handoffs/active/mid.md", self.calls[0]["prompt"])
-        self.assertIn("handoffs/active/zed.md", self.calls[1]["prompt"])
-        for slug in ("mid", "zed"):
+        for slug in ("mid",):
             e = S[slug]
             self.assertEqual(e["engine"], "claude", "registry default_engine knob")
             self.assertEqual(e["status"], "live")
@@ -115,12 +113,14 @@ class AutoStartTests(AutoStartFixture):
         log = self.log_text()
         self.assertIn("AUTO-START mid handoff=handoffs/active/mid.md engine=claude", log)
         self.assertIn("rows=row-gpu-1", log)
-        self.assertIn("AUTO-START zed handoff=handoffs/active/zed.md engine=claude", log)
+        self.assertNotIn("AUTO-START zed", log, "heuristic-only handoffs wait while a real-row handoff needs a session")
         self.assertNotIn("AUTO-START alpha", log)
-        # the stub pids are dead: the next pass reaps the turns, parses session ids, and fills the freed slots with alpha
+        # the stub pid is dead: the next pass reaps the turn, parses the session id; mid now HAS a session, so no real-row
+        # handoff is left without one -> heuristic handoffs may take up to HEURISTIC_SLOTS (2): zed (rank 1) then alpha
         reg, _ = self.dispatch()
         S = reg["sessions"]
         self.assertEqual(S["mid"]["session_id"], "claude-sess-1")
+        self.assertIn("zed", S)
         self.assertIn("alpha", S)
         self.assertNotIn("closed", S, "a handoff with no open task never gets a session")
 
@@ -157,7 +157,7 @@ class AutoStartTests(AutoStartFixture):
         hs.save(hs.reg_path(self.flags), reg)
         reg, _ = self.dispatch()
         n = len(self.calls)
-        self.assertEqual(n, 2)
+        self.assertEqual(n, 1, "only the real-row handoff starts on the first pass")
         # make the started pids "alive": a second pass must not start the same handoffs again
         with patch.object(hs, "alive", return_value=True):
             reg, _ = self.dispatch()
@@ -181,6 +181,12 @@ class YieldTests(AutoStartFixture):
         with patch.object(hs, "alive", return_value=True):
             reg, _ = self.dispatch()
         self.assertEqual(self.calls, [], "never killed or replaced mid-task; cap is full")
+        self.assertFalse(reg["sessions"]["alpha"].get("yield"), "sticky: a LIVE session keeps its slot (operator 23:35Z)")
+        # after two consecutive no-op turns it is no longer sticky -> yields to the higher-ranked handoff
+        reg["sessions"]["alpha"].update({"noop_turns": 2, "last_effect": None})
+        hs.save(hs.reg_path(self.flags), reg)
+        with patch.object(hs, "alive", return_value=True):
+            reg, _ = self.dispatch()
         self.assertTrue(reg["sessions"]["alpha"]["yield"])
         self.assertIn("YIELD alpha: handoff rank #", self.log_text())
         # its turn ends (pid gone, wrap-up landed): not resumed for new work although it has advanceable tasks; mid gets the slot
@@ -625,7 +631,7 @@ class InventoryTests(_DSHBase):
             reg, _ = self.dispatch()
         S = reg["sessions"]
         started = [k for k, e in S.items() if e.get("auto_started")]
-        self.assertEqual(sorted(started), ["mid", "zed"], "slots filled by auto-start while alpha's rows run")
+        self.assertEqual(sorted(started), ["mid"], "the real-row handoff is started while alpha's rows run (zed is heuristic-only)")
         self.assertEqual(S["alpha"]["work_state"], "pause")  # nothing open but its own running rows -> paused, slot given away
         self.assertIn("PAUSE alpha: waiting on row(s) run-1, run-2", self.log_text())
         data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
