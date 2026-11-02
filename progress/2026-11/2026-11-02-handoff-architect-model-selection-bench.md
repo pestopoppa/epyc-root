@@ -23,3 +23,11 @@ Recovered the previous wrap-up publication failure: merged concurrent origin/mai
 ## 00:30Z — Preserve reproducible EffiBench-X patch bundle
 
 Preserved all four acceptance-gate EffiBench-X patches, SHA-256 checksums and pinned-upstream reconstruction instructions in artifacts/effibench-x-upstream-20261102/. All checksums pass. The 308 DATED dataset files are absent locally; reconstruct and pin them, apply the two exclusions, and integrate the instrument before marking adoption complete. Current GPU recipe and test dependency checks have registered completion events; no inference row published. GitNexus reports this lane unindexed.
+
+## 00:30Z — Prepare current-model GPU row and EffiBench acceptance inputs
+
+Consumed current GPU configuration and EffiBench test dependency reports. Current Qwen3.8-27B Q8 and DFlash2 weights exist, but the old architect launcher uses a stale in-tree kernel and differs from current serving shape; recipe and registry disagree on draft max 8 versus 7. Delegated a production-store keeper-safe GPQA row draft, the eight existing regression tests in a disposable environment, and revision-pinned DATED dataset reconstruction with both exclusions. Registered all completion files; no inference launched or row published.
+
+## 00:31Z — Prepare current-model GPU row and EffiBench acceptance inputs
+
+Consumed current GPU configuration and EffiBench test dependency reports. Current Qwen3.8-27B Q8 and DFlash2 weights exist, but the old architect launcher uses a stale in-tree kernel and differs from current serving shape; recipe and registry disagree on draft max 8 versus 7. Delegated a production-store keeper-safe GPQA row draft, the eight existing regression tests in a disposable environment, and revision-pinned DATED dataset reconstruction with both exclusions. Registered all completion files; no inference launched or row published.
