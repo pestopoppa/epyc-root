@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 708
+      "open": 713
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -233,7 +233,7 @@
     },
     "autokernel-cross-workload-keep-gate.md": {
       "blocked": 0,
-      "closed": 25,
+      "closed": 26,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 11,
@@ -245,7 +245,7 @@
       },
       "row_id": "INF-75",
       "state": "active",
-      "total": 36
+      "total": 37
     },
     "autokernel-orchestrator-actor-backend.md": {
       "blocked": 0,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 387,
+      "open": 392,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 727
+      "total": 732
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
