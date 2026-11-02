@@ -87,6 +87,9 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
   row `brf-exp04-pf1-crossover-pilot-20261102`, published by ws58 2026-11-02).
   Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff (PF1-EXP04 filed with the owner's EXPAND/REVISE/INCONCLUSIVE review).
 - [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](tool-output-compression.md) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+  Row `brf-exp09-pilot-20261102` (ws58; one CPU quarter, cap 45 min, own v10 kernel-store llama-server on :18409,
+  worker Qwen3.6-35B-A3B-MTP-Q8_0, greedy, MTP off). Control = current `_spill_output` (orchestrator `3a428cb3`,
+  executed unchanged). Corpus: 12 frozen failing logs, [`exp09-failing-log-corpus-manifest-20261102.json`](../../docs/design/backlog-refactor-2026-11/exp09-failing-log-corpus-manifest-20261102.json).
 - [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot on the SERVED config, bounded at <=76 generations. Owner:
   [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102-v2` (supersedes `brf-cap04-pilot-20261102`, whose critic ran thinking OFF and so did not describe the served model) on the MI210 `mi210_0,184-191`;
   est: provisional; pilot: bounded <=76 generations, 2.5 h cap (expected ~1.75 h, estimate 7800 s). Metric: accuracy, higher is better. Identity: frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 (sha c1283d8b) + architect_critic Qwen3.8-27B-Q8_0
