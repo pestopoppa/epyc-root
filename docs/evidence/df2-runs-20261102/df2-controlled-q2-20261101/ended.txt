@@ -1,0 +1,7 @@
+rc=1 time=2026-11-02T00:13:40Z reason=job-rc-1:exited
+job_id=h-df2-11-controlled-q2-20261101
+owner=h-df2
+step=job-run
+estimated_wall_s=1200
+started=2026-11-02T00:13:34Z
+regions=0-23

@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-sl2-fresh-cpu-20261101/launcher.out",
+ "elapsed_s": 70,
+ "ended": "rc=0 time=2026-11-01T23:41:45Z reason=complete",
+ "engine_sha256": "316830c77eefeda21a4ebf70aab3fe05977e53e58696fd9f582020614d0921c4",
+ "first_unit_at": "2026-11-01T23:41:45Z",
+ "id": "df2-sl2-fresh-cpu-20261101",
+ "launcher_sha256": "3a6723a4a07f7acd5d0eaa874a38aad446eecfe3c3f7cb9d5d651080b76c981f",
+ "passed_at": "2026-11-01T23:41:45Z",
+ "regions": "0-23",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/handoff-df2-sl2-fresh-20261101/results.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": "ORPHANS [1180910, 1180912]: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+}
