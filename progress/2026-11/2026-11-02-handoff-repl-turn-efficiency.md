@@ -64,3 +64,9 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `strategy-custody6.json`: external-anchor capture byte-binding prototype passed four offline tests for tampering, identity mismatch, symlink/path traversal and wrong binder hash. It verifies bytes only; independent trusted anchors, protected capture root, plan completeness, scorer, server/model identity and grant provenance still require real integration. The referenced lane binder is untracked and was not adopted or modified.
 - Delegated integration and a prospective protocol draft with events `strategy-integration7` and `strategy-protocol7`; no threshold or measurement warrant is invented. Delegated model-free Omega logging repair, event `omega-offline7`, without retrying its parked lineage.
 - Prior wrap-up pushed `d531c6320c2d22c4d770ba79cc6b7226aa815a5c`, cherry empty. No inference or row publication this turn.
+
+## 01:58Z — Review integrated strategy capture checks and advance producer
+
+- Consumed `strategy-integration7.json`: scratch integration of digest-bound call intents, externally anchored byte binding and exact question/arm coverage passed ten offline tamper and missing/duplicate/unplanned-pair tests. It does not authenticate grant, server, model, score, external channel or measurement warrant and is not publishable.
+- Delegated independent bounded live producer, native belief adapter and model/tokenizer/server identity preparation (`live8`, `adapter8`, `identity8` events); no inference, publication or invented grading rule. Existing protocol and parked-lineage offline preparation events remain pending.
+- Prior wrap-up pushed `5290f910558ee6ef39e791da7d97be749dee7eea`, cherry empty. Existing unrelated untracked files remain untouched.
