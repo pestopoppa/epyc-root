@@ -4,7 +4,7 @@
 **Scratch**: `/mnt/raid0/llm/tmp/mtp-target-precision/` · worktrees: `/mnt/raid0/llm/worktrees/mtp-target-precision-*` NI08 original native writer, source and publication custody: `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; own sparse generated product lane `/mnt/raid0/llm/worktrees/ni08-inf50-native-writer-product-20261007/`. · `/mnt/raid0/llm/tmp/refactor-01a16fc3/` (queued XGrammar sources, build receipts, parity and timing evidence; keep) · `/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/` · `/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/` (published rows; keeper owns reclamation)
 **Categories**: speculative_decoding, hardware_optimization, local_inference, moe_optimization
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
-**Related**: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md), [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
+**Related**: [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution), [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
 
 ## Objective
 

@@ -1709,7 +1709,7 @@ along; the blocker is external and named, and every non-external dependency is n
 - [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout (vidya evidence paths, 13→6 queue with cause separation, guardrail pin, PII-gate surfacing).
 - [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record and regenerated 2026-08-25 readiness artifacts.
 - [`handoffs/completed/frontier-f1-real-task-corpus.md`](../handoffs/completed/frontier-f1-real-task-corpus.md) — the 2026-08-23 completion banner (10/10, stale-prose correction, AP-16 residual pointer) and the W3 ledger row.
-- [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
+- [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
 - [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-frontier-f4-continuity-backup) — the 2026-08-23 EVL-26 checkpoint (restic backend, corrected T0 manifest and size, operator target rejection, W2/W3 unchecked).
 
 ## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary

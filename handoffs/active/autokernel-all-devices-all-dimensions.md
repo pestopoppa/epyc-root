@@ -28,7 +28,7 @@ its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](dflash2-blo
 DS41-C9, DS41-T2, DS41-B14), RTG-58 [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md)
 (np=4 × ~80k is its regime too; KPF gates share G4's slot restore), INF-74
 [`autokernel-concurrent-target-coordination.md`](autokernel-concurrent-target-coordination.md) (stage claims),
-INF-31 [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (dense-mask vs sparse gather), INF-70
+INF-31 [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) (dense-mask vs sparse gather), INF-70
 [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (the 0.80% → 7.22% GPU-overlap floor and
 be2-fa row-exactness), [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) (VB-AK-LONGCTX)
 

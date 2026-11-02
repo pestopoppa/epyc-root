@@ -168,6 +168,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "frontier-f4-continuity-backup"
   },
+  "frontier-f6-upstream-publication.md": {
+   "target": "gemma-challenge-kernel-techniques-v7.md",
+   "track": "frontier-f6-upstream-publication"
+  },
   "gpu-acceleration-path.md": {
    "target": "mi210-serving-program.md",
    "track": "gpu-acceleration-path"
@@ -215,6 +219,10 @@
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "lightning-attention-port"
+  },
+  "llama-cpp-dsa-contribution.md": {
+   "target": "gemma-challenge-kernel-techniques-v7.md",
+   "track": "llama-cpp-dsa-contribution"
   },
   "loop-state-offraid-backup.md": {
    "target": "engineering-hygiene-backlog.md",
@@ -504,6 +512,10 @@
    "target": "RTG-22",
    "track": "frontier-f4-continuity-backup"
   },
+  "EVL-27": {
+   "target": "INF-16",
+   "track": "frontier-f6-upstream-publication"
+  },
   "EVL-30": {
    "target": "RTG-22",
    "track": "integration-test-coverage"
@@ -603,6 +615,10 @@
   "INF-30": {
    "target": "EVL-02",
    "track": "lightning-attention-port"
+  },
+  "INF-31": {
+   "target": "INF-16",
+   "track": "llama-cpp-dsa-contribution"
   },
   "INF-34": {
    "target": "INF-22",

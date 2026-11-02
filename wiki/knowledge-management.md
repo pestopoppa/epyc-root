@@ -1000,7 +1000,7 @@ program); **verified** for the publication gates (frontier-f6 upstream publicati
 ### Source References (2026-09-15)
 
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — the carrier contract, the write-side rule, the citation gate, and the mutation audit.
-- [frontier-f6-upstream-publication.md](../handoffs/active/frontier-f6-upstream-publication.md) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
+- [frontier-f6-upstream-publication.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
 - [docs/publication/social/README.md](../docs/publication/social/README.md) — the append-only social conversation ledger schema and gates.
 
 ## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
@@ -1483,7 +1483,7 @@ routed to `retired_from_public_claims`. Three transferable design choices:
   projection contract and the dependency-evidence boundary the SC39 call extends
 - [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
   one-ladder-per-class invariant, read for this compile
-- [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md)
+- [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication)
   W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
 - [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
   §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
@@ -2835,7 +2835,7 @@ as pool identity travels with a recall number.
 
 ### Source References
 
-- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) —
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) —
   the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
   containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
 - [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)

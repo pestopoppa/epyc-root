@@ -1,5 +1,7 @@
 # Gemma-Challenge Kernel Techniques → v7-Experimental Candidates
 
+> **Fold destination** (BRF-T1-F22, BRF-T1-1, route 1a, 2026-11-02): absorbs 2 handoff(s) as `## Track:` sections at the end of this file (`frontier-f6-upstream-publication.md`, `llama-cpp-dsa-contribution.md`). The body above the first track is the former `gemma-challenge-kernel-techniques-v7.md`.
+
 > **NI08 source-only start here — 2026-10-07:** `K11-REPEAT-SUMMARY-SOURCE` and the prospectively enrolled `VB-K11-REPEAT-SUMMARY-CONFORMANCE` own the current requested-repeat reporting correction and whole-module synthetic controls. Final source/native acceptance is still open. The v7 findings below are dated history; verify current source and frozen production identity before any experimental work. Live natural-prose determinism and kernel runs remain separate gates.
 
 **Status**: active — onegraph structural check ✅ (re-audited) + HIP graph infra verified ✅ + **K2 MI210 smoke-test/bench ✅ (2026-07-11)**. K2: per-decode HIP graph capture engages on MI210 and is net-positive on Q8 (A4B MoE decode +4.3% / **spec-dec +25%**; dense-31B +6.1% / +3.4%) — but A4B **Q4** spec-dec regresses ~−5%. **K7 root-caused it: the thrash is VERIFY-side** (target verify batch = n_drafted+1 varies with acceptance → warmup resets), NOT the draft loop (which is already shape-stable and replays). The candidate fix **Lever A — a shape-aware graph cache key** was implemented (env-gated) but a clean quiet-host re-eval measured it **NEUTRAL** (Q8 spec-dec −2% with byte-identical output → correctness-safe, no speedup; Q4 +6% noisy) → **NOT landed**, source reverted, preserved as `llama.cpp-experimental/lever-a-shape-key.patch`. The **onegraph single-graph fold is DEFERRED** (very-high effort, lower-EV — it fuses the already-optimal draft decodes, not the verify thrash). GRAPH_OPT=1 and Q8_PREFETCH levers both tested → net-negative, rejected. Also validated graphs generalize beyond gemma4 (Qwen dense/MoE base decode +7–14%; native-MTP spec-dec only +2%, so the +25% is gemma4-external-head-specific). **2026-07-16 v7 cleanup:** K14 HIP backend-ops blocker was resolved in the then-current `experimental-v7-candidate` worktree with flash-attn selector/device-guard fixes; full `test-backend-ops` passed on MI210. `ngram-mod` retest shows workload-dependent speed upside but is not quality-cleared. **2026-07-16 v7 perf/server A/B:** refreshed candidate `8e5c555ab` passed the backend gate earlier, the direct base-decode report and server artifacts captured production-shaped perf, and the launcher guard landed in orchestrator so stack-launched llama-server commands always pin `--device none` and speculative launches also pin `--device-draft none`. **2026-07-19 promotion authority sync:** the authoritative promotion branch is `experimental-v7-refresh-20260716`; the validated promotion candidate is frozen at `6ad45fa3ff` / binary `10098`, and older `experimental-v7-candidate` references are historical evidence only. Scope: lossless only. The narrow upstream-ahead fixes, OP-2 CPU-regression canonical bench, `P-GPU-1` ratification, K5 quality baseline, K35/A1 release artifact, GLM reviewer disposition, and final readiness/server smokes are closed. Post-candidate `12a292f0c` repaired native GLM-MTP serving and `93d945885` added a default-off CPU `CONCAT` dim0 row-partition prototype; those are valuable research deltas but require a fresh exact-tip final smoke before replacing frozen `6ad45fa3ff` as the promotable artifact. Reviewer/control-plane routing is decoupled by operator decision and is not a v7 release blocker; actual promotion is the operator cutover step tracked in `v7-promotion.md`.
@@ -505,3 +507,394 @@ Source: control-plane planning session (audit doc `research/deep-dives/2026-07-1
 ## Non-inference K11 summary-source correction — 2026-10-07
 
 - [x] **K11-REPEAT-SUMMARY-SOURCE — prevent partial or empty repeat sets from reporting task success.** The actual runner previously summarized only available task evaluations, allowing a passed repeat to hide another requested error/missing evaluation; --runs0 also yielded empty-set determinism success. MAIN reviewed exact two-file Researchf770-based source: reject nonpositive repeats before server launch, require every requested repeat to have status ok and boolean task pass, preserve absent oracle NULL. Bind full original test module including actual run_execute fake-server/persisted-summary regressions and existing captured-process cleanup control through VB-K11-REPEAT-SUMMARY-CONFORMANCE before publication. No model, live sampler/stop fix, historical result rewrite or K11.1 natural-prose acceptance. ✅ 2026-10-07 — [MAIN exact source and original30/30](../../artifacts/ni08/k11-repeat-summary-success-acceptance-20261007/README.md). Live K11 determinism remains independently gated.
+
+## Track: frontier-f6-upstream-publication
+<!-- gate: none -->
+
+> Folded from `handoffs/active/frontier-f6-upstream-publication.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F22, route 1a, operator D1/D5; retired row EVL-27 → INF-16). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Frontier F6 — Upstream & Publication Leverage
+
+**Status**: IN PROGRESS — W2 methodology-post draft scaffold + claim backfill landed 2026-06-13; W3 generator + protocol-backfill parser + missing-field summary landed, first P-BENCH-2 section metadata backfilled 2026-06-14, public-scrub gating landed 2026-06-21, internal-alias display scrub landed 2026-06-27, protocol-backfill triage/neighbor-row bleed prevention landed 2026-06-28, pre-attestation historical review separation landed 2026-06-28, generated review queue landed 2026-06-28, and the review-decision overlay retired 325 unverified historical rows from public claims on 2026-07-06; W1/W3/W4 still open
+**Created**: 2026-06-12
+**Priority**: MED — D2 PR is the spearhead and already an ACTIVE queue item
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F6 — read before claiming
+**Related**: [llama-cpp-dsa-contribution.md](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) (D2 = spearhead); MEASUREMENT.md (claims grammar governs every published number); `docs/guides/agent-workflows/research-writer.md` (the persona file was archived 2026-08-16 — this guide is the live surface)
+
+#### Why
+
+Nobody else publishes EPYC CPU-inference engineering at this depth (NUMA laws,
+canonical-measurement discipline, compounding-matrix self-correction, MoE-Spec
+data, roofline). The open-source-only constraint governs deploys, not publishing.
+Returns: upstream maintainers prioritizing PRs we are already waiting on (DSA
+#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators.
+
+#### Waypoints
+
+- [ ] **W1 — D2 PR spearhead** (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help with — upstream citizenship AND our own unlock (V3.2 + GLM-5.1 on 1.1TB). D1 pull/build/smoke is superseded: generic DSA landed through #23346; see the D2 design and profiling gates in `llama-cpp-dsa-contribution.md`. The former GLM-5.2 target was dropped in the 2026-10-29 audit, so select a supported target before specifying a new run. Acceptance: PR submitted upstream.
+- [ ] **W2 — methodology post** (2–3 days, research-writer role): "How we collapsed our own +17% wins to +1.6%: canonical CPU benchmarking on EPYC" — content exists in CPU20 + 2026-04-26 compounding data + MEASUREMENT.md. Venue: blog + llama.cpp discussions cross-post. Acceptance: every number carries the claims grammar. **Draft scaffold + claim backfill landed 2026-06-13**: `docs/publication/canonical-cpu-benchmarking-methodology-draft.md` now separates the April 26 EP-frontdoor `+17% -> +1.6%` collapse from the April 24 CPU2 Q8 microkernel thread-scaling lesson and records evidence readiness per claim. **Publication-prep packet landed 2026-07-06**: the draft now has public-safe claim labels, names the exact April 26 logs behind the main collapse rows, demotes the April 24 Q8 microkernel exact numbers to paraphrase-only unless raw repack logs are found or remeasured, and flags the 2026-06-14 dry-run recipe witness as pre-v6. Not publication-ready: host-attestation IDs/current-era rerun decision and final external scrub remain.
+- [ ] **W3 — public results page** [18 retained rows need protocol evidence adjudication before publication] (optional, 1 day): generated from `RESULTS.md` (models × quant × t/s on EPYC, protocol-tagged). Regenerated per release, never hand-edited. Acceptance: generation script, no manual numbers. **Generator scaffold landed 2026-06-13**: `scripts/publication/generate_public_results.py` emits `docs/publication/public-results-draft.md` from `epyc-inference-research/docs/reference/benchmarks/RESULTS.md`, with every non-protocol-tagged row held for backfill under `MEASUREMENT.md`; tests cover parser/renderer behavior. **Protocol-backfill parser landed 2026-06-14**: `1ec09e1` parses protocol id, `n/reps`, date, and attestation metadata and only promotes complete rows to `publish_candidate`; `epyc-inference-research` `7a3e931` adds initial `P-BENCH-2` metadata to the NUMA throughput section. **Missing-field summary landed 2026-06-14**: the generated draft now summarizes action counts and names missing protocol fields, turning the P-BENCH-2 gap into explicit `missing attestation` rows. **Public-scrub gate landed 2026-06-21**: publish candidates are demoted to `hold_for_public_scrub` if generated fields expose local paths, loopback endpoints, internal role aliases, or operator/internal workflow terms. **Internal-alias display scrub landed 2026-06-27**: generated section/entity/metric fields now rewrite internal role aliases to public-safe labels before rendering and scrub classification. **Backfill triage landed 2026-06-28**: the generated draft separates protocol blockers into `31` P-BENCH rows missing only attestation, `18` evidence-linked rows needing protocol tags, and `325` historical rows needing a verification decision; all `374` rows remain `public-safe surface`. The parser now avoids protocol bleed from neighboring table rows, so a complete protocol marker in one row cannot promote adjacent rows. **Pre-attestation review separation landed 2026-06-28**: the `31` P-BENCH rows dated `2026-03-21` now use `hold_for_historical_attestation_review` rather than ordinary protocol backfill, so they require a real historical attestation artifact or remeasurement instead of current-state retro-certification. **Review queue landed 2026-06-28**: `docs/publication/public-results-review-queue.md` is now generated alongside the draft and groups all `374` rows into `historical-attestation-review=31`, `protocol-tag-needed=18`, and `verification-decision-needed=325`. **Review-decision overlay landed 2026-07-06**: `docs/publication/public-results-review-decisions.json` now routes the `325` unverified historical rows to `retired_from_public_claims` by default, leaving only `31` historical-attestation/remeasurement rows and `18` protocol-tag rows as active public-results blockers. W3 remains open until the 18 retained protocol-tag rows carry complete evidence or are retired/remeasured; the 31 historical-attestation rows were retired from public claims on 2026-11-02.
+- [ ] **W4 — cadence**: one artifact/month max. Candidates queue: NUMA topology laws; gemma4 MTP recipe; closure-inflation/remediation story; instrument-era reconciliation (epistemics piece). Acceptance: queue maintained in this file. **Queue initialized 2026-06-13**; keep unchecked until the first monthly review uses it.
+- [ ] **W5 — social/X conversation ledger**: maintain `docs/publication/social/` as the append-only record of outbound social threads and notable inbound replies, every public claim linked to its in-repo receipt and MEASUREMENT.md grade. Layout + schema + gates: `docs/publication/social/README.md`. Acceptance: every posted thread has a ledger row **before** it goes out; no public number ships without an evidence pointer; corrections appended, never rewritten.
+  - [x] Seed the ledger: README + schema + first transcript ✅ 2026-09-15 — `docs/publication/social/{README.md,conversations.yaml,threads/2026-09-15-x-mi210-low-quants.md}`; the MI210 low-bit-quant thread recorded with its 7 claims linked and its four soft spots. W5 stays open on the pre-post gate.
+
+#### Gates & pitfalls
+
+- NEVER publish F1 personal-task data — real-task corpus and operator workload stay local.
+- Strip personal/infra identifiers from everything published.
+- Only publish numbers that carry a protocol tag (MEASUREMENT.md grade) — dogfooding the claims grammar is the credibility.
+- One artifact per month cap — publishing is yield-capture, not a second job.
+- D1 smoke requires the standing bench-approval; no concurrent inference without per-run approval.
+
+#### Reporting
+
+Tick waypoints here, update master index row, log each published artifact in progress. W1 progress reports also go to llama-cpp-dsa-contribution.md.
+
+#### Publication Cadence Queue
+
+One artifact per month maximum. Do not publish two items in one month to "catch up"; stale drafts stay in queue.
+
+| Candidate | Format | Gate before drafting | Notes |
+|---|---|---|---|
+| Canonical CPU benchmarking collapse story | Blog post + llama.cpp discussion | F6-W2 claim backfill/scrub complete | Draft scaffold exists in `docs/publication/canonical-cpu-benchmarking-methodology-draft.md`. |
+| NUMA topology laws on EPYC | Technical note | P-BENCH-2 references and public-safe diagrams | Focus on quarter/full instance law, not private deployment details. |
+| Gemma4 / MTP recipe | Repro recipe | Local canonical result with protocol tag | Do not publish vendor or upstream claims without local reproduction. |
+| Closure-inflation and remediation | Postmortem | Instrument-era references scrubbed | Teach how stale derived views created false confidence; avoid personal task data. |
+| Instrument-era reconciliation | Epistemics note | MEASUREMENT.md section 5 stable | Use demote/retro-certify/retire-view vocabulary; no operational secrets. |
+
+#### Checkpoints
+
+- 2026-06-13 W2 draft scaffold: added `docs/publication/canonical-cpu-benchmarking-methodology-draft.md`. The draft keeps `+17%` as a historical collapsed observation, distinguishes candidate publishable numbers (`4.32 -> 4.39 t/s`, `+1.6%`; `0.85 -> 1.12 t/s`, `+31.8%`; PPL `6.6985 +/- 0.708`) from claim-ready facts, and points every number at `progress/2026-04/2026-04-24.md` or `MEASUREMENT.md`. Remaining W2: backfill protocol IDs/reps/attestation refs, replace internal paths with public-safe links, and scrub host/personal details before external posting.
+- 2026-06-13 W4 queue scaffold: initialized the publication cadence queue in this handoff with one-artifact/month rule, candidate formats, and gates. This is not a published artifact and does not complete W4 until the first monthly review uses the queue.
+- 2026-06-13 W2 claim backfill: updated the CPU methodology draft to use the April 26 compounding matrix as the main collapse evidence (`EP frontdoor +17%` from `14.63 -> 17.18 t/s` became `+1.6%` from `20.81 -> 21.15 t/s` against proper canonical) and to treat the April 24 Q8 repack rows (`0.85 -> 1.12`, `4.32 -> 4.39`) as a separate microkernel lesson. Evidence pointers now include `epyc-inference-research/data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`, `2026-04-24-q8-8x8-kernel/thread-scaling-summary.md`, `bench_canonical.sh`, `canonical_recipe.py`, and `MEASUREMENT.md`. Remaining W2: public-safe artifact labels, host-attestation IDs, raw-log/reps confirmation for CPU2 rows, final generated recipe snippet, and external scrub.
+- 2026-06-13 W3 generator scaffold: added `scripts/publication/generate_public_results.py`, `tests/publication/test_generate_public_results.py`, and generated `docs/publication/public-results-draft.md` (374 rows). Validation: `python3 -m py_compile` passed; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 2 passed; `uv run --with ruff ruff check scripts/publication/generate_public_results.py tests/publication/test_generate_public_results.py` passed; `python3 scripts/publication/generate_public_results.py --check` passed. Remaining W3: protocol-tag retained rows, scrub public surface, and decide whether the generated draft should move into the public site tree.
+- 2026-06-14 W3 protocol-backfill parsing: `epyc-root` `1ec09e1` adds structured protocol parsing (`protocol-id`, `n/reps`, date, attestation) and keeps incomplete protocol rows in `hold_for_protocol_backfill`; `epyc-inference-research` `7a3e931` tags the `Production Throughput - NUMA Deployment` section with initial `P-BENCH-2, n=5, 2026-03-21` metadata. Validation: `python3 -m py_compile scripts/publication/generate_public_results.py`; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 6 passed; `uv run --with ruff ruff check ...` passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows. Remaining: add attestation refs before promoting the P-BENCH-2 rows to `publish_candidate`, scrub public identifiers, and decide site placement.
+- 2026-06-14 W2 recipe dry-run backfill: captured a non-inference `bench_canonical.sh --dry-run` witness for the Qwen3.6 Q8 methodology example and added both the internal transcript and public-safe command/env shape to `docs/publication/canonical-cpu-benchmarking-methodology-draft.md`. Command used `-n 32 -p 0 -r 5 --dry-run`; wrapper validated and printed the canonical `taskset -c 0-95 numactl --interleave=all ... llama-bench -t 96 -fa 1 -mmp 0 ... -o md` shape without executing `llama-bench`. W2 still remains open: host-attestation IDs, public artifact labels, and raw-log/reps backfill are not complete enough for external publication.
+- 2026-07-06 W2 publication-prep packet: tightened `docs/publication/canonical-cpu-benchmarking-methodology-draft.md` with public-safe claim handles (`F6-METH-C1`, `F6-METH-C2`, `F6-METH-S1`, `F6-METH-P1`), named the April 26 exact-row logs (`V2_q8_cold_canonical_repeat.log`, `E_q8_EP.log`), and made the April 24 Q8 microkernel lesson paraphrase-only unless exact raw repack logs are found or the rows are remeasured. The draft now also marks the 2026-06-14 recipe dry-run as a pre-v6 internal witness that must be regenerated from the current single-kernel recipe before external publication. W2 remains open on host-attestation/current-era rerun decision plus final external scrub.
+- 2026-06-14 W3 generator hardening: changed the public-results generator so explicit but unparseable `P-BENCH`/`protocol-id` markers remain `hold_for_protocol_backfill` instead of falling through to `publish_candidate`. Validation: `python3 -m py_compile scripts/publication/generate_public_results.py`; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 7 passed; `uv run --with ruff ruff check ...` passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows. No current generated rows changed, but the publication bias is now conservative for malformed protocol metadata.
+- 2026-06-14 W3 missing-field summary: `generate_public_results.py` now lists exactly which protocol fields are missing for incomplete protocol-tagged rows and emits an action-count summary in `docs/publication/public-results-draft.md`. Current generated state: 374 total rows, all held for protocol backfill; the P-BENCH-2 section rows now explicitly show `missing attestation`. Validation: `python3 -m py_compile scripts/publication/generate_public_results.py tests/publication/test_generate_public_results.py`; `uv run --with ruff ruff check ...` passed; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 9 passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows.
+- 2026-06-21 W3 public-scrub gate: `generate_public_results.py` now computes a `Scrub status` per generated row, summarizes scrub blockers, and fail-closes protocol-complete rows to `hold_for_public_scrub` when local paths, loopback endpoints, internal role aliases, or operator/internal workflow terms are present. Current generated state: 374 total rows, all still `hold_for_protocol_backfill`; scrub summary is `public-safe surface=364`, `needs public scrub: internal role alias=10`. Validation: `python3 -m py_compile scripts/publication/generate_public_results.py tests/publication/test_generate_public_results.py`; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 12 passed; `uv run --with ruff ruff check ...` passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows.
+- 2026-06-27 W3 internal-alias display scrub: `generate_public_results.py` now rewrites internal orchestration labels such as `frontdoor`, `worker_general`, `toolrunner`, `ingest_long_context`, and architect/coder role aliases to public-safe display labels before row rendering and scrub classification. Current generated state: 374 total rows, all still `hold_for_protocol_backfill`; scrub summary is now `public-safe surface=374`, with the prior 10 `internal role alias` blockers cleared. Validation: `python3 -m py_compile scripts/publication/generate_public_results.py tests/publication/test_generate_public_results.py`; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 13 passed; `uv run --with ruff ruff check ...` passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows.
+- 2026-06-28 W3 protocol-backfill triage + parser containment: `generate_public_results.py` now emits `Protocol Backfill Summary` and `Protocol Status Summary` sections so W3 no longer presents all 374 held rows as one undifferentiated blocker. Current generated state: 374 total rows, all still `hold_for_protocol_backfill`; backfill targets are `attestation=31`, `protocol tag=18`, and `verification decision=325`; scrub remains `public-safe surface=374`. The parser now limits protocol evidence to the current row, section heading, and table preamble, preventing neighboring-row protocol bleed. Validation: GitNexus impact LOW (`impactedCount=0`); `python3 -m py_compile scripts/publication/generate_public_results.py tests/publication/test_generate_public_results.py`; `uv run --with ruff ruff check ...`; `uv run --with pytest pytest -q tests/publication/test_generate_public_results.py` -> 14 passed; `python3 scripts/publication/generate_public_results.py --check` -> current, 374 rows.
+- 2026-06-28 W3 pre-attestation historical review separation: `generate_public_results.py` now recognizes protocol-tagged rows dated before the host-attestation era (`2026-06-12`) that lack attestation. The generated draft now reports `hold_for_historical_attestation_review=31` and `hold_for_protocol_backfill=343`; the review bucket is explicitly `historical attestation or remeasurement`, preventing current-host retro-certification of 2026-03-21 rows. W3 remains open because those rows need a real historical attestation artifact, a rerun under current attestation, or retirement from the public-results candidate set.
+- 2026-06-28 W3 generated review queue: `generate_public_results.py` now writes `docs/publication/public-results-review-queue.md` by default and checks it under `--check`. The queue groups the same `374` generated rows by next review action: `historical-attestation-review=31`, `protocol-tag-needed=18`, and `verification-decision-needed=325`, each with source line, section, entity, metrics, status, and action guidance. Validation: GitNexus impacts LOW for `render_page`/`collect_rows`; py_compile; ruff; focused publication pytest (`17 passed`); `python3 scripts/publication/generate_public_results.py`; and `python3 scripts/publication/generate_public_results.py --check`.
+- 2026-07-06 W3 review-decision overlay: added `docs/publication/public-results-review-decisions.json` and wired `generate_public_results.py` to apply dependency-free JSON review decisions before rendering the generated draft/review queue. The default decision retires `325` unverified historical rows from public claims without mutating the source `RESULTS.md`, while row-specific overrides can re-open selected rows for remeasurement or publication backfill. Current generated state: `374` total rows; `325` `retired_from_public_claims`; `31` `historical-attestation-review`; `18` `protocol-tag-needed`; all `374` remain `public-safe surface`. Validation: publication generator check, py_compile, focused pytest (`20 passed`), and focused ruff passed.
+- 2026-09-15 W5 social-conversation ledger scaffolded: added `docs/publication/social/README.md` (layout, entry schema, inherited scrub/claim-grammar gates), `docs/publication/social/conversations.yaml` (append-only ledger, `social_conversations.v1`), and the seed transcript `docs/publication/social/threads/2026-09-15-x-mi210-low-quants.md` (the posted MI210 low-bit-quant thread, verbatim, plus its four recorded soft spots and evidence pointers). The ledger sits under `docs/`, outside the mkdocs `docs_dir` (`site_src/`), so nothing here is served publicly. W5 remains open on the pre-post gate: every future thread gets a ledger row before it goes out.
+
+- 2026-11-02 W3 historical-attestation disposition: retired the 31 pre-attestation review rows from public claims after a review found no contemporaneous attestation binding the stated results to their runs. March 18 NUMA logs and March 24–28 REAP records are related evidence, not attestation of the March 21 label; the latter groups postdate it. The routing overlay preserves historical source values and allows reconsideration with a valid evidence bundle or separately attested rerun. The 18 protocol-tag rows remain under independent review.
+
+#### Candidate — llama.cpp issue #27442 (2026-08-21, Stage-2b intake-1279#record)
+
+> **PART ONE POSTED 2026-08-23** — [issue #27442 comment](https://github.com/ggml-org/llama.cpp/issues/27442#issuecomment-5385082723),
+> operator-approved, under the operator's account. The row below reasoned that the analysis was
+> blocked on G1 because "posting first offers a critique with no data behind it". On execution that
+> split cleanly in two, and only the second half was ever blocked:
+> the **corrections to the reporter's own artifacts** need no measurement of ours — they are facts
+> about their logs — while **our boundary-sweep numbers** still do. Part one went out and says so
+> explicitly: *"We have not reproduced the bug — we run this architecture on CPU and ROCm, not
+> Metal — so this is analysis of your artifacts, not a second data point."*
+> Every claim was re-derived from the attachments before posting, not carried from the dive:
+> `n_prompt_tokens_cache` occurs **14×, all zero**; token `248046` = `<|im_end|>`; both `_noflash`
+> logs contain `flash_attn = enabled`; sampler at `temp = 0.300`, so the intermittency may be the
+> sampler rather than a stale state; `70aff2525` is **2026-08-20T10:43:59Z** against their newest
+> build `dc72703` at **2026-08-19T15:44:15Z**, ~19 h earlier. The post does **not** claim a fix
+> exists, and it rules #27450 *out* with the reason: it touches only the `mpp::tensor_ops` path,
+> gated on `has_tensor` = `supportsFamily:MTLGPUFamilyMetal4_GGML` (`ggml-metal-device.m:743`),
+> which an M4 does not report. Thread was OPEN with **zero** comments at post time, so this is the
+> first reply. **Part two — our own greedy sweep — remains blocked on G1.**
+
+- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the results half.**
+      Unusually strong material for a low-cost contribution: the issue is OPEN with **zero comments and
+      no maintainer reply**, and four things in it are demonstrably wrong or unsupported —
+      (a) its cache/checkpoint localization is refuted by **its own attached log** (`n_prompt_tokens_cache = 0`
+      on all fourteen requests: no cache engaged, every failure a cold full prefill, which also explains
+      why all three of the reporter's workarounds were ineffective); (b) its exonerating control cannot
+      detect wrong output at all — `llama-bench` feeds `std::rand()` tokens and never samples the model;
+      (c) the file named `_noflash` logs flash attention being **force-enabled** for quantized V cache;
+      (d) all four builds tested **predate** Metal fixes #27390 (2026-08-20T10:43Z, which rewrote exactly
+      the quantized-KV + FA path every run used) and #27450.
+      **Blocked on G1** — not because the analysis needs it, but because posting first offers a critique
+      with no data behind it. With our own greedy boundary sweep attached it is a contribution; without
+      it, it is an argument. Also worth offering: the cheapest decisive experiment nobody has run is a
+      single **temperature-0** trial on a **non-degenerate** prompt, which separates "the model wants to
+      stop after 18K tokens of repeated pangram" from a kernel defect.
+
+## Track: llama-cpp-dsa-contribution
+<!-- gate: none -->
+
+> Folded from `handoffs/active/llama-cpp-dsa-contribution.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F22, route 1a, operator D1/D5; retired row INF-31 → INF-16). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### llama.cpp DSA Contribution — DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)
+
+**Status**: RE-AUDITED 2026-07-17 — **generic DSA support LANDED via upstream #23346** for DeepSeek32, NOT the tracked draft #21149 -> the "track #21149 to merge" objective and D1 are SUPERSEDED. Important correction closed: pre-fix source registered `LLM_ARCH_GLM_DSA` and loaded GLM DSA tensors but did not instantiate `llama_kv_cache_dsa` for GLM; experimental-v7 commit `3dee86a5a` now wires GLM to the DSA cache/runtime path, aliases the DeepSeek32 DSA graph, requires live GLM indexer tensors, and force-builds GLM indexer Hadamard rotation tensors. Runtime GLM-5.2 fixed-`indexer_top_k=32` scaling now classifies the landed path as **DSA-DENSE-MASK**: generic DSA top-k/indexer engages in prompt processing, but final attention still scales with full KV. Live remnants: D2 sparse final-attention implementation/profiling + D3 CPU AVX-512 Lightning-Indexer, re-anchored to the landed code and re-gated on fresh profiling. All inference gated per `feedback_no_concurrent_inference.md`.
+**Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
+**Lifecycle**: live — audit override (2026-07-18): the original #21149-merge objective is SUPERSEDED, but the D2/D3 CPU sub-tracks are genuinely live (re-anchored to landed code, gated on fresh profiling). Prevents the dashboard heuristic from dimming this as "superseded". See [`stale-open-audit-2026-07-18.md`](frontier-lab-automation.md#track-stale-open-audit-2026-07-18).
+**Updated**: 2026-07-17 — DSA landed audit reset + GLM cache/runtime wiring fix + runtime `DSA-DENSE-MASK` classification recorded; prior 2026-05-28 deepseek4 section retained as adjacent history.
+**Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
+**Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
+**Parent indices**:
+- [`inference-research-index.md`](inference-research-index.md) (architectural research)
+- [`inference-research-index.md`](inference-research-index.md) (kernel engineering)
+**Related**:
+- [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — GLM-5.2 active target; generic DSA landed and GLM cache/runtime wiring closed on experimental-v7 `3dee86a5a`; sparse final-attention and quality gates remain open
+- [`multiscreen-attention-evaluation.md`](attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
+- [`triattention-kv-selection.md`](attention-matching-kv-compaction.md#track-triattention-kv-selection) — retrofit selection (Expected Attention) for comparison vs DSA's integrated selection
+- [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) — Phase 5 candidate (CPU26) AVX-512BW Lightning Indexer kernel; **D3 sub-track lives here**
+- [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — archived 2026-06-12; superseded but format template
+- intake-506 (DeepSeek-V3.2 paper, arxiv:2512.02556)
+- [V3.2 deep-dive](../../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md) — full mechanism analysis + "How we'd contribute" section
+
+#### 2026-07-16 Audit Reset — DSA has LANDED (this handoff's premise is superseded)
+
+**The tracked PR #21149 is no longer the path.** DSA support reached our v6 fork via a DIFFERENT upstream PR — **#23346, "DeepseekV32ForCausalLM with generic DeepSeek Sparse Attention (DSA) implementation."** Verified in v6 (2026-07-16):
+- Arch enums registered: **`LLM_ARCH_DEEPSEEK32` ("deepseek32")** AND **`LLM_ARCH_GLM_DSA` ("glm-dsa")**.
+- `src/models/glm-dsa.cpp` is present and loads GLM lightning-indexer tensors; `src/llama-kv-cache-dsa.cpp` implements the Lightning-indexer KV cache.
+- Pre-fix source model-memory setup created `llama_kv_cache_dsa` only for `LLM_ARCH_DEEPSEEK32`; `LLM_ARCH_GLM_DSA` fell through to ordinary `llama_kv_cache`. Experimental-v7 `3dee86a5a` now routes GLM through `llama_kv_cache_dsa` and the DeepSeek32 DSA graph; current-source synthetic tests and exact `READY` GLM smoke passed.
+
+**What this changes:**
+- **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
+- **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
+- **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-17) found generic DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. The GLM cache/runtime prerequisite is now closed by `3dee86a5a`; runtime GLM-5.2 scaling confirmed **DSA-DENSE-MASK** (`23.81 -> 21.04 -> 17.28 t/s` as prompt tokens grew `2900 -> 5906 -> 11921` under fixed `indexer_top_k=32`). D2 now needs sparse final-attention implementation/profiling, not more activation proof. D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
+- **Cross-reference (2026-10-04, ak-ds41-main): DeepSeek-V4.1-Flash shows the same dense-mask shape.** Code reading at
+  `dd6c9cdbd` (`src/models/deepseek41.cpp:1095-1100`): the top-k becomes a −inf mask over all compressed rows
+  (`build_top_k_mask`), and `ggml_concat(raw_k, comp_k)` copies the full compressed plane every layer, every step
+  (~29 KiB per context token per step; arithmetic, not measured). Recorded as INF-77 DS41-C123 in
+  [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md); AutoKernel's route onto that graph path is
+  INF-81 AKX-ALL-12 in [`autokernel-all-devices-all-dimensions.md`](autokernel-all-devices-all-dimensions.md). The
+  generic sparse-gather kernel stays here (D2.4/D2.5).
+  - **2026-07-19 note — D2 is also the LONG-CONTEXT GLM-quality enabler.** GLM-5.2 emits malformed output past ~12K prompt tokens (32K needle FAILS) because the `indexer_top_k` cap doesn't scale with context; only hand-tuned next-power-of-two caps stay coherent (`2048`≤2K, `4096`≤3K, `16384`≤12K). Finishing D2 (a real sparse/indexed final-attention path with a correct, length-scaling top-k) is the **durable fix** for >12K GLM coherence. **But it is ORTHOGONAL to GLM's reviewer/judge quality** — those prompts fit ≤12K and are being tested NOW on external ground-truth benchmarks (see [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md) 2026-07-19 directive). Do not gate the reviewer-quality verdict on D2.
+
+#### Objective (revised 2026-07-16)
+
+Generic DSA is landed upstream (#23346) and present in v6/v7. The objective is no longer "track a draft PR to merge" — it is: (1) use the now-wired **GLM-5.2** DSA cache/runtime path (`3dee86a5a`) as the active large-MoE DSA testbed — **DeepSeek-V3.2 is NOT a planned eval** (GLM-5.2 covers the DSA large-MoE niche; V3.2 stays a supported-arch fact/fallback, not worth a second ~380 GB download + inference window), and (2) evaluate whether the two CPU-performance contribution opportunities (D2 sparse-compute attention reality, D3 AVX-512BW Lightning-Indexer kernel) are still real against the LANDED code, and pursue them upstream only if the re-gating checks pass. Original PR-#21149 tracking context is retained below as history.
+
+##### 2026-07-16 static D2 audit
+
+Read-only landed-code audit found:
+- Prompt and decode both route through the same `decode()`/`process_ubatch()`/`build_graph()` path; the main distinction is `ubatch.n_tokens`, not a separate DSA graph.
+- DSA input tensors are built per `ubatch`, with no decode-only `n_tokens == 1` gate.
+- `top_k` selection is computed for all tokens in the current ubatch.
+- The selected `top_k` is applied by editing a dense KQ mask before standard attention.
+- The final attention call still appears dense: `ggml_flash_attn_ext(...)` over full `k/v`, or `ggml_mul_mat(k, q)` plus softmax mask.
+
+GLM correction (2026-07-17): this conclusion applies to the generic DSA path once a DSA cache exists. Pre-fix `LLM_ARCH_GLM_DSA` source loaded DSA metadata/tensors but did not instantiate `llama_kv_cache_dsa`; experimental-v7 `3dee86a5a` closes that cache/runtime gap. Older GLM >64K run artifacts came from a stale `build-hip` binary and should not be treated as current-source long-context proof.
+
+Conclusion: current generic DSA code appears to do top-k selection in both prompt processing and decode, but static inspection does not prove sparse-compute attention. Runtime closeout on GLM-5.2 UD-IQ2_M later confirmed **DSA-DENSE-MASK**: with fixed `indexer_top_k=32`, Lightning/indexer caches engaged at 4K/8K/16K, but prompt throughput declined with context length (`/mnt/raid0/llm/tmp/glm52-current-source-kv-scaling-20260717T130222Z/runtime_summary.md`).
+
+#### PR State Snapshot (2026-04-29)
+
+| Property | Value |
+|----------|-------|
+| PR # | [#21149](https://github.com/ggml-org/llama.cpp/pull/21149) |
+| Author | fairydreaming |
+| State | **DRAFT, ACTIVE** |
+| Opened | 2026-03-29 |
+| Last commit | 2026-04-28 |
+| Commits | 58+ |
+| Backends working | CPU ✅, CUDA ✅ (WMMA), Vulkan ✅ (after #22177 fix); Metal ❌ not mentioned |
+| Author's caveat | *"Due to the way it's currently implemented it doesn't improve long context performance yet"* |
+| Author's help requests | (1) benchmark verification on GPU clusters, (2) Vulkan debugging, (3) implicit gap: CPU benchmarks |
+| Models supported | DeepseekV32ForCausalLM (V3.2 Exp, V3.2, V3.2 Speciale) |
+
+##### What's in the PR
+
+- New ggml ops: `GGML_OP_HADAMARD`, `GGML_OP_LIGHTNING_INDEXER`
+- New KV cache classes: `llama_kv_cache_dsa`, `llama_ik_cache` (indexer keys)
+- Specialized flash-attention MMA kernel sparse path (token generation)
+- Conversion tooling: requires `add_bos_token=true` in tokenizer_config.json before conversion
+- ~1000+ LOC across multiple files (model/architecture + ggml ops + KV cache + tests + benchmarks)
+
+##### What's NOT in the PR yet (per author)
+
+- Long-context speedup not yet realized — sparse path applies to token generation only, not prompt processing
+- Author flagged a separate follow-on PR for "advanced sparse fattn kernel optimization" (extending sparse path to PP)
+- No CPU-only benchmarks published — all reported numbers are CUDA WMMA
+- Metal backend support
+
+#### Three Contribution Sub-Tracks
+
+##### D1 — Pull / Build / Smoke Test (SUPERSEDED; historical #21149 path)
+
+**Effort**: ~1 day
+**Visibility**: Medium (first CPU data point on a CUDA-dominated PR)
+**Risk**: Low (read-only contribution; just observation)
+**Inference gate**: REQUIRED per `feedback_no_concurrent_inference.md`
+
+**Work items**:
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| D1.1 | Verify disk space for V3.2 Q4_K_M GGUF (~380 GB) on `/mnt/raid0` (3.7 TB total per `user_hardware`) | SUPERSEDED | V3.2 is no longer the planned first DSA eval target. |
+| D1.2 | Pull PR #21149 as feature branch in `llama.cpp-experimental` | SUPERSEDED | DSA reached v6 through #23346; do not pull the old draft as the live path. |
+| D1.3 | Build on EPYC with our standard CPU-build flags | SUPERSEDED | Use current v6/experimental-v7 code for checks. |
+| D1.4 | Download V3.2-Exp Q4_K_M GGUF | SUPERSEDED | GLM-5.2 is the active large-MoE DSA target. |
+| D1.5 | Convert if no Q4_K_M available — `convert_hf_to_gguf.py` per PR's `add_bos_token=true` requirement | SUPERSEDED | Historical #21149 context only. |
+| D1.6 | **Quality gate**: GSM8K + GPQA-Diamond at 32K context, replicate "V3.2-Exp ≈ V3.1-Terminus" | SUPERSEDED | Replace with GLM-5.2 load/smoke + long-context DSA probe. |
+| D1.7 | **Throughput gate**: t/s at 16K / 64K / 128K context, V3.2 with DSA active vs MLA-only baseline | SUPERSEDED | Reprofile D2/D3 only after landed-code GLM evidence. |
+| D1.8 | Post results as comment on PR #21149 | SUPERSEDED | No live PR comment action. |
+
+**Decision gate replacement**: GLM-5.2 now loads coherently, the landed DSA path processed a stale-binary true >64K prompt with `Lightning Indexer enabled` (`/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/`), and current-source `3dee86a5a` smokes prove GLM cache/runtime wiring (`/mnt/raid0/llm/tmp/glm52-current-source-ready-smoke-20260717T092344/`). Current-source fixed-`indexer_top_k=32` KV scaling (`/mnt/raid0/llm/tmp/glm52-current-source-kv-scaling-20260717T130222Z/runtime_summary.md`) confirmed D2 is live: final attention behaves as dense-mask. If the CPU Lightning-Indexer is compute-bound, D3 may also be live.
+
+##### D2 — Sparse-compute reality check / possible follow-on PR
+
+**Effort**: ~1-2 weeks
+**Visibility**: HIGH (real upstream contribution, closes the long-context-speedup gap that's currently the PR's biggest known limitation)
+**Risk**: Medium (kernel work; CUDA + CPU paths both involved)
+
+Historical #21149 context said sparse path applied only to **token generation** (`batch_size=1`) and prompt processing remained dense. Landed-code static audit does **not** show that exact split: top-k selection appears in both prompt processing and decode. The live question is whether the final attention op is still dense-mask compute in both paths, which would explain why long-context speedups may remain unrealized.
+
+Author's note (paraphrased): *"separate PR needed for advanced sparse fattn kernel optimization"*
+
+**Work items**:
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| D2.1 | Read the landed #23346 sparse path — identify whether DSA is prompt-only, decode-only, or shared | DONE | Static audit: top-k selection is shared across prompt/decode; final attention appears dense/mask-based. ✅ 2026-07-16 |
+| D2.2 | Runtime closeout: profile one prefill batch and one single-token decode with a DSA model | DONE | Current-source GLM fixed-top-k run completed 4K/8K/16K with `max_tokens=1`; Lightning/indexer caches engaged and prompt throughput declined with KV length. ✅ 2026-07-17 |
+| D2.3 | Vary KV length while keeping `indexer_top_k` fixed | DONE | Full-KV scaling observed: `23.81 -> 21.04 -> 17.28 t/s` at `2900 -> 5906 -> 11921` prompt tokens, classification `DSA-DENSE-MASK`. ✅ 2026-07-17 |
+| D2.4 | If dense-mask scaling is confirmed, design sparse-fattn extension | SCOPED | 2026-07-18 source prep: existing `ggml_get_rows()` is not sufficient because KV positions sit on dim2; useful path is a new indexed DSA attention op with CPU oracle and fused GPU implementation, guarded behind fallback. Prep note: `/mnt/raid0/llm/epyc-inference-research/docs/reference/benchmarks/glm_mtp_sparse_attention_prep_20260718.md`. ✅ 2026-07-18 |
+| D2.5 | Implement CPU path first if a real dense-mask bottleneck is confirmed | PENDING | `tests/test-backend-ops.cpp` existing + new PP tests; validate PPL bit-exact. |
+| D2.6 | Throughput gate: PP/decode t/s improvement at 32K / 64K / 128K | **GATED on user inference approval** | Must show real sparse-compute speedup, not just preservation. |
+| D2.7 | CUDA path follow-on (optional; can split as separate PR) | PENDING | Author has CUDA expertise; we don't necessarily need to implement. |
+| D2.8 | Open as a separate upstream PR or current-master patch if the gap still exists | PENDING | Do not target the superseded #21149 draft as the live integration path. |
+
+**Decision gate before starting D2 implementation**: closed 2026-07-17. The GLM-5.2 landed-code smoke shows the DSA cache/runtime path is real, and runtime scaling shows final attention work still scales with full KV despite top-k selection. D2 implementation can now be scoped as real sparse final-attention work.
+
+##### D3 — AVX-512BW Lightning Indexer (Zen 5 SIMD)
+
+**Effort**: ~1 week
+**Visibility**: HIGH (first CPU SIMD optimization on the DSA path)
+**Risk**: Medium (profile may show indexer is BW-bound; if so, SIMD is a no-op)
+
+**Cross-track**: Lives in `cpu-shape-specialized-gemv-decode.md` Phase 5 candidate (CPU26). This handoff tracks the strategic context; the SIMD work itself happens in the kernel handoff.
+
+Author commit (2026-04-28): *"ggml : optimized GGML_OP_LIGHTNING_INDEXER (added WMMA kernel >= Ampere)"* — CUDA path got WMMA optimization. CPU path is presumably scalar.
+
+Our angle (per `project_zen5_vnni_vs_maddubs` + `project_q8_8x8_avx512bw_outcome` memories): we have established Zen 5 SIMD expertise. The Lightning Indexer's FP8 head-weighted scoring with block-64 quantized key cache is the kind of operation our existing AVX-512BW work targets.
+
+**Work items**:
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| D3.1 | Profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` to confirm compute-bound | CLOSED NO-GO ✅ 2026-07-19 | OP-2/B4 profile on GLM-5.2 `p5906`, `indexer_top_k=2048` measured `ggml_compute_forward_lightning_indexer` at only `1.08%` of cycle samples; quantized dot products, flash-attn, and OpenMP/runtime frames dominate. Artifact: `/mnt/raid0/llm/epyc-inference-research/data/op2_canonical_window/op2_b4_dsa_d3_profile_20260719T075142/b4-dsa-d3/summary.md`. |
+| D3.2 | If compute-bound: design AVX-512BW kernel for indexer dot-product + top-k selection | DEFERRED | Do not start from current evidence; reopen only if D2 real-sparse final-attention or a materially different serving shape makes Lightning Indexer cycle share material. |
+| D3.3 | Implement kernel with `vpmaddubsw`+`vpmaddwd` (NOT VPDPBUSD, per Zen 5 finding) | PENDING | ~300-500 LOC est. |
+| D3.4 | Correctness gate: PPL bit-exact vs scalar baseline | PENDING | Standard test-backend-ops + 32-chunk PPL pattern |
+| D3.5 | Throughput benchmark: indexer-time fraction before/after at 96 threads | **GATED on user inference approval** | Falsify "indexer FP8 kills CPU advantage" |
+| D3.6 | Auto-mbind the indexer key cache buffer (if it's a separate allocation) per `feedback_repack_buffer_numa_mbind` | PENDING | Only if profile shows multi-thread NUMA pressure |
+| D3.7 | Open upstream PR against current master if profiling justifies it | PENDING | Specifically scoped to "ggml-cpu/arch/x86 LIGHTNING_INDEXER kernel" |
+
+**Decision gate after D3.1**: current landed-code profile says D3 is not worth immediate SIMD work. The Lightning Indexer path is active, but only `1.08%` of cycle samples on the OP-2/B4 GLM-5.2 8K profile. Redirect effort to D2/sparse-final-attention or higher-share CPU bottlenecks unless a later serving shape changes the profile.
+
+#### 2-Models-for-1 Leverage Statement
+
+Both V3.2 (671B-class) and the GLM-MoE-DSA family use DSA with identical indexer + KV cache infrastructure. **This unlock has now HAPPENED in two steps: generic DSA landed via #23346, registering `deepseek32` + `glm-dsa` in v6, and experimental-v7 `3dee86a5a` wired GLM into the DSA cache/runtime path**. V3.2, GLM-5.1, and GLM-5.2 are now supported by the same DSA infrastructure, exactly the multi-model-for-one-effort payoff this handoff bet on.
+
+This is the core reason this handoff exists as a strategic tracker rather than a single-model evaluation. Effort here pays off twice (or more, as DSA propagates to future DeepSeek / GLM model families).
+
+Cross-ref: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) is the GLM-5.1 evaluation tracker; it's been gated on this exact DSA implementation work.
+
+#### Decision Gates
+
+| Gate | Trigger | Action |
+|------|---------|--------|
+| **D1 START** | OBE — DSA landed via #23346 | Do not pull/build the superseded draft PR as the live path |
+| **D2 START** | GLM-5.2 current-source cache/runtime smoke succeeds + prompt processing is still dense/unimproved | Begin D2 design |
+| **D3 START** | GLM-5.2 current-source cache/runtime smoke succeeds + D3.1 profile confirms compute-bound | Begin D3 kernel work |
+| **D2 / D3 PARALLEL** | Both above gates met | Can run concurrently — different code paths |
+| **PR #21149 MERGED** | OBE for this handoff | No action; landed-code path is #23346/current upstream |
+| **GLM-5.2 ACTIVATION** | OBE — no longer gated on a V3.2 validation: DSA landed (#23346); activation = GLM-5.2 UD-IQ2_M download + smoke-test | Hand off to `glm51-reap-cpu-evaluation.md` (GLM-5.2 plan) |
+| **DEPRIORITIZE** | Author abandons PR OR upstream rejects DSA design | Re-evaluate; possibly maintain a fork-only path |
+
+#### Monitoring Cadence
+
+| Target | Cadence | Signal |
+|--------|---------|--------|
+| PR #21149 commits | MOOT | Stop tracking for merge-readiness; retained as historical context |
+| PR #21149 description | MOOT | Stop tracking for merge-readiness; re-check landed code instead |
+| Issue #20363 (tracking) | Monthly | Status changes |
+| Issue #21458 (`GGML_OP_GATED`) | Monthly | Supporting infrastructure status |
+| GLM-5.1 GGUF availability | Monthly | Community Q4_K_M release |
+
+Optional: schedule a weekly background agent via `/schedule` to check PR state and notify on caveat removal.
+
+#### Cross-References
+
+- **Parent intake**: intake-506 (DeepSeek-V3.2 paper, arxiv:2512.02556) — full mechanism details
+- **Sibling intake**: intake-502 (KSA) — explicitly cites V3.2 as same first-principle of sequence-level KV compression
+- **Architecture parent**: arxiv:2502.11089 (NSA — DSA's parent paper, Native Sparse Attention)
+- **Deep dive**: `/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md` — full PR audit + "How we'd contribute" expansion
+- **Existing fork commit**: `1c0d9081f` (DeepSeek v3.2 chat parser, already on `production-consolidated-v3`)
+- **Comparison axis**: `triattention-kv-selection.md` S1 PPL-at-50%-eviction gate template — reusable for D1.6 quality validation
+
+#### Adjacent Upstream Arch Work — deepseek4 (DeepSeek-V4-Flash)
+
+Tracked as a sibling effort, NOT folded into this handoff. V4 is a fundamentally new arch (CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections), not a DSA derivative — porting it is a multi-thousand-line arch addition, not an ops-add.
+
+- **Upstream issue**: ggml-org/llama.cpp#22319 (model request, open)
+- **WIP discussion**: ggml-org/llama.cpp#22376 (4+ community forks: nisparks `wip/deepseek-v4-support`, draft PR #22378 "no intent to merge", cdome94, Fringe210, antirez/llama.cpp-deepseek-v4-flash)
+- **RESOLVED 2026-08-09; local testing closed 2026-08-26**: `deepseek4` **merged upstream** as PR #24162 (`8c146a836`) and is present in `production-consolidated-v8` (`src/llama-arch.cpp:81`). Our out-of-tree port is moot — the ik_llama branch `feature/deepseek4-port` is dead and the port handoff is closed ([`../completed/deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md)). The completed 0731/`draft-dspark` evidence is preserved in [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md); the operator declined further local model testing.
+- <s>**Our port**: experimental branch `feature/deepseek4-port` off ik_llama production tree</s> — superseded, see above
+- **Watch trigger**: if a core contributor (fairydreaming or similar) opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution against canonical NPS4 stack); roll back our experimental branch in favor of the upstream PR for review and merge.
+
+#### Notes
+
+The "we'd need to write a fork patch" framing in earlier glm51 handoff text was generated by extrapolation from a stale handoff line ("indexer not yet supported") that was true for PR #19460 in February but no longer reflects upstream state. The active reframe is: **track + test + selectively contribute**, not **write from scratch**.
+
+`feedback_no_concurrent_inference.md` rule applies to every benchmark execution in this handoff. The `[GATED]` markers above are explicit; the experimental-kernel agent should not run any inference without per-run user approval.
+
+#### Research Intake Update — 2026-06-20
+
+##### GLM-5.2 raises the stakes on the DSA forward pass (intake-699)
+
+- **GLM-5.2 (754B GLM-MoE-DSA) is now the PRIMARY GLM target** (intake-699: unsloth dynamic quants of `zai-org/GLM-5.2`, MIT, 1M context; supersedes GLM-5.1). 2026-07-16 correction: the old "PR #21149 is the gating dependency" statement is superseded; v6 contains generic DSA via #23346. The live gate is now GLM-5.2 UD-IQ2_M completion, integrity verification, load-smoke, and long-context DSA-indexer engagement.
+- **Note**: #19460 remains a superseded tensor-loading PR, and #21149 remains useful historical design context, but neither is the current activation blocker. See [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) for the GLM-side disposition.
+
+#### 2026-07-25 v8-audit note — HIP LIGHTNING_INDEXER bf16 backend-op failure CLASSIFIED (pre-existing baseline, flaky)
+
+During v8-candidate gating (`experimental-v8-refresh-20260724`), `test-backend-ops -o
+LIGHTNING_INDEXER -p type_K=bf16` fails on MI210 HIP with ERR≈1.0 (vs 1e-6 tol) — and the
+paired differential proves it is **NOT a v8 delta**: production v7 failed 8/12 bf16 configs,
+candidate 6/12 (identical clean-env invocation); isolated 5-rep single-config runs show it is
+**flaky** (production failed rep 5/5, candidate 0/5). Durable evidence:
+`epyc-inference-research/data/kernel-v8-candidate/lightning-indexer-v7-v8-{baseline,isolated}/`.
+This is a real pre-existing HIP bf16 LIGHTNING_INDEXER kernel bug in the landed #23346 code —
+not a promotion blocker, but it means the DSA indexer's bf16 K-cache path is numerically
+untrustworthy on gfx90a until root-caused.
+
+- [x] **D4 — root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure** ✅ 2026-08-13 — reproduced on
+  frozen `production-consolidated-v9` (`0db32c06e`, build-hip `10125`); **NOT flaky** — deterministic and
+  bf16-specific. `test-backend-ops -o LIGHTNING_INDEXER -p type_K=bf16` fails exactly the 6 `nb=1` configs
+  (ERR≈1.0); `type_K=f16` passes 12/12 including all `nb=1`. The prior "flaky 5/5 vs 0/5" was a misread: the
+  isolated run re-tested the *passing* `nb=512` shape. **Root cause narrowed to the bf16 load path of
+  `lightning_indexer_kernel_vec`** (`lightning-indexer.cu`, reached via `get_dequantize_V<GGML_TYPE_BF16,…>`
+  → `dequantize_V_bf16` in `fattn-common.cuh`): the WMMA kernel is `#if !defined(GGML_USE_HIP)` and never runs
+  on gfx90a, so the handoff's "WMMA-era reduction" suspicion is wrong. Ruled out by inspection: tensor
+  indexing (all 4 tensors cross-checked vs the CPU reference), the warp reduction (shared with f16, which
+  passes), `nv_bfloat16`/`nv_bfloat162` sizes (2B/4B confirmed), and the HIP `ggml_cuda_cast<float2>` low/high
+  bf16 extraction. A standalone ggml dump (`/tmp/opencode/dump_*.cpp`) confirms the bf16 output is a constant
+  garbage value in the direct (non-graph) path for *all* batch sizes, while f16 is exact — i.e. the bf16 K
+  load itself is defective, not the batch geometry. Latent correctness bug only (no production role uses a
+  bf16 indexer K-cache). **Remaining for upstream filing**: pin the exact line via a `hipPrintf`/patched-build
+  debug of `dequantize_V_bf16` vs the known-good `vec_dot_fattn_vec_KQ_bf16` (fattn-common.cuh:117) bf16 path,
+  then file against upstream `ggml-cuda` (`#25545` is the introducing commit).
+
+#### Progress checklist
+
+- [x] D1 pull/build/smoke PR #21149 — SUPERSEDED: DSA landed in v6 via generic-DSA #23346 (`deepseek32` + `glm-dsa` archs present); no draft-PR pull needed; smoke-test moved to the model-eval handoffs. ✅ 2026-07-16
+- [x] Weekly monitoring of PR #21149 to merge-readiness — MOOT: DSA landed via #23346; stopped tracking #21149. ✅ 2026-07-16
+- [x] Re-anchor D2/D3 to the LANDED #23346 code, not the fairydreaming draft. ✅ 2026-07-16
+- [x] Run the static D2 landed-code audit: top-k selection is shared across prompt/decode, but final attention appears dense/mask-based. ✅ 2026-07-16
+- [x] Close D2 with runtime evidence: current-source GLM-5.2 fixed-`indexer_top_k=32` KV-length scaling classified final attention as `DSA-DENSE-MASK` ✅ 2026-07-17
+- [x] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work — CLOSED NO-GO; `ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples in the OP-2/B4 GLM-5.2 profile. ✅ 2026-07-19
+- [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
+- [ ] D3 AVX-512BW Lightning Indexer CPU kernel — deferred because D3.1 did not show material indexer share; reopen only after D2 real-sparse or a different shape changes the profile.
+- [x] ~~GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.2 UD-IQ2_M deleted; graveyard row model_registry.yaml (GLM-5.2-UD-IQ2_M unsloth, 6 shards); GLM-5.2 target dropped)
+
+#### Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [x] **DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#record).** Adopt the FlashMLA sparse-decode contract: int32 indices (page*page_size + offset, -1 = invalid), per-query topk_length, attn_sink, optional extra index set; write the CPU oracle test first (dense masked FA over the same gathered rows must match bit-for-bit). Consumer: DS41-C123.1. ✅ 2026-10-29 (audit: child DSA-IDX.1 oracle ticked 2026-10-21 (test-dsa-sparse-attn-oracle pass=11 fail=0 @ 6b8291de5); contract+scalar reference done 2026-10-20; interface fixed before D2.4 as required) [no-belief: audit-reconciliation]
+  - *(2026-10-20.)* Contract + scalar reference + two dense-masked oracles on `experimental/intake-fixes-20261020` @ 6b8291de5; oracle test queued.
+  - [x] **DSA-IDX.1 oracle** ✅ 2026-10-21: `test-dsa-sparse-attn-oracle` pass=11 fail=0 (sparse reference == dense-masked oracle bit-for-bit; invalid indices rejected) on `experimental/intake-fixes-20261020` @ 6b8291de5.

@@ -231,7 +231,7 @@ Sources: [Speculative decoding and MTP refresh](../handoffs/active/speculative-d
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-CONF.1, T4.1, T5.1, W6, W6.1, T7.1.
 - [Speculative-decoding / MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) — SPEC-CONF.1, SPEC-PIT.1, SPEC-RNG.1, SPEC-GRAM.1.
 - [DFlash2 experimental build](../handoffs/active/dflash2-block-drafter-experimental-build.md) — selector and np4 context; DFlash2 is the champion's spec path for the 27B.
-- [llama.cpp DSA contribution](../handoffs/active/llama-cpp-dsa-contribution.md) — sparse-attention decode context.
+- [llama.cpp DSA contribution](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) — sparse-attention decode context.
 
 ## Latest source review — 2026-10-07
 
@@ -2092,7 +2092,7 @@ Same GGUF as target and drafter (self-speculation — the only difference betwee
 ### Source References (2026-08-23 evening)
 
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2-5 five-point redesign, DF2-6 third finding (`a6b4b5263`), DF2-6b ngram arm, DF2-6c protocol fixes, DF2-7/DF2-8, all with their gates
-- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) — part-one post on #27442 (2026-08-23), the artifact-re-derived claim list, part two still blocked on G1
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) — part-one post on #27442 (2026-08-23), the artifact-re-derived claim list, part two still blocked on G1
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — G3 scope correction (CPU vs CUDA/HIP, NVIDIA-only locator), the `draft_max = 1` bandwidth reframe, B5, the gamma=1 acceptance identity, G8 VeriCache α measurement
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — R9 warrant repair (the +3.3% figure never evidenced "no degradation"; the clearing warrant is the NIAH + PPL pair, not throughput) — cross-listed with [KV Cache](kv-cache.md)
 

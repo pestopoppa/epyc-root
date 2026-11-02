@@ -147,7 +147,7 @@ Sources: [exl3-cpu-mi210-implementation](../handoffs/active/quantization-and-low
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W5/W5.1/W8, T3.2, KV.1.
 - [iqk IQ-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — shipped-in-v8 context.
-- [llama.cpp DSA contribution](../handoffs/active/llama-cpp-dsa-contribution.md) — fixed sparse-op interface for the quantized KV path.
+- [llama.cpp DSA contribution](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) — fixed sparse-op interface for the quantized KV path.
 
 ## Latest source review — 2026-10-07
 

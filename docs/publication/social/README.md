@@ -11,7 +11,7 @@ scrubbed before it goes anywhere public.
 
 ## Owner
 
-[`handoffs/active/frontier-f6-upstream-publication.md`](../../../handoffs/active/frontier-f6-upstream-publication.md)
+[`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../../../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication)
 (W5) — the same handoff that tracks upstream GitHub engagement. The ledger is the durable
 store; frontier-f6 carries the work.
 

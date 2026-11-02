@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 59,
-      "handoffs": 32,
+      "handoffs": 31,
       "oldest_advance": "2026-07-29",
-      "open": 1033
+      "open": 1039
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 16,
-      "handoffs": 13,
-      "oldest_advance": "2026-09-15",
-      "open": 768
+      "handoffs": 12,
+      "oldest_advance": "2026-10-21",
+      "open": 762
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -438,7 +438,7 @@
       "blocked": 0,
       "closed": 40,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 10,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -476,7 +476,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 33,
+      "closed": 34,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -488,7 +488,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 45
+      "total": 46
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1142,22 +1142,6 @@
         }
       ]
     },
-    "frontier-f6-upstream-publication.md": {
-      "blocked": 0,
-      "closed": 1,
-      "guarded": 0,
-      "last_advanced": "2026-09-15",
-      "open": 6,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-27",
-      "state": "active",
-      "total": 7
-    },
     "frontier-lab-automation.md": {
       "blocked": 0,
       "closed": 75,
@@ -1227,11 +1211,11 @@
       ]
     },
     "gemma-challenge-kernel-techniques-v7.md": {
-      "blocked": 0,
-      "closed": 111,
+      "blocked": 1,
+      "closed": 122,
       "guarded": 0,
       "last_advanced": "2026-10-07",
-      "open": 7,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1240,7 +1224,39 @@
       },
       "row_id": "INF-16",
       "state": "active",
-      "total": 118
+      "total": 137,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 111,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 7
+        },
+        {
+          "blocked": 0,
+          "closed": 1,
+          "gates": [],
+          "guarded": 0,
+          "line": 511,
+          "markers": 1,
+          "name": "frontier-f6-upstream-publication",
+          "open": 6
+        },
+        {
+          "blocked": 1,
+          "closed": 10,
+          "gates": [],
+          "guarded": 0,
+          "line": 622,
+          "markers": 1,
+          "name": "llama-cpp-dsa-contribution",
+          "open": 1
+        }
+      ]
     },
     "glm52-reviewer-capability-gates.md": {
       "blocked": 0,
@@ -1487,22 +1503,6 @@
       "row_id": "RTG-15",
       "state": "active",
       "total": 70
-    },
-    "llama-cpp-dsa-contribution.md": {
-      "blocked": 1,
-      "closed": 10,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-31",
-      "state": "active",
-      "total": 12
     },
     "log-linear-gated-deltanet-readiness.md": {
       "blocked": 1,
@@ -2581,21 +2581,12 @@
       "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
       "track": "fable5 window2 findings 03 portfolio and mas"
     },
-    "EVL-27": {
-      "deps": [],
-      "handoff": "frontier-f6-upstream-publication.md",
-      "id": "EVL-27",
-      "index": "research-evaluation-index.md",
-      "line": 19,
-      "next_action": "W1 \u2014 Build the D2 CPU sparse prompt-processing path per llama-cpp-dsa-contribution.md (D1 superseded by #23346); profile, then PR",
-      "track": "frontier f6 upstream publication"
-    },
     "EVL-29": {
       "deps": [],
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
@@ -2604,7 +2595,7 @@
       "handoff": "repl-session-memory-maturity.md",
       "id": "EVL-36",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "D-f1 live lease validation at its inference-owner boundary",
       "track": "repl session memory maturity"
     },
@@ -2613,7 +2604,7 @@
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "index": "research-evaluation-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
     },
@@ -2622,7 +2613,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2635,7 +2626,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2646,7 +2637,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -2729,15 +2720,6 @@
       "next_action": "HSF-5.P: re-run microbench (-lv 4, G4 amendment) on GPU after v11-086-cpu ~10-25 00:00Z",
       "track": "heterogeneous slot fabric residency"
     },
-    "INF-31": {
-      "deps": [],
-      "handoff": "llama-cpp-dsa-contribution.md",
-      "id": "INF-31",
-      "index": "inference-research-index.md",
-      "line": 32,
-      "next_action": "D4 residual \u2014 pin the faulty `dequantize_V_bf16` line and file upstream (D4 done: c49a37c4)",
-      "track": "llama cpp dsa contribution"
-    },
     "INF-33": {
       "deps": [
         "INF-48"
@@ -2745,7 +2727,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2757,7 +2739,7 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "index": "inference-research-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "Resolve Q4/IQ2 approvals; scope INF37-MOE-Q8-FUSION's experimental GLU correctness slice",
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -2768,7 +2750,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "index": "inference-research-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
       "track": "numa prefill decode disaggregation"
     },
@@ -2777,7 +2759,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2788,7 +2770,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 37,
+      "line": 36,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2797,7 +2779,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -2806,7 +2788,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2817,7 +2799,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2828,7 +2810,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -2902,7 +2884,7 @@
       "handoff": "autokernel-unified-surface-program.md",
       "id": "INF-73",
       "index": "inference-research-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "LIVE GPU leg (serving-owner grant, ws58)",
       "track": "autokernel unified surface"
     },
@@ -2913,7 +2895,7 @@
       "handoff": "autokernel-concurrent-target-coordination.md",
       "id": "INF-74",
       "index": "inference-research-index.md",
-      "line": 43,
+      "line": 42,
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
@@ -2926,7 +2908,7 @@
       "handoff": "autokernel-cross-workload-keep-gate.md",
       "id": "INF-75",
       "index": "inference-research-index.md",
-      "line": 44,
+      "line": 43,
       "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
       "track": "autokernel cross-workload keep gate"
     },
@@ -2937,13 +2919,13 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 46,
+      "line": 45,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
     "INF-77": {
       "deps": [
-        "INF-31",
+        "INF-16",
         "RTG-57"
       ],
       "handoff": "deepseek-v41-flash-evaluation.md",
@@ -2998,7 +2980,7 @@
       "handoff": "autokernel-all-devices-all-dimensions.md",
       "id": "INF-81",
       "index": "inference-research-index.md",
-      "line": 45,
+      "line": 44,
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
       "track": "autokernel all devices all dimensions"
     },
