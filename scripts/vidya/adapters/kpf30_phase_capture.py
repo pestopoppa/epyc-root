@@ -40,6 +40,8 @@ def parse_log(lines):
     seen_calls = set()
     excluded_prestart_rows = 0
     for lineno, line in enumerate(lines, 1):
+        if 'KPF30_UNSCOPED_TARGET' in line:
+            raise ValueError('unscoped target work; phase coverage incomplete')
         m = _BEGIN.search(line)
         if m:
             call, count = map(int, m.groups())

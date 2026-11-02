@@ -42,6 +42,7 @@ class PhaseCapture(unittest.TestCase):
         self.assertEqual(prestart, 1)
         self.assertEqual(len(rows), 2)
         with self.assertRaises(ValueError): parse_log(corpus() + [mask(0,4)])
+        with self.assertRaises(ValueError): parse_log(corpus() + ['KPF30_UNSCOPED_TARGET kind=serial_verify\n'])
 
     def test_writer_projects_exact_phase_and_shared_grade(self):
         with tempfile.TemporaryDirectory() as d:
