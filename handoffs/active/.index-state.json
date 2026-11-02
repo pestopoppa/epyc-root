@@ -16,7 +16,7 @@
       "blocked": 16,
       "handoffs": 13,
       "oldest_advance": "2026-09-15",
-      "open": 766
+      "open": 768
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 16,
-      "handoffs": 22,
+      "handoffs": 21,
       "oldest_advance": "2026-07-29",
-      "open": 679
+      "open": 677
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -300,7 +300,7 @@
       "blocked": 2,
       "closed": 246,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "open": 100,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -436,10 +436,10 @@
     },
     "autopilot-sequential-allocation.md": {
       "blocked": 0,
-      "closed": 18,
+      "closed": 40,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 8,
+      "open": 10,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -448,11 +448,35 @@
       },
       "row_id": "EVL-04",
       "state": "active",
-      "total": 26
+      "total": 50,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 18,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 8
+        },
+        {
+          "blocked": 0,
+          "closed": 22,
+          "gates": [
+            "RTG-02"
+          ],
+          "guarded": 0,
+          "line": 446,
+          "markers": 1,
+          "name": "promptforge-mutation-safety-contract",
+          "open": 2
+        }
+      ]
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 32,
+      "closed": 33,
       "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 12,
@@ -464,7 +488,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 44
+      "total": 45
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1924,22 +1948,6 @@
       "state": "active",
       "total": 11
     },
-    "promptforge-mutation-safety-contract.md": {
-      "blocked": 0,
-      "closed": 22,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 2,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-55",
-      "state": "active",
-      "total": 24
-    },
     "quantization-and-low-bit.md": {
       "blocked": 1,
       "closed": 64,
@@ -3225,23 +3233,12 @@
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
-    "RTG-55": {
-      "deps": [
-        "RTG-02"
-      ],
-      "handoff": "promptforge-mutation-safety-contract.md",
-      "id": "RTG-55",
-      "index": "routing-and-optimization-index.md",
-      "line": 30,
-      "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
-      "track": "promptforge mutation safety"
-    },
     "RTG-56": {
       "deps": [],
       "handoff": "typed-decision-plane.md",
       "id": "RTG-56",
       "index": "routing-and-optimization-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
       "track": "typed decision plane"
     },
@@ -3253,7 +3250,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3266,7 +3263,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3275,7 +3272,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

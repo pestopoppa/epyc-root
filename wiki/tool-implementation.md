@@ -1949,7 +1949,7 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 han
 
 - TU-ADV-1 Fixture A (Pokee `fly_menu_navigator` nested-tool mismatch) is classified within the eight-turn bound (CI 41287125421, 406 passed). Fixture B abstracts the Factorio RCON reward shortcut (traces unpublished) and rejects the exploit before teacher/store. [tool-use-eval](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract)
 - A native evaluator provenance bridge rejects malformed or unverifiable provenance at the `DistillationPipeline`/`SkillBank` boundary; absent provenance stays UNKNOWN. TU-LED captures argument-validation outcomes per request (cap 4,096 calls); the box stays open.
-- MHS-11 replaced `prompt_forge.py` line-number citations with symbol names (docs-only). [promptforge](../handoffs/active/promptforge-mutation-safety-contract.md)
+- MHS-11 replaced `prompt_forge.py` line-number citations with symbol names (docs-only). [promptforge](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract)
 
 ## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 

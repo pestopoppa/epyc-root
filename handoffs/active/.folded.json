@@ -317,6 +317,10 @@
    "target": "eval-tower-program.md",
    "track": "prompt-construction-determinism"
   },
+  "promptforge-mutation-safety-contract.md": {
+   "target": "autopilot-sequential-allocation.md",
+   "track": "promptforge-mutation-safety-contract"
+  },
   "qwen-chat-template-evaluation.md": {
    "target": "repl-turn-efficiency.md",
    "track": "qwen-chat-template-evaluation"
@@ -794,6 +798,10 @@
   "RTG-54": {
    "target": "EVL-37",
    "track": "qwen-chat-template-evaluation"
+  },
+  "RTG-55": {
+   "target": "EVL-04",
+   "track": "promptforge-mutation-safety-contract"
   },
   "RTG-59": {
    "target": "RTG-36",

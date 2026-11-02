@@ -720,7 +720,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       nothing measures out-of-sample transfer of an accepted mutation. Negative deltas concentrate in
       `rewrite_action` / `force_action` patches (all 4 REPLACE patches regress, but the single worst
       patch is hint-only CONSTRAIN — MHS-5, orchestrator `4f28e6c3`, pending merge), which ties this directly to **MHS-4** in
-      [`promptforge-mutation-safety-contract.md`](promptforge-mutation-safety-contract.md).
+      [`promptforge-mutation-safety-contract.md`](autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract).
       The caution itself is zero-compute and lands with this row. **The held-out arm on accepted
       mutations is COMPUTE-GATED: filed, never run here** — it needs eval compute and belongs to
       another session. `intake-1323#record` (dive actionable D3). Dependency: MHS-4.

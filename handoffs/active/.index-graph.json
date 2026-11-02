@@ -298,11 +298,6 @@
       "to": "RTG-48"
     },
     {
-      "from": "RTG-55",
-      "kind": "dep",
-      "to": "RTG-02"
-    },
-    {
       "from": "RTG-57",
       "kind": "dep",
       "to": "RTG-36"
@@ -407,6 +402,24 @@
       "from": "EVL-04",
       "kind": "ref",
       "to": "EVL-10",
+      "weight": 2
+    },
+    {
+      "from": "EVL-04",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 1
+    },
+    {
+      "from": "EVL-04",
+      "kind": "ref",
+      "to": "INF-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-04",
+      "kind": "ref",
+      "to": "RTG-02",
       "weight": 2
     },
     {
@@ -774,12 +787,6 @@
       "kind": "ref",
       "to": "RTG-02",
       "weight": 1
-    },
-    {
-      "from": "INF-02",
-      "kind": "ref",
-      "to": "RTG-55",
-      "weight": 2
     },
     {
       "from": "INF-02",
@@ -1672,12 +1679,6 @@
     {
       "from": "RTG-02",
       "kind": "ref",
-      "to": "RTG-55",
-      "weight": 2
-    },
-    {
-      "from": "RTG-02",
-      "kind": "ref",
       "to": "UFH-01",
       "weight": 2
     },
@@ -1928,24 +1929,6 @@
       "weight": 5
     },
     {
-      "from": "RTG-55",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 1
-    },
-    {
-      "from": "RTG-55",
-      "kind": "ref",
-      "to": "INF-02",
-      "weight": 2
-    },
-    {
-      "from": "RTG-55",
-      "kind": "ref",
-      "to": "RTG-02",
-      "weight": 2
-    },
-    {
       "from": "RTG-57",
       "kind": "ref",
       "to": "EVL-47",
@@ -2062,12 +2045,6 @@
     {
       "from": "UFH-08",
       "kind": "ref",
-      "to": "RTG-55",
-      "weight": 2
-    },
-    {
-      "from": "UFH-08",
-      "kind": "ref",
       "to": "UFH-01",
       "weight": 4
     },
@@ -2102,7 +2079,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T22:14:23Z",
+  "generated_at": "2026-11-02T22:15:42Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2250,15 +2227,15 @@
       "blocked_by": [
         "RTG-02"
       ],
-      "closed": 18,
-      "dispatchable": 8,
+      "closed": 40,
+      "dispatchable": 10,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "autopilot-sequential-allocation.md",
       "id": "EVL-04",
       "last_advanced": "2026-11-01",
       "next_action": "After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes",
-      "open": 8,
+      "open": 10,
       "priority": 0.5434,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): SEQ-3b \u2014 Re-run clean under E8 (expensive, no ruling needed). Restart the candidate at",
@@ -2274,7 +2251,33 @@
       "priority_rank": 49,
       "readiness": "blocked",
       "state": "active",
-      "track": "autopilot sequential allocation"
+      "track": "autopilot sequential allocation",
+      "tracks": [
+        {
+          "blocked_by": [
+            "RTG-02"
+          ],
+          "dispatchable": 8,
+          "gates": null,
+          "line": 0,
+          "name": "(untracked)",
+          "open": 8,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-02"
+          ],
+          "dispatchable": 2,
+          "gates": [
+            "RTG-02"
+          ],
+          "line": 446,
+          "name": "promptforge-mutation-safety-contract",
+          "open": 2,
+          "readiness": "blocked"
+        }
+      ]
     },
     {
       "age_days": 0,
@@ -4532,7 +4535,7 @@
       "track": "reviewer typed artifacts"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 246,
@@ -4541,7 +4544,7 @@
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
-      "last_advanced": null,
+      "last_advanced": "2026-11-02",
       "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
       "open": 102,
       "priority": 0.6763,
@@ -4553,7 +4556,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 2,
+        "unblocks": 1,
         "unblocks_rows": [
           "EVL-04",
           "RTG-55"
@@ -4934,7 +4937,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 78,
+      "priority_rank": 77,
       "readiness": "ready",
       "state": "active",
       "track": "model capability descriptors"
@@ -5493,38 +5496,6 @@
     {
       "age_days": 1,
       "blocked": 0,
-      "blocked_by": [
-        "RTG-02"
-      ],
-      "closed": 22,
-      "dispatchable": 2,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "promptforge-mutation-safety-contract.md",
-      "id": "RTG-55",
-      "last_advanced": "2026-11-01",
-      "next_action": "MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12",
-      "open": 2,
-      "priority": 0.0231,
-      "priority_basis": {
-        "basis": "T7 non-inference best open item (N): MHS-6 (record, no work) \u2014 Optimizer budget shape. Record it as \"constant in training-set",
-        "blocker": "operator decision or approval pending",
-        "campaign": 0,
-        "file_rank": 170,
-        "source": "file",
-        "tier": 7,
-        "tier_name": "T7 held / blocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 77,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "promptforge mutation safety"
-    },
-    {
-      "age_days": 1,
-      "blocked": 0,
       "blocked_by": [],
       "closed": 26,
       "dispatchable": 29,
@@ -5639,7 +5610,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 32,
+      "closed": 33,
       "dispatchable": 12,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -5654,7 +5625,7 @@
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 78,
+      "priority_rank": 77,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -5949,6 +5920,7 @@
       "RTG-49",
       "RTG-51",
       "RTG-54",
+      "RTG-55",
       "RTG-59",
       "RTG-60",
       "RTG-61",
@@ -5967,7 +5939,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 78,
+      "file": 77,
       "heuristic": 1,
       "override": 0
     },
@@ -5983,7 +5955,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 37,
+    "blocked": 36,
     "no_open": 0,
     "ready": 42
   },
