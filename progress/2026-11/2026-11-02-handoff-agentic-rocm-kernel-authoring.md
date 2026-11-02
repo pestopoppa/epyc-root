@@ -7,3 +7,7 @@ The previously registered controller null-arm draft and k228/k175 hook plans wer
 ## 00:24Z — Recover prior unpublished boundary and advance inference row preparation
 
 The preceding wrap-up commit 08902776f8a2 was not published because the serialized push lock was held by another live session. None of the six previously registered draft or hook-plan reports existed at this boundary; no completed implementation or runnable row can be inferred. Dispatched bounded lane-local artifacts for the C5-6 matched null arm and the k228/k175 real-model hooks, and registered their completion events. No compute was launched and no result checkbox was ticked.
+
+## 00:25Z — Prepare C5-7, RPUCG and roster integration and recover unpublished lane
+
+Prior lane commits remain unpublished: serialized push initially encountered an active lock, then a direct push was rejected because origin/main had advanced. None of the three lane-local inference-preparation completion markers was present at this boundary; no row was published. Confirmed the pinned C5-7 research commit exposes counter declaration and externally supplied evidence through hip_decision_grade CLI, while its receipt explicitly says no end-to-end counter capture. Dispatched bounded reviewable patch drafts for C5-7, AR-RPUCG and C5-8 with completion events. No compute was launched.
