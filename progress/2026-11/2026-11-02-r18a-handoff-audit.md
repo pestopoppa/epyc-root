@@ -11,3 +11,8 @@ The parked lineage has an isolated r4 successor under `/mnt/raid0/llm/tmp/refact
 At 12:59Z the publisher's unlocked four-core smoke started on q0 while EVL-46 held that quarter; we stopped our own process and the EVL-46 owner confirmed no timing measurement was affected. A second attempt wrapped in a q0 claim selected q1 instead, so it too was stopped; neither produced a build unit or comparison. The isolated packet and test results are retained while the actual smoke placement is bound to a separately claimed quarter. [no-belief: operational launch observations]
 
 At 13:04:39Z the r4 real-lane smoke passed under an acquired q0 claim, producing a fresh CPU build unit and clean rc75 stop. The row is published and grantable; no full comparison has run. Focused conditional recipe-compatibility preparation passed 50 tests in a private research worktree; the predicate remains false. The publisher's row-ID process sweep had signalled its own parent in an intervening attempt; the passing invocation kept the ID out of parent argv. [no-belief: operational preparation only]
+
+
+## R18-A r4 execution — 2026-11-02
+
+The r4 real-lane smoke passed at 13:04:39Z. The row is RUNNING under grant `regions=0-23`, `holds=q0`, through 17:58Z, using the normal `region-lock` build role; grant file, launcher log and live lock status agree. The full three-surface symbol comparison has no result yet, and `PRODUCTION_RECIPE_IS_VERIFIABLE` remains false. [no-belief: operational run status only]
