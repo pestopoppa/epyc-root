@@ -3,21 +3,25 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from urllib.request import Request, urlopen
 
 import q38_t7_isolated as coordinator
 import q38_t7_runtime as runtime
+import q38_t7_supervisor as native_supervisor
 
 
 FAKE = r'''
 import json, sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
-mode = sys.argv[1]
+mode = sys.argv[1] if sys.argv[1] in ('drafted', 'nodraft') else ('drafted' if '-md' in sys.argv else 'nodraft')
 prefixes = []
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args): pass
@@ -79,8 +83,9 @@ class HttpTransport:
     def __init__(self): self.sent = []
 
     def send(self, handle, body):
-        self.sent.append((handle['url'], body))
-        req = Request(handle['url'] + '/v1/chat/completions',
+        url = handle['url'] if isinstance(handle, dict) else handle.url
+        self.sent.append((url, body))
+        req = Request(url + '/v1/chat/completions',
                       data=json.dumps(body).encode(), headers={'Content-Type': 'application/json'})
         with urlopen(req, timeout=2) as response:
             return json.load(response)
@@ -171,6 +176,51 @@ class ManagedHttpTest(unittest.TestCase):
         with self.assertRaises(coordinator.InvalidRun):
             coordinator.run_pairs(self.rt, self.recipes, [coordinator.Pair('B', body, warm, 1)])
         self.assertEqual(self.supervisor.spawned, [])
+
+    def test_concrete_owner_drives_both_fake_http_arms(self):
+        root = Path(self.temp.name)
+        model, draft, log = root / 'model', root / 'draft', root / 'servers.log'
+        model.write_bytes(b'model'); draft.write_bytes(b'draft')
+        sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+        shape = {'common_argv': [str(self.fake), '-m', str(model)],
+                 'binary_sha256': sha(sys.executable), 'model_sha256': sha(model),
+                 'env': {'PATH': os.environ.get('PATH', '/usr/bin:/bin')}}
+        base = {'binary': sys.executable, 'model': str(model), 'shape': shape}
+        recipes = {'drafted': dict(base, draft_model=str(draft),
+                                   draft_options={'type': 'draft-dflash', 'n_max': 7,
+                                                  'draft_sha256': sha(draft)}),
+                   'nodraft': dict(base, draft_model=None, draft_options={})}
+
+        def fake_identity(handle, arm, recipe):
+            with urlopen(handle.url + '/props', timeout=2) as response:
+                return handle.process.poll() is None and json.load(response)['mode'] == arm
+
+        class BoundFakeSupervisor(native_supervisor.Supervisor):
+            def spawn(inner, arm, recipe):
+                offset = log.stat().st_size if log.exists() else 0
+                handle = super(BoundFakeSupervisor, inner).spawn(arm, recipe)
+                deadline = time.monotonic() + 3
+                while time.monotonic() < deadline:
+                    lines = log.read_text()[offset:].splitlines()
+                    if lines and lines[0].isdigit():
+                        handle.url = 'http://127.0.0.1:' + lines[0]
+                        return handle
+                    if handle.process.poll() is not None:
+                        break
+                    time.sleep(.01)
+                inner.stop_and_drain(handle)
+                raise runtime.SpawnFailure('fake server did not bind', True)
+
+        concrete = BoundFakeSupervisor(fake_identity, lambda h: h.process.poll() is not None,
+                                       log_path=str(log))
+        owner = runtime.Runtime(concrete, self.transport, self.journal, lambda: False)
+        warm = {'messages': [{'role': 'user', 'content': 'prefix'}]}
+        body = {'messages': [{'role': 'user', 'content': 'prefix test'}]}
+        result = coordinator.run_pairs(owner, recipes, [coordinator.Pair('B', body, warm, 6)])
+        self.assertFalse(result['partial'], result['error'])
+        self.assertEqual(result['cleanup'], {'drafted': True, 'nodraft': True})
+        self.assertEqual([r['response']['mode'] for r in result['records']],
+                         ['drafted', 'drafted', 'nodraft', 'nodraft'])
 
 
 if __name__ == '__main__':
