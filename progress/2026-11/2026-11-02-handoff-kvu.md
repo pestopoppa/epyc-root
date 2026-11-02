@@ -35,3 +35,7 @@ Repaired and republished handoff-kvu-16i-c5-replay-20261101. Its failed dry run 
 ## 09:27Z — Record C5 GPU replay qualification
 
 The GPU C5 row was republished after its missing historical receipt and stale engine pin were repaired; source and 48 request identities passed offline and keeper qualification is running. Lane refresh shows the durable repair in commit a44a037e2. Independent tokenizer, runner and CPU row preparation have been delegated. No inference was launched by this session.
+
+## 09:32Z — Investigate C5 qualification failure and assess KVU inference readiness
+
+Investigated C5 FAIL-2 (rc 75): producer refused MI210 because it tested WS58_REGIONS, which rowflow supplies as CPU-only; the qualification log separately shows the mi210_0 grant and GPU flock. A bounded repair and tests are in progress; completion event c5-region-repair-20261102 is registered for review before activation. KVU-15b requires 200 credited live :8083 calls in two eligible windows; the default serving log has 14 :8083 records and one credited call, insufficient, with other logs unverified. KVU-16h requires unfinished lifecycle and custody work. KVU-16a’s current 38.03 GiB value is derived at ubatch 512; the equal historical measurement used ubatch 2048, so it cannot establish current-shape provenance. No row was published or compute launched. GitNexus reports this lane unindexed; impact analysis unavailable. [no-belief: qualification log and bounded source review only]
