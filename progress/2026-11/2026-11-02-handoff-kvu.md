@@ -91,3 +91,7 @@ Repaired the uninstalled VKQ3 guard draft to accept real-arm mode when FILLER_DR
 ## 10:03Z — Investigated VKQ3 calibration and scoped independent runner and cache-credit work; delegated bounded supervisor fix for integration.
 
 VKQ3 calibration: bounded supervisor review delegated; output is awaited in /mnt/raid0/llm/tmp/kvu/vkq3-agent-result.txt. KVU-15b requires organic traffic: current serving log has one credited call against the required 200 in two windows. KVU-16h remains open because dedicated server lifecycles and verified cleanup span multiple runners. No inference was run.
+
+## 10:05Z — Corrected VKQ3 diagnostic receipt parsing to the native tokenizer --ids format and tested offline.
+
+VKQ3 diagnostic receipt draft now parses the native bracketed comma-separated --ids output rather than whitespace-separated IDs. Five receipt and ten supervisor offline tests pass; source confirms the output format. No tokenizer binary provenance, integrated worker, keeper qualification, or target result is asserted. Worker and provenance preparation are delegated, with scratch-preserved outputs registered for integration.
