@@ -647,6 +647,8 @@ Global constraints:
     - a CPU region window for W4-CPU.
   - **No benchmark window:** the replay classifies against the **recorded** A/B verdicts, and measures nothing new.
 - [ ] **AKX-P1c — replay sync17-fix2.**
+  - [x] **AKX-P1c-COMPILER-FD — observe CMake compiler descriptor inheritance.** ✅ 2026-11-02 [belief: cc]
+    `inf75-cmake-compiler-fd-20261102` ended rc0 on CPUs 24–47. The tiny CMake C configure/build succeeded; six compiler invocations were recorded and the one actual `/proc/self/fd/3/main.c` compile retained the matching readable source directory FD (device 2431, inode 204224415): `COMPILER_SOURCE_FD_OBSERVED`. Preflight, logs and process records matched; native result SHA-256 `f9abc79a8ceca58f18c80f74fa03a1049e182bd07b01d3b4282b449a20a0e38b`, `/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/cmake-compiler-fd/RESULT.json`. This one fixture does not prove full-build or all-descendant custody and is not the P1c replay.
   - [x] **AKX-P1c-CMAKE-FD — observe CMake source descriptor handling.** ✅ 2026-11-02 [belief: cc]
     Diagnostic `inf75-cmake-source-fd-20261102` ended rc0 on CPUs 48–71. The single `LANGUAGES NONE` configure recorded exactly one `CMAKE_HOME_DIRECTORY`, `/proc/self/fd/3`, equal to its inherited source argument: `LEXICAL_FD_PRESERVED`. Preflight, cache and log hashes verified; result SHA-256 `fc6f0f0c4c9bfba3e4f0ff3d11eb0a6d73baec4bd750823f91f0269aacd917f3`, `/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/cmake-fd-diagnostic/RESULT.json`. This is one configure observation; it does not prove compiler-descendant FD custody, a coverage build, or the P1c replay.
   - [x] **AKX-P1c-INDEX — index the pinned source snapshot for impact analysis.** ✅ 2026-11-02 [belief: cc]
