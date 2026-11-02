@@ -239,3 +239,7 @@ Published `akagg-ch26b-mmap-abi-20261102`; its four-CPU smoke produced four diag
 ## 11:28Z — Filed C3 r9 production run inconclusive after disk-floor termination; retained earlier complete R3 diagnostic.
 
 C3 r9 ended rc=75 (disk-floor) at 11:17:23Z without RESULT.json; filed inconclusive and acknowledged the run. The original B R3 diagnostic already completed, so no duplicate C3 rerun or new performance claim is justified. CH26 r1 remains armed with known validation limitations; corrected diagnostic is under preparation.
+
+## 11:29Z — Published corrected owned-child perf mmap ABI diagnostic with four-unit smoke PASS.
+
+Published akagg-ch26b-mmap-abi-r2-20261102 after independent raw-sample identity, cleanup and evidence access fixes; smoke rc0 on CPUs 0–3, four units, 19 model-free tests passed. The r1 result must remain inconclusive. Neither diagnostic establishes a DS41 floor or host-wide coverage.
