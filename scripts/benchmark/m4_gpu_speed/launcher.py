@@ -24,6 +24,8 @@ def main():
     output = Path(env['M4_WATCH_DIR']).resolve(strict=True)
     if str(output / 'watch-result.json') != cell.get('watch_result_path'):
         raise RuntimeError('watch output does not match enrolled plan')
+    if (output / 'watch-result.json').exists() or (output / 'server-pids.txt').exists():
+        raise RuntimeError('watch output is not a fresh attempt')
     if trust.capture_root != output and trust.capture_root not in output.parents:
         raise RuntimeError('watch output outside approved capture root')
     grants_dir, hold_dir = write_capture.grant_directories(env)

@@ -244,6 +244,9 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutof
         assert launcher.main() == 0
     assert json.loads((watch_dir/'watch-result.json').read_text())['containment_empty'] is True
     assert not list(path.parent.glob('capture-v2*'))
+    if not cutoff:
+        with pytest.raises(RuntimeError, match='fresh attempt'):
+            launcher.main()
 
 
 def test_native_request_batch_fake_http_and_partial_records(tmp_path):
