@@ -9,6 +9,13 @@ retained; incomplete step usage stays null, and complete cost still requires
 session-wide tap parity. `/chat` returns tool timing metadata but does not
 promise complete tool arguments and outputs; that field remains unknown.
 
+`hs4_file_transport.py` prepares the corresponding HTTP and OpenCode subprocess
+paths, but **always refuses before I/O** because no accepted live isolation
+verifier has been wired. Its mock controls exercise request/response and process
+identity capture only. Before enabling it, the owner must additionally prove
+that STOP/timeout drains all descendants; the present timeout handler kills and
+reaps only the captured direct child and makes no descendant-cleanup claim.
+
 The existing P0.4 scorer is the fixture-specific `check_fixture` running
 `test_calc.sh` after a code edit, not a final-answer scorer for the three new
 file-task families. A nearby APP scorer at orchestrator `868275acb64ef3d490ecac6952518ae187fe74d3`,
