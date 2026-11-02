@@ -138,5 +138,42 @@ class WrapupTests(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
 
 
+    def test_detached_wrapup_survives_its_caller_being_killed(self):
+        """D9: codex exec tore the wrap-up down mid-push when its turn ended. Killing
+        the caller's whole process group must not stop the push or orphan it."""
+        import signal
+        import time
+        stubs = {"scripts/coordination/serialized_push.py":
+                 "import subprocess, sys, time\nlane = sys.argv[sys.argv.index('--repo') + 1]\n"
+                 "time.sleep(2)\nr = subprocess.run(['git', '-C', lane, 'push', '-q', 'origin', 'HEAD:main'])\n"
+                 "sys.exit(r.returncode)\n",
+                 "scripts/handoffs/index_state.py": "print('ok')\n"}
+        for rel, body in stubs.items():
+            os.makedirs(os.path.dirname(os.path.join(self.lane, rel)), exist_ok=True)
+            with open(os.path.join(self.lane, rel), "w") as fh:
+                fh.write(body)
+        p = os.path.join(self.tmp, "rec.json")
+        json.dump(self.rec, open(p, "w"))
+        env = {k: v for k, v in os.environ.items() if k != "WRAPUP_INNER"}
+        fg = subprocess.Popen([sys.executable, os.path.join(_CHURN, "wrapup.py"), "--json", p, "--lane", self.lane,
+                               "--flags", self.flags], stdout=subprocess.PIPE, text=True, start_new_session=True,
+                              env=env)
+        first = fg.stdout.readline()
+        self.assertIn("[wrapup] detached: pid=", first)
+        time.sleep(0.5)
+        os.killpg(fg.pid, signal.SIGKILL)   # what codex exec does to a yielded command at turn end
+        fg.wait(timeout=10)
+        report = os.path.join(self.flags, "handoff-sessions", "demo", "report.json")
+        deadline = time.monotonic() + 60
+        while not os.path.exists(report) and time.monotonic() < deadline:
+            time.sleep(0.2)
+        self.assertTrue(os.path.exists(report), "the detached wrap-up must finish after its caller died")
+        sha = json.load(open(report))["wrapped_sha"]
+        self.assertEqual(_git(self.seed, "--git-dir", self.bare, "rev-parse", "main").strip(), sha)
+        logs = [f for f in os.listdir(os.path.dirname(report)) if f.startswith("wrapup-") and f.endswith(".log")]
+        self.assertTrue(logs)
+        self.assertTrue(open(os.path.join(os.path.dirname(report), logs[0])).read().strip().endswith(f"WRAPPED {sha}"))
+
+
 if __name__ == "__main__":
     unittest.main()
