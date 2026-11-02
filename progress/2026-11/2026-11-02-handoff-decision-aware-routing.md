@@ -47,3 +47,7 @@ Consumed index-repair diagnosis and regenerated handoff state, graph and master 
 ## 01:16Z — Publish routing coverage auditor and advance prospective capture
 
 Recovered the prior failed publication: serialized_push.py published 11 lane commits through 1bb56aa76dc5 to origin/main, including aggregate auditor 2ff97f3b95b1 and its source-table and wiring task. The prior index_state check passed. Started bounded prospective native receipt, preference propagation, and private snapshot preparation drafts, each with a dispatcher event. No real audit, inference or row published.
+
+## 01:17Z — Review prospective capture and preference sweep preparation
+
+Synced lane; checked scratch snapshot and prospective receipt implementations, which require focused safety and integrity review before any private data or measurement use. Preference propagation is also under focused review. Registered three bounded review events. The published task-ID auditor is fixture-tested but no real data scan, inference or compute row has occurred.
