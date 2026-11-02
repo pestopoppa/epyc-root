@@ -87,8 +87,22 @@ def check(args: argparse.Namespace) -> dict:
     unresolved, errors = id_list(report, "unresolved_ids"), id_list(report, "error_ids")
     if completed != ids or resolved != ids or unresolved or errors:
         raise ValueError("gold report must complete and resolve exactly every bound case, without errors")
-    if report.get("total_instances") != len(ids) or report.get("completed_instances") != len(ids) or report.get("resolved_instances") != len(ids) or report.get("error_instances") != 0 or report.get("unresolved_instances") != 0:
-        raise ValueError("gold report counters disagree with cases")
+    counts = {"total_instances": len(ids), "completed_instances": len(ids),
+              "resolved_instances": len(ids), "error_instances": 0,
+              "unresolved_instances": 0}
+    for key, wanted in counts.items():
+        if type(report.get(key)) is not int or report[key] != wanted:
+            raise ValueError("gold report counters disagree with cases")
+    # Native SWE-bench reports may include these additional status fields.
+    # Check each if supplied; older minimal reports need not supply them.
+    for key, wanted in (("submitted_ids", ids), ("empty_patch_ids", set()),
+                        ("incomplete_ids", set())):
+        if key in report and id_list(report, key) != wanted:
+            raise ValueError(f"gold report {key} disagrees with cases")
+    for key, wanted in (("submitted_instances", len(ids)), ("empty_patch_instances", 0),
+                        ("incomplete_instances", 0)):
+        if key in report and (type(report[key]) is not int or report[key] != wanted):
+            raise ValueError(f"gold report {key} disagrees with cases")
     return {"status": "REPORT_COVERAGE_MATCH", "cases": len(ids),
             "binding_sha256": digest(Path(args.binding).read_bytes()),
             "report_sha256": digest(Path(args.report).read_bytes()),
