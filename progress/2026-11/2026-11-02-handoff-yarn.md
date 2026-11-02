@@ -47,3 +47,7 @@ Integrated provenance checks into the CPU Jet-Long prototype: small artifact has
 ## 10:18Z — Implement Jet-Long draft keeper admission
 
 Integrated the deliberately disabled Jet-Long coordinator and keeper-envelope admission checks; all 20 offline tests pass. The coordinator validates deadline, allocation, stop-file and dry-run output envelope and atomically writes its result. Native entry remains refused pending in-flight stop handling, descendant cleanup, source/build and model custody, sealed fixtures, timing and keeper qualification. No inference or row published.
+
+## 10:19Z — Land Jet-Long keeper admission after upstream merge
+
+Twenty offline tests passed for the prototype suite. Concurrent upstream changes were merged before retrying the serialized push; native entry remains disabled.
