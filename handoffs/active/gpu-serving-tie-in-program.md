@@ -149,6 +149,7 @@ config change with a rehearsed rollback, never a rebuild.
 
 ### Phase 4 — AutoPilot on the new surface
 - [ ] **P4-1** — Stage-2 typed knobs ONLY: tenant ∈ {stock, FF} + np_ceiling within measured bounds; flag-gate + strategy-store seeding pattern; fail-closed on any 5xx class. **Invariant: autopilot never touches launch plumbing, registry, or lane lifecycle.**
+  - Implementation preparation: [typed-knob contract and source review](../../docs/design/gpu-serving-p4-typed-knobs.md). P3-5 must first select replacement arms and provide measured ceiling rows; the deleted stock/FF artifacts cannot be seeded as live candidates. This design does not implement or activate P4-1.
 - [ ] **P4-2** — staged widening after N clean trials (N set at P4-1 review).
 
 ### Phase 5 — SWE-bench agentic (Phase-2 of architect-bench)
