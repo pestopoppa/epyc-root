@@ -63,3 +63,11 @@ Consumed B4c adapter and F2 source seal results. The scratch B4c adapter at hand
 ## 00:36Z — Advance B4c adapter and F2 source checks
 
 Consumed B4c adapter and F2 source seal results. The scratch B4c adapter at handoff-sessions/agentic-serving-harness-fixes/b4-adapter passed five offline fixture controls but has no production backend and cannot provide inference evidence. Independently verified all five candidate prompt and two ground-truth hashes match the retained cohort. F2 seal preflight found all declared paths present; reseal remains pending completion of concurrent edits. Delegated isolated B4 backend, F2 grant/dryrun completion and independent authority negative controls and registered result files. A delegated no-live-API restriction is not a new session-wide operator restriction. No compute, live configuration change, published row, or task tick.
+
+## 00:38Z — Correct F2 authority qualification controls
+
+Consumed F2 authority controls and identified a false positive: the test labels two cases legacy and rowflow but passes the same legacy three-field grant bytes to both. An offline actual rowflow-formatted fixture with holds/schema/id/kind/admission_class was rejected by current authority.py as malformed, so rowflow compatibility is NOT proven and the prior PASS is limited to legacy format and other negative controls. Delegated strict rowflow parser and corrected fixtures, independent receipt/cleanup review, and B4 backend review; registered result files. No compute or live API mutation, no row published, and no task tick.
+
+## 00:39Z — Correct F2 authority qualification controls
+
+Consumed F2 authority controls and identified a false positive: the test labels two cases legacy and rowflow but passes the same legacy three-field grant bytes to both. An offline actual rowflow-formatted fixture with holds/schema/id/kind/admission_class was rejected by current authority.py as malformed, so rowflow compatibility is NOT proven and the prior PASS is limited to legacy format and other negative controls. Delegated strict rowflow parser and corrected fixtures, independent receipt/cleanup review, and B4 backend review; registered result files. No compute or live API mutation, no row published, and no task tick.
