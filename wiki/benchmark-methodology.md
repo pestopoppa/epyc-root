@@ -7646,3 +7646,8 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md) · [Code
 ### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1225#record (ParEval): The dive found a balanced 420-prompt parallel-code benchmark (60 per execution model) that covers the CPU, with an AMD arm less constrained than the NVIDIA arm (no offload-arch pin) and a single gpu.cu serving both vendors. MIT, self-contained, locally measured baseline. Verdict adopt_component as a secondary layer, dive-verified; handoff vidya-belief-substrate-program.
+
+## Build identity and historical comparison — 2026-11-02
+
+- The R18-A independent v10 rebuild matched the exported CPU, HIP host and gfx90a device symbol-name sets against frozen anchors, with 141 recorded HIP CUIDs replayed. This establishes the stated symbol-set identity, not byte, runtime or performance equivalence. [Evidence](../artifacts/compute/r18a-r4-20261102/README.md).
+- R23-62's formerly reported champion-only shift combined the window-3 paired ratio with a window-1 pristine rate. Raw replay places window 3 at 12.0184 t/s pristine and 20.5891 t/s champion, with mean per-prompt ratio 1.7151 over 60 pairs; unequal observed GPU co-residency and differing windows leave the historical cause unresolved. [Audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md).
