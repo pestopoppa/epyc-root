@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
 from pydantic import ValidationError
 
 APP = Path('/mnt/raid0/llm/epyc-orchestrator')
@@ -29,19 +28,20 @@ def load(name, path):
 @pytest.fixture
 def candidate(tmp_path, monkeypatch):
     import subprocess
-    for name in ('src/api/models/requests.py', 'src/api/routes/chat_pipeline/repl_executor.py'):
+    for name in ('src/api/models/requests.py', 'src/api/routes/chat_pipeline/repl_executor.py',
+                 'src/api/routes/chat.py'):
         target = tmp_path / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes((APP / name).read_bytes())
-    subprocess.run(['patch', '-s', '-p1', '-d', str(tmp_path), '-i', str(HERE / 'request-optin.patch')], check=True)
+    subprocess.run(['patch', '-s', '-p1', '-d', str(tmp_path), '-i', str(HERE / 'request-opt-in.patch')], check=True)
     requests = load('document_search_requests_candidate', tmp_path / 'src/api/models/requests.py')
     executor = load('document_search_executor_candidate', tmp_path / 'src/api/routes/chat_pipeline/repl_executor.py')
     monkeypatch.setitem(sys.modules, 'src.api.routes.chat_pipeline.repl_executor', executor)
-    return requests, executor
+    return requests, executor, tmp_path / 'src/api/routes/chat.py'
 
 
 def test_opt_in_requires_repl_and_rejects_bundle(candidate):
-    request, _ = candidate
+    request, _, _ = candidate
     assert request.ChatRequest(prompt='hi').document_search is False
     with pytest.raises(ValidationError, match='requires force_mode'):
         request.ChatRequest(prompt='hi', document_search=True)
@@ -50,18 +50,18 @@ def test_opt_in_requires_repl_and_rejects_bundle(candidate):
     assert request.ChatRequest(prompt='hi', document_search=True, force_mode='repl').document_search
 
 
-@pytest.mark.asyncio
-async def test_absent_document_fails_closed(candidate, basic_routing, mock_primitives, mock_state):
-    request, executor = candidate
-    with pytest.raises(HTTPException) as exc:
-        await executor._execute_repl_body(request.ChatRequest(prompt='hi', document_search=True, force_mode='repl'), basic_routing, mock_primitives, mock_state, time.perf_counter(), Role.WORKER_GENERAL, None)
-    assert exc.value.status_code == 422
+def test_request_pipeline_fails_closed_and_rejects_streaming(candidate):
+    _, _, chat_path = candidate
+    source = chat_path.read_text()
+    assert 'document_search requires a successfully parsed document' in source
+    assert 'document_search not supported on /chat/stream' in source
+    assert 'features().script_interception and not request.document_search' in source
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('enabled', [False, True])
 async def test_request_opt_in_reaches_document_repl(candidate, mock_primitives, mock_state, enabled):
-    request, executor = candidate
+    request, executor, _ = candidate
     doc = MagicMock()
     doc.document_result.to_searchable_text.return_value = 'Searchable text'
     doc.injection_flags = None

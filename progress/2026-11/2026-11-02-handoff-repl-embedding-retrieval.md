@@ -103,3 +103,7 @@ REPL-EMB-4.2: added a multi-chunk Unicode pointer round-trip control covering co
 ## 11:47Z — Prevent bundle pull-budget bypass in document-search candidate
 
 REPL-EMB-4.2: corrected the unapplied bundle candidate to refuse the section(n) raw-text accessor when bundle search is enabled, directing callers to context.get; synthetic tests cover budget refusal and unchanged opt-out behavior. The candidate still needs full request integration and review of other accessors; no feature is deployed or completed. REPL-EMB-2.8a/2.8b still require request-scoped trace lifecycle and a genuine authorized session. Existing inference rows cover online shadow and G-S; other listed runs are frozen, deferred or depend on unfinished work. [no-belief: candidate correctness controls only]
+
+## 11:55Z — File refused G-S rehearsal and publish fresh private-copy successor
+
+REPL-EMB-2.11: codex-ufh12-gs-private-v2-20261102 ended rc2, REFUSED after the live grant disappeared; native parity and full apply verdict are null, server reaped. Its 144-item admission canary is not the full verdict. Native bounded evidence retained in docs/reports/repl-emb-211-gs-private-v2-20261102.json; filing receipt created. The 4.2 draft tests now exercise the stronger request opt-in patch, with 17 focused tests passed; APP remains unmodified. [belief: cc] Published codex-ufh12-gs-private-v3-20261102 after its four-CPU partial smoke passed with one finite 256-dimensional embedding and server reaped; full apply/parity and full G-S remain open. The live-grant check remains fail-closed.
