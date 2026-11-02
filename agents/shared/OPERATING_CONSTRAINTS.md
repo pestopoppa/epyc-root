@@ -396,8 +396,8 @@ treated as two copies when both were aliases of one physical tree.)
    `guarded_rm.sh` after the citation check. An inline classifier or executor (a heredoc,
    `python3 -c`, or an ad-hoc script) that decides or performs deletions is a violation. The
    PreToolUse hook `scripts/hooks/check_destructive_scratch.sh` refuses recursive deletes under
-   those roots that bypass the guarded tools. Its override is
-   `EPYC_ALLOW_SCRATCH_DELETE='operator: <who> <date>: <reason>'`, for operator-approved cases only.
+   those roots that bypass the guarded tools. It has no override (LOOP-53, operator 2026-11-02):
+   an operator-approved reclaim runs through `guarded_rm.sh`, or the operator runs it themselves.
 
 ## Act, Don't Defer — the admission test for escalating at all
 
