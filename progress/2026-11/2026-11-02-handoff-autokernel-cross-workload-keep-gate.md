@@ -57,3 +57,9 @@ Captured the source-bound S20_FIX1 CPU workload configuration, prompt/client ide
 ## AKX-P1c footprint default attribution
 
 Running the existing Research footprint producer on the pinned real source range exposed cross-knob contamination: the original labeled TINY_SOLO_CLAMP default ON despite the source default OFF, and treated GGML_RESTRICT as a knob. Prepared a patch against Research 99301fa149af86a6f9743d2b0405c9234ba39586 that restricts default attribution to named markers and limits knob discovery to explicit reads or markers; ambiguous cases stay UNKNOWN. Nine focused tests pass in an isolated Research copy. The actual source range then yields SCALE_SPLIT UNKNOWN→ON, SOLO_YIELD_ROWCOL UNKNOWN→ON and TINY_SOLO_CLAMP UNKNOWN→OFF; no GGML_RESTRICT knob. Patch applies cleanly but is not applied to the Research-owned repository. Historical build dependency mappings are unverified; no T1 or replay claim.
+
+## 10:36Z — Fail closed on unknown footprint knob defaults
+
+## AKX-P1c footprint conservatism
+
+Extended the staged Research footprint patch so unproven knob defaults make the static footprint opaque rather than potentially excusing a workload. The isolated footprint and surface suites pass 224 tests. The real P1c range retains SCALE_SPLIT ON, SOLO_YIELD_ROWCOL ON and TINY_SOLO_CLAMP OFF while exposing 16 unknown-default reasons; it is not ready to screen as INERT. The patch applies cleanly to Research but remains unapplied there under this lane-only session.

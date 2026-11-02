@@ -45,9 +45,19 @@
                  found[(h.file, name)] = EnvKnob(name, f"{h.file}:{h.new_range.split(',')[0]}",
                                                  before, after)
      return tuple(found[k] for k in sorted(found))
+@@ -313,6 +308,9 @@
+     sites = _dispatch_sites(hunks)
+     predicates = _uniq(s.predicate_text for s in sites)
+     knobs = _env_knobs(hunks)
++    # Unknown defaults cannot excuse a workload from validation.
++    opaque.extend(f"unknown_knob_default:{k.name}:{k.read_site}" for k in knobs
++                  if "UNKNOWN" in (k.default_before, k.default_after))
+     kinds = {h.kind for h in hunks}
+     if "build" in kinds:
+         change_class = "build" if len(kinds) == 1 else "mixed"
 --- a/scripts/kernel_rnd/autokernel/evaluator/test_footprint.py
 +++ b/scripts/kernel_rnd/autokernel/evaluator/test_footprint.py
-@@ -60,6 +60,16 @@
+@@ -60,6 +60,18 @@
          self.assertTrue(any("GGML_CUDA_CC_CDNA2" in d["arch"] for d in merged))
          self.assertTrue(any(d["shape_terms"] for d in merged))
  
@@ -56,7 +66,9 @@
 ++int unrelated = (x == NULL) ? 1 : 0;
 ++const char *marker = "DEFAULT_ON=GGML_SCALE_SPLIT;DEFAULT_OFF=GGML_TINY_SOLO_CLAMP";
 ++int GGML_NOT_A_KNOB = 2;''')
-+        knobs = {k.name: (k.default_before, k.default_after) for k in produce(patch).env_knobs}
++        result = produce(patch)
++        knobs = {k.name: (k.default_before, k.default_after) for k in result.env_knobs}
++        self.assertTrue(any(x.startswith("unknown_knob_default:GGML_OTHER:") for x in result.opaque_reasons))
 +        self.assertEqual(knobs["GGML_TINY_SOLO_CLAMP"], ("UNKNOWN", "OFF"))
 +        self.assertEqual(knobs["GGML_OTHER"], ("UNKNOWN", "UNKNOWN"))
 +        self.assertNotIn("GGML_NOT_A_KNOB", knobs)
