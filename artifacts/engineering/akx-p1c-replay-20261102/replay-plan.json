@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.akx.p1c.preparation.v1",
+  "status": "NOT_READY",
+  "handoff_task": "INF-75:AKX-P1c",
+  "source_repository": "/mnt/raid0/llm/tmp/inf70/retest1wt",
+  "baseline": "ef81196d5bdd4190b46dff4ae7eecc333a46c8ce",
+  "candidate": "2516c9807b8a92d472c8e75a0a1ce8558d2e34a7",
+  "patch_sha256": "02ade30871a43157718a3ff96582023efe7e5109390af8ee8edca775132166f0",
+  "candidate_default_on": ["GGML_SCALE_SPLIT", "GGML_SOLO_YIELD_ROWCOL"],
+  "candidate_default_off": ["GGML_TINY_SOLO_CLAMP"],
+  "intended_workloads": {
+    "inf70_cpu": {
+      "historical_model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf",
+      "model_present_at_preparation": false,
+      "recipe_evidence": "/mnt/raid0/llm/tmp/inf70/agents/retest1/session2.sh"
+    },
+    "w1": {
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "historical_diagnostic_recipe": "/mnt/raid0/llm/tmp/akx-p0bc-acceptance-20260915/w1-gpu-run2/invocation.json",
+      "recipe_scope": "decode-only diagnostic; not the required full W1 MTP envelope"
+    }
+  },
+  "decision_rule": "Pass only when actual coverage-bound CPU workload is TOUCHED and names the executed default-ON knob reads, the footprint records default_after flips, and W1 receives a T1 classification with an execution witness. Missing data or ambiguous coverage is UNKNOWN; no rate or promotion claim.",
+  "remaining_before_publish": [
+    "Resolve and bind historical INF-70 model or demonstrate an equivalent exact-identity copy by digest.",
+    "Implement and test the coverage-to-knob-read and blast-radius classification producer; bind its revision and hashes.",
+    "Prepare pinned experimental coverage builds for baseline and candidate; bind compiler, flags, source commit and resulting loaded DSO digests.",
+    "Construct model-server requests and observations for both required workloads and production shape envelopes, including W1 MTP; verify actual device residency during requests.",
+    "Implement bounded cleanup, resource, admission and result contracts; independently review and seal the actual runnable packet before rowflow publication."
+  ]
+}
