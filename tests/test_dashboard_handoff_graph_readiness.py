@@ -217,6 +217,13 @@ def _aligned(nodes, key) -> float:
 
 
 @unittest.skipUnless(shutil.which("node"), "node not available")
+class HoverWebTests(unittest.TestCase):
+    def test_hover_highlights_transitive_up_and_down(self):
+        html = _PAGE.read_text(encoding="utf-8")
+        for needle in ('walk("up")', 'walk("down")', "hl-up", "hl-down", ".dimmed{opacity:.15}"):
+            self.assertIn(needle, html)
+
+
 class LayoutTests(unittest.TestCase):
     """Box "Graph layout reads as a lattice". A human judges the look; the proxy asserted here is
     ALIGNMENT (nodes sharing an exact row/column) must be rare while the separation that made the
