@@ -15,3 +15,19 @@ Consumed CI preparation and request-path review. Full B2 baseline has 31 failure
 ## 01:44Z — Restore sparse census input and retry wrap-up
 
 The first wrap-up attempt failed its pre-commit observer census because the sparse lane omitted tracked artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh. Restored that exact HEAD blob locally; observer census now passes. Prior entry records the consumed findings and delegated preparation.
+
+## 01:46Z — Prepare CI collection-skip compatibility patch for review
+
+Consumed ci-report-fix: analysis identifies pytest collection skips with empty classname as the cause of the native JUnit parser returning NULL and the adapter producing no grade row. Preserved a proposed compatibility change and test plan under artifacts/refactoring-ci-report/. The prepared patch originally had a malformed hunk header; regenerated a valid unified diff against lane HEAD and git apply --check passed. This is an untested proposal, not an accepted repair or full CI result; review must check fail-closed behavior and source custody before applying. Delegated independent patch review, CPU row preparation and RESUME-7 repair preparation; their outcomes are registered for resumption. No compute or row was published by the owner.
+
+## 01:46Z — Move CI repair draft to scratch and complete wrap-up
+
+The first wrap-up rejected untracked artifacts/ scratch. The preceding entry’s proposed CI patch and test plan are now at /mnt/raid0/llm/tmp/refactor-01a16fc3/ci-report-fix-20261102/ (not artifacts/refactoring-ci-report/). The regenerated unified patch passed git apply --check; independent behavioral review and validation remain pending. Row-design preparation reported no row published and inspected the earlier malformed patch, before its repair.
+
+## 01:47Z — Move CI repair draft to scratch and complete wrap-up
+
+The first wrap-up rejected untracked artifacts/ scratch. The preceding entry’s proposed CI patch and test plan are now at /mnt/raid0/llm/tmp/refactor-01a16fc3/ci-report-fix-20261102/ (not artifacts/refactoring-ci-report/). The regenerated unified patch passed git apply --check; independent behavioral review and validation remain pending. Row-design preparation reported no row published and inspected the earlier malformed patch, before its repair.
+
+## 01:47Z — Preserve untested repair drafts and finish wrap-up
+
+The wrapper rejected untracked artifacts/ scratch; CI report patch and test plan moved to /mnt/raid0/llm/tmp/refactor-01a16fc3/ci-report-fix-20261102/, and RESUME-7 draft moved to /mnt/raid0/llm/tmp/refactor-01a16fc3/resume7-fix-20261102/. Both are untested proposals. The CI patch now passes git apply --check. Review and source-bound validation remain necessary. Sparse checkout omitted a tracked operator script required by the pre-commit observer census; restored the HEAD blob locally.
