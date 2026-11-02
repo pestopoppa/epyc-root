@@ -98,6 +98,25 @@ def complete(out, rc, capture_script):
         if sha(item['path']) != item['sha256']: raise ValueError('input changed during capture')
     if git('rev-parse','HEAD') != source['head'] or git('rev-parse','HEAD^{tree}') != source['tree'] or git('status','--porcelain','--untracked-files=all'):
         raise ValueError('source changed during capture')
-    terminal(out,'complete', {'result_sha256': sha(result), 'sets_manifest_sha256': sha(out/'sets/manifest.json'),
-                              'verdict': rc == 0, 'returncode': rc, 'capture_script': checked(capture_script)})
+    atomic(out/'prepared.json', {'result_sha256': sha(result), 'sets_manifest_sha256': sha(out/'sets/manifest.json'),
+                                 'verdict': rc == 0, 'returncode': rc, 'capture_script': checked(capture_script)})
     return manifest
+
+
+def finalize(out, result, outcome):
+    """Publish only after the parent has recorded a successful, drained run."""
+    out, result, outcome = map(Path, (out, result, outcome))
+    window_check()
+    data = json.loads(result.read_text())
+    parent = json.loads(outcome.read_text())
+    detail = json.loads((out/'prepared.json').read_text())
+    rc = detail['returncode']
+    if (data.get('partial') is not False or data.get('exit_code') != rc
+            or parent.get('exit_code') != rc or parent.get('partial') is not False
+            or data.get('reason') not in ('independent_cpu_hip_symbol_identity_pass',
+                                          'independent_cpu_hip_symbol_identity_valid_negative')):
+        raise ValueError('parent run did not finish successfully')
+    detail.update(full_result={'path': str(result.resolve()), 'sha256': sha(result)},
+                  parent_outcome={'path': str(outcome.resolve()), 'sha256': sha(outcome)})
+    window_check()
+    terminal(out, 'complete', detail)

@@ -40,6 +40,10 @@ def fixture(tmp_path, *, passed=False):
   rows[kind]=row
  result.write_text(json.dumps({'schema':'r18a.independent_symbol_identity.v1','comparisons':rows,'symbol_identity_pass':passed}))
  capture.complete(out,0 if passed else 1,V/'producers/r18_symbol_sets.py')
+ rc=0 if passed else 1
+ full=tmp_path/'full-result.json'; full.write_text(json.dumps({'partial':False,'exit_code':rc,'reason':'independent_cpu_hip_symbol_identity_pass' if passed else 'independent_cpu_hip_symbol_identity_valid_negative'}))
+ parent=tmp_path/'parent-outcome.json'; parent.write_text(json.dumps({'partial':False,'exit_code':rc}))
+ capture.finalize(out,full,parent)
  return out,begin
 
 def test_capture_projection_refusals_and_planning_canary(tmp_path):
@@ -71,3 +75,21 @@ def test_stop_prevents_complete(tmp_path, monkeypatch):
 def test_complete_positive(tmp_path):
  out,_=fixture(tmp_path, passed=True)
  assert adapter.project(adapter.native_rows(out/'terminal.json')[0]).value == 1
+
+
+def test_parent_outcome_is_bound(tmp_path):
+ out,_=fixture(tmp_path)
+ (tmp_path/'parent-outcome.json').write_text('{"partial": true, "exit_code": 75}')
+ with pytest.raises(claim_tuple.ProjectionError): adapter.native_rows(out/'terminal.json')
+
+def test_finalize_refuses_stop_deadline_and_failed_parent(tmp_path, monkeypatch):
+ out,_=fixture(tmp_path)
+ (out/'terminal.json').unlink()
+ full=tmp_path/'full-result.json'; parent=tmp_path/'parent-outcome.json'
+ stop=tmp_path/'stop'; stop.touch(); monkeypatch.setenv('FILLER_STOPFILE',str(stop))
+ with pytest.raises(ValueError, match='stopped'): capture.finalize(out,full,parent)
+ monkeypatch.delenv('FILLER_STOPFILE'); monkeypatch.setenv('FILLER_DEADLINE','0')
+ with pytest.raises(ValueError, match='expired'): capture.finalize(out,full,parent)
+ monkeypatch.delenv('FILLER_DEADLINE'); parent.write_text('{"partial": true, "exit_code": 75}')
+ with pytest.raises(ValueError, match='parent run'): capture.finalize(out,full,parent)
+ assert not (out/'terminal.json').exists()

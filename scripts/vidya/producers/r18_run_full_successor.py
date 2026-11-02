@@ -39,10 +39,16 @@ finally:
         tmp = result.with_suffix('.json.tmp')
         tmp.write_text(json.dumps(data, indent=2) + '\n')
         os.replace(tmp, result)
-    c = B / 'belief-symbol-finding'
-    if (c / 'begin.json').exists() and not (c / 'terminal.json').exists():
-        capture.terminal(c, 'partial' if data.get('partial', True) else 'failed', {'exit_code': rc, 'reason': data.get('reason')})
     with (B / 'terminal-events.jsonl').open('a') as f:
         f.write(json.dumps({'schema':'r18a.native-unit.v1', 'kind':'terminal', 'time':time.time(), 'exit_code':rc, 'partial':data.get('partial', True), 'disposition':'UNKNOWN' if data.get('partial',True) else 'SEE_FULL_RESULT', 'result_path':str(result)}) + '\n')
         f.flush(); os.fsync(f.fileno())
+    c = B / 'belief-symbol-finding'
+    if (c / 'begin.json').exists() and not (c / 'terminal.json').exists():
+        outcome = B / 'parent-outcome.json'
+        capture.atomic(outcome, {'exit_code': rc, 'partial': data.get('partial', True)})
+        try:
+            capture.finalize(c, result, outcome)
+        except BaseException as exc:
+            capture.terminal(c, 'partial', {'exit_code': rc, 'reason': str(exc)})
+            rc = 75
 sys.exit(rc)

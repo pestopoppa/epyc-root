@@ -25,6 +25,12 @@ def native_rows(path):
             pins={'comparator':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61', 'anchor_cpu':'3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0', 'anchor_hip':'f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079'}
             if begin['source']['head'] != 'ffc1bac82eeca6f9099e1ccd9ba49703c460a115' or any(begin['inputs'][k]['sha256'] != v for k,v in pins.items()): raise ValueError('not pinned v10')
         detail=terminal['detail']; result_path=Path(begin['result'])
+        full, parent = detail['full_result'], detail['parent_outcome']
+        if sha(full['path']) != full['sha256'] or sha(parent['path']) != parent['sha256']: raise ValueError('parent outcome changed')
+        full_data, parent_data = json.loads(Path(full['path']).read_text()), json.loads(Path(parent['path']).read_text())
+        if (full_data.get('partial') is not False or parent_data.get('partial') is not False
+                or full_data.get('exit_code') != detail['returncode'] or parent_data.get('exit_code') != detail['returncode']
+                or full_data.get('reason') not in ('independent_cpu_hip_symbol_identity_pass', 'independent_cpu_hip_symbol_identity_valid_negative')): raise ValueError('incomplete parent run')
         if not begin['synthetic'] and detail['capture_script'] != begin['inputs']['set_extractor']: raise ValueError('extractor binding mismatch')
         if sha(result_path) != detail['result_sha256'] or sha(root/'sets/manifest.json') != detail['sets_manifest_sha256']: raise ValueError('result digest mismatch')
         manifest=json.loads((root/'sets/manifest.json').read_text()); result=json.loads(result_path.read_text())
