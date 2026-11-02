@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:19:04Z",
+  "generated_at": "2026-11-02T11:28:29Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4604,18 +4604,18 @@
       "track": "repl session memory maturity"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 28,
-      "dispatchable": 18,
+      "closed": 29,
+      "dispatchable": 17,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
-      "open": 18,
+      "open": 17,
       "priority": 0.8497,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): RUS-3 \u2014 Repeated-sample run to measure within-question trace-length agreement (needs an in",
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 382,
+      "dispatchable": 387,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 386,
+      "open": 391,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -6242,15 +6242,15 @@
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 56,
-      "dispatchable": 35,
+      "closed": 57,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "last_advanced": "2026-11-02",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 35,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -6681,20 +6681,20 @@
       "track": "autokernel concurrent targets"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-65",
         "INF-66",
         "INF-73"
       ],
-      "closed": 23,
+      "closed": 25,
       "dispatchable": 11,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-cross-workload-keep-gate.md",
       "id": "INF-75",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
       "open": 11,
       "priority": 0.9711,
