@@ -103,3 +103,7 @@ Published `akx-all-10-1-route2-sinks-cpu-20261102` with publisher smoke PASS (fo
 ## 11:38Z — File AKX-ALL-8 floor attempt and repair host region-lock entry point
 
 AKX-ALL-8 v3 exited rc=64 before creating its run directory or process observations: host region-lock could not execute the container-only venv Python. Filed inconclusive; no floor or keep is claimed. Preserved the packet and prepared v4 with the unchanged orchestrator lock CLI invoked through a host-visible Python shim; strict cross-role preflight was checked in the host namespace. The v4 publisher smoke passed on CPUs 48–51 with one diagnostic serving unit, rc=0; the 24-pair floor awaits its granted run.
+
+## 11:41Z — Prepare LB3.2b OpenMP affinity readback repair
+
+Prepared a fresh per-TID affinity checker and OpenMP fixture under `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/lb32-affinity/`. An eight-thread fixture on CPUs 0–3 passed; a declaration excluding CPU 3 refused rc 68. This is preliminary: integrate and validate it in a fresh sealed pair package, establish full-run placement and keeper smoke, then publish the pair. No row published and no box completed. The retired failed pair is unchanged. Q38FN floor is folded into CH-27, whose separately owned successor is being prepared for its single authorized window.

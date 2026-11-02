@@ -52,3 +52,27 @@ def test_missing_or_ambiguous_exact_document_refuses_without_pulls(items):
     with pytest.raises(ValueError, match='exactly one exact document'):
         repl._search_sections('pear')
     assert bundle.accounting()['totals']['pull_calls'] == 0
+
+
+def test_multichunk_unicode_pointers_round_trip_through_view_and_account_bytes():
+    from src.repl_environment.context_bundle import repl_view
+
+    content = ('αβγ filler\n' * 100) + 'uniquequince 漢字\n'
+    sections = [Section('s', 'Unicode', 1, content)]
+    text = '# Unicode\n' + content + '\n'
+    dc = mod.DocumentContext(sections, [], 1, [], '/doc')
+    repl = mod.DocumentREPLEnvironment('Question\n\n' + text, dc,
+                                       document_search_enabled=True, document_search_embedder=None)
+    bundle = ContextBundle.from_payload({'sections': [{'name': 'doc', 'text': text}]})
+    repl.attach_context_bundle(bundle)
+    hits = repl._search_sections('uniquequince')
+    assert hits and any('uniquequince' in text[h['start']:h['end']] for h in hits)
+    view = repl_view(bundle)
+    total = 0
+    for hit in hits:
+        value = view.get(hit['bundle_section'], offset=hit['start'], max_chars=hit['end'] - hit['start'])
+        assert value == text[hit['start']:hit['end']]
+        assert hit['line'] == text.count('\n', 0, hit['start']) + 1
+        total += len(value.encode('utf-8'))
+    assert bundle.accounting()['totals']['bytes_pulled'] == total
+    assert total > sum(h['end'] - h['start'] for h in hits)
