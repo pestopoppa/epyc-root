@@ -27,3 +27,7 @@ Delegated a native-MTP versus DFlash2 serving A/B design with measurement-consti
 ## 10:00Z — Prepare P3-4 paired serving comparison design
 
 Prepared a P3-4 native-MTP versus DFlash2 serving comparison proposal with common model and binary, paired workload strata, explicit launch-switch economics, quality and latency outcomes, residency and identity proofs, and applicable protocol limits. Candidate identities, sustained-serving protocol and decision thresholds remain to be settled before booking; no measurement or adoption is claimed.
+
+## 10:04Z — Prepare P3-5 replacement-arm decision package
+
+Prepared the P3-5 operator package: recommend Qwen3.8-27B versus the previously specified A4 sequential control; alternatives restore the deleted historical stock/FF pair or measure only the Qwen3.8 baseline. Operator selection remains outstanding. Verify artifacts and recipe, measure new ceiling rows and use the proper orchestrator worktree before configuration changes; no activation or inference follows from the package.
