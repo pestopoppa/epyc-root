@@ -53,7 +53,8 @@ static void set_tensor_data(ggml_tensor * t, std::mt19937 & gen, int64_t n_f32) 
 }
 
 // returns output floats; if reps > 0 also measures mean time per compute in us
-static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, int reps, double * us) {
+static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, int reps, double * us,
+        bool reveal_masked_cells = false) {
     const int64_t kv_size = c.kv + 256;
     ggml_init_params ip = { 64*ggml_tensor_overhead() + ggml_graph_overhead(), nullptr, true };
     ggml_context * ctx = ggml_init(ip);
@@ -173,7 +174,11 @@ static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, in
                         (int)visible, (int)should_be_visible);
                 exit(2);
             }
-            mf[i*c.kv + j] = visible ? dis(gen) : -INFINITY;
+            // The guard-removal control turns every independently classified
+            // masked cell into an ordinary score.  The normal run still gets
+            // -inf for these cells.  Since this only changes the mask, the
+            // paired run isolates whether the backend actually honors it.
+            mf[i*c.kv + j] = visible ? dis(gen) : (reveal_masked_cells ? 0.0f : -INFINITY);
         }
     }
     std::vector<ggml_fp16_t> mh(mf.size());
@@ -261,6 +266,24 @@ int main(int argc, char ** argv) {
             if (getenv("FA_CASE") && atoi(getenv("FA_CASE")) != (int) i) continue;
             std::vector<float> r = run_case(backend, c, 0, nullptr);
             if (r.empty()) { printf("case %2zu unsupported\n", i); continue; }
+            if (c.n_shared > 0) {
+                const std::vector<float> unguarded = run_case(backend, c, 0, nullptr, true);
+                if (unguarded.size() != r.size()) {
+                    fprintf(stderr, "case %zu mask negative control returned %zu outputs, expected %zu\n",
+                            i, unguarded.size(), r.size());
+                    return 2;
+                }
+                for (float value : unguarded) {
+                    if (!std::isfinite(value)) {
+                        fprintf(stderr, "case %zu mask negative control returned non-finite output\n", i);
+                        return 2;
+                    }
+                }
+                if (memcmp(r.data(), unguarded.data(), r.size()*sizeof(float)) == 0) {
+                    fprintf(stderr, "case %zu mask negative control had no effect; masked cells may be ignored\n", i);
+                    return 2;
+                }
+            }
             int nan = 0; for (float x : r) nan += std::isnan(x);
             const uint64_t h = fnv1a(r.data(), r.size()*sizeof(float));
             all ^= h; all *= 1099511628211ull;
