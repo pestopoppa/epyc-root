@@ -23,3 +23,23 @@ Ultra prior filing receipt exists; duplicate dispatcher event requires no second
 ## 00:21Z — Reconcile stale scorer qualification and advance remaining speech rows
 
 The scorer dry-run PASS at 00:13Z precedes its 00:15Z ended run, already filed inconclusive with receipt after custody; it is not a new grantable result. PIDs 1906994 and 1906997 from the dry-run warning were absent on one later ps check; no signal sent. Prior score/Voxtral filing wrapped and reached origin/main at a8d38d8c45b91bda458edb38845be36b99b7267c. Bounded Voxtral exposure, Crisp HIP and Ultra-fault audits are dispatched with completion events. No new row published.
+
+## 01:54Z — Prepare Crisp HIP and no-redraw speech successors
+
+Crisp HIP row failed before a build unit at rc75; existing packet binds a missing source tree and a stale build configuration, so publication requires a restored-source seal, clean reconfiguration and STOP-aware verified units. Dispatched bounded Crisp candidate, Voxtral no-redraw successor and Ultra fault analysis; completion events CRISP-BUILD8, VOX-RESUME8 and ULTRA-DIAG8 registered. Previous reconciliation commit 06ce9c483540 was pushed under serialized lock and verified at origin/main a6c75d5d7712. No compute or new row submitted.
+
+## 01:56Z — Advance blocked speech row repairs
+
+CS-5 and CS-6 are reference harness and run-plan preparation, not runnable inference rows; CS-8 depends on those inputs. CS8 build dry-run exited rc75 at the disk reserve before a unit; its existing success marker does not provide incremental units and a sealed successor is needed. Bounded build and Ultra migration repairs are preparing scratch reports registered as dispatcher events; review and integrate on receipt. No compute launched or row published. GitNexus reports this worktree is not indexed; impact checks are required before code edits. [no-belief: operational investigation]
+
+## 03:47Z — Prepare speech row successor and restore wrap-up check
+
+Previous wrap-up failed at observer census because the sparse lane omitted tracked artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh; restored that tracked hook input and observer census passes. CS-52 source investigation confirms the handoff requires owner-window footprint measurements before choosing a CPU pool cap; no production edits or compute. CS8 successor implementation and CS-6 run-plan preparation were delegated into scratch; completion events registered. Ultra prior report is still pending. No new row was published. [no-belief: operational investigation]
+
+## 03:47Z — Prepare speech row successor and restore wrap-up check
+
+Previous wrap-up failed at observer census because the sparse lane omitted tracked artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh; restored that tracked hook input and observer census passes. CS-52 source investigation confirms the handoff requires owner-window footprint measurements before choosing a CPU pool cap; no production edits or compute. CS8 successor implementation and CS-6 run-plan preparation were delegated into scratch; completion events registered. Ultra prior report is still pending. No new row was published. [no-belief: operational investigation]
+
+## 03:48Z — Review speech bench plan and build successor
+
+Consumed CS6 plan and CS8 build draft. CS6 has an ordered run list, measurands, exit criteria and explicitly provisional booking ranges; independent review requested before integration. CS8 journal passed three model-free tests but remains unpublishable due to STOP race, child drain, source/launcher seals and cutover; bounded implementations dispatched in scratch. Completion event files registered. Prior wrap-up push failed and subsequent commit failed because merge reapplied sparse patterns; lane sparse configuration now includes the tracked observer hook input, and observer census passes. No compute or row published. [no-belief: preparation and operational checks]
