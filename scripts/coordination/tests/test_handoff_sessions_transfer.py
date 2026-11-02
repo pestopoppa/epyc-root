@@ -178,7 +178,7 @@ class WrappedParsingTests(_Fixture):
         self.assertEqual(len(self.calls), 1)
         p = self.calls[0]["prompt"]
         for marker in ("go on: next=unreported", "NEVER wait in this turn", hs.REPORT_LINE, "`blocked_by`", "priority order",
-                       "task boundary", "Spend this turn on the task itself", "Progress = a box in YOUR handoff"):
+                       "A turn ends ONLY at one of", "Spend this turn on the task itself", "Progress = a box in YOUR handoff"):
             self.assertIn(marker, p)
 
     def test_legacy_wrapup_form_still_parsed(self):
