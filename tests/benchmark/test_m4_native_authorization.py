@@ -3,6 +3,8 @@ import importlib.util
 import json
 from pathlib import Path
 import pytest
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]/'scripts/benchmark/m4_cpu_ownership'))
 
 ROOT=Path(__file__).resolve().parents[2]
 spec=importlib.util.spec_from_file_location('m4_auth',ROOT/'scripts/benchmark/m4_cpu_ownership/native_authorization.py')
@@ -31,12 +33,20 @@ def packet(tmp):
             'canary':{'context':str(context),'context_sha256':h(context),'context_witness':'historical conclusion',
                       'history':str(history),'history_sha256':h(history),'history_witness':'do not repeat'}}
 
-def test_fully_bound_admission(tmp_path):
+def test_untrusted_canary_markers_never_authorize(tmp_path,monkeypatch):
     plan=packet(tmp_path)
-    result=auth.verify(plan,current_champion=auth.CHAMPION,enrolled=True)
-    assert result['role']=='worker_general'
+    monkeypatch.setattr(auth.planning_canary, 'run', lambda: (_ for _ in ()).throw(ValueError('native replay refused')))
+    with pytest.raises(ValueError,match='native replay refused'):
+        auth.verify(plan,current_champion=auth.CHAMPION,enrolled=True)
 
-@pytest.mark.parametrize('defect',['unenrolled','champion','model','library','scope','canary'])
+
+def test_missing_canary_never_authorizes(tmp_path,monkeypatch):
+    plan=packet(tmp_path); plan.pop('canary')
+    monkeypatch.setattr(auth.planning_canary, 'run', lambda: (_ for _ in ()).throw(ValueError('native replay refused')))
+    with pytest.raises(ValueError,match='native replay refused'):
+        auth.verify(plan,current_champion=auth.CHAMPION,enrolled=True)
+
+@pytest.mark.parametrize('defect',['unenrolled','champion','model','library','scope'])
 def test_unbound_or_drifted_inputs_refuse(tmp_path,defect):
     plan=packet(tmp_path)
     if defect=='model': Path(json.loads(Path(plan['native_plan']).read_bytes())['models'][0]['model_path']).write_bytes(b'changed')

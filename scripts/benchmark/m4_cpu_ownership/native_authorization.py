@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import planning_canary
 from pathlib import Path
 
 CHAMPION = 'c72ec82f5417bb2937310326120f149b665e8400'
@@ -99,16 +100,11 @@ def verify(plan: dict, *, current_champion: str, enrolled: bool) -> dict:
             if not target.is_relative_to(root) or sha(target) != digest:
                 raise ValueError('image content changed')
         images[arm] = root
-    # The original planner context and do-not-repeat witness are independently
-    # sealed before launch; fixture records do not prove a wired planner.
-    canary = plan['canary']
-    witnessed = []
-    for name in ('context','history'):
-        path = checked_file(canary[name], canary[name+'_sha256'])
-        witnessed.append(path)
-        marker = canary[name+'_witness']
-        if not isinstance(marker,str) or not marker or marker not in path.read_text():
-            raise ValueError(f'canary {name} witness missing')
-    if witnessed[0] == witnessed[1]:
-        raise ValueError('context and history witnesses must be distinct')
-    return {'scope':scope,'native_plan':native_plan,'role':role,'images':images}
+    receipt = _verify_planning_canary()
+    return {'scope':scope,'native_plan':native_plan,'role':role,'images':images,'canary_receipt':receipt}
+
+
+def _verify_planning_canary() -> dict:
+    # Execute the canonical native replay; no plan-supplied summary or strings
+    # can serve as a receipt. Unknown/crash/FAIL all refuse before inference.
+    return planning_canary.run()

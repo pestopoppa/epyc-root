@@ -164,6 +164,8 @@ def main() -> int:
             champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
                 'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
             bound = native_authorization.verify(plan, current_champion=champion, enrolled=True)
+            with (a.output/'PLANNER-CANARY-BEFORE.json').open('x',encoding='utf-8') as receipt:
+                json.dump(bound['canary_receipt'],receipt,sort_keys=True,indent=2)
             command = [sys.executable, '-B', str(producer/'dispatch.py'), '--scope', str(bound['scope']),
                        '--plan', str(bound['native_plan']), '--baseline-image', str(bound['images']['baseline']),
                        '--candidate-image', str(bound['images']['candidate']), '--out', str(output),
@@ -180,7 +182,9 @@ def main() -> int:
                 raise ValueError('deployed reader changed after work')
             champion = subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
                 'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'], text=True).strip()
-            native_authorization.verify(plan, current_champion=champion, enrolled=True)
+            final_binding = native_authorization.verify(plan, current_champion=champion, enrolled=True)
+            with (a.output/'PLANNER-CANARY-AFTER.json').open('x',encoding='utf-8') as receipt:
+                json.dump(final_binding['canary_receipt'],receipt,sort_keys=True,indent=2)
         _grant(a.grant, plan['region'], a.deadline)
         if _sha(a.grant) != grant_hash or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('final grant, STOP or HOLD check failed')

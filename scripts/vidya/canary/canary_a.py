@@ -57,6 +57,8 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+from optional_digest import optional_digest
+
 import canary_guard
 canary_guard.install()
 
@@ -75,7 +77,7 @@ def main() -> int:
     canonical = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
     telemetry = Path("/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl")
     canonical_before = sha(canonical)
-    telemetry_before = sha(telemetry)
+    telemetry_before = optional_digest(telemetry)
 
     from scripts.kernel_rnd.autokernel.loop import actors, belief_context, dispatch_guard, loop
     from scripts.kernel_rnd.autokernel.loop import run as run_mod, archive, resume as resume_mod
@@ -254,12 +256,14 @@ def main() -> int:
                      for line in section.splitlines())
     passed = belief_status == "ready" and known_line and bool(guard.get("akm-cpu-fa-query-major-row-schedule"))
     canonical_unchanged = canonical_before == sha(canonical)
-    telemetry_unchanged = telemetry_before == sha(telemetry)
+    telemetry_after = optional_digest(telemetry)
+    telemetry_unchanged = telemetry_before == telemetry_after
     status = ("UNKNOWN" if belief_status != "ready" or not canonical_unchanged or not telemetry_unchanged
               else ("PASS" if passed else "FAIL"))
     print("CANARY_RESULT:", json.dumps({"loop": "A", "status": status,
           "known_line": known_line, "guard_refusal": bool(guard.get("akm-cpu-fa-query-major-row-schedule")),
-          "canonical_ledger_unchanged": canonical_unchanged, "telemetry_unchanged": telemetry_unchanged}))
+          "canonical_ledger_unchanged": canonical_unchanged, "telemetry_unchanged": telemetry_unchanged,
+          "telemetry_before": telemetry_before, "telemetry_after": telemetry_after}))
     return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2}[status]
 
 
