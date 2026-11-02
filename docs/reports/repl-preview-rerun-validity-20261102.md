@@ -19,3 +19,9 @@ newly captured replies through `run_reply` and document what happened. Use a
 fresh output directory; verify model and other inputs before row publication.
 The original 15–25 minute estimate plus loading is the planning estimate until
 the replacement launcher establishes a better one.
+
+Independent review found an additional publication gate: the root belief
+adapter currently accepts any complete non-mock result without checking cell
+validity, so a direct adapter invocation can emit even the old invalid run.
+Harden and test the adapter itself as well as the driver, and make the launcher
+reject an already-complete invalid result on resume before publishing the row.
