@@ -4,19 +4,19 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1041
+      "open": 1042
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-09-24",
-      "open": 69
+      "open": 70
     },
     "research-evaluation-index.md": {
       "blocked": 15,
       "handoffs": 41,
       "oldest_advance": "2026-07-29",
-      "open": 690
+      "open": 693
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 654
+      "open": 660
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -281,10 +281,10 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 301,
+      "closed": 302,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 72,
+      "last_advanced": "2026-11-02",
+      "open": 73,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -293,7 +293,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 374
+      "total": 376
     },
     "autokernel-restart-and-strip.md": {
       "blocked": 0,
@@ -329,9 +329,9 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 40,
+      "closed": 42,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 57,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -341,7 +341,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 99
+      "total": 101
     },
     "autopilot-dashboard-fidelity-audit-2026-07-22.md": {
       "blocked": 0,
@@ -505,10 +505,10 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 15,
+      "closed": 17,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 4,
+      "last_advanced": "2026-11-02",
+      "open": 8,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -517,7 +517,7 @@
       },
       "row_id": "RTG-62",
       "state": "active",
-      "total": 19
+      "total": 25
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -569,7 +569,7 @@
     },
     "conversation-stack.md": {
       "blocked": 42,
-      "closed": 72,
+      "closed": 73,
       "guarded": 0,
       "last_advanced": "2026-11-01",
       "open": 35,
@@ -581,7 +581,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 149
+      "total": 150
     },
     "coordinator-role-failure-modes-and-refactor.md": {
       "blocked": 0,
@@ -668,7 +668,7 @@
       "closed": 20,
       "guarded": 0,
       "last_advanced": "2026-11-01",
-      "open": 10,
+      "open": 12,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -677,7 +677,7 @@
       },
       "row_id": "RTG-47",
       "state": "active",
-      "total": 30
+      "total": 32
     },
     "decision-aware-routing.md": {
       "blocked": 1,
@@ -764,7 +764,7 @@
       "closed": 9,
       "guarded": 0,
       "last_advanced": "2026-10-24",
-      "open": 7,
+      "open": 8,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -773,7 +773,7 @@
       },
       "row_id": "EVL-52",
       "state": "active",
-      "total": 16
+      "total": 17
     },
     "dflash2-block-drafter-experimental-build.md": {
       "blocked": 0,
@@ -1385,10 +1385,10 @@
     },
     "internal-kb-rag.md": {
       "blocked": 0,
-      "closed": 41,
+      "closed": 43,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 20,
+      "last_advanced": "2026-11-02",
+      "open": 21,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1397,7 +1397,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 61
+      "total": 64
     },
     "iqk-iquant-enablement.md": {
       "blocked": 0,
@@ -1835,7 +1835,7 @@
       "blocked": 0,
       "closed": 45,
       "guarded": 0,
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-01",
       "open": 10,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2809,10 +2809,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,
-      "closed": 335,
+      "closed": 336,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 368,
+      "last_advanced": "2026-11-02",
+      "open": 370,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2821,7 +2821,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 707
+      "total": 710
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -4414,7 +4414,7 @@
       "id": "RTG-54",
       "index": "routing-and-optimization-index.md",
       "line": 59,
-      "next_action": "Resume CT-21 from 1956/2352 rows with reviewed parse-outcome capture; archive raw logs at each boundary; then CT-12.5",
+      "next_action": "Prepare CT-12.3d deployed orchestrator escaped-cost check; review CT-21 scorer cause and prospective measurement",
       "track": "qwen chat template evaluation"
     },
     "RTG-55": {
@@ -4496,7 +4496,7 @@
       "id": "RTG-62",
       "index": "routing-and-optimization-index.md",
       "line": 66,
-      "next_action": "Land MIN_RESUME_GAP_S fix; measure CAF burn; cut net line count (open boxes)",
+      "next_action": "SA-1 (merge into sticky-slot change: ready-row admission, start cooldown) then SA-2/SA-3/JEV-3",
       "track": "churn pipeline"
     },
     "UFH-01": {

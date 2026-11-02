@@ -457,3 +457,10 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 
 Flip checkboxes with inline `✅ YYYY-MM-DD` as phases land; record routes/registry schema in
 `progress/`. Delete the index row on completion.
+
+## Loop and knowledge views from intake-2604/2609/2619 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [ ] **JEV-5** [M] Typed loop-spec JSON (states, transitions, stop reasons, thresholds) for the churn loop first; phase A = a registered hub page rendering it (vendored Mermaid or cockpit-style inline SVG) with registry entry, `/api/health` probe and freshness envelope. Phases B (replay stepper over saved journals/FAIL files) and C (threshold-only patch edits) only after the operator has used phase A (intake-2609#record). removes: hand-drawn flowcharts and log-grepping to follow a loop.
+- [ ] **KT-3** [M] Knowledge hub page: store counts and freshness, KT-1 lint and conflict totals, and a claim browser (claim → tuple/grade → supporting and refuting frames → run → commit, cited-by reverse lookup, `vidya impact` preview); same renderer as JEV-5; registry + probe + freshness envelope. Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md). removes: reading `.vidya` ledger JSON and `vidya query` output by hand.

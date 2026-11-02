@@ -1,0 +1,21 @@
+# Current-arm GPQA-CoT row: launcher design
+
+This is an implementation plan, not a published row or a measurement. The 2026-10-28 handoff retarget makes the historical A1/A2 arms non-current. Select and pin current model artifacts and their per-model recipes before publication; do not infer an old A1/A3/A4 comparison from a new cohort.
+
+## Preparation before publication
+
+Use `gpqa_split_manifest.py` with the pinned 198-question manifest. If it fails mid-write, discard the partial output directory and start with a new one. Pin the current model and any required draft artifact, production kernel-store binary and libraries, question manifest, runner and scorer; prepare and verify these inputs outside the grant. Record sampler, seed, prompt, token budget, template, model configuration and decision rule for every current arm. The historical A3 full CoT run used an 8192-token output cap; do not assume the old server recipe is directly comparable to new models.
+
+## Grant execution and resumability
+
+1. Run only under keeper-granted GPU resources. Use the granted CPU, port and process conventions and a private `LD_LIBRARY_PATH` for the production GPU store. Capture server PIDs that the launcher itself creates for targeted cleanup. Verify the store's approved binary and linkage according to the existing scripts; do not use the frozen tree's stale in-tree build.
+2. Use one output directory and `per_question.jsonl` **per arm and item**. The v7 quality runner's resume validation rejects same-suite IDs outside its current input; pointing one-item manifests at a shared JSONL can move earlier records to rejected output. A completed item is skippable only after validating its identity, suite, seed and source/model/run fingerprint; reject duplicates, malformed, wrong-arm and stale records. Keep individual immutable results until consolidation.
+3. Check `FILLER_STOPFILE` and `FILLER_DEADLINE` before each item and on interruption. Account for the maximum in-flight request duration and cleanup margin: a boundary check alone cannot stop a request that overruns the deadline. Implement bounded request cancellation and cleanup for the captured child processes. Persist valid finished items atomically; on interruption mark unfinished work partial/unknown and return the rowflow-required cutoff status (75), never a complete verdict. Resume from validated finished items only.
+4. Before running an 8192-token output request, establish actual per-slot context capacity and leave room for the complete prompt and output. A server total `-c 16384 -np 4` must not be assumed to provide 16384 tokens per slot. Record server settings and prove the actual allocation from the server's runtime evidence. Prefer a configuration that demonstrably fits; fail closed if capacity is uncertain.
+5. Establish GPU residency **during** inference: isolated ggml linkage verification plus overlapping nonzero VRAM and KFD process evidence, associated with the captured process and observation window. A pre-run snapshot or executable `ldd` alone does not prove HIP execution. Capture failures, transport errors, truncation and parser outcomes; do not silently discard them.
+
+## Consolidation and publication
+
+After all items finish, validate exactly 198 unique expected IDs per arm against the pinned manifest, no extras or duplicates, with matching cohort and protocol fingerprints. Atomically write a consolidated result preserving raw records and explicit errors/unknowns; partial output cannot satisfy the full-cohort decision rule. Use the canonical objective scorer and a predeclared paired comparison rule, with paired item identity and any multiple-comparison limitations documented. The result schema must distinguish complete, partial and invalid and include provenance and device evidence.
+
+Before `publish_row.py`, exercise the launcher offline with fake runner/server fixtures: normal completion; interruption during a request and resume; malformed, stale, duplicate and missing item; server failure; insufficient context; and missing GPU evidence. Validate native stop and cleanup with the keeper's qualification process; this session must not grant, qualify, launch inference, or claim a measurement. Publish only when the current arms, artifact pins, decision rule, result path and a bounded estimate are all defined.

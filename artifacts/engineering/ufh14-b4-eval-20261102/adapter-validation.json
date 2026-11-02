@@ -1,0 +1,19 @@
+{
+  "task": "B4c offline adapter payload validation",
+  "scope": "Offline adapter and fixture tests only; no live config, network, compute, or handoff edits.",
+  "result": "implemented",
+  "changes": [
+    "Added validation binding each backend result to an expected cohort case and A0-pre/A2/A0-post arm.",
+    "Rejects mock/fixture-only or empty answers; requires finite nonnegative latency, criterion rows, and raw serving rows containing prefix_fingerprint, cache_n, prompt_n, prompt_ms, role, and port.",
+    "Updated backend fixture with a realistic non-mock payload and added acceptance/rejection contract tests."
+  ],
+  "validation": {
+    "command": "python3 -m unittest -v",
+    "passed": 13,
+    "failed": 0
+  },
+  "files": {
+    "paired_b4c.py": "072d26551d724c1340af5e88c4acd70e959a06cfebe729b40b959a4f2d6fc296",
+    "test_paired_b4c.py": "e87f1f523230ff164da9f33e04207a31365c1fa6994fe46b2aa754191aa14956"
+  }
+}

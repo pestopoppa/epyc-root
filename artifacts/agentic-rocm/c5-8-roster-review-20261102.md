@@ -1,0 +1,5 @@
+# C5-8 roster patch review — 2026-11-02
+
+`c5-8-reviewed-candidate.patch` SHA-256 `2484d79e4e3bfa9141b07bdb72d08abcaf5c516bb0ff4ec81a7d65aec1e8d3b2` is a reviewed, unintegrated research patch against `99301fa149af86a6f9743d2b0405c9234ba39586`. It catalogs Hawkeye and SwizzlePerf as discovery-only `ControllerSpec` entries, outside the executable `CONTROLLERS` roster. This preserves refusal of unprovisioned controllers and the pinned eight-arm panel. The independent review applied the patch to a source copy and reported 13 passing tests and two passing subtests, with tested bytes matched to the applied patch.
+
+This does not complete C5-8: it neither implements the Hawkeye loop nor SwizzlePerf's persistent code-diff/bottleneck history, structured critique and planner-memory registration. A discovery catalog must not be reported as a runnable controller or a completed planner-memory mapping. The shared research checkout was not changed. Integrate only through an appropriate clean source checkout after reviewing the planner-memory contract and the required source identities; no GPU or controller performance claim follows from these tests.
