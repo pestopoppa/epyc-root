@@ -100,7 +100,34 @@ def safe_relative_path(value: str) -> bool:
 
 def contained_env(harness, ident: str, docker: str):
     class Contained(harness.DockerEnv):
+        def _git(self, args, timeout):
+            # Start git as the sandbox's directly exec'd process. Wrapping it
+            # in a sandboxed shell/timeout makes it a descendant that cannot
+            # inspect its own /proc entry under the existing containment policy.
+            try:
+                p = subprocess.run([docker, 'exec', '-w', '/testbed', ident, 'timeout',
+                                    f'{max(1, int(timeout))}s', 'python3', '-I',
+                                    '/opt/p5_sandbox/run.py', '--git', *args], capture_output=True,
+                                   text=True, errors='replace', timeout=timeout + 15)
+            except subprocess.TimeoutExpired:
+                return harness.TIMEOUT_EXIT, '', harness._timeout_msg(timeout)
+            return p.returncode, p.stdout or '', p.stderr or ''
+
         def _exec(self, cmd, timeout):
+            # Route only the harness's known argv forms. Arbitrary model shell
+            # commands retain the ordinary shell and identical containment.
+            if cmd == "git ls-files -- '*.py'":
+                return self._git(['ls-files', '--', '*.py'], timeout)
+            if cmd == 'git -C /testbed diff':
+                return self._git(['-C', '/testbed', 'diff'], timeout)
+            prefix = 'git -C /testbed add -N -- '
+            if cmd.startswith(prefix):
+                try:
+                    paths = shlex.split(cmd[len(prefix):])
+                except ValueError:
+                    paths = []
+                if paths and all(safe_relative_path(path) for path in paths):
+                    return self._git(['-C', '/testbed', 'add', '-N', '--', *paths], timeout)
             inner = f"timeout {int(timeout)}s bash -c {shlex.quote(cmd)}"
             try:
                 p = subprocess.run([docker, 'exec', '-w', '/testbed', ident, 'python3', '-I',
@@ -109,6 +136,15 @@ def contained_env(harness, ident: str, docker: str):
             except subprocess.TimeoutExpired:
                 return harness.TIMEOUT_EXIT, '', harness._timeout_msg(timeout)
             return p.returncode, p.stdout or '', p.stderr or ''
+
+        def reset_testbed(self, base_commit=None, timeout=120):
+            if base_commit is not None and not re.fullmatch(r'[0-9a-f]{40}', base_commit):
+                return False, 'invalid base commit'
+            code, out, err = self._git(['reset', '--hard', *([base_commit] if base_commit else [])], timeout)
+            if code:
+                return False, (err or out).strip()[-400:]
+            code, out, err = self._git(['clean', '-fd'], timeout)
+            return (True, '') if code == 0 else (False, (err or out).strip()[-400:])
 
         def read_file(self, rel_path):
             if not safe_relative_path(rel_path):

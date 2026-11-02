@@ -8,6 +8,8 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
+import shlex
 from pathlib import Path
 import sys
 
@@ -24,6 +26,20 @@ def load_pinned(path, expected):
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
+
+
+def select_tracked_python(env):
+    """Choose a deterministic tracked, readable regular text file in testbed."""
+    code, listing, error = env._exec("git ls-files -- '*.py'", 15)
+    require(code == 0, 'cannot list tracked Python files: ' + (error or listing).strip()[-1000:])
+    for name in sorted(listing.splitlines()):
+        if (not re.fullmatch(r'[A-Za-z0-9_./-]+\.py', name)
+                or any(part in ('', '.', '..') for part in name.split('/'))):
+            continue
+        content = env.read_file(name)  # adapter refuses symlinks and traversal
+        if content is not None and '\x00' not in content and '\ufffd' not in content and len(content) < 1000000:
+            return name, content
+    raise RuntimeError('no safe tracked Python text file in testbed')
 
 
 def main():
@@ -61,14 +77,18 @@ def main():
         require(code == 0 and env.read_file('p5_qualification_symlink/passwd') is None,
                 'symlink escape not refused')
         checks.append('file_traversal_refused')
-        code, _ = env.run('git ls-files --error-unmatch README.rst >/dev/null', 15)
-        require(code == 0, 'pinned trial requires tracked README.rst')
-        client = harness.ReplayClient(['ACTION: bash\nprintf \"\\nP5 qualification marker\\n\" >> README.rst', 'ACTION: done'])
+        target, original = select_tracked_python(env)
+        dirty_marker = 'P5_PRE_RESET_CONTAMINATION_8421'
+        patch_marker = 'P5_QUALIFICATION_PATCH_8421'
+        require(dirty_marker not in original and patch_marker not in original, 'marker collision')
+        require(env.write_file(target, original + '\n# ' + dirty_marker + '\n'), 'cannot seed reset control')
+        client = harness.ReplayClient(['ACTION: bash\nprintf "\\n# ' + patch_marker + '\\n" >> ' + shlex.quote(target), 'ACTION: done'])
         result = harness.run_instance(client, env, matching[0], harness.AgentConfig())
         require(result.get('evidence_complete') and result.get('turns_used') == 2,
                 'replay evidence incomplete or reset failed')
-        require('README.rst' in result.get('model_patch', '') and
-                'P5 qualification marker' in result.get('model_patch', ''), 'replay patch missing')
+        patch = result.get('model_patch', '')
+        require(target in patch and patch_marker in patch and dirty_marker not in patch,
+                'replay patch missing or pre-trial contamination survived reset')
         checks.append('real_instance_reset_replay_and_patch')
     # The context must have removed its own container before any PASS is written.
     result = {'schema': 'p5.swe-image-qualification.v1', 'verdict': 'PASS',
