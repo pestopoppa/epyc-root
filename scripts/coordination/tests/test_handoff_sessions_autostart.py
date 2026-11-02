@@ -137,8 +137,8 @@ class AutoStartTests(AutoStartFixture):
         _w(os.path.join(self.flags, "grants", "row-x.grant"), "regions=0-23\n")
         reg, _ = self.dispatch()
         S = reg["sessions"]
-        self.assertEqual(S["finished"]["status"], "done")
-        self.assertIn("DONE finished: next=done and no open box left", self.log_text())
+        self.assertEqual(S["finished"]["status"], "retired", "closed: never resumed")
+        self.assertIn("DONE finished: next=done; handoff archived on origin/main; session retired", self.log_text())
         self.assertEqual(S["waiting"]["status"], "suspended", "paused: every blocked_by row is readied")
         self.assertIn("PAUSE waiting: blocked on readied row(s) row-x [running]", self.log_text())
         self.assertEqual(S["waiting"]["work_state"], "pause")
@@ -262,18 +262,31 @@ class PauseRuleTests(AutoStartFixture):
         self.assertEqual(d({"next": "non-inference"})[0], "continue")
         self.assertEqual(d({"next": "inference"})[0], "continue")
         self.assertEqual(d({"next": "blocked"})[0], "continue", "blocked without ids never pauses")
-        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1"]}), ("continue", "r1 is not ready (state: unknown) - make it ready"))
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1"]}), ("continue", "making-ready: r1 is not ready (state: unknown) - make it ready"))
         _w(os.path.join(self.flags, "dryrun", "r1", "PASS.json"), "{}")
         _w(os.path.join(self.flags, "grants", "r2.grant"), "")
         self.assertEqual(d({"next": "blocked", "blocked_by": ["r1", "r2"]}), ("pause", "blocked on readied row(s) r1 [grantable], r2 [running]"))
         hs.time.sleep(0.02)
         _w(os.path.join(self.flags, "dryrun", "r1", "FAIL-1.json"), "{}")  # a later FAIL un-readies it: resumed
-        self.assertEqual(d({"next": "blocked", "blocked_by": ["r1", "r2"]}), ("continue", "r1 is not ready (state: failed) - make it ready"))
+        self.assertTrue(d({"next": "blocked", "blocked_by": ["r1", "r2"]})[1].startswith("making-ready: r1 is not ready (state: failed) - make it ready"))
+        _w(os.path.join(self.flags, "dryrun", "r3", "RUNNING.json"), '{"pid": 1}')  # pending dry run: NOT readied
+        why = d({"next": "blocked", "blocked_by": ["r3"]})
+        self.assertEqual(why[0], "continue")
+        self.assertIn("making-ready", why[1])
+        _w(os.path.join(self.flags, "dryrun", "r4", "FAIL-1.json"),
+           json.dumps({"fix_task": "fix FIXME-X", "launcher_out_tail": ["line-a", "TAIL-MARK"]}))
+        memo = d({"next": "blocked", "blocked_by": ["r4"]})[1]
+        self.assertIn("FIX TASK (r4): fix FIXME-X", memo)
+        self.assertIn("TAIL-MARK", memo)
+        self.assertNotIn("dryrun-running", hs.READIED)
         _w(os.path.join(self.flags, "grants", "r2.ended"), "rc=0\n")  # the row ended: resumed
-        self.assertEqual(d({"next": "blocked", "blocked_by": ["r2"]})[1], "r2 is not ready (state: done) - make it ready")
+        self.assertEqual(d({"next": "blocked", "blocked_by": ["r2"]})[1], "making-ready: r2 is not ready (state: done) - make it ready")
         self.assertEqual(d({"next": "done"}), ("continue", "you reported next=done but the handoff has 1 open box(es) - finish or tick them"))
         e["handoff"] = "handoffs/active/closed.md"
         self.assertEqual(d({"next": "done"})[0], "done")
+        with patch.object(hs, "active_on_main", lambda h, repo=None: True):  # still in active/ on origin/main: not closed
+            self.assertEqual(d({"next": "done"})[0], "continue")
+            self.assertIn("finish the completion wrap-up", d({"next": "done"})[1])
         self.assertEqual(d({"next": "non-inference"})[0], "continue", "only the session's own next=done closes a handoff")
         self.assertEqual(hs.decide(self.flags, "codex-gen", {"generalist": True, "last_report": {"next": "done"}})[0], "pause")
         # pane status lines: never "Pane is dead"
@@ -314,7 +327,7 @@ class WindowClutterTests(AutoStartFixture):
         self.assertEqual(len(nw), 1)
         self.assertEqual(nw[0][:6], ("new-window", "-d", "-t", "agent:", "-n", "h-alpha"))
         self.assertEqual(reg["sessions"]["alpha"]["status"], "live")
-        self.assertIn("OPEN alpha: row-x is not ready (state: unknown) - make it ready", self.log_text())
+        self.assertIn("OPEN alpha: making-ready: row-x is not ready (state: unknown) - make it ready", self.log_text())
         self.assertFalse(any(c[0] == "send-keys" for c in calls))
 
 
@@ -451,14 +464,10 @@ class CAF1Tests(_DSHBase):
         self.assertNotIn("do not poll.", b)
         self.assertIn("awaiting/<name>.json", b)
         self.assertIn("NEVER wait in this turn", hs.idle_prompt("alpha", e, self.flags))
-        # a dry-run FAIL for an owned row resumes the session with the fix task (the session never polled for it)
+        # the dry run is publish_row's smoke in the owner's own turn: a FAIL file is no dispatcher event
         _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-1.json"), json.dumps({"reason": "no unit", "fix_task": "fix the result_path"}))
-        reg, st = self.dispatch()
-        self.assertIn("DRYRUN-RESULT row-a -> alpha", self.log_text())
-        self.assertEqual(len(self.calls), 1)
-        self.assertIn("Dry-run FAIL for your row `row-a`", self.calls[0]["prompt"])
-        self.assertIn(hs.REPORT_LINE, self.calls[0]["prompt"])
-        self.assertIn("fix the result_path", self.calls[0]["prompt"])
+        self.dispatch()
+        self.assertNotIn("DRYRUN-RESULT", self.log_text())
         # an awaited file: registered by the session, fires when it exists
         self.session(last_report={"next": "blocked", "blocked_by": ["row-a"]})  # paused on a readied row: only an event resumes it
         _w(os.path.join(self.flags, "grants", "row-a.grant"), "regions=0-23\n")
@@ -803,3 +812,14 @@ class LandLaneTests(_DSHBase):
         self.assertEqual(len(landed), 1)
         self.assertEqual(hs.landed_ticks(landed[0], repo=lane), 1)
         self.assertEqual(hs.land_lane(lane), [], "nothing left to land")
+
+
+class HandoffRoutingTests(unittest.TestCase):
+    def test_row_routes_by_handoff_task_file_then_legacy_ids(self):
+        pilots = {"a": {"handoff": "handoffs/active/alpha.md", "ids": set(), "rows": set()},
+                  "b": {"handoff": "handoffs/active/contest.md", "ids": {"old-row"}, "rows": set()}}
+        self.assertEqual(bg.handoff_file("handoffs/active/alpha.md:INF-3"), "alpha.md")
+        self.assertEqual(bg.handoff_file("FILLERS"), "")
+        self.assertEqual(bg.pilot_of(pilots, "new-row", None, "alpha.md:INF-3"), "a")
+        self.assertEqual(bg.pilot_of(pilots, "new-row", None, "test.md"), None, "no suffix match (contest.md)")
+        self.assertEqual(bg.pilot_of(pilots, "old-row", None, "FILLERS"), "b", "row_ids stay the fallback for old rows")

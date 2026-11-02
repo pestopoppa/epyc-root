@@ -9,7 +9,7 @@ Registry: compute-flags/handoff-sessions.json (schema epyc.handoff-sessions.v1)
      "sessions": {"<slug>": {"handoff": "handoffs/active/<file>.md", "engine": "codex|claude|opencode",
                              "session_id": "...", "status": "live|suspended|done", "waits_on": [row ids],
                              "last_resume": "<iso>", "last_wrapup": "<path or commit>", "brief": "briefs/HANDOFF-<slug>.md",
-                             "row_ids": [...], "row_patterns": [regex...], "handoff_rows": [INF-..], "pid": <int|null>}}}
+                             "row_ids": [...] (legacy fallback; rows route by handoff_task), "handoff_rows": [INF-..], "pid": <int|null>}}}
     backlog_gen.py reads the same file: matched rows leave BACKLOG-<worker>.md and go to BACKLOG-handoff-<slug>.md.
 
 2026-11-01 portability rulings (operator): the owner files its own results (no filing subagent); the session
@@ -93,6 +93,9 @@ REPORT_LINE = (
     "Progress = a box in YOUR handoff ticked with its evidence. Finish existing boxes before adding new ones. Add a box only when "
     "a task you are doing genuinely splits, or a result creates a follow-up the operator would need to act on. When a result "
     "lands, tick its box in the same turn.\n"
+    "Report next=done ONLY after the completion wrap-up has LANDED: extract findings to docs, `git mv` the handoff to "
+    "handoffs/completed/, delete its index row, run `python3 scripts/handoffs/index_state.py --check` (exit 0), then land. "
+    "The dispatcher retires you only once the file is gone from handoffs/active/ on origin/main.\n"
     "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
     "launcher + publish_row.py + dry-run PASS) and end the turn only at a task boundary. Your wrap-up JSON (-> report.json) "
     "MUST carry `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
@@ -110,6 +113,13 @@ def lane_line(slug):
 WRAPPED_RX = re.compile(r"(?:WRAPPED|WRAPUP:)\s+([0-9a-f]{7,40})\b")
 
 
+def active_on_main(handoff, repo=ROOT) -> bool:
+    """True while handoffs/active/<file> still exists on origin/main (the close step's proof is its absence)."""
+    subprocess.run(["git", "-C", repo, "fetch", "-q", "origin", "main"], capture_output=True, timeout=120)
+    path = "handoffs/active/" + os.path.basename(str(handoff or ""))
+    return subprocess.run(["git", "-C", repo, "cat-file", "-e", f"origin/main:{path}"], capture_output=True).returncode == 0
+
+
 def landed(sha, repo=ROOT) -> bool:
     """Proof a wrap-up landed: `git cherry origin/main <sha>` is empty (and the sha resolves)."""
     if not sha or not re.fullmatch(r"[0-9a-f]{7,40}", sha):
@@ -124,7 +134,6 @@ def landed(sha, repo=ROOT) -> bool:
 
 
 MAX_REQUEUE = 3                       # run-end event redelivered at most 3 times without filing-done/<id>.FILED
-DRYRUN_EVENT_MAX_AGE_S = 30 * 60      # dry-run results older than this are not events (restart safety)
 FILING_SLOTS = 1                       # DSH-4: one slot above max_live reserved for run-end filing resumes
 
 
@@ -180,7 +189,6 @@ def brief_text(slug: str, e: dict, flags: str) -> str:
                 f"`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
                 f"`WRAPPED <sha>` is your LAST line. One turn = ALL ready items, via sub-agents; never a one-item turn.\n")
     rows = ", ".join(f"`{x}`" for x in (e.get("row_ids") or [])) or "(none listed)"
-    pats = ", ".join(f"`{x}`" for x in (e.get("row_patterns") or [])) or "(none)"
     hrows = ", ".join(f"`{x}`" for x in (e.get("handoff_rows") or [])) or "(none)"
     return f"""# HANDOFF-{slug} — session-per-handoff brief (ws58 pilot, operator-approved 2026-11-01)
 
@@ -199,7 +207,7 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
   merge conflict is your first task). Handoff: `{lane_dir(slug)}/{e['handoff']}`.
 - Every resume prompt carries your STATE delta (rows, next tasks, own inference tasks; CAF-3) - act on it, do not start a
   turn by re-reading files. Full view when needed: `{flags}/BACKLOG-handoff-{slug}.md` (regenerated every 10 min by backlog_gen.py from the registry
-  `{reg_path(flags)}`). Owned row ids: {rows}; row patterns: {pats}; handoff task rows: {hrows}.
+  `{reg_path(flags)}`). Rows are routed to you by their `handoff_task` file ({e['handoff']}); legacy row ids: {rows}; handoff task rows: {hrows}.
 - Progress files: `progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md` (one per day, append per boundary).
 - Row manifests: `{flags}/ready/<id>.json` or `{flags}/ready/armed/<id>.json` (schema `epyc.row.v3`: `result_path`,
   `decision_rule`, `handoff_task`; older v2 manifests carry the same keys plus more). Grants: `{flags}/grants/`.
@@ -258,8 +266,7 @@ context (rows, open boxes, your handoff's rank), not an order.
   recreated on resume, so anything not committed and pushed is gone.
 - **NEVER wait in a turn** (CAF-1, operator 2026-11-01): no `sleep`, no polling of grants/dry-run/queue files, no
   `wait_agent`/`list_agents`/status loops, no watching a sub-agent. Publish or delegate, wrap up, END THE TURN. The
-  dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, its `dryrun/<id>/PASS.json|FAIL-n.json`,
-  or any file you register in `{flags}/handoff-sessions/{slug}/awaiting/<name>.json` as {{"path": "<file that will
+  dispatcher resumes you on the event: your row's `grants/<id>.ended|.complete`, or any file you register in `{flags}/handoff-sessions/{slug}/awaiting/<name>.json` as {{"path": "<file that will
   appear>", "note": "<what it means>"}} (a sub-agent's output file, a build artifact). A turn that polls is a defect.
 
 ## Transfer rule
@@ -627,7 +634,7 @@ def pane_status(flags, slug, every=30, once=False):
         reg = load(reg_path(flags), {"sessions": {}})
         e = (reg.get("sessions") or {}).get(slug) or {"status": "done"}
         print(f"{now_iso()} [{window_name(slug)}] {pane_status_line(e)}", flush=True)
-        if e.get("status") == "done" or once:
+        if e.get("status") in ("done", "retired") or once:
             return 0
         time.sleep(every)
 
@@ -825,7 +832,7 @@ def candidates(flags, reg, repo=None, priority=None, keeper_log=None, data=None)
     for h in data.get("needs_session") or []:
         hf = h["handoff"]
         slug = handoff_slug(S, hf)
-        if slug and S[slug].get("status") != "done":
+        if slug and S[slug].get("status") not in ("done", "retired"):
             continue
         if open_tasks(hf, repo) <= 0:
             continue
@@ -858,7 +865,7 @@ def priority_order(repo, priority=None) -> dict:
 
 def new_entry(reg, handoff, row_id=None):
     return {"handoff": handoff, "engine": reg.get("default_engine", "codex"), "session_id": None, "status": "suspended",
-            "waits_on": [], "last_resume": None, "last_wrapup": None, "brief": None, "row_ids": [], "row_patterns": [],
+            "waits_on": [], "last_resume": None, "last_wrapup": None, "brief": None, "row_ids": [],
             "handoff_rows": [row_id] if row_id else [], "pid": None, "auto_started": now_iso()}
 
 
@@ -886,7 +893,7 @@ def start_handoff(flags, reg, h, runner, st, live, cap):
     S = reg.setdefault("sessions", {})
     slug = h.get("slug") or slug_for(h["handoff"], S)
     e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
-    if e.get("status") == "done":  # the handoff grew open tasks again: fresh session, same slug
+    if e.get("status") in ("done", "retired"):  # the handoff grew open tasks again: fresh session, same slug
         e.update(new_entry(reg, h["handoff"], h.get("row_id")), restarted_from_done=e.get("session_id"))
     S[slug] = e
     rows = (h.get("rows") or [])[:8]
@@ -905,7 +912,19 @@ def start_handoff(flags, reg, h, runner, st, live, cap):
 # verified blocked claim (every blocked_by row readied in rowflow), and closes it on next=done with no open box left.
 RESUME_STALL_S = 30 * 60            # RESUME-STALL: queued events but no RESUME for this long
 WATCHDOG_MIN_STARTS = 3             # SA-2: alarm when this many starts in an hour produced no ready row
-READIED = ("grantable", "armed", "running", "dryrun-running")  # dry-run PASS / armed / granted / running; a dry run in flight resumes on FAIL
+READIED = ("grantable", "armed", "running")  # dry-run PASSed / armed / granted / running. A pending dry run is NOT readied:
+# make-ready is one task, so the step stays making-ready and a FAIL memo rides in the next nudge (operator 2026-11-02)
+
+
+def fail_memo(flags, rid) -> str:
+    """The latest dry-run FAIL of a row as a nudge memo: fix_task plus launcher_out_tail."""
+    fails = sorted(glob.glob(os.path.join(flags, "dryrun", rid, "FAIL-*.json")), key=os.path.getmtime)
+    d = bg.load_json(fails[-1]) if fails else None
+    if not isinstance(d, dict):
+        return ""
+    t = d.get("launcher_out_tail") or []
+    t = "\n".join(t[-15:]) if isinstance(t, list) else str(t)[-1500:]
+    return f"\nFIX TASK ({rid}): {str(d.get('fix_task') or d.get('reason'))[:500]}\nlauncher_out_tail:\n{t}\n"
 RETIRED_KEYS = ("yield", "stuck", "await_event", "noop_reason", "idle_reported", "dirty_wrap_resume", "throttle_logged", "push_retries")
 STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
 STARVED_ALARM_EVERY_S = 30 * 60
@@ -1007,7 +1026,7 @@ def ensure_generalist(reg):
     S = reg.setdefault("sessions", {})
     if GENERALIST not in S:
         S[GENERALIST] = {"handoff": None, "generalist": True, "engine": reg.get("default_engine", "codex"), "session_id": None,
-                         "status": "suspended", "pid": None, "row_ids": [], "row_patterns": [], "handoff_rows": [], "waits_on": [],
+                         "status": "suspended", "pid": None, "row_ids": [], "handoff_rows": [], "waits_on": [],
                          "last_report": {"next": "done"}}  # a new generalist waits for its first event
     return S[GENERALIST]
 
@@ -1068,7 +1087,9 @@ def decide(flags, slug, e, repo=None, allrows=None) -> tuple[str, str]:
         if is_generalist(e):
             return "pause", "codex-gen reported done (resumed by its next event)"
         n = open_tasks(e.get("handoff") or "", repo)
-        return ("done", "next=done and no open box left") if n == 0 else \
+        if n == 0 and active_on_main(e.get("handoff"), repo or ROOT):
+            return "continue", "finish the completion wrap-up: findings to docs, git mv the handoff to handoffs/completed/, delete its index row, index_state.py --check, land; then report done"
+        return ("done", "next=done; handoff archived on origin/main") if n == 0 else \
             ("continue", f"you reported next=done but the handoff has {n} open box(es) - finish or tick them")
     if nxt == "blocked":
         ids = [str(x) for x in rep.get("blocked_by") or [] if x] if isinstance(rep.get("blocked_by"), list) else []
@@ -1077,25 +1098,20 @@ def decide(flags, slug, e, repo=None, allrows=None) -> tuple[str, str]:
         states = {rid: row_state(flags, rid, allrows) for rid in ids}
         bad = [(rid, x) for rid, x in states.items() if x not in READIED]
         if bad:
-            return "continue", f"{bad[0][0]} is not ready (state: {bad[0][1]}) - make it ready"
+            rid, x = bad[0]
+            if x == "dryrun-running":
+                return "continue", f"making-ready: the dry run of {rid} is still pending (not readied) - keep working the make-ready task; its verdict decides"
+            return "continue", f"making-ready: {rid} is not ready (state: {x}) - make it ready" + (fail_memo(flags, rid) if x in ("failed", "parked") else "")
         return "pause", "blocked on readied row(s) " + ", ".join(f"{r} [{x}]" for r, x in states.items())
     return "continue", f"next={nxt or 'unreported'}"
 
 
 # ---------------------------------------------------------------- dispatcher
 def end_events(flags):
-    """(rid, path, kind): grant ends and dry-run FAILs (CAF-1: the dispatcher, not the session, watches these files). A PASS
-    readies a row; it resumes nobody."""
+    """(rid, path, 'run-end') per grant end (CAF-1). Dry-run verdicts are no events: the dry run is publish_row's smoke,
+    run in the owner's own turn."""
     for p in glob.glob(os.path.join(flags, "grants", "*.ended")) + glob.glob(os.path.join(flags, "grants", "*.complete")):
         yield os.path.basename(p).rsplit(".", 1)[0], p, "run-end"
-    cutoff = time.time() - DRYRUN_EVENT_MAX_AGE_S
-    for p in glob.glob(os.path.join(flags, "dryrun", "*", "FAIL-*.json")):
-        try:
-            if os.path.getmtime(p) < cutoff:
-                continue  # historic result: the backlog already carries it as the row's fix task; no resume storm on (re)start
-        except OSError:
-            continue
-        yield os.path.basename(os.path.dirname(p)), p, "dryrun"
 
 
 def awaiting_events(flags, slug):
@@ -1112,15 +1128,6 @@ def awaiting_events(flags, slug):
         except OSError:
             continue
         yield d, p
-
-
-def dryrun_prompt(slug, e, flags, rid, path):
-    d = bg.load_json(path) or {}
-    return f"""[{VERSION}] Dry-run FAIL for your row `{rid}` ({path}). {FANOUT_LINE} {lane_line(slug)}
-Record: {json.dumps(d)[:900]}
-Fix task: {str(d.get("fix_task") or d.get("reason"))[:400]} -> fix the launcher/spec in your lane, re-publish (publish_row.py), then wrap up.
-Print `WRAPPED <sha>` as your LAST line.
-{REPORT_LINE}"""
 
 
 def awaiting_prompt(slug, e, flags, data):
@@ -1212,13 +1219,21 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             log(flags, f"TURN-END {slug} session={e.get('session_id')} rc={e.get('last_rc')} wrapup={e.get('last_wrapup')}")
     # 2. new run ends owned by a pilot
     for rid, p, kind in end_events(flags):
-        key = os.path.basename(p) if kind == "run-end" else f"dryrun/{rid}/{os.path.basename(p)}"
+        key = os.path.basename(p)
         if key in seen:
             continue
         seen.add(key)
         if seed:
             continue
-        slug = bg.pilot_of(pilots, rid, None, manifest_for(flags, rid)[1].get("handoff"))
+        man = manifest_for(flags, rid)[1]
+        hf = bg.handoff_file(man.get("handoff_task") or man.get("handoff"))
+        slug = bg.pilot_of(pilots, rid, None, hf)
+        if (not slug or slug not in S) and hf and os.path.isfile(os.path.join(repo, "handoffs", "active", hf)):
+            # the row's handoff has no session yet: hold the event; that handoff takes the next free slot first
+            st.setdefault("unowned", {}).setdefault("handoffs/active/" + hf, []).append(
+                {"rid": rid, "end": p, "kind": kind, "related": {}})
+            log(flags, f"UNOWNED {rid} -> handoffs/active/{hf}: no session yet; it starts on the next free slot")
+            continue
         if (not slug or slug not in S) and GENERALIST in S:  # ownerless row: the dispatcher files it, else codex-gen does
             if kind == "run-end" and not filed(flags, rid):
                 rc, out = file_result(flags, rid, lane_dir(GENERALIST))
@@ -1233,7 +1248,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
                                                "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
-            log(flags, f"{'RUN-END' if kind == 'run-end' else 'DRYRUN-RESULT'} {rid} -> {slug}")
+            log(flags, f"RUN-END {rid} -> {slug}")
     for slug, e in S.items():  # CAF-1: files a session registered as awaited - ALL fired files of a slug ride in ONE event
         fired = []
         for d, reg_file in awaiting_events(flags, slug):
@@ -1268,16 +1283,16 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             e.pop(k, None)
         if e.get("status") in ("retry", "failed"):  # retired DSH-3 backoff states: an error is a go-on nudge now
             e["status"] = "suspended"
-        if e.get("status") == "done" or alive(e.get("pid")) or (not e.get("handoff") and not is_generalist(e)):
+        if e.get("status") in ("done", "retired") or alive(e.get("pid")) or (not e.get("handoff") and not is_generalist(e)):
             continue
         ws, why = decide(flags, slug, e, repo, allrows)
         e["_work"] = (ws, why)
         if ws == "done":
-            e["status"], e["done_at"] = "done", now_iso()
+            e["status"], e["done_at"] = "retired", now_iso()  # never resumed; the slot goes to the next handoff
             kill_window(slug)
             remove_lane(flags, slug, repo)
             st.setdefault("dones", []).append(now)
-            log(flags, f"DONE {slug}: {why}; slot freed; tmux window {window_name(slug)} killed")
+            log(flags, f"DONE {slug}: {why}; session retired, slot freed; tmux window {window_name(slug)} killed")
         else:
             if ws == "pause" and tmux_has_window(slug):  # operator: no window clutter while paused
                 kill_window(slug)
@@ -1312,7 +1327,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         for ev in q:  # events: run-ends (filing), dry-run FAILs, awaited files
             e = S.get(ev["slug"])
-            if not e or e.get("status") == "done":
+            if not e or e.get("status") in ("done", "retired"):
                 continue
             if alive(e.get("pid")) or ev["slug"] in launched or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4
                 rest.append(ev)
@@ -1321,8 +1336,6 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if rest_ev:  # the event stays queued until the wrap-up has landed
                 rest.append(ev)
                 push(ev["slug"], e)
-            elif ev.get("kind") == "dryrun":
-                _go(flags, ev["slug"], e, dryrun_prompt(ev["slug"], e, flags, ev["rid"], ev["end"]), runner, None)
             elif ev.get("kind") == "awaiting":
                 _go(flags, ev["slug"], e, awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {}), runner, None)
             else:
@@ -1338,16 +1351,23 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         pos = priority_order(repo, priority)
         rank = lambda hf, slug, i: pos.get(hkey(hf), (2, i))
         work = [(rank(e.get("handoff"), slug, 0), slug, None) for slug, e in S.items()
-                if e.get("status") != "done" and not alive(e.get("pid")) and slug not in launched
+                if e.get("status") not in ("done", "retired") and not alive(e.get("pid")) and slug not in launched
                 and not any(ev["slug"] == slug for ev in rest)
                 and ((e.get("_work") or ("",))[0] == "continue" or ((e.get("_work") or ("",))[0] == "pause" and not wrapped(e, lcache)))]
-        if reg.get("auto_start", True):
-            work += [(rank(h["handoff"], h.get("slug") or "", i), None, h) for i, h in enumerate(cands)]
+        unowned = st.get("unowned") or {}
+        if reg.get("auto_start", True) or unowned:
+            have = {hkey(h["handoff"]) for h in cands}
+            cands = cands + [{"handoff": hf, "slug": handoff_slug(S, hf), "rows": [ev["rid"] for ev in evs]}
+                             for hf, evs in unowned.items() if hf not in have]
+            work += [(((-1, 0) if hkey(h["handoff"]) in unowned else rank(h["handoff"], h.get("slug") or "", i)), None, h)
+                     for i, h in enumerate(cands) if reg.get("auto_start", True) or hkey(h["handoff"]) in unowned]
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
                 new = start_handoff(flags, reg, h, runner, st, live, cap) if live < cap else None
                 if new:
+                    for ev in (st.get("unowned") or {}).pop(hkey(h["handoff"]), []):
+                        st.setdefault("queue", []).append(dict(ev, slug=new))  # delivered to the new owner next pass
                     started.append(new)
                     live += 1
                 continue
