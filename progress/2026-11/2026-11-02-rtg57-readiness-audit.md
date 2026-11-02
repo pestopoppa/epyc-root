@@ -78,6 +78,9 @@ validation requires the applicable compute authorization.
   controls, ABI smoke and ggml linkage passed. GPU validation and new-version promotion remain open.
   Its compile workers were pinned to CPUs 72–75 while a peer's GPU job used siblings 184–191;
   the brief configure was not pinned. The possible overlap was disclosed to the peer owner.
+  Later, the index refresh acquired q1 after `region-lock status` reported it free, but the RTG-58
+  owner reported a still-running correctness process whose reservation had vanished. The overlap
+  was disclosed; the owner requested the current refresh finish and restored the reservation.
 - Orchestrator `39920459` prepares an opt-in future TTS launcher transition with digest/flag checks;
   69 offline tests passed. No current v1 launch or stack configuration was changed.
 
