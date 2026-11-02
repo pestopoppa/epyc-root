@@ -75,3 +75,11 @@ Added offline evaluator for a proposed short numeric prompt preflight; it reject
 ## 10:28Z — Land Jet-Long preflight evaluator after upstream merge
 
 The offline prompt-count evaluator and 33 passing prototype tests are ready; merged concurrent upstream changes for push retry. No inference or scientific result.
+
+## 10:32Z — Add CPU affinity observation guard
+
+Integrated an isolated captured-PID CPU thread affinity observer; 36 offline tests pass. It detects invalid grant masks, process identity changes and thread-set churn; it does not enforce affinity, cover descendants or establish continuous observations. The DCA composition audit found five dual-modified paths requiring semantic review. No inference or row publication; publish_row.py currently invokes real dry-run despite the no-compute/no-qualification instruction.
+
+## 10:32Z — Land CPU affinity observer after upstream merge
+
+The affinity observer passed the 36-test offline suite; concurrent upstream changes were merged before push retry. No inference or scientific result.
