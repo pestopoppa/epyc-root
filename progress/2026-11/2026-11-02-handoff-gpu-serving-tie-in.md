@@ -47,3 +47,7 @@ Fixed the P5 binding helper to reject submitted, empty-patch or incomplete field
 ## 10:14Z — Prepare P5 native report and harness repairs
 
 Identified two distinct native SWE-bench subset report conventions and commissioned explicit selected-report support with fail-closed partition checks. Separately found that research agentic_swe_harness.apply_one_block reports success when DockerEnv.write_file returns false; a reviewable research patch and model-free negative controls are being prepared without modifying the research tree. Neither item establishes gold scorer validation.
+
+## 10:15Z — Support P5 native selected-instance reports
+
+Added explicit native-selected report validation for the schema-2 selected-instance partition: bound cases must be submitted, completed and resolved, while unselected IDs must exactly match the bound dataset complement. Strict remains the default; the mode is recorded in the result and the dataset is rechecked when read. Fourteen model-free tests pass. Independent review confirmed the sealed-validator contract; the distinct historic 500-submitted/40-evaluated format remains refused. No scorer correctness or gold execution is claimed. GitNexus impact was unavailable because the lane is unindexed.

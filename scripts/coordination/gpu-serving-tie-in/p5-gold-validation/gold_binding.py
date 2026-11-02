@@ -87,23 +87,47 @@ def check(args: argparse.Namespace) -> dict:
     unresolved, errors = id_list(report, "unresolved_ids"), id_list(report, "error_ids")
     if completed != ids or resolved != ids or unresolved or errors:
         raise ValueError("gold report must complete and resolve exactly every bound case, without errors")
-    counts = {"total_instances": len(ids), "completed_instances": len(ids),
+    mode = getattr(args, "report_mode", "strict")
+    if mode == "native-selected":
+        # Dataset bytes have just been bound by freeze(); this mode accepts the
+        # official selected-instance partition, never arbitrary extra IDs.
+        dataset_raw, dataset = read(args.dataset)
+        if digest(dataset_raw) != expected["dataset_sha256"]:
+            raise ValueError("dataset changed after binding check")
+        universe = set(unique_rows(dataset, "instance_id"))
+        if report.get("schema_version") != 2 or type(report.get("schema_version")) is not int:
+            raise ValueError("native-selected requires report schema_version 2")
+        submitted = id_list(report, "submitted_ids")
+        incomplete = id_list(report, "incomplete_ids")
+        empty = id_list(report, "empty_patch_ids")
+        if submitted != ids or incomplete != universe - ids or empty:
+            raise ValueError("native-selected report partition disagrees with bound dataset")
+        counts = {"total_instances": len(universe), "submitted_instances": len(ids),
+                  "completed_instances": len(ids), "resolved_instances": len(ids),
+                  "error_instances": 0, "unresolved_instances": 0, "empty_patch_instances": 0}
+        if "incomplete_instances" in report:
+            counts["incomplete_instances"] = len(incomplete)
+    elif mode == "strict":
+        counts = {"total_instances": len(ids), "completed_instances": len(ids),
               "resolved_instances": len(ids), "error_instances": 0,
               "unresolved_instances": 0}
+    else:
+        raise ValueError("unknown report mode")
     for key, wanted in counts.items():
         if type(report.get(key)) is not int or report[key] != wanted:
             raise ValueError("gold report counters disagree with cases")
     # Native SWE-bench reports may include these additional status fields.
     # Check each if supplied; older minimal reports need not supply them.
-    for key, wanted in (("submitted_ids", ids), ("empty_patch_ids", set()),
-                        ("incomplete_ids", set())):
-        if key in report and id_list(report, key) != wanted:
-            raise ValueError(f"gold report {key} disagrees with cases")
-    for key, wanted in (("submitted_instances", len(ids)), ("empty_patch_instances", 0),
-                        ("incomplete_instances", 0)):
-        if key in report and (type(report[key]) is not int or report[key] != wanted):
-            raise ValueError(f"gold report {key} disagrees with cases")
-    return {"status": "REPORT_COVERAGE_MATCH", "cases": len(ids),
+    if mode == "strict":
+        for key, wanted in (("submitted_ids", ids), ("empty_patch_ids", set()),
+                            ("incomplete_ids", set())):
+            if key in report and id_list(report, key) != wanted:
+                raise ValueError(f"gold report {key} disagrees with cases")
+        for key, wanted in (("submitted_instances", len(ids)), ("empty_patch_instances", 0),
+                            ("incomplete_instances", 0)):
+            if key in report and (type(report[key]) is not int or report[key] != wanted):
+                raise ValueError(f"gold report {key} disagrees with cases")
+    return {"status": "REPORT_COVERAGE_MATCH", "cases": len(ids), "report_mode": mode,
             "binding_sha256": digest(Path(args.binding).read_bytes()),
             "report_sha256": digest(Path(args.report).read_bytes()),
             "limitation": "report consistency only; does not prove fresh execution, negative controls, or scorer validity"}
@@ -122,6 +146,7 @@ def main() -> None:
         else:
             p.add_argument("--binding", required=True)
             p.add_argument("--report", required=True)
+            p.add_argument("--report-mode", choices=("strict", "native-selected"), default="strict")
     args = parser.parse_args()
     if args.cmd == "freeze":
         result = freeze(args)

@@ -117,6 +117,43 @@ class GoldBindingTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             binding.freeze(self.args)
 
+    def native_selected_report(self):
+        self.dataset.append(dict(self.dataset[0], instance_id="repo-2"))
+        self.write_json("dataset.json", self.dataset)
+        self.write_json("binding.json", binding.freeze(self.args))
+        self.args.report_mode = "native-selected"
+        self.report.update(schema_version=2, total_instances=2,
+                           submitted_instances=1, submitted_ids=["repo-1"],
+                           empty_patch_instances=0, empty_patch_ids=[],
+                           incomplete_ids=["repo-2"])
+
+    def test_native_selected_accepts_unsubmitted_dataset_cases(self):
+        self.native_selected_report()
+        self.write_json("report.json", self.report)
+        result = binding.check(self.args)
+        self.assertEqual(result["status"], "REPORT_COVERAGE_MATCH")
+        self.assertEqual(result["report_mode"], "native-selected")
+        self.args.report_mode = "strict"
+        with self.assertRaises(ValueError):
+            binding.check(self.args)
+
+    def test_native_selected_rejects_partition_and_counter_contradictions(self):
+        self.native_selected_report()
+        for key, value in (("incomplete_ids", ["repo-1"]),
+                           ("incomplete_ids", ["repo-3"]),
+                           ("incomplete_ids", []),
+                           ("incomplete_ids", ["repo-2", "repo-2"]),
+                           ("submitted_ids", ["repo-1", "repo-2"]),
+                           ("empty_patch_ids", ["repo-1"]),
+                           ("total_instances", True),
+                           ("submitted_instances", 2),
+                           ("incomplete_instances", 0),
+                           ("schema_version", 1)):
+            with self.subTest(field=key, value=value):
+                self.write_json("report.json", dict(self.report, **{key: value}))
+                with self.assertRaises(ValueError):
+                    binding.check(self.args)
+
 
 if __name__ == "__main__":
     unittest.main()
