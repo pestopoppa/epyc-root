@@ -207,3 +207,7 @@ Applied the C3 canonical-path producer regression to an isolated successor copy 
 ## 10:39Z — Add recipe-derived model custody coverage validation
 
 Extended /mnt/raid0/llm/tmp/akagg/c3-custody-check/check_coverage.py to derive target and draft model paths from each recipe argv and reject missing, ambiguous, relative, or malformed model arguments. Twelve model-free controls pass. C3 successor binding, CH-26b observer and CH-27 atomic publication fixes are delegated; no row or performance claim.
+
+## 10:41Z — Review C3 r9 model receipt coverage against actual production recipe
+
+C3 r9 production recipe names only the Bolt model; its existing pre-grant receipt covers that path (metadata coverage check; not runtime-byte proof). The broader L/smoke seal previously started is not required by that B-only recipe unless other launch paths use those models. Identified final_image in the r9 recipe pointing to READY-PROPOSAL.json while the native producer and verifier use FINAL-IMAGE.json; independent review and correction are in progress. CH-27 two-floor scratch staging and CH-26 sampled observer remain proof-only.
