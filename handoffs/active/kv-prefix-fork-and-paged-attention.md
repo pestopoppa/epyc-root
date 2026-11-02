@@ -70,10 +70,19 @@ coordination rules remain binding.
 ### Implementation progress — 2026-11-02
 
 - **KPF-17:** full C5 + P1 experimental candidate `experimental/kpf17-champion-p1-20261102` at `9c2dfe160` adds busy-source partial-restore test and negative control. Linked CPU test build and own ggml linkage verified; model execution and mutation detection remain open. [no-belief: source/build only]
+- [x] **KPF-17-PARTIAL-SOURCE — implement busy-source partial-restore regression on the full P1 candidate.** Candidate `9c2dfe160`, linked CPU build and own-library check; execution and mutation proof remain in KPF-17. [no-belief: source/build only]
 - **KPF-22:** orchestrator main `f678231c` prevents a prefix hit bypassing any earlier waiter that already fits, and fails closed for unknown reservations. Focused and related suites: 111 plus 7 tests passed. KPF-26 live validation remains open. [no-belief: software verification]
+- [x] **KPF-22-FAIRNESS-SOURCE — prevent a later prefix hit bypassing an earlier waiter that fits.** Orchestrator `f678231c`; 111 related and 7 focused tests passed. KPF-22 live gate remains open. [no-belief: software verification]
 - **KPF-30:** C5-derived `experimental/kpf30-counter-20261102` at `236413a87` adds a default-off ownership observer; standalone fixtures and changed source object compile passed. Root main `8c17604ec` adds native live capture and existing-ladder projection; VB-KPF30-WIRE tracks real runner integration and canary. Full candidate fold, runtime capture and two-window gate remain open. [no-belief: source/build only]
+- [x] **KPF-30-OBSERVER-SOURCE — add opt-in per-row ownership counter and prospective capture.** Candidate `236413a87`, root `8c17604ec`; synthetic fixtures, source compile and 56 adapter tests passed. Full linked build, runner canary and native measurements remain open. [no-belief: source/build only]
 - **KPF-60.GPU-X:** [reproducible derived table](../../artifacts/engineering/kpf60-gpu-crossover-20261102/README.md) estimates f16 attention KV at 65,536 bytes/token from current model metadata. Native chunk bytes and end-to-end crossover are unmeasured. [no-belief: derived estimate]
 - **KPF-64.3:** research main `fded4ce6c` + `7ac65aecf` rejects invalid family cohorts and incomplete, duplicate or failed replay coverage, preserving unknown timings; 52 tests passed. The historical 267/442 F record remains partial; the comparable-cohort amendment and subsequent F/FB work remain open. [no-belief: software verification]
+- [x] **KPF-64-COHORT-GUARD — reject missing, duplicate, invalid and failed family replay coverage.** Research `fded4ce6c` and `7ac65aecf`; 52 replay tests passed. Historical F remains partial and the comparable successor cohort is not yet selected. [no-belief: software verification]
+
+- [x] **KPF-62-C5-PORT — port chunk store, sparse recompute, exact-prefix reorder and guarded G3/server source to the C5 candidate.** `experimental/kpf62-c5-integration-20261102` @ `6d2e5be64`; model-free store/reorder tests, G3 selftest and four missing-data regressions passed, changed source syntax-compiled. Linked build, selector, frozen G3 cohort and validation remain open. [no-belief: source/build only]
+
+- [x] **KPF-26-SCOUT-PREFILL-SOURCE — restore real scout trunk prefill and capture request/admission evidence.** Orchestrator `b35d368a` forwards the prefill method through the stage wrapper and records payload, first output and admission data; 71 tests passed. Peak sampling, paired replay and live validation remain open. [no-belief: software verification]
+- [x] **KPF-41-ROW-PLAN-SOURCE — implement ownership-aware row plan and compact-mask interface.** C5-derived `experimental/kpf41-eligibility-20261102` @ `326c80e1a`; focused fixtures, ASan/UBSan and source compilation passed. Graph/backend consumption and KPF-42 remain open. [no-belief: source/build only]
 
 ## P1 dispatch corrections — 2026-11-02
 
