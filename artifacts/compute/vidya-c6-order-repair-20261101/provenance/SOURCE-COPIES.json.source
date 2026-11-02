@@ -1,0 +1,328 @@
+{
+  "scope": "SOURCE_COPY_NOT_LAUNCH_QUALIFICATION",
+  "sources": [
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/C5-RECIPES.json",
+      "destination": "C5-RECIPES.json",
+      "sha256": "854fcfdc1142f568dd4ba84dfff75a62709aff803f8a41690221d1f4f81aa4a9"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/IDENTITY-PLAN.md",
+      "destination": "IDENTITY-PLAN.md",
+      "sha256": "1f717cf3f508ed33777e10563e91f9b87eb6b0dc24dd0547f8a73c325b6cd0f5"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/ORIGINAL-SHA256SUMS",
+      "destination": "ORIGINAL-SHA256SUMS",
+      "sha256": "019b67bc485b11785ac2aca2d316518804eef7e3681653d15a27195c8756db22"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/PACKAGE-SHA256SUMS",
+      "destination": "PACKAGE-SHA256SUMS",
+      "sha256": "6cc3af56102841028ffc812da43d7df49b3e6320a0a5c942f57fa3b536aed243"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/PRIOR-CLEANUP-DISCLOSURE.md",
+      "destination": "PRIOR-CLEANUP-DISCLOSURE.md",
+      "sha256": "d29647f31f798d3191b54c8133abc28e1ba26ebd9c4407a4d363c03eb0b0f980"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/PROTOCOL-PINS.json",
+      "destination": "PROTOCOL-PINS.json",
+      "sha256": "c82fb70390cfd194cc6d72f90ab80325c6acba02a06b1172eba664639065d6b1"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/RETAINED-READSET.json",
+      "destination": "RETAINED-READSET.json",
+      "sha256": "2b81bdcf77608d0a951e61c50a4840d4e68d898b80f38068d9e276429860225e"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/arm_order.py",
+      "destination": "arm_order.py",
+      "sha256": "37397ee8f291ff27d4f09a9d42c300c01e1daa4c88f8133f2a0c095fa280ea63"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/calendar.sh",
+      "destination": "calendar.sh",
+      "sha256": "3d189cd633a5c3b79faf2947879f288e554be5945a80d4481e8072c15e5747c5"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/consume_identity.py",
+      "destination": "consume_identity.py",
+      "sha256": "86888f0a8417572bddf892ed5485bf34ba37610c5ad7766ffff74166ab061423"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/control_client.py",
+      "destination": "control_client.py",
+      "sha256": "ee41b9a9e3de3de33c44cb5976290fe1b921745e2eb12b031d9b039f01042794"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/cpu_server_control.py",
+      "destination": "cpu_server_control.py",
+      "sha256": "08ca6643efb865c5ed20a2f6908ab36b93c8d56e717dac28521a1d8cc4c04611"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/engine/dryrun_check.py",
+      "destination": "engine/dryrun_check.py",
+      "sha256": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/engine/filler_lib.sh",
+      "destination": "engine/filler_lib.sh",
+      "sha256": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/engine/filler_run13.sh",
+      "destination": "engine/filler_run13.sh",
+      "sha256": "29b88da445634de88b33a7a8d74ebdc21e4a011fac12417c02b25e5beec1c10d"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/engine/resource_gate.py",
+      "destination": "engine/resource_gate.py",
+      "sha256": "bbf26966a270a84b98a6b2f31a43dd2e54055c23fbddb0010db5bf9d0ca9e9f5"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/frontdoor.sh",
+      "destination": "frontdoor.sh",
+      "sha256": "c8cfdba0a7dde7dd4f7c18ab221d075fc7506e29669ac45892bd226790e3f867"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/gpu_identity_job.py",
+      "destination": "gpu_identity_job.py",
+      "sha256": "ffe9f4cc50e8f2ed7475ee0d7c11b639fd45bc58d11b4850c8f148750ff89dfa"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/instruments/produce.py",
+      "destination": "instruments/produce.py",
+      "sha256": "42f18fdedb4af7ad1855966b61ecae80cc29938b4980c9e6d6a7f968438e188b"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/original/ab_arms.sh",
+      "destination": "original/ab_arms.sh",
+      "sha256": "327dbc84dd6068989264e0d1f3a00b40876fde27be70bbe48be19b139028c41c"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/original/ab_probe.py",
+      "destination": "original/ab_probe.py",
+      "sha256": "bd195fa6fe3575d50ef4e23a68dd5aad9e61f5201497118cf20abb646489182b"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/original/gpu_champion_ab.sh",
+      "destination": "original/gpu_champion_ab.sh",
+      "sha256": "d638ee66ecb55d80896b48448adcec0cd5757d0d92cca53a0045a2148012361f"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/original/server_args.27b-dflash2-20261004.bin",
+      "destination": "original/server_args.27b-dflash2-20261004.bin",
+      "sha256": "e13ea7d0a51f0d5f2cef05563b1cc8050929f9db0e26e8bcdbc85b186c5b00e9"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/prep_admission.py",
+      "destination": "prep_admission.py",
+      "sha256": "ff13cc7f2383c028084146f79a960917ac8e9ea1bbd623fec8059bbeca769525"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/r11_http_stop_driver.py",
+      "destination": "r11_http_stop_driver.py",
+      "sha256": "2ac09efe49f13307982e702cec389753978e42f8d571d9ef25233cd6588f6992"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/supervisor.py",
+      "destination": "supervisor.py",
+      "sha256": "25220f89ade98e3538e0d8529e2ab9b8340dbe3ea95a7d2e995f539df738d600"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/test_actual_main.py",
+      "destination": "test_actual_main.py",
+      "sha256": "92f775c2aa88ed215c4eac25016465959ce48a1816ded53de975a3aa4c63e029"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/test_arm_order.py",
+      "destination": "test_arm_order.py",
+      "sha256": "a76956840bd6f35054b1fc1ee7093c9bd293925c7b891ef2e205563bb188a6d8"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/SOURCE-CLOSURE.json",
+      "destination": "SOURCE-CLOSURE.json",
+      "sha256": "c4b445cefd7069cb48f3c8d87e48273ed8e9f181efaa2e39b109400e5f7f8b6e"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/COMPARATOR-PROPOSED-r2.patch",
+      "destination": "COMPARATOR-PROPOSED-r2.patch",
+      "sha256": "b24374a041b97545671151b5b33428207e5347569ffa4f449ff6a2d44631c8eb"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/SUCCESSOR-SOURCE-PINNED-BUILDS.patch",
+      "destination": "SUCCESSOR-SOURCE-PINNED-BUILDS.patch",
+      "sha256": "c0a5613de6030510667ab080b49d4c14c031aa4e2e28a5ddcfd421facd7cb4da"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-r2-20261031/NATIVE-QUALIFICATION-PENDING.md",
+      "destination": "NATIVE-QUALIFICATION-PENDING.md",
+      "sha256": "0947170dfd8ce41d1b3a2b7681a6307a68ce039fbfbe1efa3ad86227218fccda"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/ab_arms.log",
+      "destination": "retained-evidence/ab_arms.log",
+      "sha256": "b2cd56652434e6ca59c53d0749409801ed8f0f6e51cc77dd948eec1ffcb03050"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-10C.meta.json",
+      "destination": "retained-evidence/arm-10C.meta.json",
+      "sha256": "ef2468d55d8de93fe1010a07ab41d0359983be7000c2bde448abf4689cdb1338"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-11P.meta.json",
+      "destination": "retained-evidence/arm-11P.meta.json",
+      "sha256": "b9eafd40731d138748cba5b8bec755604a0e25866ddde118d4b324f0efbb08bc"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-12C.meta.json",
+      "destination": "retained-evidence/arm-12C.meta.json",
+      "sha256": "9602a07c979f522c5f63ecb6de37b758cf2ca09e20a912013eb55804340a4983"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-13P.meta.json",
+      "destination": "retained-evidence/arm-13P.meta.json",
+      "sha256": "4af28afefe81a4307bba96a200bee00aa7aeeb993207c1636a2548c76798abc6"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-14C.meta.json",
+      "destination": "retained-evidence/arm-14C.meta.json",
+      "sha256": "35c467a75f2619ef513628c7fe297585b675e6293a88fe887e4b7bd96ef1ddae"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-15P.meta.json",
+      "destination": "retained-evidence/arm-15P.meta.json",
+      "sha256": "7eaf5583e387d9f9cccb3b31879f1cb72ff93dd36deb92693c76422e25d6706d"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-16C.meta.json",
+      "destination": "retained-evidence/arm-16C.meta.json",
+      "sha256": "2341fa85126f1dd067b701b858f1207a4d5a7fb8cf48f67d5badd4cfd9807fa3"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-17P.meta.json",
+      "destination": "retained-evidence/arm-17P.meta.json",
+      "sha256": "62a6cf880215b7f423b91f45f5af10529e681e8375c4cadfee764c24e6afddbf"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-18C.meta.json",
+      "destination": "retained-evidence/arm-18C.meta.json",
+      "sha256": "86657ee510939202e82944d8112eb956b3162def615ec740d65da0eba99dbcb3"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-19P.meta.json",
+      "destination": "retained-evidence/arm-19P.meta.json",
+      "sha256": "90a8b25729ee8ee020712a35a763bd98be1b966a43e2395698eb0c9f16f6504f"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-1P.meta.json",
+      "destination": "retained-evidence/arm-1P.meta.json",
+      "sha256": "e2658215e8bc8f977120cfb0223ceb38cec35def0a4fbcb338d97bad89be93e6"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-20C.meta.json",
+      "destination": "retained-evidence/arm-20C.meta.json",
+      "sha256": "f0030461fbdf168748ada09bf74bf65c6cf8f6d5b75e01d1840e9400fc2d4562"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-21P.meta.json",
+      "destination": "retained-evidence/arm-21P.meta.json",
+      "sha256": "e733a79ed47960fbc7fda3941a88b5f5e8965377cbb37008af46f4227073b82d"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-22C.meta.json",
+      "destination": "retained-evidence/arm-22C.meta.json",
+      "sha256": "6334cf5dd9f99f8a6f2fbaad50257b1e16bff481bdce34ee35e79379a5ebec32"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-23P.meta.json",
+      "destination": "retained-evidence/arm-23P.meta.json",
+      "sha256": "43fa2a8109e130f7779dd9595d3d756e242f2057bf200bdd3a47d505344c043a"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-24C.meta.json",
+      "destination": "retained-evidence/arm-24C.meta.json",
+      "sha256": "b29a729a2c062ef68448f14313766b7272fe27182d3ec0b01d654acba845c431"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-25P.meta.json",
+      "destination": "retained-evidence/arm-25P.meta.json",
+      "sha256": "eb0303463faee0082af393cb6ecad0a85e99214d7596219eb179349a6e19eb42"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-26C.meta.json",
+      "destination": "retained-evidence/arm-26C.meta.json",
+      "sha256": "ea7928ea387ab31f9e99f579a209af0db3bb150c5241f4992fc66bbb97e20db1"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-27P.meta.json",
+      "destination": "retained-evidence/arm-27P.meta.json",
+      "sha256": "a9b2b037dbd9d00af18cf236d1378bf196766ecd5b0794e564e11974ffa953c9"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-28C.meta.json",
+      "destination": "retained-evidence/arm-28C.meta.json",
+      "sha256": "1eda7d869fd44f88248c1c8dbc12434dc4cc88a73902f17f60cbe99e9ab84200"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-29P.meta.json",
+      "destination": "retained-evidence/arm-29P.meta.json",
+      "sha256": "3c6b8354dec5ae963b87491c1c163730bc1248e0fa45b9ca0366a0c64f8f8e5b"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-2C.meta.json",
+      "destination": "retained-evidence/arm-2C.meta.json",
+      "sha256": "e39ed77f062241aa136156b14056f6bfc07d57aefcd46a5a0aca74dcb89ffc65"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-30C.meta.json",
+      "destination": "retained-evidence/arm-30C.meta.json",
+      "sha256": "df120d514f6dbd81b7f423c865abb25716392a9c6d658bce7a2ff8b3c6a29336"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-3P.meta.json",
+      "destination": "retained-evidence/arm-3P.meta.json",
+      "sha256": "6f6afcf66caca12317939da0ba9f717201c0ec27eb066d27f55bc9cfe674f702"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-4C.meta.json",
+      "destination": "retained-evidence/arm-4C.meta.json",
+      "sha256": "a5ae7ceca376cb4f642f9d09a2897a77afefe5d47f60b7ca0bd6146dc88c633f"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-5P.meta.json",
+      "destination": "retained-evidence/arm-5P.meta.json",
+      "sha256": "1b13c522b25819f77186bb59a558fc5fcb594d9522ea7508e1995425d9a4fb08"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-6C.meta.json",
+      "destination": "retained-evidence/arm-6C.meta.json",
+      "sha256": "768a8c70aab1180773acd74dce9c362f386aa4fb6322274b5aafcb92ab504aec"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-7P.meta.json",
+      "destination": "retained-evidence/arm-7P.meta.json",
+      "sha256": "c2fc60539429cd8abc9e028f40180090557f60bd8824823d341f9bc4f685e56e"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-8C.meta.json",
+      "destination": "retained-evidence/arm-8C.meta.json",
+      "sha256": "b27b2c0580ae52d9b23b3b4e1892cdf96a482d01ed6119e0479165ea2acbf26d"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/arm-9P.meta.json",
+      "destination": "retained-evidence/arm-9P.meta.json",
+      "sha256": "a3b6f85391ca658c348f0843890fbb95bdfd420b594b2945f50de8702690bcb2"
+    },
+    {
+      "source_path": "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/result.json",
+      "destination": "retained-evidence/result.json",
+      "sha256": "bb75877259a5bfc0ccb09743472043d406b04faf90b312e7f108da31c3847b0f"
+    }
+  ],
+  "derivations": {
+    "test_arm_order.py": "Only RETAINED path changed to bundled immutable readset. All controls and expected binary pins preserved."
+  }
+}

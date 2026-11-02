@@ -35,11 +35,59 @@ def is_marker(p):
     return bool(_MARKER.search(str(p or "")))
 
 
+# Operator 2026-11-01 23:55Z "DO BETTER" (third occurrence: inf70, kvu-vkq3 tokenize, sr6 `sha256sum -c FULL-MODEL.sha256` on one
+# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is refused at publish.
+PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum|hashlib\.sha256)\b[^\n]*(?:\.gguf|FULL-MODEL|\bMODEL[^\s]*\.sha256|/models?/|weights?)"
+                     r"|\b(?:tokeni[sz]e|tokenizer\.encode|pretokeni[sz]e)\b"
+                     r"|\b(?:wget|curl|aria2c|rsync|huggingface-cli download|hf_hub_download|snapshot_download)\b"
+                     r"|\bcp\b[^\n]*\.gguf", re.I)
+# small source/packet checksum lists (SOURCE-SHA256SUMS, PACKET-SHA256SUMS, INPUT.sha256 over scripts) are cheap integrity
+# checks and stay allowed; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are refused.
+PREP_MSG = "verify/prepare inputs once before publishing, not inside the grant"
+
+
+def executed_texts(launcher):
+    """The launcher's text plus every local script it executes (engine line tokens and $D/<file> references in its own dir)."""
+    texts = {}
+    try:
+        texts[launcher] = open(launcher, errors="replace").read()
+    except OSError:
+        return texts
+    d = os.path.dirname(launcher)
+    cands = set()
+    try:
+        cands.update(rf.referenced_paths(rf.parse_launcher(launcher)))
+    except Exception:
+        pass
+    for m in re.finditer(r"(?:\$D|\$\{D\}|" + re.escape(d) + r")/([A-Za-z0-9_.-]+\.(?:sh|py|bash))", texts[launcher]):
+        cands.add(os.path.join(d, m.group(1)))
+    for c in cands:
+        if os.path.isfile(c) and c != launcher and os.path.getsize(c) < 2_000_000:
+            try:
+                texts[c] = open(c, errors="replace").read()
+            except OSError:
+                pass
+    return texts
+
+
+def prep_in_grant(launcher):
+    """(file, offending line) when the launcher or a script it runs hashes weights or does single-core prep in the grant."""
+    for f, txt in executed_texts(launcher).items():
+        for ln in txt.splitlines():
+            if ln.lstrip().startswith("#"):
+                continue
+            if PREP_RX.search(ln):
+                return f, ln.strip()[:160]
+    return None
+
+
 def lint(spec):
     """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
     notes = []
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
+        hit = prep_in_grant(launcher)
+        rf.need(hit is None, f"{PREP_MSG}: {hit[0]} runs `{hit[1]}`" if hit else "")
         if not spec.get("lane"):
             try:
                 cls = rf.parse_launcher(launcher)["class"]
