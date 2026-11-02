@@ -99,3 +99,7 @@ kvfork17a-cpu-paired publication smoke PASS with two case receipts; row grantabl
 ## 11:41Z — File instrumented build and prepare bounded GPU layout witness
 
 Filed kvfork174d-build-20261102 PASS under its build-only rule (rc 0, source 6ec877068936588b6d63dbba5842bbd540b92031, parent 84d0a31603d495377dee24e1159bbbf02f1e2f21, server SHA-256 cedf9a3b8cabd0f779c3dcd51962d8961f3759beea37144b17714ffdfe695c27). Prepared predeclared single-cell prospective witness and write-side belief enrollment; 34 unit tests passed. Publisher queued kvfork174d-witness-20261102 smoke because GPU is busy; no PASS or GPU result yet. The historical re-judgment and parent checkbox remain open.
+
+## 11:46Z — File KPF-17a CPU exactness and complete A/A-floor runner implementation
+
+Filed kvfork17a-cpu-paired PASS, rc 0: 86 original and 111 extended CPU cases, including 25 shared-trunk cases, with bit-identical baseline/champion outputs and completed custody. ROCm smoke remains queued; KPF-17a stays open. Verified KPF-18.0e A/A-floor judge in CPU/GPU runner, 9 focused tests passed and S1 application is recorded; tick implementation only, placement-floor and item-4 remain open. Registered KPF-17a native source wiring. Prepared fresh KPF-17.4d build custody and mapped-DSO verification (5 tests pass); its publication smoke was started, outcome not observed. Review found external linkage helper is unpinned and a future GPU launch must pin the validated receipt and custody manifest; neither limitation is silently waived.

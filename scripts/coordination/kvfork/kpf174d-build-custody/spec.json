@@ -1,0 +1,25 @@
+{
+  "id": "kvfork174d-custody-build-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-custody/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-custody/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only PASS when rc=0 and source/options/knobs/linkage pass, every ggml core, base, CPU, HIP and llama library is hashed in the build-completion receipt, and CUSTODY.json seals those receipt hashes; no inference or historical image equivalence.",
+  "estimate_s": 2400,
+  "ram_gib": 32,
+  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17.4d",
+  "priority_rank": 45,
+  "dryrun_timeout_s": 2700,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-custody",
+  "keep": [
+    "RESULT.json",
+    "CUSTODY.json",
+    "runs/**",
+    "v3/**"
+  ],
+  "smoke_timeout_s": 300,
+  "notes": "Fresh independent build; source inputs reuse the retained prior immutable snapshot, verified at build boundaries. Never retroactively attests earlier images."
+}
