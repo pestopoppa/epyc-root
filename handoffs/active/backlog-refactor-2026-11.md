@@ -81,7 +81,17 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
 - [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. Owner: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (PF1).
   Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
 - [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](tool-output-compression.md) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
-- [ ] **BRF-T4-CAP04** [inference] CAP-04 pilot. Owner: [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1). Stop rule: manifest `sufficiency` CAP-04. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+- [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot, bounded at 200 generations. Owner:
+  [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102` on the MI210 `mi210_0,184-191`;
+  est: provisional; pilot: bounded 200 items, 2.5 h cap (expected ~2 h). Metric: accuracy, higher is better. Identity: frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 (sha c1283d8b) + architect_critic Qwen3.8-27B-Q8_0
+  (sha a680f44a), v10 kernel store 10303, own llama-server, chat path, enable_thinking=false, greedy, seed 42; 20
+  olympiadbench_hard + 20 GPQA-Diamond-CoT pinned items (items sha 81ef522b). Cells, each generated fresh at its own
+  budget: TB 2 models x {8k,16k,32k} x 20; E frontdoor x {L2,L3} x 20; crossed frontdoor x {L2,L3} x {8k,32k} x 10
+  GPQA, so **TB-4 COVERED (screen)**. TB-1 reports BOTH denominators (overall, finished-only) plus truncation; a knee
+  below the production ceiling settles TB-3 for that role only, never E-2/E-3.
+  Stop rule: manifest `sufficiency` CAP-04 (exploratory; look at every cell; stop on answer or futility is an
+  operational decision, never a gate result); STOP, deadline or cap gives a resumable partial; budget overrun,
+  think leak or short slot context is INVALID. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
 - [ ] **BRF-T4-R** [non-inference] NEEDS-OWNER Owner review of the four pilot results; promote or re-scope the 16 provisional packages.
 
 ## T5 — D7 decision-package delivery
