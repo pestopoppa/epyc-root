@@ -1092,7 +1092,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
-               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1"} if smoke_s else {}))  # ws58 2026-11-01: launchers written for the v8 keeper read it
+               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1", "FILLER_DISK_FLOOR_GIB": "20"} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
     with open(grant, "w") as f:

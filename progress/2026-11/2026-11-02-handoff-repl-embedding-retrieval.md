@@ -75,3 +75,7 @@ REPL-EMB-2.11: published codex-ufh12-gs-private-v1-20261102; the four-CPU smoke 
 ## 11:14Z — Investigated the online-shadow run prerequisite and attempted the required code-impact indexing; CPU admission refused the index build.
 
 REPL-EMB-2.3: the existing shadow sink has no APP runtime hook, belief ingest, or planning canary; a live online-shadow run cannot yet be qualified. Attempted GitNexus indexing before implementing the belief wiring, but the wrapper returned exit 64: cross-role global region locks are not enabled and CPU admission was refused. No code was changed. REPL-EMB-2.8 separately requires at least 75 genuine traces and explicit original query/corpus retention authorization.
+
+## 11:17Z — Prepared and published the admitted GitNexus impact row needed for shadow-wiring implementation.
+
+REPL-EMB-2.3: published codex-ufh12-shadow-gnx-v1-20261102. Its four-CPU smoke passed with one source-scan unit and rc 75; the full run will index pinned root f58d0bf7668147b5aa142ade921b7b86ece35ec0 under the required whole-host build admission and record context/upstream impact for the shadow sink, stream validator and ingest entry points. Review risks and source freshness before edits. REPL-EMB-4.2 scratch candidate is at /mnt/raid0/llm/tmp/repl-embedding-retrieval/document-search/candidate.patch; initial fake-dense and lexical-fallback tests passed 3/3, but caller integration and large-document coverage remain unvalidated; no application change landed.
