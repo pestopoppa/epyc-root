@@ -21,6 +21,12 @@ def payload_sha(payload: dict[str, Any]) -> str:
 
 
 def _validate_payload(payload: dict[str, Any]) -> None:
+    if not isinstance(payload, dict):
+        raise InvalidRun('payload must be an object')
+    try:
+        payload_sha(payload)
+    except (TypeError, ValueError, UnicodeEncodeError) as exc:
+        raise InvalidRun('payload is not canonical JSON') from exc
     # Request-level speculative overrides would mask a drafted server identity error.
     if any(str(k).startswith('speculative') for k in payload):
         raise InvalidRun('request-level speculative override forbidden')
@@ -48,7 +54,7 @@ def run_arm(runtime: Any, variant: str, cases: list[dict[str, Any]]) -> list[dic
         for case in cases:
             # P3 adapter must independently reconstruct neighbor occupancy per arm.
             # Do not give the adapter the coordinator's authoritative case.
-            occupancy = runtime.prepare_occupancy(handle, copy.deepcopy(case))
+            occupancy = copy.deepcopy(runtime.prepare_occupancy(handle, copy.deepcopy(case)))
             if not isinstance(occupancy, dict) or occupancy.get('verified') is not True:
                 raise InvalidRun('occupancy is unverified')
             signature = occupancy.get('comparison')
@@ -56,15 +62,15 @@ def run_arm(runtime: Any, variant: str, cases: list[dict[str, Any]]) -> list[dic
                 raise InvalidRun('occupancy comparison missing')
             try:
                 occupancy_sha = payload_sha(signature)
-            except (TypeError, ValueError) as exc:
+            except (TypeError, ValueError, UnicodeEncodeError) as exc:
                 raise InvalidRun('occupancy comparison is not canonical JSON') from exc
             warm = copy.deepcopy(case['warm'])
             measure = copy.deepcopy(case['measure'])
             warm_sha, measure_sha = payload_sha(warm), payload_sha(measure)
-            warm_result = runtime.request(handle, warm)
+            warm_result = copy.deepcopy(runtime.request(handle, warm))
             if payload_sha(warm) != warm_sha:
                 raise InvalidRun('warm payload mutated by runtime')
-            result = runtime.request(handle, measure)
+            result = copy.deepcopy(runtime.request(handle, measure))
             if payload_sha(measure) != measure_sha:
                 raise InvalidRun('measure payload mutated by runtime')
             cache_n = (result.get('timings') or {}).get('cache_n')

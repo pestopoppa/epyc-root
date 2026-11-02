@@ -30,6 +30,26 @@ def case():
 
 
 class Lifecycle(unittest.TestCase):
+    def test_results_are_snapshotted_before_runtime_reuses_response(self):
+        rt = Runtime()
+        response = {'timings': {'cache_n': 100}, 'sequence': 0}
+        def request(handle, payload):
+            response['sequence'] += 1
+            return response
+        rt.request = request
+        rows = run_pair(rt, [case()])
+        self.assertEqual([(r['warm_result']['sequence'], r['result']['sequence'])
+                          for r in rows], [(1, 2), (3, 4)])
+
+    def test_invalid_later_case_is_rejected_before_start(self):
+        for invalid in (float('nan'), object(), '\ud800'):
+            bad = case()
+            bad['measure']['invalid'] = invalid
+            rt = Runtime()
+            with self.assertRaisesRegex(InvalidRun, 'not canonical JSON'):
+                run_pair(rt, [case(), bad])
+            self.assertEqual(rt.started, [])
+
     def test_separate_servers_same_payloads_and_independent_warmups(self):
         rt = Runtime()
         rows = run_pair(rt, [case()])

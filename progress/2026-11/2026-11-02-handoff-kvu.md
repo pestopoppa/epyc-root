@@ -55,3 +55,7 @@ Prepared deterministic synthetic input generator for the VKQ3 tokenizer diagnost
 ## 09:46Z — Harden KVU-16h draft runner payload custody
 
 Prepared an uninstalled P3/X0 coordinator draft that hashes request payloads before adapter calls, rejects mutation, and isolates authoritative cases and occupancy data. Ten offline tests pass, including payload mutation and cleanup cases. The broader cross-runner lifecycle task remains open; no inference was run. [no-belief: offline draft tests only]
+
+## 09:47Z — Harden runner payload evidence and prepare VKQ3 diagnostic receipts
+
+The uninstalled P3/X0 coordinator now validates canonical payloads before server startup and snapshots adapter responses and occupancy; twelve offline tests pass. A separate VKQ3 draft isolates qualification and full attempt receipts, rejects invalid completion and records bounded stdout identity without raw output; four offline tests pass. Its token output grammar is unverified and the draft is not integrated with the tokenizer, grant or process custody. No inference was run. [no-belief: isolated offline draft tests only]
