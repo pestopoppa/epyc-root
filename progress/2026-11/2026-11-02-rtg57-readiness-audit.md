@@ -60,6 +60,14 @@ validation requires the applicable compute authorization.
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - Research `b1d7e1f77`: registry-rendered KVU-16a load-only producer, six fake-runtime controls;
   real load and prospective belief capture `VB-KVU-16A-LOAD` remain open.
+- Wrap-up: KVU-16a packet `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/PACKET.md` is
+  unpublished/unarmed. Keeper fake smoke refused the GPU qualification because no actual GPU
+  residency was observed; dry-run bypasses region locks and the fake did not use GPU. No target
+  model loaded. Next owner must qualify a real exclusive entry before publishing. Other sessions
+  were told not to wait for an RTG-57 release flag.
+- Experimental KVU-5 correlation draft `c5b098e96` is pushed but uncompiled/untested; earlier
+  `c3c983600` conditional erase passed model-free tests and build. Native request/task join and
+  drain integration remain unfinished; no live preemption is enabled.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one
   base/candidate process each; it is not a repeatability result. Prospective belief capture is
   filed as `VB-KVU19A2-WIRE`; the original smoke remains a committed conclusion only. The native

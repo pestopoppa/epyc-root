@@ -6,6 +6,16 @@ configuration and serving proof below are **historical 2026-09-24 evidence**, no
 KVU-16 records a 393216-token pool and DFlash2; verify the actual process, effective configuration and binaries
 before any live-state claim. KVU-1b/M-3b were superseded by DFlash2 and must not be dispatched.
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r13-20261030/` (active READY/native evidence; retain), `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-attempt2-fix/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-original-nan-audit/` · worktrees: none
+**2026-11-02 session custody:** retain `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/` (KEEP;
+unpublished load packet), `/mnt/raid0/llm/worktrees/rtg57-implementation-20261102/`,
+`/mnt/raid0/llm/worktrees/rtg57-kvu126-matrix-20261102/`,
+`/mnt/raid0/llm/worktrees/rtg57-fa4b-accounting-20261102/`, and
+`/mnt/raid0/llm/worktrees/codex-rtg57-q38-safe-20261102/`,
+`/mnt/raid0/llm/worktrees/kvu5-task-erase-20261102/`,
+`/mnt/raid0/llm/worktrees/codex-kvu11c-qwentts-20261102/`, and
+`/mnt/raid0/llm/tmp/rtg57-kvu126-unique-cells-20261102/` until their branches and evidence are
+integrated. The 2026-11-02 source/case archives and raw GPU results are preserved on the research
+branch; do not treat `/dev/shm` build outputs as durable.
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
 **Priority**: HIGH. The historical 98,304-token cap motivated the rollout; later pool changes supersede that
 number. Remaining work covers capacity truth, correct and efficient attention, and safe stack integration.
@@ -300,6 +310,13 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       controls pass. Real load validation and source-side belief capture (`VB-KVU-16A-LOAD`) remain
       open; a sampled maximum is not a proven lifetime peak. ✅ 2026-11-02
       [no-belief: prospective producer and fake-runtime controls]
+    - *(2026-11-02 wrap-up.)* Pinned load-only packet `/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/PACKET.md`
+      is **unpublished and unarmed**. Its fake-server keeper smoke returned without a target load,
+      but the publisher refused qualification because it requires actual GPU-residency evidence.
+      The keeper dry-run bypasses region locks; the fake test did not touch GPU. Do not infer a
+      scheduled row or a measurement. Next owner: qualify a real, exclusive, load-only entry,
+      reconcile current source/registry and adapter pins, then publish under the existing scheduler
+      and peer ordering. Preserve the failed smoke; no generation request was made.
     - *(2026-11-02, shape-matched load row.)* `handoff-kvu-16a-load-20261102` rc=0: production-store GPU, np4, pool 393216, ubatch 512, Q8 KV; two post-health own-PID HIP/KFD samples and verified cleanup. Maximum sampled own VRAM was 47.812553 GiB; observed target KV was 12.75 GiB, leaving 35.062553 GiB. [Native result and samples](../../progress/evidence/kvu16a-load-result-20261102/result.json). Registry reconciliation, production-shape review and stack-change validation remain; this row does not complete the box. [no-belief: native load result; registry application pending]
     - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
       STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
