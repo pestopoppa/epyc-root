@@ -171,3 +171,7 @@ Added the sealed-plan SR-6 window coordinator, with 95 preparation tests passing
 ## 10:44Z — Preserve revised CAFE-4 source candidate
 
 Retained the revised rollback harness source as an explicitly unvalidated candidate. It requires strict partial acceptance, models suffix removal and a subsequent sampled-token decode, caps oracle float storage at 256 MiB and returns UNKNOWN for the non-state-specific fault. Seven structural checks and a syntax-only compile against v10 headers passed on the source before adding the warning comment. Independent semantic review, source provenance, recurrent snapshot evidence, a state-specific fault and native validation remain; no row or result is claimed.
+
+## 10:46Z — Review CAFE-4 target verification semantics
+
+Independent v10 source review found that candidate v2 decodes and rewinds the sampled boundary before D+1 verification, unlike the server. Its drafter is synthetic rather than MTP and the state-specific fault control remains absent. Strict partial acceptance and suffix retention are present; no inference, recurrent-state result or task completion is claimed. Boundary and MTP repairs are delegated.
