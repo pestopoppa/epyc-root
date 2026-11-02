@@ -96,7 +96,13 @@ PERSIST_LINE = ("Persist = wrapup.py only: it ticks your boxes with the evidence
                 "index_state.py, regenerate the master rollup or prune - one central writer owns the generated index files.")
 
 
+BOX_LINE = ("Every turn names the box id it advances (report.json `box`), or it is not a turn. If that box is blocked (by a "
+            "rule, a reboot or another session), say so in one line and move to the next unblocked box in the same turn. "
+            "Turns that only record notes or assessments are not allowed.")
+
+
 REPORT_LINE = (
+    BOX_LINE + "\n"
     "Spend this turn on the task itself (code, launcher, row, fix, result). Do not write status notes, progress prose, "
     "re-verifications of finished work, audits of your own bookkeeping, or messages about the pipeline. A turn whose only output "
     "is bookkeeping is a wasted turn.\n"
@@ -109,7 +115,7 @@ REPORT_LINE = (
     "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
     "launcher + publish_row.py, whose smoke IS the dry run on 4 CPUs and the only compute you run yourself - it must PASS; "
     "long benchmark runs go through rows). " + TURN_END_LINE + " " + PERSIST_LINE + " Your wrap-up JSON (-> report.json) "
-    "MUST carry `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
+    "MUST carry `box` (the box id this turn advanced) and `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
     "\"blocked\", `blocked_by`: [<row ids>] - every remaining task waits on those rows and each is already readied (dry-run "
     "PASS, armed, granted or running). You are resumed at once unless next=blocked on readied rows (then when one ends or FAILs "
     "its dry run) or next=done with no open box left (the handoff closes).")
@@ -197,7 +203,7 @@ def brief_text(slug: str, e: dict, flags: str) -> str:
             goal = "(GOAL-codex-gen.md missing)"
         return (goal + f"\n\n## Managed-session contract (dispatcher)\n{FANOUT_LINE}\n{TURN_END_LINE}\n{PERSIST_LINE}\n{lane_line(slug)}\n"
                 f"Your backlog: `{flags}/BACKLOG-{GENERALIST}.md`; rows/tasks labelled 'yours' are yours. Wrap up with ONE JSON -> "
-                f"`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
+                f"`python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
                 f"`WRAPPED <sha>` is your LAST line. One turn = ALL ready items, via sub-agents; never a one-item turn.\n")
     rows = ", ".join(f"`{x}`" for x in (e.get("row_ids") or [])) or "(none listed)"
     hrows = ", ".join(f"`{x}`" for x in (e.get("handoff_rows") or [])) or "(none)"
@@ -254,7 +260,7 @@ context (rows, open boxes, your handoff's rank), not an order.
   changed, lane-relative>"], "belief": "cc|clm_<id>|no-belief: <reason>", "message": "<commit subject + body>",
   "question": null, "rows_published": ["<row ids>"], "next": "non-inference|inference|blocked|done",
   "blocked_by": ["<row ids, when next is blocked>"], "trailers": ["Co-Authored-By: ...", "Claude-Session: ..."]}} and run
-  `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}`. It merges origin/main into your
+  `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}`. It merges origin/main into your
   lane, appends the progress entry (`progress/YYYY-MM/YYYY-MM-DD-handoff-{slug}.md`), ticks the boxes BY TEXT with the
   belief tag, makes the pathspec commit with your trailers, pushes the lane to main through
   `serialized_push.py`, proves `git cherry origin/main` empty, writes `{flags}/handoff-sessions/{slug}/report.json` (the
@@ -302,6 +308,9 @@ def manifest_for(flags, rid):
     return None, {}
 
 
+#: ws58: sessions run the INSTALLED wrapup.py (next to this dispatcher), never the lane checkout's copy, so a fix
+#: reaches every lane the moment it is installed (yarn/mtp kept failing on a stale lane-local wrapup.py).
+WRAPUP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn", "wrapup.py")
 FILE_RESULT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "churn", "file_result.py")
 
 
@@ -374,7 +383,7 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
 4. Decide the next step and publish the next row: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`
    (spec: id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s, handoff_task,
    priority_rank). Continue per {flags}/briefs/HANDOFF-{slug}.md.
-5. Wrap up: ONE JSON -> `python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its
+5. Wrap up: ONE JSON -> `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its
    `WRAPPED <sha>` is your LAST line.
 {REPORT_LINE}"""
 
@@ -387,7 +396,7 @@ def delta_block(delta):
 def idle_prompt(slug, e, flags, delta=""):
     return f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {FANOUT_LINE} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
-`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
+`python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
 {REPORT_LINE}"""
 
@@ -397,7 +406,7 @@ def continue_prompt(slug, e, flags, why="", delta=""):
 fan independent items out to sub-agents and land them before persisting. {TURN_END_LINE} {FANOUT_LINE}
 {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
-`python3 scripts/coordination/churn/wrapup.py --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
+`python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
 {REPORT_LINE}"""
 

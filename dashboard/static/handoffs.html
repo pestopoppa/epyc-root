@@ -1553,6 +1553,7 @@ async function loadGraph(){
         + (n.readiness?` · ${n.readiness}${(n.blocked_by&&n.blocked_by.length)?" on "+n.blocked_by.join(", "):""}`:"")
         + (pi?` &middot; blocker: <b>${pi.class}</b> &middot; ${pi.activity}${pi.engine?" ("+pi.engine+")":""}`:"")
         + (typeof n.priority==="number"?prioTip(n,g.nodes.length):"")
+        + (typeof n.steps_since_tick==="number"?` &middot; ${n.steps_since_tick} steps since last tick`:"")
         + `<br>upstream ${up.size} &middot; downstream ${down.size}</div>`
         + (n.next_action?`<div class="tna">${n.next_action}</div>`:"");
     });
