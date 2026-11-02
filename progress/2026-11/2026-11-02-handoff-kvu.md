@@ -15,3 +15,7 @@ Filed codex3-cpu-fa-vkq3-mtp-20261031 inconclusive with rc=1 and no terminal pai
 ## 00:18Z — Preserve VKQ3 tokenizer draft repair and retry publication
 
 Reviewed the uninstalled synthetic tokenizer supervisor draft repair: incomplete stdin and direct-child cleanup paths fail closed, and ten fake-child supervisor tests pass. This draft does not prove child consumption or descendant cleanup and is not row-ready. The earlier original-row filing passed index checks and committed, but publication met concurrent push-lock contention; this wrap retries publication of all lane commits. No model or inference was run.
+
+## 00:19Z — Complete VKQ3 filing publication recovery
+
+Recovered the filing and tokenizer draft publication using serialized_push.py after lock contention; origin/main verified to carry lane HEAD f94d90585f7f. GPU qualification repair remains delegated. No inference was run.
