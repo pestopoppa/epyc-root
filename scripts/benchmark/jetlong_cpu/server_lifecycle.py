@@ -17,6 +17,7 @@ import urllib.parse
 from pathlib import Path
 
 import runner
+import provenance
 
 
 class LaunchError(RuntimeError):
@@ -79,7 +80,7 @@ def _cleanup(child, term_s, kill_s):
 
 def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
               arm, budget_s, minimum_cell_s, request_timeout_s, startup_s=30,
-              term_s=5, kill_s=5, n_predict=128, log_path):
+              term_s=5, kill_s=5, n_predict=128, log_path, runtime_check=None):
     """Start exactly one direct child, run one arm, and always reap that child.
 
     Never use against an existing endpoint: caller owns port admission. Startup
@@ -127,13 +128,19 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
                     raise LaunchError('owned server health deadline expired')
                 if child.poll() is not None:
                     raise LaunchError('owned server exited during startup')
+                if runtime_check is not None:
+                    runtime_check(child.pid)
                 remaining = deadline - time.monotonic() - term_s - kill_s
                 if remaining < minimum_cell_s:
                     return 75
                 def transport(tokens, timeout):
                     _owned_listener(child.pid, base_url)
+                    if runtime_check is not None:
+                        runtime_check(child.pid)
                     result = _request(base_url, tokens, timeout, n_predict)
                     _owned_listener(child.pid, base_url)
+                    if runtime_check is not None:
+                        runtime_check(child.pid)
                     return result
                 return runner.run_segment(plan_path, output_dir, fixture_root, arm,
                     transport,
@@ -143,3 +150,21 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
     finally:
         for sig, handler in old_handlers.items():
             signal.signal(sig, handler)
+
+
+def run_verified(*, manifest, expected_dir, **kwargs):
+    """Verify pinned small files and live library mappings; model custody is separate.
+
+    This is still a prototype: source-to-build proof, descendant cleanup and
+    a keeper entry must be supplied before any native row can be published.
+    """
+    artifacts = manifest.get('artifacts', {})
+    command = kwargs.get('command', [])
+    if not command or str(Path(command[0]).resolve()) not in artifacts:
+        raise provenance.ProvenanceError('server executable not pinned')
+    if kwargs.get('env', {}).get('LD_LIBRARY_PATH') != str(Path(expected_dir).resolve()):
+        raise provenance.ProvenanceError('library path must be the pinned directory alone')
+    provenance.check_artifacts(manifest)
+    if 'runtime_check' in kwargs:
+        raise ValueError('runtime check is owned by run_verified')
+    return run_owned(runtime_check=lambda pid: provenance.check_live(pid, expected_dir, manifest), **kwargs)

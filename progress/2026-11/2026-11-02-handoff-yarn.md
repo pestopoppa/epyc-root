@@ -39,3 +39,7 @@ Recorded the 35B GGUF content identity, captured by one-time SHA-256 outside a g
 ## 10:14Z — Land Jet-Long model identity after upstream merge
 
 Recorded the SHA-256 model identity outside a grant. Concurrent upstream changes were merged for serialized push retry; no native inference or scientific result.
+
+## 10:16Z — Integrate Jet-Long runtime provenance checks
+
+Integrated provenance checks into the CPU Jet-Long prototype: small artifact hashes are verified before launch and the captured server PID mappings are checked at startup and around requests. Fifteen offline tests pass. This does not prove source-to-build identity, model custody or descendant cleanup; the keeper coordinator still refuses native execution and no row was published. Independent preparation of those remaining steps is registered for follow-up.
