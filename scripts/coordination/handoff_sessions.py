@@ -1005,16 +1005,10 @@ def context_size(session_id, engine="codex"):
     return last
 
 
-def keeper_cands(path):
-    """cands=N from the keeper log's last SNAPSHOT line; None when unreadable (never treated as idle)."""
-    try:
-        with open(path, "rb") as f:
-            f.seek(max(0, os.path.getsize(path) - 65536))
-            tail = f.read().decode(errors="replace")
-    except OSError:
-        return None
-    m = re.findall(r"SNAPSHOT .*?\bcands=(\d+)", tail)
-    return int(m[-1]) if m else None
+def unreadied(data):
+    """{handoff: un-readied inference task count} - advanceable rows plus own inference tasks not yet published."""
+    return {h["handoff"]: len(h.get("rows") or []) + int(h.get("candidate_rows") or 0)
+            for h in (data or {}).get("handoff_rank") or [] if (h.get("rows") or h.get("candidate_rows"))}
 
 
 def start_watchdog(flags, st, now, sessions=None):
@@ -1402,24 +1396,20 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
-        # IDLE-COMPUTE (ws58 2026-11-02 08:22-09:18Z: 0 live, 80 parked, every lane idle with cands=0): idle compute outranks
-        # every token-saving park. With nothing live and the keeper holding 0 candidates, resume the top-ranked open sessions
-        # up to max_live, ignoring yield / stuck / await_event / idle cooldown / resume gap.
-        idle = live == 0 and keeper_cands(keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")) == 0
-        order = list(S.items())
-        if idle:
-            rank = {h["handoff"]: i for i, h in enumerate((bdata or {}).get("handoff_rank") or [])}
-            order.sort(key=lambda kv: rank.get("handoffs/" + str(kv[1].get("handoff") or "").split("handoffs/", 1)[-1], 10**6))
-            log(flags, f"IDLE-COMPUTE live=0 keeper cands=0: parks ignored; resuming up to {cap} top-ranked sessions")
+        # UN-READIED (operator 2026-11-02, after the 08:22-09:18Z deadlock: 0 live, 80 parked, every lane idle): while a
+        # handoff has un-readied inference tasks (rows blocked / needs-launcher / needs-qualification, or own inference tasks
+        # not yet published as rows) its session is never parked - yield / stuck / await_event / cooldowns do not apply -
+        # and slots go to those handoffs first, most un-readied tasks first. Parks apply only to handoffs with none.
+        todo = unreadied(bdata)
+        hkey = lambda e: "handoffs/" + str(e.get("handoff") or "").split("handoffs/", 1)[-1]
+        order = sorted(S.items(), key=lambda kv: -todo.get(hkey(kv[1]), 0))
         for slug, e in order:  # continue: anything open that is not waiting on a queued/running row
-            if idle and live >= cap:
-                break
             if (live >= cap and not is_generalist(e)) or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) \
                     or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
-            if idle:
+            if todo.get(hkey(e)):
                 e["stuck"], e["await_event"], e["yield"] = None, False, False
             elif not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
                 continue  # gap only after a turn that produced nothing (ws58 23:30Z: the gap throttled productive sessions to 0 alive)

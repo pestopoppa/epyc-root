@@ -66,6 +66,8 @@ class _Fixture(unittest.TestCase):
         self._disk.start()
         self._cwd = patch.object(hs, "project_cwd", lambda e, repo=None: self.repo)  # the fixture repo is not a git clone
         self._cwd.start()
+        self._inv = patch.object(hs, "unreadied", lambda data: {})  # no un-readied tasks by default
+        self._inv.start()
 
     def dispatch(self, **kw):
         return hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, **kw)
@@ -75,6 +77,7 @@ class _Fixture(unittest.TestCase):
         self._lane.stop()
         self._disk.stop()
         self._cwd.stop()
+        self._inv.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out):

@@ -28,6 +28,7 @@ import backlog_gen as bg  # noqa: E402
 import handoff_sessions as hs  # noqa: E402
 
 _REAL_ENSURE_LANE = hs.ensure_lane  # fixtures stub ensure_lane; the lane tests call the real one
+_REAL_UNREADIED = hs.unreadied
 
 
 def _w(p, txt):
@@ -73,10 +74,14 @@ class AutoStartFixture(unittest.TestCase):
         self._lane.start()
         self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
         self._disk.start()
+        # no un-readied tasks by default so the park rules are exercised; UN-READIED tests patch it
+        self._inv = patch.object(hs, "unreadied", lambda data: {})
+        self._inv.start()
 
     def tearDown(self):
         self._lane.stop()
         self._disk.stop()
+        self._inv.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out, cwd=None):
@@ -921,28 +926,23 @@ class IdleComputeUnparkTests(_DSHBase):
         old = self._old(31)
         self.session(stuck="3 no-op turns", noop_turns=3, last_end=old, last_resume=old)
         hs.save(hs.reg_path(self.flags), self.reg)
-        with patch.object(hs, "keeper_cands", return_value=4):  # compute busy: only the expiry can resume it
+        with patch.object(hs, "unreadied", return_value={}):  # no un-readied tasks: only the expiry can resume it
             self.dispatch()
         self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "stuck session resumed after expiry")
 
-    def test_idle_compute_ignores_every_park(self):
+    def test_unreadied_tasks_override_every_park(self):
         now = hs.now_iso()
         self.session(stuck="3 no-op turns", noop_turns=3, await_event=True, last_end=now, last_resume=now,
                      idle_reported="nothing to do")
         self.reg["sessions"]["alpha"]["yield"] = True
         hs.save(hs.reg_path(self.flags), self.reg)
-        with patch.object(hs, "keeper_cands", return_value=5):  # compute has candidates: parks hold
+        with patch.object(hs, "unreadied", return_value={}):  # nothing un-readied: parks hold
             self.dispatch()
         self.assertEqual([c for c in self.calls if "FINISH ALL READY ITEMS" in c["prompt"]], [])
-        with patch.object(hs, "keeper_cands", return_value=0):  # live==0 and cands==0: idle compute outranks the parks
+        rank = {"handoff_rank": [{"handoff": "handoffs/active/alpha.md", "rows": ["row-a"], "candidate_rows": 2},
+                                 {"handoff": "handoffs/active/zed.md", "rows": [], "candidate_rows": 0}]}
+        self.assertEqual(_REAL_UNREADIED(rank), {"handoffs/active/alpha.md": 3})
+        with patch.object(hs, "unreadied", return_value=_REAL_UNREADIED(rank)):  # un-readied tasks: never parked
             reg, _ = self.dispatch()
         self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls))
         self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
-        self.assertIn("IDLE-COMPUTE", self.log_text())
-
-    def test_keeper_cands_parses_last_snapshot(self):
-        p = os.path.join(self.flags, "k.log")
-        _w(p, "2026-11-02T09:17:21Z SNAPSHOT free=q0 busy=- cands=3 assigned=0\nnoise\n"
-              "2026-11-02T09:19:21Z SNAPSHOT free=gpu-quiet,q0 busy=- cands=0 assigned=0 lanes cpu=0 gpu=0\n")
-        self.assertEqual(hs.keeper_cands(p), 0)
-        self.assertIsNone(hs.keeper_cands(p + ".missing"))
