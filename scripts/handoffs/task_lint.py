@@ -9,7 +9,8 @@ execution-type validation against the deliverable wins.
                                            an UNTAGGED failure
   task_lint_v2.py publish  FILE.md:LINE    rowflow publish gate for ONE box: class must be inference (explicit or
                                            validated), identity complete (model, build, harness, metric+direction, rule,
-                                           region, est), est may be `provisional` ONLY with a bounded pilot clause;
+                                           region, est), est may be `provisional` ONLY with a bounded pilot clause (a plain
+                                           numeric est passes; no run citation is required);
                                            NEEDS-* present -> refuse; non-inference deliverable -> refuse. exit 1 on refuse
 Changes vs task_lint.py (2026-11-02 second-pass review §1): (i) execution-type validator — the deliverable decides, not a
 metric mention (scorer/build/wire/implement/audit/replay/read-only => non-inference even if 't/s' appears; measure/run/
@@ -38,8 +39,6 @@ PENDING = re.compile(r'(operator|owner)[^.\n]{0,40}\b(to decide|must decide|deci
                      r'awaiting operator|pending operator|needs operator|OPERATOR DECISION|decide whether|choose between|implement or procure', re.I)
 EST = re.compile(r'\best(?:imate)?[:\s]\s*(provisional|~?\d+)', re.I)
 SUFF = re.compile(r'\bstop(?:[- ]rule|[- ]on[- ]answer|[- ]on[- ]futility|/continue)\b|\bsufficiency\b|\bfutility\b|\bstop contract\b', re.I)
-RUNCITE = re.compile(r'\best(?:imate)?[:\s]\s*~?\d[^;\n]{0,80}?\b(?:from|per|measured (?:in|on|by)|observed in|based on|cf\.?)\s+'
-                     r'(?:the |a |an )?(?:run|smoke|pilot|grant|dry[- ]run|RESULT|`[^`]+`|[\w./-]+\.json\b|[A-Z][A-Z0-9]+-[\w.-]+)', re.I)
 PILOT = re.compile(r'\bpilot\b.{0,80}\b(bounded|n\s?=\s?\d+|\d+\s?(?:items|rows|prompts|min|h)\b)', re.I)
 
 def own_block(text):
@@ -127,15 +126,29 @@ def run_migrate(paths):
             elif hard: print(f"{p}:{ln}: tagged {r['tags']} fails={hard} (allowed)")
     return 1 if bad else 0
 
+# What each identity field needs, so a refusal names the exact edit (ws58 2026-11-02).
+FIELD_HINT = {
+    'model': 'model: name it (e.g. Qwen3.8-27B, Q38FN, DS41, gemma)',
+    'quant_build': 'quant_build: the quant or build (e.g. Q8_0, IQ4_XS, v10 production, champion, experimental build)',
+    'metric': 'metric: what is measured, with direction (e.g. decode t/s, higher is better)',
+    'rule': 'rule: the decision rule (keep if / threshold / floor / descriptive, no verdict)',
+    'region': 'region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)',
+    'estimate': 'estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)',
+}
+
+
+def missing_fields_text(miss):
+    return '; '.join(FIELD_HINT.get(m, m) for m in miss)
+
+
 def publish_text(txt, ch=0):
     r = score2(txt, ch); why = []
     if r['tags']: why.append(f"NEEDS tags present {r['tags']}")
-    if r['class'] != 'inference': why.append(f"class {r['class']} ({r['class_basis']}) — non-inference payload refused")
-    if r['missing_c']: why.append(f"identity incomplete: {r['missing_c']}")
-    e = EST.search(own_block(txt))
-    if r['class'] == 'inference' and e and e.group(1).lstrip('~').isdigit() and not RUNCITE.search(own_block(txt)):
-        why.append('estimate not run-cited (write `est <N> s from run <id|RESULT path>`, or `est: provisional` + a bounded `pilot:`)')
-    if 's' in r['fails']: why.append('no sufficiency/stop rule stated (inference task must say stop-on-answer / stop-on-futility, and gate-class = futility-only)')
+    if r['class'] != 'inference': why.append(f"class {r['class']} ({r['class_basis']}) — non-inference payload refused "
+                                             "(state the run/measurement the row performs, or tag the box [inference])")
+    if r['missing_c']: why.append(f"identity incomplete: {r['missing_c']} — add {missing_fields_text(r['missing_c'])}")
+    if 's' in r['fails']: why.append('no sufficiency/stop rule stated — add `stop-on-answer when <condition>; stop-on-futility on <condition>; '
+                                     'gate-class = futility-only` (inference task must say stop-on-answer / stop-on-futility)')
     if r['rollup']: why.append('roll-up is non-dispatchable')
     if 'h' in r['fails'] or r['decision_kind'] == 'pending-choice': why.append('pending operator choice (field h) — route to the operator queue first')
     if 'd' in r['fails']: why.append(f"untestable prose prerequisite: {r['named_prereq']!r}")

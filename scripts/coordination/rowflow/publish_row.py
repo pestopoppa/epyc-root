@@ -17,9 +17,10 @@ Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/act
 `file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
 Task lint (BRF-T6-1, D6 staged, operator 2026-11-02): handoff_task must also name the TASK (`file.md:<TASK-ID>` or
 `file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish` and the row is refused when the
-box fails the inference identity (field c), states no stop rule (field s), has an estimate that is neither run-cited nor
-`provisional` with a bounded pilot, carries NEEDS-* / a pending operator choice / a standing hold, or is a non-inference
-payload. The lint runs before the smoke, so a refused row costs no compute.
+box fails the inference identity (field c; a plain numeric `est` passes, `est: provisional` needs a bounded pilot),
+states no stop rule (field s), carries NEEDS-* / a pending operator choice / a standing hold, or is a non-inference
+payload. Each refusal names the exact missing fields of that box. The lint runs before the smoke, so a refused row costs
+no compute.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
 (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
 dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
@@ -146,11 +147,12 @@ def check_handoff(spec, repo=None):
 
 
 def _task_lint():
-    """task_lint.py: TASK_LINT_DIR, else a copy installed beside this file (compute-flags/bin/rowflow), else the repo's
-    scripts/handoffs (ROWFLOW_REPO), else the checkout this file lives in."""
+    """task_lint.py: TASK_LINT_DIR, else a copy installed beside this file (compute-flags/bin/rowflow), else the checkout
+    this file lives in, else the repo's scripts/handoffs (ROWFLOW_REPO)."""
     here = os.path.dirname(os.path.abspath(__file__))
-    for d in (os.environ.get("TASK_LINT_DIR"), here, os.path.join(REPO, "scripts", "handoffs"),
-              os.path.join(os.path.dirname(os.path.dirname(here)), "handoffs")):
+    # the checkout this file lives in wins over ROWFLOW_REPO, so a checkout's tests lint with that checkout's lint
+    for d in (os.environ.get("TASK_LINT_DIR"), here, os.path.join(os.path.dirname(os.path.dirname(here)), "handoffs"),
+              os.path.join(REPO, "scripts", "handoffs")):
         if d and os.path.isfile(os.path.join(d, "task_lint.py")):
             if d not in sys.path:
                 sys.path.insert(0, d)
@@ -189,9 +191,8 @@ def check_task_lint(spec, repo=None):
     """BRF-T6-1: refuse the row unless its task box passes `task_lint.py publish`."""
     path, ln, txt, ch = task_box(spec, repo)
     why = _task_lint().publish_text(txt, ch)
-    rf.need(not why, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}): " + "; ".join(why)
-            + ". FIX the task box (identity: model, build, harness metric+direction, rule, region, run-cited est or "
-              "`est: provisional` + bounded `pilot:`; a stop rule), then re-run publish_row.py")
+    rf.need(not why, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
+            + "\n  - ".join(why) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
 
 
 def smoke_regions(lane, regions, flags):

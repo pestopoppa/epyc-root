@@ -4,7 +4,7 @@
       "blocked": 57,
       "handoffs": 51,
       "oldest_advance": "2026-07-29",
-      "open": 1017
+      "open": 1018
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -157,7 +157,7 @@
       "closed": 56,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 59,
+      "open": 60,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -166,7 +166,7 @@
       },
       "row_id": "INF-81",
       "state": "active",
-      "total": 115
+      "total": 116
     },
     "autokernel-champion-aggregate.md": {
       "blocked": 1,

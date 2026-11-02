@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """BRF-T6-1 (D6 staged): publish_row binds `task_lint.py publish` to the task box handoff_task names. A row is refused
-before any smoke when its box fails the inference identity (c), the stop rule (s), a run-cited or provisional+pilot
-estimate, carries NEEDS-* or is a non-inference payload; handoff_task must name the task, which must be an open box."""
+before any smoke when its box fails the inference identity (c, including a provisional estimate without a bounded pilot),
+the stop rule (s), carries NEEDS-* or is a non-inference payload (a plain numeric est passes: ws58 2026-11-02); handoff_task must name the task, which must be an open box."""
 import contextlib
 import io
 import os
@@ -62,8 +62,17 @@ class PublishLintTests(unittest.TestCase):
     def test_non_inference_payload_refused(self):
         self.refused("T-NONINF", "non-inference payload refused")
 
-    def test_estimate_must_be_run_cited(self):
-        self.refused("T-NOCITE", "estimate not run-cited")
+    def test_plain_numeric_estimate_passes(self):
+        # ws58 2026-11-02: the run-cited estimate rule (4d6ea0b3d) was not in the plan; a plain numeric est passes
+        self.lint("T-NOCITE")
+
+    def test_refusal_names_exact_missing_fields(self):
+        with self.assertRaises(rf.Refused) as cm:
+            self.lint("T-NOID")
+        msg = str(cm.exception)
+        for f in ("model:", "quant_build:", "rule:", "region:"):
+            self.assertIn(f, msg)
+        self.assertIn("h.md:", msg)
 
     def test_provisional_estimate_needs_bounded_pilot(self):
         self.lint("T-PILOT")

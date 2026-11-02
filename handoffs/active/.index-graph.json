@@ -3619,7 +3619,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T19:16:51Z",
+  "generated_at": "2026-11-02T19:18:10Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6599,14 +6599,14 @@
         "RTG-58"
       ],
       "closed": 56,
-      "dispatchable": 59,
+      "dispatchable": 60,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-all-devices-all-dimensions.md",
       "id": "INF-81",
       "last_advanced": "2026-11-02",
       "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
-      "open": 59,
+      "open": 60,
       "priority": 0.9827,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep lb49-c5-graph-readonly-20261027: harness fix",

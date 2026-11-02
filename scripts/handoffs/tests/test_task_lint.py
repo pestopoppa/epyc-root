@@ -13,6 +13,9 @@ def _run():
     ok &= t('bare est provisional refused', any('identity incomplete' in w and 'estimate' in w for w in L.publish_text(INF + ", est provisional")))
     ok &= t('est provisional + bounded pilot accepted', not any('estimate' in w for w in L.publish_text(INF + ", est provisional ~900 s; pilot: bounded n=6 launches/arm")))
     ok &= t('est from a measured run accepted', not any('estimate' in w for w in L.publish_text(INF + ", est 600 s from run r1")))
+    # ws58 2026-11-02: no run citation is required; a plain numeric est passes
+    ok &= t('plain numeric est accepted (no run-cited rule)', not any('estimate' in w for w in L.publish_text(INF + ", est 600 s; stop-on-futility")))
+    ok &= t('identity refusal names the exact field to add', any('add region:' in w for w in L.publish_text("- [ ] **X-2** [inference] measure decode t/s of Qwen3.8-27B Q8_0, rule keep if >= 1, est 600 s; stop-on-futility")))
     # v5-3 own block excludes nested descendants
     parent = "- [ ] **P-1** wire the scorer into run.py (non-inference deliverable)\n  - [ ] **P-1.a** measure t/s with llama-bench on the GPU, operator to decide whether to adopt"
     r = L.score2(parent, 1)
