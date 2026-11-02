@@ -1759,6 +1759,12 @@
       "weight": 2
     },
     {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "RTG-63",
+      "weight": 2
+    },
+    {
       "from": "INF-40",
       "kind": "ref",
       "to": "INF-29",
@@ -3799,7 +3805,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:50:00Z",
+  "generated_at": "2026-11-02T18:53:16Z",
   "nodes": [
     {
       "age_days": 95,
@@ -5697,14 +5703,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 18,
-      "dispatchable": 10,
+      "dispatchable": 11,
       "domain": "inference-research",
       "guarded": 1,
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
       "last_advanced": "2026-10-31",
       "next_action": "PF1 \u2014 measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)",
-      "open": 11,
+      "open": 12,
       "priority": 0.4566,
       "priority_basis": {
         "basis": "T2 non-inference best open item (N): PF1 (G) \u2014 measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE. Artifact",

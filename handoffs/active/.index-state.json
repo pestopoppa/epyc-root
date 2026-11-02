@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 1035
+      "open": 1036
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1580,7 +1580,7 @@
       "closed": 18,
       "guarded": 1,
       "last_advanced": "2026-10-31",
-      "open": 10,
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1589,7 +1589,7 @@
       },
       "row_id": "INF-34",
       "state": "active",
-      "total": 29
+      "total": 30
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,

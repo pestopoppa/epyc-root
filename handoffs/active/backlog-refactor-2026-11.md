@@ -82,8 +82,9 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
   futility at each checkpoint; quality pass not reducible (gate stays open). Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
   Identity: Q38FN-lane IQ4_KT/Q4_K_M + IQ2_KT/IQ2_XXS GGUFs on `ik_llama.cpp@c04881fc0`, one CPU quarter, ≤90 min; pilot box T2 → EXP01-PILOT.
   BLOCKED (operator decision, 2026-11-02 ws58): the manifest identity is not runnable — see EXP01-PILOT in the owner.
-- [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. Owner: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (PF1).
-  Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+- [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. Owner: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) PF1 (executes as its box **PF1-EXP04**,
+  row `brf-exp04-pf1-crossover-pilot-20261102`, published by ws58 2026-11-02).
+  Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff (PF1-EXP04 filed with the owner's EXPAND/REVISE/INCONCLUSIVE review).
 - [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](tool-output-compression.md) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
 - [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot, bounded at 200 generations. Owner:
   [`reasoning-effort-levels.md`](reasoning-effort-levels.md) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102` on the MI210 `mi210_0,184-191`;

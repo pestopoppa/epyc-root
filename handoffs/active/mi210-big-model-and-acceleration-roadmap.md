@@ -242,6 +242,16 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
       reproduced in a later-window reversed-order replicate. Results feed the fabric prefill rule and the
       numa-prefill-decode-disaggregation.md reopen trigger. Bench-class: this authorizes no serving change.
   Full rigor controls (frozen manifest, per-cell raw outputs, holdout, denominator, region claim, freeze constraints, VB-PREFILL-XOVER first): `docs/research-intake/orch-prior-art-stage3-plan-20260926.md` P3-3.
+  - [ ] **PF1-EXP04** [inference] Bounded pilot screen before the full PF1 matrix (backlog refactor 2026-11 EXP-04,
+        [`backlog-refactor-2026-11.md`](backlog-refactor-2026-11.md) BRF-T4-EXP04). Row `brf-exp04-pf1-crossover-pilot-20261102`,
+        launcher `/mnt/raid0/llm/tmp/brf-exp04/launch.sh` (engine `filler_run15.sh`, scratch_root `/mnt/raid0/llm/tmp/brf-exp04/`).
+        Identity pinned in `IDENTITY.json`: Q38FN UD-IQ4_XS 3 shards by sha256; v10 kernel store `kernels/production/{cpu,gpu}`
+        (ffc1bac82, 10303, linkage PASS) for ALL arms. Cells: L ∈ {2048, 8192} × {A0, A1 -ub 2048, A2 -ub 2048, A1-disabled}
+        × 3 interleaved launches, -n 0. Resources: quiet host (0-95 + idle MI210), rides a granted quiet window; cap 3600 s.
+        Done when: `out/PILOT-COMPLETE.json` is filed with duration per cell, variance per arm, capture completeness, consumer
+        coverage and the owner's EXPAND / REVISE / INCONCLUSIVE review. Stop rule: manifest `sufficiency` EXP-04: planned look
+        per block; stop on answer or futility (residency unproven on ≥ 2 GPU units; control diverges > 25%); labelled operational,
+        never a PF1 gate result; the 2K/8K screen never yields a negative PF1 verdict.
   - [x] **PF1 native launcher preparation** — source-frozen initial and conditional holdout packets; model-free native driver, STOP/reap, failure denominator, resume/no-redraw and holdout fixtures passed. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/PF1-NATIVE-READY.md` (NEXT `0c94cb0f-fda7-43c1-9759-ff71b043e574`); source manifest `e5b51ff0cf4a90383c4afeb052f32b077e78f7259aed9314aa4627d8d0d9364d`. Initial whole-host request max 24 h/min 4 h; holdout conditional on complete initial receipt and >=4 h elapsed. No P3 closure or serving decision. ✅ 2026-10-27 [no-belief: preparation and fixture only]
   - [x] **PF1-pre — the v8 CPU prefill runner is retired, so the A0 arm cannot silently reuse it.** ✅ 2026-09-26 —
         research `3d3581e6` (operator decision): `scripts/benchmark/cpu_prefill_v8_regression_runner.py` is retired IN
