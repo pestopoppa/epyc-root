@@ -55,3 +55,7 @@ Synced lane with origin/main. Dispatched bounded investigations for AK-V27-PERF,
 ## 00:43Z — Resolve matched archive prerequisites
 
 Consumed AK-WM-2b investigation: no validated real archive or projector result is available; the final AP-WM evaluator is offline and its launcher is scripts.kernel_rnd.autokernel.offline_least_commitment. Fresh matched prefill, accepted decode calibration and distinct holdout, heldout-bound pair and real receipt projection precede it. Dispatched bounded investigations of the strict preflight blocker and real fault campaign rehearsal; their output files are registered as wake events. Earlier AK-V27-PERF and package campaign investigations remain outstanding. The preceding wrap-up created commit f4acb87f7bc0 but its serialized push failed; publishing remains required. No inference or compute launched and no task closed.
+
+## 00:44Z — Prepare remaining AutoKernel inference prerequisites
+
+Confirmed previous wrap-up commit 91e33d99ab90 is unpublished after origin/main advanced during serialized push. Dispatched bounded investigations to prepare the matched prefill pair, real fault rehearsal and AK-V27-PERF; output file events registered for resumption. AK-WM-2b needs a real matched archive and cannot validly run on fixtures. No row published and no scientific result claimed. GitNexus index unavailable due CPU admission refusal, so no source edits attempted.
