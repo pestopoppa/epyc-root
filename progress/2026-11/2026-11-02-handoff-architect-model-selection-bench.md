@@ -99,3 +99,7 @@ GPQA runner inspection found one-item manifests cannot safely share per_question
 ## 00:53Z — File pinned GPQA item-manifest preparation
 
 Filed gpqa_split_manifest.py, an offline preparer pinned to the full GPQA-CoT source digest. Against the actual manifest it emitted 198 single-item manifests that reconstructed the source in order; altered input and an existing output directory were rejected, and compilation passed. This is preparation only: current arms, stop/deadline handling, distinct output files, validated consolidation and residency proof remain needed before publication. No inference or row published. Prior wrap-up commit 0af727f3bae0 failed serialized push; this wrap-up retries it.
+
+## 00:54Z — Record GPQA preparation review and continue launcher work
+
+Independent review confirmed gpqa_split_manifest.py preserves source order and runner schema. A failed write can leave a partial newly created destination: discard it and retry in a new directory. The splitter is offline preparation, not a runnable row. Prior serialized push failed after lock retry; efc04ea5123f and its predecessors remain local and are included in this retry. Delegated bounded EffiBench wrapper and GPU launcher work with completion events registered. No inference or row publication.
