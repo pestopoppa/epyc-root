@@ -107,3 +107,7 @@ Preparing a boundary-source checker for retained NEMO traces while CPU and GPU l
 ## 09:52Z — Complete inference preparation
 
 C3 custody and CPU request-capture candidates remain under implementation; no ready successor meets the measurement and publication requirements.
+
+## 09:53Z — Prepare inference successors
+
+CPU request identity, GPU model custody and CH-27 campaign candidates are in implementation. No row or measured result claimed.
