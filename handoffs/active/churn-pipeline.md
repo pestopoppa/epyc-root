@@ -100,3 +100,4 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Rows published with a non-inference payload as compute rows** (e.g. gitnexus analyze held all 96 cores).
 - [ ] **Row estimate_s vastly overstated**: fix estimator.
 - [ ] **Per-row UNDERUSED is only logged**: act on it.
+- [ ] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).

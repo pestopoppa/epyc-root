@@ -405,6 +405,14 @@
       "script": "scripts/coordination/handoff_sessions.py",
       "contract": "exempt",
       "reason": "Reviewed 2026-11-01 (rowflow). The dispatcher observes only sessions it started itself: liveness is the pid it recorded in handoff-sessions.json checked via /proc/<pid>/stat (zombie-aware), never an argv/name pattern. The 'pkill/pgrep' token is prompt TEXT handed to the agent sessions forbidding exactly that. Not battery-adoptable: it is an event-driven resumer (grants/<id>.ended -> resume owner), not a watchdog of a daemon it does not own."
+    },
+    {
+      "id": "churn_up",
+      "script": "scripts/coordination/churn/churn_up.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/churn-pipeline.md",
+      "task_marker": "OBS-CHURN-UP",
+      "notes": "Identifies pipeline loops by pidfile pid + argv marker and by exact installed-path argv element over /proc/*/cmdline (never a name pattern). A blind read (unreadable /proc) reports DOWN, not dead-forever: it never relaunch-loops (one-shot command, and it refuses a duplicate when any exact-path argv match exists). Adopt observer_guard.sh three-valued state under OBS-CHURN-UP."
     }
   ]
 }
