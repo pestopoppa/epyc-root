@@ -11,3 +11,7 @@ The preceding wrap-up commit 08902776f8a2 was not published because the serializ
 ## 00:25Z — Prepare C5-7, RPUCG and roster integration and recover unpublished lane
 
 Prior lane commits remain unpublished: serialized push initially encountered an active lock, then a direct push was rejected because origin/main had advanced. None of the three lane-local inference-preparation completion markers was present at this boundary; no row was published. Confirmed the pinned C5-7 research commit exposes counter declaration and externally supplied evidence through hip_decision_grade CLI, while its receipt explicitly says no end-to-end counter capture. Dispatched bounded reviewable patch drafts for C5-7, AR-RPUCG and C5-8 with completion events. No compute was launched.
+
+## 00:26Z — Identify C5-7 same-run evidence ordering defect and prepare in-run capture seam
+
+Consumed c57-patch.done: at research commit 39b63b061238d52d0669d2d9eb3e4d3f29affd11, the CLI loads evidence before run() generates its fresh secret workload and timing anchor identities, yet the gate requires both hashes. Thus ordinary same-run native evidence cannot generally be supplied through that CLI; existing tests use synthetic evidence and the conditional seam is not end-to-end enforcement. Requested a reviewable injected capture interface after identities are sealed with mock-provider failure and identity-binding tests; actual profiler capture remains separate. No GPU execution, measurement claim, or completed handoff checkbox.
