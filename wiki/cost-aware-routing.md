@@ -2,23 +2,7 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): live-only quality prior in the cost-aware scorer; contention counter relabel. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): PB-QCOST-1 confirm is graded per phase. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
 **Sources**: 47+ documents (added 2026-08-25: optical-context-compression.md OCC-2 record + qwen-chat-template-evaluation.md CT-2/CT-5/CT-E7 + progress 2026-08-23 + progress 2026-08-25-mainA-rtg53; prior additions unchanged) (added 2026-08-16 intake-1140 HarnessOpt-Bench + the Qwen3.8-27B swap/candidate-surface pair; added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
-
-## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
-
-Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
-
-- **Every Mini-Vibe Check with Jev** (intake-1476#record) Jev judged 37 documents x 21 questions (777 judgments) in under 0.7 s, and 11 experiments totalled 1,709 judgments for under one cent; on 12 synthetic passages Jev median 0.35 s vs Fable 5.1 8.83 s (~25x faster) at ~580x lower estimated cost. Vendor-adjacent, with a conflict-of-interest note and no new Stage-2 declines; supports the many-cheap-judgments routing pattern.
-- **Paired Qwen 3.8 27B (Cerebras) vs Jev benchmark** (intake-1485#01) Seven scenes run side by side: p50/p95/p99 215/452/912 ms for Qwen vs 176/336/532 ms for Jev, validated 475/476 vs 479/480 (intake-1485#01); estimated cost $0.310581 vs $0.011919, a token x list-price estimate not an invoice (intake-1485#03). Agreement is workload-dependent (home 24/24 vs 15/24). Third-party evidence with no vendor performance claim carried as measured.
-- **JEV-as-a-Judge: accept when confident, escalate when unsure** (intake-1606#01) JEV 1.13.0 is within three points of GPT-6 Astra on selected tasks at 0.36% of its estimated cost (intake-1606#00), but trails by 14.6 points on JudgeBench (intake-1606#01). At threshold 0.9 the cascade accepts 53.7% of 510 pairs and scores 92.5% vs 93.1% (99.36% retained) at 56.8% of fallback fee. Costs are estimated provider fees, live latency is absent, and temperature scaling transfers unevenly; the confidence-cascade pattern fits our routing.
-- **jev-bench spam and Banking77** (intake-1621#01) On 500 paired Banking77 items the cheap LLM was 3.4 points more accurate than Jev (intake-1621#00), spam was consistent with parity. Jev was 139x cheaper than the frontier comparator on spam and 84x on Banking77 but only ~2.2x cheaper or at price parity against the cheap LLM (intake-1621#01). The offline spam cascade matched frontier accuracy on the same 130 items with no separate threshold split or live latency.
-- **Clef on Workers AI** (intake-1876#00) Hosted Clef priced at $0.24 per million input tokens; request takes one state and 1-64 typed questions (intake-1876#01) with 65,536-token context and state truncation (intake-1876#02). EPYC: cost reference for a cloud decision-model alternative to local routing.
-- **Clef-Flash on Workers AI** (intake-1877#00) 9B model priced at $0.09 per million input tokens with the same typed multi-question contract (intake-1877#01); "fast" wording is not a latency guarantee (intake-1877#02).
-- **Clef on JevBench** (intake-1880#00) Text-only Clef evaluated on 1,624 decisions on evaluator-owned H100 infrastructure. Displayed latency is adjusted and cost estimated, not measured hosted service (intake-1880#01); headline uses a post-leaderboard method amendment (intake-1880#02).
-- **JevBench repository** (intake-1885#00) Frozen v1.5 method plus versioned amendments; headline includes a disclosed post-result amendment. Runner keeps raw evidence hashes but does not require immutable served-model identity (intake-1885#01); complete raw-to-score reproduction not established (intake-1885#05).
-- **Benchmark Heaven data sources** (intake-1897#01) Adjusted cost combines endpoint tariffs, task-token inputs and workload/cache assumptions (modelled USD per task). Composite uses linked ranks with a neutral fallback of 50 for zero evidence (intake-1897#02).
-- **JevBench v1.5.6 ranking** (intake-1898#00) Frozen release of 1,624 decisions per system (904 open, 720 sealed); sealed results published only as system-level aggregates. Added Vansa row rests on private raw outputs, so it cannot be independently verified (intake-1898#02).
 
 ## Summary
 
@@ -548,7 +532,28 @@ such, not a new measurement.
 
 The [supplied-score expectation helper](../docs/reference/confidence-expectation-preparation.md) preserves exact synthetic coverage, existing grading φ maps and explicit missing/unresolved dispositions. [Original off-host CI37446388954](../artifacts/ni07/run-37446388954/README.md) passes26/26 after MAIN source/API custody review. Candidate-normalized native probabilities and JSON-reported probabilities do not establish parity with the historical T1 score-token instrument. No reviewer threshold, route, native writer or calibration result changed; RC-10 and SC43 live work remain open.
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): PB-QCOST-1 confirm is graded per phase
+## Compile Log
+
+_Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
+
+**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): live-only quality prior in the cost-aware scorer; contention counter relabel. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): PB-QCOST-1 confirm is graded per phase. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
+
+### Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
+
+Verified research-intake findings (dive-verified entries not previously compiled into the wiki). Each bullet carries its anchored claim or `#record` citation; EPYC relevance is stated per entry.
+
+- **Every Mini-Vibe Check with Jev** (intake-1476#record) Jev judged 37 documents x 21 questions (777 judgments) in under 0.7 s, and 11 experiments totalled 1,709 judgments for under one cent; on 12 synthetic passages Jev median 0.35 s vs Fable 5.1 8.83 s (~25x faster) at ~580x lower estimated cost. Vendor-adjacent, with a conflict-of-interest note and no new Stage-2 declines; supports the many-cheap-judgments routing pattern.
+- **Paired Qwen 3.8 27B (Cerebras) vs Jev benchmark** (intake-1485#01) Seven scenes run side by side: p50/p95/p99 215/452/912 ms for Qwen vs 176/336/532 ms for Jev, validated 475/476 vs 479/480 (intake-1485#01); estimated cost $0.310581 vs $0.011919, a token x list-price estimate not an invoice (intake-1485#03). Agreement is workload-dependent (home 24/24 vs 15/24). Third-party evidence with no vendor performance claim carried as measured.
+- **JEV-as-a-Judge: accept when confident, escalate when unsure** (intake-1606#01) JEV 1.13.0 is within three points of GPT-6 Astra on selected tasks at 0.36% of its estimated cost (intake-1606#00), but trails by 14.6 points on JudgeBench (intake-1606#01). At threshold 0.9 the cascade accepts 53.7% of 510 pairs and scores 92.5% vs 93.1% (99.36% retained) at 56.8% of fallback fee. Costs are estimated provider fees, live latency is absent, and temperature scaling transfers unevenly; the confidence-cascade pattern fits our routing.
+- **jev-bench spam and Banking77** (intake-1621#01) On 500 paired Banking77 items the cheap LLM was 3.4 points more accurate than Jev (intake-1621#00), spam was consistent with parity. Jev was 139x cheaper than the frontier comparator on spam and 84x on Banking77 but only ~2.2x cheaper or at price parity against the cheap LLM (intake-1621#01). The offline spam cascade matched frontier accuracy on the same 130 items with no separate threshold split or live latency.
+- **Clef on Workers AI** (intake-1876#00) Hosted Clef priced at $0.24 per million input tokens; request takes one state and 1-64 typed questions (intake-1876#01) with 65,536-token context and state truncation (intake-1876#02). EPYC: cost reference for a cloud decision-model alternative to local routing.
+- **Clef-Flash on Workers AI** (intake-1877#00) 9B model priced at $0.09 per million input tokens with the same typed multi-question contract (intake-1877#01); "fast" wording is not a latency guarantee (intake-1877#02).
+- **Clef on JevBench** (intake-1880#00) Text-only Clef evaluated on 1,624 decisions on evaluator-owned H100 infrastructure. Displayed latency is adjusted and cost estimated, not measured hosted service (intake-1880#01); headline uses a post-leaderboard method amendment (intake-1880#02).
+- **JevBench repository** (intake-1885#00) Frozen v1.5 method plus versioned amendments; headline includes a disclosed post-result amendment. Runner keeps raw evidence hashes but does not require immutable served-model identity (intake-1885#01); complete raw-to-score reproduction not established (intake-1885#05).
+- **Benchmark Heaven data sources** (intake-1897#01) Adjusted cost combines endpoint tariffs, task-token inputs and workload/cache assumptions (modelled USD per task). Composite uses linked ranks with a neutral fallback of 50 for zero evidence (intake-1897#02).
+- **JevBench v1.5.6 ranking** (intake-1898#00) Frozen release of 1,624 decisions per system (904 open, 720 sealed); sealed results published only as system-level aggregates. Added Vansa row rests on private raw outputs, so it cannot be independently verified (intake-1898#02).
+
+### Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): PB-QCOST-1 confirm is graded per phase
 
 **Confidence: verified** for the recorded run; grade INDICATIVE.
 
@@ -556,7 +561,7 @@ The [supplied-score expectation helper](../docs/reference/confidence-expectation
 
 Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) (PB-QCOST-1 confirm-R) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
-## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
 - **PB-QCOST-1 re-derived offline and reproduced exactly.** Per-n intercepts: n = 1 A = 766.85 ms/iter, n = 4 A = 871.40; held-out P99 abs residual 72.29 and 210.69 ms/iter. The frozen cost model FAILS the 10% request-level MAPE bar (12.84% at n = 1, 26.32% at n = 4); the per-n refit passes (2.40%, 3.83%). The frozen model agrees with the n = 0 control within 7%, so the failure is specific to decode rows being present.
 - **Slope rises with decode rows:** B = 0.010794 (n = 1), 0.012137 (n = 3, offline), 0.013798 (n = 4) ms per cached token, the pattern a real decode-batch effect gives. Leave-one-length-out P99 is 73.8 / 122.4 ms/iter, so 210.7 is the conservative n = 4 margin for KVU-16g-2.
@@ -565,7 +570,7 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-prog
 
 Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 
-## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
+### Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the source fix and its regression coverage; no new measurement, threshold or reload.
 
@@ -574,22 +579,22 @@ Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 
 Sources: [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
 **Confidence: verified** — 2 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
+#### Run 2026-10-31, IDs 2546–2602 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2546-2602.md)
 
 - intake-2567#record (ThinkingCap Qwen3.8-Flash-Next blog): stage 1 had no numbers and implied a method; dive fills the vendor-run, single-source BF16/vLLM table, discloses no method, and shows all six deltas negative, so 'no quality loss' is not carried. Not evidence for our quant. Integrated via architect-model-selection-bench.
 - intake-2582#record (d1-2B and d1-3B GGUF cards): corrects 'text-only' (both are VL models) and supplies quant sizes and the board comparison; speeds are Transformers-only, not llama.cpp, EPYC or MI210, and no ECE is reported. Integrated via typed-decision-plane.
 
-## Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
+### Compiled Update — 2026-11-01 (intake dive digest backfill, batch a+c+e, workspace-58)
 
 **Confidence: verified** — 12 dive-verified intake entries whose Stage-2 results lived only as fields in `research/intake_index.yaml`. Each bullet cites the entry in `#record` form; the full claims, anchors and corrections are in the run digest linked per heading.
 
 
-### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
+#### Run 2026-10-21, IDs 2214–2340 — [digest](../research/deep-dives/intake-digests/2026-10-21-ids-2214-2340.md)
 
 - intake-2216#record (Dual-Pool Token-Budget Routing): Simulation-only, same-group-corroborated argument that length-tiering a fleet by max_model_len pays when a large short-request fraction exists and the engine reserves max-context KV per request. Adopt-patterns, integrated; linked to within-role-placement-state-machine.md.
 - intake-2243#record (METR Metrics of Agent Ability): Cite for metric vocabulary only (score-at-fixed-expenditure, score-at-plateau, expenditure-at-fixed-score, cost-of-pass); it contains no measurements of its own. Worth-investigating; linked to harness-improvement-loop.md.
@@ -600,7 +605,7 @@ Sources: [scoring-infra-standardization](../handoffs/active/scoring-infra-standa
 - intake-2296#record (The Larger the Better? (budget-matched code generation)): Cite as the budget-matched comparison method (equal FLOPs or wall-time, sweep model size versus sample count) and as evidence that a deterministic checker makes small-model many-sample runs pay. Adopt-patterns; linked to repl-turn-efficiency.md.
 - intake-2312#record (Are More LLM Calls All You Need?): 'More calls can lower accuracy' holds for plurality or filter-then-vote selection and not for any-sample-correct with a checker; check this before running any N-sample arm with a vote. Adopt-patterns; linked to repl-turn-efficiency.md.
 
-### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
+#### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2535#record (Spotify Portal token-usage post): Headline 90% narrowed to a Claude-context-token estimate with no accuracy measurement; HN practitioner replication (anecdotal) reports 5-7%. Adopt-patterns; companion plugin source dived as intake-2536#record.
 - intake-2539#record (Anthropic advisor strategy post): Confirmed as vendor-reported. Worth investigating; related sources were dived as intake-2541#record and inside intake-2540#record.

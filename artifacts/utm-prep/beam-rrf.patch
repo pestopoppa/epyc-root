@@ -40,8 +40,8 @@ diff --git a/scripts/benchmark/beam_memory_retrievers.py b/scripts/benchmark/bea
 +                           "candidate_depth": candidate_depth, "vector": dict(identity)}
 +        super().__init__(chunks_by_conversation, **kwargs)
 +        # Navigation currently mishandles URI metacharacters; reject before any lookup.
-+        if any(ch in str(self.db_path) for ch in "?#"):
-+            raise TraceRetrieverUnavailable("trace navigation cannot safely use ? or # in DB path")
++        if any(ch in str(self.db_path) for ch in "?#%"):
++            raise TraceRetrieverUnavailable("trace navigation cannot safely use ?, # or % in DB path")
 +        # Read all IDs from the actual private trace store, scoped to the current run.
 +        conn = sqlite3.connect(self.db_path.resolve().as_uri() + "?mode=ro", uri=True)
 +        try:
@@ -114,7 +114,7 @@ diff --git a/scripts/benchmark/test_beam_hybrid_patch.py b/scripts/benchmark/tes
 new file mode 100644
 --- /dev/null
 +++ b/scripts/benchmark/test_beam_hybrid_patch.py
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,97 @@
 +import os
 +from pathlib import Path
 +
@@ -196,10 +196,16 @@ new file mode 100644
 +    p = Provider()
 +    r = TraceHybridPairChunkRetriever({'a':['same one', 'same two', 'same three', 'same four']},
 +        vector_provider=p, candidate_depth=3, db_dir=unusual, orchestrator_root=app_root)
-+    for unsafe in ("db ?", "db #"):
++    # Percent decoding must never redirect a lookup into the decoded decoy.
++    decoy = tmp_path / "db decoy"
++    decoy.mkdir()
++    marker = decoy / "events.sqlite"
++    marker.write_bytes(b"decoy must remain untouched")
++    for unsafe in ("db ?", "db #", "db%20decoy"):
 +        with pytest.raises(TraceRetrieverUnavailable, match="cannot safely"):
 +            TraceHybridPairChunkRetriever({'a':['text']}, vector_provider=Provider(),
 +                candidate_depth=3, db_dir=tmp_path / unsafe, orchestrator_root=app_root)
++    assert marker.read_bytes() == b"decoy must remain untouched"
 +    assert [row['source_line'] for row in p.built['a']] == [0, 1, 2, 3]
 +    # Equal-score vector ranks use the provider's declared ascending-line tiebreak.
 +    p.answer = [{'id':row['id'], 'source_line':row['source_line']} for row in p.built['a'][:3]]
