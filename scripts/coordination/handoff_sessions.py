@@ -206,8 +206,10 @@ runs under "Own inference tasks to publish as rows" and your handoff's rank amon
 
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
    handoff_task, priority_rank, kind=compute) and publish it: `python3 scripts/coordination/rowflow/publish_row.py <spec.json>`.
-   **Fetch/prepare inputs yourself before publish_row**: a row whose launcher only downloads or copies data is refused
-   (`kind: fetch|prepare` or a launcher that just fetches) - that work is session preparation, not a compute row.
+   **Verify/prepare inputs ONCE before publishing, never inside the grant** (operator 23:55Z "DO BETTER"): publish_row
+   refuses a launcher, or any script it runs, that hashes model weights (`sha256sum` over *.gguf / FULL-MODEL.sha256) or
+   does single-core prep (tokenize, download, copy) - do that in your own turn, then publish; fetch-only rows
+   (`kind: fetch|prepare`) are refused for the same reason.
 2. The keeper dry-runs/qualifies the row and grants it (`grants/<id>`); you NEVER arm, grant, qualify or run compute.
 3. `grants/<id>.ended|.complete` appears -> the dispatcher resumes you with rc, end line, result_path, decision_rule.
 4. YOU file the verdict: read `result_path`, apply `decision_rule`, tick the handoff with evidence (rc, result path,
@@ -766,6 +768,19 @@ def write_backlog_for(flags, slug, data=None, priority=None, keeper_log=None, re
         log(flags, f"BACKLOG-WRITE-FAILED {slug}: {ex!r}")
 
 
+def has_awaiting(flags, slug) -> bool:
+    return bool(glob.glob(os.path.join(flags, "handoff-sessions", slug, "awaiting", "*.json")))
+
+
+def sticky(flags, slug, e) -> bool:
+    """Operator 2026-11-01 23:35Z (thrash, not idleness: ~40 handoffs cycled in 30 min, half-built rows abandoned): a
+    session KEEPS its slot while it is mid-work - live, a commit/row/filing in its last turn, or delegated work awaited.
+    It loses it only after 2 consecutive no-op turns, an IDLE report, or when nothing is open."""
+    if int(e.get("noop_turns", 0)) >= 2 or e.get("idle_reported"):
+        return False  # two no-op turns or an IDLE report: the slot is up for grabs even while the session is live
+    return alive(e.get("pid")) or bool(e.get("last_effect")) or has_awaiting(flags, slug)
+
+
 def mark_yields(flags, reg, data, cap):
     """Operator 2026-11-01: a session whose handoff is not in the top-`cap` handoffs by rows unblocked YIELDS its slot -
     it finishes its current task and wraps up, then is not resumed for NEW work (run-end events for its own rows still
@@ -777,7 +792,7 @@ def mark_yields(flags, reg, data, cap):
         if e.get("status") == "done" or not e.get("handoff") or is_generalist(e):
             continue
         hf = "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1]
-        outranked = bool(ranked) and hf not in top
+        outranked = bool(ranked) and hf not in top and not sticky(flags, slug, e)
         if outranked and not e.get("yield"):
             h = ranked.get(hf) or {}
             e["yield"] = True
@@ -802,7 +817,11 @@ def auto_start(flags, reg, live, cap, runner=None, repo=None, priority=None, kee
     if live >= cap:
         return live
     started = []
-    for h in cands:
+    real = [h for h in cands if h.get("rows")]          # stuck rows with fix tasks / rows needing a launcher
+    heur = [h for h in cands if not h.get("rows")]      # only "own unpublished inference tasks" (heuristic)
+    heur_live = sum(1 for e in S.values() if alive(e.get("pid")) and e.get("auto_start") and not (e["auto_start"].get("rows")))
+    order = real + ([] if real else [h for h in heur][:max(0, HEURISTIC_SLOTS - heur_live)])
+    for h in order:
         if live >= cap:
             break
         slug = h.get("slug") or slug_for(h["handoff"], S)
@@ -836,6 +855,7 @@ OWN_TASK_RX = re.compile(r"^- \S+ L\d+ \[(cpu|gpu)\] ", re.M)
 IDLE_RX = re.compile(r"IDLE:\s*(.*)")
 IDLE_REPORT_COOLDOWN_S = 30 * 60  # a session that itself said IDLE: <reason> is re-asked after this long
 MIN_RESUME_GAP_S = 10 * 60        # budget emergency 22:45Z: at most one non-filing resume per session per 10 min
+HEURISTIC_SLOTS = 2                 # at most this many live auto-started sessions chosen on heuristic "own inference tasks"
 STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit free with zero candidates before INVENTORY-STARVED
 STARVED_ALARM_EVERY_S = 30 * 60
 PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
@@ -1193,7 +1213,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if alive(e.get("pid")) or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4: filing never queues behind auto-start
                 rest.append(ev)
                 continue
-            if ev.get("kind") in ("awaiting", "dryrun") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
+            if ev.get("kind") == "dryrun" and not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
                 rest.append(ev)  # not a filing event: wait for the gap (the next resume carries it with everything else)
                 continue
             if not wrapped(e, lcache):  # 2026-11-01 ruling: no new work on an unwrapped session; keep the event
