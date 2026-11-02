@@ -99,3 +99,7 @@ Reviewed the static E5 manifest auditor: 10 of 20 in-scope Qwen manifests and 4 
 ## 10:40Z — Document corrected E5 placement readiness
 
 Reviewed and prepared the static E5 placement readiness document: 10 of 20 in-scope Qwen manifests and 4 of 8 Gemma manifests have multi-node CPU sets with no memory policy. Preserved INF-07 ownership, the banked-Gemma do-not-rerun requirement and the distinction between static manifests and runtime evidence. P1-2 remains open. Prior wrapup commit was created but serialized push failed; exact Git rejection was suppressed by wrapup output.
+
+## 10:43Z — Correct shed duty-cycle dependency and review GPU gate readiness
+
+Corrected the P2-5e/f dependency: P1-3 completed in August, OP-19 retired the E8 signature chain, and representative stress evidence still requires a justified historical window or a separately authorized future restart and representative window. The threshold and duty-cycle tasks remain open. GPU-ZOS-2.3 cannot use the relinked C5 successor while its genuine store-build prerequisite is reopened. Prior serialized-push failure did not retain the underlying Git error.
