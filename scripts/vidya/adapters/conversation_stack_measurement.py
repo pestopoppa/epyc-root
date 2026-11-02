@@ -1,6 +1,6 @@
 """VB-SPEECH-CONV-1 (+1B..1E): the conversation-stack voice-measurement write side and projection.
 
-INF-79 (`handoffs/active/conversation-stack.md`) produces a new measurement family -- interlocutor
+INF-79 (`handoffs/active/speech-and-multimodal.md`) produces a new measurement family -- interlocutor
 bake-offs on the reference harness, GPU co-residency, end-to-end voice turns, the quantization
 ladder, and since 2026-10-22 the STT bake-off (CS-8.STT3/STT5/STT6/STT7), the lexicon trial
 (CS-8.LEX2), the VAD gate grid / end-of-turn / time-to-final (CS-22.V1/L1/T1), the LID router

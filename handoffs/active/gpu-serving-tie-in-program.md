@@ -125,7 +125,7 @@ config change with a rehearsed rollback, never a rebuild.
   - Cross-reference 2026-09-24 (conversation-stack session). This box has been overtaken by events, and it is left open for its owner to close:
     - W2 happened: whisper.cpp on HIP served on the MI210 from 2026-07-31 (multimodal S-10).
     - The operator then moved STT and TTS to the CPU on 2026-09-24 (KVU-11, OP-56).
-    - Speech placement is now owned by [`conversation-stack.md`](conversation-stack.md) (INF-79): CS-12 (cascade onto the second MI210) and CS-9 (co-residency).
+    - Speech placement is now owned by [`conversation-stack.md`](speech-and-multimodal.md) (INF-79): CS-12 (cascade onto the second MI210) and CS-9 (co-residency).
     - The ~1.6 GiB whisper reservation in `gpu_shadow_lane_np_ceiling.yaml` is still fail-safe; it is reconciled when CS-12 re-cuts the capacity-gate fold.
 
 - [x] ~~**P0-1a (owner: the session holding the E8 bundle review — deictic "THIS session" resolved out 2026-08-11 by `mainC`; the authoring session died 2026-07-29)** — when Codex presents the E8 bundle: verify the MERGED wrapper tree against the review blockers (self-consistent checkout: pinned runners exist + prepare/validator CLI agreement; composite validator handles segmented T2; receipt-after-CAS semantics present — main already carries `a2e97bb0`+`4d6589a2`-line commits; hashes pinned = merged tree) before advising SAFE-TO-SIGN.~~ (closed 2026-10-29 audit: SUPERSEDED → E8 bundle review no longer exists: OP-19 ruling commit 1ee8bd7cc (2026-08-27, artifacts/operator/ruling_op19_e8_chain_20260827.json) retired the E8 chain (ordinal 418 permanently unadjudicable))

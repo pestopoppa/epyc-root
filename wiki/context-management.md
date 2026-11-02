@@ -56,7 +56,7 @@ Open: spill-summary replacement (3.1/3.2), the real-trace re-check (2.8), live v
 ### Source References (2026-10-20 sweep 2, context-management)
 
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — invariants, 2.1 rule, 2.2 result, 4.1/4.5.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS16/CS18 voice payload and disposition sources.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS16/CS18 voice payload and disposition sources.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — retrieval-eval write side that records the run.
 
 ## Latest source review — 2026-10-07
@@ -91,7 +91,7 @@ DCP now verifies a bound file-body hash again before rendering FULL, SLICES or C
 ## Source References
 
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
 - [DCP handoff](../handoffs/active/delegation-context-preassembly.md)
 - [Progressive folding](../handoffs/active/context-folding-progressive.md)
@@ -1155,7 +1155,7 @@ DCP remains default-off after its unfavorable first live J7 A/B, and DCP-4 seed 
 
 - [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md) — the diagnostics trigger and the benchmark note.
 - [Harness improvement loop](../handoffs/active/harness-improvement-loop.md) — HIL-7 matched-budget gate that applies to any context-feature loop.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — a parallel owned-trigger pattern for embedder screens.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — a parallel owned-trigger pattern for embedder screens.
 
 ## Compiled Update — 2026-10-21 (sweep 3): compression A/B requirements and the error-output rule
 
@@ -1191,7 +1191,7 @@ Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md
 - Compaction quality dimensions: "uncertain-incorrect rate" was declined (production has no correctness label); give-up and no-answer/max-turns rates join compaction state via existing anomaly detectors (APP `df5645e9`, 109 tests). A bounded audit could not establish resident old-tool token shares or per-decode occupancy, so the >=40%/>=20% trigger stays unknown and no KV-drop probe fired. [context-folding](../handoffs/active/context-folding-progressive.md)
 - TOTAL-tokens-per-episode is instrumented through a request-local usage ledger spanning REPL creation through FINAL repair, with cache replay separate (APP `44fa7f7d`, ROOT `a50cb6e8`; 24 + 54 controls). No A/B or performance claim. [tool-output-compression](../handoffs/active/tool-output-compression.md), [progress](../progress/2026-11/2026-11-01-total-episode-tokens.md)
 - DCP-8 (paired descriptive/lazy instruction axis, intake-1157#record) is done as a conformance instrument; DCP-11 (Packer stops downgrading edit-site files with ColGREP hits) is implemented (hosted run 41282077353, 299 passed); its policy effect is still a proposed DCP-6 arm. [DCP](../handoffs/active/delegation-context-preassembly.md)
-- Voice stack: CS-16 (spoken form/display payload) implemented, APP `ee58e839`; Nemotron 3.5 Q8 STT English WER auto/forced (%): R0 14.410/13.234, R3 12.749/12.276, R6 12.033/11.875, R13 12.482/11.451 over 1,437 utterances per setting (selection-only, no paired baseline). [conversation-stack](../handoffs/active/conversation-stack.md), [progress](../progress/2026-11/2026-11-01-nemotron-tc-validation.md)
+- Voice stack: CS-16 (spoken form/display payload) implemented, APP `ee58e839`; Nemotron 3.5 Q8 STT English WER auto/forced (%): R0 14.410/13.234, R3 12.749/12.276, R6 12.033/11.875, R13 12.482/11.451 over 1,437 utterances per setting (selection-only, no paired baseline). [conversation-stack](../handoffs/active/speech-and-multimodal.md), [progress](../progress/2026-11/2026-11-01-nemotron-tc-validation.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 

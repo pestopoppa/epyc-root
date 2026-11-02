@@ -32,7 +32,6 @@
   "INF-54": 0.45,
   "INF-62": 0.45,
   "INF-24": 0.4,
-  "INF-41": 0.4,
   "INF-72": 0.4,
   "INF-79": 0.4,
   "INF-80": 0.4,
@@ -136,7 +135,8 @@
   "RTG-43": 0.1,
   "RTG-45": 0.1,
   "EVL-41": 0.1,
-  "RTG-17": 0.05
+  "RTG-17": 0.05,
+  "INF-79#multimodal-pipeline": 0.4
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -2510,5 +2510,13 @@
   "(^|-)gnx-": "INF-50",
   "(^|-)df2-": "INF-62",
   "(^|-)parakeet-": "INF-79"
+ },
+ "dep_tracks": {
+  "RTG-57>INF-79": [
+   {
+    "track": "multimodal-pipeline",
+    "next_action": "Run S-18 paired 60-item CPU cohort; project/canary via VB-SERVING-DF2"
+   }
+  ]
  }
 }

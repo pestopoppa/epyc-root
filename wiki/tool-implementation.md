@@ -1699,7 +1699,7 @@ The [INF64 importer/path matrix](../artifacts/ni08/inf64-source-reachability-rev
 
 At the06:42 checkpoint, [voice HTTP/WAV and W6 producer source preparation](../docs/reference/ni08-non-inference-continuation.md) was reviewed and prospectively enrolled; the later HTTP/WAV acceptance is recorded below. Voice controls exercise injected controller/cascade/HTTP boundaries and bounded WAV/PCM CLI handling. The W6 block describes core-minus-fresh quality with explicit scored-plus-task-failed denominators, excluded infra/scoring failures, nullable absence/reasons and incomparable suite/question mixes.34 source functions expand to38 native identities. Optional future journal support preserves authored metadata without changing objective, quality grade or historical rows.
 
-Source references: [INF64 active work](../handoffs/active/autokernel-restart-and-strip.md), [voice parent](../handoffs/active/conversation-stack.md), [W6 metric direction and source gates](../handoffs/active/objective-task-rate-goodput.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md).
+Source references: [INF64 active work](../handoffs/active/autokernel-restart-and-strip.md), [voice parent](../handoffs/active/speech-and-multimodal.md), [W6 metric direction and source gates](../handoffs/active/objective-task-rate-goodput.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ### Real subprocess gates and isolated voice source — 2026-10-07 07:38 checkpoint
@@ -1710,7 +1710,7 @@ Source references: [INF64 active work](../handoffs/active/autokernel-restart-and
 
 [Pin-report controls](../handoffs/active/vidya-belief-substrate-program.md) are prospectively enrolled for29 whole-module synthetic tests, retaining nested original TRUE/FALSE/NULL records and strict report-write/reader controls through the existing carrier. At this cut, their original capture awaits MAIN review; report conformance cannot establish current pin health.
 
-Source references: [W4 source task](../handoffs/active/model-stack-single-source-update-pipeline.md), [voice parent](../handoffs/active/conversation-stack.md), [pin-report parent](../handoffs/active/scoring-infra-standardization.md), [NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [belief-source enrollment](../scripts/vidya/adapters/README.md).
+Source references: [W4 source task](../handoffs/active/model-stack-single-source-update-pipeline.md), [voice parent](../handoffs/active/speech-and-multimodal.md), [pin-report parent](../handoffs/active/scoring-infra-standardization.md), [NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [belief-source enrollment](../scripts/vidya/adapters/README.md).
 
 ### Accepted W6 diagnostics, pin reports and reachability manifest — 2026-10-07 08:15 checkpoint
 
@@ -1731,7 +1731,7 @@ The accepted K11 summary now requires every requested positive repeat to exist, 
 
 ### Shared MTMD discovery source accepted — 2026-10-07
 
-The [three former probe implementations](../handoffs/active/multimodal-pipeline.md) now share the reviewed Bash executable discovery, symlink-target library prefix, bounded timeout, status and merged-output primitive. Python retains distinct strict/tolerant parsing, fallback order and explicit override behavior. [MAIN authenticated the original hosted11/11](../artifacts/ni08/s49-mtmd-probe-success-acceptance-20261007/README.md), including owned TERM-ignoring child-death verification, and published six exact APP source blobs. Actual serving binary/library residency and runtime verification remain the inference owner's boundary; synthetic source controls do not establish those claims.
+The [three former probe implementations](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) now share the reviewed Bash executable discovery, symlink-target library prefix, bounded timeout, status and merged-output primitive. Python retains distinct strict/tolerant parsing, fallback order and explicit override behavior. [MAIN authenticated the original hosted11/11](../artifacts/ni08/s49-mtmd-probe-success-acceptance-20261007/README.md), including owned TERM-ignoring child-death verification, and published six exact APP source blobs. Actual serving binary/library residency and runtime verification remain the inference owner's boundary; synthetic source controls do not establish those claims.
 
 The [prospective native source companion](../handoffs/active/vidya-belief-substrate-program.md) uses the existing conformance carrier/shared grader. The zero-job setup original has no receipt; the prior missing-multipart NULL is preserved. Adding the exact locked dependency permitted a separately bound fresh run; it did not change the original evidence.
 

@@ -103,7 +103,7 @@ Open: Phase 0b authorization (operator/budget); real-trace re-check of the retri
 
 - [Engram conditional memory](../handoffs/active/engram-conditional-memory.md) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — store-migration follow-ons and the one-model-per-index invariant.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — session-keyed store and summary frontier source acceptance.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — session-keyed store and summary frontier source acceptance.
 
 ## Latest source review — 2026-10-07
 
@@ -128,7 +128,7 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 
 - [Engram conditional memory](../handoffs/active/engram-conditional-memory.md) — sweep 2 (2026-10-20)
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md)
 - [REPL maturity](../handoffs/active/repl-session-memory-maturity.md)
 - [UTM conformance](../docs/reference/utm-synthetic-conformance-contract.md)
@@ -1361,7 +1361,7 @@ The [read-only MCP registrar](../artifacts/ni08/utm-b1-read-only-mcp-source-2026
 
 [Original31/31 and published APP source](../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md) cover explicit normal/verbatim/display contracts, protected text before emission/persistence/TTS, typed retain/cancel choice and replacement-turn cleanup. [Corrected276/276](../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) restores the voice verifier after prospectively adding omitted import inputs; historical maps remain unchanged. Each review binds467Git+5generated inputs and484 authenticated original ZIP members. Synthetic source conformance supports these bounded implementations; real speech quality, audio realization and latency still need their own evidence.
 
-Source references: [conversation stack](../handoffs/active/conversation-stack.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md), [NI08 published boundaries](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [conversation stack](../handoffs/active/speech-and-multimodal.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md), [NI08 published boundaries](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 ### Tulving SRS comparison workflow controls — 2026-10-08
 

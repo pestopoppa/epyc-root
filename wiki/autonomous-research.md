@@ -4119,7 +4119,7 @@ checkbox, and historical runs are not retrofitted into evidence their producers 
 - [Autopilot sequential allocation](../handoffs/active/autopilot-sequential-allocation.md) — shared Shinka/DGM selector comparison.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective replay receipt and trigger profiles.
 - [Reviewer calibration accounting](../handoffs/active/reviewer-calibration-accounting.md) — autonomous-science activation boundary.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — LensVLM bottleneck trigger.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — LensVLM bottleneck trigger.
 
 **Confidence:** verified as repository task structure; every algorithmic gain remains prospective until the shared replay emits a governed receipt.
 

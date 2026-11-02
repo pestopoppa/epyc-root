@@ -1419,7 +1419,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   2026-07-31, and the operator then moved STT and TTS to the CPU on 2026-09-24 (KVU-11). Speech
   placement is now owned by the conversation-stack program: CS-12 puts the cascade on the
   second MI210, and CS-9 measures co-residency. P2-9 carries a cross-reference for its owner to
-  close. ([conversation-stack](../handoffs/active/conversation-stack.md),
+  close. ([conversation-stack](../handoffs/active/speech-and-multimodal.md),
   [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md))
   [p2-2-tenant-landing-readiness](../docs/reference/p2-2-tenant-landing-readiness-20260729.md),
   [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
@@ -2825,7 +2825,7 @@ and that traffic was mostly the DS41 planner seat and the C95 harness experiment
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-start-dry-run-launched-stack, INC-20261003-runtime-flag-survived-reboot.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the 09-24 → 10-01 log analysis and its verdict.
 - [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-17 serving telemetry.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — the VL placement and S-20.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the VL placement and S-20.
 - [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — ARCHSWAP-4 done.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-4.5.
@@ -2952,7 +2952,7 @@ Sources: [Qwen3.8-27B replace Qwen3.6](../handoffs/active/qwen38-27b-replace-qwe
 - **Corpus retrieval flag-off ratified** (RATIFY-CORPUS-RETRIEVAL-OFF-20261021; research `ab702eca6`, orchestrator `792955fc`). It takes effect at the next stack start and ends the failed per-request lookup against the 651 GB index deleted on 2026-07-04.
 - **Do not run operator commands or readers from the shared `/workspace` clone.** It is about 500 commits behind origin/main and carries dirty tracked files that conflict with upstream (NIB2-99). On 2026-10-21 a new ratify script was simply absent there. Operator bundles run from a fresh origin/main worktree.
 
-Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/qwen38-27b-replace-qwen36.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [Conversation stack](../handoffs/active/conversation-stack.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
+Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/qwen38-27b-replace-qwen36.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 

@@ -8,6 +8,10 @@
    "target": "model-evaluation-queue.md",
    "track": null
   },
+  "conversation-stack.md": {
+   "target": "speech-and-multimodal.md",
+   "track": null
+  },
   "delta-mem-reproduction.md": {
    "target": "model-evaluation-queue.md",
    "track": "delta-mem-reproduction"
@@ -32,6 +36,15 @@
    "target": "model-evaluation-queue.md",
    "track": "minimax-h3-video-generation-evaluation"
   },
+  "model-stack-change-standardization-audit.md": {
+   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
+  },
+  "multimodal-pipeline.md": {
+   "target": "speech-and-multimodal.md",
+   "track": "multimodal-pipeline"
+  },
   "qwen-mtp-llamacpp-port.md": {
    "target": "model-evaluation-queue.md",
    "track": "qwen-mtp-llamacpp-port"
@@ -44,19 +57,14 @@
    "target": "model-evaluation-queue.md",
    "track": "summary-token-attention-readiness"
   },
-  "tidar-one-pass-variant-b.md": {
-   "target": "model-evaluation-queue.md",
-   "track": "tidar-one-pass-variant-b"
-  },
-  "model-stack-change-standardization-audit.md": {
-   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
-   "track": null,
-   "retired": "D4 2026-11-02"
-  },
   "swarm-dataset-distillation.md": {
    "target": "handoffs/completed/swarm-dataset-distillation.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "tidar-one-pass-variant-b.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "tidar-one-pass-variant-b"
   }
  },
  "ids": {
@@ -84,6 +92,10 @@
    "target": "EVL-02",
    "track": "lightning-attention-port"
   },
+  "INF-41": {
+   "target": "INF-79",
+   "track": "multimodal-pipeline"
+  },
   "INF-46": {
    "target": "EVL-02",
    "track": "qwen-mtp-llamacpp-port"
@@ -100,10 +112,6 @@
    "target": "EVL-02",
    "track": "ernie-image-turbo-evaluation"
   },
-  "UFH-04": {
-   "target": "EVL-02",
-   "track": "minddr-deep-research-mode"
-  },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
    "track": null,
@@ -114,6 +122,10 @@
    "target": "handoffs/completed/swarm-dataset-distillation.md",
    "track": null,
    "retired": "D4 2026-11-02"
+  },
+  "UFH-04": {
+   "target": "EVL-02",
+   "track": "minddr-deep-research-mode"
   }
  }
 }

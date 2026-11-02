@@ -859,7 +859,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 > subject is now `qwentts.cpp` rather than the PyTorch server; the **5-dep install becomes optional**
 > (it belongs to the PyTorch fallback, which needs no deps under the C++ path); and "the C++
 > accelerator" that must not be rebuilt is **ours**, not this one. Owning detail + task block S-1..S-11:
-> [`multimodal-pipeline.md`](multimodal-pipeline.md).
+> [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline).
 >
 > **STT also stopped depending on the network** the same day: `whisper_server.py` resolved a model
 > *name* through `huggingface_hub` on every cold start and failed **silently** (it is in
@@ -997,7 +997,7 @@ Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
   STT is measured (WER 2.35 %, ~4.2 s floor) and TTS is measured (round-trip WER 0.0 %,
   TTFA 67.9 ms, 0.86× RT CPU via `qwentts.cpp`). The remaining unfinalized arm is
   **Qwen3-ASR**, whose 72.14 % WER is a configuration defect with a named suspect (the
-  Q8_0 audio projector). See [`multimodal-pipeline.md`](multimodal-pipeline.md) S-6..S-10.
+  Q8_0 audio projector). See [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) S-6..S-10.
 
 ### P1-11 CORRECTED 2026-07-31 — what is exclusive vs what is a tunable surface
 

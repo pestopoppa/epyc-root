@@ -465,7 +465,7 @@ A/B has completed, so no speedup may be attributed to it.
   2.62 GiB. Folding them into GPU headroom keeps the 2026-09-22 lineup fitting, but the margin falls
   **5.85 → 1.17 GiB** — so the aux services were most of the unaccounted headroom. PREPARED only; see the
   multimodal page for the two gates that hold it.
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11a)
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11a)
 
 ### Open questions
 
@@ -481,7 +481,7 @@ A/B has completed, so no speedup may be attributed to it.
   arithmetic, thread divergence), C18 (per-slot context).
 - [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — phase-resolved planner cost,
   the accepted GEMM proposal, the 27B/flash-next throughput pair.
-- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-11a, the 4.68 GiB of aux-service
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a, the 4.68 GiB of aux-service
   VRAM and its effect on the GPU headroom margin.
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile)
@@ -2152,7 +2152,7 @@ versioned dependency** (pins: qwentts.cpp `abab6b3b`, ggml fork `c044c6f0`, bina
 ### Source References
 
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15c, the ARGSORT mechanism, the 74/74 / 292/292 counts, and the 13.2% HIP-graphs figure
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — task S-6a (the ARGSORT fix closure) and S-3 (the one-line FP8-guard patch, a related but distinct third-party build fix on the same fork)
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — task S-6a (the ARGSORT fix closure) and S-3 (the one-line FP8-guard patch, a related but distinct third-party build fix on the same fork)
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N27** (speech)
 ## Compiled Update — 2026-07-30 (NUMA placement defect; the E5 quarters-vs-full verdict is RETRACTED)
 

@@ -84,7 +84,7 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
 
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — 2.1 rule, 2.2 run result, operator decision, 2.5/2.6 evidence, pilot timing, 2.8.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR and VB-UFH12-EMBSPEED write sides (first run written, box open).
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — vision-side embedder screen trigger (collections empty).
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — vision-side embedder screen trigger (collections empty).
 
 ## Latest source review — 2026-10-07
 
@@ -110,7 +110,7 @@ The older K2 paragraph about hard-coded web caps is historical. Current source r
 
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — sweep 2 (2026-10-20)
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — sweep 2 (2026-10-20)
 - [Forced identity](../docs/reference/kb-force-build-identity-contract.md)
 - [vector publication](../docs/reference/kb-vector-staged-publication-contract.md)
 - [native catalog](../docs/reference/kb-catalog-dependency-contract.md)

@@ -28,7 +28,7 @@ on KVU-1.
 [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-3 (native LCP slot pick),
 [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) SW-9,
 [`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md) OAB-4a,
-[`multimodal-pipeline.md`](multimodal-pipeline.md) S-11a
+[`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) S-11a
 
 ## Start here
 
@@ -1678,7 +1678,7 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   - The voice-pipeline handoff the operator's parallel agent is drafting must carry this contention as a
     requirement; that handoff did not exist at 2026-09-24 ~19:50Z, so no cross-reference was written.
   - Cross-reference (added 2026-09-24, later): the operator's plan landed as
-    [`conversation-stack.md`](conversation-stack.md) (INF-79). This contention and the acceptance above are carried
+    [`conversation-stack.md`](speech-and-multimodal.md) (INF-79). This contention and the acceptance above are carried
     there as CS-12 (CS-11 declined 2026-10-21) (cascade onto the second MI210). KVU-11c stays here.
   - Layout hygiene seen in the same run: `megasync` (unpinned) ran at 60–100% on core 16, inside whisper's 0-23
     mask — a possible straggler source (quiet STT RTF spread 0.22–0.39). Pin it outside 0-39 as part of whichever

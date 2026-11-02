@@ -1,6 +1,6 @@
 # CS-2 STT-scoring amendment candidates (Annex S, P-STT-1)
 
-**Status**: CANDIDATE TEXT, NOT RATIFIED. Drafted 2026-10-22 by CS-2.STT1 ([`handoffs/active/conversation-stack.md`](../../../handoffs/active/conversation-stack.md)).
+**Status**: CANDIDATE TEXT, NOT RATIFIED. Drafted 2026-10-22 by CS-2.STT1 ([`handoffs/active/speech-and-multimodal.md`](../../../handoffs/active/speech-and-multimodal.md)).
 **Authority**: none. `MEASUREMENT.md` and `measurement/protocols/speech.md` are human-amendment-only and are **not edited** by this document. Every item below is a recommended wording for the operator to accept, change or reject when the CS-2 package is ratified. Nothing here changes any scorer, record or gate until then.
 **Quoted text** is from `measurement/protocols/speech.md` (P-STT-1, RATIFIED 2026-08-03), line numbers as of this worktree.
 **Intake records** (discussed, not relied on as assertions): intake-2346#record, intake-2352#record, intake-2353#record, intake-2354#record, intake-2366#record, intake-2372#record, intake-2374#record, intake-2381#record, intake-2382#record.

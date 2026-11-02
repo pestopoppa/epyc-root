@@ -5431,7 +5431,7 @@ Four further harness-evolution papers sit in a primary-read queue with only Stag
 
 - [Harness improvement loop](../handoffs/active/harness-improvement-loop.md) — HIL-7, HIL-8 and the primary-read queue.
 - [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md) — the DCP-6 matched on/off design HIL-7 mirrors, and its default-off status.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
 - [Wrap-up intake progress note](../progress/2026-10/2026-10-20-wrapup-intake-20261020.md) — verification that the filed IDs resolve and that HIL-8 is the only flip.
 
 ## Compiled Update — 2026-10-21 (sweep 3): the harness-cluster intake adds an isolation and reporting contract to the improvement loop

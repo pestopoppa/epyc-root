@@ -217,7 +217,7 @@ Cross-refs: [search-retrieval](search-retrieval.md), [multimodal](multimodal.md)
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR / EMBSPEED build notes, VB-DF2-REPLAY, VB-KVU-CPU, VB-AK-HISTORY (newest sections only; the 421 KB file was not read in full).
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — frozen rules and strata.
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — the run being recorded.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-45 evidence note and review-pending checkbox.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45 evidence note and review-pending checkbox.
 
 ## Latest source review — 2026-10-07
 
@@ -273,7 +273,7 @@ A related CI lesson is that dependency checkout paths are evidence boundaries to
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — sweep 2 (2026-10-20)
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Coordinator ledger](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
 - [Repo readiness](../handoffs/active/repo-readiness-scorer.md)
 - [Agent-file completed ledger](../handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md)
@@ -365,7 +365,7 @@ producers projects a tuple yet.
   VB-SPEECH-CONV-1.
 - [scripts/vidya/adapters/README.md](../scripts/vidya/adapters/README.md): the conversation-stack, `actor_call_metrics.v1` and
   `actor_context_bundle.v1` source rows and their cautions.
-- [conversation-stack.md](../handoffs/active/conversation-stack.md): INF-79, the ratified speech vision that produces the new family.
+- [conversation-stack.md](../handoffs/active/speech-and-multimodal.md): INF-79, the ratified speech vision that produces the new family.
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): two "open" items had been fixed for weeks and never ticked, and two new belief-kernel sources were filed write-side first
 
@@ -4163,7 +4163,7 @@ The Vidya program and adapter source table gained or rewrote four write-side ite
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-DS41-1017-WIRE, VB-Q38FN-SERVED-SWEEP-WIRE, VB-AK-HISTORY.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — VB-DSV41 row extension for the MXFP4-direct plan.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — the W5/W6 gates the records bind.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-47 and CS-49 outputs.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-47 and CS-49 outputs.
 
 ## Compiled Update — 2026-10-21 (sweep 3): harness-cluster Stage 4 filing and new write-side obligations
 
@@ -4260,7 +4260,7 @@ The source tables now extend existing CME7T, CS22 and speech-conversation famili
 - **CS22:** the original negative remains a committed diagnostic conclusion; prospective same-release capture retains the unproved-weight-identity caveat. Strict projection and planning-context canary remain open; historical records are not backfilled.
 - **STT2:** the converted Parakeet/Whisper assets and per-clip CPU smoke source are bound before acquisition/execution. The source family still needs strict native-record reading and a planning-context canary before it can be called wired.
 
-Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/conversation-stack.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
+Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
 
 ## Compiled Update — 2026-10-29 (wrap-up sweep)
 
