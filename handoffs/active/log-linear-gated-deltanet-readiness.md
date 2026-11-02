@@ -260,7 +260,7 @@ distinguished from a row that was never checked.
 ## Cross-References
 
 - **Deep dive**: `research/deep-dives/memory-caching-log-linear-attention.md`
-- **Survey**: `handoffs/active/multiscreen-attention-evaluation.md` (priority ranking, literature survey)
+- **Survey**: `handoffs/active/attention-matching-kv-compaction.md` (priority ranking, literature survey)
 - **Intake**: intake-356 (primary), intake-354 (related MC analysis)
 - **Chapters**: 10-advanced-speculative-decoding (Section 13: Delta Net speculation blocked)
 - **Handoffs**: routing-intelligence.md (historical Delta Net / reasoning-trace risk notes preserved in the completed ledger linked from the active handoff)
@@ -538,7 +538,7 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       Porting GDN-2 to ggml is a standing **decline on evidence**, not a compute block: 4/4 independent
       losses to plain GDN, the untested baseline control above, and +12.5 % active parameters for zero
       state saving (intake-1281#record). See also the static-analysis question `Z12` filed in
-      [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md), which could shrink
+      [multiscreen-attention-evaluation.md](attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation), which could shrink
       that +12.5 % and is zero-compute.
 
 ### Verification for the above

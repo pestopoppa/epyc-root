@@ -56,7 +56,6 @@
   "PIP-04": 0.3,
   "INF-13": 0.25,
   "INF-33": 0.25,
-  "INF-56": 0.25,
   "EVL-16": 0.25,
   "EVL-36": 0.25,
   "REV-07": 0.25,
@@ -72,7 +71,6 @@
   "RTG-48": 0.2,
   "RTG-51": 0.2,
   "RTG-52": 0.2,
-  "INF-42": 0.15,
   "INF-76": 0.15,
   "RTG-04": 0.15,
   "RTG-05": 0.15,
@@ -83,7 +81,6 @@
   "INF-29": 0.1,
   "INF-44": 0.1,
   "INF-49": 0.1,
-  "INF-51": 0.1,
   "RTG-50": 0.1,
   "RTG-45": 0.1,
   "EVL-41": 0.1,
@@ -145,7 +142,10 @@
   "INF-22#qwen38-27b-replace-qwen36": 0.75,
   "INF-02#autokernel-restart-and-strip": 0.6,
   "UFH-08#opencode-shell-integration": 0.15,
-  "EVL-37#qwen-chat-template-evaluation": 0.65
+  "EVL-37#qwen-chat-template-evaluation": 0.65,
+  "INF-05#multiscreen-attention-evaluation": 0.15,
+  "INF-05#streaming-llm-baseline": 0.1,
+  "INF-05#triattention-kv-selection": 0.25
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",

@@ -5105,7 +5105,7 @@ claim; the next performance-bearing run must prove achieved locality before admi
 
 ### Source References (2026-08-27)
 
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
 - [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — T5 locality-gate contract and the live multi-node `--no-mmap` placement witness.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — PID identities, checkpoint provenance, 163-record validation and OpenCode ownership reconciliation.
 
@@ -6816,7 +6816,7 @@ Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-
 **Confidence: scoped to cited native records and source controls.**
 
 - G16 greedy native comparisons matched first IDs but failed full UTF-8 byte equality at 2K, 8K, 16K and 24K; this does not resolve the separate NMSE branch or establish causality/promotion. ([G16](../handoffs/active/log-linear-gated-deltanet-readiness.md))
-- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/multiscreen-attention-evaluation.md))
+- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

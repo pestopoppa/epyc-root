@@ -182,7 +182,7 @@ The strategic appeal of Log-Linear Gated DeltaNet is direct: the O(L log L) hidd
 
 ### Multiscreen attention survey (cluster expansion)
 
-Per [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md). The sub-quadratic attention cluster has expanded beyond the original Multiscreen mechanism (replaces softmax with screening; 40% params; 2.3–3.2× latency at 100K context).
+Per [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation). The sub-quadratic attention cluster has expanded beyond the original Multiscreen mechanism (replaces softmax with screening; 40% params; 2.3–3.2× latency at 100K context).
 
 Highest-priority watch item: **IHA (Interleaved Head Attention)** — +112% RULER at 16K multi-key retrieval, FlashAttention-compatible. None of the cluster have GGUF implementations, and all are pretraining-required architectures (no retrofit possible to existing weights). Monitor for community reproductions and pretrained checkpoints.
 
@@ -221,7 +221,7 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 
 - [MTP speculative decoding handoff](/workspace/handoffs/completed/mtp-speculative-decoding.md) -- Complete history of all speculation approaches tested, timing results, root cause analysis, bug fixes
 - [SEAL concise reasoning experiment](/mnt/raid0/llm/epyc-inference-research/docs/experiments/seal-concise-reasoning.md) -- Control vector catastrophic failure on Gated Delta Net
-- [Multiscreen attention evaluation](/workspace/handoffs/active/multiscreen-attention-evaluation.md) -- Sub-quadratic attention alternative, watch item status, expanded mechanism cluster
+- [Multiscreen attention evaluation](/workspace/handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) -- Sub-quadratic attention alternative, watch item status, expanded mechanism cluster
 - [Qwen3.5 frontdoor benchmark](/workspace/handoffs/completed/qwen35-frontdoor-benchmark.md) -- Production benchmark results, spec-decode bust confirmation, MoE lookup acceleration
 - [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Configuration tips for hybrid MoE + Delta Net
 - [intake-237#record/238] Nemotron-Cascade 2 -- Mamba2 vs Delta Net benchmarks, cascade RL
@@ -360,7 +360,7 @@ The Liquid AI LFM2 family (intake-650 blog / 651 model card / 652 catalog / 653 
 - **NOT a spec-dec drafter**: its own 128K `lfm2` vocab is incompatible with every production target tokenizer (Qwen3.6, gemma4); spec-dec requires exact tokenizer match; all production spec-dec is self-speculation (gemma4 MTP / REAP+draft). Standalone-only.
 - **Deployment verdict**: no current production role has a gap a 1.5B-active edge model fills, so intake-651 was set to worth_investigating (not adopt_component). The 63.47 AA-Omniscience non-hallucination figure is a calibrated-**abstention** RL artifact (Accuracy 8.67, Index −24.70), not a knowledge win — though that calibrated-abstention behavior could suit a future router/triage role. **LFM2-ColBERT-350M** (late-interaction retriever) is a candidate vs GTE-ModernColBERT for `internal-kb-rag.md`, but is **PyLate/PLAID-only — NOT GGUF/llama.cpp/ONNX** (HF-only per Liquid docs).
 
-Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md), [`handoffs/active/multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md), [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md), intake-650/651/652/653.
+Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md), [`handoffs/active/attention-matching-kv-compaction.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation), [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md), intake-650/651/652/653.
 
 ## Nemotron-3-Ultra-550B — first in-RAM Mamba2-hybrid MoE with a CPU path (2026-06-12)
 
@@ -482,7 +482,7 @@ The branch map had one data point on the state-size axis (log-linear's 15×). GD
 
 - [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the SALA reattribution (Simple GLA, constant-decay), the zero-new-operators table, Z9/G18/B8, the #27018 pointer and the standing declines
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — Gates 4/5 addendum, the GDN-2 1.0×-state axis (with log-linear 15× and PGDN ~0.8% beside it), the B9 decline cross-reference
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — the CoT-SFT amnesia hazard (arXiv 2606.11052), the G1 S-NIAH-2 probe protocol and gate, the efficient-attention counter-argument (arXiv 2606.15378)
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — the CoT-SFT amnesia hazard (arXiv 2606.11052), the G1 S-NIAH-2 probe protocol and gate, the efficient-attention counter-argument (arXiv 2606.15378)
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert GDN-2 ggml delta and #26001's K==1 constraint (cross-listed with [Hardware Optimization](hardware-optimization.md))
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction: the no-go's MEASUREMENT stands, its premise about the state of the art did not
 
@@ -544,7 +544,7 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 ### Source References (2026-08-23 addendum)
 
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the ρ = L/L_FA record with the Appendix C.1 warning, the m-a-p `hybrid-4-1` correction, the GDN-2 state-vs-active-parameter rider, the `B9` decline, and the op-test coverage gap that shapes `G16`.
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — the CoT-SFT amnesia hazard and `G1` probe contract (compiled in the 2026-08-23 evening section above, not restated here), and `Z12`, the zero-compute question of whether GDN-2's `b_proj`/`w_proj` can be low-rank factorized on the Kimi Linear `SSM_F_A`/`F_B` precedent already in our tree. **Z12-COMMIT is filed (2026-09-17):** the document that informs B9 (`epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`) is untracked on the research shared clone and on no ref, and must be committed; a verbatim copy (sha256 `5c3f5a42…d792`) is held in `/mnt/raid0/llm/backups/preserve-20260916/`.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — the CoT-SFT amnesia hazard and `G1` probe contract (compiled in the 2026-08-23 evening section above, not restated here), and `Z12`, the zero-compute question of whether GDN-2's `b_proj`/`w_proj` can be low-rank factorized on the Kimi Linear `SSM_F_A`/`F_B` precedent already in our tree. **Z12-COMMIT is filed (2026-09-17):** the document that informs B9 (`epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`) is untracked on the research shared clone and on no ref, and must be committed; a verbatim copy (sha256 `5c3f5a42…d792`) is held in `/mnt/raid0/llm/backups/preserve-20260916/`.
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert ggml delta for a channel-wise gate, the `K == 1` selection constraint, `G15` (#24561 on MI210, with its `MIN_BLOCKS_PER_SM` occupancy trap) and `B5` (do not stack chunked on the BF16 state lever, with the attention-output correction).
 - intake-1280#record, intake-1281#record, intake-1285#record, intake-1287#record, intake-1290#record in [the research index](../research/intake_index.yaml) — the dive-verified primary-source readings behind every figure above.
 

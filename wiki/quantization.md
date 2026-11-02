@@ -627,7 +627,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 - [KV Cache Quantization Handoff](../handoffs/completed/kv-cache-quantization.md) -- Hadamard Phase 1 deployed, hybrid buffer archived, TurboQuant/PolarQuant/QJL abandoned, split attention working but unnecessary, long-context degradation analysis, production validation results
 - [TQ3 Monitor Handoff](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) -- TQ3_1S on monitor-only status, PR #21038 Hadamard auto-rotation, PR #21089 CPU TurboQuant, ChunkKV tracking
 - [AM Handoff](../handoffs/active/attention-matching-kv-compaction.md) -- Compaction validated on Q4KM Coder-32B, stacking hypothesis
-- [TriAttention Handoff](../handoffs/active/triattention-kv-selection.md) -- Selection + quantization stacking gates (S3)
+- [TriAttention Handoff](../handoffs/active/attention-matching-kv-compaction.md#track-triattention-kv-selection) -- Selection + quantization stacking gates (S3)
 - [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- Double compression pipeline, bartowski GGUF availability
 - [DFlash Deep-Dive](../research/deep-dives/dflash-dart-diffusion-speculation.md) -- the Q4_K_M hidden-state degradation hypothesis (paper 6.49 tokens-per-round vs our 27% per-token — different units; the causal reading is not established, corrected 2026-09-23)
 - [REAP Deep-Dive](../research/deep-dives/0xsero-reap-ecosystem-deep-dive.md) -- bartowski 26 quant variants, double compression pipeline, GGUF conversion path

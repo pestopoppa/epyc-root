@@ -209,6 +209,10 @@
    "target": "speech-and-multimodal.md",
    "track": "multimodal-pipeline"
   },
+  "multiscreen-attention-evaluation.md": {
+   "target": "attention-matching-kv-compaction.md",
+   "track": "multiscreen-attention-evaluation"
+  },
   "non-inference-backlog.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": null
@@ -297,6 +301,10 @@
    "target": "model-evaluation-queue.md",
    "track": "strand-rust-coder-rustevo2-verification"
   },
+  "streaming-llm-baseline.md": {
+   "target": "attention-matching-kv-compaction.md",
+   "track": "streaming-llm-baseline"
+  },
   "summary-token-attention-readiness.md": {
    "target": "model-evaluation-queue.md",
    "track": "summary-token-attention-readiness"
@@ -321,6 +329,10 @@
   "tq3-quantization-evaluation.md": {
    "target": "quantization-and-low-bit.md",
    "track": "tq3-quantization-evaluation"
+  },
+  "triattention-kv-selection.md": {
+   "target": "attention-matching-kv-compaction.md",
+   "track": "triattention-kv-selection"
   },
   "v9-kernel-per-request-speculative-params.md": {
    "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
@@ -472,9 +484,17 @@
    "target": "INF-79",
    "track": "multimodal-pipeline"
   },
+  "INF-42": {
+   "target": "INF-05",
+   "track": "multiscreen-attention-evaluation"
+  },
   "INF-46": {
    "target": "EVL-02",
    "track": "qwen-mtp-llamacpp-port"
+  },
+  "INF-51": {
+   "target": "INF-05",
+   "track": "streaming-llm-baseline"
   },
   "INF-52": {
    "target": "EVL-02",
@@ -487,6 +507,10 @@
   "INF-54": {
    "target": "INF-80",
    "track": "tq3-quantization-evaluation"
+  },
+  "INF-56": {
+   "target": "INF-05",
+   "track": "triattention-kv-selection"
   },
   "INF-58": {
    "target": "EVL-21",
