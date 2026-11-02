@@ -71,3 +71,7 @@ Investigated the parked W5s r7 lineage: three failed qualifications remain parke
 ## 10:40Z — Prepare W5s census repair and sync17 replay
 
 W5s r7 remains parked after three qualification failures; commissioned bounded repair analysis without retry or reset. The staged P1c quantizer job performs git archive and extraction within its granted job and requires input preparation outside the grant before publication. Independent replay and control preparation dispatched; no inference or census result claimed. Previous wrap commit push failed and remains to be published.
+
+## 10:41Z — Prepare INF-75 quantizer source outside the compute grant
+
+Prepared git archive of quantizer source commit 7cdd7c97bed538a85c3b75331b6cdb369e5b2adc outside the grant at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/quantizer-source/source.tar, SHA-256 cc9c5831b6622dd2fbc5aa85387c70b998af100276e1cd6c0dac3174bbfadff6. Job integration and validation remain; no row published. GitNexus re-index was refused by CPU admission. Previous wrap failed when the lane ceased to be a git worktree during push.
