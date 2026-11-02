@@ -163,7 +163,6 @@
   "RTG-40": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-17": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
-  "INF-37": "operator decision or approval pending",
   "EVL-21": "operator decision or approval pending",
   "RTG-29": "operator decision or approval pending",
   "RTG-36": "operator decision or approval pending",
@@ -197,11 +196,13 @@
   "RTG-02#evidence-plane-instrument-repair": "operator decision or approval pending",
   "RTG-02#orchestration-robustness-audit-2026-07-11": "operator decision or approval pending",
   "RTG-02#scaffold-autopilot-cost-lever-deployment": "operator decision or approval pending",
-  "EVL-04#promptforge-mutation-safety-contract": "operator decision or approval pending"
+  "EVL-04#promptforge-mutation-safety-contract": "operator decision or approval pending",
+  "INF-03#mi210-q8-dequant-gemv-roofline": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",
-  "INF-03": "REGAUDIT|AGPR"
+  "INF-03": "REGAUDIT|AGPR",
+  "INF-03#mi210-q8-dequant-gemv-roofline": ""
  },
  "briefs": {
   "VB-FOLDGATE-WRITE": "Write the belief-kernel write side for the CH-28/CH-30 fold gate outputs (gate_{cpu,gpu}.v2.out + GATE_ACCEPTANCE.md): add the adapter row in scripts/vidya/adapters/README.md and a projector to ClaimTuple; do not write a grading rule. Zero inference; land before c4-gate-e / c4-gpu-correctness run.",

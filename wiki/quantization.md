@@ -406,7 +406,7 @@ The same hazard bit the analysis itself: an earlier pass reported the `%HBM` fig
 - [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung ladder table, the batched sweep, the manifest unit correction, and the caveat list.
 - [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-research-loop.md) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
 - [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the per-quant static VGPR table that predicted the knee four days early, and the IQ2_XXS-vs-IQ4_XS disassembly diff.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
 
 ## Compiled Update — 2026-08-14: two GPU surfaces where the quant lever is negative or inert
 
@@ -1022,7 +1022,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — EXL3-6c5 now references UD only.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, MXFP4-direct ruling and W8 AutoKernel re-point.
 - [TQ3 quantization evaluation](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — LittleBit monitor entry.
-- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — INF37-IQ-4 layout record.
+- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-IQ-4 layout record.
 - [Retire IQ4_XS-uniform progress note](../progress/2026-10/2026-10-20-retire-iq4xs-uniform.md) — recipe revision, census and the epoch consequence.
 - [DS41 1017 swap progress note](../progress/2026-10/2026-10-20-ds41-1017-swap.md) — operator rulings.
 
@@ -1128,7 +1128,7 @@ Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#
 - **Arm P2 closed as no-ship, artifact reclaimed.** The 101 GB `q38fn-armP2.gguf` was reclaimed 2026-10-27; the recipe (job.sh, pins, VERDICT.md) is preserved in the repo and the file can be rebuilt from it. Verdict unchanged: PPL 2.979 vs UD 2.9868 but speed gate FAIL (pp5 -6.12%, tg128 -8.85%).
 - **MI210 Q8 dequant-GEMV Item C retargeted (operator, 2026-10-28):** Qwen3.5-122B is deprecated and no longer serves; the IQ2_XXS kernel work is format-level and is to be re-measured on a current IQ-format target (DS41 or Q38FN low-bit lanes, or the GPU-resident IQ role), not the 122B.
 
-Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) · [mi210-q8-dequant-gemv-roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) · [2026-10-29 codex refactor](../progress/2026-10/2026-10-29-codex-refactor-01a16fc3.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
+Sources: [iqk-iquant-enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) · [mi210-q8-dequant-gemv-roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) · [2026-10-29 codex refactor](../progress/2026-10/2026-10-29-codex-refactor-01a16fc3.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

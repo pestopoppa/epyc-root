@@ -4510,7 +4510,7 @@ negatives so the planner cannot omit inconvenient history.
 | **P0.3 normalized scoreboard** | Correct derived view, but must not be a hand-maintained source of truth | Derive from journal events and capability rows; bind every row to regime and candidate identity |
 
 **GPU families.** Current anchors: [MI210 speed-campaign summary](../completed/mi210-speed-campaign-summary.md),
-[Q8/GEMV roofline](mi210-q8-dequant-gemv-roofline.md),
+[Q8/GEMV roofline](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline),
 [graph techniques](gemma-challenge-kernel-techniques-v7.md),
 [acceleration index](inference-research-index.md).
 
@@ -4534,7 +4534,7 @@ negatives so the planner cannot omit inconvenient history.
 non-GEMM findings that the original G1–G13 audit had no measurement to see. Their common premise: on this
 device **fp16 already attains 62.6% of spec bandwidth and vLLM-ROCm attains 69.2%**, so the memory system
 is not the limiter and the entire collapse is down the quant ladder — the ladder and its spec-vs-achievable
-calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](mi210-q8-dequant-gemv-roofline.md).
+calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline).
 
 | New family | Audit verdict | Seed disposition |
 |---|---|---|

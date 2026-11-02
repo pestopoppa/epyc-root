@@ -1858,7 +1858,7 @@ problem" (which is how they get closed by mistake), never left as prose a planne
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5-3a
   (sealed correctness-only provider), C5-4 (bound-quality classes), and the fp32/fp16 identity
   correction.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) —
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) —
   INF37-IQ-1: the latent-residency binding and its AK-ADM-1 enforcement hand-off.
 
 ## Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar

@@ -244,6 +244,10 @@
    "target": "mi210-serving-program.md",
    "track": "mi210-big-model-and-acceleration-roadmap"
   },
+  "mi210-q8-dequant-gemv-roofline.md": {
+   "target": "agentic-rocm-kernel-authoring.md",
+   "track": "mi210-q8-dequant-gemv-roofline"
+  },
   "minddr-deep-research-mode.md": {
    "target": "model-evaluation-queue.md",
    "track": "minddr-deep-research-mode"
@@ -623,6 +627,10 @@
   "INF-34": {
    "target": "INF-22",
    "track": "mi210-big-model-and-acceleration-roadmap"
+  },
+  "INF-37": {
+   "target": "INF-03",
+   "track": "mi210-q8-dequant-gemv-roofline"
   },
   "INF-40": {
    "target": "EVL-21",

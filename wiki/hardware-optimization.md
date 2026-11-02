@@ -279,7 +279,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-a
 ### Source References (2026-10-22 wrap-up sweep 10)
 
 - [handoffs/active/autokernel-all-devices-all-dimensions.md](../handoffs/active/autokernel-all-devices-all-dimensions.md) — AKX-ALL-LB4 iqk FA gates, AKX-ALL-27/27b width replay, LB2 production surfaces
-- [handoffs/active/mi210-q8-dequant-gemv-roofline.md](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — INF37-LB1 MMVQ ISA audit
+- [handoffs/active/agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-LB1 MMVQ ISA audit
 - [handoffs/active/autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CH-LB1 GDN BF16-state guard, V11-086 oracle diagnosis
 - [docs/reference/kernel-manifests/llama-v11-manifest.md](../docs/reference/kernel-manifests/llama-v11-manifest.md) — V11-102 PEND row for iqk CPU FA
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — akx-all-27b-run outcome and V11 driver context
@@ -312,7 +312,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-a
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md)
 - [docs/reference/kernel-manifests/llama-v11-manifest.md](../docs/reference/kernel-manifests/llama-v11-manifest.md)
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md)
-- [handoffs/active/mi210-q8-dequant-gemv-roofline.md](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)
+- [handoffs/active/agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
 
 ## Compiled Update — 2026-10-21 (wrap-up sweep 3: candidate C consolidation, HIP guard bands, rounding-step reading)
 
@@ -344,7 +344,7 @@ Cross-refs: [Inference Serving](inference-serving.md), [MoE Optimization](moe-op
 
 ### Source References (2026-10-20 sweep 2)
 
-- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — reframing, quant ladder, achievable-bandwidth basis.
+- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — reframing, quant ladder, achievable-bandwidth basis.
 - [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — row counts, IN rows, at-risk list.
 - [Speech v2 release manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md) — must-carry gfx90a patches, threadpool work.
 - [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md) — GPU lane context.
@@ -949,7 +949,7 @@ wall timeout, and bounded output.
 
 - [a10_iq2_vgpr_compiler_ab_20260915.md](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md) — the static A/B tables, method traps and addendum.
 - [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md) — AK-QL-2b / AK-QL-7 / AK-QL-8.
-- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — INF37-IQ-2 / INF37-IQ-3.
+- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-IQ-2 / INF37-IQ-3.
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the #19984 correction.
 - [rocm-upgrade-checklist.md](../docs/runbooks/rocm-upgrade-checklist.md) — unpin gates.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — SC84 write-side hook (VB-VGPR-STATIC; filed as SC76).
@@ -970,7 +970,7 @@ licensed sources.
 ### Source References (2026-09-15)
 
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — GEAK gfx90a coverage, the LDS bank-topology measurement, the fp16 retarget, and the profiler-null result.
-- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the 62.6% fp16 attainment denominator and the gfx90a low-precision datapath facts.
+- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the 62.6% fp16 attainment denominator and the gfx90a low-precision datapath facts.
 
 ## Compiled Update — 2026-09-08 (pm, R23-58): the THP shim is CPU-ONLY — a launch recipe is PER-SURFACE, so a commit hash plus one recipe still under-specifies a kernel
 
@@ -1443,7 +1443,7 @@ The mechanism was fully on disk before the ladder ran — the Q8_0 roofline work
 - [A10 quant-ladder occupancy knee](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung batch-1 table, the batched sweep, the suspected B=8 outlier, the GiB/GB unit hazard, and the full caveat list.
 - [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-research-loop.md) — the re-aimed lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census.
 - [A10 IQ2 VGPR lever](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the static per-quant table and the extraction method that made the prediction four days early.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the "achieved-bandwidth/occupancy, NOT dequant-compute" prior, the 1433.3 GB/s measured achievable denominator, and the latent-exposure tripwire for the day an IQ-format role becomes GPU-resident.
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the "achieved-bandwidth/occupancy, NOT dequant-compute" prior, the 1433.3 GB/s measured achievable denominator, and the latent-exposure tripwire for the day an IQ-format role becomes GPU-resident.
 
 ## Compiled Update — 2026-08-14 (GPU-lane batch): KV placement dominates the decode number, op-offload prefill is a free 2.3×, and the KV-quant "alive at long context" hypothesis is dead
 
@@ -1682,7 +1682,7 @@ An evidence-authority audit draws a line this page must respect: the rows above 
 
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — G15/G17/G18 closures, async-prefetch replays, AK-BH baseline-honesty arms, AK-LN-2 split-depth calibration, and the evidence-authority audit.
 - [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 saturation replications, the Q4_K MMQ root cause and 172/172 fix, and the RVP-C5-R historical expert replay.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the stream-K retirement, Item A/B/C rungs, and the IQ2 fancy-SIMD one-row narrowing.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the stream-K retirement, Item A/B/C rungs, and the IQ2 fancy-SIMD one-row narrowing.
 - [`mi210-mfma-compute-bound-paths.md`](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — the synthetic WGM16 proxy optimum that the real MMQ sweep inverts.
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) and [`gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — the K28 attribution and its closure.
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the LDS solver mis-stamp correction and its merge-note provenance.
@@ -2452,7 +2452,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **GDN recurrence is the aggregate/batch-scaling bottleneck and is qwen35-specific — but the GDN-MFMA kernel is KILLED by profile for decode.** GDN grows 2%→19.5% of decode across B1→B32 (absolute ×39); the qwen35 frontdoor batch-scales only 3.4× (B1→B32) vs gemma-MoE 5.9× / gemma-dense 8.6×. rocprofv2 on `gated_delta_net_cuda` @B=32 decode: **MemUnitBusy 65% vs VALUBusy 16%, MfmaUtil 0%, ~42% occupancy, ~130 GB/s of 1638** — memory-unit + occupancy/latency-bound (recurrent-state ~106 MB/disp, 48% L2 hit), NOT compute-bound. An MFMA kernel targets compute headroom that isn't the bottleneck → **do not build it for decode**; the real GDN lever is occupancy + recurrent-state traffic/layout. (Prefill is more ALU-active, VALUBusy ~50% — separate open question.) Tooling: rocprof v1 reads SQ/TA counters as zero on this box; **rocprofv2 required**.
 - **KV-quant does NOT help the weight-dominated MoE frontdoor.** q8_0-KV vs f16-KV on Qwen3.6-35B-A3B Q8 @98k context saves only ~0.94 GB VRAM and changes decode t/s by nothing (±1.5% noise); the ~36 GB Q8 weights dominate and ~15 GB is free even @128-way → VRAM is not the binding constraint and the **~430 t/s aggregate @128-way @80k plateau is compute/BW-bound**. Stay on f16-KV. (Alive in a KV-heavy regime — a dense model, or single-stream long-context where KV rivals the weights.) **UPDATE — SCOPED → DEFER (2026-07-05, findings-05c L14): no dedicated GPU run.** Resolving the "alive regime" against the deployed roster: only the **qwen35 ~1/4 full-global attention layers @ single-stream 32–64k** qualify — **GDN keeps KV O(1)**, **gemma SWA bounds it**, and **aggregate is weight-dominated**, so **3 of 4 resident model classes see ~0 payoff**. CPU precedent shows the **dequant cast COSTS throughput** (+9% wall / −30% gen). No deployed role needs it. Decision: run only as a cheap **~2–4h rider** on a *future* dense-full-global long-context role, to close the `[U]` with data — **it is a max-context / VRAM characterization, not a speed lever.**
 - **Throughput-vs-context: the "hybrid stays flat" hypothesis is FALSIFIED (SWA confound).** 1k→64k single-stream decode degrades qwen35 hybrid **−22.3%** vs gemma-4 **−7.9%** — the OPPOSITE of expected. Root cause (GGUF metadata): gemma-4 uses sliding-window attention (bounded per-layer KV → context-capped decode) while qwen35's ~1/4 attention layers are full-global (unbounded KV growth). GDN context-independence is real, but the full-global attention layers dominate degradation; a clean GDN-flatness test needs a non-SWA dense baseline (gemma-4 is not one). qwen35's full-global attention is a recall advantage, not a pure loss.
-- **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md)).
+- **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md)).
 - **CAMPAIGN OUTCOME (updated 2026-07-04 EOD — speed exhausted; frontier moved to capability).** Every kernel/occupancy bet has now been driven to a verdict, and the honest conclusion is convergence. Single-stream dense-Q8 banked **+37% (40.4 t/s)** — MMVQ +17.4%, nwarps 2→4 +4.6% (`5dc116130`), async-prefetch +3.3% (`7c28056b7`) — then **fused-prefetch, megakernel (Pass-2: MLP/memory floor — HIP graphs already capture the only +5.9% launch headroom), n-gram-GPU-spec, MFMA, and the L3-MoE MMQ-occupancy rewrite were all ruled out WITH DATA** (the last: *built* then falsified — Q8-MMQ at B=32 is **grid-limited** (104 WGs = 1/CU), not LDS-limited, and bf16 wins on native-MFMA not occupancy). Aggregate is solved by **config, not kernels**: **`-fa 1` is a WIN for MoE aggregate** (B≥8, +16–43%, peak **bf16+`-fa1` @B128 = 1548 t/s** — the *opposite* of dense-27B where FA hurt) and **bf16-for-aggregate / Q8-for-single-stream** (crossover B≈16–24). L20 GDN-occupancy scoped **NO-GO** (theoretical occupancy already 100% — nothing to free; the one modest lever is bf16 recurrent-state, ~+11%@B32, drift-gated). **Load-bearing meta-finding: a lever's sign is set by {arch × substrate × batch} — never carry a spec-dec / quant / FA verdict across dense↔MoE or GPU↔CPU.** With speed at bedrock, the frontier moved to **capability**: the CDNA2 sub-4-bit MMQ path is already numerically correct (`MUL_MAT_ID 789/789` across IQ2/IQ3/IQ1), so IQ2 unlocks **Qwen3.5-122B-A10B @ ~38 GB fully GPU-resident** — the residency bet's real prize (GLM-5.2 ~238 GB still won't fit). Top-line: [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) · [lever × model-category matrix (findings-05c)](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix).
 - **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-08-11): the historical four-phase scaffold is reconciled into the system-wide AutoKernel loop.** Design history: [mi210-kernel-rnd-loop-proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md); current owner: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md).
 
@@ -2633,7 +2633,7 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [MI210 big-model residency + acceleration roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) -- the two-axis strategic thread (Axis A residency quant-ladder IQ2→offload/REAP→GLM-5.2 754B endgame; Axis B GPU drafter-farm with quant-asymmetric self-spec N5-free-by-construction); corrected architect baseline ~18–21 t/s (not 4.3); expert-routing-skew profile as the shared offload/REAP gating experiment
 - [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) -- completed top-line campaign verdict: single-stream dense-Q8 +37% banked, aggregate solved by config (bf16-for-aggregate / Q8-for-single-stream, `-fa 1` win for MoE), all occupancy rewrites (L3-MoE, L20) structurally dead, frontier moved speed→capability
 - [MI210 batch-1 latency-wall greenfield (prefetch→megakernel)](../handoffs/completed/mi210-batch1-latency-wall-greenfield.md) -- the 62→100% batch-1 MLP floor; async-prefetch `raw.buffer.load.lds` +3.3% (MemUnitStalled −62%, CDNA2 ceiling); megakernel RULED OUT (HIP graphs already capture the only +5.9% launch headroom; AMD Fleet arXiv 2604.15379 is the CDNA3/4 precedent, no CDNA2 megakernel exists); rocBLAS GEMV is dense-only (dequant-to-fp16 = fatal bytes-moved for BW-bound decode)
-- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) -- the batch-1 dequant gap decomposition (Q4_K 34%→Q8 50%→fp16 62.5% roofline); custom dequant-GEMV worth authoring only for a batch-1 *latency* role (GPU drafter); "self-compensates when served batched" holds for K-quants only — see the 2026-08-16 occupancy-knee section (IQ3_XXS/IQ2_XXS plateau at 0.77/0.88 of IQ4_XS at B=32)
+- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) -- the batch-1 dequant gap decomposition (Q4_K 34%→Q8 50%→fp16 62.5% roofline); custom dequant-GEMV worth authoring only for a batch-1 *latency* role (GPU drafter); "self-compensates when served batched" holds for K-quants only — see the 2026-08-16 occupancy-knee section (IQ3_XXS/IQ2_XXS plateau at 0.77/0.88 of IQ4_XS at B=32)
 - [MI210 MFMA compute-bound paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md) -- GDN-MFMA killed by profile for decode (MemUnitBusy 65% vs VALUBusy 16%, MfmaUtil 0% — memory/occupancy-bound, not compute); MFMA targets headroom that isn't the bottleneck
 - [MI210 kernel-R&D loop proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md) -- completed historical scaffold; the current system-wide owner is AutoKernel
 - [Progress 2026-07-03 — MI210 Qwen3.6-27B speed campaign](../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md) -- the running kernel/quant/regime campaign log (MMVQ→MMQ verify-dispatch, nwarps, async-prefetch, fused-prefetch/megakernel/L3-MoE-occupancy falsifications, bf16-for-aggregate crossover)
@@ -3908,7 +3908,7 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the amended GEAK scoping, the K1–K12 banded ceiling, and the 2026-08-03 index-backed leads
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the side-loaded profiler toolchain, per-block collection limits and the counter taxonomy
 - [`handoffs/completed/mi210-mfma-compute-bound-paths.md`](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — the fragment-layout identity, the arch-independent HipKittens lessons and the vendor ridge-point error
-- [`handoffs/active/mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the attainment ladder behind the fp16 re-target and its calibration caveat
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the attainment ladder behind the fp16 re-target and its calibration caveat
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §9 — the freshness appendix this sweep executes
 ## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
 
@@ -4368,7 +4368,7 @@ dispatches against 45,021 in a real decode.
 - [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
   governed prefill receipt, non-governed decode capture, per-kernel shares, and the VGPR/occupancy
   correction with both template instantiations side by side.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the IQ2
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the IQ2
   tool-boundary row, its closure caveats, and the derived VGPR-pressure lever.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — commit hashes, residency samples, receipt
   paths, and the runner-defect chain.
@@ -4418,7 +4418,7 @@ Verify a tool exists before trusting its negative result.
   table, the four IQ2_XXS instantiations, the disassembly diff, and the extraction method.
 - [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
   the decode timings the occupancy question hangs off.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the filed
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the filed
   `v_perm_b32` re-expression task and its experimental-branch constraint.
 
 ## Compiled Update — 2026-08-12c (ROCm 6.3 wheels on a 6.2 host; the mixed-runtime rule)
@@ -6491,7 +6491,7 @@ A separate fused-decoder investigation found a correctness blocker: Flash-Next f
 
 The Oct 3 CPU quant research review separates measured speed from unresolved quality: local uniform IQ4_XS was +15.2% at N=1 before BIOS and +10.5% under clean placement versus UD-IQ4_XS, while the production MTP serving shape and file quality were still unmeasured. The DS41 lossless MXFP4 expert repack was estimated at at most +2%, below the stated 3.4–4.5% admission floor; it was retained as a quality option, not a decode-speed result. Follow-up IQ*_K/KS self-quant work for Q38FN is a gated proposal with download, port and quality requirements, not an executed measurement. The companion variant survey is a recommendation/derivation over that same evidence, not an independent benchmark.
 
-Sources: [CPU fused decoder blocks](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks), [Llama.cpp DSA contribution](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).
+Sources: [CPU fused decoder blocks](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks), [Llama.cpp DSA contribution](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).
 
 ## Incremental synthesis — 2026-10-07: Q38FN on 2x DGX Spark is physics parity with our CPU champion
 
@@ -6972,7 +6972,7 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 - [R23-62 estimand and contention audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md)
 - [E5 batched-decode placement evidence](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 - [MI210 lever matrix correction](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix)
-- [MI210 Q8 GEMV correction](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)
+- [MI210 Q8 GEMV correction](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
 - [CH-31 paired diagnostic](../artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/)
 - [C6 Q4 diagnostics](../artifacts/compute/inf65-c6-diagnostic-20261102/COMBINED-SUMMARY.json)
 - [Champion aggregate handoff](../handoffs/active/autokernel-champion-aggregate.md)

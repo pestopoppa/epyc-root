@@ -346,7 +346,7 @@ MoE-IQ2 remains our worst roofline rung by roughly 2× (10.3% of spec / 11.8% of
 - [`artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) — both 122B captures, the four-variant occupancy correction, the `-n 0` governed-runner defect, and the timing distribution.
 - [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the four IQ2_XXS instantiations, the Q8_0-on-the-same-wrapper control at 25 VGPR, and the zero-spill constraint.
 - [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the dense-model ladder whose direction the MoE attribution agrees with, and its caveat list.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the MoE-IQ2 10.3%/11.8% rung, the latent-exposure tripwire, and the open kill-criterion probe on whether ~10% is an architectural floor.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 10.3%/11.8% rung, the latent-exposure tripwire, and the open kill-criterion probe on whether ~10% is an architectural floor.
 
 ## Compiled Update — 2026-08-14: full sub-4-bit residency beats partial expert offload on the 122B, and the CPU-MoE tail is the whole cost
 
@@ -375,7 +375,7 @@ Op coverage was HIP-clean — no fallback warnings. **The monotone decline in N 
 
 - [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — the M2 `-ncmoe` sweep, the M2b full-IQ2-residency comparison, and the explicit "quality, not speed" open question.
 - [fable5 window-2 findings-05c — lever × category matrix](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) — the L15 sub-4-bit lever this confirms, and the MoE-category framing it sits in.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the MoE-IQ2 roofline rung the residency argument runs against.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the MoE-IQ2 roofline rung the residency argument runs against.
 
 ## Compiled Update — 2026-08-12: the expert-count fork patch is unnecessary — stock v9 already does it, and does it cheaper
 

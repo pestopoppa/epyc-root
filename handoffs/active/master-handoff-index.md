@@ -85,9 +85,9 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-AKU-A2 | Approve versioned native A2 intent/one-shot permit/diagnostic terminal semantics (HIGH: transition validator, 17 upstream). Preserves legacy events and forbids replayed intent from authorizing relaunch; no measurement-policy change or fabricated witness passes. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-04f | 2026-09-09 |
 | OP-AKU-REFRESH | Approve explicit versioned profile-request and PROFILE_VERIFIED successor records with original predecessor/settlement joins (HIGH: actor event validator, 16 upstream). Required for autonomous profile renewal; preserves legacy refusal, original validity, production freeze and measurement policy. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-06i | 2026-09-09 |
 | OP-AKU-U3 | Select the variance-only RUNTIME_CONFIG keep rule: recommend log downside-semideviation ratio, paired-bootstrap one-sided 95% upper bound <0, n≥14/arm, with throughput LCB above −session floor; or name another estimand/test/N/mean guard. This is scientific admission authority, not implementation detail. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → U3-SEED, S3-AKU-04 | 2026-09-15 |
-| OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
+| OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) INF-03 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](mi210-serving-program.md) P2-5j | 2026-08-11 |
-| OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
+| OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) INF-03 | 2026-08-11 |
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [model-evaluation-queue.md](model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) EVL-02 | 2026-08-30 |
@@ -140,7 +140,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 31 | 1039 | 59 | 2026-07-29 |
+| inference-research | 30 | 1039 | 59 | 2026-07-29 |
 | pipeline-integration | 1 | 74 | 3 | 2026-11-02 |
 | research-evaluation | 12 | 762 | 16 | 2026-10-21 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
