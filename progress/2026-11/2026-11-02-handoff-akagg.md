@@ -95,3 +95,7 @@ CPU pidfd-bound request capture, C3 pre-grant model custody and CH-27 private-st
 ## 09:49Z — Prepare C3 and CPU calibration launchers
 
 C3 model custody, CPU owning request capture and CH-27 store reconstruction are being integrated; no measurement or successor row claimed.
+
+## 09:50Z — Complete inference launcher preparation
+
+GPU model custody, CPU request capture and CH-27 isolated store remain in implementation; no row published.
