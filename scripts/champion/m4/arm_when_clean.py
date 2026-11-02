@@ -4,7 +4,7 @@
 It creates no grant, touches no peer process and exits if row state changes.
 The M4 native entry independently refuses other llama workloads at each launch.
 """
-import fcntl, json, os, subprocess, sys, time
+import fcntl, hashlib, json, os, subprocess, sys, time
 from pathlib import Path
 flags='/mnt/raid0/llm/tmp/compute-flags';rid='inf22-m4-aa-np4-r6-20261102'
 root=Path('/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r6-20261102')
@@ -37,14 +37,22 @@ def clean_sample():
 def main():
     lock=(root/'run/arm-watcher.lock').open('a')
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    held=Path(flags)/'dryrun'/rid/'OWNER-CLEAN-WAIT.row.json'
+    ready=Path(flags)/'ready'/f'{rid}.json'
+    expected='2899f50a8bb31a9c3dfa205070356ae0edf157ee67cd74109f034169fb77d828'
     clean=0
     while True:
-        rows=rowflow.rows(flags);row=rows.get(rid)
-        if not row:
-            print('EXIT row absent',flush=True);return 1
-        state=rowflow.status(flags,rid,rows)['state']
-        if state!='grantable':
-            print('EXIT row state',state,flush=True);return 0 if state in ('armed','running','done') else 1
+        if ready.exists() or not held.is_file():
+            print('EXIT ownership changed',flush=True);return 1
+        if (Path(flags)/'grants'/f'{rid}.grant').exists():
+            print('EXIT unexpected grant',flush=True);return 1
+        if hashlib.sha256(held.read_bytes()).hexdigest()!=expected:
+            print('EXIT held row changed',flush=True);return 1
+        row=json.loads(held.read_text())
+        passed=rowflow.load_json(rowflow.pass_path(flags,rid))
+        launcher=row['launcher']['path']
+        if not passed or passed.get('launcher_sha256')!=row['launcher']['sha256'] or rowflow.sha256(launcher)!=row['launcher']['sha256']:
+            print('EXIT qualification or launcher changed',flush=True);return 1
         try:
             busy=clean_sample()
         except (OSError,subprocess.SubprocessError,RuntimeError) as exc:
@@ -56,11 +64,11 @@ def main():
             else:
                 clean+=1
                 if clean>=2:
-                    # status revalidates the current PASS and launcher digest;
-                    # no grant is written here.
-                    if rowflow.status(flags,rid,rows)['state']!='grantable':continue
-                    pid,msg=rowflow.arm_one(flags,rid,row)
-                    print('ARM',pid,msg,flush=True);return 0 if pid else 1
+                    # Link is atomic and exclusive; until this point the keeper
+                    # cannot see the row. Only the keeper arms and grants it.
+                    os.link(held,ready)
+                    held.unlink()
+                    print('RELEASED row to deterministic keeper',flush=True);return 0
         time.sleep(10)
 
 if __name__=='__main__':raise SystemExit(main())
