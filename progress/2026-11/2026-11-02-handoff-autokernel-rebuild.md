@@ -127,3 +127,7 @@ Filed autokernel-r22-5-v10-cpu-compile-20261102-v1 as fail: granted run rc=1, fu
 ## 11:27Z — File incomplete R23-3 serving comparison
 
 Filed autokernel-r23-3-v10-serving-20261102 inconclusive: rc=1; granted run produced nine baseline observations, three prompts times three repeats, and no observations for the three remaining arms. An earlier smoke produced two baseline observations. The prescribed four-arm comparison is incomplete, so no correction or relative speed claim follows. Preserved observation copies in /mnt/raid0/llm/tmp/autokernel-rebuild/r233-filed-evidence; R23-3 stays open. Failure repair is delegated.
+
+## 11:30Z — Requalify R18-D private v10 prefill calibration
+
+R18-D private v10 smoke previously failed after 300 seconds before the first measured pair; it requires two warmup and two measured invocations before emitting a unit. Republished the existing candidate; its smoke was still running at this boundary, so no PASS or calibration is claimed. The publisher uses smoke_timeout_s rather than dryrun_timeout_s; prepared the scratch spec with smoke_timeout_s=1500 for a retry if the current attempt fails, and registered PASS/FAIL events. R18-A remains blocked on a full experimental build and unchanged zero-difference symbol comparison; P6 and P7.3a were already complete. No predicate or production kernel changed.
