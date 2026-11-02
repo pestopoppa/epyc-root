@@ -108,6 +108,8 @@ path exists.
 The claim rests on source at the exact lines cited; SW-2 below closes the loop cheaply when a lane
 is free.
 
+NG5 source-by-source scope and remaining provenance gaps: [2026-11-02 audit](../../docs/reports/ng5-provenance-audit-20261102.md). The audit is partial and does not close NG5.
+
 ## Outstanding Tasks (priority order)
 
 - [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
@@ -202,6 +204,7 @@ is free.
   - 2026-11-01: published `sr6-qwen36-width-diagnostic-20261101`, a prospective private CPU 15-prompt greedy `draft-mtp`-only 4/3/4-repeat observation. Its distinct recipe does not reproduce or confirm the old composed/sampling result and cannot authorize a registry change. Keeper qualification and execution pending; see the packet under declared scratch for the exact rule. [no-belief: row preparation only]
   - 2026-11-02: `sr6-qwen36-width-diagnostic-20261101` ended rc0 with 45/45 responses and 15/15 matched token-identical pairs. Width 3 versus 4 gained 11.57% aggregate (code 18.40%, RAG 2.16%, prose 12.05%), below the respective within-window A/A floors of 18.14%, 21.19%, 24.21% and 16.52%. This single-window greedy `draft-mtp` diagnostic is inconclusive, does not confirm the historical composed/sampling result, and does not authorize a registry edit. [Retained raw evidence](../../docs/reports/sr6-qwen36-width-diagnostic-20261101/ANALYSIS.json). [belief: cc]
   - 2026-11-02 preparation: a fresh comparison design and fail-closed paired-analysis prototype are retained in [SR-6 successor preparation](../../docs/reports/sr6-successor-preparation/DESIGN.md); seven synthetic tests pass. The worker, launcher, source/runtime pins, exposure audit, rendered-token repetition metrics and statistical decision rule remain necessary before a row can be published. This is preparation, not a result. [no-belief: preparation only]
+  - 2026-11-02 further preparation: a model-free schedule planner and scoped prompt/exposure audit now accompany the design, with bounded tests. These are not a native inference worker or proof that inventories, tokenization or source seals are complete; no actual prompt set has been audited. Runtime execution, grant lifecycle, native capture, fresh inputs and a predeclared statistical decision rule remain before publication. [no-belief: preparation only]
 - [ ] **SR-7 — explain why the 122B VIOLATES acceptance-falls-with-n_max** (acceptance *rises* at `n_max=6`). Working hypothesis: a composed recipe shifts the branch mix between proposers as the budget grows, so the single-proposer monotonicity assumption does not survive composition. This matters because that assumption is load-bearing for any autopilot search over `n_max`.
   - Corpus and repeated-5-gram fraction for the historical 122B composed-recipe observation: not recorded in this handoff; consult the original evidence before reuse.
   - *(Retarget 2026-10-28 (operator): Qwen3.5-122B deprecated. Test whether monotonicity survives composition on a served

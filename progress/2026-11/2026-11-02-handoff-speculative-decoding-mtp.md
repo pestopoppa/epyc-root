@@ -47,3 +47,7 @@ Published the reconciliation after merging concurrent origin/main updates; the e
 ## 09:32Z — Reconcile stale dispatch guidance and next inference preparation
 
 Published the reconciliation after merging concurrent origin/main updates; the earlier wrap-up push was rejected as non-fast-forward. No inference row published.
+
+## 09:35Z — Prepare SR-6 planning and NG5 provenance audit
+
+Advanced SR-6 with a model-free four-arm plus repeat schedule planner, scoped supplied-inventory prompt audit, source-discovery pointers and bounded tests; all 18 preparation tests pass. No real prompt set was audited and these components do not implement a native worker, verify runtime or tokenizer provenance, establish grant lifecycle, or supply the statistical decision rule. A fresh row is not yet publishable. NG5 scoped audit catalogs missing corpus-specific fractions and registry fields requiring source tracing; NG5 remains open. Legacy blocked INF-50 predecessor and stderr task remain superseded/completed as already filed. No measurement or row was published.
