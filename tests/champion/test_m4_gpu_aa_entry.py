@@ -232,3 +232,20 @@ def test_champion_binding_refuses_ref_movement(monkeypatch):
     assert mod.check_champion(aa)=='c'*40
     monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw:types.SimpleNamespace(stdout='d'*40+'\n'))
     with pytest.raises(RuntimeError,match='moved'): mod.check_champion(aa)
+
+
+def test_targeted_watch_audit_rejects_missing_or_live(tmp_path,monkeypatch):
+    import os
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    spec=importlib.util.spec_from_file_location('aa_targeted',ROOT/'scripts/champion/m4/targeted_smoke.py')
+    target=importlib.util.module_from_spec(spec);spec.loader.exec_module(target)
+    wd=tmp_path/'watch';wd.mkdir()
+    plan={'cells':{'x':{'watch_result_path':str(wd/'watch-result.json')}}}
+    with pytest.raises(FileNotFoundError):target.audit_watches(plan)
+    import json
+    (wd/'watch-result.json').write_text(json.dumps({'status':'closed','containment_empty':True}))
+    (wd/'server-pids.txt').write_text('')
+    assert target.audit_watches(plan)==1
+    birth=Path('/proc/self/stat').read_text().rsplit(')',1)[1].split()[19]
+    (wd/'server-pids.txt').write_text(f'{os.getpid()} {birth}\n')
+    with pytest.raises(RuntimeError,match='still alive'):target.audit_watches(plan)
