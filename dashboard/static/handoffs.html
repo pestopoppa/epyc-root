@@ -261,15 +261,18 @@
   section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   section.graph .gsw.dot{border-radius:50%}
-  section.graph #graph-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 18px;align-items:start;
-    padding:8px 10px;border:1px solid var(--border,#30363d);border-radius:6px;font-size:11.5px}
+  section.graph #graph-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 16px;align-items:start;
+    padding:6px 10px;border:1px solid var(--border,#30363d);border-radius:6px;font-size:12px;line-height:1.3}
   section.graph .lgrp .lt{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--muted)}
   section.graph .lgrp .lb{display:flex;flex-direction:column;gap:2px;color:var(--text,inherit)}
-  section.graph .lgrp.lidx .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  section.graph .lgrp.lidx .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
   section.graph .lgrp.lnode .lb{flex-direction:column}
   section.graph .lgrp.lcounts{grid-column:1/-1}
   section.graph .li{display:flex;align-items:center;gap:6px;min-width:0}
-  section.graph .lsw{flex:none;overflow:visible}
+  section.graph .lsw{flex:none;overflow:visible;display:inline-block;max-width:46px;max-height:16px;width:auto;height:16px;background:none;border:0}
+  section.graph .lsw[width="46"]{width:46px}
+  section.graph .lsw[width="18"]{width:16px}
+  section.graph .lsw[width="14"],section.graph .lsw[width="12"]{width:14px;height:14px}
   section.graph .lsw g,section.graph .lsw path.q{stroke:var(--bg,#0d1117);stroke-width:.6}
   section.graph .lcnt{color:var(--muted)}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
@@ -281,10 +284,15 @@
   section.graph .gzoom button:hover{border-color:#58a6ff}
   section.graph svg{touch-action:none}
   section.graph svg.grabbing{cursor:grabbing}
-  section.graph svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
-  section.graph .gtip{position:static;margin:6px 0 0 auto;width:min(440px,100%);box-sizing:border-box;min-height:132px;
-    background:var(--panel,rgba(13,17,23,.85));border:1px solid var(--border,#30363d);border-radius:6px;padding:8px 10px;
-    font-size:12px;line-height:1.45;overflow:hidden}
+  section.graph svg:not(.lsw){width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
+  section.graph .gtipbox{position:absolute;right:10px;bottom:10px;z-index:25;width:280px;max-width:calc(100% - 20px);
+    box-sizing:border-box;background:var(--panel,#161b22);background:color-mix(in srgb,var(--panel,#161b22) 88%,transparent);
+    border:1px solid var(--border,#30363d);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  section.graph .gtipbox.collapsed .gtip{display:none}
+  section.graph .gtipbox .gtip-x{position:absolute;top:2px;right:4px;z-index:1;background:none;border:0;color:var(--muted);
+    cursor:pointer;font-size:14px;line-height:1;padding:2px 4px}
+  section.graph .gtip{box-sizing:border-box;max-height:220px;overflow:auto;padding:8px 22px 8px 10px;
+    font-size:12px;line-height:1.45}
   section.graph .gtip.hint{color:var(--muted)}
   section.graph .gtip b{font-size:12px}
   section.graph .gtip .tid{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
@@ -423,7 +431,8 @@
         <span class="muted">ctrl/⌘+scroll to zoom · drag to pan · double-click to fit</span>
       </div>
       <svg id="graph-svg" viewBox="0 0 1200 780" role="img" aria-label="handoff reference graph"></svg>
-      <div id="graph-tip" class="gtip hint">Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.</div>
+      <div class="gtipbox" id="graph-tipbox"><button class="gtip-x" id="gtip-x" title="collapse / expand info panel" aria-label="toggle info panel">&minus;</button>
+      <div id="graph-tip" class="gtip hint">Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.</div></div>
     </div>
   </section>
 <section id="pipeline-sec"><h2>Pipeline: compute loop and session loop</h2>
@@ -1309,6 +1318,7 @@ async function loadGraph(){
   try{ g = await getJSON("/api/handoff_graph"); }
   catch(e){ setBadge("#graph-badge","stale"); return; }
   const svg=$("#graph-svg"), tip=$("#graph-tip");
+  { const bx=$("#graph-tipbox"), xb=$("#gtip-x"); if(xb&&bx) xb.onclick=()=>{ const c=bx.classList.toggle("collapsed"); xb.textContent=c?"+":"\u2212"; }; }
   // Pipeline overlay: per-handoff blocker class + live activity from /api/pipeline (same nodes, no second graph).
   const PIPE={};
   try{ const pd=await getJSON("/api/pipeline");
