@@ -1,0 +1,96 @@
+--- a/src/repl_document.py
++++ b/src/repl_document.py
+@@ -28,6 +28,9 @@
+ from src.repl_environment import REPLEnvironment, REPLConfig
+ 
+ 
++_POOL = object()
++
++
+ @dataclass
+ class DocumentContext:
+     """Document context for REPL access."""
+@@ -72,6 +75,8 @@
+         tool_registry: Any | None = None,
+         script_registry: Any | None = None,
+         role: str | None = None,
++        document_search_enabled: bool = False,
++        document_search_embedder: Any = _POOL,
+         **kwargs,
+     ):
+         """Initialize the document REPL environment.
+@@ -98,6 +103,10 @@
+             **kwargs,
+         )
+         self.document_context = document_context
++        self._document_search_enabled = document_search_enabled
++        self._document_search_embedder = document_search_embedder
++        self._document_search_index = None
++        self._document_search_index_text = None
+ 
+         # Add document functions to globals
+         self._add_document_functions()
+@@ -227,6 +236,9 @@
+         Returns:
+             List of matching section info dicts.
+         """
++        if self._document_search_enabled:
++            return self._search_document_pointers(query)
++
+         self._exploration_calls += 1
+ 
+         query_lower = query.lower()
+@@ -253,6 +265,53 @@
+         self._exploration_log.add_event("search_sections", {"query": query}, results)
+         return results
+ 
++    def _search_document_pointers(self, query: str) -> list[dict[str, Any]]:
++        """Experimental search; returned offsets are consumed with peek(n, offset=...)."""
++        from types import SimpleNamespace
++        from src.repl_environment.context_search import (
++            ContextSearchIndex, QUERY_MAX_CHARS, SEARCH_DEFAULT_K, pool_dense_embedder,
++        )
++
++        if not isinstance(query, str) or not query.strip():
++            raise ValueError("search_sections: query must be a non-empty string")
++        # peek without a file switches to bundle.page(), so document offsets do
++        # not name its source or pass through its pull accounting. Refuse rather
++        # than return unreadable or unaccounted pointers.
++        if self.context_bundle is not None:
++            raise ValueError("document search unavailable with a context bundle")
++        parts = [f"{'#' * s.level} {s.title}\n{s.content}\n" for s in self.document_context.sections]
++        # to_searchable_text joins each per-section trailing newline with a
++        # separator newline. The caller may prepend a question/injection note.
++        text = "\n".join(parts)
++        if not text or not self.context.endswith(text):
++            raise ValueError("document text does not match the context suffix")
++        if self._document_search_index is None or self._document_search_index_text != text:
++            sections = [SimpleNamespace(name=str(i + 1), text=part) for i, part in enumerate(parts)]
++            self._document_search_index = ContextSearchIndex(sections)
++            self._document_search_index_text = text
++        base = len(self.context) - len(text)
++        starts = []
++        pos = base
++        for part in parts:
++            starts.append(pos)
++            pos += len(part) + 1
++        hits, meta = self._document_search_index.search(
++            query[:QUERY_MAX_CHARS], SEARCH_DEFAULT_K, section=None,
++            embedder=(pool_dense_embedder() if self._document_search_embedder is _POOL
++                      else self._document_search_embedder),
++        )
++        results = []
++        for hit in hits:
++            section = int(hit["section"])
++            start = starts[section - 1] + hit["start"]
++            end = starts[section - 1] + hit["end"]
++            results.append({**hit, "section": section, "start": start, "end": end,
++                            "line": self.context.count("\n", 0, start) + 1,
++                            "source": "context", "read": "peek"})
++        self._exploration_calls += 1
++        self._exploration_log.add_event("search_sections", {"query": query}, results)
++        return results
++
+     def _document_info(self) -> dict[str, Any]:
+         """Get document metadata.
+ 
