@@ -1,0 +1,7 @@
+rc=75 time=2026-11-02T00:17:10Z reason=disk-floor
+job_id=df2-6bbis-gpu-20261101
+owner=handoff-df2-20261101
+step=job-run
+estimated_wall_s=10800
+started=2026-11-02T00:11:32Z
+regions=mi210_0,184-191
