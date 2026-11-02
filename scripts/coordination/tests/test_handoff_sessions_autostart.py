@@ -27,6 +27,8 @@ if str(_COORD) not in sys.path:
 import backlog_gen as bg  # noqa: E402
 import handoff_sessions as hs  # noqa: E402
 
+_REAL_ENSURE_LANE = hs.ensure_lane  # fixtures stub ensure_lane; the lane tests call the real one
+
 
 def _w(p, txt):
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -69,9 +71,12 @@ class AutoStartFixture(unittest.TestCase):
 
         self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
         self._lane.start()
+        self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
+        self._disk.start()
 
     def tearDown(self):
         self._lane.stop()
+        self._disk.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out, cwd=None):
@@ -737,3 +742,46 @@ class SA23Tests(_DSHBase):
         st2 = {"starts": [hs.time.time()] * 5}
         hs.start_watchdog(self.flags, st2, hs.time.time())
         self.assertNotIn("watchdog_alarm", st2, "a produced ready row is an effect: no alarm")
+
+
+class LaneDiskTests(_DSHBase):
+    def test_disk_gate_blocks_new_lanes(self):
+        self.reg["auto_start"] = True
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "free_gib", lambda path="/": 150.0):
+            reg, _ = self.dispatch()
+        self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
+        self.assertIn("AUTO-START-THROTTLED disk: 150 GiB free < 170; no new lanes", self.log_text())
+
+    def test_sparse_lane_excludes_artifacts_and_reap_removes_clean_landed_lane(self):
+        import subprocess, tempfile
+        repo = tempfile.mkdtemp()
+        subprocess.run(["git", "-C", repo, "init", "-q", "-b", "main"], check=True)
+        _w(os.path.join(repo, "artifacts", "big.bin"), "x" * 1000)
+        _w(os.path.join(repo, "scripts", "a.py"), "print(1)\n")
+        g = lambda *a: subprocess.run(["git", "-C", repo, "-c", "user.email=t@t", "-c", "user.name=t", *a], check=True, capture_output=True)
+        g("add", "."); g("commit", "-q", "-m", "base"); g("remote", "add", "origin", repo); g("fetch", "-q", "origin")
+        lanes = tempfile.mkdtemp()
+        with patch.object(hs, "LANES_DIR", lanes), patch.object(hs, "ROOT", repo):
+            d, st = _REAL_ENSURE_LANE("x", repo=repo)
+            self.assertEqual(st, "created")
+            self.assertTrue(os.path.exists(os.path.join(d, "scripts", "a.py")))
+            self.assertFalse(os.path.exists(os.path.join(d, "artifacts", "big.bin")), "artifacts/ excluded from the sparse lane")
+            self.assertTrue(hs.lane_clean_and_landed(d))
+            # reap: a suspended session's clean, landed lane is removed (no --force); recreated on the next ensure_lane
+            reg = {"sessions": {"x": {"handoff": "handoffs/active/x.md", "status": "suspended", "pid": None}}}
+            hs.reap_lanes(self.flags, reg, repo)
+            self.assertFalse(os.path.exists(d))
+            self.assertIn("LANE-REAPED x", self.log_text())
+            d, st = _REAL_ENSURE_LANE("x", repo=repo)
+            self.assertEqual(st, "created")
+            # a dirty lane is kept and logged once
+            _w(os.path.join(d, "scripts", "a.py"), "print(2)\n")
+            hs.reap_lanes(self.flags, reg, repo); hs.reap_lanes(self.flags, reg, repo)
+            self.assertTrue(os.path.exists(d))
+            self.assertEqual(self.log_text().count("LANE-DIRTY x"), 1)
+            # a live session's lane is never touched
+            reg["sessions"]["x"]["pid"] = os.getpid()
+            with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
+                hs.reap_lanes(self.flags, reg, repo)
+            self.assertTrue(os.path.exists(d))
