@@ -15,3 +15,7 @@ Continued preparing the AKX-ALL-8 v3 successor under /mnt/raid0/llm/tmp/akxall8-
 ## 10:13Z — AKX-ALL-8 floor successor integration
 
 Continued integrating the model-free AKX-ALL-8 floor successor under /mnt/raid0/llm/tmp/akxall8-v3-owner-20261102/. Full resource proof, the independent quarter probe and packet binding remain under review; no row has been published and no inference or qualification performed.
+
+## 10:15Z — Prepare independent inference row specifications
+
+Dispatched bounded preparations for AK-Q38FN-64K-FLOOR, AKX-ALL-3, and AKX-AUTO-10; completion paths registered for subsequent integration. AKX-ALL-8 successor still requires an equivalent combined GPU reservation/lock witness and an actual incremental measurement record; no floor or qualification claimed.
