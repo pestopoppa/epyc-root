@@ -40,6 +40,21 @@ def _sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _verify_recipe_env(argv: list, environment: dict) -> None:
+    if not isinstance(environment, dict) or set(environment) - {'GGML_FA_SPLIT_KV', 'GGML_NOHUGEPAGE_PROCESS'}:
+        raise ProjectionError('invalid bound recipe environment')
+    if not argv or argv[0] != 'env':
+        raise ProjectionError('native environment prefix missing')
+    for name, value in environment.items():
+        assignments = [x for x in argv if isinstance(x, str) and x.startswith(name + '=')]
+        unsets = sum(argv[i:i+2] == ['-u', name] for i in range(len(argv) - 1))
+        if value is None:
+            if assignments or unsets != 1:
+                raise ProjectionError('required environment unset missing')
+        elif not isinstance(value, str) or assignments != [name + '=' + value] or unsets:
+            raise ProjectionError('recipe environment differs')
+
+
 def _verify_bound_image_request(sample: dict, scenario: dict, capture_root: Path, prompt: str) -> None:
     """Reopen the producer's exact request and verify its image bytes and prompt."""
     expected = scenario.get('image_sha256')
@@ -143,6 +158,9 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
         if (native.get('role') in ('worker_vision', 'vision_escalation')
                 and 'image_path' in bound_scenario and not bound_scenario['image_path']):
             raise ProjectionError('vision scenario lacks a bound image')
+        recipe_env = bound_scenario.get('recipe_env')
+        if recipe_env is not None:
+            _verify_recipe_env(argv, recipe_env)
         bound_context = bound_scenario.get('server_context_size')
         if bound_context is not None and (type(bound_context) is not int or arg('-c') != str(bound_context)):
             raise ProjectionError('bound server context mismatch')
