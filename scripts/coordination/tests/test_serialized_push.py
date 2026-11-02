@@ -1245,3 +1245,128 @@ def test_held_lease_pid_line_says_gone_is_expected():
     text = describe_holder(rec)
     pid_line = next(line for line in text.splitlines() if line.startswith("  pid"))
     assert "normal for a held lease" in pid_line
+
+
+# ---------------------------------------------------------------------------
+# 9. KERNEL LOCK (D9, 2026-11-01): flock decides, the JSON label only names
+# ---------------------------------------------------------------------------
+
+_HOLDER_SRC = r"""
+import sys, time
+sys.path.insert(0, sys.argv[1])
+from scripts.coordination.serialized_push import acquire, release
+acquire(sys.argv[2], sys.argv[3], sys.argv[4], "/child")
+print("ACQUIRED", flush=True)
+time.sleep(float(sys.argv[5]))
+"""
+
+
+def _spawn_holder(lock_dir, key, agent, hold_s=60.0):
+    proc = subprocess.Popen([sys.executable, "-c", _HOLDER_SRC, str(REPO_ROOT), str(lock_dir),
+                             key, agent, str(hold_s)], stdout=subprocess.PIPE, text=True)
+    assert proc.stdout.readline().strip() == "ACQUIRED"
+    return proc
+
+
+def test_sigkilled_holder_releases_and_next_acquire_succeeds_immediately(tmp_path):
+    work = _plain_repo(tmp_path)
+    lock_dir, key = tmp_path / "locks", repo_key(work)
+    proc = _spawn_holder(lock_dir, key, "handoff-codex-gen")
+    proc.kill()
+    proc.wait(timeout=10)
+    rec = acquire(lock_dir, key, "ws58", str(work))   # no --force-release needed
+    assert rec["agent"] == "ws58" and rec["kernel_lock"] is True
+    journal = [json.loads(ln) for ln in
+               (lock_dir / "displacements.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert journal[-1]["event"] == "STALE-LABEL-REPLACED"
+    assert journal[-1]["displaced"]["agent"] == "handoff-codex-gen"
+    assert release(lock_dir, key, "ws58") is True
+
+
+def test_live_holder_is_never_displaced(tmp_path):
+    work = _plain_repo(tmp_path)
+    lock_dir, key = tmp_path / "locks", repo_key(work)
+    proc = _spawn_holder(lock_dir, key, "mainA")
+    try:
+        before = lock_path(lock_dir, key).read_bytes()
+        for _ in range(3):
+            with pytest.raises(LockHeldError) as exc:
+                acquire(lock_dir, key, "mainB", str(work))
+            assert "mainA" in str(exc.value)
+        with pytest.raises(LockHeldError):          # not even by its own roster id
+            acquire(lock_dir, key, "mainA", str(work))
+        with pytest.raises(NotHolderError) as exc:
+            force_release(lock_dir, key, "mainB", "mainA")
+        assert exc.value.condition == "holder-live"
+        assert lock_path(lock_dir, key).read_bytes() == before
+    finally:
+        proc.kill()
+        proc.wait(timeout=10)
+
+
+_PUSHER_SRC = r"""
+import sys, time
+sys.path.insert(0, sys.argv[1])
+from scripts.coordination.serialized_push import acquire, release, LockHeldError
+lock_dir, key, agent, log = sys.argv[2:6]
+for _ in range(3):
+    while True:
+        try:
+            acquire(lock_dir, key, agent, "/p")
+            break
+        except LockHeldError:
+            time.sleep(0.005)
+    with open(log, "a") as fh:
+        fh.write(f"{agent} in {time.monotonic():.6f}\n")
+    time.sleep(0.03)
+    with open(log, "a") as fh:
+        fh.write(f"{agent} out {time.monotonic():.6f}\n")
+    release(lock_dir, key, agent)
+"""
+
+
+def test_concurrent_pushers_serialize(tmp_path):
+    work = _plain_repo(tmp_path)
+    lock_dir, key = tmp_path / "locks", repo_key(work)
+    log = tmp_path / "critical.log"
+    procs = [subprocess.Popen([sys.executable, "-c", _PUSHER_SRC, str(REPO_ROOT), str(lock_dir),
+                               key, f"p{i}", str(log)]) for i in range(4)]
+    for p in procs:
+        assert p.wait(timeout=60) == 0
+    events = [ln.split() for ln in log.read_text().splitlines()]
+    assert len(events) == 4 * 3 * 2
+    inside = None
+    for agent, what, _ in events:   # strictly alternating in/out by one agent
+        if what == "in":
+            assert inside is None, f"{agent} entered while {inside} was inside"
+            inside = agent
+        else:
+            assert inside == agent
+            inside = None
+
+
+def test_hold_keeper_survives_cli_exit_and_dies_with_its_parent(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir, key = tmp_path / "locks", repo_key(work)
+    token = tmp_path / "lease.token"
+    common = ["--agent", "mainA", "--repo", str(work), "--lock-dir", str(lock_dir),
+              "--lock-name", "wrapup", "--token-file", str(token)]
+    # parent = this pytest process: the lease outlives the CLI call
+    assert _cli(*common, "--acquire").returncode == EXIT_OK
+    with pytest.raises(LockHeldError):
+        acquire(lock_dir, key, "mainB", str(work), mode="hold", name="wrapup",
+                token_file=tmp_path / "b.token")
+    assert _cli(*common, "--release").returncode == EXIT_OK
+    rec = acquire(lock_dir, key, "mainB", str(work), name="wrapup")   # free at once
+    release(lock_dir, key, "mainB", name="wrapup")
+    # parent = a shell that exits right after the CLI: the keeper lets go by itself
+    sh = subprocess.run(["sh", "-c", " ".join(
+        [sys.executable, str(SCRIPT), *common, "--acquire"])], capture_output=True, text=True)
+    assert sh.returncode == EXIT_OK, sh.stderr
+    import time as _t
+    deadline = _t.monotonic() + 10
+    while lock_path(lock_dir, key, "wrapup").exists() and _t.monotonic() < deadline:
+        _t.sleep(0.1)
+    rec = acquire(lock_dir, key, "mainB", str(work), name="wrapup")
+    assert rec["agent"] == "mainB"
+    assert "HOLD-PARENT-DIED" in (lock_dir / "displacements.jsonl").read_text()
