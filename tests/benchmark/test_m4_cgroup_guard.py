@@ -130,3 +130,17 @@ def test_real_watcher_sigkill_drains_its_group(tmp_path):
             watch.kill(); watch.wait(timeout=5)
         if cg and cg.exists():
             guard.drain(cg); cg.rmdir()
+
+
+def test_real_watcher_success_disarms_only_after_empty(tmp_path):
+    import json
+    out = tmp_path / 'output'; out.mkdir()
+    grant = tmp_path / 'grant'; grant.write_text('authorized')
+    stop = tmp_path / 'stop'; hold = tmp_path / 'hold'; hold.mkdir()
+    helper = tmp_path / 'entry.py'
+    helper.write_text('''import os, sys, time\nimport watch\nenv=dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup', M4_OUTER_OWNER_PID=sys.argv[1], M4_OUTER_OWNER_BIRTH=sys.argv[2])\nraise SystemExit(watch.run([sys.executable,'-c','pass'],sys.argv[3],sys.argv[4],sys.argv[5],time.time()+20,sys.argv[6],env))\n''')
+    result = subprocess.run([sys.executable, str(helper), str(os.getpid()), str(guard.birth(os.getpid())), str(grant), str(stop), str(hold), str(out)], env=dict(os.environ, PYTHONPATH=str(MODULE.parent)), capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stderr
+    recorded = json.loads((out/'watch-result.json').read_text())
+    assert recorded['status'] == 'closed' and recorded['containment_empty'] is True
+    assert not Path(json.loads((out/'containment.json').read_text())['path']).exists()
