@@ -103,3 +103,7 @@ Reviewed the prospective RPUCG snapshot patch and recorded its provenance and co
 ## 00:52Z — Review controller roster draft and identify RPUCG policy state mismatch
 
 Consumed the C5-8 roster review: the existing discovery-only patch passed 13 tests and 2 subtests but does not implement controller loops or planner-memory mapping, so C5-8 remains open. RPUCG upstream review identified a concrete schema mismatch: the policy stores per-chain per-node visits and per-chain expansion counts, while the prospective snapshot draft collapses those dimensions. Updated the review and corrected the earlier speculative arithmetic observation; no policy-state equality is inferred. Dispatched bounded work on the schema review, roster mapping and capture hook discovery; completion events registered. No inference row published or compute run.
+
+## 00:53Z — Consume upstream RPUCG state review and prepare schema correction
+
+Consumed the pinned SimpleTES RPUCG state report and recorded exact source digests and the checkpoint/partial-hook caveats in artifacts/agentic-rocm/rpucg-snapshot-review-20261102.md. Dispatched separate bounded work to repair the snapshot schema with tests and identify an authenticated producer boundary; completion events registered. No selector A/B, row publication or compute run is claimed.
