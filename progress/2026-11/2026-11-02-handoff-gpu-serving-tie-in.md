@@ -43,3 +43,7 @@ Found and reproduced a P5 helper defect: a report can mark a case resolved while
 ## 10:12Z — Fix contradictory P5 gold-report coverage
 
 Fixed the P5 binding helper to reject submitted, empty-patch or incomplete fields that contradict its fully scoped bound cases, and reject boolean counters. Twelve model-free tests passed including contradictory-field controls. Independent review identified native subset reports with broader submitted or incomplete ID sets; the README now explicitly says these are refused rather than rewritten. This validates report consistency only, not the P5 scorer or a gold execution. GitNexus impact was unavailable because the lane is unindexed and CPU admission refused indexing.
+
+## 10:14Z — Prepare P5 native report and harness repairs
+
+Identified two distinct native SWE-bench subset report conventions and commissioned explicit selected-report support with fail-closed partition checks. Separately found that research agentic_swe_harness.apply_one_block reports success when DockerEnv.write_file returns false; a reviewable research patch and model-free negative controls are being prepared without modifying the research tree. Neither item establishes gold scorer validation.
