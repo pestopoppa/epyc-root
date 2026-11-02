@@ -1,0 +1,9 @@
+# EVL-34 successor prerequisites — 2026-11-02
+
+The v8 custody successor remains unqualified and is not publishable. The canonical v15 engine exists, but the successor launcher intentionally exits 78 and has no canonical engine invocation. Rowflow static parsing refuses it. No publication, grant, inference, or qualification was attempted.
+
+`PREREQUISITES.json` records the current native runtime and manifest dependencies. Both the sealed interpreter and the launcher’s final freeze pathname are absent in this container namespace; the launcher enters the host through /proc/1/root, where an unprivileged check was denied, so their host presence is unverified. The recovered byte-identical freeze is already prepared outside grants at `../codex3-row-repairs-20261101/requirements-freeze.txt` (SHA-256 `f133fc7fe76c72e24d294dfa1bee242d70375841959782ce78b80841cd0f9111`). Copying it alone cannot restore the sealed interpreter or imported implementation inventory.
+
+A safe successor requires checking the sealed runtime and final freeze deployment in the host execution context and restoring them if absent, verifying every native source digest and LOCAL-SOURCE-INVENTORY, then adapting the launcher to the canonical engine with the original native control and unchanged entry-qualification gate. The native control must produce its own fresh evidence; historical qualification cannot be carried over. The scorer, exposure boundary, pilot inputs and original entry requirements were left intact. Do not publish a launcher that knowingly fails before its native control.
+
+This artifact is preparation evidence only. It does not establish delegation, quality, overhead, or pilot readiness. GitNexus reported this worktree unindexed; no shared index was rebuilt. Changes are confined to this new artifact directory.
