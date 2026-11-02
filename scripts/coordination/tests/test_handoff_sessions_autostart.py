@@ -792,3 +792,25 @@ class LaneDiskTests(_DSHBase):
             with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
                 hs.reap_lanes(self.flags, reg, repo)
             self.assertTrue(os.path.exists(d))
+
+
+class WrappedGateTests(_DSHBase):
+    def test_reaped_lane_passes_dirty_lane_gets_one_resume(self):
+        import subprocess, tempfile
+        lanes = tempfile.mkdtemp()
+        with patch.object(hs, "LANES_DIR", lanes):
+            e = {"session_id": "t", "last_end": "x", "cwd": os.path.join(lanes, "h-gone")}
+            self.assertTrue(hs.wrapped(e), "a reaped lane (clean + landed by construction) has nothing unwrapped")
+            d = os.path.join(lanes, "h-dirty"); os.makedirs(d)
+            subprocess.run(["git", "-C", d, "init", "-q", "-b", "main"], check=True)
+            _w(os.path.join(d, "f.txt"), "1")
+            subprocess.run(["git", "-C", d, "-c", "user.email=t@t", "-c", "user.name=t", "add", "."], check=True)
+            subprocess.run(["git", "-C", d, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "b"], check=True)
+            subprocess.run(["git", "-C", d, "remote", "add", "origin", d], check=True); subprocess.run(["git", "-C", d, "fetch", "-q", "origin"], check=True)
+            _w(os.path.join(d, "f.txt"), "2")  # dirty tracked edit
+            e = {"session_id": "t", "last_end": "x", "cwd": d}
+            self.assertTrue(hs.wrapped(e), "one wrap-up resume for a dirty lane")
+            self.assertFalse(hs.wrapped(e), "then refused until it wraps")
+        e = {"last_wrapup": None}
+        hs.log_unwrapped(self.flags, "s", e); hs.log_unwrapped(self.flags, "s", e)
+        self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)
