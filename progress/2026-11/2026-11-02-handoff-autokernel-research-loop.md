@@ -163,3 +163,7 @@ Consumed fd-row-bridge-final.txt. In the inspected rowflow path no existing pre-
 ## 01:13Z — Recover lifecycle assessment publication
 
 The prior wrap-up created commit 533362e84fa2 with the descriptor lifecycle assessment but serialized_push returned rc=4 without publishing it. This boundary retries publication through the standard wrapper; pending preparation and registered completion events remain as recorded.
+
+## 01:14Z — Advance native logits capture and model descriptor changes
+
+Consumed three reports. Candidate examples/rowexact/rowexact.cpp already captures full-vocabulary aligned single and batched logits and the CPU backend exposes an IQK FA process counter, but current program emits aggregates and does not bind candidate authority, actual ubatch or dispatch witness to the capture. Requested a focused model-free source prototype. Reviewed proposed opt-in sealed model FD forwarding in research microbench: current Popen closes it, and the current GitNexus index is stale so impact remains unknown; requested a patch and focused disposable tests for review without modifying research. Disposable fs-verity probes returned ENOTSUP on the model ext4 filesystem and ENOTTY on surveyed overlay/tmpfs mounts; this is scoped to tested roots. Requested other immutable options. No model execution, row publication, or box completion.
