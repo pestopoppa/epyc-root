@@ -86,13 +86,15 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
 
 ## T5 — D7 decision-package delivery
 
-- [ ] **BRF-T5-1** [non-inference] Write the 158 per-handoff option sheets (options + tradeoffs + recommendation) from the task manifest, in fold order. Done when: all 158 sheets are committed under `docs/design/backlog-refactor-2026-11/`.
+- [x] **BRF-T5-1** [non-inference] Write the 158 per-handoff option sheets (options + tradeoffs + recommendation) from the task manifest, in fold order. Done when: all 158 sheets are committed under `docs/design/backlog-refactor-2026-11/`.
+  ✅ 2026-11-02 `4d6ea0b3d`: all 158 accounted for in `decision-packages/` (26 destination packages + `index.json`, fold-list-1a order): 119 delivered; 39 excluded with reasons (26 decided/issued authorization, 11 merged, 2 not an operator choice). [no-belief: tooling]
 - [ ] **BRF-T5-2** [roll-up] Non-dispatchable parent. Deliver each package via the decision tool at its fold; record the answer in the
   owning handoff. A dismissed question pauses only its own item.
 
 ## T6 — staged lint enforcement (D6)
 
-- [ ] **BRF-T6-1** Bind `task_lint.py migrate` in the fold commit gate and `task_lint.py publish` in rowflow publish.
+- [x] **BRF-T6-1** Bind `task_lint.py migrate` in the fold commit gate and `task_lint.py publish` in rowflow publish.
+  ✅ 2026-11-02 `4d6ea0b3d`: publish leg in `publish_row.py` (installed to `compute-flags/bin/rowflow/`, cmp 3/3); migrate leg = the exact command in the gate section above. Tests 9/9 new, rowflow 58 pass + 1 known failure. [no-belief: tooling]
 - [x] **BRF-T6-2** [non-inference] Add `task_lint.py` to `index_state.py --check` as warn-only. `3e2b99bb5` — TASK-LINT column on stderr, exit code untouched. [no-belief: tooling]
 - [ ] **BRF-T6-3** [non-inference] Make the lint blocking in `--check` and in wrap-up once BRF-T7-1 is ticked. Done when: `--check` exits non-zero on an untagged lint failure (test).
 

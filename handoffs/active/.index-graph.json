@@ -3799,7 +3799,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T18:34:04Z",
+  "generated_at": "2026-11-02T18:36:32Z",
   "nodes": [
     {
       "age_days": 95,
@@ -9008,15 +9008,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 8,
-      "dispatchable": 15,
+      "closed": 10,
+      "dispatchable": 13,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-02",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 15,
+      "open": 13,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
