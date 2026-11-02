@@ -131,3 +131,7 @@ Completed a controlled S0 reproducer: the retained guard returned 32 lock-lost r
 ## 11:30Z — Published the A2 400K negative-control GPU row after its smoke passed.
 
 - YARN-E1-A2: published `yarn-e1-a2-gpu-20261102-v1`; publisher smoke passed on mi210_0 and CPUs 88–91 (rc 0, one unit, 2026-11-02T11:29:51Z). Result path `/mnt/raid0/llm/tmp/yarn/a2/results/RESULT.json`; scientific verdict remains pending the granted run. Jet-Long CPU build preflight exposed an invalid `df` option combination; its isolated helper is being repaired.
+
+## 11:31Z — Submitted DCA paired row for smoke; publisher queued it because the GPU was busy.
+
+- YARN-DCA-E1: submitted `yarn-e1-dca-pair-gpu-20261102-v1`; publisher queued smoke because the GPU was busy. No smoke PASS or row readiness is claimed; result awaits the allocator. A2 review confirmed the earlier smoke PASS and existing publication. Jet-Long build preflight found incompatible df options; isolated repair is in progress.
