@@ -5,3 +5,5 @@
 Extract the archive into an empty directory, then run `sha256sum -c /path/to/SHA256SUMS` from that directory. For deterministic replay, import the extracted `agg.py`, set its `R` to the extracted `runs` directory, then call `summ('R_P')`, `summ('R_C3')`, and `paired('R_P','R_C3')`. On the rescued rows these reproduce 12.0184 and 20.5891 tokens/s (60 eligible prompt rows per arm), and the mean paired ratio 1.7151 (60 pairs). The per-prompt bootstrap is the producer's original estimator; it does not cure launch dependence or the documented contention. The archived `REPORT.md` §5.1–5.2 identifies the separate window-1 pristine 12.366 value and §6 discusses contamination.
 
 See [AUDIT.md](AUDIT.md) for the launch-order, contention and estimand replay and a prospective diagnostic design.
+
+The archived `thp-control/` files preserve historical sampler data used solely for the unratified 48-thread accounting proposal; see [PROPOSED-48-ACCOUNTING.md](PROPOSED-48-ACCOUNTING.md).
