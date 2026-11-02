@@ -29,6 +29,17 @@ mismatched provenance is UNKNOWN. The optional MTP table consumes hash-bound
 historical rows and labels its arithmetic ratio as descriptive across different
 cache protocols; it supplies no controlled comparison or promotion authority.
 
+`OwnedHttpTransport` and `NativeTokenizerAttestor` use the captured child's
+explicit loopback listener and verify native process/socket identity before and
+after both response and `/tokenize` calls. Tokenization receipts retain the raw
+server response and bind its token IDs to exact output text, PID/birth, model,
+tokenizer and an external native-identity evidence digest. `run_attested_plan`
+requires this transport and matching plan/recipe digests before the first
+launch. One consistent process identity per arm and distinct arm processes are
+required at scoring. Fake servers exercise the path end to end; they do not
+prove a production model or tokenizer identity. The independently supplied
+model/tokenizer, membership and mode verifiers still need real native evidence.
+
 `test_q38_t7_isolated_http.py` starts two **fake** HTTP server subprocesses in
 sequence, routes real local HTTP calls, and verifies independent warmups,
 matching body hashes, correct arm modes, refusal on mismatched mode or cache
@@ -52,7 +63,7 @@ ownership attestations remain required external proofs; neither current cgroup
 membership nor a fake test establishes exclusive custody or effective mode.
 
 There is deliberately no production CLI, concrete cgroup-placement or mode
-attestor, production transport or durable journal. Before target use, implement and qualify those
+attestor, native model-identity verifier or durable journal. Before target use, implement and qualify those
 against the host's child/descendant ownership, process and socket identity,
 recipe/binary/model/library binding, STOP and drain, durable no-redraw exposure,
 native cache receipts and rowflow contracts. `Runtime`'s injected verifiers

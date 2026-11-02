@@ -32,20 +32,25 @@ class FakeRuntime:
                     'finish': 'stop', 'token_ids': [1, 2, 3], 'timings': timings,
                     'stream_complete': True, 'raw_stream': raw,
                     'raw_stream_sha256': hashlib.sha256(raw.encode()).hexdigest(),
-                    'tokenizer_provenance': self.proof('reason\nanswer')}
+                    'tokenizer_provenance': self.proof('reason\nanswer', server)}
         content = '2-4-1-9-ORCHID; Mbeki Larsen' if original.QUESTION in text else '<answer>5</answer>'
         payload = {'choices': [{'message': {'content': content}, 'finish_reason': 'stop'}], 'timings': timings}
         raw = json.dumps(payload)
         return {'http_status': 200, 'body': payload, 'raw_body': raw,
                 'raw_body_sha256': hashlib.sha256(raw.encode()).hexdigest(),
                 'token_ids': [1, 2, 3], 'timings': timings,
-                'tokenizer_provenance': self.proof(content)}
+                'tokenizer_provenance': self.proof(content, server)}
 
     @staticmethod
-    def proof(text):
+    def proof(text, server):
+        token_raw = json.dumps({'tokens': [1, 2, 3]})
         return {'method': 'retokenized_text', 'text_sha256': hashlib.sha256(text.encode()).hexdigest(),
                 'tokenizer_sha256': 'a' * 64,
-                'token_ids_sha256': hashlib.sha256(b'[1,2,3]').hexdigest()}
+                'token_ids_sha256': hashlib.sha256(b'[1,2,3]').hexdigest(),
+                'model_sha256': 'b' * 64, 'pid': 123 if server == 'drafted' else 124, 'birth': '456',
+                'identity_evidence_sha256': 'c' * 64, 'server_url': 'http://127.0.0.1:1234',
+                'tokenizer_response': token_raw,
+                'tokenizer_response_sha256': hashlib.sha256(token_raw.encode()).hexdigest()}
 
 
 class PayloadTest(unittest.TestCase):
@@ -53,7 +58,7 @@ class PayloadTest(unittest.TestCase):
         p = 'nonce and facts: 2-4-1-9-ORCHID and Mbeki Larsen'
         self.plan = successor.build_plan([{'id': 'p1', 'suite': 's', 'prompt': 'question'}],
                                          [successor.FrozenContext(2000, 20, (p + '1', p + '2'), 5)],
-                                         tokenizer_sha256='a' * 64)
+                                         tokenizer_sha256='a' * 64, model_sha256='b' * 64)
         self.gt = {'p1': {'expected': '5', 'scoring_method': 'exact_match'}}
         base = {'binary': 'bound', 'model': 'bound', 'shape': {'np': 1}}
         self.recipes = {'drafted': dict(base, draft_model='draft', draft_options={'type': 'dflash'}),
@@ -119,6 +124,11 @@ class PayloadTest(unittest.TestCase):
         first = next(row for row in wrong_tokenizer['records'] if row['kind'] == 'measure')
         first['response']['tokenizer_provenance']['tokenizer_sha256'] = 'b' * 64
         self.assertEqual(successor.score(self.plan, wrong_tokenizer, self.gt)['status'], 'UNKNOWN')
+        wrong_process = copy.deepcopy(run)
+        drafted = next(row for row in wrong_process['records'] if row['kind'] == 'measure'
+                       and row['arm'] == 'drafted' and row['key'] == 'B/2000/decode/1')
+        drafted['response']['tokenizer_provenance']['pid'] = 987
+        self.assertEqual(successor.score(self.plan, wrong_process, self.gt)['status'], 'UNKNOWN')
         dirty = copy.deepcopy(self.plan)
         dirty.pairs[0].body['max_tokens'] = 201
         self.assertEqual(successor.score(dirty, run, self.gt)['status'], 'UNKNOWN')
@@ -140,7 +150,7 @@ class PayloadTest(unittest.TestCase):
         raw = json.dumps(drafted['response']['body'])
         drafted['response']['raw_body'] = raw
         drafted['response']['raw_body_sha256'] = hashlib.sha256(raw.encode()).hexdigest()
-        drafted['response']['tokenizer_provenance'] = FakeRuntime.proof('<answer>4</answer>')
+        drafted['response']['tokenizer_provenance'] = FakeRuntime.proof('<answer>4</answer>', 'drafted')
         report = successor.score(self.plan, run, self.gt)
         self.assertEqual(report['status'], 'COMPLETE')
         self.assertEqual(report['verdict']['correctness'], 'FAIL')
@@ -159,6 +169,12 @@ class PayloadTest(unittest.TestCase):
         self.assertEqual(run['cleanup'], {'drafted': True})
         self.assertTrue(all(arm == 'drafted' for arm, _, _ in rt.sent))
         self.assertEqual(successor.score(self.plan, run, self.gt)['status'], 'UNKNOWN')
+
+    def test_attested_entry_rejects_unowned_transport_before_launch(self):
+        rt = FakeRuntime()
+        with self.assertRaisesRegex(ValueError, 'owned native transport'):
+            successor.run_attested_plan(rt, self.recipes, self.plan)
+        self.assertEqual(rt.sent, [])
 
 
 if __name__ == '__main__':
