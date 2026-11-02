@@ -16,6 +16,8 @@ class SupervisorTest(unittest.TestCase):
         self.assertEqual((r['status'],r['stdout'],r['stderr'],r['returncode']), ('completed',b'input',b'ok',0))
         self.assertTrue(r['cleanup'])
         self.assertEqual(r['input_bytes_written'], 5)
+        self.assertLessEqual(r['started_monotonic_s'], r['ended_monotonic_s'])
+        self.assertAlmostEqual(r['elapsed_s'], r['ended_monotonic_s'] - r['started_monotonic_s'])
 
     def test_nonzero(self):
         self.assertEqual(self.run_child('raise SystemExit(3)')['status'], 'nonzero_exit')
@@ -27,6 +29,7 @@ class SupervisorTest(unittest.TestCase):
     def test_pre_cancel(self):
         r = self.run_child('raise SystemExit(0)', stopped=lambda: True)
         self.assertEqual(r['status'], 'cancelled'); self.assertIsNone(r['returncode'])
+        self.assertIsNone(r['started_monotonic_s']); self.assertIsNone(r['ended_monotonic_s'])
 
     def test_mid_cancel_reaps(self):
         import time

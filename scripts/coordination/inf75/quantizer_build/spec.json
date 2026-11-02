@@ -1,0 +1,18 @@
+{
+  "id": "inf75-quantizer-7cdd7c97-20261102",
+  "owner": "handoff-autokernel-cross-workload-keep-gate",
+  "launcher": "/mnt/raid0/llm/worktrees/mains/h-autokernel-cross-workload-keep-gate/scripts/coordination/inf75/quantizer_build/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/inf75-quantizer-7cdd7c97-20261102/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Accept the build-only result only if rc=0, the full source commit is 7cdd7c97bed538a85c3b75331b6cdb369e5b2adc, captured source/toolchain/binary hashes verify and ggml linkage succeeds; this does not establish model identity or complete AKX-P1c.",
+  "estimate_s": 2400,
+  "handoff_task": "INF-75:AKX-P1c",
+  "priority_rank": 7,
+  "scratch_root": "/mnt/raid0/llm/tmp/inf75-quantizer-7cdd7c97-20261102",
+  "keep": ["RESULT.json", "runs/**"],
+  "dryrun_timeout_s": 2700,
+  "dryrun_native_result": true,
+  "ram_gib": 32
+}

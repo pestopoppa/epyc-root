@@ -9,7 +9,7 @@ import receipts
 
 def result(**overrides):
     value = dict(status='completed', cleanup=True, returncode=0, input_bytes_written=5,
-                 elapsed_s=0.25, stdout=b'[1, 2, 30]\n', stderr=b'private')
+                 elapsed_s=0.25, started_monotonic_s=2.0, ended_monotonic_s=2.25, stdout=b'[1, 2, 30]\n', stderr=b'private')
     value.update(overrides)
     return value
 
@@ -32,6 +32,7 @@ class ReceiptTests(unittest.TestCase):
         self.assertEqual((f['status'], f['verdict'], f['validated_token_count']),
                          ('completed', 'synthetic_input_completed', 3))
         self.assertEqual(q['verdict'], 'excluded_qualification')
+        self.assertEqual((f['tokenizer_started_monotonic_s'], f['tokenizer_ended_monotonic_s']), (2.0, 2.25))
         self.assertEqual(json.loads((full / 'unit.jsonl').read_text()), f)
         self.assertTrue((full / 'complete.json').exists())
         self.assertEqual(os.stat(full).st_mode & 0o777, 0o700)

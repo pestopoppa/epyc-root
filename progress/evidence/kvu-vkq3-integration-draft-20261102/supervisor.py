@@ -20,7 +20,8 @@ def supervise(argv, input_bytes, env, *, stopped, timeout_s, stdout_cap=8_000_00
         raise ValueError('timeout and output caps must be positive')
     started = time.monotonic()
     if stopped():
-        return {'status': 'cancelled', 'elapsed_s': 0.0, 'cleanup': True,
+        return {'status': 'cancelled', 'elapsed_s': 0.0, 'started_monotonic_s': None,
+                'ended_monotonic_s': None, 'cleanup': True,
                 'returncode': None, 'input_bytes_written': 0, 'stdout': b'', 'stderr': b''}
     stdout = bytearray()
     stderr = bytearray()
@@ -105,7 +106,9 @@ def supervise(argv, input_bytes, env, *, stopped, timeout_s, stdout_cap=8_000_00
                     raise CleanupError('captured child did not reap') from exc
         else:
             child.wait()
-        result = {'status': status, 'elapsed_s': time.monotonic()-started,
+        ended = time.monotonic()
+        result = {'status': status, 'elapsed_s': ended-started,
+                  'started_monotonic_s': started, 'ended_monotonic_s': ended,
                   'cleanup': child.poll() is not None, 'returncode': child.returncode,
                   'input_bytes_written': input_bytes_written,
                   'stdout': bytes(stdout), 'stderr': bytes(stderr)}
