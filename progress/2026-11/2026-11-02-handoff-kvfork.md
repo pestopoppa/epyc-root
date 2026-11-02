@@ -11,3 +11,7 @@ Added globally invisible K/V perturbation and visible-V sensitivity controls to 
 ## 09:52Z — KPF-17a shared-trunk masked-value controls
 
 Published CPU and GPU KPF-17a rows; qualification and scientific verdict remain pending. The preceding preparation commit is included in this lane merge.
+
+## 09:52Z — KPF-17a shared-trunk masked-value controls
+
+Published CPU and GPU KPF-17a rows; qualification and scientific verdict remain pending. The preceding preparation commit is included in this lane merge.
