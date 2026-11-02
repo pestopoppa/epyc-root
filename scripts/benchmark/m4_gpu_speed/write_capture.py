@@ -15,7 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vidya"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vidya" / "adapters"))
 from claim_tuple import ProjectionError
-from m4_gpu_speed_v2 import Trust, validate_capture
+from m4_gpu_speed_v2 import Trust, parse_grant, validate_capture
 import enrollment
 
 
@@ -65,11 +65,13 @@ def grant_proof(cell, env):
     grant_path = Path(grants_dir) / (grant_id + ".grant")
     try:
         raw = grant_path.read_bytes()
-        fields = dict(field.split("=", 1) for field in raw.decode().split())
-        if len(raw.decode().split()) != 3 or set(fields) != {"regions", "start", "end"} or fields["regions"] != grant["regions"]:
-            raise ValueError("invalid grant fields")
-        start = datetime.strptime(fields["start"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
-        end = datetime.strptime(fields["end"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
+        start, end = parse_grant(raw, grant, qualification=_dryrun(env))
+        if _dryrun(env):
+            dry_dir = Path(env['FILLER_DRYRUN_DIR'])
+            if not dry_dir.is_absolute() or dry_dir.resolve() != dry_dir or Path(grants_dir) != dry_dir / 'grants':
+                raise ValueError('fixture grant directory mismatch')
+            if grant['stopfile'] != str(dry_dir / 'stop'):
+                raise ValueError('fixture STOP path mismatch')
         deadline = int(env["FILLER_DEADLINE"])
         if int(env["FILLER_END"]) != end or not start <= time.time() < deadline < end:
             raise ValueError("outside grant or deadline")

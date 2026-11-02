@@ -51,6 +51,30 @@ def _file_sha(path: str | Path) -> str:
         raise ProjectionError(f"cannot hash sealed file: {exc}") from exc
 
 
+def parse_grant(raw: bytes, identity: dict, *, qualification: bool) -> tuple[float, float]:
+    try:
+        parts = raw.decode().split()
+        fields = dict(part.split("=", 1) for part in parts)
+        required = {"regions", "start", "end"}
+        if qualification:
+            required |= {"holds", "schema", "id", "kind"}
+            if set(fields) not in (required, required | {"admission_class"}):
+                raise ValueError("unexpected fixture fields")
+            if fields["schema"] != "epyc.rowflow.dryrun-grant.v1" or fields["kind"] != "rowflow-dryrun" or fields["id"] != identity["id"]:
+                raise ValueError("fixture identity mismatch")
+        elif set(fields) != required:
+            raise ValueError("unexpected live grant fields")
+        if len(parts) != len(fields) or fields["regions"] != identity["regions"]:
+            raise ValueError("duplicate or wrong grant region")
+        start = datetime.strptime(fields["start"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
+        end = datetime.strptime(fields["end"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
+        if start >= end:
+            raise ValueError("invalid grant interval")
+        return start, end
+    except (KeyError, ValueError, UnicodeError, TypeError) as exc:
+        raise ProjectionError(f"grant receipt invalid: {exc}") from exc
+
+
 @dataclass(frozen=True)
 class Trust:
     """Deployment-owned bindings independently authorized before capture."""
@@ -149,12 +173,9 @@ def validate_capture(path: str | Path, trust: Trust, *, require_guardian: bool =
         receipt = _capture(doc["grant_receipt_path"], trust).read_bytes()
         if sha(receipt) != doc["grant_receipt_sha256"]:
             raise ValueError("grant receipt hash")
-        parts = receipt.decode().split()
-        fields = dict(part.split("=", 1) for part in parts)
-        if len(parts) != 3 or set(fields) != {"regions", "start", "end"} or fields["regions"] != doc["grant"]["regions"]:
-            raise ValueError("grant fields")
-        start = datetime.strptime(fields["start"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp() * 1_000_000_000
-        end = datetime.strptime(fields["end"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp() * 1_000_000_000
+        start, end = parse_grant(receipt, doc['grant'], qualification=trust.qualification_only)
+        start *= 1_000_000_000
+        end *= 1_000_000_000
         if not start <= doc["request_start_ns"] < doc["request_end_ns"] < end:
             raise ValueError("request outside grant")
     except (KeyError, OSError, ValueError, TypeError, UnicodeError) as exc:

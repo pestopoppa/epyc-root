@@ -350,6 +350,11 @@ def test_native_cell_fake_http_kfd_and_partial_fail_closed(tmp_path, monkeypatch
 def test_qualification_only_never_projects(tmp_path):
     path, trusted, _ = setup_capture(tmp_path)
     fixture_trust = Trust(trusted.capture_root, trusted.plan_path, trusted.plan_sha256, trusted.sources, qualification_only=True)
+    doc = json.loads(path.read_text())
+    receipt = Path(doc['grant_receipt_path'])
+    receipt.write_text(receipt.read_text() + ' holds=mi210_0,q3 schema=epyc.rowflow.dryrun-grant.v1 id=grant-1 kind=rowflow-dryrun')
+    doc['grant_receipt_sha256'] = digest(receipt.read_bytes())
+    path.write_text(json.dumps(doc))
     assert validate_capture(path, fixture_trust)[2] == 20
     with pytest.raises(ProjectionError, match='qualification-only'):
         project(path, fixture_trust)
@@ -367,3 +372,16 @@ def test_dry_run_does_not_fallback_to_live_enrollment(monkeypatch):
         write_capture.enrolled()
     with pytest.raises(ProjectionError, match='dry-run grant authority absent'):
         write_capture.grant_directories(os.environ)
+
+
+def test_rowflow_fixture_grant_is_separate_from_live():
+    from m4_gpu_speed_v2 import parse_grant
+    identity = {'id':'unit', 'regions':'mi210_0,184-191'}
+    raw = b'regions=mi210_0,184-191 start=2026-11-02T12:00Z end=2026-11-02T13:00Z holds=mi210_0,q3 schema=epyc.rowflow.dryrun-grant.v1 id=unit kind=rowflow-dryrun'
+    assert parse_grant(raw, identity, qualification=True)[1] > parse_grant(raw, identity, qualification=True)[0]
+    with pytest.raises(ProjectionError):
+        parse_grant(raw, identity, qualification=False)
+    with pytest.raises(ProjectionError):
+        parse_grant(raw.replace(b'id=unit', b'id=other'), identity, qualification=True)
+    with pytest.raises(ProjectionError):
+        parse_grant(raw + b' id=unit', identity, qualification=True)
