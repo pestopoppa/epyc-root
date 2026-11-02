@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import bundle_preflight as bp
 
@@ -51,6 +52,24 @@ class BundleTests(unittest.TestCase):
     def test_rejects_outside_scratch(self):
         with self.assertRaises(ValueError):
             bp.prepare_bundle(Path(bp.__file__).parent, Path('/missing'), '/tmp/not-kvu', {})
+
+    def test_manifest_is_complete_before_publication_and_failure_leaves_no_manifest(self):
+        src = Path(bp.__file__).parent
+        guard = src.parent / 'kvu-vkq3-guard-review-20261102' / 'guard.py'
+        expected = pins(src, guard)
+        with tempfile.TemporaryDirectory(dir='/mnt/raid0/llm/tmp/kvu') as tmp:
+            root = Path(tmp) / 'prepared'
+
+            def refuse_publish(temporary, target):
+                self.assertFalse(target.exists())
+                self.assertEqual(json.loads(temporary.read_text())['files'], expected)
+                self.assertEqual(temporary.stat().st_mode & 0o777, 0o400)
+                raise OSError('injected publication failure')
+
+            with mock.patch.object(bp.os, 'replace', side_effect=refuse_publish):
+                with self.assertRaisesRegex(OSError, 'injected publication failure'):
+                    bp.prepare_bundle(src, guard, root, expected)
+            self.assertFalse((root / 'bundle-manifest.json').exists())
 
 
 if __name__ == '__main__':

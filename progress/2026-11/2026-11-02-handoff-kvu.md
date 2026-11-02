@@ -163,3 +163,19 @@ VKQ3 model-free integration passed: synthetic grant through guard, supervisor an
 ## 10:31Z — Bind diagnostic bundle to supplied source hashes and test qualification input isolation
 
 VKQ3 draft bundle preflight requires an exact supplied SHA-256 pin set and hashes copied bytes; three offline tests pass. The model-free integration test now asserts that the tokenizer receives the short qualification input. These tests do not establish pin authority, runtime integrity, safe concurrent scratch ancestry, atomic manifest consumption, real keeper execution, or target feasibility; the draft is not publishable.
+
+## 10:33Z — Verify model-free VKQ3 qualification executes from the prepared module bundle
+
+An isolated Python process ran the model-free qualification lifecycle from the prepared VKQ3 bundle; assertions bind imported draft modules, guard and wrapper to that bundle. One offline test passed. Pins are local test fixtures; trusted provenance, real keeper execution, runtime integrity and target feasibility remain unproven.
+
+## 10:34Z — Harden draft bundle verification and reconcile KVU-16a evidence
+
+VKQ3 draft adds atomic manifest publication and a separate pinned-file verifier; nine offline tests pass. The verifier is unwired and does not establish trusted provenance, protected custody or controlled imports. KVU-16a old package is stale, and the current derived ubatch-512 value is not the historical ubatch-2048 measurement; recorded the distinction in the handoff.
+
+## 10:36Z — Merge origin/main and apply VKQ3 execution-boundary review to ongoing implementation
+
+Merged current origin/main into the lane after the prior serialized push failed. VKQ3 review identified that verification must precede imports in a trusted bootstrap and that point-in-time hashes alone cannot protect later execution; bounded implementation and verifier work are underway.
+
+## 10:38Z — Reject unpinned imports from the VKQ3 draft bundle
+
+The draft bundle verifier now rejects unexpected root and subdirectory entries including unpinned Python modules and bytecode; six verifier tests pass. The separate bootstrap remains deny-only and the tokenizer worker does not measure target MTP acceptance, so neither is a publishable calibration.

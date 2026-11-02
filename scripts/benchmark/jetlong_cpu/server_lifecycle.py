@@ -18,6 +18,9 @@ from pathlib import Path
 
 import runner
 import provenance
+import affinity_guard
+import admission
+import sys
 
 
 class LaunchError(RuntimeError):
@@ -81,7 +84,7 @@ def _cleanup(child, term_s, kill_s):
 def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
               arm, budget_s, minimum_cell_s, request_timeout_s, startup_s=30,
               term_s=5, kill_s=5, n_predict=128, log_path, runtime_check=None,
-              stop_file=None):
+              stop_file=None, granted_cpus=None):
     """Start exactly one direct child, run one arm, and always reap that child.
 
     Never use against an existing endpoint: caller owns port admission. Startup
@@ -97,6 +100,12 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
         raise ValueError('budget does not cover startup and cleanup')
     if not env.get('LD_LIBRARY_PATH'):
         raise ValueError('an isolated library path is required')
+    if granted_cpus is None:
+        raise ValueError('grant CPU list is required')
+    cpus = admission.parse_cpus(granted_cpus)
+    if not cpus.issubset(os.sched_getaffinity(0)):
+        raise ValueError('grant exceeds inherited affinity')
+    wrapped_command = [sys.executable, str(Path(__file__).with_name('affinity_exec.py')), granted_cpus, '--', *command]
     stop_requested = lambda: stop_file is not None and Path(stop_file).exists()
     if stop_requested():
         return 75
@@ -111,7 +120,7 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
         for sig in (signal.SIGTERM, signal.SIGINT):
             old_handlers[sig] = signal.signal(sig, interrupted)
         with path.open('ab', buffering=0) as logfile:
-            child = subprocess.Popen(command, stdin=subprocess.DEVNULL,
+            child = subprocess.Popen(wrapped_command, stdin=subprocess.DEVNULL,
                                      stdout=logfile, stderr=subprocess.STDOUT,
                                      env=env, close_fds=True)
             try:
@@ -132,6 +141,10 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
                     raise LaunchError('owned server health deadline expired')
                 if child.poll() is not None:
                     raise LaunchError('owned server exited during startup')
+                start_ticks = affinity_guard._start_ticks(Path(f'/proc/{child.pid}/stat'))
+                def check_affinity():
+                    return affinity_guard.verify_threads(child.pid, start_ticks, cpus)
+                check_affinity()
                 if runtime_check is not None:
                     runtime_check(child.pid)
                 if stop_requested():
@@ -141,10 +154,12 @@ def run_owned(*, command, env, base_url, plan_path, fixture_root, output_dir,
                     return 75
                 def transport(tokens, timeout):
                     _owned_listener(child.pid, base_url)
+                    check_affinity()
                     if runtime_check is not None:
                         runtime_check(child.pid)
                     result = _request(base_url, tokens, timeout, n_predict)
                     _owned_listener(child.pid, base_url)
+                    check_affinity()
                     if runtime_check is not None:
                         runtime_check(child.pid)
                     return result

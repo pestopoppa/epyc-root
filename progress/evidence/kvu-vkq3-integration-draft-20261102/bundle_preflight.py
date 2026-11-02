@@ -65,9 +65,14 @@ def prepare_bundle(source, guard, root, source_pins):
             manifest[str(rel)] = actual
         payload = (json.dumps({'schema': 'kvu-diagnostic-bundle-v1', 'files': manifest},
                               sort_keys=True, indent=2) + '\n').encode()
-        with (root / 'bundle-manifest.json').open('xb') as out:
+        # Write the complete record privately before making its public name visible.
+        temporary_manifest = root / '.bundle-manifest.tmp'
+        with temporary_manifest.open('xb') as out:
             out.write(payload)
-        os.chmod(root / 'bundle-manifest.json', 0o400)
+            out.flush()
+            os.fchmod(out.fileno(), 0o400)
+            os.fsync(out.fileno())
+        os.replace(temporary_manifest, root / 'bundle-manifest.json')
         return manifest
     except BaseException:
         # Preserve partial custody; no caller may re-use this root.

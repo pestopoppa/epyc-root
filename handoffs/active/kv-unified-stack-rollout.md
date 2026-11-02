@@ -217,6 +217,11 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     - *(Annotation, workspace-ec, 2026-10-04.)* 38.03 GiB is right as a LOAD-time figure, and OP-72 can be signed
       as packaged. However, :8083 grows +7.2 GiB while serving (KVU-16h), so the load-time figure understates the
       runtime peak. The runtime term is KVU-16i; it does not change this item.
+    - *(2026-11-02 revalidation.)* The old hygiene package is STALE: its research patch no longer applies at
+      `99301fa14`, and no signature receipt was found. The current registry's 38.03 GiB is derived for ubatch 512;
+      the historical 38.03 GiB measurement used ubatch 2048, so numeric equality does not establish a measurement
+      for the current shape. Obtain shape-matched load evidence and reconcile and validate the package against
+      current heads before requesting a signature. [no-belief: package validation and source inspection]
     - *(2026-10-21 triage)* open (no evidence found).
   - [x] **KVU-16b — a corrected concurrent-residency proof for the 393216 pool.** NOTE (2026-10-03, workspace-89 P3 code read): production runs `cache_idle_slots` ON, so idle slots are flushed to RAM at each task launch and the pool can only fill with ACTIVELY GENERATING sequences. The proof must hold 4 long contexts DECODING at once (long `n_predict`), not parked. P3 part A1 uses `--no-cache-idle-slots`: cite it only as a mechanism result, NOT as a production residency proof. (filed 2026-10-03, workspace-ec) ✅ 2026-10-26 (workspace-58) PASS, predicate `request-task-prompt-end-v1`: 4 requests decoding past prompt-end at once, 324673 resident cells with all 4 decoding (pool 393216), KFD peak 48.567 GiB <= 62, 0 failed requests / slot errors / faults; one load of the current champion c72/10419, `-np 4 -c 393216`. Evidence `/mnt/raid0/llm/tmp/cal-1026/kvu-16b/out/native/kvu16b/20261026T214759Z/report.json` + `out/RUN_RECORD.json`. NO rate/performance claim, no promotion; the earlier INVALID prompt_end data stays invalid; child result, not KVU program closure. [belief: cc]
     - **Correction (2026-10-03, workspace-ec, from the P3 report):** the idle-purge claim above is a CODE READ, not a
