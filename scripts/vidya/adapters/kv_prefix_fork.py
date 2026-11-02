@@ -273,7 +273,39 @@ def _intkeys(obj: Any) -> Any:
     return obj
 
 
+def _validate_kpf30(row: Any) -> list[str]:
+    """Validate only native run metadata and recorded counters; never invent row class."""
+    from adapters.kpf30_capture import SCHEMA as KPF30_SCHEMA
+    if not isinstance(row, dict) or row.get("schema") != KPF30_SCHEMA:
+        return ["not a KPF-30 native record"]
+    problems = []
+    for key in ("run_id", "window_id", "host", "start_utc", "end_utc", "rows", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "prompt_set_sha256", "rows_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if not isinstance(row.get("argv"), list) or not row["argv"] or not all(isinstance(x, str) for x in row["argv"]):
+        problems.append("missing argv")
+    if type(row.get("exit_code")) is not int or row["exit_code"] != 0:
+        problems.append("run did not complete")
+    if type(row.get("n_rows")) is not int or row["n_rows"] <= 0:
+        problems.append("no observed rows")
+    c = row.get("counts")
+    keys = ("blocks", "live", "mixed", "unknown", "live_unknown", "invalid_mask")
+    if not isinstance(c, dict) or any(type(c.get(k)) is not int or c[k] < 0 for k in keys):
+        problems.append("invalid native counts")
+    elif c["mixed"] > c["live"] or c["live"] > c["blocks"] or c["unknown"] > c["blocks"] \
+            or c["live_unknown"] > c["live"] or c["live_unknown"] > c["unknown"]:
+        problems.append("inconsistent native counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
+    return problems
+
+
 def validate_row(row: Any) -> list[str]:
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.observation.v1":
+        return _validate_kpf30(row)
     if not isinstance(row, dict):
         return ["row is not an object"]
     problems = []
@@ -447,7 +479,7 @@ def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
         return ()
     natives = [{"row": r, "sidecar_path": str(path), "attestation_present": _rows_present(r, path)} for r in rows
                if not _DECLINED_SUB_ARM.match(str(r.get("arm")))]
-    return tuple(natives + _serving_natives(natives))
+    return tuple(natives + _serving_natives([n for n in natives if n["row"].get("schema") == SCHEMA]))
 
 
 def _metric(row: dict) -> tuple[str, Any, str, int, str]:
@@ -476,6 +508,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
     present = _rows_present(row, sidecar)
+    if row["schema"] == "epyc.kpf30.observation.v1":
+        return _project_kpf30(row, sidecar, present)
     if row["arm"] == OUTCOME_ARM:
         return _project_outcome(row, sidecar, present)
     if is_conformance(row):
@@ -532,6 +566,35 @@ def project(native: Any) -> ClaimTuple:
         },
         applicability=_applicability(row),
     )
+
+
+def _project_kpf30(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    counts = row["counts"]
+    if present:
+        # Verify the producer's aggregate against its sealed native per-mask rows.
+        try:
+            rows = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+            sums = {key: sum(x[key] for x in rows) for key in counts}
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-30 attested rows") from exc
+        if len(rows) != row["n_rows"] or sums != counts:
+            raise ProjectionError("KPF-30 aggregate does not match attested rows")
+    return ClaimTuple(
+        measurement_id="kpf30-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf30_known_mixed_live_blocks", value=counts["mixed"], unit="blocks",
+        date=row["end_utc"], category=row["category"], metric_direction="lower_better",
+        claim=(f"KPF-30 recorded {counts['mixed']} known mixed live blocks across {row['n_rows']} "
+               "mask rows; includes all observed row types, not a decode-only or threshold verdict"),
+        protocol_id="", reps=row["n_rows"], reps_basis="mask rows recorded, not independent windows",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf30:{row['run_id']}:win={row['window_id']}:bin={row['binary_sha256'][:16]}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "counts": counts, "run_id": row["run_id"],
+               "window_id": row["window_id"], "host": row["host"], "argv": row["argv"],
+               "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+               "start_utc": row["start_utc"], "end_utc": row["end_utc"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+        applicability=_applicability(row))
 
 
 def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
