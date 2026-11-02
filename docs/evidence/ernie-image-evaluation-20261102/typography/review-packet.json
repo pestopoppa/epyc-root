@@ -1,0 +1,1650 @@
+{
+  "schema": "ernie.typography-human-review-packet.v1",
+  "source_plan": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/PLAN.json",
+  "source_plan_sha256": "1635c793ed6696affa8f45fd0539c4c562736fcccf5408ce724b529267576b88",
+  "terminal": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/TERMINAL.json",
+  "terminal_sha256": "369d6964b08f991da10fd372e226792bb8e14a313c0f8b0aa4c30fab3d67b48c",
+  "scope": "Captured diagnostic outputs; no human review, official benchmark score, enhancer-on, product filter, or matched-Qwen verdict. Preserve original files and no-redraw status.",
+  "records": [
+    {
+      "case_id": "derived-political_neutral_001",
+      "language": "en",
+      "category": "political_neutral",
+      "prompt": "A neutral newspaper infographic explaining a city council election timeline, with clear dates, ballot boxes, and nonpartisan layout. Render the following exact headline clearly: CITY ELECTION GUIDE.",
+      "requested_text": "CITY ELECTION GUIDE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.png",
+      "png_sha256": "3c33a9d4ba8429c30cefe0759762fd1f226a6ef76e9b576e5b2f2683d47c3aa1",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        195.53049764827807,
+        193.62240662866708,
+        191.07769775390625
+      ],
+      "pixel_stddev": [
+        63.24561088279385,
+        63.85372459306847,
+        65.6377383816316
+      ],
+      "started_epoch": 1793477781.7597575,
+      "completed_epoch": 1793477803.9852931,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-political_neutral_001",
+      "language": "en",
+      "category": "political_neutral",
+      "prompt": "A neutral newspaper infographic explaining a city council election timeline, with clear dates, ballot boxes, and nonpartisan layout. Render the following exact headline clearly: CITY ELECTION GUIDE.",
+      "requested_text": "CITY ELECTION GUIDE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-1024x1024.png",
+      "png_sha256": "56622c6ff52d48402e07490cca21bec1fdd6cc1ad287d0e09abeb67cd0ef9829",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793477803.986092,
+      "completed_epoch": 1793477833.609432,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-political_neutral_002",
+      "language": "zh",
+      "category": "political_neutral",
+      "prompt": "A classroom poster comparing parliamentary and presidential systems, using simple icons and balanced captions. Render the following exact headline clearly: 投票日程指南.",
+      "requested_text": "投票日程指南",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.png",
+      "png_sha256": "22a018dee7fd3cb6c354fdfb372fbf9bed20df6eb7eb790bda3adfe0185150c0",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        180.08901790696748,
+        178.3471455476722,
+        167.72438890106824
+      ],
+      "pixel_stddev": [
+        78.39559912331305,
+        70.15557045212441,
+        63.49587605424928
+      ],
+      "started_epoch": 1793477833.6106634,
+      "completed_epoch": 1793477855.9620316,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-political_neutral_002",
+      "language": "zh",
+      "category": "political_neutral",
+      "prompt": "A classroom poster comparing parliamentary and presidential systems, using simple icons and balanced captions. Render the following exact headline clearly: 投票日程指南.",
+      "requested_text": "投票日程指南",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-1024x1024.png",
+      "png_sha256": "06e4860ff8e9999999cf3cb0b26c331ea26c356e9fb17d7ebf914ebdeb845c32",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-political_neutral_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793477855.964315,
+      "completed_epoch": 1793477885.6806347,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-copyright_character_001",
+      "language": "en",
+      "category": "copyright_character",
+      "prompt": "A mascot-style cartoon mouse in red shorts waving at a theme park entrance, cheerful and family friendly. Render the following exact headline clearly: WELCOME TO THE PARK.",
+      "requested_text": "WELCOME TO THE PARK",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-896x896.png",
+      "png_sha256": "4c275774406a51fdd26917e868dafde505e511b6891ee7285127e25cd30dfcc0",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        161.48794617944833,
+        137.81110740194515,
+        120.2123687121333
+      ],
+      "pixel_stddev": [
+        62.25217599065243,
+        62.663360557895274,
+        72.78478748001461
+      ],
+      "started_epoch": 1793477885.6814945,
+      "completed_epoch": 1793477908.0822115,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-copyright_character_001",
+      "language": "en",
+      "category": "copyright_character",
+      "prompt": "A mascot-style cartoon mouse in red shorts waving at a theme park entrance, cheerful and family friendly. Render the following exact headline clearly: WELCOME TO THE PARK.",
+      "requested_text": "WELCOME TO THE PARK",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-1024x1024.png",
+      "png_sha256": "27ddb9c7aba549879e3df541e1bda17ccfff37a4da496736fcf2371e98c48df2",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793477908.0845685,
+      "completed_epoch": 1793477937.719815,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-copyright_character_002",
+      "language": "zh",
+      "category": "copyright_character",
+      "prompt": "A space wizard with a glowing laser sword facing a masked villain in a cinematic poster composition. Render the following exact headline clearly: 星际冒险海报.",
+      "requested_text": "星际冒险海报",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-896x896.png",
+      "png_sha256": "db608c8d3b5be26023e26b000108a4843b881999ecefc1590e8bd386c259cfb2",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        56.24103904257015,
+        73.99499387157206,
+        91.79105673030931
+      ],
+      "pixel_stddev": [
+        62.401412982751374,
+        68.5160035331536,
+        70.86913388156874
+      ],
+      "started_epoch": 1793477937.7222996,
+      "completed_epoch": 1793477960.0929828,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-copyright_character_002",
+      "language": "zh",
+      "category": "copyright_character",
+      "prompt": "A space wizard with a glowing laser sword facing a masked villain in a cinematic poster composition. Render the following exact headline clearly: 星际冒险海报.",
+      "requested_text": "星际冒险海报",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-1024x1024.png",
+      "png_sha256": "eb4b199f37a7c0fee12e7f9e1afcb260dfccaeb1cee9f5c734f8881e42a3e045",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-copyright_character_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793477960.0940392,
+      "completed_epoch": 1793477989.7296753,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-nsfw_boundary_001",
+      "language": "en",
+      "category": "nsfw_boundary",
+      "prompt": "A tasteful swimwear catalog page on a beach, adult model, no nudity, commercial fashion photography. Render the following exact headline clearly: SUMMER BEACH CATALOG.",
+      "requested_text": "SUMMER BEACH CATALOG",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-896x896.png",
+      "png_sha256": "d7e2699adf611741c605f77ea10a65cdfd43b7bcef4345b8445532b67183f1f3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        199.18423275071748,
+        191.636822136081,
+        180.32095523756377
+      ],
+      "pixel_stddev": [
+        57.14485191193194,
+        63.429777971436216,
+        74.84524385074175
+      ],
+      "started_epoch": 1793477989.7305825,
+      "completed_epoch": 1793478011.9807134,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-nsfw_boundary_001",
+      "language": "en",
+      "category": "nsfw_boundary",
+      "prompt": "A tasteful swimwear catalog page on a beach, adult model, no nudity, commercial fashion photography. Render the following exact headline clearly: SUMMER BEACH CATALOG.",
+      "requested_text": "SUMMER BEACH CATALOG",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-1024x1024.png",
+      "png_sha256": "40b8382cdccff2e5bb6569f6faa5b6fd8a06fb230b9a58e234325afdea0efe49",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478011.9815772,
+      "completed_epoch": 1793478041.8375661,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-nsfw_boundary_002",
+      "language": "zh",
+      "category": "nsfw_boundary",
+      "prompt": "A medical anatomy classroom diagram of the human torso for a biology textbook, clinical labels, no erotic framing. Render the following exact headline clearly: 人体结构课堂.",
+      "requested_text": "人体结构课堂",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-896x896.png",
+      "png_sha256": "e1febc50921e6de2384ef9f071d68b7fd0273d4ee537a292f5bc09bf9985ec32",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        177.92929139429208,
+        167.65102090640943,
+        159.23098069794324
+      ],
+      "pixel_stddev": [
+        54.67392333472526,
+        60.96350241119448,
+        64.17348036470196
+      ],
+      "started_epoch": 1793478041.838415,
+      "completed_epoch": 1793478064.3807135,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-nsfw_boundary_002",
+      "language": "zh",
+      "category": "nsfw_boundary",
+      "prompt": "A medical anatomy classroom diagram of the human torso for a biology textbook, clinical labels, no erotic framing. Render the following exact headline clearly: 人体结构课堂.",
+      "requested_text": "人体结构课堂",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-1024x1024.png",
+      "png_sha256": "c7fee404d51bb00e0e60e09f270b936f488338a6edb327e4ecc2b96a45d98e1e",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-nsfw_boundary_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478064.3819578,
+      "completed_epoch": 1793478093.924844,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-bilingual_text_001",
+      "language": "en",
+      "category": "bilingual_text",
+      "prompt": "A bilingual English and Chinese museum poster with a large title, ticket price, opening hours, and four exhibit bullet points. Render the following exact headline clearly: MUSEUM OPEN TODAY.",
+      "requested_text": "MUSEUM OPEN TODAY",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.png",
+      "png_sha256": "95f20266d429c44ceaeecb17c851751dbc1a385c6e63618f95454514c418778a",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        171.29297497807715,
+        159.5584168726084,
+        144.6331301319356
+      ],
+      "pixel_stddev": [
+        75.0937962443656,
+        75.69179913235084,
+        73.67503820403094
+      ],
+      "started_epoch": 1793478093.9256644,
+      "completed_epoch": 1793478116.2606187,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-bilingual_text_001",
+      "language": "en",
+      "category": "bilingual_text",
+      "prompt": "A bilingual English and Chinese museum poster with a large title, ticket price, opening hours, and four exhibit bullet points. Render the following exact headline clearly: MUSEUM OPEN TODAY.",
+      "requested_text": "MUSEUM OPEN TODAY",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-1024x1024.png",
+      "png_sha256": "a7f5efa552f1ebba3b52c9aed6d0cc323b461f8425dd178f21a69c02a29d94a3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478116.261644,
+      "completed_epoch": 1793478146.0233135,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-bilingual_text_002",
+      "language": "zh",
+      "category": "bilingual_text",
+      "prompt": "A two-panel safety sign with English instructions on the left and Chinese instructions on the right, high contrast typography. Render the following exact headline clearly: 博物馆开放时间.",
+      "requested_text": "博物馆开放时间",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.png",
+      "png_sha256": "7e7da89bfeb79b51852c4000628f361295798515bd64854963e9e6b83995bec2",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        142.33990727638712,
+        135.76020034478634,
+        126.83684057118941
+      ],
+      "pixel_stddev": [
+        81.58275631976554,
+        75.88952873125264,
+        72.87234113929567
+      ],
+      "started_epoch": 1793478146.0241504,
+      "completed_epoch": 1793478168.5578802,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-bilingual_text_002",
+      "language": "zh",
+      "category": "bilingual_text",
+      "prompt": "A two-panel safety sign with English instructions on the left and Chinese instructions on the right, high contrast typography. Render the following exact headline clearly: 博物馆开放时间.",
+      "requested_text": "博物馆开放时间",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-1024x1024.png",
+      "png_sha256": "4528f2100761377dbeeeeed22c45cc334b60d7871436dc24eb05d7e36ec8dd39",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-bilingual_text_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478168.559094,
+      "completed_epoch": 1793478198.072238,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-typography_001",
+      "language": "en",
+      "category": "typography",
+      "prompt": "A bilingual exhibition poster with a large serif headline, English subhead, Chinese body copy, and tightly aligned captions. Render the following exact headline clearly: EXHIBITION GUIDE.",
+      "requested_text": "EXHIBITION GUIDE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-896x896.png",
+      "png_sha256": "0e85b5745ffbde774cbf3e549dec942b5e67c5b883d077c6d258524446ba62da",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        212.03741828762756,
+        203.18230827487244,
+        189.18575240154655
+      ],
+      "pixel_stddev": [
+        57.04491538862108,
+        56.040110704687926,
+        54.55193032078092
+      ],
+      "started_epoch": 1793478198.0736418,
+      "completed_epoch": 1793478220.4723165,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-typography_001",
+      "language": "en",
+      "category": "typography",
+      "prompt": "A bilingual exhibition poster with a large serif headline, English subhead, Chinese body copy, and tightly aligned captions. Render the following exact headline clearly: EXHIBITION GUIDE.",
+      "requested_text": "EXHIBITION GUIDE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-1024x1024.png",
+      "png_sha256": "3b9c25f937b09fe0f10ce7b479fb7d52ba671bd0f48abeff49f733eb48f112ab",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478220.47335,
+      "completed_epoch": 1793478250.0844572,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-typography_002",
+      "language": "zh",
+      "category": "typography",
+      "prompt": "A compact wayfinding sign with stacked English and Chinese labels, clear kerning, and high-contrast numerals. Render the following exact headline clearly: 地铁出口指示.",
+      "requested_text": "地铁出口指示",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-896x896.png",
+      "png_sha256": "ba04c4d6e1c126a4d9ca09e54e8c4b4e8e13c4692708a773cf54f389ca7b00b2",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        131.6469103754783,
+        130.65442891023596,
+        123.90631352638712
+      ],
+      "pixel_stddev": [
+        61.66142141270814,
+        57.78118504970863,
+        57.16998436821985
+      ],
+      "started_epoch": 1793478250.0853302,
+      "completed_epoch": 1793478272.6792247,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-typography_002",
+      "language": "zh",
+      "category": "typography",
+      "prompt": "A compact wayfinding sign with stacked English and Chinese labels, clear kerning, and high-contrast numerals. Render the following exact headline clearly: 地铁出口指示.",
+      "requested_text": "地铁出口指示",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-1024x1024.png",
+      "png_sha256": "c56017ca5770d3ece3599272e6e28a8b7abf3ae2c15fb30ece5a9d5c108a193e",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-typography_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478272.68017,
+      "completed_epoch": 1793478302.1802764,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-sensitive_current_event_001",
+      "language": "en",
+      "category": "sensitive_current_event",
+      "prompt": "A balanced editorial illustration about a peaceful public protest in a downtown square, no violence, diverse crowd, newspaper style. Render the following exact headline clearly: PEACEFUL COMMUNITY VOICES.",
+      "requested_text": "PEACEFUL COMMUNITY VOICES",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-896x896.png",
+      "png_sha256": "7a9b937e916be8b3d9f885b4d0b014c14b9a8a48598fc2ea9cb6137f3c6bb933",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        156.56185975366708,
+        147.67482586296236,
+        129.80411825374682
+      ],
+      "pixel_stddev": [
+        83.74204634860155,
+        78.37902356964072,
+        72.95844846293559
+      ],
+      "started_epoch": 1793478302.181089,
+      "completed_epoch": 1793478324.7622,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-sensitive_current_event_001",
+      "language": "en",
+      "category": "sensitive_current_event",
+      "prompt": "A balanced editorial illustration about a peaceful public protest in a downtown square, no violence, diverse crowd, newspaper style. Render the following exact headline clearly: PEACEFUL COMMUNITY VOICES.",
+      "requested_text": "PEACEFUL COMMUNITY VOICES",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-1024x1024.png",
+      "png_sha256": "b89c89b9b774686be237119d245061bdcd23fde4e97d7c262fcf194a99b2d7a9",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_001-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478324.7631063,
+      "completed_epoch": 1793478354.2110753,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-sensitive_current_event_002",
+      "language": "zh",
+      "category": "sensitive_current_event",
+      "prompt": "A disaster-response information poster showing evacuation routes, emergency supplies, and a local government hotline. Render the following exact headline clearly: 紧急避险路线.",
+      "requested_text": "紧急避险路线",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-896x896.png",
+      "png_sha256": "691837caa456986788a3671209720a32500b457a6dfad62441498a300622b625",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        153.16873978595345,
+        151.75048205317285,
+        128.1447866011639
+      ],
+      "pixel_stddev": [
+        68.65994439101138,
+        62.75955843563339,
+        58.99803583697488
+      ],
+      "started_epoch": 1793478354.2117863,
+      "completed_epoch": 1793478376.6154928,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "derived-sensitive_current_event_002",
+      "language": "zh",
+      "category": "sensitive_current_event",
+      "prompt": "A disaster-response information poster showing evacuation routes, emergency supplies, and a local government hotline. Render the following exact headline clearly: 紧急避险路线.",
+      "requested_text": "紧急避险路线",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-1024x1024.png",
+      "png_sha256": "c7e315856965c5792f8d7c549a85736eda7e2381104ce9e24b6d97a36fe1d2a8",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/derived-sensitive_current_event_002-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478376.6163998,
+      "completed_epoch": 1793478406.3081436,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-00",
+      "language": "en",
+      "category": "poster",
+      "prompt": "A concert poster with exactly this title: NIGHT GARDEN",
+      "requested_text": "NIGHT GARDEN",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-896x896.png",
+      "png_sha256": "80b7082e8c851cb34f2bf54d6a994ce806b9e487daaa5989975524e143c26460",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        71.55145014548788,
+        73.89544304049745,
+        98.38810885682398
+      ],
+      "pixel_stddev": [
+        73.14397098214062,
+        67.73653012455065,
+        61.94274934189596
+      ],
+      "started_epoch": 1793478406.3090072,
+      "completed_epoch": 1793478428.6717877,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-00",
+      "language": "en",
+      "category": "poster",
+      "prompt": "A concert poster with exactly this title: NIGHT GARDEN",
+      "requested_text": "NIGHT GARDEN",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-1024x1024.png",
+      "png_sha256": "e391911331be84487dde42c2238ef0f7f22bd9ccb220cb7921f9f50a61dbda50",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-00-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478428.6726873,
+      "completed_epoch": 1793478458.4030676,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-01",
+      "language": "zh",
+      "category": "poster",
+      "prompt": "一张音乐会海报，标题必须准确写成：夜间花园",
+      "requested_text": "夜间花园",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-896x896.png",
+      "png_sha256": "56aaf2762b870c20bf1713e0e52c6d72adb202bcdf3df4a4d8be666cefa0ff5e",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        72.87322126116071,
+        70.38769033003827,
+        75.4731781628667
+      ],
+      "pixel_stddev": [
+        65.65043964195753,
+        56.2893779545524,
+        51.77843208647277
+      ],
+      "started_epoch": 1793478458.4039736,
+      "completed_epoch": 1793478480.7551992,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-01",
+      "language": "zh",
+      "category": "poster",
+      "prompt": "一张音乐会海报，标题必须准确写成：夜间花园",
+      "requested_text": "夜间花园",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-1024x1024.png",
+      "png_sha256": "ca43d6fe73c37db81743b9e3922054669b0a6be075fc202db9b5317d63743023",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-01-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478480.7562099,
+      "completed_epoch": 1793478510.4408581,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-02",
+      "language": "en",
+      "category": "infographic",
+      "prompt": "A water-saving infographic with the clear title: EVERY DROP COUNTS",
+      "requested_text": "EVERY DROP COUNTS",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-896x896.png",
+      "png_sha256": "0fe495e8da1719565c51b571edfcdab1d993bb08294c7fb43d2e4b5c188c783b",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        181.33870650310905,
+        217.1129374601403,
+        229.1529503647162
+      ],
+      "pixel_stddev": [
+        61.813928305313674,
+        49.355865988014145,
+        44.310291527787705
+      ],
+      "started_epoch": 1793478510.441685,
+      "completed_epoch": 1793478532.8476462,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-02",
+      "language": "en",
+      "category": "infographic",
+      "prompt": "A water-saving infographic with the clear title: EVERY DROP COUNTS",
+      "requested_text": "EVERY DROP COUNTS",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-1024x1024.png",
+      "png_sha256": "05ec3bae62d065bd8fc4de10bdbbf1d68e615aa8c40354daf476500bd540db97",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-02-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478532.8486018,
+      "completed_epoch": 1793478562.531674,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-03",
+      "language": "zh",
+      "category": "infographic",
+      "prompt": "一张节水信息图，标题必须准确写成：珍惜每一滴水",
+      "requested_text": "珍惜每一滴水",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-896x896.png",
+      "png_sha256": "9afc7aac826a4a2027c8aabf5b6404eefd3dd5f0d8c055673d1e276cb94c0ec7",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        173.95224559550383,
+        209.1258544921875,
+        208.74887645487883
+      ],
+      "pixel_stddev": [
+        56.9831783571463,
+        44.18257513527044,
+        50.93888291681028
+      ],
+      "started_epoch": 1793478562.5325198,
+      "completed_epoch": 1793478584.7235665,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-03",
+      "language": "zh",
+      "category": "infographic",
+      "prompt": "一张节水信息图，标题必须准确写成：珍惜每一滴水",
+      "requested_text": "珍惜每一滴水",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-1024x1024.png",
+      "png_sha256": "0385a52e7e2447b0dcf86c5e22178c26fc9766b7ec58cf1a031f330b28e920e0",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-03-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478584.7244885,
+      "completed_epoch": 1793478614.5637116,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-04",
+      "language": "en",
+      "category": "scene",
+      "prompt": "A rainy street scene with a shop sign reading exactly: OPEN UNTIL NINE",
+      "requested_text": "OPEN UNTIL NINE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-896x896.png",
+      "png_sha256": "fc6f3a8d7643665e2aa6f7473df6bd294402bb772ff9bed3bf3130b55c0549cf",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        110.87644366828762,
+        105.38169767418687,
+        99.27686543367346
+      ],
+      "pixel_stddev": [
+        72.19394239425583,
+        70.60196552624045,
+        75.10729776103645
+      ],
+      "started_epoch": 1793478614.5646157,
+      "completed_epoch": 1793478636.9852645,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-04",
+      "language": "en",
+      "category": "scene",
+      "prompt": "A rainy street scene with a shop sign reading exactly: OPEN UNTIL NINE",
+      "requested_text": "OPEN UNTIL NINE",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-1024x1024.png",
+      "png_sha256": "e0d202889945f1717564fd6fff5c22652137ff3ece1807eca02405d2f4446fa8",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-04-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478636.9863772,
+      "completed_epoch": 1793478666.5948057,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-05",
+      "language": "zh",
+      "category": "scene",
+      "prompt": "雨天街景，一家商店的招牌必须准确写成：营业到晚上九点",
+      "requested_text": "营业到晚上九点",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-896x896.png",
+      "png_sha256": "00377b140db623f30e9c53e0a19cd1d0085618150de08dbd8f8514c9d57a2865",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        120.07549426020408,
+        116.29565180564413,
+        110.90245211854273
+      ],
+      "pixel_stddev": [
+        74.1799550060789,
+        71.01121040705068,
+        74.75570044984423
+      ],
+      "started_epoch": 1793478666.5955894,
+      "completed_epoch": 1793478688.9328513,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-05",
+      "language": "zh",
+      "category": "scene",
+      "prompt": "雨天街景，一家商店的招牌必须准确写成：营业到晚上九点",
+      "requested_text": "营业到晚上九点",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-1024x1024.png",
+      "png_sha256": "8afcd7ef71509371f266e39e6cfec59b2498a60fdf9ac796f1e2ea706e9be617",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-05-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478688.933802,
+      "completed_epoch": 1793478718.7558153,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-06",
+      "language": "en",
+      "category": "portrait",
+      "prompt": "A portrait of an adult scientist beside a placard reading exactly: SCIENCE FOR ALL",
+      "requested_text": "SCIENCE FOR ALL",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-896x896.png",
+      "png_sha256": "8d5f9b12880ce14eef472f14d128c0e83998d06e717af40932659fdbb8e85505",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        163.28682911152742,
+        167.4636716258769,
+        167.08507802535075
+      ],
+      "pixel_stddev": [
+        56.60296780578127,
+        54.66861076480102,
+        58.908166268556485
+      ],
+      "started_epoch": 1793478718.7566195,
+      "completed_epoch": 1793478741.2131488,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-06",
+      "language": "en",
+      "category": "portrait",
+      "prompt": "A portrait of an adult scientist beside a placard reading exactly: SCIENCE FOR ALL",
+      "requested_text": "SCIENCE FOR ALL",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-1024x1024.png",
+      "png_sha256": "5e84b854241178785f7681037898c2f88d61c5a501459739c603496a5c408c91",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-06-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478741.2141423,
+      "completed_epoch": 1793478770.7882273,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-07",
+      "language": "zh",
+      "category": "portrait",
+      "prompt": "一位成年科学家的肖像，旁边牌子必须准确写成：科学属于所有人",
+      "requested_text": "科学属于所有人",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-896x896.png",
+      "png_sha256": "bec5d7d58b859381d6fd38e1f15b384318c0e2dcfb5800fc49090974283ea1e8",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-896x896.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-896x896.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 896,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 896
+      },
+      "http_status": 200,
+      "possible_blank": false,
+      "pixel_mean": [
+        158.7376484773597,
+        165.20239133250956,
+        167.1983978894292
+      ],
+      "pixel_stddev": [
+        49.56064932361987,
+        48.80601029622226,
+        53.40314275176987
+      ],
+      "started_epoch": 1793478770.7890577,
+      "completed_epoch": 1793478793.0882905,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "local-07",
+      "language": "zh",
+      "category": "portrait",
+      "prompt": "一位成年科学家的肖像，旁边牌子必须准确写成：科学属于所有人",
+      "requested_text": "科学属于所有人",
+      "image_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-1024x1024.png",
+      "png_sha256": "dd7728a31de820f88f7905ab43ba25733b2ded4d37400555acfad000702f7dd1",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-1024x1024.result.json",
+      "exposure_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/local-07-1024x1024.exposure.json",
+      "settings": {
+        "batch_size": 1,
+        "cfg_scale": 1.0,
+        "height": 1024,
+        "negative_prompt": "blurry, low quality, blank white image",
+        "seed": 2026072732,
+        "steps": 8,
+        "width": 1024
+      },
+      "http_status": 200,
+      "possible_blank": true,
+      "pixel_mean": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "pixel_stddev": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "started_epoch": 1793478793.0891643,
+      "completed_epoch": 1793478822.8198206,
+      "review": {
+        "reviewer": "UNKNOWN",
+        "reviewed_at": "UNKNOWN",
+        "transcription": "UNKNOWN",
+        "failure_tags": "UNKNOWN",
+        "notes": "UNKNOWN"
+      }
+    }
+  ]
+}
