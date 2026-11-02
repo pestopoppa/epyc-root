@@ -27,3 +27,7 @@ SW-2 tick was applied in the previous wrap attempt, which stopped at index fresh
 ## 07:54Z — Close scoped v9 SW-2 behavior and retain G3 instrument design
 
 SW-2 tick was applied in the previous wrap attempt, which stopped at index freshness; regenerated index state and retrying publication. Combined the pinned private v9 runs: 0 produces no drafts, lower caps constrain observed trace widths, request 12 clamps and echoes 8 without error, and default after zero drafts again on the reused slot. Corrected parser passes nine bounded tests; successor native row remains inconclusive because its original parser rejected padded numbers. No v10 or universal claim. Reviewed G3 source-bound instrumentation design including backend microbatch and identity controls. SR-6 prompt preparation lacks a complete launcher, runtime pins and exposure audit; no row published.
+
+## 09:26Z — Retain SR-6 successor design and paired-analysis prototype
+
+Preserved SR-6 fresh multi-window composed and non-context-control comparison design and fail-closed paired-analysis prototype. Seven synthetic tests passed. It is preparation only: worker, launcher, pinned runtime and sampler, exposure audit, rendered-token repetition analysis and decision rule remain before publication. SW-2 was previously closed for scoped private-v9 behavior in 4db136723da0; the legacy blocked INF-50 predecessor and stderr task were already superseded/completed.

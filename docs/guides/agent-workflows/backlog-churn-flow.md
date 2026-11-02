@@ -13,6 +13,16 @@ extra artifact was a place for a row to get stuck and token-wasting busywork for
 5. Go back to the next blocking non-inference tasks. Rinse. Repeat. **Do not stop until ALL non-inference tasks are
    exhausted and inference tasks armed.**
 
+## The one rule no gate may break (operator, repeated for months; codified 2026-11-02)
+
+**Sessions NEVER stop unblocking inference tasks and making them ready while any un-readied inference task exists.**
+No inventory target, park, stuck rule, cooldown, yield, token-saving or disk gate may stop work on a handoff that still
+has un-readied inference tasks (needs launcher / qualification / publish, or blocked). Such gates apply only to
+handoffs with none left. Admission test for ANY new dispatcher/backlog_gen/rowflow gate: *can it leave a slot empty, or
+a handoff with un-readied inference tasks unresumed?* If yes, it is refused. Origin: on 2026-11-02, from 08:22Z to
+09:18Z, every session was parked (await_event + stuck rule) and the whole host sat idle while 69 handoffs held 268
+unpublished inference tasks.
+
 ## The row flow (`scripts/coordination/rowflow/`)
 
 **The owner writes TWO things**: the launcher script (on the canonical engine `filler_run15.sh`) and a small spec.

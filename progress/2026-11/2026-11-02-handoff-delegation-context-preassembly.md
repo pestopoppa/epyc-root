@@ -15,3 +15,7 @@ Recorded the DCP-12 calibration gap: the existing J7 runner alternates OFF/ON an
 ## 03:34Z — Recover serialized push of DCP calibration preparation
 
 Recovered the prior serialized-push failure: serialized_push published the calibration preparation and verified origin/main carries the lane, including commit 0a9ea4f58e64. DCP-12 still requires a same-configuration repeated-run harness and predeclared correctness labels; no calibration result or row is available yet. GitNexus reports this worktree is not indexed, so no source edit was made.
+
+## 09:24Z — Build the three missing DCP-12 calibration components
+
+Dispatched bounded implementation of the DCP-12 identical-arm runner, fixed scoring fixture and paired-outcome analyzer, with result files registered for dispatcher wakeup. Each component is prepared in scratch for owner review; no inference, admission or row publication was performed.

@@ -70,3 +70,27 @@ Consumed omega-review-20261102-result.json. Omega successor must not be publishe
 - Consumed `strategy-integration7.json`: scratch integration of digest-bound call intents, externally anchored byte binding and exact question/arm coverage passed ten offline tamper and missing/duplicate/unplanned-pair tests. It does not authenticate grant, server, model, score, external channel or measurement warrant and is not publishable.
 - Delegated independent bounded live producer, native belief adapter and model/tokenizer/server identity preparation (`live8`, `adapter8`, `identity8` events); no inference, publication or invented grading rule. Existing protocol and parked-lineage offline preparation events remain pending.
 - Prior wrap-up pushed `5290f910558ee6ef39e791da7d97be749dee7eea`, cherry empty. Existing unrelated untracked files remain untouched.
+
+## 09:18Z — Advance strategy measurement integration and identity witness
+
+- Reviewed `identity8.json`: scratch identity/token witness passed three offline synthetic tests for model/tokenizer/binary identity mismatch, request/response tampering and missing/inconsistent native usage; it accepts valid zero counts. It depends on independently captured process identity and preflight hashes and does not itself establish grant authority, GPU residency or a measurement warrant.
+- Strategy live producer, adapter and integration remain in progress under registered events. Delegated bounded integration and protocol preparation; do not publish incomplete capture or invent a grading rule. The existing frontdoor row is the erroneous parked-lineage republication and remains a safe-withdrawal task for its owner/keeper.
+- The prior wrap-up pushed `4d568ce78954ac503fa7365528654b1a21bac9c8`, cherry empty. No inference or row publication this turn.
+
+## 09:19Z — Review safe withdrawal procedure and repair strategy custody dependency
+
+- Consumed `frontdoor9.json`: allocator snapshots READY before it starts work, so checking inactivity and unlinking without an allocator-serialized boundary races an in-flight tick; `.withdrawn` and HOLD alone do not prove safe exclusion. The codex-ni owner or keeper must stop new ticks at its own safe boundary, let any current tick finish, check active work, withdraw the owner-controlled READY only when safe, then report success or failure. No per-row atomic withdrawal was found and this lane must not edit another owner's manifest. A bus routing investigation is delegated as `bus10`; lane slug is not a roster identity.
+- Prior strategy custody test depended on a vanished untracked lane binder after lane recreation. Delegated a sealed/durable source repair and focused offline checks (`strategy10`), and the next bounded producer requirement (`producer10`); no inference or row publication.
+- Prior wrap-up pushed `afdd1d56c527fa50ff8f3c380055b8774571aa10`, cherry empty.
+
+## 09:20Z — Review repaired strategy binder and dispatch boundary
+
+- Consumed `strategy10.json`: the scratch sealed binder replaced the vanished untracked lane dependency; nine offline tests passed against tampering, co-mutated payload and record, symlinks, traversal and missing or duplicate pairs. The locally held seal is not independent authentication; expected binder digest and capture anchors still require protected external custody.
+- Consumed `producer10.json`: the scratch ordered dispatch boundary passed five mock stop/deadline/gate tests. It has no real authenticated grant gate or live transport, and a synchronous call cannot enforce cancellation. Delegated bounded grant gate, deadline-enforcing transport and assembly work as `grant11`, `transport11`, `assembly11`; no inference or publication.
+- Previous wrap-up attempt logged a push failure for `ffde212f90f1`, but its same progress entry is present on current lane commit `4d81abf12` after dispatcher recovery. Git cherry against origin/main is empty. No claim that the failed original SHA was published.
+
+## 09:25Z — Integrate strategy producer prerequisites without weakening qualification
+
+- Reconciled current backlog: no result needs filing; prefix, Omega and LOG-1 lineages are parked and the codex-ni frontdoor READY is an erroneous parked-lineage publication, so no retry. The previously published GPU RUS successor is no longer listed as needing filing in this state.
+- Reviewed `grant11.json`: offline grant/stop continuity gate passed five tests but requires trusted grant directory, owned server identity and bounded in-flight transport. `assembly11.json` fixed missing telemetry accounting in the scratch summarizer; six offline tests passed. `assemble12` integrated a mock producer seam with four passing tests, but identified a one-second transport timeout that can fail normal prefill and missing actual launcher, external custody, scorer, adapter and tokenizer/protocol integration. No safe row is ready to publish and no acceptance box was ticked.
+- Further bounded strategy assembly, width guidance and RLM prompt work delegated with dispatcher events. The prior wrap-up pushed `f87b7c94dd9bddbc1b1dfb838f1b2b8243e3a749`, cherry empty. No inference performed.

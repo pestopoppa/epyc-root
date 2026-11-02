@@ -28,6 +28,7 @@ import backlog_gen as bg  # noqa: E402
 import handoff_sessions as hs  # noqa: E402
 
 _REAL_ENSURE_LANE = hs.ensure_lane  # fixtures stub ensure_lane; the lane tests call the real one
+_REAL_UNREADIED = hs.unreadied
 
 
 def _w(p, txt):
@@ -73,10 +74,14 @@ class AutoStartFixture(unittest.TestCase):
         self._lane.start()
         self._disk = patch.object(hs, "free_gib", lambda path="/": 999.0)  # the real disk may be below the floor
         self._disk.start()
+        # no un-readied tasks by default so the park rules are exercised; UN-READIED tests patch it
+        self._inv = patch.object(hs, "unreadied", lambda data: {})
+        self._inv.start()
 
     def tearDown(self):
         self._lane.stop()
         self._disk.stop()
+        self._inv.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out, cwd=None):
@@ -910,3 +915,34 @@ class DeadlockTests(_DSHBase):
         _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
         reg, st = self.dispatch()
         self.assertIsNone(reg["sessions"]["alpha"].get("dirty_wrap_resume"))
+
+
+class IdleComputeUnparkTests(_DSHBase):
+    def _old(self, minutes):
+        return hs._dt.datetime.fromtimestamp(hs.time.time() - minutes * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def test_stuck_expires_after_await_expiry(self):
+        # 08:22-09:18Z deadlock: `stuck` never expired (only a run-end cleared it) and cands=0 means no run-end ever comes
+        old = self._old(31)
+        self.session(stuck="3 no-op turns", noop_turns=3, last_end=old, last_resume=old)
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "unreadied", return_value={}):  # no un-readied tasks: only the expiry can resume it
+            self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls), "stuck session resumed after expiry")
+
+    def test_unreadied_tasks_override_every_park(self):
+        now = hs.now_iso()
+        self.session(stuck="3 no-op turns", noop_turns=3, await_event=True, last_end=now, last_resume=now,
+                     idle_reported="nothing to do")
+        self.reg["sessions"]["alpha"]["yield"] = True
+        hs.save(hs.reg_path(self.flags), self.reg)
+        with patch.object(hs, "unreadied", return_value={}):  # nothing un-readied: parks hold
+            self.dispatch()
+        self.assertEqual([c for c in self.calls if "FINISH ALL READY ITEMS" in c["prompt"]], [])
+        rank = {"handoff_rank": [{"handoff": "handoffs/active/alpha.md", "rows": ["row-a"], "candidate_rows": 2},
+                                 {"handoff": "handoffs/active/zed.md", "rows": [], "candidate_rows": 0}]}
+        self.assertEqual(_REAL_UNREADIED(rank), {"handoffs/active/alpha.md": 3})
+        with patch.object(hs, "unreadied", return_value=_REAL_UNREADIED(rank)):  # un-readied tasks: never parked
+            reg, _ = self.dispatch()
+        self.assertTrue(any("FINISH ALL READY ITEMS" in c["prompt"] for c in self.calls))
+        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])

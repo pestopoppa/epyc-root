@@ -1005,6 +1005,12 @@ def context_size(session_id, engine="codex"):
     return last
 
 
+def unreadied(data):
+    """{handoff: un-readied inference task count} - advanceable rows plus own inference tasks not yet published."""
+    return {h["handoff"]: len(h.get("rows") or []) + int(h.get("candidate_rows") or 0)
+            for h in (data or {}).get("handoff_rank") or [] if (h.get("rows") or h.get("candidate_rows"))}
+
+
 def start_watchdog(flags, st, now, sessions=None):
     """SA-2: zero-token counters over the last hour - AUTO-STARTs and DONEs (dispatcher state) vs ready rows produced
     (dryrun/*/PASS.json mtime). Starts without any effect -> AUTO-START-NO-EFFECT alarm (once per hour)."""
@@ -1390,22 +1396,31 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             launched.add(ev["slug"])
             live += 1
         st["queue"] = rest
-        for slug, e in S.items():  # continue: anything open that is not waiting on a queued/running row
+        # UN-READIED (operator 2026-11-02, after the 08:22-09:18Z deadlock: 0 live, 80 parked, every lane idle): while a
+        # handoff has un-readied inference tasks (rows blocked / needs-launcher / needs-qualification, or own inference tasks
+        # not yet published as rows) its session is never parked - yield / stuck / await_event / cooldowns do not apply -
+        # and slots go to those handoffs first, most un-readied tasks first. Parks apply only to handoffs with none.
+        todo = unreadied(bdata)
+        hkey = lambda e: "handoffs/" + str(e.get("handoff") or "").split("handoffs/", 1)[-1]
+        order = sorted(S.items(), key=lambda kv: -todo.get(hkey(kv[1]), 0))
+        for slug, e in order:  # continue: anything open that is not waiting on a queued/running row
             if (live >= cap and not is_generalist(e)) or e.get("status") in ("done", "retry", "failed") or alive(e.get("pid")) \
                     or (e.get("_work") or ("", ""))[0] != "continue":
                 continue
-            if not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
-                continue  # gap only after a turn that produced nothing (ws58 23:30Z: the gap throttled productive sessions to 0 alive)
             if slug in launched or any(ev["slug"] == slug for ev in st["queue"]):
                 continue
-            if e.get("yield"):
+            if todo.get(hkey(e)):
+                e["stuck"], e["await_event"], e["yield"] = None, False, False
+            elif not e.get("last_effect") and now - _parse(e.get("last_resume") or "") < MIN_RESUME_GAP_S:
+                continue  # gap only after a turn that produced nothing (ws58 23:30Z: the gap throttled productive sessions to 0 alive)
+            elif e.get("yield"):
                 continue  # outranked: no new work; its slot goes to a higher-ranked handoff
-            if e.get("stuck"):
-                continue  # 3 no-effect turns: only a run-end (or a new external event) resumes it
-            if e.get("await_event") and e.get("work_reason") == e.get("noop_reason") \
+            elif e.get("stuck") and now - _parse(e.get("last_end") or "") < AWAIT_EXPIRY_S:
+                continue  # 3 no-effect turns: a run-end, a new event, or AWAIT_EXPIRY_S resumes it (it used to never expire)
+            elif e.get("await_event") and e.get("work_reason") == e.get("noop_reason") \
                     and now - _parse(e.get("last_end") or "") < AWAIT_EXPIRY_S:
                 continue  # last turn was a no-op and nothing changed since: wait for an event (or 30 min), not another re-check
-            if e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
+            elif e.get("idle_reported") and now - _parse(e.get("last_end") or "") < IDLE_REPORT_COOLDOWN_S:
                 continue  # the session itself said IDLE: <reason>; re-asked after the cooldown
             if not wrapped(e, lcache):
                 log_unwrapped(flags, slug, e)
