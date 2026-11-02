@@ -8,6 +8,8 @@ from adapters import kvu19a2_native as native
 
 
 def test_prospective_writer_projects_observed_and_preserves_unknown(tmp_path):
+    producer = tmp_path / "producer.py"
+    producer.write_text("# synthetic producer\n")
     raw = tmp_path / "raw.bin"
     raw.write_bytes(struct.pack("<ff", 1.0, float("nan")))
     digest = hashlib.sha256(raw.read_bytes()).hexdigest()
@@ -17,7 +19,7 @@ def test_prospective_writer_projects_observed_and_preserves_unknown(tmp_path):
                 "gpu_vram_observed": None, "source_build_binding": "unproven"}
     missing = {"observed": False, "arm": "candidate", "case": "D576", "nan_elements": None,
                "missing_reason": "interrupted"}
-    result, sidecar = native.record_run(tmp_path / "out", run_id="synthetic", producer="test", observations=[observed, missing])
+    result, sidecar = native.record_run(tmp_path / "out", run_id="synthetic", producer=str(producer), observations=[observed, missing])
     assert json.loads(result.read_text())["observations"][1] == missing
     rows = native.native_rows(sidecar)
     assert len(rows) == 1
@@ -25,10 +27,12 @@ def test_prospective_writer_projects_observed_and_preserves_unknown(tmp_path):
     assert claim.value == 1 and claim.protocol_id == "" and claim.reps == 1
     assert native.frames_for_sidecar(sidecar, as_of="2026-11-02T23:59:59Z")
     with pytest.raises(FileExistsError):
-        native.record_run(tmp_path / "out", run_id="synthetic", producer="test", observations=[observed])
+        native.record_run(tmp_path / "out", run_id="synthetic", producer=str(producer), observations=[observed])
 
 
 def test_capture_refuses_false_count_and_preserves_missing(tmp_path):
+    producer = tmp_path / "producer.py"
+    producer.write_text("# synthetic producer\n")
     raw = tmp_path / "raw.bin"
     raw.write_bytes(struct.pack("<f", 2.0))
     obs = {"observed": True, "arm": "base", "case": "D576", "nan_elements": 1,
@@ -36,8 +40,8 @@ def test_capture_refuses_false_count_and_preserves_missing(tmp_path):
            "source_archive_sha256": "a" * 64, "executable_sha256": "b" * 64,
            "hip_sha256": "c" * 64, "mapped_ggml": {}}
     with pytest.raises(ValueError, match="count mismatch"):
-        native.record_run(tmp_path / "bad", run_id="bad", producer="test", observations=[obs])
-    result, sidecar = native.record_run(tmp_path / "unknown", run_id="unknown", producer="test",
+        native.record_run(tmp_path / "bad", run_id="bad", producer=str(producer), observations=[obs])
+    result, sidecar = native.record_run(tmp_path / "unknown", run_id="unknown", producer=str(producer),
                                         observations=[{"observed": False, "nan_elements": None,
                                                        "missing_reason": "interrupted"}])
     assert result.exists() and sidecar is None
