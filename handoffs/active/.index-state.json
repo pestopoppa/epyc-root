@@ -4,7 +4,7 @@
       "blocked": 59,
       "handoffs": 59,
       "oldest_advance": "2026-07-29",
-      "open": 1039
+      "open": 1037
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -571,7 +571,7 @@
       "blocked": 42,
       "closed": 74,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2521,10 +2521,10 @@
     },
     "speculative-decoding-mtp-refresh.md": {
       "blocked": 1,
-      "closed": 56,
+      "closed": 58,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 35,
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",

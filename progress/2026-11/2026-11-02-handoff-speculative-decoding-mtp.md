@@ -79,3 +79,11 @@ Added model-free partial-block classifier and mocked captured-child lifecycle se
 ## 09:44Z — Advance SR-6 lifecycle controls and trace T5 evidence
 
 Published the SR-6 and T5 preparation after merging concurrent origin/main changes. No row published.
+
+## 10:07Z — Decide SW-3 and CAFE-1 and advance SR-6
+
+Decided SW-3: retain existing lower-only n_max, which bitwise-sensitive callers use; no demonstrated current consumer justifies additional per-request controls, and the historical composed-cost observation alone is insufficient. Decided CAFE-1: decline tested p-min 0.5/0.75/0.9 on failed mandatory greedy identity (4/15, 6/15, 5/15; repeat baseline 15/15). Native rc1 and post-run predicate revision remain explicit; no performance or deployment claim. Added SR-6 model-free integrated block capture seam and tests; admission, native runtime evidence, exposure-root authority and process-tree drain remain to implement. Traced T3/T3c retained research packet; exact rendered prompt fractions remain unknown. All 50 bounded preparation tests pass. No inference row published.
+
+## 10:10Z — Decide SW-3 and CAFE-1 and advance SR-6
+
+The SW-3 and CAFE-1 boxes were ticked on the preceding wrap-up attempt; regenerated the derived handoff rollup required after those ticks. SR-6 and NG5 work remains as recorded in the preceding entry.

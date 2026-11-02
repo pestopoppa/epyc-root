@@ -1272,7 +1272,7 @@
       "from": "EVL-48",
       "kind": "ref",
       "to": "INF-37",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "INF-02",
@@ -1596,7 +1596,7 @@
       "from": "INF-22",
       "kind": "ref",
       "to": "INF-07",
-      "weight": 6
+      "weight": 8
     },
     {
       "from": "INF-22",
@@ -3945,7 +3945,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T07:54:26Z",
+  "generated_at": "2026-11-02T10:10:11Z",
   "nodes": [
     {
       "age_days": 95,
@@ -6104,16 +6104,16 @@
       "track": "sarathi serve cpu evaluation"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 56,
+      "closed": 58,
       "domain": "inference-research",
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 35,
+      "open": 33,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -6490,7 +6490,7 @@
         "INF-62",
         "INF-64"
       ],
-      "closed": 85,
+      "closed": 86,
       "domain": "inference-research",
       "handoff": "autokernel-champion-aggregate.md",
       "id": "INF-65",
@@ -6870,16 +6870,16 @@
       "track": "autokernel orchestrator actor backend"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 73,
+      "closed": 74,
       "domain": "inference-research",
       "handoff": "conversation-stack.md",
       "id": "INF-79",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 35,
+      "open": 34,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
