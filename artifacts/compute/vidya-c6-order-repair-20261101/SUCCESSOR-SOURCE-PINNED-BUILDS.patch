@@ -1,0 +1,400 @@
+--- a/calendar.sh
++++ b/calendar.sh
+@@ -5,7 +5,7 @@
+ : "${WS58_REGIONS:?real GPU calendar grant required}"
+ [ "$WS58_REGIONS" = mi210_0,72-79 ] || { echo 'wrong original-protocol GPU/CPU placement' >&2; exit 64; }
+ (cd "$HERE"; sha256sum -c PACKAGE-SHA256SUMS >/dev/null)
+-id=refactor-c6-gpu-27b-identity-729599d69-20261031
++id=refactor-c6-gpu-27b-identity-r2-729599d69-20261031
+ job="taskset -c \"\$FILLER_CPUS\" /usr/bin/python3 -B '$HERE/gpu_identity_job.py'"
+ complete="/usr/bin/python3 -B '$HERE/consume_identity.py'"
+ exec /bin/bash "$HERE/engine/filler_run13.sh" --id "$id" --class gpu --claim-cpus 72-79 --gpu-quiet exclusive --role bench \
+--- a/gpu_identity_job.py
++++ b/gpu_identity_job.py
+@@ -4,7 +4,8 @@
+ from pathlib import Path
+ HERE=Path(__file__).resolve().parent;sys.path.insert(0,str(HERE/'instruments'))
+ import produce
+-ID='refactor-c6-gpu-27b-identity-729599d69-20261031'
++from arm_order import validate_arm_order
++ID='refactor-c6-gpu-27b-identity-r2-729599d69-20261031'
+ P=Path('/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5')
+ C=Path('/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6')
+ ATTEMPT_ROOT=None
+@@ -70,10 +71,8 @@
+  original=root/'ab/result.json'
+  if not original.exists():raise RuntimeError('original full protocol omitted result')
+  data=json.loads(original.read_text());arms=data.get('arms');v=data.get('verdict',{})
+- if not isinstance(arms,list) or len(arms)!=30 or data.get('kind')!='mtp':raise RuntimeError('original 30-arm result missing')
+- tags=[a.get('tag') for a in arms]
+- if tags!=[f'{i}{"P" if i%2 else "C"}' for i in range(1,31)]:raise RuntimeError('original pair order changed')
+- identity=v.get('identity',{});result['original_result_sha256']=sha(original);result['identity_pass']=identity.get('C_equals_P') is True and identity.get('P_self_deterministic') is True;result['protocol_pass']=v.get('PASS') is True;result['status']='COMPLETE_ORIGINAL_PROTOCOL' if row['rc']==0 else 'NATIVE_FAILED'
++ order_proof=validate_arm_order(data,root/'ab',{'P':P/'bin/llama-server','C':C/'bin/llama-server'})
++ result['execution_order_proof']=order_proof;identity=v.get('identity',{});result['original_result_sha256']=sha(original);result['identity_pass']=identity.get('C_equals_P') is True and identity.get('P_self_deterministic') is True;result['protocol_pass']=v.get('PASS') is True;result['status']='COMPLETE_ORIGINAL_PROTOCOL' if row['rc']==0 else 'NATIVE_FAILED'
+  raw=[]
+  for f in sorted((root/'ab').rglob('*')):
+   if f.is_file():raw.append({'path':str(f.relative_to(root)),'sha256':sha(f),'size':f.stat().st_size})
+--- a/consume_identity.py
++++ b/consume_identity.py
+@@ -2,7 +2,8 @@
+ """OUTER completion: original 30-arm GPU A/B PASS with exact raw and grant identity."""
+ import hashlib,json,re,sys
+ from pathlib import Path
+-HERE=Path(__file__).resolve().parent;ID='refactor-c6-gpu-27b-identity-729599d69-20261031'
++from arm_order import validate_arm_order
++HERE=Path(__file__).resolve().parent;ID='refactor-c6-gpu-27b-identity-r2-729599d69-20261031'
+ 
+ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+ def require(ok,msg):
+@@ -17,7 +18,7 @@
+  require(r['status']=='COMPLETE_ORIGINAL_PROTOCOL' and r['partial'] is False and r['full_gate_pass'] is True and r['protocol_pass'] is True and r['identity_pass'] is True,'protocol/identity verdict')
+  require(r['process']['children_drained'] is True and r['process']['rc']==0 and r['process']['reason'] is None,'native tree completion')
+  require(r['pre_sha256']==sha(root/'PRE-RUN.json') and r['original_result_sha256']==sha(root/'ab/result.json'),'result source hashes')
+- arms=original.get('arms',[]);require(len(arms)==30 and [a.get('tag') for a in arms]==[f'{i}{"P" if i%2 else "C"}' for i in range(1,31)],'30 original alternating arms')
++ require(r.get('execution_order_proof')==validate_arm_order(original,root/'ab',{'P':job.P/'bin/llama-server','C':job.C/'bin/llama-server'}),'native execution order proof')
+  v=original.get('verdict',{});require(v.get('PASS') is True and v.get('identity',{}).get('C_equals_P') is True and v['identity'].get('P_self_deterministic') is True,'original strict verdict')
+  for item in r['raw_files']:
+   path=(root/item['path']).resolve();require(path.is_relative_to(root) and path.is_file() and path.stat().st_size==item['size'] and sha(path)==item['sha256'],'raw changed: '+item['path'])
+--- /dev/null
++++ b/arm_order.py
+@@ -0,0 +1,69 @@
++"""Bind serialized native arms to the retained sequential execution evidence."""
++import json
++import re
++from pathlib import Path
++
++
++def validate_arm_order(data, run, expected_bins):
++    """Refuse incomplete, reordered or contradictory native evidence; no grading."""
++    run = Path(run)
++    if set(expected_bins) != {'P', 'C'} or expected_bins['P'] == expected_bins['C']:
++        raise ValueError('distinct pinned P/C binaries required')
++    expected = [f'{i}{"P" if i % 2 else "C"}' for i in range(1, 31)]
++    arms = data.get('arms')
++    if data.get('kind') != 'mtp' or not isinstance(arms, list) or len(arms) != 30:
++        raise ValueError('original 30-arm result missing')
++    by_tag = {}
++    for arm in arms:
++        if not isinstance(arm, dict):
++            raise ValueError('invalid serialized arm')
++        tag = arm.get('tag')
++        if not isinstance(tag, str) or tag not in expected or tag in by_tag:
++            raise ValueError('duplicate or unexpected serialized tag')
++        by_tag[tag] = arm
++    if set(by_tag) != set(expected):
++        raise ValueError('missing serialized tag')
++    events = []
++    launches = {}
++    deaths = {}
++    for line in (run / 'ab_arms.log').read_text().splitlines():
++        match = re.fullmatch(r'\[ab \d{2}:\d{2}:\d{2}Z\] arm (\S+): launching (.+)', line)
++        if match:
++            tag, binary = match.groups()
++            events.append(('launch', tag))
++            if tag in launches:
++                raise ValueError('duplicate native launch')
++            launches[tag] = binary
++            continue
++        match = re.fullmatch(r'\[ab \d{2}:\d{2}:\d{2}Z\] arm (\S+) server PID (\d+) verified dead', line)
++        if match:
++            tag, pid = match.groups()
++            events.append(('dead', tag))
++            if tag in deaths:
++                raise ValueError('duplicate native death')
++            deaths[tag] = int(pid)
++            continue
++        match = re.fullmatch(r'\[ab \d{2}:\d{2}:\d{2}Z\] arm (\S+) done \(\d+ s\)', line)
++        if match:
++            events.append(('done', match[1]))
++    if events != [(phase, tag) for tag in expected for phase in ('launch', 'dead', 'done')]:
++        raise ValueError('native execution sequence incomplete or changed')
++    previous = None
++    for tag in expected:
++        arm = by_tag[tag]
++        meta = json.loads((run / f'arm-{tag}.meta.json').read_text())
++        if arm.get('meta') != meta or arm.get('arm') != tag[-1] or meta.get('tag') != tag or meta.get('arm') != tag[-1]:
++            raise ValueError('serialized/native metadata mismatch')
++        start = meta.get('started_epoch')
++        if type(start) is not int or (previous is not None and start <= previous):
++            raise ValueError('native start epochs not strictly increasing')
++        previous = start
++        binary = str(Path(meta.get('bin_dir', '')) / 'llama-server')
++        argv = meta.get('cmdline')
++        if binary != str(expected_bins[tag[-1]]) or launches[tag] != binary or not isinstance(argv, list) or not argv or argv[0] != binary:
++            raise ValueError('native launch binary mismatch')
++        if type(meta.get('pid')) is not int or meta['pid'] != deaths[tag]:
++            raise ValueError('native death PID mismatch')
++        if arm.get('probe_file') != f'arm-{tag}.probe.json':
++            raise ValueError('native probe tag mismatch')
++    return {'tags_in_execution_order': expected, 'provenance': 'native_launch_dead_done_log_and_exact_per_arm_metadata'}
+--- /dev/null
++++ b/test_arm_order.py
+@@ -0,0 +1,137 @@
++import copy
++import hashlib
++import json
++import tempfile
++import unittest
++from pathlib import Path
++from arm_order import validate_arm_order
++
++RETAINED = Path('/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab')
++
++EXPECTED_BINS = {'P': '/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server', 'C': '/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server'}
++
++
++class OrderControls(unittest.TestCase):
++    def setUp(self):
++        manifest_path = Path(__file__).with_name('RETAINED-READSET.json')
++        manifest_bytes = manifest_path.read_bytes()
++        self.assertEqual(hashlib.sha256(manifest_bytes).hexdigest(), '2b81bdcf77608d0a951e61c50a4840d4e68d898b80f38068d9e276429860225e')
++        for name, expected in json.loads(manifest_bytes).items():
++            self.assertEqual(hashlib.sha256((RETAINED / name).read_bytes()).hexdigest(), expected)
++        fixtures = Path(__file__).with_name('retained-control-fixtures')
++        fixtures.mkdir(exist_ok=True)
++        self.run = Path(tempfile.mkdtemp(prefix='control-', dir=fixtures))
++        self.data = json.loads((RETAINED / 'result.json').read_text())
++        self.log = (RETAINED / 'ab_arms.log').read_text()
++        (self.run / 'ab_arms.log').write_text(self.log)
++        for arm in self.data['arms']:
++            name = f"arm-{arm['tag']}.meta.json"
++            (self.run / name).write_bytes((RETAINED / name).read_bytes())
++
++    def reject(self):
++        with self.assertRaises(ValueError):
++            validate_arm_order(self.data, self.run, EXPECTED_BINS)
++
++    def test_actual_retained_lexical_serialization_passes_provenance(self):
++        tags = [arm['tag'] for arm in self.data['arms']]
++        expected = [f'{i}{"P" if i % 2 else "C"}' for i in range(1, 31)]
++        self.assertNotEqual(tags, expected)  # Original wrapper's actual failing predicate.
++        proof = validate_arm_order(self.data, self.run, EXPECTED_BINS)
++        self.assertEqual(proof['tags_in_execution_order'], expected)
++
++    def test_result_serialization_permutation_is_not_execution(self):
++        self.data['arms'].reverse()
++        self.assertEqual(len(validate_arm_order(self.data, self.run, EXPECTED_BINS)['tags_in_execution_order']), 30)
++
++    def test_swapped_execution_refused_even_with_complete_ordinals(self):
++        lines = self.log.splitlines()
++        i = next(i for i, line in enumerate(lines) if 'arm 1P: launching' in line)
++        j = next(i for i, line in enumerate(lines) if 'arm 2C: launching' in line)
++        lines[i], lines[j] = lines[j], lines[i]
++        (self.run / 'ab_arms.log').write_text('\n'.join(lines))
++        self.reject()
++
++    def test_duplicate_tag(self):
++        self.data['arms'][1] = copy.deepcopy(self.data['arms'][0])
++        self.reject()
++
++    def test_missing_tag(self):
++        self.data['arms'].pop()
++        self.reject()
++
++    def test_wrong_ordinal_label(self):
++        self.data['arms'][0]['tag'] = '10P'
++        self.reject()
++
++    def test_aggregate_metadata_tamper(self):
++        self.data['arms'][0]['meta']['pid'] += 1
++        self.reject()
++
++    def test_disk_metadata_tamper(self):
++        path = self.run / 'arm-1P.meta.json'
++        data = json.loads(path.read_text()); data['pid'] += 1
++        path.write_text(json.dumps(data)); self.reject()
++
++    def test_consistent_metadata_but_wrong_binary(self):
++        arm = self.data['arms'][0]
++        arm['meta']['bin_dir'] = '/wrong/bin'
++        arm['meta']['cmdline'][0] = '/wrong/bin/llama-server'
++        (self.run / f"arm-{arm['tag']}.meta.json").write_text(json.dumps(arm['meta']))
++        self.reject()
++
++    def test_death_pid_mismatch(self):
++        (self.run / 'ab_arms.log').write_text(self.log.replace('server PID 1410645 verified dead', 'server PID 1 verified dead'))
++        self.reject()
++
++    def test_duplicate_launch(self):
++        launch = next(line for line in self.log.splitlines() if 'arm 1P: launching' in line)
++        (self.run / 'ab_arms.log').write_text(self.log + launch + '\n')
++        self.reject()
++
++    def test_missing_completion(self):
++        (self.run / 'ab_arms.log').write_text('\n'.join(line for line in self.log.splitlines() if 'arm 30C done (' not in line))
++        self.reject()
++
++    def test_lexically_sorted_log_refused(self):
++        events = [line for line in self.log.splitlines() if ': launching ' in line or ' verified dead' in line or ' done (' in line]
++        (self.run / 'ab_arms.log').write_text('\n'.join(sorted(events, key=lambda line: line.split(' arm ')[1].split()[0])))
++        self.reject()
++
++    def test_epoch_reversal_with_matching_metadata(self):
++        arm = next(arm for arm in self.data['arms'] if arm['tag'] == '2C')
++        arm['meta']['started_epoch'] = 0
++        (self.run / 'arm-2C.meta.json').write_text(json.dumps(arm['meta']))
++        self.reject()
++
++    def test_wrong_probe_binding(self):
++        self.data['arms'][0]['probe_file'] = 'arm-1P.probe.json'
++        self.reject()
++
++    def change_build(self, letters):
++        log = self.log
++        for arm in self.data['arms']:
++            tag = arm['tag']
++            old_binary = arm['meta']['cmdline'][0]
++            binary = EXPECTED_BINS[letters[tag[-1]]]
++            arm['meta']['bin_dir'] = str(Path(binary).parent)
++            arm['meta']['cmdline'][0] = binary
++            (self.run / f'arm-{tag}.meta.json').write_text(json.dumps(arm['meta']))
++            log = log.replace(f'arm {tag}: launching {old_binary}', f'arm {tag}: launching {binary}')
++        (self.run / 'ab_arms.log').write_text(log)
++
++    def test_log_and_metadata_consistent_swapped_builds_refused(self):
++        self.change_build({'P': 'C', 'C': 'P'})
++        self.reject()
++
++    def test_log_and_metadata_consistent_same_build_refused(self):
++        self.change_build({'P': 'P', 'C': 'P'})
++        self.reject()
++
++    def test_no_new_grading(self):
++        self.data['verdict']['PASS'] = False
++        validate_arm_order(self.data, self.run, EXPECTED_BINS)  # Validator proves order only.
++        self.assertFalse(self.data['verdict']['PASS'])
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)
+--- /dev/null
++++ b/test_actual_main.py
+@@ -0,0 +1,87 @@
++"""Model-free actual main/writer controls; allocation/service adapters are fixtures."""
++import importlib.util
++import json
++import os
++from pathlib import Path
++import shutil
++import tempfile
++import time
++import unittest
++from unittest.mock import patch
++import test_arm_order
++
++HERE = Path(__file__).resolve().parent
++spec = importlib.util.spec_from_file_location('c6_actual_job', HERE / 'gpu_identity_job.py')
++job = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(job)
++
++
++class MainControls(unittest.TestCase):
++    def exercise(self, mode):
++        # Retain every fixture: no cleanup/delete/rename.
++        root = Path(tempfile.mkdtemp(prefix='actual-main-', dir=HERE / 'retained-control-fixtures'))
++        (root / 'PROTOCOL-PINS.json').write_bytes((HERE / 'PROTOCOL-PINS.json').read_bytes())
++        for name in ['ORIGINAL-SHA256SUMS', 'PACKAGE-SHA256SUMS']:
++            (root / name).write_text('MODEL_FREE_ADAPTER_FIXTURE\n')
++        proto = json.loads((HERE / 'PROTOCOL-PINS.json').read_text())
++        fixture_grant = root / 'PRIVATE-NON-GRANT.txt'
++        fixture_grant.write_text('not an admission; model-free external-boundary adapter only\n')
++        real_sha = job.sha
++
++        def fixture_sha(path):
++            if Path(path).parent == Path('/mnt/raid0/llm/tmp/compute-flags/grants'):
++                return real_sha(fixture_grant)
++            return real_sha(path)
++
++        class ServiceAdapter:
++            def __init__(self, *args):
++                pass
++
++            def run(self, argv, workdir, env, timeout):
++                self_case.assertIn(str(root / 'original/gpu_champion_ab.sh'), argv)
++                self_case.assertEqual(argv[argv.index('--pairs') + 1], '15')
++                if mode == 'stop':
++                    return {'reason': 'fixture_active_stop', 'rc': 75, 'children_drained': True}
++                ab = workdir / 'ab'
++                ab.mkdir()
++                manifest = json.loads((HERE / 'RETAINED-READSET.json').read_text())
++                for name in manifest:
++                    shutil.copy2(test_arm_order.RETAINED / name, ab / name)
++                if mode == 'bad_order':
++                    log = (ab / 'ab_arms.log').read_text()
++                    (ab / 'ab_arms.log').write_text(log.replace('arm 1P: launching', 'arm 2C: launching', 1))
++                return {'reason': None, 'rc': 0, 'children_drained': True}
++
++        self_case = self
++        env = {'FILLER_ID': job.ID, 'WS58_REGIONS': 'mi210_0,72-79', 'FILLER_CPUS': '72-79',
++               'FILLER_DEADLINE': str(time.time() + 7200), 'FILLER_STOPFILE': str(root / 'UNCREATED-STOP')}
++        with patch.object(job, 'HERE', root), patch.object(job, 'pins', return_value=proto), patch.object(job, 'sha', fixture_sha), patch.object(job.os, 'sched_getaffinity', return_value=set(range(72, 80))), patch.object(job.produce, 'OwnedStep', ServiceAdapter), patch.dict(os.environ, env):
++            if mode == 'bad_order':
++                with self.assertRaisesRegex(ValueError, 'duplicate native launch|execution sequence'):
++                    job.main()
++                self.assertFalse((job.ATTEMPT_ROOT / 'RESULT.json').exists())
++                return
++            rc = job.main()
++        result = json.loads((job.ATTEMPT_ROOT / 'RESULT.json').read_text())
++        self.assertEqual(rc, 75 if mode == 'stop' else 0)
++        if mode == 'stop':
++            self.assertTrue(result['partial'])
++            self.assertIsNone(result['full_gate_pass'])
++        else:
++            self.assertTrue(result['full_gate_pass'])
++            self.assertEqual(len(result['execution_order_proof']['tags_in_execution_order']), 30)
++            self.assertEqual(result['original_result_sha256'], real_sha(test_arm_order.RETAINED / 'result.json'))
++        (root / 'CONTROL-SCOPE.json').write_text(json.dumps({'scope':'MODEL_FREE_ACTUAL_MAIN_EXTERNAL_BOUNDARY_ADAPTERS_ONLY','mode':mode,'no_native_or_real_grant':True,'not_scientific_ingest':True}) + '\n')
++
++    def test_actual_main_retained_native_and_result_writer(self):
++        self.exercise('normal')
++
++    def test_actual_main_rejects_bad_execution(self):
++        self.exercise('bad_order')
++
++    def test_actual_main_preserves_partial75(self):
++        self.exercise('stop')
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)
+--- /dev/null
++++ b/RETAINED-READSET.json
+@@ -0,0 +1,34 @@
++{
++  "ab_arms.log": "b2cd56652434e6ca59c53d0749409801ed8f0f6e51cc77dd948eec1ffcb03050",
++  "arm-10C.meta.json": "ef2468d55d8de93fe1010a07ab41d0359983be7000c2bde448abf4689cdb1338",
++  "arm-11P.meta.json": "b9eafd40731d138748cba5b8bec755604a0e25866ddde118d4b324f0efbb08bc",
++  "arm-12C.meta.json": "9602a07c979f522c5f63ecb6de37b758cf2ca09e20a912013eb55804340a4983",
++  "arm-13P.meta.json": "4af28afefe81a4307bba96a200bee00aa7aeeb993207c1636a2548c76798abc6",
++  "arm-14C.meta.json": "35c467a75f2619ef513628c7fe297585b675e6293a88fe887e4b7bd96ef1ddae",
++  "arm-15P.meta.json": "7eaf5583e387d9f9cccb3b31879f1cb72ff93dd36deb92693c76422e25d6706d",
++  "arm-16C.meta.json": "2341fa85126f1dd067b701b858f1207a4d5a7fb8cf48f67d5badd4cfd9807fa3",
++  "arm-17P.meta.json": "62a6cf880215b7f423b91f45f5af10529e681e8375c4cadfee764c24e6afddbf",
++  "arm-18C.meta.json": "86657ee510939202e82944d8112eb956b3162def615ec740d65da0eba99dbcb3",
++  "arm-19P.meta.json": "90a8b25729ee8ee020712a35a763bd98be1b966a43e2395698eb0c9f16f6504f",
++  "arm-1P.meta.json": "e2658215e8bc8f977120cfb0223ceb38cec35def0a4fbcb338d97bad89be93e6",
++  "arm-20C.meta.json": "f0030461fbdf168748ada09bf74bf65c6cf8f6d5b75e01d1840e9400fc2d4562",
++  "arm-21P.meta.json": "e733a79ed47960fbc7fda3941a88b5f5e8965377cbb37008af46f4227073b82d",
++  "arm-22C.meta.json": "6334cf5dd9f99f8a6f2fbaad50257b1e16bff481bdce34ee35e79379a5ebec32",
++  "arm-23P.meta.json": "43fa2a8109e130f7779dd9595d3d756e242f2057bf200bdd3a47d505344c043a",
++  "arm-24C.meta.json": "b29a729a2c062ef68448f14313766b7272fe27182d3ec0b01d654acba845c431",
++  "arm-25P.meta.json": "eb0303463faee0082af393cb6ecad0a85e99214d7596219eb179349a6e19eb42",
++  "arm-26C.meta.json": "ea7928ea387ab31f9e99f579a209af0db3bb150c5241f4992fc66bbb97e20db1",
++  "arm-27P.meta.json": "a9b2b037dbd9d00af18cf236d1378bf196766ecd5b0794e564e11974ffa953c9",
++  "arm-28C.meta.json": "1eda7d869fd44f88248c1c8dbc12434dc4cc88a73902f17f60cbe99e9ab84200",
++  "arm-29P.meta.json": "3c6b8354dec5ae963b87491c1c163730bc1248e0fa45b9ca0366a0c64f8f8e5b",
++  "arm-2C.meta.json": "e39ed77f062241aa136156b14056f6bfc07d57aefcd46a5a0aca74dcb89ffc65",
++  "arm-30C.meta.json": "df120d514f6dbd81b7f423c865abb25716392a9c6d658bce7a2ff8b3c6a29336",
++  "arm-3P.meta.json": "6f6afcf66caca12317939da0ba9f717201c0ec27eb066d27f55bc9cfe674f702",
++  "arm-4C.meta.json": "a5ae7ceca376cb4f642f9d09a2897a77afefe5d47f60b7ca0bd6146dc88c633f",
++  "arm-5P.meta.json": "1b13c522b25819f77186bb59a558fc5fcb594d9522ea7508e1995425d9a4fb08",
++  "arm-6C.meta.json": "768a8c70aab1180773acd74dce9c362f386aa4fb6322274b5aafcb92ab504aec",
++  "arm-7P.meta.json": "c2fc60539429cd8abc9e028f40180090557f60bd8824823d341f9bc4f685e56e",
++  "arm-8C.meta.json": "b27b2c0580ae52d9b23b3b4e1892cdf96a482d01ed6119e0479165ea2acbf26d",
++  "arm-9P.meta.json": "a3b6f85391ca658c348f0843890fbb95bdfd420b594b2945f50de8702690bcb2",
++  "result.json": "bb75877259a5bfc0ccb09743472043d406b04faf90b312e7f108da31c3847b0f"
++}
+--- /dev/null
++++ b/PRIOR-CLEANUP-DISCLOSURE.md
+@@ -0,0 +1 @@
++The first 16-control invocation used Python TemporaryDirectory and addCleanup(cleanup), which deleted only its newly created private fixture directories. This violated the standing no-delete rule. The source and original retained evidence were unchanged. The initial ORDER-CONTROLS.log/json and first patch remain preserved. Successor tests retain every new fixture directory and verify the exact immutable native result/log plus all 30 meta-file hashes before replay.

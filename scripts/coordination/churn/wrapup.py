@@ -179,6 +179,10 @@ def push_with_retry(lane: str, slug: str) -> None:
 
 # --------------------------------------------------------------------- 6. commit
 def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) -> str:
+    junk = [l[3:] for l in _git(lane, "status", "--porcelain", "--untracked-files=all", "--", "artifacts/").stdout.splitlines() if l.startswith("??")]
+    if junk:
+        raise WrapupError(f"untracked scratch under artifacts/ in the lane ({len(junk)} file(s), e.g. {junk[0]}): scratch belongs in "
+                          f"/mnt/raid0/llm/tmp/<slug>/ - move or delete it, then wrap up (disk incident 2026-11-02)")
     _ok(_git(lane, "add", "--", *pathspec), "git add")
     if not _git(lane, "diff", "--cached", "--quiet").returncode:
         raise WrapupError("nothing staged under the pathspec")

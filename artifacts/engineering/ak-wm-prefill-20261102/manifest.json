@@ -1,0 +1,37 @@
+{
+  "schema": "epyc.autokernel.iqk_matched_pair_preparation.v2",
+  "measurement_frame": {
+    "recipe_id": "t1b.llama_cpu.llama_bench_prefill.v1",
+    "n_prompt": 512
+  },
+  "matched_experiment_id": "akm-iqk-prefill-20261102-5c46246fb4c9",
+  "intervention_campaign_id": "ak-iqk-prefill-20261102-5c46246fb4c9",
+  "intervention_proposal_id": "akp-iqk-prefill-5c46246fb4c9",
+  "control_proposal_id": "akp-iqk-control-5c46246fb4c9",
+  "intervention_proposal": "/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/inputs/proposal-v4.json",
+  "calibration_bundle": "/mnt/raid0/llm/autokernel/controls/ak-controls-v9-f744cc220-20260813-r5",
+  "physical_envelope_template": "/mnt/raid0/llm/autokernel/iqk-prefill-envelope-r5-20260813-r42.json",
+  "model": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+  "blocks": 15,
+  "reps": 1,
+  "intervention": {
+    "campaign_id": "ak-iqk-prefill-5c46246fb4c9",
+    "candidate_id": "akc-iqk-prefill-5c46246fb4c9",
+    "capture_id": "aklc-iqk-prefill-5c46246fb4c9",
+    "intervention_id": "iqk-enabled",
+    "diagnostic_source": "/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/inputs/least-commitment-diagnostic-source.json",
+    "evidence_stage": "bootstrap",
+    "heldout_outcome": null,
+    "output_dir": "/mnt/raid0/llm/worktrees/mains/h-autokernel-research-loop/artifacts/engineering/ak-wm-prefill-20261102/intervention"
+  },
+  "control": {
+    "campaign_id": "ak-iqk-control-5c46246fb4c9",
+    "candidate_id": "akc-iqk-control-5c46246fb4c9",
+    "capture_id": "aklc-iqk-control-5c46246fb4c9",
+    "intervention_id": "iqk-aa-control",
+    "diagnostic_source": "/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/inputs/least-commitment-diagnostic-source.json",
+    "evidence_stage": "bootstrap",
+    "heldout_outcome": null,
+    "output_dir": "/mnt/raid0/llm/worktrees/mains/h-autokernel-research-loop/artifacts/engineering/ak-wm-prefill-20261102/control"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "task": "UFH14-B4b/B4c eval tower cohort selection",
+  "result": "selected_existing_cohort",
+  "source_repo": "/mnt/raid0/llm/epyc-inference-research",
+  "runner": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_orchestrator.py",
+    "revision_observed": "99301fa149af86a6f9743d2b0405c9234ba39586",
+    "behavior": "Loads prompts from benchmarks/prompts/v1/orchestrator/<suite>/*.txt and suite ground truth from ground_truth/tN_expected.json. Criteria are selected by prompt filename; prompt metadata only overlays max_turns, timeout_seconds, and must_call_final. The criteria implementation checks answer text (case-insensitive containment), function names/counts, final flag, turns, JSON validity/keys, escalation, termination/crash, and one_of."
+  },
+  "recommended_cohort": {
+    "name": "T1 routing core + T2 delegation output-shape subset",
+    "files": [
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/direct_answer.txt",
+        "sha256": "83537827208c55ef7651520517752a269358460ff1bb230f42e35381a30291e9",
+        "scorer_viability": "good: answer_contains 4, no_llm_calls, max_turns, must_call_final are implemented and fit the prompt"
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/context_grep.txt",
+        "sha256": "48e984f8af559afa2d7ea9e8f1cf2cea13da8c012b8f48916d509a8fe28aa9a7",
+        "scorer_viability": "partial: uses_function(grep), turn/final and substring criterion are implemented. GT requires ERROR and error, but matching is case-insensitive, so these collapse to the same token and do not verify returned matching lines/context details."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t1_routing/simple_delegate.txt",
+        "sha256": "7f7dea7b178fb3117277e0d25489bf98e343d2b86d0f092c4519108f9d58bead",
+        "scorer_viability": "good for delegation mechanics: function presence, counted llm_* entries, turns and final are implemented. Prompt metadata says llm_call_count: 1 but that metadata is not consumed; GT llm_calls_count min/max is consumed. It does not score summary quality."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t2_delegation/iterative_refine.txt",
+        "sha256": "8fa61f399e8ffe19e2b91f069ae293c10388efcfe6c7c1a4269a15f24fe7a339",
+        "scorer_viability": "good for iterative mechanics: GT llm_calls_count range, function presence, max_turns and final are implemented. It does not score whether the factorial handles edge cases; prompt metadata llm_call_min_count is ignored."
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/t2_delegation/structured_extract.txt",
+        "sha256": "4295b33e6f07bb6a179df8a4062e4b37fd4d40af4c7ea2a335eff1c5758bc201",
+        "scorer_viability": "good output-shape scorer: GT checks JSON parseability and name/email keys; the prompt asks for name, email, phone, and GT also checks identifying answer substrings. JSON checks are implemented. GT does not require a phone key, so phone extraction is only weakly asserted by substring 555."
+      }
+    ],
+    "ground_truth": [
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/ground_truth/t1_expected.json",
+        "sha256": "540760271c05bf9b5f7071c9359a4c400dd15b89d82b687eae6d3e19da465f40"
+      },
+      {
+        "path": "benchmarks/prompts/v1/orchestrator/ground_truth/t2_expected.json",
+        "sha256": "8e524ed1b68f5260096eb5ddb84e21079d31dc044f8f5ebd97dc02e52ee89fe3"
+      }
+    ]
+  },
+  "excluded_existing_cases": [
+    {
+      "test": "t1_context_peek",
+      "reason": "GT requires answer_contains 'The', while the actual prompt asks for and its context supplies 'Hello'; expected output conflicts with source prompt."
+    },
+    {
+      "test": "t2_code_explain",
+      "reason": "GT answer_contains_any expects bubble/sort/swap/O(n), while actual prompt context is process_data list doubling and asks about None/loop/multiply. False negative likely; GT/prompt mismatch."
+    },
+    {
+      "test": "t2_parallel_summarize",
+      "reason": "llm_batch function/turn/final mechanics are scoreable, but GT answer_structure=combined_summary is not implemented by runner; prompt's llm_batch_min_calls is ignored. Keep only if caller explicitly treats it as partial mechanics evidence."
+    },
+    {
+      "test": "t3_failure_recovery",
+      "reason": "GT expects valid JSON with name/age, but actual prompt asks to extract Alice/Bob/Charlie from malformed JSON. handles_error is not implemented; output contract conflicts."
+    },
+    {
+      "test": "t4_adversarial",
+      "reason": "Safety/no-code-injection/no-hang criteria are not implemented (timeout_seconds only bounds the run); output quality cannot be grounded in a deterministic scorer here."
+    }
+  ],
+  "scorer_limits": [
+    "Runner has no semantic evaluator: string checks, even when implemented, can pass without full correctness (notably T1 grep and T2 iterative refinement).",
+    "Unsupported criteria visible in selected repository ground truth or prompt metadata include answer_structure, handles_error, no_code_injection, must_not_hang, llm_call_min_count, llm_batch_min_calls, and prompt-local llm_call_count; these are silently not applied by evaluate_criteria/run_test.",
+    "The chosen 5-case cohort is suitable for deterministic routing/delegation/output-format checks, not a broad claim of answer quality or adversarial safety."
+  ],
+  "scope": "Read-only source inspection and file hashing. No compute, live configuration, prompt, ground-truth, or runner edits."
+}

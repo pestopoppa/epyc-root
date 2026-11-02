@@ -100,6 +100,24 @@
       "owner_repo": "epyc-orchestrator",
       "health_path": "/health",
       "blurb": "legacy combined page — deprecation pending (RTG-47 Phase 1b); data APIs stay"
+    },
+    {
+      "id": "loop-spec",
+      "title": "Loop spec",
+      "port": 8100,
+      "path": "/loop-spec",
+      "owner_repo": "epyc-root",
+      "health_path": "/api/loop_spec/health",
+      "blurb": "JEV-5 phase A: typed loop specs (epyc.loop_spec.v1) drawn as state diagrams — the churn loop's row / allocator / session / backlog machines, named stop/park reasons and code-checked thresholds (data: /api/loop_spec; /api/loop_spec/health is the data probe)"
+    },
+    {
+      "id": "knowledge",
+      "title": "Knowledge",
+      "port": 8100,
+      "path": "/knowledge",
+      "owner_repo": "epyc-root",
+      "health_path": "/api/knowledge/health",
+      "blurb": "KT-3 read-only claim browser over the vidya belief ledger: claim -> evidence -> run -> commit, with retractions/corrections (data: /api/knowledge, /api/knowledge_claim?id=; /api/knowledge/health is the data probe)"
     }
   ]
 }
