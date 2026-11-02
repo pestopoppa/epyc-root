@@ -31,3 +31,15 @@ Consumed CPU serving, CPU calibration and S3-AKU-13 reviews. The existing CPU se
 ## 00:17Z — Integrate calibration identity and prepare floor contracts
 
 Consumed CPU screen design, CPU identity and matched-floor wrapper reviews. The handoff identifies champion-of-record b0ba1d427 and the Qwen3.8 Flash-Next CPU serving target, but the historical campaign recipe/build is not yet proven to be the exact current gate instance. Existing matched calibration requires at least 24 pairs and reports a descriptive interval, but its sealed frame and reader do not enforce host-state/coexistence identity; no wrapper was added that would misrepresent this gap as solved. The CPU screen workload/metric/estimator is not specified in the current handoff. Dispatched a lane-owned proposed screen preregistration and host-state contract to make the source work concrete, plus a review of the repeated wrapup push race. Outputs are registered for dispatcher resumption. No compute launched, row published or task ticked.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
+
+## 00:19Z — Resolve wrapup publication race
+
+Consumed the push-race review. wrapup merges before committing, but serialized_push fetches later under the push lock; a concurrent main advance can reject the push, and current retries only recognize lock-held. Pre-acquiring the push lock deadlocks wrapup against its own push; dispatcher recovery can land commits but cannot produce the required report. Dispatched a bounded impact-gated fix with non-fast-forward retry and focused deterministic tests in this lane; awaiting event registered. The separate CPU screen preregistration and host-state contract remain in progress. No compute was launched or row published.
