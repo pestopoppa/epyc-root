@@ -624,6 +624,54 @@ def ws58_cpus(regions):
 
 
 
+CORES = tuple(f"c{n}" for n in range(96))   # ws58 2026-11-02 sub-quarter packing: one token per physical core
+
+
+def qcores(q):
+    lo = int(q[1]) * 24
+    return {f"c{n}" for n in range(lo, lo + 24)}
+
+
+def expand(tokens):
+    """A whole quarter also holds its 24 core tokens, so it is free only when no sub-quarter row holds any of its cores."""
+    out = set(tokens)
+    for t in tokens:
+        if t in QUARTERS:
+            out |= qcores(t)
+    return out
+
+
+def compress(tokens):
+    """Grant/log form: core tokens of a whole quarter folded away; partial cores kept (c48,c49,...)."""
+    qs = {t for t in tokens if t in QUARTERS}
+    cov = set().union(*[qcores(q) for q in qs]) if qs else set()
+    return sorted(t for t in tokens if t not in cov)
+
+
+def cpu_tokens(cpus):
+    """Tokens of a cpu list (SMT siblings fold onto their core): a quarter covered fully -> qN, partly -> its core tokens."""
+    cores = set()
+    for tok in str(cpus or "").split(","):
+        tok = tok.strip()
+        if re.fullmatch(r"\d+(-\d+)?", tok):
+            a, b = (tok.split("-") + [tok])[:2]
+            cores |= {c % 96 for c in range(int(a), min(int(b), 191) + 1)}
+    out = set()
+    for q in QUARTERS:
+        cs = {c for c in cores if f"q{c // 24}" == q}
+        if len(cs) >= 24:
+            out.add(q)
+        else:
+            out |= {f"c{c}" for c in cs}
+    return out
+
+
+def tokens_cpus(tokens):
+    """The exact cpu list (cores + their SMT siblings) of a sub-quarter option."""
+    cs = sorted(int(t[1:]) for t in tokens if re.fullmatch(r"c\d+", t))
+    return ",".join(str(c) for c in cs + [c + 96 for c in cs])
+
+
 def cpu_list(q):
     lo = int(q[1]) * 24
     return f"{lo}-{lo + 23}"
@@ -639,6 +687,7 @@ def open_grants(flags):
         kv = dict(re.findall(r"(\w+)=(\S+)", first))
         regions = kv.get("regions", "")
         holds = set(kv["holds"].split(",")) if kv.get("holds") else quarters_of(regions) | ({GPU} if "mi210" in regions else set())
+        holds = expand(holds)
         run = load_json(running_path(flags, rid))
         arm = load_json(armed_path(flags, rid))
         dry = bool(run)
@@ -704,8 +753,17 @@ def row_shape(d):
         if not cc and cls == "gpu":
             cc = "0-95"
     if cc and not (nofold and cls == "gpu"):
-        extra |= quarters_of(cc, fold=True)
-    if regs == "any-cpu-quarter":
+        extra |= cpu_tokens(cc)   # ws58 sub-quarter: a claim covering < 24 cores of a quarter holds only those cores
+    elif cls == "gpu" and "mi210" in regs and not cc:
+        extra |= cpu_tokens(ws58_cpus(regs))   # GPU row: its declared host threads (184-191 -> cores 88-95), not q3
+    if not cc and cls == "cpu" and ws58_cpus(regs) and "mi210" not in regs:
+        rt = cpu_tokens(ws58_cpus(regs))
+        if not (rt & set(QUARTERS)):
+            extra |= rt; cc = ws58_cpus(regs)   # concrete sub-quarter regions (e.g. 0-3): only those cores
+    sub = cc and not (extra & set(QUARTERS)) and any(t in CORES for t in extra)
+    if sub or (cls == "gpu" and "mi210" in regs):
+        bases = [set()]   # the claim pins the cpus: no extra quarter (whole-quarter/host shapes still add theirs below)
+    elif regs == "any-cpu-quarter":
         bases = [{q} for q in QUARTERS]
     elif regs.startswith("any-of"):
         bases = [{x.strip()} for x in regs[len("any-of"):].split(",") if re.fullmatch(r"q[0-3]", x.strip())]
@@ -723,7 +781,7 @@ def row_shape(d):
             bases = [set(c) for c in __import__("itertools").combinations(QUARTERS, n)]
     opts = []
     for b in bases:
-        fs = frozenset(b | extra)
+        fs = frozenset(compress(expand(b | extra)))
         if fs and fs not in opts:
             opts.append(fs)
     return opts, (gq == "exclusive" or o.get("role") == "bench")
@@ -734,8 +792,10 @@ def grant_regions(d, option):
     regs = str(d.get("regions") or "")
     if "mi210" in regs:
         return regs
+    qs = sorted(q for q in option if q in QUARTERS)
+    if not qs and any(t in CORES for t in option):
+        return tokens_cpus(option)   # sub-quarter grant: the exact cpu list
     if regs == "any-cpu-quarter" or regs.startswith("any-of"):
-        qs = sorted(q for q in option if q in QUARTERS)
         return cpu_list(qs[0]) if qs else regs
     return regs
 
@@ -748,7 +808,7 @@ DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant en
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
     if c.get("bench") and gpu_grant_open:
-        opts = [o for o in opts if "q3" not in o]
+        opts = [o for o in opts if not (o & expand({"q3"}))]
     if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
         return []
     return opts
@@ -768,6 +828,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
+    free = expand(free)
+    for c in cands:   # ws58 sub-quarter: a whole quarter also holds its core tokens
+        c["options"] = [frozenset(expand(o)) for o in c["options"]]
     pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
@@ -784,8 +847,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 prev = (drain_prev or {}).get(c["id"])
                 if prev:   # ws58 2026-11-02: a drain's T never moves later (11:28Z akx-auto10 slid 11:53 -> 12:00)
                     T = min(T, float(prev))
-                if T - now > DRAIN_MAX_WAIT_S:   # ws58 hotfix 2026-11-01: never hold the host empty for hours
-                    drain, T = None, None
+                # ws58 2026-11-02: a far T no longer drops the drain (that left the "needs all regions, some busy" hold
+                # with no T and nothing backfilled); free regions are backfilled by any row that ends by T, so the
+                # host is never held empty, and T is persisted so it never slides later.
             break
     plan.last_drain = (drain, T) if drain else None
     need_r = set().union(*drain["options"]) if drain is not None else set()
@@ -811,10 +875,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         if not placed:
             break
         c, o = placed
-        out.append(placed); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
+        out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
-    for r in sorted(free):
+    for r in sorted(x for x in free if x in REGIONS):
         want = [c for c in pending if any(r in o for o in c["options"])]
         if not want:
             idle[r] = "no runnable row needs it (every grantable/dry-runnable row is placed, running, failed or parked)"
@@ -829,7 +893,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             if r in o and not clash:
                 miss = o - free
                 if miss:
-                    why.append(f"needs {','.join(sorted(o))}: {','.join(sorted(miss))} busy")
+                    why.append(f"needs {','.join(compress(o))}: {','.join(compress(miss))} busy")
                 elif c.get("bench") and gpu_grant_open and "q3" in o:
                     why.append("timing row keeps off q3 while a GPU grant is open")
                 elif ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
@@ -1254,7 +1318,7 @@ def arm_one(flags, rid, d, regions=None):
     os.makedirs(os.path.join(dd, "state"), exist_ok=True)
     log = os.path.join(dd, "poller.out")
     before = sum(1 for l in tail(log, 100000) if "launcher up pid=" in l)
-    env = dict(os.environ, FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
+    env = dict(os.environ, FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_STATE_DIR=os.path.join(dd, "state"), FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(flags, "grants"))
     if regions and ws58_cpus(regions):
         env["WS58_REGIONS"] = ws58_cpus(regions)
@@ -1321,7 +1385,7 @@ def admit(flags, rid, d, pid, regions, window_s):
 def write_grant(flags, rid, regions, holds, window_s):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
-    line = f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(sorted(holds))}\n"
+    line = f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}\n"
     p = os.path.join(flags, "grants", rid + ".grant")
     with open(p + ".tmp", "w") as f:
         f.write(line)
@@ -1364,7 +1428,7 @@ def heal_grants(flags, grants, rl, log, seen):
             log(f"HEAL stale-grant {rid}: poller pid {g['pid']} dead, no .ended; grant moved to {os.path.basename(stale_dir)}/ (row re-granted when free)")
             seen.add(f"stale-grant:{id_stem(rid)}")
             continue
-        foreign = [r for r in g["holds"] if r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
+        foreign = [r for r in g["holds"] if r in REGIONS and r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
         if foreign:
             holder = ",".join(f"{r}={rl[r][1]}" for r in foreign)
             if not g["started"] and not g["dryrun"]:
@@ -1439,13 +1503,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     allrows = rows(flags)
     rl = rl_status()
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen)
-    busy = {r for r, (s, _) in rl.items() if s != "free"}
-    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-")}
+    # a quarter held in region-lock by sub-quarter grants (LOCK_SH + per-core locks) is busy only on those cores
+    subq = {q for g in grants for q in QUARTERS if q not in g["holds"] and g["holds"] & qcores(q)}
+    busy = expand({r for r, (s, _) in rl.items() if s != "free" and r not in subq})
+    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
     for g in grants:
         busy |= g["holds"]
         for r in g["holds"]:
-            holders.setdefault(r, g["id"])
-    free = set(REGIONS) - busy
+            if r in REGIONS:
+                holders.setdefault(r, g["id"])
+    free = (set(REGIONS) | set(CORES)) - busy
     gpu_open = any(GPU in g["holds"] for g in grants)
     if GPU in free and not dry and start_gpu_batch(flags, log):
         free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
@@ -1479,14 +1546,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     if plan.last_drain:
         dc, T = plan.last_drain
         log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
-    log(f"SNAPSHOT free={','.join(sorted(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in sorted(busy)) or '-'} "
+    log(f"SNAPSHOT free={','.join(compress(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in compress(busy)) or '-'} "
         f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']}")
     out = []
     for c, opt in assigned:
         rid, d = c["id"], allrows[c["id"]]
         regions = grant_regions(d, opt)
         if dry:
-            log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(sorted(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
+            log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(compress(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
         try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
             a = load_json(armed_path(flags, rid))
             if not (a and alive(a.get("pid"))):
@@ -1507,10 +1574,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             seen.add(f"error:{rid}")
     for r, why in idle.items():
         log(f"IDLE-WHY {r}: {why}")
-    left = free - set().union(*[o for _, o in assigned]) if assigned else free
+    left = free - expand(set().union(*[o for _, o in assigned])) if assigned else free
     for c in pending:
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
-            seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(sorted(free))} but was not placed")
+            seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
     if not dry:
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
