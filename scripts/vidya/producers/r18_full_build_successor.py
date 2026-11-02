@@ -6,7 +6,7 @@ sys.path.insert(0, str(INPUTS))
 import replay_evidence as evidence
 sys.path.insert(0, str(PRODUCERS))
 import r18_symbol_capture as belief
-D=pathlib.Path('/mnt/raid0/llm/tmp/r18-belief-successor-20261102')
+D=pathlib.Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102')
 COMMIT='ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
 p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--scratch',required=True);p.add_argument('--mode',choices=['smoke','cutoff','configure','full'],required=True);a=p.parse_args()
 S=pathlib.Path(a.source); B=pathlib.Path(a.scratch)

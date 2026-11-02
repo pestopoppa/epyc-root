@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'r18_inputs'))
 import replay_evidence as evidence
-p = Path('/mnt/raid0/llm/tmp/r18-belief-successor-20261102/scratch/full')
+p = Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/scratch/full')
 try:
     result = json.loads((p/'full-result.json').read_text())
     native = json.loads((p/'symbol-identity.json').read_text())
