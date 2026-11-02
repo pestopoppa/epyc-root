@@ -33,3 +33,9 @@ The staged historical quantizer build now rechecks compiler bytes after compilat
 ## AKX-P1c source diff coordinates
 
 Added a fail-closed zero-context changed-line extractor, with review fixes for header identity, hunk geometry and LF-only splitting. Four tests pass; the pinned source range parses six files, 74 deleted and 423 added lines. Output remains PARTIAL_UNVERIFIED, not a semantic footprint, coverage witness or replay; the unreviewed coverage build remains disabled.
+
+## 10:28Z — Reject malformed P1c diff metadata
+
+## AKX-P1c source coordinates
+
+Hardened the partial changed-line extractor against unsafe paths, malformed or repeated Git index records, and orphan or repeated no-newline markers. Five model-free tests pass. Coordinates remain unverified preparation, not a footprint or workload witness.

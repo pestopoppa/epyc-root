@@ -33,6 +33,15 @@ class DiffSitesTests(unittest.TestCase):
             with self.subTest(patch=patch), self.assertRaises(DiffError):
                 extract_changed_lines(patch)
 
+    def test_malformed_metadata_and_paths_refuse(self):
+        for patch in (PATCH.replace("index 0000000..1111111 100644", "index bogus"),
+                      PATCH.replace("index 0000000..1111111 100644", "index 0000000..1111111 100644\nindex 0000000..1111111 100644"),
+                      PATCH.replace("a/a.c b/a.c", "a/../a.c b/../a.c"),
+                      PATCH.replace("-old1", "\\ No newline at end of file\n-old1"),
+                      PATCH.replace("-old1", "-old1\n\\ No newline at end of file\n\\ No newline at end of file")):
+            with self.subTest(patch=patch), self.assertRaises(DiffError):
+                extract_changed_lines(patch)
+
     def test_lf_only_line_splitting(self):
         patch = PATCH.replace("-old1", "-old\v+still-old")
         self.assertEqual(extract_changed_lines(patch)["files"]["a.c"]["anchor_lines"], [2, 3])

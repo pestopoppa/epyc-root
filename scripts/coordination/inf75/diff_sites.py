@@ -14,6 +14,7 @@ class DiffError(ValueError):
 
 
 _FILE = re.compile(r"diff --git a/([^\s]+) b/([^\s]+)\Z")
+_INDEX = re.compile(r"index [0-9a-f]+\.\.[0-9a-f]+(?: [0-7]{6})?\Z")
 _HUNK = re.compile(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(?: .*)?\Z")
 
 
@@ -28,23 +29,34 @@ def extract_changed_lines(patch: str) -> dict:
     headers = []
     path = None
     mode = None
+    index_seen = False
+    previous_change = False
     for line in patch.removesuffix("\n").split("\n"):
         match = _FILE.fullmatch(line)
         if match:
             if current is not None and (old_left != 0 or new_left != 0):
                 raise DiffError("missing or truncated hunk")
             a, b = match.groups()
-            if a != b or a in files or '"' in a or "\\" in a:
+            if (a != b or a in files or '"' in a or "\\" in a
+                    or any(part in ("", ".", "..") for part in a.split("/"))):
                 raise DiffError("unsupported or duplicate path")
             current = files[a] = {"anchor_lines": [], "candidate_lines": []}
             path = a
             mode = None
+            index_seen = False
+            previous_change = False
             headers = []
             old_end = new_end = 0
             old_left = new_left = None
             continue
         if current is None:
             raise DiffError("missing file header")
+        if line == r"\ No newline at end of file":
+            if not previous_change:
+                raise DiffError("orphan newline marker")
+            previous_change = False
+            continue
+        previous_change = False
         match = _HUNK.fullmatch(line)
         if match:
             if old_left not in (None, 0) or new_left not in (None, 0):
@@ -64,18 +76,18 @@ def extract_changed_lines(patch: str) -> dict:
                 raise DiffError("invalid or overlapping hunk coordinates")
             old_end, new_end = old_start + old_left, new_start + new_left
             continue
-        if old_left is None and line in ("new file mode 100644", "deleted file mode 100644") and not headers and mode is None:
+        if old_left is None and line in ("new file mode 100644", "deleted file mode 100644") and not headers and mode is None and not index_seen:
             mode = "new" if line.startswith("new") else "deleted"
             continue
-        if old_left is None and line.startswith("index ") and not headers:
+        if old_left is None and _INDEX.fullmatch(line) and not headers and not index_seen:
+            index_seen = True
             continue
         if old_left is None and line.startswith(("--- ", "+++ ")):
             headers.append(line)
             continue
-        if line == r"\ No newline at end of file" and old_left is not None:
-            continue
         if old_left is None or not line or line[0] not in "+-":
             raise DiffError("unsupported patch line")
+        previous_change = True
         if line[0] == "-":
             if old_left <= 0 or old_line <= 0:
                 raise DiffError("invalid anchor count")
