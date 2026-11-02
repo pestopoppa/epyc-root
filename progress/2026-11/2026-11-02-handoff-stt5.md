@@ -51,3 +51,7 @@ Filed reviewed CS-6 prospective bench-window plan with gate ordering, measurands
 ## 09:28Z — Advance speech build and restore CS6 wrap
 
 CS6 prospective plan and checkbox were prepared in the prior boundary, but wrap failed on stale master rollup; index regeneration initiated. CS8 scratch supervisor now has ten model-free passing tests; escaped descendants, spawn race, actual namespace cutoff, source seals, lock and disk floor remain to resolve. Ultra diagnostic found 75 rc0 arm records but only 14 verdicts; nine comparator shape errors and two absent comparison files make it inconclusive. CS5 request-manifest validator has four model-free tests but requires real runners, verified inputs and CS3 integration. No compute or row publication. [no-belief: preparation and diagnostics]
+
+## 09:31Z — Advance speech launcher safeguards
+
+CS6 plan wrap passed index checks and created commit 1ef9c6e36794, but concurrent main advances rejected the push; a lock-held fetch/merge/push was initiated to land it. CS8 source seal and writer lock, CS8 disk-floor guard, and Ultra comparison-only repair are delegated to bounded scratch jobs; completion events registered. No compute or row was launched. [no-belief: preparation and operational state]
