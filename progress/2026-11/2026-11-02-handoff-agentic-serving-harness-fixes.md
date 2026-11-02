@@ -163,3 +163,7 @@ The observer commit hook was repaired by restoring its tracked operator ratifier
 ## 01:02Z — Consume index diagnosis and prepare B1g evaluation
 
 Consumed index-cause2.txt: the index check serially scans git history for roughly 187 handoffs and its citation phase may take several minutes; buffered output alone is not evidence of a hang. Handoff files are present despite sparse checkout; the observer-hook omission was a separate issue. The captured full check has not yet emitted its registered completion event, so its actual gate failure remains unclassified; DEPLOY-EC-2d evidence remains uncommitted in the lane. Delegated independent UFH14-B1g evaluation row preparation and registered its result event; prior GPU, B4b/B1e patch and completed-chat row results remain pending. No row published.
+
+## 01:03Z — Prepare B1g forced-answer evaluation packet
+
+Consumed B1g row preparation. The feature computes its 0.65 trigger from the budget remaining at graph start, and without a valid deadline the on arm never triggers. A defensible paired evaluation requires per-worker flag attestation and rollback, actual per-request forced-turn exposure, fixed paired cases, deadlines and per-suite rescue/regression denominators with infra and scoring failures retained; no valid row has yet been published. Delegated construction of the concrete packet and registered its result. The prior wrap-up committed d7783b1070cc but its push failed as origin/main advanced; this wrap retries publication. DEPLOY-EC-2d handoff evidence remains pending the captured index gate result.
