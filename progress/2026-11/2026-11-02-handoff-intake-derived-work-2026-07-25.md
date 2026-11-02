@@ -7,3 +7,7 @@ Resumed the three bounded ID-9 preparation jobs (launcher, trace inputs and pred
 ## 01:33Z — Advance ID-4, ID-9 and ID-14 preparation; repair lane checkout for wrap-up.
 
 Dispatched bounded, independent preparation for ID-4 matched-control CPU comparison, ID-9 GPU pilot, and ID-14 disposable-host containment. Completion files are registered for dispatcher resume; no compute was launched. Resolved the preceding wrap-up failure: the operator ratifier was present in HEAD but excluded by this lane’s sparse checkout. Restored the tracked file byte-for-byte locally, and the pre-commit observer census now passes. The earlier attribution to an unresolved mass deletion was incorrect.
+
+## 01:34Z — Reconcile completed ID-13 and prepare remaining experiments.
+
+Closed ID-13 against the owning completed handoff: AFC-P5.0/P5.2 recorded the 2026-07-29 structural deletion and four-policy de-duplication, retained safeguards and passed validators (root commits 400fb4b3 and f4d2b34a). Dispatched bounded ID-4 CPU, ID-9 GPU, and ID-14 disposable-host preparation; registered completion events. No compute launched or row published.
