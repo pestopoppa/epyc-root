@@ -48,6 +48,8 @@ validation requires the applicable compute authorization.
 - Root `3159fda2d`: fail-closed legacy Q38 and GPU-slot entries, plus retained patches for three
   inactive live P3/X0 copies; 13 focused and 40 Q38 tests passed. The separately pinned shape-B
   file is unchanged and dedicated lifecycles remain open.
+- Root `a1a26d6da`: P3 slot L0/L3/L0 separate-server successor, 12 fake-server controls passed;
+  during-decode residency and sequencer/native qualification remain open.
 - KVU-16a source/receipt reconciliation found an idle-slot argv mismatch; the sampled load does
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one
