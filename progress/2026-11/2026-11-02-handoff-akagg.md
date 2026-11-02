@@ -59,3 +59,7 @@ The previous wrap-up landed a39e42590c163ec891213f6aa1e3db65a6db13f4. GPU scratc
 ## 09:37Z — Integrate residency and calibration candidate reports
 
 Consumed cpu-next3.json: /mnt/raid0/llm/tmp/akagg/cpu-verifier-candidate has a structural observation validator with nine passing synthetic controls; complete structure does not prove host quiet or placement. Request-phase collector and lifecycle controls delegated; event cpu-collector-done.json. Consumed ch27-next3.json: existing completion checker passes its native-shaped fixture and 12 negative controls but accepts empty residency samples; it proves shape and hash checks only. One-window calibration remains unpublished; private campaign reconstruction and two-plan failure-atomic promotion with native consumer tests delegated via ch27-isolation-done.json and ch27-promotion-done.json. Existing C3 full-packet work continues via gpu-next3.json. No compute or qualification run and no row or result claimed.
+
+## 09:38Z — Reconcile prior wrap and continue qualification repairs
+
+Prior wrap log reported serialized push lock failure after commit 25a9f5268c12; the equivalent progress commit is now 8421be26d on origin/main (git cherry empty). CPU collector, GPU full packet and CH-27 isolation/promotion remain delegated with completion events cpu-collector-done.json, gpu-next3.json, ch27-isolation-done.json and ch27-promotion-done.json in /mnt/raid0/llm/tmp/akagg. No new result, row or tick is asserted.
