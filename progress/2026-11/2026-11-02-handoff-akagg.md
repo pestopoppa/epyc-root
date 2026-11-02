@@ -19,3 +19,7 @@ Consumed the C3 and CH-27 investigation reports: C3 r5 host FD9 path passes mode
 ## 03:45Z — Record source-boundary and campaign custody findings
 
 Consumed the C3 and CH-27 investigation reports: C3 r5 host FD9 path passes model-free but profiler and native join both hash GGUF in the grant; safe content binding and engine seal remain before publication. CH-27 shared store cannot be exclusively claimed with its watchdog lock because reanchor bypasses it; SQLite WAL copying is not a coherent snapshot, and native registry records pin durable paths and hashes. NEMO original captures lack independent token or graph-launch events. Delegated bounded repairs and registered report-file events. No new measurement or row claimed.
+
+## 03:47Z — Merge current main and continue C3 and CH-27 preparation
+
+Previous wrap-up committed source-boundary and custody findings at 677957bf2 but serialized push failed; merged current origin/main in lane, without conflicts. C3 model provenance, CH-27 private campaign and NEMO prospective capture delegated; report-file events registered. No measurement or new row claimed.
