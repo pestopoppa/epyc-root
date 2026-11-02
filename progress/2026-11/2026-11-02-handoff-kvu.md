@@ -131,3 +131,7 @@ VKQ3 diagnostic receipt now durably records a bounded private category-only stde
 ## 10:18Z — Wired VKQ3 worker to direct-child parent-death supervisor and prepared distinct qualification input.
 
 VKQ3 worker draft now defaults to the direct-child parent-death supervisor; seven offline tests pass, including wrapper invocation and cancellation/reaping. Descendant cleanup, interpreter and wrapper provenance and real rowflow/chroot integration remain unproven. Prepared distinct qualification input as ASCII `synthetic qualification control: amber cedar river 20261102` followed by LF: 60 bytes, SHA-256 af67718fefc2257d854467d8d36537640bf1a65131a5d01458e83bc9994543cd at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthetic-qualification.txt. No inference ran or row was published.
+
+## 10:20Z — Fixed VKQ3 diagnostic guard rejection of authentic four-CPU rowflow smoke grants.
+
+VKQ3 diagnostic guard accepts the four exact CPU smoke shapes selected by publish_row.py only for authenticated rowflow dry-run grants, while full runs still require the whole host. Seven offline guard tests pass, covering all four shapes and rejected mismatches or elevation. Launcher and model identity integration remain open; no row was published and no inference ran.

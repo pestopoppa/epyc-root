@@ -97,6 +97,26 @@ class GuardContract(unittest.TestCase):
         self.env['FILLER_CPUS'] = '0-95'
         with self.assertRaises(ValueError): self.make()
 
+    def test_publisher_four_cpu_smoke_shapes_and_full_gate(self):
+        for regions in ('0-3', '24-27', '48-51', '72-75'):
+            with self.subTest(regions=regions):
+                self.dry(regions=regions)
+                self.assertEqual(self.make().mode, 'qualification')
+                self.env['FILLER_CPUS'] = '0-95'
+                with self.assertRaises(ValueError): self.make()
+                # A synthetic grant never authorizes full work.
+                self.env['FILLER_CPUS'] = regions
+                self.env['FILLER_DRYRUN'] = '0'
+                with self.assertRaises(ValueError): self.make()
+                # Nor does stripping the synthetic metadata elevate it.
+                self.path.write_text(self.path.read_text().split(' schema=')[0] + '\n')
+                with self.assertRaises(ValueError): self.make()
+
+        for regions in ('1-4', '0-4', '96-99', '0-3,24-27'):
+            with self.subTest(regions=regions):
+                self.dry(regions=regions)
+                with self.assertRaises(ValueError): self.make()
+
     def test_stop_and_deadline(self):
         self.dry()
         g = self.make()
