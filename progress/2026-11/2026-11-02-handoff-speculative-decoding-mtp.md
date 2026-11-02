@@ -139,3 +139,7 @@ The SR-6 exposure reader validates the recorded rendered hash against the reques
 ## 10:31Z — Prepare experimental G3 dispatch instrumentation
 
 Prepared an opt-in v10 flash-attention dispatch trace patch against the exact source pin; patch dry-run and five structural controls passed. It explicitly reports correlation unavailable, so it cannot attribute a dispatch to target verification or answer G3. No build, production-tree edit, inference or result occurred. The lane is unindexed and GitNexus impact is unavailable.
+
+## 10:33Z — Prepare G3 correlated-dispatch classification
+
+Added a model-free proposed G3 classifier with three bounded tests, including incomplete invocations and invalid correlation. It does not establish actual event delivery, source or loaded-binary identity, or HIP residency; the current instrumentation does not emit correlated records and no row or G3 result is claimed.
