@@ -152,3 +152,28 @@ Rejected as embedded runtimes:
 Minimum-rigor notes:
 - JEV-2 and JEV-3 run in shadow only. Their deciding evidence is a replay over saved inputs, with a held-out split and real outcome labels. Activation needs a separate gate.
 - SA-1 is deterministic infrastructure. Its conformance check is a unit-test fixture plus the count of `AUTO-START rows=-` lines in the next 24 h of the log, which should be zero.
+
+## Stage 4 filing (operator approved 2026-11-02: "Approve, go to Stage 4"; D9 acknowledged for scripts/coordination)
+
+Filed as written in the owning handoffs, with these changes from the draft above:
+- SA-1..4, JEV-3 and JEV-6 went to `handoffs/active/churn-pipeline.md` (RTG-62), not to session-bus-thin-dispatcher.md.
+- SA-1 is merged into the in-progress sticky-slot change.
+- JEV-3 and JEV-2 **replace** the regex/heuristic classifiers with the local native `src/typed_decisions/` path (TD-29). Replay of the saved FAIL inputs is a regression check only, and there is no new accuracy study.
+- Every task line carries a "removes:" clause (deletion-first).
+
+Owners:
+
+| Handoff | Tasks |
+|---|---|
+| autopilot-continuous-optimization.md | JEV-1, JEV-2 |
+| autokernel-research-loop.md | JEV-4 |
+| dashboard-architecture-restructure.md | JEV-5, KT-3 |
+| internal-kb-rag.md | KT-1, KT-4 |
+| vidya-belief-substrate-program.md | KT-2 |
+| dev-harness-trace-mining.md | KT-5 |
+
+**Order:**
+1. SA-1 + JEV-1.
+2. SA-2, SA-3, JEV-3.
+3. JEV-5 phase A, KT-1, KT-3.
+4. The rest. JEV-5 phases B and C come only after the operator has used phase A.
