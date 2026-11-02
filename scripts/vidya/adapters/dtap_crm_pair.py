@@ -23,7 +23,7 @@ SOURCE_KIND = "dtap-crm-pair"
 CASE = "crm-malicious-indirect-general-ai-restrictions-004"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-PRODUCER_SHA256 = "723108477c7ea1fb86bc28b5a1b0c9e0f7e1447e75771dc28b8ca704e61aa2eb"
+PRODUCER_SHA256 = "ef125619c5cee717c53e19435b555363c73ee10862bc2ba1d5a01fc52dddf8bf"
 PROVIDER_SHA256 = "43595426ec4a447c06e192ba533b01384674a6217a5005be9980d337974dd961"
 LOCK_SHA256 = "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881ece56c"
 RECEIPT_SHA256 = "cee7fc7f4ab8dc7fe756b3720c6ee126f8f8b9708de5c62ca74ac18fed290801"
@@ -36,6 +36,7 @@ SOURCE_FILES = tuple(DTAP + p for p in (
     "harness/crm_source_manifest.py", "harness/runner.py", "harness/endpoint.py",
     "harness/tool_contract.py", "harness/tool_schemas.json", "harness/judge_guard.py",
     "cases.json", "manifest.json", "judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py",
+    "tools/crm_prepare.py", "tools/crm_row_fixture.py",
 )) + ("src/runtime/region_claim_receipt.py", "src/runtime/region_lock_cli.py", "src/runtime/cpu_region_lock.py")
 
 
