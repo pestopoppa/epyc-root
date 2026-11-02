@@ -179,3 +179,7 @@ Merged current origin/main into the lane after the prior serialized push failed.
 ## 10:38Z — Reject unpinned imports from the VKQ3 draft bundle
 
 The draft bundle verifier now rejects unexpected root and subdirectory entries including unpinned Python modules and bytecode; six verifier tests pass. The separate bootstrap remains deny-only and the tokenizer worker does not measure target MTP acceptance, so neither is a publishable calibration.
+
+## 10:40Z — Identify reusable MTP calibration worker and its grant-time preparation defects
+
+The earlier VKQ3 calibration worker launches both MTP arms and records divergence, but hashes model weights and tokenizes in-grant; its previous run timed out before target exposure. Adaptation must bind a one-time preflight receipt and isolate qualification output before publication. KVU-16a load-row preparation continues.
