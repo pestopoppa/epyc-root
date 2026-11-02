@@ -1,0 +1,51 @@
+diff --git a/scripts/benchmark/k35_stack_context_matrix_runner.py b/scripts/benchmark/k35_stack_context_matrix_runner.py
+index 0773bb6fc..ed3f20aa3 100644
+--- a/scripts/benchmark/k35_stack_context_matrix_runner.py
++++ b/scripts/benchmark/k35_stack_context_matrix_runner.py
+@@ -663,6 +663,20 @@ def server_context(scenario: Scenario, nominal_context: int, max_tokens: int) ->
+     return capped
+ 
+ 
++def refuse_request_disabled_draft(scenario: Scenario) -> None:
++    """Disallow request-local draft disablement pending dedicated lifecycle support.
++
++    This deliberately refuses every n_max=0 request: parsing only selected
++    server flags cannot prove an arbitrary prebuilt argv has no draft path.
++    A truly no-draft server should omit the request-local override.
++    """
++    if scenario.request_spec_n_max == 0:
++        raise ValueError(
++            "request-local no-draft is unsupported; use a separately launched "
++            "no-draft scenario without speculative.n_max=0"
++        )
++
++
+ def build_server_argv(
+     scenario: Scenario,
+     *,
+@@ -671,6 +685,7 @@ def build_server_argv(
+     nominal_context: int,
+     max_tokens: int,
+ ) -> list[str]:
++    refuse_request_disabled_draft(scenario)
+     ctx = server_context(scenario, nominal_context, max_tokens)
+     argv = [
+         *runtime_env_prefix(binary),
+@@ -972,6 +987,7 @@ def build_chat_request_body(
+     *,
+     max_tokens: int,
+ ) -> dict[str, Any]:
++    refuse_request_disabled_draft(scenario)
+     if scenario.request_endpoint == "completion":
+         body = {
+             "prompt": prompt,
+@@ -1247,6 +1263,9 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
+ 
+ def run_cell(cell: dict[str, Any], args: argparse.Namespace, output_dir: Path) -> dict[str, Any]:
+     scenario = scenario_by_name(cell["scenario"])
++    # Check before creating files, collecting hardware state, or launching any
++    # supplied argv. A caller may bypass build_server_argv entirely.
++    refuse_request_disabled_draft(scenario)
+     rep = int(cell.get("rep", 1))
+     cell_dir = output_dir / "runs" / f"{scenario.name}_ctx{cell['nominal_context']}_rep{rep}"
+     cell_dir.mkdir(parents=True, exist_ok=True)

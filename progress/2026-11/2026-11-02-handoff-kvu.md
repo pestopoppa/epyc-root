@@ -195,3 +195,7 @@ Review of the real two-arm VKQ3 draft found in-grant tokenization, hardcoded gra
 ## 10:45Z — Review real worker grant and receipt integration for keeper smoke
 
 The two-arm VKQ3 worker still hardcodes whole-host grants and source-local outputs; the existing tokenizer-only grant bridge is not a drop-in. Input receipt, grant/result and exposure components remain under implementation and require integration before a four-CPU keeper smoke.
+
+## 10:46Z — Harden K35 no-draft refusal against extra arguments and prebuilt launch commands
+
+Prepared a source-hash-bound K35 patch that refuses request-local n_max=0 before launch or request construction, including prebuilt argv; three offline tests pass. This is an uninstalled patch, not the dedicated server lifecycle or global runner protection required by KVU-16h.
