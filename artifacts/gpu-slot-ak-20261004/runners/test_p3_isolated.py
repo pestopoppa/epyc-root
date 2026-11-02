@@ -11,6 +11,7 @@ import p3_kvu_probe_isolated as p
 
 
 class FakeServer:
+    supports_exclusive_request_custody = True
     instances = []
     def __init__(self, name, port):
         self.variant = p.ACTIVE_VARIANT
@@ -19,6 +20,7 @@ class FakeServer:
         self.slots = {0: 0, 1: 0, 2: 0, 3: 0}
         self.requests = []
         self.stopped = False
+        self.task_id = 0
         self.instances.append(self)
     def start(self):
         pass
@@ -35,6 +37,7 @@ def fake_chat(base, message, slot, tokens, extra=None):
     assert extra is None
     s = instance(base)
     s.requests.append((message, slot, tokens))
+    s.task_id += 1
     cached = s.slots[slot]
     s.slots[slot] = 100
     return {'prompt_n': 0 if cached else 100, 'cache_n': 100 if cached else 0,
@@ -44,7 +47,7 @@ def fake_chat(base, message, slot, tokens, extra=None):
 
 def fake_resident(base):
     slots = instance(base).slots.copy()
-    return {'per_slot': slots, 'sum': sum(slots.values()), 'busy': [], 'frac_pool': 0}
+    return {'per_slot': slots, 'sum': sum(slots.values()), 'busy': [], 'tasks': {0: instance(base).task_id}, 'frac_pool': 0}
 
 
 def fake_slot(base, sid, action, filename=None):
@@ -54,22 +57,30 @@ def fake_slot(base, sid, action, filename=None):
 
 
 class Poll:
-    def __init__(self, base, **kwargs): pass
+    def __init__(self, base, **kwargs): self.base = base
     def __enter__(self): return self
     def __exit__(self, *args): pass
-    def summary(self): return {'n_during_busy': 2}
+    def summary(self):
+        s = instance(self.base)
+        return {'n_during_decode': 2, 'task_ids_complete': True, 'task_ids': [s.task_id],
+                'per_slot_min': s.slots.copy(), 'per_slot_max': s.slots.copy()}
 
 
 class P3IsolatedTests(unittest.TestCase):
-    def run_pair(self, fail_cleanup=False):
+    def run_pair(self, fail_cleanup=False, mismatch=False):
         FakeServer.instances = []
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
+            def request(base, message, slot, tokens, extra=None):
+                result = fake_chat(base, message, slot, tokens, extra)
+                if mismatch and instance(base).variant == "nodraft" and slot != 0:
+                    instance(base).slots[slot] = 92
+                return result
             def stop(s):
                 s.stopped = True
                 s.rec.update(teardown={'verified_dead': not fail_cleanup}, port_free_after=True)
             with patch.object(p, 'OUT', root), patch.object(p, 'Server', FakeServer), \
-                 patch.object(FakeServer, 'stop', stop), patch.object(p, 'chat', fake_chat), \
+                 patch.object(FakeServer, 'stop', stop), patch.object(p, 'chat', request), \
                  patch.object(p, 'resident', fake_resident), patch.object(p, 'slot_action', fake_slot), \
                  patch.object(p, 'SlotPoller', Poll), patch.object(p, 'texts', return_value=('x'*100, 'y'*400)), \
                  patch.object(p, 'NB_TOK', 100), patch.object(p.C, 'http_json', return_value={'tokens': list(range(100))}), \
@@ -85,13 +96,57 @@ class P3IsolatedTests(unittest.TestCase):
         self.assertTrue(all(x.stopped for x in FakeServer.instances))
         self.assertEqual(FakeServer.instances[0].requests, FakeServer.instances[1].requests)
         self.assertEqual(len(result['rows']), 12)
+        self.assertEqual(len(result['occupancy_differences']), 12)
+        self.assertIn('reference only', result['occupancy_reference'])
         self.assertTrue(result['dedicated_server_per_variant'])
+
+    def test_occupancy_difference_is_reported_not_a_new_gate(self):
+        rc, result = self.run_pair(mismatch=True)
+        self.assertEqual(rc, 0, result)
+        self.assertTrue(any(x['relative_difference'] > 0.05 for x in result['occupancy_differences']))
+
+    def test_restore_refuses_unobservable_occupancy(self):
+        with self.assertRaisesRegex(ValueError, 'prefilled'):
+            p.phase_a1(SimpleNamespace(port=18183, park_mode='restore'))
 
     def test_cleanup_failure_never_starts_second_server(self):
         rc, result = self.run_pair(True)
         self.assertEqual(rc, 1)
         self.assertEqual(result['status'], 'failed')
         self.assertEqual(len(FakeServer.instances), 1)
+
+    def test_poller_only_counts_decoding_slot_zero(self):
+        poll = p.SlotPoller('fake')
+        poll.samples = [
+            {'sum': 100, 'busy': [1], 'tasks': {0: 8}, 'decoded': {0: 5}, 'per_slot': {0: 10, 1: 90}},
+            {'sum': 100, 'busy': [0], 'tasks': {0: 9}, 'decoded': {0: 0}, 'per_slot': {0: 10, 1: 90}},
+            {'sum': 100, 'busy': [0], 'tasks': {0: 9}, 'decoded': {0: 1}, 'per_slot': {0: 10, 1: 90}},
+            {'sum': 101, 'busy': [0], 'tasks': {0: 9}, 'decoded': {0: 2}, 'per_slot': {0: 11, 1: 90}},
+        ]
+        summary = poll.summary()
+        self.assertEqual(summary['n_during_decode'], 2)
+        self.assertEqual(summary['task_ids'], [9])
+        self.assertEqual(summary['per_slot_min'], {0: 10, 1: 90})
+
+    def test_mixed_tasks_and_missing_decode_are_refused(self):
+        for summary in (
+            {'n_during_decode': 1, 'task_ids_complete': True, 'task_ids': [3]},
+            {'n_during_decode': 2, 'task_ids_complete': True, 'task_ids': [3, 4]},
+            {'n_during_decode': 2, 'task_ids_complete': False, 'task_ids': [3]},
+        ):
+            summary.update(per_slot_min={0: 100, 1: 0, 2: 0, 3: 0},
+                           per_slot_max={0: 100, 1: 0, 2: 0, 3: 0})
+            srv = SimpleNamespace(base='fake')
+            class FixturePoll:
+                def __init__(self, *a): pass
+                def __enter__(self): return self
+                def __exit__(self, *a): pass
+                def summary(self): return summary
+            with tempfile.TemporaryDirectory() as tmp, patch.object(p, 'SlotPoller', FixturePoll), \
+                 patch.object(p, 'resident', return_value={'busy': [], 'tasks': {0: 2}}), \
+                 patch.object(p, 'chat', return_value={'draft_n': 1, 'prompt_n': 0, 'cache_n': 100}):
+                with self.assertRaisesRegex(RuntimeError, 'two decode samples'):
+                    p.measure_level(srv, 'P', 100, 'L0_base', 100, [], Path(tmp)/'out', {})
 
     def test_request_override_refused_before_transport(self):
         with patch.object(p.SB, 'stream_chat') as transport:
