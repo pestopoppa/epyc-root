@@ -19,3 +19,7 @@ Recovered the previous wrap-up publication failure: merged concurrent origin/mai
 ## 00:27Z — Recover publication of EffiBench-X preparation
 
 Recovered the previous wrap-up publication failure: merged concurrent origin/main changes and serialized-pushed the EffiBench-X preparation and recovery commits, ending at 3308d47c6fcb. The prior registered current-model GPU, EffiBench-X, calculator and ThinkingCap preparation results have not yet appeared; no prepared inference row was available to publish in this turn.
+
+## 00:30Z — Preserve reproducible EffiBench-X patch bundle
+
+Preserved all four acceptance-gate EffiBench-X patches, SHA-256 checksums and pinned-upstream reconstruction instructions in artifacts/effibench-x-upstream-20261102/. All checksums pass. The 308 DATED dataset files are absent locally; reconstruct and pin them, apply the two exclusions, and integrate the instrument before marking adoption complete. Current GPU recipe and test dependency checks have registered completion events; no inference row published. GitNexus reports this lane unindexed.
