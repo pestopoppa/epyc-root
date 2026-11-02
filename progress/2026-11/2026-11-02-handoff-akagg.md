@@ -119,3 +119,7 @@ CPU observation, GPU custody and CH-27 private campaign implementation are in pr
 ## 09:56Z — Complete successor launcher repairs
 
 C3 packet custody, CPU owning launcher and CH-27 private store integration delegated; no row or result claimed.
+
+## 09:58Z — Integrate CPU request capture and private calibration plan
+
+Prepared GPU custody code and synthetic controls; pre-grant model seal is being completed. Integrating the CPU owner with request capture and implementing a fresh-C5 private calibration preflight. No row or measurement claimed.
