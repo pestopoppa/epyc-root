@@ -123,3 +123,7 @@ Reviewed frontdoor and S4 Omega investigations: frontdoor READY manifest is an e
 ## 09:33Z — Integrate parked-lineage investigation reports
 
 Reviewed frontdoor and S4 Omega investigations: frontdoor READY manifest is an erroneous republication of parked RTE-LOG-1; allocator-safe withdrawal is assigned to owner/keeper, with no new grant or retry. S4 Omega is parked after three failures; last qualification had zero units, no run-phase result, and a logger output failure. Strategy and prefix measurement investigations found no runnable independent row yet. Delegated owner routing and independent preparation; completion reports registered as dispatcher events. No measurement verdict or acceptance is claimed.
+
+## 09:35Z — Land prior progress and prepare remaining independent work
+
+Landed prior investigation progress after resolving concurrent origin/main push races by acquiring the serialized push lock across fetch, merge and push. Strategy ablation remains unpublishable pending trusted runner, grant/server custody and attested belief producer. Dispatched independent width and prompt preparation; completion events registered. No parked lineage retried and no measurement result claimed.
