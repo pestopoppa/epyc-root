@@ -31,6 +31,7 @@ class PhaseCapture(unittest.TestCase):
         bad = [corpus()[:-1], [mask(0, 3)],
                corpus()[:2]+['KPF30_PHASE call=1 index=1 seq=0 pos=3 phase=verify\n']+corpus()[3:],
                corpus()[:-1]+['KPF30_END call=1 rc=1\n'],
+               corpus()[:4]+corpus()[5:],
                corpus()[:3]+[mask(1,7,unknown=1)]+corpus()[4:],
                corpus()[:3]+['KPF30 row=0 seq=1 live=1\n']+corpus()[4:],
                corpus()[:2]+['KPF30_PHASE call=1 index=1 seq=1 pos=7 phase=unknown\n']+corpus()[3:]]

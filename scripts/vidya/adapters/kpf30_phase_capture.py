@@ -47,7 +47,7 @@ def parse_log(lines):
             call, count = map(int, m.groups())
             if active is not None or call in seen_calls or count <= 0:
                 raise ValueError('overlapping, duplicate or empty call')
-            active = {'call':call, 'count':count, 'begin_line':lineno, 'inputs':{}, 'indexes':set(), 'rows':[]}
+            active = {'call':call, 'count':count, 'begin_line':lineno, 'inputs':{}, 'indexes':set(), 'seen_masks':set(), 'rows':[]}
             seen_calls.add(call)
             continue
         m = _PHASE.search(line)
@@ -72,6 +72,7 @@ def parse_log(lines):
                 continue
             item = active['inputs'].get((row['seq'],row['pos']))
             if item is None: raise ValueError('mask row missing phase join')
+            active['seen_masks'].add((row['seq'],row['pos']))
             phase, phase_line = item
             if phase in ('decode','verify'):
                 active['rows'].append(dict(row, phase=phase, call=active['call'], begin_line=active['begin_line'], phase_line=phase_line, mask_line=lineno))
@@ -79,7 +80,7 @@ def parse_log(lines):
         m = _END.search(line)
         if m:
             call, rc = map(int, m.groups())
-            if active is None or call != active['call'] or rc != 0 or active['indexes'] != set(range(active['count'])):
+            if active is None or call != active['call'] or rc != 0 or active['indexes'] != set(range(active['count'])) or active['seen_masks'] != set(active['inputs']):
                 raise ValueError('failed, incomplete or mismatched call')
             emitted.extend(dict(row,end_line=lineno) for row in active['rows'])
             active = None
