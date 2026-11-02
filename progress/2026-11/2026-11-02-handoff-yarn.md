@@ -103,3 +103,7 @@ The prototype affinity integration passed 38 offline tests. Merged concurrent up
 ## 10:39Z — Add DCA source packet verifier
 
 Integrated DCA source packet structural verifier with three passing offline tests. It checks prepared source identities, parent audit, shared-file round trips, and archive digest against the supplied metadata; it is not independently authenticated or proof of a build. A2 owned-client transport passes fake-server tests but stopping the client does not prove server cancellation. No inference or row publication.
+
+## 10:42Z — Add bounded A2 server cancellation prototype
+
+Integrated the A2 owned-client and captured-server cancellation prototype with bounded 32 MiB input, redirect rejection, unknown interrupted outcomes and explicit direct-child cleanup. Seven offline tests pass with ResourceWarning treated as an error. Ownership remains caller-supplied and descendant cleanup remains unproved; native entry is not enabled and no inference row was published.
