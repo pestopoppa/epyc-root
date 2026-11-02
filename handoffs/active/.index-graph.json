@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:05:18Z",
+  "generated_at": "2026-11-02T11:08:06Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 380,
+      "dispatchable": 381,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 384,
+      "open": 385,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -6237,20 +6237,20 @@
       "track": "v9 kernel per request speculative params"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-57"
       ],
-      "closed": 55,
-      "dispatchable": 36,
+      "closed": 56,
+      "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 36,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
