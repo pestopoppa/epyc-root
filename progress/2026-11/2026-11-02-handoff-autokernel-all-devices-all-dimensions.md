@@ -31,3 +31,7 @@ Prepared independent model-free work for the CH-27a startup and tamper controls,
 ## 10:19Z — Prepare CPU floor dual-lock witness
 
 The v3 CPU class reserves GPU quiet without a GPU residency check but does not acquire the separate device flock; the old floor protocol requires both. Dispatched bounded model-free admission, lock lifecycle and observer ancestry controls to establish a safe successor. No row, inference or floor claimed.
+
+## 10:21Z — Test AKX floor incremental observation
+
+Applied the existing incremental-observation patch to a scratch copy of R4 serving.py and compiled it. A model-free test executed the patched actual arm-loop body: a successful synthetic measurement wrote one process-unit JSON record, while a subsequent failed measurement propagated its exception and wrote no additional record. This does not prove keeper admission, native measurement, or a floor. Independent controls for flock lifecycle, unit admission and the quiet dry-run discrepancy are in progress.
