@@ -227,3 +227,11 @@ Inspected the production GPU store symlink, its provenance and adjacent CMake ca
 ## 03:34Z — Record v10 GPU build configuration evidence
 
 Inspected the production GPU store symlink, its provenance and adjacent CMake cache; recorded the cache and provenance digests, relevant HIP and CPU settings, compiler paths and the known RUNPATH caveat in docs/design/autokernel-v10-hip-build-evidence-20261102.md. This narrows candidate build preparation but does not prove a new binary or reconstruct all original tool versions and arguments. Previous wrapup committed aba0656fee27 but failed serialized push; this boundary retries publication. No build, inference, or row publication.
+
+## 09:20Z — Refine candidate build configuration
+
+Extended v10 HIP build evidence with the generator, release compiler flags, RPATH origin option and backend/cache configuration from the content-hashed production CMake cache. These are configuration observations, not proof of a new binary. Dispatched source-preflight implementation, build-row dry-run admission research and GPU capture manifest work; result events registered. Prior wrapup committed eb3f220a5776 but failed serialized push; this boundary retries publication. No compute, build or row publication.
+
+## 09:22Z — Validate reciprocal candidate source and capture contract
+
+Consumed the GPU capture and build-row dry-run reviews. Added the capture receipt design and a fail-closed source preflight with three synthetic tests (3 passed). The previous isolated candidate scratch checkout was absent, so reconstructed it from the read-only shared v10 object store and preserved patch; preflight passed all 3,289 source files against manifest SHA-256 6bda06cb329eb4d5f6776850ff13f0885efe858be929e7af6fbd00d2e6637a3d with base ffc1bac82eeca6f9099e1ccd9ba49703c460a115. Scratch is ephemeral and can be reconstructed; committed manifest and patch are authoritative. This establishes source identity only: no HIP build, capture, inference or row publication. The CPU build launcher must exercise genuine build work for the dry-run native result and bind final artifact identities separately. Previous wrapup committed 0126a0c162be but push failed; this retries.

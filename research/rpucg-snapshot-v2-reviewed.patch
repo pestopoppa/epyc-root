@@ -1,0 +1,232 @@
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/rpucg_snapshot.py
+@@ -0,0 +1,111 @@
++"""Admission checks for prospective nonpromotable selector snapshots.
++
++A valid record is not evidence of counterfactual performance or a live switch.
++The producer must retain the original bytes and their digest before selection.
++Capture metadata is a producer assertion, not proof of provenance or atomicity.
++The asserted atomic capture covers candidates and both counter maps at one
++pre-selection boundary, with no intervening policy updates.
++"""
++import hashlib
++import json
++import math
++import re
++
++SHA256 = re.compile(r'^[0-9a-f]{64}$')
++
++
++def validate_snapshot(raw, expected_sha256, *, evaluator_bytes, recipe_bytes):
++    if not isinstance(raw, bytes) or not SHA256.fullmatch(expected_sha256):
++        raise ValueError('raw bytes and expected sha256 required')
++    if hashlib.sha256(raw).hexdigest() != expected_sha256:
++        raise ValueError('snapshot bytes do not match sealed digest')
++    def unique(pairs):
++        result = {}
++        for key, value in pairs:
++            if key in result:
++                raise ValueError('duplicate JSON key')
++            result[key] = value
++        return result
++    obj = json.loads(raw, object_pairs_hook=unique, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
++    if not isinstance(obj, dict) or obj.get('schema') != 'epyc.rpucg.snapshot.v2' or obj.get('promotable') is not False:
++        raise ValueError('wrong schema or promotability')
++    def nonempty(value):
++        return isinstance(value, str) and bool(value.strip())
++    for name in ('task_id', 'evaluator_id', 'recipe_id', 'tie_rule'):
++        if not nonempty(obj.get(name)):
++            raise ValueError('missing identity or tie rule: ' + name)
++    for name, content in (('evaluator', evaluator_bytes), ('recipe', recipe_bytes)):
++        expected = obj.get(name + '_sha256')
++        if (not isinstance(content, bytes) or not isinstance(expected, str)
++                or not SHA256.fullmatch(expected)
++                or hashlib.sha256(content).hexdigest() != expected):
++            raise ValueError(name + ' content does not match sealed identity')
++    capture = obj.get('capture')
++    if (not isinstance(capture, dict)
++            or not nonempty(capture.get('producer_id'))
++            or not nonempty(capture.get('policy_source_revision'))
++            or capture.get('semantics') != 'producer_asserted_atomic_pre_selection'):
++        raise ValueError('missing capture provenance or atomicity assertion')
++    n = obj.get('inspiration_count')
++    if isinstance(n, bool) or not isinstance(n, int) or n < 1:
++        raise ValueError('invalid inspiration count')
++    rows = obj.get('candidates')
++    if not isinstance(rows, list) or not rows:
++        raise ValueError('no candidates')
++    by_id, orders = {}, set()
++    for row in rows:
++        if not isinstance(row, dict):
++            raise ValueError('invalid candidate')
++        cid, order, chain = row.get('id'), row.get('creation_order'), row.get('chain_id')
++        if not nonempty(cid) or cid in by_id or not nonempty(chain):
++            raise ValueError('invalid candidate identity or chain')
++        if isinstance(order, bool) or not isinstance(order, int) or order < 0 or order in orders:
++            raise ValueError('invalid creation order')
++        if not isinstance(row.get('source_sha256'), str) or not SHA256.fullmatch(row['source_sha256']):
++            raise ValueError('invalid source hash')
++        if not isinstance(row.get('correctness_passed'), bool):
++            raise ValueError('missing candidate correctness verdict')
++        parents = row.get('parent_ids')
++        if not isinstance(parents, list) or any(not nonempty(p) for p in parents) or len(set(parents)) != len(parents):
++            raise ValueError('invalid parent list')
++        by_id[cid] = row
++        orders.add(order)
++    for row in rows:
++        if any(p not in by_id or by_id[p]['creation_order'] >= row['creation_order'] for p in row['parent_ids']):
++            raise ValueError('parent missing or not earlier than child')
++    eligible, choice = obj.get('eligible_ids'), obj.get('incumbent_choice_ids')
++    if (not isinstance(eligible, list) or not eligible
++            or any(not nonempty(cid) for cid in eligible)
++            or len(set(eligible)) != len(eligible) or not set(eligible) <= set(by_id)):
++        raise ValueError('invalid eligible candidate pool')
++    for cid in eligible:
++        row = by_id[cid]
++        reward = row.get('normalized_reward')
++        if row['correctness_passed'] is not True:
++            raise ValueError('eligible candidate is not correctness admitted')
++        if isinstance(reward, bool) or not isinstance(reward, (float, int)) or not math.isfinite(reward):
++            raise ValueError('invalid eligible normalized reward')
++    if (not isinstance(choice, list) or len(choice) != n
++            or any(not nonempty(cid) for cid in choice)
++            or len(set(choice)) != len(choice) or not set(choice) <= set(eligible)):
++        raise ValueError('invalid incumbent choice')
++    # Mirror the serialized upstream state, including empty chains and node
++    # entries outside the current candidate pool. No history is assumed.
++    visits = obj.get('chain_visit_counts')
++    expansions = obj.get('chain_total_expansions')
++    chains = {row['chain_id'] for row in rows}
++    def count(value):
++        return not isinstance(value, bool) and isinstance(value, int) and value >= 0
++    if (not isinstance(visits, dict) or not isinstance(expansions, dict)
++            or not visits or set(visits) != set(expansions)
++            or not chains <= set(visits)
++            or any(not nonempty(chain) for chain in visits)):
++        raise ValueError('invalid or incomplete chain counter maps')
++    for node_counts in visits.values():
++        if (not isinstance(node_counts, dict)
++                or any(not nonempty(node) or not count(value)
++                       for node, value in node_counts.items())):
++            raise ValueError('invalid per-node visit counts')
++    if any(not count(value) for value in expansions.values()):
++        raise ValueError('invalid per-chain expansion counts')
++    return obj
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/controller/test_rpucg_snapshot.py
+@@ -0,0 +1,115 @@
++import copy
++import hashlib
++import json
++import unittest
++from rpucg_snapshot import validate_snapshot
++
++
++def snapshot():
++    return {'schema':'epyc.rpucg.snapshot.v2', 'promotable':False,
++            'task_id':'task', 'evaluator_id':'eval', 'recipe_id':'recipe',
++            'tie_rule':'id', 'inspiration_count':1,
++            'evaluator_sha256':hashlib.sha256(b'evaluator').hexdigest(),
++            'recipe_sha256':hashlib.sha256(b'recipe').hexdigest(),
++            'candidates':[{'id':'a', 'source_sha256':'a'*64, 'creation_order':0,
++                'chain_id':'c', 'parent_ids':[], 'correctness_passed':True, 'normalized_reward':1},
++                {'id':'b', 'source_sha256':'b'*64, 'creation_order':1,
++                 'chain_id':'c', 'parent_ids':['a'], 'correctness_passed':True, 'normalized_reward':2}],
++            'eligible_ids':['a','b'], 'incumbent_choice_ids':['b'],
++            'capture':{'producer_id':'producer', 'policy_source_revision':'revision',
++                       'semantics':'producer_asserted_atomic_pre_selection'},
++            'chain_visit_counts':{'c':{'a':1}}, 'chain_total_expansions':{'c':1}}
++
++
++def admit(obj):
++    raw=json.dumps(obj).encode()
++    return validate_snapshot(raw,hashlib.sha256(raw).hexdigest(), evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
++
++
++class TestAdmission(unittest.TestCase):
++    def test_round_trip_full_counter_state_without_history_assumptions(self):
++        obj = snapshot()
++        obj['chain_visit_counts'] = {'c': {'a': 7, 'b': 2, 'past-node': 3}, 'empty': {}}
++        obj['chain_total_expansions'] = {'c': 1, 'empty': 0}
++        result = admit(obj)
++        self.assertEqual(result['chain_visit_counts'], obj['chain_visit_counts'])
++        self.assertEqual(result['chain_total_expansions'], obj['chain_total_expansions'])
++        # A checkpoint can have independent counters; no fresh-history rule applies.
++        obj['chain_total_expansions']['c'] = 0
++        self.assertEqual(admit(obj)['chain_total_expansions']['c'], 0)
++        obj['chain_visit_counts'] = {'c': {}}
++        obj['chain_total_expansions'] = {'c': 0}
++        self.assertEqual(admit(obj)['chain_visit_counts'], {'c': {}})
++
++    def test_counter_shapes_and_capture_are_required(self):
++        changes = [
++            lambda x: x.update(schema='epyc.rpucg.snapshot.v1'),
++            lambda x: x.update(chain_visit_counts={'c': 1}),
++            lambda x: x.update(chain_total_expansions=1),
++            lambda x: x.update(chain_total_expansions={'other': 1}),
++            lambda x: x.update(chain_visit_counts={'other': {}}, chain_total_expansions={'other': 0}),
++            lambda x: x.update(chain_visit_counts={'c': {'a': True}}),
++            lambda x: x.update(chain_visit_counts={'c': {'': 1}}),
++            lambda x: x.update(chain_visit_counts={'c': {'a': -1}}),
++            lambda x: x.update(chain_total_expansions={'c': False}),
++            lambda x: x.update(chain_total_expansions={'c': -1}),
++            lambda x: x.pop('capture'),
++            lambda x: x['capture'].update(producer_id=' '),
++            lambda x: x['capture'].update(policy_source_revision=''),
++            lambda x: x['capture'].update(semantics='atomic'),
++        ]
++        for change in changes:
++            obj = copy.deepcopy(snapshot())
++            change(obj)
++            with self.subTest(obj=obj), self.assertRaises(ValueError):
++                admit(obj)
++
++    def test_identity_bytes_must_match(self):
++        obj = snapshot()
++        for key in ('evaluator_sha256', 'recipe_sha256'):
++            for bad in (None, '0' * 64, 'not-a-hash'):
++                copy_obj = copy.deepcopy(obj)
++                if bad is None:
++                    del copy_obj[key]
++                else:
++                    copy_obj[key] = bad
++                with self.subTest(key=key, value=bad), self.assertRaises(ValueError):
++                    admit(copy_obj)
++        raw = json.dumps(obj).encode()
++        for evaluator, recipe in ((b'changed', b'recipe'), (b'evaluator', b'changed')):
++            with self.subTest(evaluator=evaluator, recipe=recipe), self.assertRaises(ValueError):
++                validate_snapshot(raw, hashlib.sha256(raw).hexdigest(), evaluator_bytes=evaluator, recipe_bytes=recipe)
++
++    def test_valid(self):
++        self.assertEqual(admit(snapshot())['incumbent_choice_ids'], ['b'])
++    def test_failed_ineligible_ancestor_is_represented(self):
++        obj = snapshot()
++        obj['candidates'][0]['correctness_passed'] = False
++        del obj['candidates'][0]['normalized_reward']
++        obj['eligible_ids'] = ['b']
++        self.assertEqual(admit(obj)['candidates'][0]['correctness_passed'], False)
++
++    def test_failed_eligible_candidate_is_refused(self):
++        obj = snapshot()
++        obj['candidates'][0]['correctness_passed'] = False
++        with self.assertRaises(ValueError):
++            admit(obj)
++
++    def test_bad_digest_and_duplicate_keys(self):
++        with self.assertRaises(ValueError): validate_snapshot(b'{}', '0'*64, evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
++        raw=b'{"schema":1,"schema":2}'
++        with self.assertRaises(ValueError): validate_snapshot(raw,hashlib.sha256(raw).hexdigest(), evaluator_bytes=b'evaluator', recipe_bytes=b'recipe')
++    def test_incomplete_and_invented_inputs_refused(self):
++        changes=[lambda x:x['candidates'][1].update(parent_ids=['absent']),
++                 lambda x:x['candidates'][0].update(parent_ids=['b']),
++                 lambda x:x.update(eligible_ids=['unknown']),
++                 lambda x:x.update(incumbent_choice_ids=['absent']),
++                 lambda x:x.update(chain_visit_counts={}),
++                 lambda x:x['candidates'][0].update(correctness_passed=False),
++                 lambda x:x['candidates'][0].update(normalized_reward=float('nan')),
++                 lambda x:x.update(promotable=True)]
++        for change in changes:
++            obj=copy.deepcopy(snapshot()); change(obj)
++            with self.subTest(obj=obj), self.assertRaises(ValueError): admit(obj)
++
++if __name__ == '__main__': unittest.main()
