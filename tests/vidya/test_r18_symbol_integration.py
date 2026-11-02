@@ -93,3 +93,12 @@ def test_finalize_refuses_stop_deadline_and_failed_parent(tmp_path, monkeypatch)
  monkeypatch.delenv('FILLER_DEADLINE'); parent.write_text('{"partial": true, "exit_code": 75}')
  with pytest.raises(ValueError, match='parent run'): capture.finalize(out,full,parent)
  assert not (out/'terminal.json').exists()
+
+
+def test_relocated_dependency_manifest_resolves_bundle(tmp_path):
+ bundle=V/'producers/r18_inputs'
+ deps=json.loads((bundle/'comparator-dependencies.json').read_text())
+ for key, expected in deps.items():
+  path=bundle/'perl-lib'/key.removeprefix('@bundle/') if key.startswith('@bundle/') else Path(key)
+  assert capture.sha(path)==expected
+ assert capture.sha(bundle/'compare_symbols.py')=='08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61'

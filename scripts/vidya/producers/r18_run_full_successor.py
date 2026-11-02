@@ -3,7 +3,7 @@
 import json, os, runpy, signal, sys, time, traceback
 from pathlib import Path
 PRODUCERS = Path(__file__).resolve().parent
-D = Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102')
+D = Path('/mnt/raid0/llm/tmp/r18-belief-successor-20261102')
 sys.path.insert(0, str(PRODUCERS))
 import r18_symbol_capture as capture
 B = Path(sys.argv[sys.argv.index('--scratch') + 1]).resolve() if '--scratch' in sys.argv else D / 'scratch' / 'full'

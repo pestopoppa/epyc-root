@@ -44,14 +44,14 @@ def begin(out, result, source, inputs, dependencies, commands, *, synthetic=Fals
     if out.exists() or result.exists(): raise ValueError('fresh capture and absent comparator output required')
     dep = json.loads(Path(dependencies).read_text())
     if not isinstance(dep, dict) or not dep: raise ValueError('empty comparator dependencies')
-    bound = {p: checked(p) for p in dep}
+    bound = {p: checked(Path(__file__).resolve().parent / 'r18_inputs' / 'perl-lib' / p[len('@bundle/'):] if p.startswith('@bundle/') else p) for p in dep}
     if any(bound[p]['sha256'] != digest for p, digest in dep.items()): raise ValueError('dependency digest mismatch')
     def git(*args): return subprocess.check_output(['git', '-C', str(source), *args], text=True).strip()
     head, tree, status = git('rev-parse','HEAD'), git('rev-parse','HEAD^{tree}'), git('status','--porcelain','--untracked-files=all')
     if status: raise ValueError('source dirty')
     if not synthetic:
         window_check()
-        if sha(dependencies) != '4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425': raise ValueError('comparator dependency manifest differs')
+        if sha(dependencies) not in ('4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425', '5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd'): raise ValueError('comparator dependency manifest differs')
         pins = {'comparator':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61',
                 'anchor_cpu':'3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0',
                 'anchor_hip':'f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079'}

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import argparse,hashlib,json,os,pathlib,signal,subprocess,time,sys,shutil
-sys.path.insert(0, '/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102')
-import replay_evidence as evidence
-D=pathlib.Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102')
 PRODUCERS=pathlib.Path(__file__).resolve().parent
+INPUTS=PRODUCERS/'r18_inputs'
+sys.path.insert(0, str(INPUTS))
+import replay_evidence as evidence
 sys.path.insert(0, str(PRODUCERS))
 import r18_symbol_capture as belief
-P=pathlib.Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102')
+D=pathlib.Path('/mnt/raid0/llm/tmp/r18-belief-successor-20261102')
 COMMIT='ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
 p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--scratch',required=True);p.add_argument('--mode',choices=['smoke','cutoff','configure','full'],required=True);a=p.parse_args()
 S=pathlib.Path(a.source); B=pathlib.Path(a.scratch)
@@ -23,10 +23,19 @@ def source_check():
  assert git('branch','--show-current').startswith('experimental/'),'not experimental'
  assert not git('status','--porcelain','--untracked-files=all'),'source dirty'
 source_check()
+def input_check():
+ pins={'production-recipe.json':'74a2544c1b953a95df302295bdbb83fef9ccd26f37c7868989546f26e6d96496',
+       'replay_evidence.py':'640540abc50af9c1024bd3296e3a1d11e6c90c3fdaa2c2204d483e243ac0c596',
+       'replay_hip_cuid.py':'7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01',
+       'compare_symbols.py':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61',
+       'comparator-dependencies.json':'5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd'}
+ for name, digest in pins.items():
+  if hashlib.sha256((INPUTS/name).read_bytes()).hexdigest()!=digest: raise ValueError('pinned build input changed: '+name)
+input_check()
 env=dict(os.environ,PATH='/usr/bin:/bin',LD_LIBRARY_PATH='',OMP_NUM_THREADS='1',HIP_VISIBLE_DEVICES='',ROCR_VISIBLE_DEVICES='',CUDA_VISIBLE_DEVICES='',PYTHONDONTWRITEBYTECODE='1')
 cmake='/usr/bin/cmake';tool=pathlib.Path('/usr')
-recipe=json.loads((D/'production-recipe.json').read_text())
-CUID=D/'CUID-RECIPES.json'; CUID_SHA='89cdaffdd58b9a8a624c5e79b7d477b82b626640876694f5fa5654a73d874aa4'
+recipe=json.loads((INPUTS/'production-recipe.json').read_text())
+CUID=INPUTS/'CUID-RECIPES.json'; CUID_SHA='89cdaffdd58b9a8a624c5e79b7d477b82b626640876694f5fa5654a73d874aa4'
 assert hashlib.sha256(CUID.read_bytes()).hexdigest()==CUID_SHA, 'CUID recipe manifest changed'
 def interrupted(signum,frame):raise SystemExit(75)
 signal.signal(signal.SIGTERM,interrupted)
@@ -84,7 +93,7 @@ def configure(kind):
   args += [f'-DCMAKE_{lang}_COMPILER={tool/"bin"/exe}',f'-DCMAKE_{lang}_COMPILER_AR={tool/"bin/gcc-ar-15"}',f'-DCMAKE_{lang}_COMPILER_RANLIB={tool/"bin/gcc-ranlib-15"}']
  if kind=='gpu':
   args+=['-DCMAKE_HIP_COMPILER=/opt/rocm/lib/llvm/bin/clang++']
-  launcher=['/usr/bin/python3',str(D/'replay_hip_cuid.py'),'--manifest',str(CUID),'--manifest-sha256',CUID_SHA,'--source-root',str(S),'--output-root',str(target)]
+  launcher=['/usr/bin/python3',str(INPUTS/'replay_hip_cuid.py'),'--manifest',str(CUID),'--manifest-sha256',CUID_SHA,'--source-root',str(S),'--output-root',str(target)]
   args+=['-DCMAKE_HIP_COMPILER_LAUNCHER:STRING='+';'.join(launcher)]
  if not (target/'CMakeCache.txt').exists():run([cmake,'-S',str(S),'-B',str(target),'-G','Unix Makefiles',*args])
  return target
@@ -111,30 +120,31 @@ if a.mode=='smoke':
 run([cmake,'--build',str(cpu),'--target','ggml-cpu','-j',str(threads)])
 cpu_lib=cpu/'bin/libggml-cpu.so'
 assert cpu_lib.is_file() and cpu_lib.stat().st_size>64, 'completed CPU target has no library'
-with (D/'scratch/native-units.jsonl').open('a') as f:
+with (D/'native-units.jsonl').open('a') as f:
  f.write(json.dumps({'schema':'r18a.native-unit.v1','kind':'cpu-build-complete','artifact':str(cpu_lib),'sha256':hashlib.sha256(cpu_lib.read_bytes()).hexdigest()})+'\n'); f.flush(); os.fsync(f.fileno())
 gpu=configure('gpu')
 run([cmake,'--build',str(gpu),'--target','ggml-cpu','ggml-hip','-j',str(threads)])
 # Every retained TU must have actually passed through the pinned launcher in this fresh build.
 proof=evidence.verify_replay(log,CUID,CUID_SHA,gpu)
 (B/'hip-replay-witness.json').write_text(json.dumps(proof,indent=2,sort_keys=True)+'\n')
-deps=json.loads((D/'comparator-dependencies.json').read_text())
+deps=json.loads((INPUTS/'comparator-dependencies.json').read_text())
 before=evidence.comparison_hashes(cpu,gpu,deps)
 (B/'comparison-inputs-before.json').write_text(json.dumps(before,indent=2,sort_keys=True)+'\n')
 env['R18_SYMBOL_RESULT']=str(B/'symbol-identity.json')
 # Start before comparator, and bind exact source, toolchain, comparator and both build arms.
 capture_dir=B/'belief-symbol-finding'
-inputs={'comparator':evidence.COMPARATOR,'anchor_cpu':evidence.ANCHORS/'verified-v10-cpu/bin/libggml-cpu.so',
- 'anchor_hip':evidence.ANCHORS/'verified-v10-gpu/bin/libggml-hip.so','candidate_cpu':cpu/'bin/libggml-cpu.so',
+inputs={'comparator':evidence.COMPARATOR,'anchor_cpu':evidence.ANCHORS/'cpu-20260921-ffc1bac82/bin/libggml-cpu.so',
+ 'anchor_hip':evidence.ANCHORS/'gpu-20260921-ffc1bac82/bin/libggml-hip.so','candidate_cpu':cpu/'bin/libggml-cpu.so',
  'candidate_hip':gpu/'bin/libggml-hip.so','cpu_compiler':'/usr/bin/cc','cxx_compiler':'/usr/bin/c++',
- 'hip_compiler':'/opt/rocm/lib/llvm/bin/clang++','cmake':cmake,'recipe':D/'production-recipe.json',
+ 'hip_compiler':'/opt/rocm/lib/llvm/bin/clang++','cmake':cmake,'recipe':INPUTS/'production-recipe.json',
  'cuid_manifest':CUID,'replay_witness':B/'hip-replay-witness.json','driver':__file__,
  'writer':PRODUCERS/'r18_symbol_capture.py','capture_cli':PRODUCERS/'r18_symbol_capture_cli.py',
  'set_extractor':PRODUCERS/'r18_symbol_sets.py','wrapper':PRODUCERS/'r18_run_full_successor.py',
- 'evidence_checker':D/'replay_evidence.py','cuid_launcher':D/'replay_hip_cuid.py'}
-belief.begin(capture_dir, B/'symbol-identity.json', S, inputs, D/'comparator-dependencies.json', commands, build_env=env)
+ 'evidence_checker':INPUTS/'replay_evidence.py','cuid_launcher':INPUTS/'replay_hip_cuid.py'}
+input_check()
+belief.begin(capture_dir, B/'symbol-identity.json', S, inputs, INPUTS/'comparator-dependencies.json', commands, build_env=env)
 
-rc=run(['bash','-c','exec "$@" > "$R18_SYMBOL_RESULT"','r18-comparator','/usr/bin/python3',str(evidence.COMPARATOR),'--anchor-build',str(evidence.ANCHORS/'verified-v10-gpu'),'--anchor-cpu-build',str(evidence.ANCHORS/'verified-v10-cpu'),'--candidate-build',str(gpu),'--candidate-cpu-build',str(cpu)],allowed=(0,1))
+rc=run(['bash','-c','exec "$@" > "$R18_SYMBOL_RESULT"','r18-comparator','/usr/bin/python3',str(evidence.COMPARATOR),'--anchor-build',str(evidence.ANCHORS/'gpu-20260921-ffc1bac82'),'--anchor-cpu-build',str(evidence.ANCHORS/'cpu-20260921-ffc1bac82'),'--candidate-build',str(gpu),'--candidate-cpu-build',str(cpu)],allowed=(0,1))
 after=evidence.comparison_hashes(cpu,gpu,deps)
 (B/'comparison-inputs-after.json').write_text(json.dumps(after,indent=2,sort_keys=True)+'\n')
 if before != after: raise ValueError('comparison inputs changed during comparator execution')
