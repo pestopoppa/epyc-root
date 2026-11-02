@@ -28,5 +28,12 @@ class ClassifyTest(unittest.TestCase):
         records = call() + [dict(call()[0])]
         with self.assertRaises(ValueError): classify(records, expected_attention_layers=2)
 
+    def test_wrong_layer_set_is_unknown(self):
+        records = call()
+        records[2] = dict(records[2], layer=7)
+        result = classify(records, expected_attention_layers=2)
+        self.assertEqual(result['verify_calls'], [])
+        self.assertEqual(result['unknown_invocations'], ['a'])
+
 if __name__ == '__main__':
     unittest.main()

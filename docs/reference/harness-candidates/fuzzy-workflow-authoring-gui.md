@@ -1,6 +1,6 @@
 # FW-3 — prior art for fuzzy workflow authoring
 
-Verified 2026-10-06 from official documentation. This is a design survey for [FW-1](../../../handoffs/active/fuzzy-workflow-authoring-gui.md#fw-1-sketch--worker-failure-routing-as-a-two-layer-workflow-2026-09-17), with no ingestion, installation, model download, execution or GUI implementation. Borrow the authoring affordances below into the existing contract; they confer no runtime, calibration or latency evidence.
+Verified 2026-10-06 from official documentation. This is a design survey for [FW-1](../../../handoffs/completed/fuzzy-workflow-authoring-gui.md#fw-1-sketch--worker-failure-routing-as-a-two-layer-workflow-2026-09-17), with no ingestion, installation, model download, execution or GUI implementation. Borrow the authoring affordances below into the existing contract; they confer no runtime, calibration or latency evidence.
 
 | Prior art and verified affordance | Borrow for FW-1 | Refuse in the EPYC authoring contract |
 |---|---|---|

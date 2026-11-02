@@ -27,7 +27,7 @@ task_rate as the axis) → panels relabel (extends E8-PANELS-a axis-labeling tas
 ## 2026-07-26 Staleness Review
 
 The era prerequisite has advanced, but the
-[design-backlog triage](design-backlog-triage-2026-07-23.md) still requires a
+[design-backlog triage](../completed/design-backlog-triage-2026-07-23.md) still requires a
 fresh quality-eligible replay: the previous task-rate frontier admitted
 quality-floor violations. W3 therefore remains a narrowly gated replay and
 policy decision, not a live-vector flip.

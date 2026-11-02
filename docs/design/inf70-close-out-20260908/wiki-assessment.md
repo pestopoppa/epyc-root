@@ -75,7 +75,7 @@ manifest), `C` = changed (content hash differs).
 | 3 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `benchmark_methodology` (champion/floor/harness), `quantization` (Q4_K gating) |
 | 4 | C | handoff-active | `handoffs/active/cpu-fused-decoder-blocks.md` | `hardware_optimization` | — |
 | 5 | C | handoff-active | `handoffs/active/cpu-prefill-compute-large-models.md` | `hardware_optimization` | `inference_serving` |
-| 6 | C | handoff-active | `handoffs/active/cpu-shape-specialized-gemv-decode.md` | `hardware_optimization` | `quantization` |
+| 6 | C | handoff-active | `handoffs/completed/cpu-shape-specialized-gemv-decode.md` | `hardware_optimization` | `quantization` |
 | 7 | C | handoff-active | `handoffs/active/numa-placement-defect-20260730.md` | `hardware_optimization` | `inference_serving` |
 | 8 | C | handoff-active | `handoffs/active/wrap-up-division-of-labor-policy.md` | `agent_architecture` | `knowledge_management` |
 | 9 | C | progress | `progress/2026-09/2026-09-08-ak-rebuild-20260828.md` | `hardware_optimization` | `agent_architecture`, `autonomous_research` |

@@ -13,7 +13,7 @@
 > "no checkpoint". That was wrong from 2026-02-13 onward; neither review queried HuggingFace. Read
 > [§ Activation Evidence — 2026-08-12](#activation-evidence--2026-08-12) instead. Kept for provenance.
 
-The [design-backlog triage](design-backlog-triage-2026-07-23.md) still
+The [design-backlog triage](../completed/design-backlog-triage-2026-07-23.md) still
 classifies the public path as training-only and requires both a pretrained
 checkpoint and an inference reference. Neither implementation gate is recorded
 as satisfied, so this remains monitoring-only.

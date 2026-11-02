@@ -11,7 +11,7 @@
 
 ## 2026-07-26 Staleness Review
 
-The [design-backlog triage](design-backlog-triage-2026-07-23.md) preserves the
+The [design-backlog triage](../completed/design-backlog-triage-2026-07-23.md) preserves the
 dedicated-op path as profile-gated and leaves the production-role decision
 open. No new role or profile evidence was produced by this review, so LQ-1
 through LQ-4 remain correctly gated.
