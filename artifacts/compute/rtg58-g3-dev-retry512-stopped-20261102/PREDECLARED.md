@@ -1,0 +1,3 @@
+# G3 paired dev retry (2026-11-02)
+
+Retry the identical four previously exposed dev IDs, preserving the failed 128-token attempt separately. The only experimental change is the maximum generation length 128 to 512; pairs truncated at 512 remain incomplete and must refuse scoring. The fixed output budget is a dev diagnostic, not a corpus metric admission, production setting, B7 result or G3 gate; gate IDs remain unexposed. Keep all arms, outputs, linkage, hashes, exit status and co-tenancy. CPU q1 cores 24–31 under direct claim; no timing claim. Model and candidate are the same pinned instruments as the prior attempt.

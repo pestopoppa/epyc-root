@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 672
+      "open": 673
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -1356,7 +1356,7 @@
       "closed": 118,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 56,
+      "open": 57,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1365,7 +1365,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 175
+      "total": 176
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,

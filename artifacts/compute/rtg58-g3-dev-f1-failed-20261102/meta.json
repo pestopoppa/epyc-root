@@ -1,0 +1,29 @@
+{
+  "tool": "test-chunk-kv-g3",
+  "build_info": "b10448-8952a0f69",
+  "model": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+  "n_vocab": 151936,
+  "n_requests": 4,
+  "corpus": "/mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/corpus.jsonl",
+  "ids": "/mnt/raid0/llm/tmp/kv-prefix-fork/g3-dev-f1-20261102/dev.ids",
+  "window": 64,
+  "n_cont": 64,
+  "n_batch": 512,
+  "n_ubatch": 512,
+  "n_threads": 8,
+  "type_k": "f32",
+  "type_v": "f32",
+  "selector": "head-window-v0 or kdev offline reference K, as named by each arm",
+  "outcome_tokens": 128,
+  "outcome_mode": "kdev",
+  "kdev_layer": 0,
+  "kdev_target_r": 0.25,
+  "kdev_scope": "full-graph reference K, offline quality only; no online speed claim",
+  "scored_rows": "logits at every suffix position after the last chunk, plus after each of n_cont teacher-forced tokens of the reference greedy continuation",
+  "sanity_all_inject_bit_identical": true,
+  "modes": [
+    "all-inject",
+    "none",
+    "kdev"
+  ]
+}
