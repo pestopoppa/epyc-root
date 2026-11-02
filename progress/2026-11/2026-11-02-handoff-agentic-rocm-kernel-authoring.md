@@ -75,3 +75,7 @@ Diagnosed repeated publication failures: after the start-of-turn merge, origin/m
 ## 00:43Z — Prepare lock-safe publication race remedy
 
 Repeated non-fast-forward push failures trace to a gap between wrapup.py merging origin/main and serialized_push.py acquiring its push lock; another session can publish in that window. Requested a bounded review and candidate patch for a lock-safe remedy without modifying the shared coordination scripts or keeper. Capture and counter-seam completion events remain outstanding; no new row was published. This wrap-up retries publication of the pending lane commits.
+
+## 00:44Z — Advance keeper claim compatibility, RPUCG selector and native counter producer
+
+No completion reports existed at this boundary for the previously assigned MLA, MoE, counter-seam or wrap-up race work. Dispatched independent bounded work on keeper compatibility of the governed capture claim, a license-aware selection-only RPUCG adapter for future prospective snapshots, and identification or implementation of a native paired counter producer. Registered their completion events. No GPU run, row publication, target-repository modification or completed task is claimed.
