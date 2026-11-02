@@ -51,3 +51,7 @@ Consumed hawkeye-adapter.done, tensor-model-search.done and selector-dataset.don
 ## 00:36Z — Review corrected prospective selector snapshot draft
 
 Consumed fix-rpucg-snapshot.done and reviewed artifacts/agentic-rocm/rpucg-snapshot.patch. The revised validator permits failed ineligible ancestors without rewards and refuses failed eligible nodes, while retaining digest and DAG checks. Independently applied in isolated scratch and ran five focused unit tests successfully. Preserved as a prototype only: evaluator and recipe identifiers are unverified strings, DAG closure excludes external parents, and no native producer, RPUCG selector, actual A/B, or target integration exists. AR-RPUCG remains open; fixture tests are not a measurement.
+
+## 00:37Z — Recover selector draft publication and advance real-model capture prerequisites
+
+The previous wrap-up created 9ab3026e7027 but its serialized push failed, so this boundary carries that commit forward for publication. No governed inference row is yet backed by an exact real-model hook and manifest. Dispatched separate bounded searches for the exact k228 MLA and k175 MoE model surfaces, plus recovery of the interrupted C5-7 in-run evidence-provider patch; registered completion events. These are preparation, not GPU execution or completed tasks.
