@@ -87,3 +87,7 @@ Delegated bounded preparation of the AKX-ALL-8 floor successor and AKX-ALL-29.5a
 ## 10:45Z — Prepare CPU floor and GPU claim measurement rows
 
 Delegated independent row preparation for AKX-ALL-8, AK-Q38FN-64K-FLOOR and AKX-ALL-3. The scheduler derives quiet-host for CPU class with exclusive GPU quiet and all four quarters; the separate device-flock witness and full native reader remain required for the AKX-ALL-8 successor. Awaiting scratch reports; no row published or measurement claimed.
+
+## 10:46Z — Develop CPU floor device-lock and registry-plan controls
+
+Consumed CPU floor preparation: CH-27 authorized one bounded C5 recalibration, but existing candidate lacks private campaign custody, joined registry-plan integrity and a continuous independent device-lock witness. Delegated model-free scratch controls for the lock and paired plan integrity; no row published and no floor claimed.

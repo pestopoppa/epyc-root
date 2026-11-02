@@ -79,3 +79,7 @@ Prepared git archive of quantizer source commit 7cdd7c97bed538a85c3b75331b6cdb36
 ## 10:43Z — Stage and inventory INF-75 quantizer source tree before grant
 
 Extracted the prepared 7cdd7c97 source archive outside any grant into /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/quantizer-source/src and recorded a 3,651-entry file, directory, mode and symlink inventory in tree-manifest.json, SHA-256 0fa8259e744e4db07ca4e7efbf78e85806ddb50acde135981f05ba0ca31205b0. The existing build job still needs to verify and consume this tree; no row published or replay claimed. The last wrap push failed when its lane disappeared.
+
+## 10:45Z — Prepare source verification and diagnose W5s enrollment failures
+
+Reviewed parked W5s r7 failures: all three ended during enrollment without a native unit; the isolated candidate bundle still needs independent review, and no parked row or lineage was altered. Prepared a staged-source verifier, JSON-manifest mutation fixtures, and quantizer job patch in /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/; review found an interface/schema mismatch which is being corrected before integration. No build, inference, or row publication.

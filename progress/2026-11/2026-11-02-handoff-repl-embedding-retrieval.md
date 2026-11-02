@@ -43,3 +43,7 @@ Prepared a draft request opt-in patch for REPL-EMB-4.2, requiring explicit REPL 
 ## 10:45Z — Fix document search draft refusal paths
 
 Corrected the draft document-search request patch: reject missing parsed documents with HTTP 422 after preprocessing, prevent local-script interception from bypassing the opt-in, and reject document_search on both streaming implementations before an SSE response. The patch applies cleanly to sampled APP source in a scratch copy; end-to-end route tests and bundle-attached document reads remain open. No APP source was changed or deployed. [no-belief: draft integration only]
+
+## 10:47Z — Prepare the REPL-EMB-2.8a real-session capture activation package
+
+Prepared the operator/API-owner package for a bounded real spill trace session, including process identity, capture shutdown, separate exact-original custody and digest-verified export acceptance. APP source already provides v2 spill tap and real_trace resolver; existing offline retrieval writer refuses online trace facts. Real capture, write-side integration and the handoff boxes remain open. GitNexus index creation was refused by the CPU admission guard; no source symbol was edited. [no-belief: operational preparation only]
