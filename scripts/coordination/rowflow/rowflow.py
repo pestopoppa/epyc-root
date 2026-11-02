@@ -1423,6 +1423,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             holders.setdefault(r, g["id"])
     free = set(REGIONS) - busy
     gpu_open = any(GPU in g["holds"] for g in grants)
+    if GPU in free and not dry and start_gpu_batch(flags, log):
+        free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     counts = lane_counts(flags, allrows)
     cands = []
     for rid, d in allrows.items():
@@ -1483,6 +1485,48 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
+
+
+# ---------------------------------------------------------------- queued GPU smokes (operator 2026-11-02)
+def gpu_batch_lock(flags): return os.path.join(flags, "dryrun", "GPU-SMOKE-BATCH.lock")
+
+
+def gpu_batch_running(flags):
+    """A detached queued-GPU-smoke batch is alive (its lock names a live pid); a dead lock is removed."""
+    lk = gpu_batch_lock(flags)
+    pid = (load_json(lk) or {}).get("pid")
+    if pid and alive(pid):
+        return True
+    if os.path.exists(lk):
+        try:
+            os.remove(lk)
+        except OSError:
+            pass
+    return False
+
+
+def release_gpu_batch(flags):
+    try:
+        os.remove(gpu_batch_lock(flags))
+    except OSError:
+        pass
+
+
+def start_gpu_batch(flags, log):
+    """GPU free + queued smokes: start ONE detached batch (publish_row.py --run-gpu-queue) under a lock. True = the
+    batch owns the GPU this tick (running or just started), so no GPU grant is assigned."""
+    if gpu_batch_running(flags):
+        return True
+    if not glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        return False
+    os.makedirs(os.path.join(flags, "dryrun"), exist_ok=True)
+    out = open(os.path.join(flags, "dryrun", "GPU-SMOKE-BATCH.out"), "a")
+    p = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "publish_row.py"),
+                          "--run-gpu-queue", "--flags", flags], stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                         start_new_session=True)
+    atomic_json(gpu_batch_lock(flags), {"pid": p.pid, "started": now_iso()})
+    log(f"GPU-SMOKE-BATCH started pid={p.pid}")
+    return True
 
 
 # ---------------------------------------------------------------- cli

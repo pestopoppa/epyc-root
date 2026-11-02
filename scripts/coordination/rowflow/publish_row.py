@@ -16,11 +16,13 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
 Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
 `file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
-(GPU rows: on their own regions, VRAM residency checked; never refused for busy resources), for
+(GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
+dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
 smoke_timeout_s (300). PASS (a first unit in result_path, clean stop) writes dryrun/<id>/PASS.json: ready at once. FAIL
 writes the FAIL memo and prints launcher_out_tail; the allocator grants only PASSed rows."""
 import argparse
 import datetime as dt
+import glob
 import os
 import re
 import sys
@@ -172,18 +174,62 @@ def unpublish(flags, rid):
         os.replace(rp, unpublished_path(flags, rid))
 
 
+def queued_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "GPU-SMOKE-QUEUED.json")
+
+
+def gpu_busy(flags):
+    """Operator 2026-11-02: a GPU smoke never loads a model onto the MI210 while a GPU job runs (OOM, timing skew).
+    Busy = a live grant holds gpu-quiet, a region-lock holder exists on gpu-quiet, or a queued-smoke batch is running."""
+    if rf.rl_status().get(rf.GPU, ("free",))[0] != "free":
+        return True
+    return rf.gpu_batch_running(flags) or any(rf.GPU in g["holds"] for g in rf.open_grants(flags))
+
+
+def run_smoke(flags, rid, regions, smoke_s):
+    """THE dry run: (verdict, msg); the manifest survives only a PASS."""
+    v, msg = "FAIL", "smoke did not run"
+    try:
+        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s)
+    finally:
+        if v != "PASS":
+            unpublish(flags, rid)
+    return v, msg
+
+
+def run_gpu_queue(flags):
+    """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it."""
+    n = 0
+    for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))):
+        qd = rf.load_json(q) or {}
+        rid = os.path.basename(os.path.dirname(q))
+        up = unpublished_path(flags, rid)
+        if os.path.exists(up):
+            os.replace(up, rf.ready_path(flags, rid))
+        try:
+            v, msg = run_smoke(flags, rid, qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+        except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
+            v, msg = "FAIL", f"{type(e).__name__}: {e}"
+        print(f"GPU-SMOKE {v} {rid}: {msg}")
+        os.remove(q)
+        n += 1
+    return n
+
+
 def publish_smoked(spec, flags, source):
-    """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo)."""
+    """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo); a GPU row
+    whose GPU is busy is QUEUED for the next GPU gap instead (QUEUED is not a failure; returns None)."""
     regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
-    v, msg = "FAIL", "smoke did not run"
-    try:
-        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S))
-    finally:
-        if v != "PASS":
-            unpublish(flags, rid)
+    smoke_s = int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
+    if spec.get("lane") == "gpu" and gpu_busy(flags):
+        unpublish(flags, rid)
+        rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": regions, "smoke_s": smoke_s, "spec": spec,
+                                                 "queued_at": rf.now_iso()})
+        print(f"GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS — move to your next task ({rid})")
+        return None
+    v, msg = run_smoke(flags, rid, regions, smoke_s)
     if v == "PASS":
         print(f"SMOKE PASS {rid} on {regions}: {msg}")
         return row
@@ -244,7 +290,14 @@ def main(argv=None):
     ap.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     ap.add_argument("--repair", metavar="ROW_ID")
     ap.add_argument("--flags", default=rf.FLAGS)
+    ap.add_argument("--run-gpu-queue", action="store_true", help="(allocator, detached) run every queued GPU smoke")
     a = ap.parse_args(argv)
+    if a.run_gpu_queue:
+        try:
+            print(f"GPU-SMOKE-BATCH ran {run_gpu_queue(a.flags)}")
+        finally:
+            rf.release_gpu_batch(a.flags)
+        return 0
     try:
         if a.repair:
             rc, msg = repair(a.repair, a.flags)
@@ -258,7 +311,9 @@ def main(argv=None):
         check_handoff(spec)
         for note in lint(spec):
             print(f"LINT {note}")
-        print(rf.published_line(publish_smoked(spec, a.flags, os.path.abspath(a.spec)), a.flags))
+        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec))
+        if row:
+            print(rf.published_line(row, a.flags))
         return 0
     except rf.Refused as e:
         print(f"REFUSED: {e}")
