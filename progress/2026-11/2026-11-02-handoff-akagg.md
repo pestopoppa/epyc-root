@@ -147,3 +147,7 @@ C3 successor scratch candidate now passes seven FD9/provenance tests and both R1
 ## 10:08Z — Harden CH-27 long-context manifest input custody
 
 Hardened /mnt/raid0/llm/tmp/akagg/ch27-isolation/stage_longctx_manifest.py to verify the original sealed long-context surface SHA-256 9f9094237428a06c806cb924c84e729af1a254c4e8dbdd0139cb7f6d009bcd81 before accepting its prompt digest. Native prompt parsing plus positive, existing-destination, source-path and altered-surface controls pass. Private campaign path rebinding and native admission remain in progress; no inference row was published. C3 engine identity and successor sealing are being prepared in separate scratch candidates.
+
+## 10:09Z — Test CH-27 sealed prompt staging negative cases
+
+Added and ran four repeatable model-free tests for CH-27 long-context manifest staging: original manifest accepted; existing destination, altered sealed surface, symlink and tampered prompt manifest are refused. The tampered manifest test invokes the native FrozenPromptManifest parser, which detects its digest mismatch. Test: /mnt/raid0/llm/tmp/akagg/ch27-isolation/test_stage_longctx_manifest.py. No campaign rebooking, inference or floor claim.
