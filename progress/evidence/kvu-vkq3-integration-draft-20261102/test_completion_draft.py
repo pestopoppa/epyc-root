@@ -60,6 +60,16 @@ class CompletionTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             publish_unit('full', 'test', path, dest)
 
+    def test_revoked_grant_during_publication_stays_invisible(self):
+        path = self.make()
+        dest = self.root / 'rowflow-result.jsonl'
+        def reject():
+            raise RuntimeError('grant lost during result publication')
+        with self.assertRaisesRegex(RuntimeError, 'grant lost'):
+            publish_unit('full', 'test', path, dest, before_publish=reject)
+        self.assertFalse(dest.exists())
+        self.assertTrue((self.root / '.rowflow-result.jsonl.tmp').exists())
+
     def test_native_dryrun_json_contains_qualification_unit(self):
         path = self.make('qualification')
         dest = self.root / 'native-result.json'

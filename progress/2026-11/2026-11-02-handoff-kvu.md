@@ -135,3 +135,7 @@ VKQ3 worker draft now defaults to the direct-child parent-death supervisor; seve
 ## 10:20Z — Fixed VKQ3 diagnostic guard rejection of authentic four-CPU rowflow smoke grants.
 
 VKQ3 diagnostic guard accepts the four exact CPU smoke shapes selected by publish_row.py only for authenticated rowflow dry-run grants, while full runs still require the whole host. Seven offline guard tests pass, covering all four shapes and rejected mismatches or elevation. Launcher and model identity integration remain open; no row was published and no inference ran.
+
+## 10:21Z — Added a last-moment grant check hook before VKQ3 atomic result publication.
+
+VKQ3 atomic result publisher now accepts a pre-publication check after fsync and before linking the result; eight offline completion tests pass, including revocation leaving the result invisible. The launcher must actually wire the hook and retain signal handling. Engine source review also found dry-run grants live in FILLER_GRANTS_DIR and dynamic sibling imports outside the launcher snapshot will be missing; launcher integration must address both. No row was published or inference run.

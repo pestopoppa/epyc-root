@@ -43,7 +43,7 @@ def complete_diagnostic(mode, attempt_id, directory):
         return False
 
 
-def publish_unit(mode, attempt_id, directory, destination):
+def publish_unit(mode, attempt_id, directory, destination, *, before_publish=None):
     """Publish one JSON/JSONL-compatible unit only after a complete receipt.
 
     Destination must be a new file in an existing private directory. A native
@@ -64,6 +64,8 @@ def publish_unit(mode, attempt_id, directory, destination):
             out.write(payload)
             out.flush()
             os.fsync(out.fileno())
+        if before_publish is not None:
+            before_publish()
         os.link(tmp, dest, follow_symlinks=False)
         os.unlink(tmp)
         dfd = os.open(dest.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
