@@ -7,3 +7,7 @@ Corrected the exactness comparator to parse the actual hs=hsk/hsv listing and ve
 ## 09:50Z — KPF-17a shared-trunk masked-value controls
 
 Added globally invisible K/V perturbation and visible-V sensitivity controls to shared cases; these are unexecuted. Published kvfork17a-cpu-20261102 and kvfork17a-gpu-20261102 for keeper qualification, with source-bound identities and per-case raw evidence. CPU compares pinned pre-skip and champion builds; GPU compares skip off/on with during-run residency. Qualification and scientific gates remain open.
+
+## 09:52Z — KPF-17a shared-trunk masked-value controls
+
+Published CPU and GPU KPF-17a rows; qualification and scientific verdict remain pending. The preceding preparation commit is included in this lane merge.
