@@ -50,3 +50,13 @@ write a grant, or start any job while enrollment remains disabled.
 
 Tests use model-free fakes for the outer orchestration boundary; they do not
 qualify a real GPU launcher, grant, model load, measurement, or planning canary.
+
+For large model and draft files, `prehash_custody.py` may produce a receipt before
+the GPU grant. It hashes an open regular file and refuses if its device, inode,
+size, mtime or ctime differs during hashing or at its pathname afterward. Seal
+the receipt itself in the reviewed native plan. The native entry and reader
+rehash that small receipt and compare the current file identity with it at each
+capture; they do not reread large weights during the timing grant. Metadata alone
+is not a content hash: this relies on the earlier content hash plus unchanged file
+identity, and any change invalidates the plan. Small binaries and prompts are
+still hashed directly. Historical runs receive no new warrant.

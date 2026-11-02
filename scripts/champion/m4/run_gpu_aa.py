@@ -185,6 +185,14 @@ def main():
         watch_dir.mkdir(mode=0o700, exist_ok=False)
         work = watch_dir / 'native'
         env = dict(os.environ, M4_PLAN_CELL=entry['native_cell'], M4_WATCH_DIR=str(watch_dir))
+        sensitive = ('LD_', 'GGML_', 'LLAMA_', 'HSA_', 'HIP_', 'ROCR_', 'OMP_', 'KMP_')
+        planned_env = cell['environment']
+        if any(not isinstance(k, str) or not isinstance(v, str) or not k.startswith(sensitive)
+               for k, v in planned_env.items()):
+            raise RuntimeError('invalid independently bound runtime environment')
+        # Do not inherit unbound device or library overrides from the caller.
+        env = {k: v for k, v in env.items() if not k.startswith(sensitive)}
+        env.update(planned_env)
         if execute_cell(command(entry, cell, work), env, qualification_only) == 75:
             return 75
         capture_path = work / 'run' / 'capture-v2-0.json'

@@ -468,3 +468,21 @@ def test_qualification_real_device_path_and_fixture_separation(tmp_path):
     if sysfs.exists():
         assert native.residency_paths(qual,{'device_vram_path':str(sysfs)}) == (Path('/sys/class/kfd/kfd/proc'),None,sysfs)
         assert native.residency_paths(live,{'device_vram_path':str(sysfs)}) == (Path('/sys/class/kfd/kfd/proc'),None,sysfs)
+
+
+def test_prehashed_custody_binds_content_receipt_and_file_identity(tmp_path):
+    import importlib.util
+    from m4_gpu_speed_v2 import verify_plan_file
+    source = Path(__file__).resolve().parents[2] / 'scripts/champion/m4/prehash_custody.py'
+    spec = importlib.util.spec_from_file_location('m4_prehash_fixture', source)
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    model=tmp_path/'model.gguf';model.write_bytes(b'fixture model')
+    evidence=mod.receipt(model); out=tmp_path/'receipt.json';out.write_text(json.dumps(evidence,sort_keys=True))
+    item={'path':str(model),'sha256':evidence['sha256'],'custody':{'path':str(out),'sha256':digest(out.read_bytes())}}
+    verify_plan_file(item)
+    model.write_bytes(b'changed bytes')
+    with pytest.raises(ProjectionError, match='custody mismatch'):
+        verify_plan_file(item)
+    out.write_text('{}')
+    with pytest.raises(ProjectionError, match='receipt changed'):
+        verify_plan_file(item)

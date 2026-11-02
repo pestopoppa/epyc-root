@@ -15,7 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vidya"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vidya" / "adapters"))
 from claim_tuple import ProjectionError
-from m4_gpu_speed_v2 import Trust, parse_grant, validate_capture
+from m4_gpu_speed_v2 import Trust, parse_grant, validate_capture, verify_plan_file
 import enrollment
 
 
@@ -107,10 +107,7 @@ def preflight(key, command, env, model, np, prompt):
             raise ProjectionError(f"unbound runtime override: {name}")
     # Verify all inputs before launch, including model and runtime libraries.
     for entry in cell.get("files", {}).values():
-        with Path(entry["path"]).open("rb") as fh:
-            digest = hashlib.file_digest(fh, "sha256").hexdigest()
-        if digest != entry["sha256"]:
-            raise ProjectionError("preflight file seal mismatch")
+        verify_plan_file(entry)
     if not {"binary", "model", "prompt"}.issubset(cell.get("files", {})) or not cell.get("ggml"):
         raise ProjectionError("plan lacks required files or libraries")
     if (len(command) < 7 or command[:5] != ['numactl', '--interleave=all', '--', 'taskset', '-c']

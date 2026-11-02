@@ -77,6 +77,42 @@ def parse_grant(raw: bytes, identity: dict, *, qualification: bool) -> tuple[flo
         raise ProjectionError(f"grant receipt invalid: {exc}") from exc
 
 
+def file_identity(stat):
+    return {'device':stat.st_dev, 'inode':stat.st_ino, 'size':stat.st_size,
+            'mtime_ns':stat.st_mtime_ns, 'ctime_ns':stat.st_ctime_ns}
+
+
+def verify_plan_file(item):
+    """Recheck a pre-hashed immutable file's custody, or hash small files directly.
+
+    Identity is not itself a content hash. The independently plan-sealed receipt
+    binds a prior content hash to the same open inode before and after hashing;
+    every capture rechecks the current identity against that receipt.
+    """
+    if not isinstance(item, dict) or not isinstance(item.get('path'), str):
+        raise ProjectionError('invalid planned file')
+    custody = item.get('custody')
+    if custody is None:
+        if _file_sha(item['path']) != item.get('sha256'):
+            raise ProjectionError('planned file changed')
+        return
+    if not isinstance(custody, dict) or set(custody) != {'path', 'sha256'}:
+        raise ProjectionError('invalid custody binding')
+    raw = _read(custody['path'])
+    if sha(raw) != custody['sha256']:
+        raise ProjectionError('custody receipt changed')
+    try:
+        receipt = json.loads(raw)
+        expected = receipt['identity']
+        if (receipt['schema'] != 'epyc.m4.file-custody.v1' or receipt['path'] != item['path']
+                or receipt['sha256'] != item['sha256'] or not isinstance(expected, dict)
+                or set(expected) != {'device','inode','size','mtime_ns','ctime_ns'}
+                or file_identity(_absolute(item['path']).stat()) != expected):
+            raise ProjectionError('file custody mismatch')
+    except (KeyError, TypeError, ValueError, OSError) as exc:
+        raise ProjectionError(f'invalid custody receipt: {exc}') from exc
+
+
 @dataclass(frozen=True)
 class Trust:
     """Deployment-owned bindings independently authorized before capture."""
@@ -154,8 +190,7 @@ def validate_capture(path: str | Path, trust: Trust, *, require_guardian: bool =
     if not isinstance(files, dict) or not files or not {"binary", "model", "prompt"}.issubset(files):
         raise ProjectionError("planned binary/model/prompt seals missing")
     for item in files.values():
-        if not isinstance(item, dict) or _file_sha(item.get("path", "")) != item.get("sha256"):
-            raise ProjectionError("planned file changed")
+        verify_plan_file(item)
     maps = doc.get("mapped_ggml")
     expected_maps = expected.get("ggml")
     if not isinstance(maps, dict) or not maps or maps != expected_maps:
