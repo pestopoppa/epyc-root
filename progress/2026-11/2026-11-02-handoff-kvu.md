@@ -99,3 +99,7 @@ VKQ3 diagnostic receipt draft now parses the native bracketed comma-separated --
 ## 10:06Z — Integrated VKQ3 offline worker seam connecting supervised tokenization to private receipts.
 
 VKQ3 worker draft composes bounded supervision and private receipt creation, propagates mode and deadline, and refuses success after grant loss; four offline tests pass. Grant and deadline inputs remain injected rather than authoritative; actual containment, provenance, rowflow wiring, qualification and target inference remain unverified. Independent worker review, grant integration and provenance investigation are registered for follow-up.
+
+## 10:08Z — Integrated VKQ3 worker custody review and prior-runtime identity verification.
+
+VKQ3 worker now checks attempt identity and private receipt custody before starting the child; six offline tests pass, including a harmless subprocess through the real supervisor and receipt writer. Runtime identity helper checks the tokenizer and five libraries against the previously committed calibration catalog; three offline tests pass. These checks do not establish source-build attestation, runtime loader residency, or race-free execution binding. The grant bridge and launcher remain to be integrated; no row is publishable and no inference ran.
