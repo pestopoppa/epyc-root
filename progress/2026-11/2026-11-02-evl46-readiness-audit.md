@@ -58,6 +58,11 @@ judicious review. The edit preserves existing task text and history. [no-belief:
   claim without provider/source authority. A lock-provider receipt is being built. Research
   `544a240c9` adds a bounded synthetic client-tool endpoint broker (24 tests), without a live
   OpenCode or `/chat` isolation claim. [no-belief: software controls]
+- APP `1e02f2e2` adds an opt-in provider-owned full-quarter CPU lock open/close receipt and
+  source/grant bindings; three targeted tests passed in the combined checkout under q3. The
+  receipt does not prove child affinity or independent grant issuance. Research `b2dc50a86`
+  adds bounded buffered SSE transport; 10 fake-upstream broker tests passed, with actual
+  OpenCode compatibility and timing still unverified. [no-belief: software controls]
 - Added `docs/reference/tu-hr1-tool-render-audit-20261102.md`: source and runtime census;
   sampled local model endpoints were unavailable, so actual live model/template evidence and
   TU-HR-1 remain open. [no-belief: source and operational review]

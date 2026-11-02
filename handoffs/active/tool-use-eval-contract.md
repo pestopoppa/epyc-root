@@ -48,10 +48,17 @@ ROOT `4f609b459` + `bb252dbc6` + `bf9dbd64c` add a strict original-journal reade
 partial-arm refusal controls. It is intentionally not CLI-registered and emits no claim until
 provider-owned grant and source authority are verified; three refusal tests passed. A versioned
 lock-provider receipt is in development. [no-belief: software controls]
+APP `1e02f2e2` adds an opt-in full-quarter CPU provider open/close receipt around the existing
+flock context, including copied grant and `/proc/locks` witness; its three targeted tests passed
+in the combined checkout. It does not by itself prove child affinity, scheduler issuance or
+already-loaded Python bytes. The launcher and reader must verify those separately before a claim.
+[no-belief: software controls]
 
 Research candidate `544a240c9` provides a synthetic container-to-local-endpoint broker with a
 fixed client-tool profile; 24 tests passed. It is not yet an OpenCode transport or proof of
 host-side `/chat` tool isolation. [no-belief: software and fixture controls]
+Successor `b2dc50a86` adds a bounded buffered SSE bridge tested with a fake client and upstream
+(10 broker tests); it does not establish actual OpenCode compatibility or token timing. [no-belief: software controls]
 
 [TU-HR-1 source/runtime census](../../docs/reference/tu-hr1-tool-render-audit-20261102.md)
 records the configured model/template groups and source forwarding paths, and distinguishes
