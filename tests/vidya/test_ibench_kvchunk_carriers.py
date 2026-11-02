@@ -332,3 +332,40 @@ def test_kpf62_rederives_tampering_and_rejects_missing_or_unbound_metrics(tmp_pa
     with pytest.raises(chunk_kv.CaptureError):
         chunk_kv.write_belief_measurements(tmp_path, run_id="misaligned-baseline", producer="synthetic",
                                            results_path=res, measurements=[misaligned], emitted_at=WHEN)
+
+
+def test_kdev_oracle_projection_preserves_native_provenance(tmp_path):
+    """Offline kdev is projected as such; corrupt/missing source facts refuse."""
+    results = tmp_path / 'native.json'
+    results.write_text('{}')
+    chunk = {'offset': 4, 'n_tokens': 4, 'layer': 0, 'target_r': .25,
+             'target_tokens': 1, 'selected_tokens': 2, 'realized_r': .5}
+    oracle = 'full recompute reference, offline quality instrument; not online speed'
+    reqs = [{'id': 'd', 'mode': 'kdev', 'selector_oracle': oracle, 'kdev_chunks': [chunk],
+             'n_chunk_tokens': 4, 'n_recomputed': 2, 'r': .5},
+            {'id': 'd', 'mode': 'none'},
+            {'id': 'd', 'mode': 'all-inject', 'bit_identical_to_ref': True}]
+    pos = [{'id': 'd', 'mode': mode, 'row': 0, 'pos': 9, 'kl': kl, 'top1': 1, 'nmse': .1}
+           for mode, kl in [('kdev', .1), ('none', .4), ('all-inject', 0.)]]
+    base = {'kind': 'approx_gate', 'measure': 'naive_ratio', 'selector_mode': 'kdev',
+            'naive_mode': 'none', 'source_program': 'KPF-62', 'subject': 'offline-dev',
+            'served_pin': PIN, 'window': WIN, 'request_rows': reqs, 'position_rows': pos}
+    sidecar = chunk_kv.write_belief_measurements(tmp_path, run_id='kdev', producer='synthetic',
+                        results_path=results, measurements=[base], emitted_at=WHEN)
+    row = chunk_kv.native_rows(sidecar)[0]['row']
+    assert row['value'] == pytest.approx(4.)
+    assert row['extra']['selector_mode'] == 'kdev'
+    assert row['extra']['request_rows'][0]['selector_oracle'] == oracle
+    assert row['extra']['request_rows'][0]['kdev_chunks'] == [chunk]
+    assert 'not online performance' in row['claim']
+    assert chunk_kv.validate_row(row) == []
+    assert ct.grade(chunk_kv.project(chunk_kv.native_rows(sidecar)[0])) == ('Witnessed', 'Attested', [])
+    for field, replacement in [('selector_oracle', None), ('n_recomputed', 1), ('r', .1), ('kdev_chunks', [])]:
+        bad = [dict(r) for r in reqs]
+        bad[0][field] = replacement
+        with pytest.raises(chunk_kv.CaptureError):
+            chunk_kv.write_belief_measurements(tmp_path, run_id='bad', producer='synthetic',
+                        results_path=results, measurements=[{**base, 'request_rows': bad}], emitted_at=WHEN)
+    with pytest.raises(chunk_kv.CaptureError):
+        chunk_kv.write_belief_measurements(tmp_path, run_id='missing-baseline', producer='synthetic',
+                results_path=results, measurements=[{**base, 'position_rows': [p for p in pos if p['mode'] != 'none']}], emitted_at=WHEN)
