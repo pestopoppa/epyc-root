@@ -3805,7 +3805,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T19:00:33Z",
+  "generated_at": "2026-11-02T19:03:52Z",
   "nodes": [
     {
       "age_days": 95,
@@ -9014,15 +9014,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 10,
-      "dispatchable": 13,
+      "closed": 11,
+      "dispatchable": 12,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-02",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 13,
+      "open": 12,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
@@ -9197,7 +9197,7 @@
       "track": "tool output compression"
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "UFH-01"
@@ -9208,7 +9208,7 @@
       "guarded": 0,
       "handoff": "harness-improvement-loop.md",
       "id": "UFH-08",
-      "last_advanced": "2026-10-31",
+      "last_advanced": "2026-11-02",
       "next_action": "Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts",
       "open": 16,
       "priority": 0.9422,
