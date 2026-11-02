@@ -94,11 +94,17 @@ def runtime_library_dir(binary: Path) -> Path:
     return binary.expanduser().resolve().parent
 
 
-def runtime_env_prefix(binary: Path) -> list[str]:
-    return [
-        "env",
-        f"LD_LIBRARY_PATH={runtime_library_dir(binary)}",
-    ]
+def runtime_env_prefix(binary: Path, overrides: dict[str, str | None] | None = None) -> list[str]:
+    # Only explicitly reviewed recipe knobs can alter inherited launch policy.
+    overrides = overrides or {}
+    allowed = {"GGML_FA_SPLIT_KV", "GGML_NOHUGEPAGE_PROCESS"}
+    if not isinstance(overrides, dict) or set(overrides) - allowed:
+        raise ValueError("unreviewed scenario environment key")
+    if any(value is not None and not isinstance(value, str) for value in overrides.values()):
+        raise ValueError("invalid scenario environment value")
+    return ["env", *[item for name, value in sorted(overrides.items()) if value is None for item in ("-u", name)],
+            f"LD_LIBRARY_PATH={runtime_library_dir(binary)}",
+            *[f"{name}={value}" for name, value in sorted(overrides.items()) if value is not None]]
 
 
 def scenario_device_env(scenario: "Scenario") -> list[str]:
@@ -148,6 +154,7 @@ class Scenario:
     server_context_size: int | None = None
     image_path: str | None = None
     image_sha256: str | None = None
+    recipe_env: dict[str, str | None] | None = None
 
 
 SCENARIOS: tuple[Scenario, ...] = (
@@ -690,7 +697,7 @@ def build_server_argv(
 ) -> list[str]:
     ctx = server_context(scenario, nominal_context, max_tokens)
     argv = [
-        *runtime_env_prefix(binary),
+        *runtime_env_prefix(binary, scenario.recipe_env),
         "GGML_IQK=1",
         *scenario_device_env(scenario),
         "OMP_NUM_THREADS=1",

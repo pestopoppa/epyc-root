@@ -86,3 +86,27 @@ def test_strict_vision_reader_reopens_request_and_detects_tamper(tmp_path):
     request_path.write_text(json.dumps(request))
     with pytest.raises(ProjectionError, match='image digest mismatch'):
         _verify_bound_image_request(sample, scenario, tmp_path, 'inspect image')
+
+
+def test_flash_recipe_environment_is_bound_and_unknown_keys_refuse(monkeypatch):
+    scenario = dataclasses.replace(native.SCENARIOS[0], recipe_env={'GGML_FA_SPLIT_KV': '0', 'GGML_NOHUGEPAGE_PROCESS': None})
+    monkeypatch.setenv('M4_TREATMENT', 'default-off')
+    argv = native.build_server_argv(scenario, binary=Path('/tmp/bin/llama-server'), port=18000, nominal_context=2048, max_tokens=128)
+    assert argv[:3] == ['env', '-u', 'GGML_NOHUGEPAGE_PROCESS']
+    assert 'GGML_FA_SPLIT_KV=0' in argv
+    scenario = dataclasses.replace(scenario, recipe_env={'LD_PRELOAD': '/bad'})
+    with pytest.raises(ValueError, match='unreviewed scenario environment'):
+        native.build_server_argv(scenario, binary=Path('/tmp/bin/llama-server'), port=18000, nominal_context=2048, max_tokens=128)
+
+
+def test_strict_reader_verifies_recipe_environment():
+    sys.path.insert(0, str(ROOT / 'scripts/vidya'))
+    from adapters.m4_cpu_speed import _verify_recipe_env
+    from claim_tuple import ProjectionError
+    expected = {'GGML_NOHUGEPAGE_PROCESS': None, 'GGML_FA_SPLIT_KV': '0'}
+    argv = ['env', '-u', 'GGML_NOHUGEPAGE_PROCESS', 'LD_LIBRARY_PATH=/tmp/x', 'GGML_FA_SPLIT_KV=0', 'llama-server']
+    _verify_recipe_env(argv, expected)
+    with pytest.raises(ProjectionError):
+        _verify_recipe_env([v for v in argv if v != 'GGML_FA_SPLIT_KV=0'], expected)
+    with pytest.raises(ProjectionError):
+        _verify_recipe_env(argv + ['GGML_NOHUGEPAGE_PROCESS=1'], expected)
