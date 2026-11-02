@@ -29,7 +29,8 @@ validation requires the applicable compute authorization.
   not justify a registry update or a runtime peak. The exact checklist is in the evidence directory.
 - A model-free KVU-19a-2 GPU smoke ran under an exclusive GPU and CPU-region claim, with one
   base/candidate process each; it is not a repeatability result. Prospective belief capture is
-  filed as `VB-KVU19A2-WIRE`; the original smoke remains a committed conclusion only.
+  filed as `VB-KVU19A2-WIRE`; the original smoke remains a committed conclusion only. The native
+  writer and reader have synthetic positive/refusal controls; a real planning canary remains open.
 
 All implementation branches are prospective source work. No inference or production service change
 was performed. The parent handoff boxes remain open until their complete acceptance criteria are met.

@@ -16,7 +16,7 @@
       "blocked": 15,
       "handoffs": 40,
       "oldest_advance": "2026-07-29",
-      "open": 721
+      "open": 722
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -1369,9 +1369,9 @@
     },
     "kv-unified-stack-rollout.md": {
       "blocked": 0,
-      "closed": 80,
+      "closed": 88,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
+      "last_advanced": "2026-11-02",
       "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1381,7 +1381,7 @@
       },
       "row_id": "RTG-57",
       "state": "active",
-      "total": 132
+      "total": 140
     },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
@@ -2748,7 +2748,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 400,
+      "open": 401,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2757,7 +2757,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 740
+      "total": 741
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -4362,7 +4362,7 @@
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
       "line": 62,
-      "next_action": "KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2",
+      "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
     "RTG-58": {

@@ -3757,7 +3757,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-02T11:57:38Z",
+  "generated_at": "2026-11-02T12:28:13Z",
   "nodes": [
     {
       "age_days": 95,
@@ -4853,14 +4853,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 400,
+      "dispatchable": 401,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 404,
+      "open": 405,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -8771,21 +8771,21 @@
       "track": "typed decision plane"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-41",
         "RTG-19",
         "RTG-36"
       ],
-      "closed": 80,
+      "closed": 88,
       "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
-      "last_advanced": "2026-11-01",
-      "next_action": "KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2",
+      "last_advanced": "2026-11-02",
+      "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "open": 52,
       "priority": 0.9942,
       "priority_basis": {
