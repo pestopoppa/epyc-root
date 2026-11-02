@@ -67,3 +67,7 @@ Previous boundary wrapped and pushed as 6db0e3f6954f. CS6 was ticked and pushed 
 ## 09:35Z — Advance remaining speech work
 
 Backlog has one blocked HIP build row, two parked rows, no needs-filing rows; CS6 is already complete despite stale backlog. Build repair and Ultra comparison-only successor remain unqualified, so no row was published and no incomplete checkbox was ticked. Delegated bounded integration and task audit, with completion events registered. Previous wrap de21e2d722c9 reached origin/main. [no-belief: operational state]
+
+## 09:36Z — Continue speech launcher repair
+
+Previous progress commit 0ace433df432 was created but its push raced origin/main and was rejected. No new completed task or qualification-ready row is supported by available evidence. Build integration, no-redraw Ultra comparator and task audit have bounded scratch jobs registered for completion events; no compute launched. [no-belief: operational state]
