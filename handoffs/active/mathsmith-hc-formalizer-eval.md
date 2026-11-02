@@ -1,12 +1,14 @@
 # MathSmith HC Formalizer Evaluation & A/B Testing
 
-**Status**: refreshed 2026-07-29 — active; the HC artifact is publicly available, but not local. Acquisition/conversion and every benchmark remain operator-approved follow-ons.
+**Status**: active; HC Q4 and Q2 artifacts were acquired on 2026-10-29. The contract probe remains the first inference gate.
 **Created**: 2026-03-20 (via research intake)
 **Updated**: 2026-07-14
 **Categories**: training_distillation, benchmark_methodology
 **Depends on**: ~~rlm-orchestrator-roadmap.md~~ (Phase 4 Formalizer — Done, roadmap archived 2026-03-29)
 
 ## 2026-05-28 Audit Reset — Executor Start Here
+
+**2026-11-01 continuation:** The acquisition status below is historical. The verified Q4 artifact at `/mnt/raid0/llm/models/MathSmith-HC-Problem-Synthesizer-Qwen3-8B.Q4_K_M.verified-v1.gguf` was recorded as 5,027,780,992 bytes, SHA-256 `9b1706bf2f46b02b29dbe8b439d7361144f53a8e6116b89f92426f1ce799bbc6`; Q2 is 3,281,729,920 bytes, SHA-256 `4322dc611aa057a2323490a87a851a8ec3998e6c54fb54e311ccaf3330d7d797`. Prior Q4 load smokes exceeded an 8 GiB cap; Q2 passed bounded lifecycle smokes, but its 16-token truncated response did not establish contract compatibility. The existing probe and evidence are in `/mnt/raid0/llm/tmp/evl31-mathsmith-hc-prep-20261029/`; see `progress/2026-10/2026-10-29-codex-refactor-01a16fc3.md` for scope and custody. Prepare a keeper-qualified contract row from that work; do not infer a compatibility verdict from the smoke. Q8 speed alone cannot establish the cause of the historical anomaly.
 
 This handoff remains useful, but the old "stub" status understated both the deployed baseline and the real next decision. The open work is not to revisit the formalizer concept; it is to decide whether an HC model improves JSON consistency, math accuracy, and total-token cost enough to replace the current MathSmith-Hard formalizer.
 
