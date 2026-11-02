@@ -36,4 +36,18 @@ class TestLifecycle(unittest.TestCase):
         with self.assertRaises(ValueError):
             life.run_owned(command=['false'],env={},base_url='http://127.0.0.1:1',plan_path='x',fixture_root='x',output_dir='x',arm='J',budget_s=20,minimum_cell_s=2,request_timeout_s=2,log_path='/tmp/x')
 
+    def test_existing_stop_prevents_server_launch(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            stop = root / 'stop'
+            stop.touch()
+            result = life.run_owned(
+                command=[sys.executable, '-c', 'raise SystemExit(99)'],
+                env=dict(os.environ, LD_LIBRARY_PATH='/tmp'),
+                base_url='http://127.0.0.1:1', plan_path='x', fixture_root='x',
+                output_dir='x', arm='J', budget_s=60, minimum_cell_s=2,
+                request_timeout_s=2, log_path=root / 'log', stop_file=stop)
+            self.assertEqual(result, 75)
+            self.assertFalse((root / 'log').exists())
+
 if __name__=='__main__': unittest.main()

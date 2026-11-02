@@ -55,3 +55,7 @@ Twenty offline tests passed for the prototype suite. Concurrent upstream changes
 ## 10:21Z — Preserve exact-token Jet-Long fixture generator
 
 The corrected fixture preparation reports generation_validation_rc=0 for all 150 raw-token arrays, including exact lengths, content, position, identity and aggregator matrix checks; the packet remains draft pending scientific protocol and native server prompt_n qualification. Preserved its exact generator snapshot, generator, validator, vocabulary tokenizer source and offline tests; 24 prototype tests pass. No native inference or published row.
+
+## 10:23Z — Honor Jet-Long stop before new work
+
+Integrated stop-file checks at keeper admission, server lifecycle and both sides of fixture loading so no new ledger attempt or request starts after a stop. Twenty-six offline tests pass. Descendant cleanup proposal was rejected because detached descendants and leader exit were not handled; in-flight cancellation also remains incomplete. Native entry remains disabled, with no inference or published row.
