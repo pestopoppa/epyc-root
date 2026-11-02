@@ -814,3 +814,43 @@ class WrappedGateTests(_DSHBase):
         e = {"last_wrapup": None}
         hs.log_unwrapped(self.flags, "s", e); hs.log_unwrapped(self.flags, "s", e)
         self.assertEqual(self.log_text().count("UNWRAPPED s:"), 1)
+
+
+class StuckTests(_DSHBase):
+    def test_three_no_effect_turns_make_a_session_stuck_until_a_run_end(self):
+        e = self.session(last_wrapup=None)
+        hs.time.sleep(2.2)  # fixture rows were written this second; last_resume has 1 s resolution + 1 s skew allowance
+        for n in (1, 2, 3):
+            e = self.reg["sessions"]["alpha"] if n == 1 else reg["sessions"]["alpha"]
+            e.update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live", "last_resume": hs.now_iso()})
+            hs.time.sleep(1.1)  # the fixture rows predate this resume: nothing published during the turn
+            _w(hs.report_path(self.flags, "alpha"), json.dumps({"state": "blocked", "question": "needs the C5 store digest", "rows_published": []}))
+            hs.save(hs.reg_path(self.flags), self.reg if n == 1 else reg)
+            with patch.object(hs, "landed", return_value=True):
+                reg, st = self.dispatch()
+        e = reg["sessions"]["alpha"]
+        self.assertEqual(e["noop_turns"], 3)
+        self.assertIn("3 consecutive turns without a landed tick, row or filing; last report: needs the C5 store digest", e["stuck"])
+        self.assertIn("STUCK alpha:", self.log_text())
+        # its own awaited / dry-run events are dropped while stuck; a continue is not offered
+        self.calls.clear()
+        _w(hs.report_path(self.flags, "alpha").replace("report.json", "awaiting/x.json"), json.dumps({"path": self.flags + "/BACKLOG-codex-gen.md", "allow_existing": True}))
+        _w(os.path.join(self.flags, "BACKLOG-codex-gen.md"), "## Inference rows\n\n- none\n")
+        _w(os.path.join(self.flags, "dryrun", "row-a", "FAIL-9.json"), json.dumps({"reason": "x"}))
+        reg, st = self.dispatch()
+        self.assertEqual([c for c in self.calls if "alpha" in c["prompt"] and "codex-gen" not in c["prompt"][:200]], [])
+        # the backlog carries the stuck line
+        data = bg.build(self.flags, os.path.join(self.repo, "handoffs/active/backlog-priority.json"), "nolog", sessions_path=hs.reg_path(self.flags))
+        self.assertIn("[stuck: 3 consecutive turns", bg.render("handoff-alpha", data))
+        # a run-end unsticks and resumes it (the session has a landed wrap-up, so the UNWRAPPED gate passes)
+        reg["sessions"]["alpha"]["last_wrapup"] = "abc1234"
+        hs.save(hs.reg_path(self.flags), reg)
+        _w(os.path.join(self.flags, "grants", "row-b.ended"), "rc=0\n")
+        with patch.object(hs, "landed", return_value=True):
+            reg, st = self.dispatch()
+        self.assertIsNone(reg["sessions"]["alpha"]["stuck"])
+        self.assertTrue(any("row `row-b`" in c["prompt"] for c in self.calls))
+        # a landed tick is an effect: turn_effect counts it
+        with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
+            self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))
+        self.assertEqual(hs.turn_effect(self.flags, "alpha", {"last_wrapup": None, "last_resume": "2099-01-01T00:00:00Z"}), "", "a commit alone is not an effect")

@@ -352,6 +352,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
     buckets = [GENERALIST] + [f"handoff-{s}" for s in pilots]
     _reg = load_json(sessions_path if sessions_path is not None else F + SESSIONS_NAME) or {}
     failed_sessions = {s: e.get("failed") for s, e in (_reg.get("sessions") or {}).items() if isinstance(e, dict) and e.get("failed")}
+    stuck_sessions = {s: e.get("stuck") for s, e in (_reg.get("sessions") or {}).items() if isinstance(e, dict) and e.get("stuck")}
 
     # non-inference backlog-priority rows: row-id -> task descriptions, and task-id -> row ids (for scoring)
     unblockers_by_row: dict[str, list[str]] = {}
@@ -656,7 +657,7 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
         per[w]["rows"].sort(key=_key)
     return {"generated_at": now.strftime("%Y-%m-%dT%H:%MZ"), "workers": per, "parked": parked,
             "pilots": {s: p["handoff"] for s, p in pilots.items()}, "ready_by_lane": ready_by_lane, "klog_idle": klog["idle"][-3:],
-            "needs_session": needs_session, "handoff_rank": handoff_rank, "failed_sessions": failed_sessions, "inventory": inventory}
+            "needs_session": needs_session, "handoff_rank": handoff_rank, "failed_sessions": failed_sessions, "inventory": inventory, "stuck_sessions": stuck_sessions}
 
 
 def render(w: str, data: dict) -> str:
@@ -674,6 +675,9 @@ def render(w: str, data: dict) -> str:
         counts[r["state"]] = counts.get(r["state"], 0) + 1
     L.append("State counts: " + ", ".join(f"{k}={counts.get(k, 0)}" for k in STATE_ORDER) + ".")
     if w.startswith("handoff-"):
+        ss = (data.get("stuck_sessions") or {}).get(w[8:])
+        if ss:
+            L.append(f"- [stuck: {ss}] — the dispatcher resumes this session only on a run-end or a new external event; codex-gen/operator: see why")
         fs = (data.get("failed_sessions") or {}).get(w[8:])
         if fs:
             L.append(f"- [FAILED] session: {fs} — the dispatcher stopped retrying (DSH-3); ws58 transfers or restarts it.")
