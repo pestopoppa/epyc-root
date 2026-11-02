@@ -27,3 +27,7 @@ Consumed F2 mechanics and B4b workload scans. Prepared and syntax-checked /mnt/r
 ## 00:26Z — Implement F2 qualification and sealing preparation
 
 Consumed F2 mechanics and B4b workload scans. Prepared and syntax-checked /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow-20261102/reseal.py, which maps the prior source seal onto successor files, rejects changed external inputs and pins the canonical r15 engine; do not run it until packet edits and independent resource review finish. The successor remains NOT READY. Delegated actual keeper-native smoke output and cleanup implementation, resource mapping, and an evidence-based B4b frozen eval design; registered their result files. The scan identified EvalTower prompt families and runner but no B4b-specific predefined cohort. No row published, compute run, live config changed, or task ticked.
+
+## 00:28Z — Prepare F2 quiet-host row specification
+
+Consumed F2 resource analysis: full row is representable with mi210_0,184-191, GPU-exclusive, claim CPUs 72-95, 64 GiB and a 6000 s minimum; quiet sampler remains necessary. Wrote provisional /mnt/raid0/llm/tmp/ufh14-a3af2-rowflow-20261102/row-spec.DRAFT.json with descriptive decision rule and separate native dryrun output. The successor remains NOT READY pending dryrun implementation, sealing and review; do not publish or launch. Delegated seal review, independent spec review and B4 evaluation cohort selection; registered result files. No compute or live API mutation, published rows or handoff ticks.
