@@ -17,6 +17,12 @@ def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def test_reviewed_source_pins_are_full_sha256():
+    for value in (adapter.PRODUCER_SHA256, adapter.PROVIDER_SHA256,
+                  adapter.LOCK_SHA256, adapter.RECEIPT_SHA256):
+        assert adapter.SHA256.fullmatch(value)
+
+
 def test_journal_chain_refuses_truncation_mutation_and_missing_terminal():
     def line(kind, previous):
         return (json.dumps({"kind": kind, "utc": "2026-11-02T13:00:00+00:00",
