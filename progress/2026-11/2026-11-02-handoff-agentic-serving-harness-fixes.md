@@ -67,3 +67,7 @@ Consumed B4c adapter and F2 source seal results. The scratch B4c adapter at hand
 ## 00:38Z — Correct F2 authority qualification controls
 
 Consumed F2 authority controls and identified a false positive: the test labels two cases legacy and rowflow but passes the same legacy three-field grant bytes to both. An offline actual rowflow-formatted fixture with holds/schema/id/kind/admission_class was rejected by current authority.py as malformed, so rowflow compatibility is NOT proven and the prior PASS is limited to legacy format and other negative controls. Delegated strict rowflow parser and corrected fixtures, independent receipt/cleanup review, and B4 backend review; registered result files. No compute or live API mutation, no row published, and no task tick.
+
+## 00:39Z — Correct F2 authority qualification controls
+
+Consumed F2 authority controls and identified a false positive: the test labels two cases legacy and rowflow but passes the same legacy three-field grant bytes to both. An offline actual rowflow-formatted fixture with holds/schema/id/kind/admission_class was rejected by current authority.py as malformed, so rowflow compatibility is NOT proven and the prior PASS is limited to legacy format and other negative controls. Delegated strict rowflow parser and corrected fixtures, independent receipt/cleanup review, and B4 backend review; registered result files. No compute or live API mutation, no row published, and no task tick.
