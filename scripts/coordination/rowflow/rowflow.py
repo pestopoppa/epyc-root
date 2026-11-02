@@ -23,8 +23,8 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
 KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
     allocate                  THE allocator (2026-11-01, operator "compute keeps idling because of scheduling races"): ONE
                               snapshot per tick (region-lock, open grants' holds=, live dry runs); dry runs and grants are
-                              assigned together from it (starved lane first, then priority_rank, a grantable row before a
-                              dry run; a region is never handed twice; any-cpu-quarter is resolved only here); it arms the
+                              assigned together from it (an operator rank < URGENT_RANK first, by rank; then starved
+                              lane, then priority_rank, a grantable row before a dry run; a region is never handed twice; any-cpu-quarter is resolved only here); it arms the
                               poller, admits through grant_ok_launcher (the one parser), WRITES the grant. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
                               IDLE-WHY <region>: <reason>, UNDERUSED (<5 % of a held quarter for 10 min -> owner fix task,
                               never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
@@ -849,6 +849,32 @@ def grant_regions(d, option):
 DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
+URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
+                          # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
+
+
+def row_rank(d):
+    """A row's priority_rank as a float; absent/blank -> 100. (`or 100` turned an explicit rank 0 into 100.)"""
+    r = (d or {}).get("priority_rank")
+    try:
+        return 100.0 if r is None or r == "" else float(r)
+    except (TypeError, ValueError):
+        return 100.0
+
+
+def plan_order(c):
+    """Candidate order. Urgent rows (rank < URGENT_RANK) go first by rank; within a rank, and for every other row,
+    the starved lane (fewest live rows) goes first, then rank, then a grantable row before a dry run."""
+    r = float(c["rank"])
+    return (min(r, URGENT_RANK), c["lane_count"], r, 0 if c["kind"] == "grant" else 1, c["id"])
+
+
+def drain_blocker(c, pending):
+    """The best-ranked pending row (strictly better rank than c) that wants any region c's drain would hold, or None.
+    A drain is never set for c while such a row is runnable: rank decides who gets the regions when they free."""
+    need = set().union(*c["options"]) if c["options"] else set()
+    better = [x for x in pending if x is not c and float(x["rank"]) < float(c["rank"]) and any(o & need for o in x["options"])]
+    return min(better, key=plan_order) if better else None
 
 
 def _fits(c, free, ram, gpu_grant_open):
@@ -864,12 +890,15 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
-    Order: starved lane (fewest live rows) first, then rank, then a grantable row before a dry run. Fixpoint: as long as
+    Order: plan_order (rank < URGENT_RANK first by rank, then starved lane, then rank, then a grantable row before a dry
+    run). Fixpoint: as long as
     any pending candidate fits the remaining free regions and RAM it is placed, so no region stays idle while a fitting
     row waits. Never hands a region twice.
     DRAIN (never preempt): the top quiet-host row, or the top multi-quarter/host row that has waited DRAIN_AFTER_S, that
     cannot be placed now sets T = the latest end among the running grants; only rows that END before T are backfilled, so
     nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
+    A row is neither promoted nor drained for while a better-ranked pending row wants any of its regions (drain_blocker);
+    plan.drain_held = [(row, blocker)] names those rows for the log.
     PORTS (ws58 2026-11-02): a candidate whose cand["ports"] meet held_ports (running grants) or a port placed this tick
     waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
@@ -882,15 +911,20 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         free = {t for t in free if t not in QUARTERS or expand({t}) <= free}
     for c in cands:   # ws58 sub-quarter: a whole quarter also holds its core tokens
         c["options"] = [frozenset(expand(o)) for o in c["options"]]
-    pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
+    pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
     free, ram, out = set(free), float(ram_gib), []
     ports = {int(x) for x in held_ports}
     drain, T = None, None
+    plan.drain_held = []
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
+            blocker = drain_blocker(c, pending)
+            if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
+                plan.drain_held.append((c, blocker))
+                continue
             pending.remove(c); pending.insert(0, c)   # the drain row goes FIRST: at T it takes the host before any quarter row
             if not _fits(c, free, ram, gpu_grant_open):
                 later = [float(e) for e in grant_ends if float(e) > now]
@@ -954,6 +988,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
 
 
 plan.last_drain = None
+plan.drain_held = []
 
 
 def quiet_ok_now(flags, now=None):
@@ -1761,7 +1796,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         opts, bench = row_shape(d)
         since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
         window = int(d["window_s"])
-        cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
+        cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
                       "since": iso_epoch(since), "ports": list(d.get("ports") or [])})
     dfile = os.path.join(flags, "drain_state.json")
@@ -1772,6 +1807,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                                     held_ports=held_ports, drain_prev=drain_prev)
     if not dry:
         atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
+    for hc, bc in plan.drain_held:
+        log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
     if plan.last_drain:
         dc, T = plan.last_drain
         log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
@@ -1881,7 +1918,7 @@ def main(argv=None):
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "list":
             allrows = rows(a.flags)
-            for rid in sorted(allrows, key=lambda r: float(allrows[r].get("priority_rank") or 100)):
+            for rid in sorted(allrows, key=lambda r: row_rank(allrows[r])):
                 st = status(a.flags, rid, allrows)
                 print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  {st.get('reason', '')[:100]}")
             return 0
