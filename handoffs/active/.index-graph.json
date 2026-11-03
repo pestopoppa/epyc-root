@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T22:03:15Z",
+  "generated_at": "2026-11-03T22:43:35Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1600,7 +1600,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 632,
+          "line": 633,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 991,
+          "line": 992,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1268,
+          "line": 1269,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1903,
+          "line": 1904,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2198,
+          "line": 2199,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2807,
+          "line": 2808,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3,
           "readiness": "blocked"
