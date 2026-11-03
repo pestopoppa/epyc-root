@@ -112,6 +112,10 @@
    "target": "knowledge-pipelines.md",
    "track": "colbert-reranker-web-research"
   },
+  "contention-model-device-and-load-axes-rider.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "contention-model-device-and-load-axes-rider"
+  },
   "context-folding-progressive.md": {
    "target": "context-and-token-economy.md",
    "track": null
@@ -469,6 +473,10 @@
    "target": "context-and-token-economy.md",
    "track": "reasoning-effort-levels"
   },
+  "reboot-gated-inventory-and-staging.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "reboot-gated-inventory-and-staging"
+  },
   "refactoring-multirepo-2026-10.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "refactoring-multirepo-2026-10"
@@ -748,6 +756,10 @@
    "target": "INF-22",
    "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
   },
+  "EVL-49": {
+   "target": "INF-45",
+   "track": "reboot-gated-inventory-and-staging"
+  },
   "INF-02": {
    "target": "INF-06",
    "track": "agent-collab-rnd-harness"
@@ -963,6 +975,10 @@
   "RTG-06": {
    "target": "RTG-36",
    "track": "capability-registry-and-promotion"
+  },
+  "RTG-07": {
+   "target": "INF-45",
+   "track": "contention-model-device-and-load-axes-rider"
   },
   "RTG-10": {
    "target": "RTG-08",

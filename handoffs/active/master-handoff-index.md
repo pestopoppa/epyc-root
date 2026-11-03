@@ -140,11 +140,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 15 | 1008 | 57 | 2026-10-30 |
+| inference-research | 15 | 1024 | 57 | 2026-10-30 |
 | pipeline-integration | 1 | 72 | 3 | 2026-11-02 |
-| research-evaluation | 9 | 766 | 18 | 2026-10-24 |
+| research-evaluation | 8 | 751 | 18 | 2026-10-24 |
 | reviewer-control-plane | 4 | 25 | 12 | 2026-10-06 |
-| routing-and-optimization | 12 | 673 | 16 | 2026-08-03 |
+| routing-and-optimization | 11 | 672 | 16 | 2026-10-08 |
 | user-facing-harness | 2 | 120 | 15 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 

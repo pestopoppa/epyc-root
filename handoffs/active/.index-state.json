@@ -4,7 +4,7 @@
       "blocked": 57,
       "handoffs": 15,
       "oldest_advance": "2026-10-30",
-      "open": 1008
+      "open": 1024
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 18,
-      "handoffs": 9,
+      "handoffs": 8,
       "oldest_advance": "2026-10-24",
-      "open": 766
+      "open": 751
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 16,
-      "handoffs": 12,
-      "oldest_advance": "2026-08-03",
-      "open": 673
+      "handoffs": 11,
+      "oldest_advance": "2026-10-08",
+      "open": 672
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -372,7 +372,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -384,7 +384,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 59
+      "total": 60
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -463,22 +463,6 @@
           "open": 7
         }
       ]
-    },
-    "contention-model-device-and-load-axes-rider.md": {
-      "blocked": 0,
-      "closed": 8,
-      "guarded": 0,
-      "last_advanced": "2026-08-03",
-      "open": 1,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-07",
-      "state": "active",
-      "total": 9
     },
     "context-and-token-economy.md": {
       "blocked": 4,
@@ -656,7 +640,7 @@
       "blocked": 1,
       "closed": 146,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 69,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2039,7 +2023,12 @@
           "closed": 0,
           "gates": [
             "INF-06#autokernel-research-loop",
-            "INF-45",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
             "RTG-34"
           ],
           "guarded": 0,
@@ -2086,10 +2075,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 3,
-      "closed": 235,
+      "closed": 247,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 81,
+      "open": 97,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2098,16 +2087,16 @@
       },
       "row_id": "INF-45",
       "state": "active",
-      "total": 319,
+      "total": 347,
       "tracks": [
         {
           "blocked": 0,
           "closed": 104,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 35,
+          "markers": 1,
+          "name": "numa-placement-and-contention",
           "open": 42
         },
         {
@@ -2115,7 +2104,7 @@
           "closed": 43,
           "gates": [],
           "guarded": 0,
-          "line": 1651,
+          "line": 1658,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 11
@@ -2125,7 +2114,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2727,
+          "line": 2734,
           "markers": 1,
           "name": "dynamic-stack-concurrency",
           "open": 11
@@ -2135,7 +2124,7 @@
           "closed": 36,
           "gates": [],
           "guarded": 0,
-          "line": 3108,
+          "line": 3115,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 9
@@ -2145,7 +2134,7 @@
           "closed": 23,
           "gates": [],
           "guarded": 0,
-          "line": 4653,
+          "line": 4660,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 3
@@ -2155,10 +2144,46 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 5280,
+          "line": 5287,
           "markers": 1,
           "name": "within-role-placement-state-machine",
           "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [
+            "INF-06",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
+            "RTG-34"
+          ],
+          "guarded": 0,
+          "line": 5759,
+          "markers": 1,
+          "name": "reboot-gated-inventory-and-staging",
+          "open": 15
+        },
+        {
+          "blocked": 0,
+          "closed": 8,
+          "gates": [
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine"
+          ],
+          "guarded": 0,
+          "line": 6291,
+          "markers": 1,
+          "name": "contention-model-device-and-load-axes-rider",
+          "open": 1
         }
       ]
     },
@@ -2209,22 +2234,6 @@
           "open": 14
         }
       ]
-    },
-    "reboot-gated-inventory-and-staging.md": {
-      "blocked": 0,
-      "closed": 4,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 15,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-49",
-      "state": "active",
-      "total": 19
     },
     "reviewer-escalation-and-human-gate-policy.md": {
       "blocked": 5,
@@ -2713,19 +2722,6 @@
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
-    "EVL-49": {
-      "deps": [
-        "INF-06",
-        "INF-45",
-        "RTG-34"
-      ],
-      "handoff": "reboot-gated-inventory-and-staging.md",
-      "id": "EVL-49",
-      "index": "research-evaluation-index.md",
-      "line": 20,
-      "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
-      "track": "reboot gated inventory and staging"
-    },
     "EVL-52": {
       "deps": [
         "EVL-10"
@@ -2733,7 +2729,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -2952,23 +2948,12 @@
       "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
       "track": "autopilot continuous optimization"
     },
-    "RTG-07": {
-      "deps": [
-        "INF-45"
-      ],
-      "handoff": "contention-model-device-and-load-axes-rider.md",
-      "id": "RTG-07",
-      "index": "routing-and-optimization-index.md",
-      "line": 14,
-      "next_action": "Parameterize Artifact 2 capacity/VRAM fit, then Artifact 3 interference cost; retain E5 as final calibration dependency",
-      "track": "contention model device and load axes rider"
-    },
     "RTG-08": {
       "deps": [],
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "index": "routing-and-optimization-index.md",
-      "line": 15,
+      "line": 14,
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
       "track": "context folding progressive"
     },
@@ -2977,7 +2962,7 @@
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "index": "routing-and-optimization-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
       "track": "decision aware routing"
     },
@@ -2986,7 +2971,7 @@
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
       "track": "non inference backlog"
     },
@@ -2997,7 +2982,7 @@
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "index": "routing-and-optimization-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
       "track": "routing intelligence"
     },
@@ -3006,7 +2991,7 @@
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -3015,7 +3000,7 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -3026,7 +3011,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -3038,7 +3023,7 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
@@ -3050,7 +3035,7 @@
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3059,7 +3044,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

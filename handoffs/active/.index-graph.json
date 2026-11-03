@@ -18,21 +18,6 @@
       "to": "RTG-02"
     },
     {
-      "from": "EVL-49",
-      "kind": "dep",
-      "to": "INF-06"
-    },
-    {
-      "from": "EVL-49",
-      "kind": "dep",
-      "to": "INF-45"
-    },
-    {
-      "from": "EVL-49",
-      "kind": "dep",
-      "to": "RTG-34"
-    },
-    {
       "from": "EVL-52",
       "kind": "dep",
       "to": "EVL-10"
@@ -111,11 +96,6 @@
       "from": "REV-07",
       "kind": "dep",
       "to": "REV-02"
-    },
-    {
-      "from": "RTG-07",
-      "kind": "dep",
-      "to": "INF-45"
     },
     {
       "from": "RTG-30",
@@ -339,12 +319,6 @@
       "weight": 2
     },
     {
-      "from": "EVL-49",
-      "kind": "ref",
-      "to": "EVL-02",
-      "weight": 2
-    },
-    {
       "from": "INF-03",
       "kind": "ref",
       "to": "EVL-02",
@@ -491,14 +465,14 @@
     {
       "from": "INF-45",
       "kind": "ref",
-      "to": "INF-22",
-      "weight": 3
+      "to": "EVL-02",
+      "weight": 2
     },
     {
       "from": "INF-45",
       "kind": "ref",
-      "to": "RTG-07",
-      "weight": 2
+      "to": "INF-22",
+      "weight": 3
     },
     {
       "from": "INF-45",
@@ -765,12 +739,6 @@
       "weight": 2
     },
     {
-      "from": "RTG-07",
-      "kind": "ref",
-      "to": "INF-45",
-      "weight": 4
-    },
-    {
       "from": "RTG-08",
       "kind": "ref",
       "to": "EVL-02",
@@ -969,7 +937,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:43:13Z",
+  "generated_at": "2026-11-03T08:45:32Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1255,13 +1223,23 @@
         {
           "blocked_by": [
             "INF-06#autokernel-research-loop",
-            "INF-45",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
             "RTG-34"
           ],
           "dispatchable": 1,
           "gates": [
             "INF-06#autokernel-research-loop",
-            "INF-45",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
             "RTG-34"
           ],
           "line": 1420,
@@ -1732,7 +1710,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1752,40 +1730,6 @@
       "readiness": "ready",
       "state": "active",
       "track": "vidya belief substrate program"
-    },
-    {
-      "age_days": 5,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-06",
-        "INF-45",
-        "RTG-34"
-      ],
-      "closed": 4,
-      "dispatchable": 15,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "reboot-gated-inventory-and-staging.md",
-      "id": "EVL-49",
-      "last_advanced": "2026-10-29",
-      "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
-      "open": 15,
-      "priority": 0.1561,
-      "priority_basis": {
-        "basis": "T7 non-inference best open item (N): S-04 \u2014 Capture contemporaneous E5 Stage-B readiness before future execution. The July stag",
-        "blocker": "operator decision or approval pending",
-        "campaign": 0,
-        "file_rank": 147,
-        "source": "file",
-        "tier": 7,
-        "tier_name": "T7 held / blocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 37,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "reboot gated inventory and staging"
     },
     {
       "age_days": 10,
@@ -1847,7 +1791,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 35,
+      "priority_rank": 34,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic rocm kernel authoring",
@@ -1903,7 +1847,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 8,
+        "unblocks": 7,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -2268,15 +2212,15 @@
       "age_days": 1,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 235,
-      "dispatchable": 81,
+      "closed": 247,
+      "dispatchable": 97,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-02",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
-      "open": 84,
+      "open": 100,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -2286,10 +2230,10 @@
         "source": "file",
         "tier": 7,
         "tier_name": "T7 held / blocked",
-        "unblocks": 2,
+        "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 41,
+      "priority_rank": 39,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2297,9 +2241,9 @@
         {
           "blocked_by": [],
           "dispatchable": 42,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 35,
+          "name": "numa-placement-and-contention",
           "open": 42,
           "readiness": "ready"
         },
@@ -2307,7 +2251,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1651,
+          "line": 1658,
           "name": "batched-decode-measurement",
           "open": 12,
           "readiness": "ready"
@@ -2316,7 +2260,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 2727,
+          "line": 2734,
           "name": "dynamic-stack-concurrency",
           "open": 11,
           "readiness": "ready"
@@ -2325,7 +2269,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 3108,
+          "line": 3115,
           "name": "numa-placement-defect-20260730",
           "open": 10,
           "readiness": "ready"
@@ -2334,7 +2278,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 4653,
+          "line": 4660,
           "name": "shape-keyed-contention-gating",
           "open": 3,
           "readiness": "ready"
@@ -2343,10 +2287,60 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 5280,
+          "line": 5287,
           "name": "within-role-placement-state-machine",
           "open": 6,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "INF-06",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
+            "RTG-34"
+          ],
+          "dispatchable": 15,
+          "gates": [
+            "INF-06",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine",
+            "RTG-34"
+          ],
+          "line": 5759,
+          "name": "reboot-gated-inventory-and-staging",
+          "open": 15,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-and-contention",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine"
+          ],
+          "dispatchable": 1,
+          "gates": [
+            "INF-45#numa-placement-and-contention",
+            "INF-45#batched-decode-measurement",
+            "INF-45#dynamic-stack-concurrency",
+            "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
+            "INF-45#within-role-placement-state-machine"
+          ],
+          "line": 6291,
+          "name": "contention-model-device-and-load-axes-rider",
+          "open": 1,
+          "readiness": "blocked"
         }
       ]
     },
@@ -2374,7 +2368,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 10,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -2689,7 +2683,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 146,
@@ -2698,7 +2692,7 @@
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "open": 70,
       "priority": 0.9191,
@@ -3046,7 +3040,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 42,
+      "priority_rank": 40,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -3318,38 +3312,6 @@
       ]
     },
     {
-      "age_days": 92,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-45"
-      ],
-      "closed": 8,
-      "dispatchable": 1,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "contention-model-device-and-load-axes-rider.md",
-      "id": "RTG-07",
-      "last_advanced": "2026-08-03",
-      "next_action": "Parameterize Artifact 2 capacity/VRAM fit, then Artifact 3 interference cost; retain E5 as final calibration dependency",
-      "open": 1,
-      "priority": 0.2601,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): Q4 \u2014 does the interference model need E5 (NUMA\u00d7batch) first? STILL OPEN, but the premise",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 129,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 34,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "contention model device and load axes rider"
-    },
-    {
       "age_days": 1,
       "blocked": 4,
       "blocked_by": [],
@@ -3487,7 +3449,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 38,
+      "priority_rank": 36,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3688,7 +3650,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 36,
+      "priority_rank": 35,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -3715,7 +3677,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 3,
+        "unblocks": 2,
         "unblocks_rows": [
           "RTG-48",
           "RTG-49",
@@ -3803,7 +3765,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 39,
+      "priority_rank": 37,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -4074,7 +4036,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 54,
+      "closed": 55,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -4083,13 +4045,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0212,
+      "priority": 0.0199,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 43,
+      "priority_rank": 41,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -4252,7 +4214,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 40,
+      "priority_rank": 38,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -4294,6 +4256,7 @@
       "EVL-45",
       "EVL-46",
       "EVL-48",
+      "EVL-49",
       "INF-02",
       "INF-04",
       "INF-05",
@@ -4348,6 +4311,7 @@
       "RTG-04",
       "RTG-05",
       "RTG-06",
+      "RTG-07",
       "RTG-10",
       "RTG-11",
       "RTG-13",
@@ -4403,7 +4367,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 42,
+      "file": 40,
       "heuristic": 1,
       "override": 0
     },
@@ -4419,7 +4383,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 14,
+    "blocked": 12,
     "no_open": 0,
     "ready": 29
   },

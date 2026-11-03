@@ -11,7 +11,6 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | RTG-02 | autopilot continuous optimization | [autopilot-program.md](autopilot-program.md) | Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay | — |
-| RTG-07 | contention model device and load axes rider | [contention-model-device-and-load-axes-rider.md](contention-model-device-and-load-axes-rider.md) | Parameterize Artifact 2 capacity/VRAM fit, then Artifact 3 interference cost; retain E5 as final calibration dependency | INF-45 |
 | RTG-08 | context folding progressive | [context-and-token-economy.md](context-and-token-economy.md) | CF-L5 — Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune | — |
 | RTG-09 | decision aware routing | [routing-program.md](routing-program.md) | Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first | — |
 | RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b | — |

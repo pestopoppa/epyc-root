@@ -1418,9 +1418,9 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 - [ ] **ASR / speech encoder-decoder** (Whisper large-v3-turbo) — conv frontend + bidirectional encoder + cross-attention decoder fits none of the 6 buckets.
 
 ## Track: meq-carve-reboot-gated-inventory-and-staging
-<!-- gate: INF-06#autokernel-research-loop, INF-45, RTG-34 -->
+<!-- gate: INF-06#autokernel-research-loop, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34 -->
 
-> Carved from `handoffs/active/reboot-gated-inventory-and-staging.md` (in `reboot-gated-inventory-and-staging.md`, row EVL-49) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+> Carved from `handoffs/active/numa-placement-and-contention.md` (in `reboot-gated-inventory-and-staging.md`, row EVL-49) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
 - [ ] **S-06 — Build the ThinkPRM-1.5B Q4_K_M GGUF and land the EV-5 wiring** (HF pull →
       `convert_hf_to_gguf.py` → `llama-quantize`; `orchestrator_stack.py` sequential-load config;

@@ -2334,7 +2334,7 @@ offline, not a model gap — here the "gap" was 19 silently-empty rows inside on
 - [`batched-decode-measurement.md`](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — the
   partially-banked annotation: banked gemma dir, the aborted `223703Z` sibling, the operator
   exclusion, the 24-manifest remaining scope, and the archived launcher with its two fixes.
-- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md)
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging)
   — the B1 cluster row updated to the banked scope, so window sizing matches reality.
 - [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — the A7 firing
   sessions the annotations were verified against.

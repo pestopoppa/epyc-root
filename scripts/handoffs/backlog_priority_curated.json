@@ -32,7 +32,6 @@
   "REV-07": 0.25,
   "EVL-04": 0.2,
   "EVL-14": 0.2,
-  "RTG-07": 0.2,
   "RTG-48": 0.2,
   "RTG-52": 0.2,
   "RTG-08": 0.15,
@@ -170,7 +169,8 @@
   "INF-70#sarathi-serve-cpu-evaluation": 0.1,
   "INF-70#cpu-prefill-compute-large-models": 0.2,
   "INF-70#large-moe-expert-parallelism": 0.1,
-  "INF-70#moe-routing-tap-and-locality-measurement": 0.4
+  "INF-70#moe-routing-tap-and-locality-measurement": 0.4,
+  "INF-45#contention-model-device-and-load-axes-rider": 0.2
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -181,7 +181,6 @@
   "RTG-09": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
   "RTG-36": "operator decision or approval pending",
-  "EVL-49": "operator decision or approval pending",
   "INF-45": "operator stack bring-up event (stack is DOWN)",
   "EVL-14#eval-benchmark-cost-reduction": "external: upstream PR / artifact / disk reclaim",
   "RTG-22#amd-ai-lab-website-publication": "operator decision or approval pending",
@@ -224,7 +223,9 @@
   "INF-65#cpu-fused-decoder-blocks": "",
   "INF-65#laguna-s21-cpu-port": "",
   "INF-65#moe-spec-cpu-spec-dec-integration": "",
-  "INF-65#v9-kernel-per-request-speculative-params": ""
+  "INF-65#v9-kernel-per-request-speculative-params": "",
+  "INF-45#reboot-gated-inventory-and-staging": "operator decision or approval pending",
+  "INF-45#contention-model-device-and-load-axes-rider": ""
  },
  "park": {
   "INF-06": "MMQ",
@@ -2582,24 +2583,6 @@
     "next_action": "D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3"
    }
   ],
-  "EVL-49>INF-45": [
-   {
-    "track": "batched-decode-measurement",
-    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
-   }
-  ],
-  "RTG-07>INF-45": [
-   {
-    "track": "batched-decode-measurement",
-    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
-   }
-  ],
-  "EVL-49>RTG-34": [
-   {
-    "track": "handoff-index-and-backlog-graph",
-    "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending"
-   }
-  ],
   "INF-77>INF-16": [
    {
     "track": "llama-cpp-dsa-contribution",
@@ -2714,6 +2697,22 @@
    {
     "track": "mi210-big-model-and-acceleration-roadmap",
     "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
+   }
+  ],
+  "INF-45>INF-45": [
+   {
+    "track": "batched-decode-measurement",
+    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
+   },
+   {
+    "track": "batched-decode-measurement",
+    "next_action": "E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window"
+   }
+  ],
+  "INF-45>RTG-34": [
+   {
+    "track": "handoff-index-and-backlog-graph",
+    "next_action": "Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending"
    }
   ]
  }

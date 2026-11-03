@@ -2378,7 +2378,7 @@ The retracted "4,602 pending picks" number (carried in corrected form in the pas
 - [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
 - [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
-- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
 
 ## Compiled Update — 2026-08-12: a retracted scheduling narrative, a bus wipe, and the four nested restarts it took to make one check fire
 
@@ -3887,7 +3887,7 @@ untracked in a repo root where they read as authoritative. **The artifact that p
 the one most likely to be missing from version control**, because it is written in the moment of
 proving and never treated as deliverable.
 
-_Sources: `handoffs/active/contention-model-device-and-load-axes-rider.md`;
+_Sources: `handoffs/active/numa-placement-and-contention.md`;
 `progress/2026-08/2026-08-02.md`; epyc-root `scripts/hooks/install_git_hooks.sh` +
 `scripts/hooks/tests/test_precommit_wrapper.sh`; epyc-orchestrator `9e14c069`, `93e7f5a2`,
 `cd76de50`._

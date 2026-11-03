@@ -1260,7 +1260,7 @@ A compute duty-cycle figure circulated at ~19–20% and is **~8–9% receipted**
 
 ### Source References (2026-08-12, second pass)
 
-- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the 21-of-25 false-passing gate, the two-consumer polarity split, and the host-persistence premise correction.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the 21-of-25 false-passing gate, the two-consumer polarity split, and the host-persistence premise correction.
 - [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the applicator premise correction and the zero-coverage branch closed to 49 tests.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the port-8083 alias resolution and the fleet/binding recount.
 - [`gpu-serving-tie-in-program.md`](../handoffs/active/mi210-serving-program.md) — the Probe B role-attribution correction, applied append-only.
@@ -2709,7 +2709,7 @@ The plan approval authorizes only HSF-1 and HSF-3, which are passive instrumenta
 
 ### Source References
 - [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — slot-record schema, HSF-1/2/3, the swap-protocol amendment, the recovery term, and the declines.
-- [Contention model rider](../handoffs/active/contention-model-device-and-load-axes-rider.md) — the llama-server capacity-signal map (C1-A5).
+- [Contention model rider](../handoffs/active/numa-placement-and-contention.md#track-contention-model-device-and-load-axes-rider) — the llama-server capacity-signal map (C1-A5).
 - [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-14.
 - [Dynamic stack concurrency](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) — G5 replay design; the GAIE EPP and ThunderAgent declines.
 - [Within-role placement state machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) — Dynamo's worker cost, the reference for any future replica load term.

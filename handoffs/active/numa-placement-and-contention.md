@@ -1,5 +1,7 @@
 # NUMA Topology Cutover — RESUME DOCUMENT
 
+> **Fold destination** (BRF-T7-F10, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `numa-placement-and-contention`, `reboot-gated-inventory-and-staging`, `contention-model-device-and-load-axes-rider` (rows EVL-49, RTG-07 retired into INF-45). The former `numa-placement-and-contention.md` body is `## Track: numa-placement-and-contention`; tracks those handoffs already had are lifted verbatim after their owner.
+
 > **Fold destination** (BRF-T1-F17, BRF-T1-1, route 1a, 2026-11-02): renamed from `numa-topology-cutover-resume-20260730.md`; absorbs 5 handoff(s) as `## Track:` sections at the end of this file (`batched-decode-measurement.md`, `dynamic-stack-concurrency.md`, `numa-placement-defect-20260730.md`, `shape-keyed-contention-gating.md`, `within-role-placement-state-machine.md`). The body above the first track is the former `numa-topology-cutover-resume-20260730.md`.
 
 > **Current navigation (2026-11-01):** The opening cutover instructions and all dated
@@ -30,7 +32,12 @@ suspension banner) · [`shape-keyed-contention-gating.md`](numa-placement-and-co
 
 ---
 
-## 0. What do I do next (60-second resume)
+## Track: numa-placement-and-contention
+<!-- gate: none -->
+
+> Folded from the body of `handoffs/active/numa-placement-and-contention.md` (row INF-45), from its first `##` section on, @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+
+#### 0. What do I do next (60-second resume)
 
 Answer these three questions in order; each one tells you where in P0 you are.
 
@@ -48,9 +55,9 @@ free.
 
 ---
 
-## 1. State as of 2026-07-30
+#### 1. State as of 2026-07-30
 
-### 1.1 Applied in the working tree, UNCOMMITTED, commit BLOCKED
+##### 1.1 Applied in the working tree, UNCOMMITTED, commit BLOCKED
 
 `epyc-orchestrator`:
 
@@ -78,7 +85,7 @@ free.
 > explicit pathspec** — `git commit -- <paths>` — and never `git add -A`. See
 > §4 Cross-cutting concerns.
 
-### 1.2 THE BLOCKER
+##### 1.2 THE BLOCKER
 
 The pre-commit hook (`.git/hooks/pre-commit` → `scripts/validate/check_contention_matrix_fresh.py:89`)
 rejects the commit with:
@@ -100,7 +107,7 @@ which **requires a live stack and runs inference**.
 4. Re-bench the contention matrix.
 5. Commit.
 
-### 1.3 Topology now in the tree
+##### 1.3 Topology now in the tree
 
 **Quarters are retired.** Each quarterable role now has three shapes:
 
@@ -128,7 +135,7 @@ Ports:
 physical `88-95` = region **q3**, which is inside **half B**. Any CPU work that
 must not collide with the GPU lane goes on half A.
 
-### 1.4 Runs in flight — the 2026-07-30 batch is COMPLETE, but a NEW batch is LIVE (2026-07-31)
+##### 1.4 Runs in flight — the 2026-07-30 batch is COMPLETE, but a NEW batch is LIVE (2026-07-31)
 
 > ## ⛔ 2026-07-31 09:35Z — DO NOT COLD-START THE STACK. THREE NEW TRACKS ARE RUNNING.
 >
@@ -168,7 +175,7 @@ Check with `scripts/region-lock status` before anything.
 abandoned** because that shape is retired. This is not an incomplete run to
 resume; it is complete for the shapes that still exist.
 
-### 1.5 Breaking tests — must land in the SAME commit
+##### 1.5 Breaking tests — must land in the SAME commit
 
 An A/B against a clean `git archive HEAD` measured **30 net-new failures across
 14 files**.
@@ -191,9 +198,9 @@ One of those two is worth understanding before you "fix" it:
 
 ---
 
-## 2. Prioritized task list
+#### 2. Prioritized task list
 
-### P0 — unblocks the commit (4 tasks)
+##### P0 — unblocks the commit (4 tasks)
 
 - [x] **P0-0 (NEW 2026-08-11, `mainB`) — derived `stack_priors.yaml` has DROPPED the `NUMA_FULL`
       instance of every quarterable fleet. Owner: the stack owner (`inference`), NOT this lane.**
@@ -316,7 +323,7 @@ One of those two is worth understanding before you "fix" it:
          `git fetch` + `git log @{u}..main` first. *Resume check: `git status`
          shows the §1.1 files clean in both repos.*
 
-### P1 — correctness gaps found by three parallel hygiene audits (10 tasks)
+##### P1 — correctness gaps found by three parallel hygiene audits (10 tasks)
 
 Sources — cite these, they contain the full reasoning:
 `/mnt/raid0/llm/tmp/hygiene_scheduling.md` ·
@@ -405,7 +412,7 @@ the machine.
       recompiled, with no warning at commit time. **Two occurrences today from two
       different sessions**; that is a recurrence rate, not an anecdote.
 
-### P2 — measurement debt (5 tasks)
+##### P2 — measurement debt (5 tasks)
 
 - [x] ~~**P2-1. Re-run 27 of 31 E5 Stage-B cells under `P-BENCH-PLACEMENT-1`.**~~ (closed 2026-10-29 audit: DUPLICATE → same work as numa-placement-defect-20260730.md:854 (T3 "Re-run the 27 confounded E5 cells", INF-43 index row); keep that box)
       4 are salvageable. Owning suspension banner:
@@ -439,7 +446,7 @@ the machine.
 
 ---
 
-## 3. Dependency graph
+#### 3. Dependency graph
 
 ```
                  ┌─ P0-1 fix 30 breaking tests (2 in PROMOTION_GATE_TARGETS)
@@ -491,7 +498,7 @@ the machine.
 
 ---
 
-## 4. Cross-cutting concerns
+#### 4. Cross-cutting concerns
 
 - **Shared working tree.** `/workspace/repos/<name>` and `/mnt/raid0/llm/<name>`
   are the same physical clone. Other sessions are staging into the same index
@@ -524,7 +531,7 @@ the machine.
 
 ---
 
-## 5. Key file locations
+#### 5. Key file locations
 
 **The cutover itself** (`repos/epyc-orchestrator`):
 
@@ -596,7 +603,7 @@ relying on it long-term):
 
 ---
 
-## 6. Reporting instructions
+#### 6. Reporting instructions
 
 1. **Flip the checkbox in §2 the moment a task lands** — append `✅ YYYY-MM-DD`
    inline. The handoff dashboard counts checkbox state only; prose status is
@@ -621,7 +628,7 @@ relying on it long-term):
    `handoffs/completed/`. A resume document that outlives its blocker becomes
    stale documentation.
 
-### P1-11 — the contention matrix cannot see the GPU lane (filed 2026-07-30)
+##### P1-11 — the contention matrix cannot see the GPU lane (filed 2026-07-30)
 
 - [x] ~~**Make the GPU shadow lane a participant in `contention_matrix.yaml`.** Its~~ (closed 2026-10-29 audit: SUPERSEDED → "OPERATOR DESIGN DIRECTIVE 2026-07-31" (numa:639) states it supersedes the framing of the three tasks above; lane-as-row subsumed by surface redesign box numa:658)
   current participants are six CPU roles only; the lane is not a row. Measured
@@ -645,7 +652,7 @@ relying on it long-term):
   Do NOT fix inline during the cutover — changing a safety gate's semantics
   mid-migration should be a reviewed change.
 
-#### OPERATOR DESIGN DIRECTIVE 2026-07-31 — the matrix becomes a SURFACE, not a veto
+###### OPERATOR DESIGN DIRECTIVE 2026-07-31 — the matrix becomes a SURFACE, not a veto
 
 **This supersedes the framing of the three tasks above.** "Make the GPU lane a
 matrix participant" is no longer a sufficient statement of the work: adding the
@@ -687,9 +694,9 @@ Consequences for the tasks above:
 
 ---
 
-## UPDATE 2026-07-30 evening — ngram RETRACTED; artifact rebuilt; vision measured
+#### UPDATE 2026-07-30 evening — ngram RETRACTED; artifact rebuilt; vision measured
 
-### The ngram finding is withdrawn (this supersedes every ngram row above)
+##### The ngram finding is withdrawn (this supersedes every ngram row above)
 
 `--spec-type ngram-mod` buys **nothing**. The "2.80× at depth" result committed
 earlier today was a harness artifact.
@@ -721,7 +728,7 @@ than MTP everywhere (122B CPU: 9.38 vs 15.76).
   for context-reading drafters; mandatory non-context control arm; report n/min/max
   never a bare median; `accept=1.000` is a bug report) into MEASUREMENT.md proper.
 
-### Confirmatory re-run IN FLIGHT
+##### Confirmatory re-run IN FLIGHT
 
 `/mnt/raid0/llm/tmp/ngramfix.sh` → `ngramfix_results.txt`, under a q0–q3 lock.
 3 DISTINCT prompts per rep (disjoint corpus slices, `mkdistinct.py`), per-rep
@@ -729,7 +736,7 @@ values printed, `draft-mtp` control in every group. 12 cells: 35B CPU full + 27B
 GPU × d8k/d16k × 3 arms. **If a cell still climbs monotonically rep0→rep2, the
 harness fix failed and that cell is void** — the script flags this inline.
 
-### Vision pair measured — the last unbenchmarked stack model
+##### Vision pair measured — the last unbenchmarked stack model
 
 Qwen2.5-VL-7B-Instruct Q4_K_M, node1, 24t, `membind=1`. Same GGUF serves
 `worker_vision` and `vision_escalation`, so this characterises both.
@@ -751,7 +758,7 @@ Qwen2.5-VL-7B-Instruct Q4_K_M, node1, 24t, `membind=1`. Same GGUF serves
   reported instead (observed: `prompt=2926` where true resident context was
   27,586, per `stop processing: n_tokens`). Read depth from `n_tokens` instead.
 
-### Test progress — 6 of 35 topology failures closed
+##### Test progress — 6 of 35 topology failures closed
 
 Both fixed guards had the defect as their passing condition, so the correction
 necessarily failed them; replaced, not adjusted. **Uncommitted** — the pre-commit
@@ -772,7 +779,7 @@ contention matrix is refreshed.
   in `scripts/server/stack_numa.py` and its CPU-shape registries. Do not delete it based on the old claim.
   [no-belief: source inventory correction]
 
-### Operational lesson — do not re-arm a chain you have not positively identified
+##### Operational lesson — do not re-arm a chain you have not positively identified
 
 I concluded `full_last` was dead from `pgrep -af "full_last|region_lock"` and
 re-armed it. It was alive: `cpu_chain.sh` was sitting in a `bash until … sleep 30`
@@ -789,9 +796,9 @@ correctly on the region lock so nothing was poisoned, but full_last executed twi
 
 ---
 
-## UPDATE 2026-07-31 — vision models evaluated; speech stack mapped; ngram retraction propagated
+#### UPDATE 2026-07-31 — vision models evaluated; speech stack mapped; ngram retraction propagated
 
-### Vision: MiniCPM-o is NOT a vision upgrade — the promotion case is dead on vision grounds
+##### Vision: MiniCPM-o is NOT a vision upgrade — the promotion case is dead on vision grounds
 
 42 questions (OCRBench + ChartQA), all arms on the MI210, best quant present on disk.
 Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vlquality.py`.
@@ -846,7 +853,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 - [ ] Qwen3-VL benchmark tables on the HF cards are **JPEG images**, not text — "official model card" there means
   a marketing graphic. Weight accordingly.
 
-### Speech: whisper IS deployed; TTS is not wired; the C++ TTS accelerator source is LOST
+##### Speech: whisper IS deployed; TTS is not wired; the C++ TTS accelerator source is LOST
 
 > **UPDATE 2026-07-31 (later same day) — TTS now WORKS, and the recommended path changed.**
 > Upstream **`qwentts.cpp`** (`/mnt/raid0/llm/qwentts.cpp` @ `abab6b3`) implements the full stack
@@ -896,7 +903,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   `multimodal-pipeline.md:324` still tells a reader to *"Prototype: FastAPI wrapper around
   `Qwen3TTSModel.from_pretrained()`"* — i.e. build from scratch what already exists.
 
-### VRAM: speech costs the GPU nothing, which removes MiniCPM-o's last argument
+##### VRAM: speech costs the GPU nothing, which removes MiniCPM-o's last argument
 
 | stack | size |
 |---|---|
@@ -915,7 +922,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   ceiling-amendment time downstream of P2-5j. Note the orchestrator repo could not be committed (pre-commit
   contention-matrix gate), but `np_ceiling.yaml` needed no edit, so nothing is left uncommitted on this item.
 
-### ngram retraction propagated into the record ✅ 2026-07-31
+##### ngram retraction propagated into the record ✅ 2026-07-31
 
 - [x] `master-handoff-index.md` **N26 rewritten as a retraction**; N25's P2-debt deploy sentence cancelled ✅
 - [x] `speculative-decoding-mtp-refresh.md` — ⛔ banner added; **NG1–NG4 cancelled**, NG5 re-scoped ✅
@@ -928,13 +935,13 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   it does not use. The flag catches ordinary warm-up; it means "inspect", not "void". Fix the detector before
   reusing it.
 
-### Test/commit state unchanged
+##### Test/commit state unchanged
 
 - [x] ~~6 of 35 topology test failures fixed and **still uncommitted** — the pre-commit gate blocks *all* commits to~~ (closed 2026-10-29 audit: SUPERSEDED → P0-1 CLOSED 2026-08-24 (numa:279): 196 passed/0 failed on PROMOTION_GATE_TARGETS; commits no longer blocked (matrix re-benched))
   `epyc-orchestrator`, test-only included, until the contention matrix is refreshed. **97 failures total** across
   the suite (the 35 are the topology subset); the denominator was never recorded until now.
 
-### Temperature methodology — SCOPED, do not over-apply (operator ruling 2026-07-31)
+##### Temperature methodology — SCOPED, do not over-apply (operator ruling 2026-07-31)
 
 Every benchmark run 2026-07-30/31 used `temperature=0.0`. Production serves at
 non-zero (vision roles `0.2`; Qwen3-TTS defaults `0.9`). Standing rule is
@@ -974,7 +981,7 @@ context x spec x ngram at non-zero temperature is disproportionate. Instead:
   (`finish_reason: length`, 400 tokens collapsing to 1 word). Any future
   sampling-sensitive benchmark starts at production temperature.
 
-### Production-temperature re-runs — IN FLIGHT 2026-07-31 (paths only, NO numbers)
+##### Production-temperature re-runs — IN FLIGHT 2026-07-31 (paths only, NO numbers)
 
 The re-runs the ruling above authorises are **executing now**. Recorded as paths so a
 later reader can find them; **no result exists yet and none may be quoted**.
@@ -1001,7 +1008,7 @@ Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
   **Qwen3-ASR**, whose 72.14 % WER is a configuration defect with a named suspect (the
   Q8_0 audio projector). See [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) S-6..S-10.
 
-### P1-11 CORRECTED 2026-07-31 — what is exclusive vs what is a tunable surface
+##### P1-11 CORRECTED 2026-07-31 — what is exclusive vs what is a tunable surface
 
 An earlier note recorded the operator's directive too broadly. The correction:
 
@@ -1032,7 +1039,7 @@ An earlier note recorded the operator's directive too broadly. The correction:
 - [ ] Note this regression is independent of ngram — it reproduces on `draft-mtp`
   alone, so it is a scheduling/batching property, not a speculative-decoding one.
 
-### RATIFIED DESIGN 2026-07-31 — contention matrix becomes THREE artifacts (option B)
+##### RATIFIED DESIGN 2026-07-31 — contention matrix becomes THREE artifacts (option B)
 
 Operator agreed. Replaces the single BLOCK/ALLOW pair matrix, which conflated three
 different kinds of thing and is why 58 of 78 pairs were being benchmarked to
@@ -1058,7 +1065,7 @@ rediscover set intersection.
   trainable, but imposes a shape)? Leaning parametric with the raw table retained as
   attestation — depends on how the router consumes priors.
 
-### Benchmark harness efficiency — STOP RELOADING MODELS (operator, 2026-07-31)
+##### Benchmark harness efficiency — STOP RELOADING MODELS (operator, 2026-07-31)
 
 `full_headline.sh` reloaded per (model x depth x np) = **24 loads**, with the 122B at
 73 GB each time. Wrong by construction:
@@ -1074,14 +1081,14 @@ rediscover set intersection.
   `halfa_headline_results.v3_preload_POISONED.json`). Hot-and-sequential, not
   preloaded-and-parallel.
 
-### Queue reordered 2026-07-31 (operator)
+##### Queue reordered 2026-07-31 (operator)
 
 - [x] ~~Full-instance headlines were running the **composed** recipe on 24 cells while~~ (closed 2026-10-29 audit: OBSOLETE → queue-order note: coding test adjudicating composed ngram recipe is moot; ngram retracted/retired (model_registry.yaml:1666 default_spec_type draft-mtp, ngram sidecar RETIRED))
   the coding test that ADJUDICATES that recipe had not run. Killed and re-ordered:
   coding test (~30 min, q0+q1) settles the recipe -> then ONE full-machine window on
   the decided recipe, hot instances.
 
-### Capacity curve storage — FITTED PARAMETRIC (operator ruling 2026-07-31)
+##### Capacity curve storage — FITTED PARAMETRIC (operator ruling 2026-07-31)
 
 Artifact (2) of the three-artifact contention design stores as a **fitted parametric
 form**, not a raw lookup table: cheap derivatives, which the router/autopilot can use
@@ -1105,7 +1112,7 @@ directly for gradient-based placement decisions.
 - [ ] Report fit residuals per role. A form that smooths away the turnover is worse
   than a table, because it is confidently wrong in the region the router cares about.
 
-### GPU co-residency MEASURED 2026-07-31 — all four models fit; idle residency is free
+##### GPU co-residency MEASURED 2026-07-31 — all four models fit; idle residency is free
 
 Curiosity measurement, **no gate attached** (operator explicit). Artifact:
 `/mnt/raid0/llm/tmp/gpu_coresidency_results.json`, logs `/mnt/raid0/llm/tmp/gpu_coresidency/`.
@@ -1147,7 +1154,7 @@ Curiosity measurement, **no gate attached** (operator explicit). Artifact:
   `libggml-hip` is **0.17.0**. The three trees are 0.16.0 / 0.18.0 / 0.17.0 — each needs
   its own dir prepended. `verify_ggml_linkage.sh` passes all three once done.
 
-### STILL IN FLIGHT at compaction — ngram on long-context CODING
+##### STILL IN FLIGHT at compaction — ngram on long-context CODING
 
 `/mnt/raid0/llm/tmp/ngram_coding_results.json`. Decides composed vs `draft-mtp` alone.
 12 tokenizer-verified prompts/model (3 extend-refactor, 3 port, 3 fill-in, 3 prose
@@ -1158,7 +1165,7 @@ runs once, on the decided recipe, with hot instances (one server per model at `-
 
 ---
 
-# SESSION APPEND 2026-07-31 (18:00–20:00Z) — groundwork landed, wiring NOT started
+### SESSION APPEND 2026-07-31 (18:00–20:00Z) — groundwork landed, wiring NOT started
 
 **Read this first if you are picking up.** The role reshaping is **entirely unapplied**.
 What landed today is the layer underneath it: the facts the stack will be built from are
@@ -1173,7 +1180,7 @@ now trustworthy, where before they were not. Verified against the live registry 
 | STT → whisper.cpp GPU | still launches faster-whisper CT2 on 9000 |
 | spec recipe `draft-mtp` | `stack_priors.yaml` still carries **38** `ngram-mod` occurrences |
 
-## Landed and pushed today
+#### Landed and pushed today
 
 - [x] ggml linkage fixed across all four kernels ✅ 2026-07-31 — root `136894e8`, research `94cf8d6c`.
       Found that the production HIP binary loaded **all seven** libs from the CPU-only tree with
@@ -1202,7 +1209,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       A second figure exists — **112.20**, median of 250 MMMU image+text turns. Both real,
       different workloads. **Do not pick one silently; record both with conditions.**
 
-## OUTSTANDING — hard sequence, do not reorder
+#### OUTSTANDING — hard sequence, do not reorder
 
 - [x] **W1. Apply the role reshaping edit list.** ✅ 2026-08-01 — research `fd7a2cdb` + orchestrator `a517793c`. Anchors re-derived by exact-text match (61 unique / 11 prose-range / 4 hand-derived, zero overlaps), not by line arithmetic. Registry + manifest + NUMA + roles.py + all three alias tables landed together.
       ORIGINAL NOTE: Persisted at workflow run `wf_7d5f6816-a67`
@@ -1260,7 +1267,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       image+text) into the registry with conditions attached, not as one scalar.
 
 
-## NEW — discovered while applying W1 (2026-08-01)
+#### NEW — discovered while applying W1 (2026-08-01)
 
 - [x] **The launcher disabled every device it had just resolved.** ✅ 2026-08-01 —
       `_append_cpu_only_device_args` appended `--device none --device-draft none` to EVERY
@@ -1297,7 +1304,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       Verified, top arm, +20.0 pp over the 122B IQ2. Recorded with instrument + comparators +
       shape caveat; `quality_score` deliberately still null (different instrument).
 
-### Outstanding after W1
+##### Outstanding after W1
 
 - [ ] **Phase 2 of the one-input refactor: derive what master already declares.** Highest-value
       target is `slots` — the launcher has NO table and computes `1 if role in SERIAL_ROLES else 2`,
@@ -1331,7 +1338,7 @@ now trustworthy, where before they were not. Verified against the live registry 
   - Evidence metadata (hygiene, not new quota): Orchestrator `47d4fc1a8be6479a81fe24426883c43e30238dd2`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/20/focused.log). Active paths derive from generated launch requirements; original missing-drafter red/green and186 focused controls cover fail-closed source behavior, with publication receipt. No tests rerun or historical redating.
   <!-- task-evidence-integrity:end validate_model_paths -->
 
-## Operational notes
+#### Operational notes
 
 - Shared clone: use the explicit three-path `rm` on orphaned pack files, **never `git gc`** — a full
   repack can disrupt live sessions.
@@ -1342,13 +1349,13 @@ now trustworthy, where before they were not. Verified against the live registry 
 
 ---
 
-# SESSION APPEND 2026-07-31 (20:00–21:00Z) — W3 LANDED AND LIVE; W1 BLOCKED ON A BINARY PATH
+### SESSION APPEND 2026-07-31 (20:00–21:00Z) — W3 LANDED AND LIVE; W1 BLOCKED ON A BINARY PATH
 
 **Read this first if you are picking up.** The derived layer is now correct and the stack is
 running on it. The role reshaping (W1) is still entirely unapplied, and I stopped short of it
 deliberately — see the blocker below, which is structural rather than a matter of care.
 
-## W3 COMPLETE — and a missing hop the prior append did not have
+#### W3 COMPLETE — and a missing hop the prior append did not have
 
 W3 was not one step. `stack_change_pipeline.py update` regenerates descriptors and stack priors
 **from the LEAN registry**, and nothing inside it recompiles lean from master. Running the pipeline
@@ -1388,7 +1395,7 @@ and `both` is the intended full+2-halves lineup.
       asserted `-t 96` on port 18070, which now sits on `NUMA_HALF_A` (48 physical cores) → `48`.
       Its `--spec-type draft-mtp` assertion was left alone and annotated: it was correct all along.
 
-## STACK IS UP AND VERIFIED ON THE CORRECTED RECIPE
+#### STACK IS UP AND VERIFIED ON THE CORRECTED RECIPE
 
 Started `--numa-mode both`. Verified from `/proc/<pid>/cmdline` on every live server — not from
 config, not from the launcher's intent:
@@ -1405,7 +1412,7 @@ config, not from the launcher's intent:
 
 The composed recipe is gone from production. The half fleet is live.
 
-### The gate refused the first launch, correctly, and what that means
+##### The gate refused the first launch, correctly, and what that means
 
 `[stack-change-gate] FATAL: gate exited 1; refusing launch`. Every **config** gate was green; the
 only failure was `runtime_attestation: live process drift` on two ports:
@@ -1420,7 +1427,7 @@ way to say "aux service unmanaged" separately from "unsafe to launch", so it fai
 severity for both — and the escape hatch is the only available response. W4 removes the need; until
 then this bypass will recur on every start, which is how bypasses become habitual.
 
-## W1 IS BLOCKED — and not on care or on the open decisions
+#### W1 IS BLOCKED — and not on care or on the open decisions
 
 The edit list is real and complete: **76 edits, E1–E76**, recovered from workflow `wf_7d5f6816-a67`
 and decoded byte-exactly to `/tmp/claude-1000/-workspace/26b5f442-13c1-4501-8997-1c2fb9e1c509/scratchpad/editlist.md`
@@ -1458,7 +1465,7 @@ training rows, which the operator forbade), and #5 (`config_applicator.py:557-56
 `earlyoom`), so the contention-matrix constraint on E67/E58 is no longer a live-collision risk —
 though the matrix is still stale and W8 still applies.
 
-## Revised order for the next session
+#### Revised order for the next session
 
 1. **W4/W5** — makes the gate pass honestly and stops the bypass becoming routine. W5 first: the
    `reload` defect means any service registered the same way inherits a kill-without-restart.
@@ -1473,7 +1480,7 @@ facts support it — `strategy_store.db` is 0 bytes and `warm_start.py` has no j
 nothing replays old-normalization scores across the boundary the q_scorer correction created. The
 era plumbing is still worth building for future comparisons; it is no longer urgent.
 
-## ADDENDUM (21:00–22:00Z) — the compile chain and the kernel layer
+#### ADDENDUM (21:00–22:00Z) — the compile chain and the kernel layer
 
 Operator ruling: fix the compile chain before W1, and extend the kernel layer to the
 speech kernels. Both landed.
@@ -1513,7 +1520,7 @@ speech kernels. Both landed.
 Stack unaffected by any of the above and still serving: 12/12 healthy, 18 processes,
 `--spec-type draft-mtp` with ngram in zero processes, live inference confirmed.
 
-## ADDENDUM 2 (22:00–23:00Z) — W1's kernel blocker is CLOSED
+#### ADDENDUM 2 (22:00–23:00Z) — W1's kernel blocker is CLOSED
 
 - [x] **Every role's binary is resolved from its declared DEVICE** ✅ 2026-07-31 —
       orchestrator `b060dd56`. The architecture was already right and one derivation
@@ -1550,7 +1557,7 @@ Stack unaffected by any of the above and still serving: 12/12 healthy, 18 proces
 Stack verified unaffected throughout: 12/12 healthy, `--spec-type draft-mtp`, live
 inference confirmed after every commit.
 
-## ADDENDUM 3 (wrap-up 2026-07-31) — W1 has a preflight gate; the remaining blockers are named
+#### ADDENDUM 3 (wrap-up 2026-07-31) — W1 has a preflight gate; the remaining blockers are named
 
 Nothing here supersedes the three appends above; this only records what landed after
 ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
@@ -1572,7 +1579,7 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
       code changed. The byte-hash pin did exactly its job. Pipeline back to
       `acceptance: no-inference checks passed`.
 
-### W1's remaining blockers, as tasks
+##### W1's remaining blockers, as tasks
 
 - [x] **W1-a. Obtain the D1–D4 operator rulings.** ✅ 2026-08-01 — D1 hot · D2 NARROW (`explicit_request` only) · D3 `coder` removed · D4 delete the unreachable duplicate. Plus two rulings the work surfaced: GPU host lane = `184-191` `-t 8` SHARED; matrix refresh = device-awareness first, then bench.
       ORIGINAL NOTE: `architect_critic` tier; how aggressive the
@@ -1591,7 +1598,7 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
       ORIGINAL NOTE:, not once at planning time — two
       of its four checks (repos clean, GPU headroom) are state, not facts.
 
-### Derived from the 20:00–23:00Z window — filed so they are not lost in prose
+##### Derived from the 20:00–23:00Z window — filed so they are not lost in prose
 
 - [x] **Review the `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1` bypass taken at this session's start.** ✅ 2026-08-01 — reviewed and RESOLVED structurally: `orchestration/accepted_gaps.yaml` gives the gate a severity distinction (declared+unexpired → warning, undeclared or expired → error, stale declaration itself reported). The bypass had by then been taken four consecutive times.
       ORIGINAL NOTE:
@@ -1620,7 +1627,7 @@ Repo hygiene surfaced by this window is filed as **NIB2-60..63** in
 [`non-inference-backlog.md`](engineering-hygiene-backlog.md) — not acted on here because a stack start
 was in flight and several items touch the shared clone.
 
-### Discovered 2026-08-12 while working P1-3 / P1-5 / P1-10 (`mainD`)
+##### Discovered 2026-08-12 while working P1-3 / P1-5 / P1-10 (`mainD`)
 
 - [ ] **Propagate the `dual-half-negative` supersession to the LIVE strategy store.** [too-big: live strategy-store seeding requires the embedder service owner] The YAML is the
   record; `orchestration/repl_memory/strategies/strategies.db` is what AutoPilot reads. Until
@@ -4968,7 +4975,7 @@ one of this handoff's *Decisions locked* entries and three of its Invariant-1 sh
       next auditor to skip the thing that actually runs.
 - [x] **Artifact 1 (device-aware feasibility) landed.** ✅ 2026-08-01 —
       `src/scheduling/device_model.py`. See the rider:
-      [`contention-model-device-and-load-axes-rider.md`](contention-model-device-and-load-axes-rider.md).
+      [`contention-model-device-and-load-axes-rider.md`](numa-placement-and-contention.md#track-contention-model-device-and-load-axes-rider).
       Flags stay default-off; 3628 verdicts swept against the prior module with 0 mismatches.
 
 **Honest finding worth keeping.** On the *live* topology the device-aware model changes no
@@ -5748,3 +5755,875 @@ Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the se
 - XP-A12 (intake-2214#03): time-budget batching from an offline-profiled cost table is PB-QCOST-1 / KVU-16g; nothing to re-file.
 - TB-A9 (intake-2216#03): any spillover fallback in the selection rule must re-check capacity after spilling (the paper's final feasibility check); design constraint on WP-15 arms.
 - TB-A10 (intake-2216#03): two tiers suffice (a third added about 2% in the paper's simulation); WP-15 arm (e) never uses more than one threshold.
+
+## Track: reboot-gated-inventory-and-staging
+<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34 -->
+
+> Folded from `handoffs/active/reboot-gated-inventory-and-staging.md` @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5; retired row EVL-49 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Reboot-Gated Inventory & Pre-Reboot Staging
+
+**Created** 2026-08-12 · **Owner** open (filed by a governance sweep session) · **Domain index**
+[research-evaluation-index.md](research-evaluation-index.md) `EVL-49`
+
+> **Operator directive this document serves (2026-08-12, verbatim):** *"I will personally let you know
+> when I plan to reboot. If any handoff requires special pre-reboot staging you can let them do it. In
+> an ideal world it would be great to know everything that is reboot-gated in our backlog, and churning
+> through any pre-reboot work those tasks need so that when we reboot we unblock everything as a whole."*
+>
+> **The reboot is not imminent and will be announced.** Nothing in here asks for one. This is the list
+> of what it buys, and the work that has to happen first so it buys all of it at once.
+
+---
+
+#### 1. The gate, measured — not quoted
+
+Run read-only at 2026-08-12 11:28Z, through the same code path the harness uses
+(`server_np_sweep.host_health_warnings(collect_attestation())`):
+
+```
+WARNINGS: ['uptime exceeds 1 week; MEASUREMENT.md P-BENCH-1/P-BENCH-3 policy requires reboot
+           before decision-grade claims']
+uptime_seconds = 1201884.7   (13.91 days)
+numa_balancing = 0           ✓
+existing_llama_processes = []✓
+governor = performance · perf_event_paranoid = 1 · CPU boost observed to 4552 MHz · no throttle
+```
+
+**Exactly one warning, and it is uptime.** Every other host-health precondition is already green. That
+is the headline: the reboot is the *only* thing between this host and decision-grade measurement, and
+the moment it happens a very large batch becomes eligible simultaneously.
+
+**Both routes to decision-grade are shut.** `server_numa_np_sweep.py:2141-2142`:
+
+```python
+overrides_active   = bool(args.allow_host_health_warning or args.skip_clean_check)
+run_decision_grade = not warnings and not overrides_active
+```
+
+So `warnings` blocks it, and the override that clears `warnings` sets `overrides_active`, which blocks
+it too. There is no third path. Screening / observation tier runs normally today.
+
+**Asymmetry worth closing (defect-shaped).** `bench_canonical.sh` — the P-BENCH-1 canonical CPU path —
+contains **no uptime or host-health check at all**. P-BENCH-3 (`server_numa_np_sweep.py`) fails closed;
+P-BENCH-1 is honour-system. A canonical "decision-grade" number can be minted today that the policy
+forbids, with nothing refusing it. See task S-11.
+
+---
+
+#### 2. Sequencing — what has to be true before the reboot is callable
+
+| # | Constraint | Source | State |
+|---|---|---|---|
+| 1 | **INF-03 must reach a durable boundary.** `inference` owns compute and has a live arena campaign (`inf03-available-source-six-arm-20260812-r4`, cell 006 in flight, PIDs 2889129/3435515/3435803). | `inbox/coordinator-agent.jsonl` msg-20260812T111121Z-173, 11:11Z today: *"OP-16 reboot remains necessary for decision-grade IQK/A7 work, but only after INF-03 reaches a durable boundary and explicit operator reboot authorization."* | LIVE — check at reboot time |
+| 2 | **All mains wrap up and persist.** `SESSION_LIFECYCLE.md:43-55` makes pre-reboot wrap-up mandatory including commit. Unpushed at 11:32Z: epyc-root 15 commits / 79 dirty; orchestrator 13 / 14; research 1 / 1185 (mostly untracked results — never `git add` that tree wholesale). | `SESSION_LIFECYCLE.md`; measured | pending |
+| 3 | **`tmux new-session -d -s agent` is the mandatory first post-reboot command.** `allow_session_creation: false` is deliberate; `cmd_spawn` fails closed without it, so **nothing spawns** until a human runs it. | C20, `session-bus-thin-dispatcher.md` | documented, not automated |
+| 4 | **Nothing auto-restarts the supervision tier.** coordinator-daemon, `bus_supervisor.sh`, `hub_supervisor.sh`, `fleet_watch.sh` all die together and none self-starts. `hub_supervisor.sh` was already found dead on 08-10. | OP-9; `session-bus-thin-dispatcher.md` FW-3 | cron form drafted, not installed |
+
+> **⚠ OP-16 is OPEN, not declined.** `session-bus-thin-dispatcher.md` (worktree-isolation row) states
+> *"OP-16 was declined by the operator"*. No such decision exists anywhere on the bus, in
+> `progress/2026-08/`, or in the token queue; `master-handoff-index.md:46` carries OP-16 open dated
+> 2026-08-12 and `autokernel-research-loop.md` §AK6.5 carries it as an open package recommending Option
+> A. Today's directive is *deferred-with-announcement*. The row's conclusion (a worktree cutover needs
+> no reboot) is right; its stated reason is false and should be corrected before it is cited as
+> evidence the reboot was refused. → task **S-13**.
+
+---
+
+#### 3. THE BIG ONE — the reboot alone unblocks almost none of the batch loop
+
+**25 compiled entries in `coordination/inference-batch/entries/` declare an uptime cap** (18 at ≤7 d,
+7 at ≤14 d). At 13.91 d all 18 are already refused, and **the seven ≤14 d entries expire at ~13:37Z
+today**.
+
+But the uptime cap is the *declarative* half. The **machine-enforced** half is
+`required_topology_hash`, which `run_batch_entry.py` compares fail-closed against the live
+registry-derived hash — and **every one of those 25 entries is pinned to a dead value**:
+
+| Pinned in the entries | Also pinned | Currently stamped in `contention_matrix.yaml:10` | Recorded live 07-30 |
+|---|---|---|---|
+| `8c8cfcbb13d2611d` (20-eval-tower, 30-bulk, 40-routing) | `kernel_era: production-consolidated-v7` | `171f86f9188211e9` | `bc28e15d` |
+| `df373c79cc4af06f` (50-kernel-op2, 00-example) | `kernel_era: production-consolidated-v6` | — | — |
+
+Production is **`production-consolidated-v9` @ `0db32c06`, binary 10125** (verified today,
+`verify_llama_cpp.sh` exit 0). **So after the reboot, all 25 entries still fail closed — on kernel era
+and topology hash, for reasons that have nothing to do with uptime.**
+
+**Re-pinning those 25 entries is the single highest-value pre-reboot task in this document.** Without
+it, the reboot clears one gate and leaves two. → tasks **S-01, S-02**.
+
+---
+
+#### 4. Second-biggest: the host tunables are not persistent
+
+`kernel.numa_balancing=0`, `perf_event_paranoid=1` and `governor=performance` are all set at runtime.
+There is no `/etc/sysctl.d` entry, and `scripts/session/health_check.sh:173-174` **detects** the drift
+but nothing **applies** it (`"fix: sudo sysctl -w kernel.numa_balancing=0 (self-resets per session)"`).
+`session_init.sh` does not re-apply them either.
+
+**Consequence:** post-reboot the host-health gate warns on `numa_balancing` instead of `uptime` — a
+different warning, the identical block, and the fresh-uptime window burns while somebody works out
+why. Non-interactive `sudo` is available to sessions, so this is a script, not an operator step.
+→ task **S-03**.
+
+Related, same class: **`drop_caches` is available today** (sudo works). A cold page cache is therefore
+*not* reboot-gated — which downgrades the MI210 cold-load break-even item from A to B (§7).
+
+---
+
+#### 5. Inventory
+
+**Category key** — **A** genuinely reboot-gated (cannot be done at all until after) · **B** deliverable
+claim is reboot-gated but the run executes today at screening tier · **C** misfiled: not gated, or
+already satisfied.
+
+Dispatch by **task TEXT**, never `file.md:LINE` — queue-wide anchor rot is 34.5%. Re-resolve with
+`python3 scripts/coordination/backlog_row_check.py --row "<text>"`. Note `backlog_row_check.py` now
+also refuses *prerequisite-blocked* rows (mainD, 2026-08-12) — a refusal may mean "blocked upstream",
+not "rotted".
+
+##### 5.1 Category A — genuinely reboot-gated
+
+| # | Item (cluster) | Owning handoff | Needs the reboot FOR | Pre-reboot staging required | Current staging state |
+|---|---|---|---|---|---|
+| A1 | **CPU IQK campaign rerun** + its three step rows (`CPU first`, IQK replay candidate #1, "Then a real one") | `autokernel-research-loop.md` | Preflight **refuses before claim/build/benchmark** at 13.47 d — there is no screening tier here at all | Seed `HYPOTHESES.md` entries; re-verify the dry run still composes 13 steps / 10 pairs; **read the dry-run output before executing** (the 2026-08-04 `LD_LIBRARY_PATH` defect: a candidate linked against the anchor's `libggml` measures the anchor and reports a clean null with every gate green) | **READY.** Envelope bound to recipe frame `e504d8e9…b079b0`; dry run clean; whisper/qwentts symlinks repaired; both speech kernels verified; durable command in `progress/2026-08/2026-08-12.md`; STOP_STATE receipts in `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl` |
+| A2 | **OP-16** — the authorization itself | `autokernel-research-loop.md` §AK6.5 | It *is* the reboot | File it as a **pre-validated token block** in `tokens/token-queue.md` — today it exists only as a master-index row, so the one signature the whole A-list waits on is absent from the queue the operator actually reads | Package written (Option A/B + recommendation + default) |
+| A3 | **AK-WM-2a / 2b / end-to-end campaign** (matched archive) | `autokernel-research-loop.md` | The archive builder accepts **only real** proposal-v3 events joined to clean DECIDED terminals; synthetic fixtures explicitly refused | Pre-format the projection plan (JSON-pointer + SHA-256 pin list) so receipts fire the moment two clean campaigns exist | Builder + receipts landed (research `900cb5c6`, `e8de8bfa`); 4,078-test suite; 98/98 receipt slice |
+| A4 | **C20 — create the `agent` tmux session** | `session-bus-thin-dispatcher.md` | The defect exists only post-reboot | Put the command in `tasks/post-reboot-session.md` as step 1; **pre-write the roster respawn list with endpoint→window-name mapping** (C25: spawn names the window after the *endpoint*, so a mismatch means hand-fixing with `tmux rename-window` again) | Documented in `CURRENT-CAMPAIGN.md` and OP-16 Option A; not in the handover brief's step list |
+| A5 | **Supervision tier has no auto-restart** (daemon · `bus_supervisor` · `hub_supervisor` · `fleet_watch`) | `session-bus-thin-dispatcher.md` (FW-3), `handoff-index-and-backlog-graph.md` (**OP-9**) | All four die at once and none self-starts | **Get the OP-9 ruling before the reboot** so the crontab is installed during the boot window; both cron forms are already drafted. Write the manual bring-up order (daemon → supervisor → hub → fleet_watch) into the brief as fallback | Drafted, not installed |
+| A6 | **Daemon is running stale code** (C28/C38 committed-not-live) | `session-bus-thin-dispatcher.md` | Python loaded the module at daemon start; the reboot delivers the restart for free | Pre-format the post-restart receipt: `already_flagged` reads `relay_state.json`, tick ≈0 ms, `cmd_status` ≈0.4 s not ≈9 s | Fix verified by direct invocation |
+| A7 | **Stack relaunch items:** `-np` drift (12 live-process drift errors), pytest-escaped API PID 3903691, C1 fix #2 manifest writer, `/slots` 0/19, WP-14 phantom lineup, dashboard tap live-render | `autopilot-continuous-optimization.md`, `autopilot-dashboard-fidelity-audit-2026-07-22.md`, `dashboard-architecture-restructure.md`, `within-role-placement-state-machine.md` | All need a **realized lineup** to compare against; the stack is fully down, so the observations are confounded, not failing | Pre-render the expected post-launch process table (per-port `-np`, threads, cpusets) so bring-up is a one-command diff; pre-write the `selected_servers` assertion from the launch manifest; pre-write the human-observation script for the tap (which URLs, which counters, expected ↑/↓) | Tap harness 88 checks / 0 fail; rest unstaged |
+| A8 | **earlyoom `--ignore` tweak** | `dynamic-stack-concurrency.md` | earlyoom is PPID 1, started at host boot, outside the container; the flag changes only at its next launch | Write the exact host-side launch line **into the OP-16 package** so it rides the same authorization | Not applied (host-side) |
+| A9 | **AP-19b** — first supervised live `gepa_optimize` | `autopilot-continuous-optimization.md` | Needs a live stack in a watched window; the post-reboot relaunch *is* that window | Dry-run the cold bring-up recipe (`esc8-stack-restart-landmine-audit-2026-07-22.md` §2026-07-25); pre-format the journal-row + ERROR-path checklist | Recipe written, never executed; blacklist lifted 2026-07-25 |
+| A10 | **AP-WM-1b** — over AutoKernel's first real matched archive | `autopilot-continuous-optimization.md` | Transitive on A1→A3 | Build and dry-run the observe-only harness, fixtures and receipt schema against synthetic rows now — only the *inputs* are gated | Unstaged |
+| A11 | **E8 quality-baseline reseed** | `autopilot-continuous-optimization.md` | **3 of 5 blockers are stack-shape** (24 unique ports, 5 live frontdoors, both-mode 6/6) and need the full-lineup relaunch | ⚠ **The reboot alone does NOT unblock it.** (i) Get the operator's A–D choice on the source amendment (zero compute); (ii) **delete the five `.staging-` bundles** left by the 07-26→29 `--execute` attempts — the runner forbids reuse and the post-reboot run will fail on residue; (iii) re-run `--prepare --t2-n 500`; (iv) regenerate the context coverage scan, which reports `required_tokens` in **BYTES** (task S-08) | 5 failed attempts, bundles still present |
+| A12 | **Reviewer-plane throughput/latency rows:** LB-1 attribution · LB-4 paired throughput A/B · LB-7 M3 baseline floor · RD-12 latency+token accounting · RM-4 confirmation-tier protocol | `reviewer-latency-and-sampling-budget.md`, `reviewer-decision-plane.md`, `reviewer-model-ablations.md` | Deliverables are throughput/latency/cost. `MEASUREMENT.md:121` records the throttle signature as **multi-day uptime −60%+** — these are invalid by *magnitude*, not merely by grade. LB-1 would produce a confidently wrong attribution | Write the attribution script + per-call-class instrumentation offline; **pre-register which of the three hypotheses each outcome supports** so the post-reboot run is confirmatory; codify sampling policies as arms; freeze task sets + seeds; build the A0/A1 baseline arms; build RD-12's accounting + parse-failure-fallback tests and the 50-question replay set | RD-12's vehicle (RCP-W2) never ran; LB-3 partially landed (`30d3232b`) |
+| A13 | **Hermes latency measurement** (first-token, total) | `hermes-outer-shell.md` | Same throttle logic. The handoff's own *"effective throughput much lower than raw 39 t/s"* may itself be a 13-day-uptime artifact rather than a design defect | Build the harness; **capture the current suspect reading labelled pre-reboot** so the delta separates the two explanations | Unstaged |
+| A14 | **Tool-output-compression first-party A/B** | `tool-output-compression.md` | Row: *"MUST report WALL-CLOCK (neither paper reports latency)"* — wall-clock is the declared differentiator | Build the log-growth / grep-cost instrumentation and the arm harness | Unstaged |
+| A15 | **ColBERT S4b / S6 latency** | `colbert-reranker-web-research.md` | A hard **200 ms** threshold against a **180 ms** GTE baseline — a 20 ms margin. Throttle does not degrade this verdict, it inverts it | Export LateOn INT8 (the actual blocker, offline); **re-confirm the 180 ms GTE anchor was itself taken on a compliant host** — if not, it is not a valid anchor and both arms must be re-measured | Harness exists (`bench_colbert_rerank.py`, `b37de4a`) |
+| A16 | **Parser bake-offs with a speed axis:** ODL 200-PDF five-way · LiteParse-vs-ODL-vs-pdftotext · LightOnOCR latency · ERNIE MI210 rebench | `opendataloader-pipeline-integration.md`, `ernie-image-turbo-evaluation.md` | Speed is a scored axis in each; ERNIE's row is explicitly *"measure-not-extrapolate"* | **Acquire the OmniDocBench source PDFs + mint the immutable manifest** — pure download/provenance, and it unblocks `document-parser-table-bench.md` too (same work filed twice). Note the real local ceiling is **51 eligible PDFs, not 200** | ODL hard-blocked since 07-29 on the missing PDFs |
+| A17 | **Strand RustEvo2 Phase B** | `strand-rust-coder-rustevo2-verification.md` | Entry `KOP2-strand-rustevo2-phaseB` requires `quiet_window` + `max_uptime_days: 7` + `cache_state: warm`; single-instance sequential canonical bench with no screening variant | Dry-run `eval_models_rq1.py` against a mock endpoint; re-point the entry's `kernel_era: v6` / `topology df373c79cc4af06f` (§3); pre-create `/workspace/tmp/rustevo/RustEvo/results/`; pre-format the ledger row and gate-table fork | Phase A ✅ (GGUF on disk, toolchain + venv installed, harness validated 06-18); `OP-STRAND-INFERENCE-APPROVAL` ungranted |
+| A18 | **RE-4 LongCoT-Mini chain** (RE-4.2 probe → 4.3 full → 4.4 ladder → 4.5 package), plus its duplicates **K-LCM-1** and **RE-4** | `re4-protocol-redesign.md`; dups in `bulk-inference-campaign.md`, `backlog-roi-audit-2026-07-14.md` | Entry `RE-4-longcot-mini-calibration` requires `quiet_window` + 7 d; row text names "operator quiet-window … autopilot stopped" | Re-attest the topology hash into the entry (the handoff header says to); regenerate + pin the 30-row stratified probe manifest (8/8/7/7 chem/chess/cs/math by sorted id); `--dry-run` `longcot_mini_stack_runner.py`; pre-write the `DONE_PASS` / `DONE_MARGINAL_OBS` ledger stubs. **Collapse the three duplicate surfaces to one** | RE-4.0 ✅ runner v2 (research `9323213d`); RE-4.1 ✅ entry v2 applied; dataset on disk; ledger `BLOCKED_PRECONDITION` |
+| A19 | **MindDR Phase-2 gfx90a training-viability smoke** (**OP-4**) | `minddr-deep-research-mode.md` | *"Countermanded until E5 Stage-B releases the host"* — a Python ROCm trainer is invisible to E5's process/SMT-affinity gates and would silently contaminate its decision-grade cells | **Provision the pinned gfx90a training env** (`torch`/`transformers`/`accelerate`/`trl`/`peft`/`datasets` are absent from both uv envs) — pure provisioning, no host quiet needed, and it is the stated blocker | Unstaged. Cascades to `frontier-f3-data-flywheel.md`, `engram-conditional-memory.md`, the EV-9 judge model |
+| A20 | **OpenMLE Sandbox reproduction** | `architect-model-selection-bench.md` | **A different reboot** — cgroup v1 via a GRUB kernel-cmdline edit | **Do NOT bundle into the OP-16 reboot.** Gate (1) is network-only and "any main": pull the worker/controller images and prove they run. Then draft the cgroup-v1 decision package (GRUB stanza diff + rollback + what depends on cgroup v2). Note `autokernel-research-loop.md:670` already declines a cgroup-v1 reboot as outside the adopted design | Trigger fired 08-11; gates ordered 1→2→3 |
+
+##### 5.2 Category B — the run works today, only the claim waits
+
+Full list in §6. Cluster heads:
+
+| # | Cluster | Owning handoff | Needs the reboot FOR | Pre-reboot staging |
+|---|---|---|---|---|
+| B1 | **E5 NUMA×batch / placement re-measurement** — `RE-MEASURE E5 Stage-B on the corrected placement` (live), `E5 W1-W4 runs`, `E5 — NUMA×batch interaction sweep`, plus `T3` (`numa-placement-defect-20260730.md`) and `P2-1` (`numa-topology-cutover-resume-20260730.md`) — **one physical run, five rows** | `batched-decode-measurement.md` (+2) | Decision-grade label only; the row forbids the override in its own text. Also needs an exclusive window: `host_health_warnings()` counts `existing_llama_processes` **unfiltered**, enforced at run start *and* per cell, so a stack bringup mid-window kills the remainder | **Regenerate the corrected grid** per the row's binding requirements: (a) add full-machine `0-95` + `numactl --interleave=all` as a swept shape for `qwen36_q8_0` and `qwen3_next_80b` — today's winner existed in the old grid only as gemma's C1; (b) every straddling cell carries `--interleave` or is a declared defect-replication control; (c) `drop_caches` before every cell + record `pages_by_node`; (d) attest numactl policy per instance, fail closed on disagreement; (e) harness unchanged. Then re-verify readiness (§6.1). **⚠️ UPDATE 2026-08-16 — the grid is PARTIALLY BANKED, remaining scope is 24 manifests, not 40** (A7 grid fired then operator-stopped 2026-08-13; `progress/2026-08/2026-08-13-mainA.md` Sessions 7–8, verified on disk): group `gemma4_26b_a4b_q4km_mtp` is **COMPLETE 8/8, all decision-grade, 0.0% error — DO NOT RE-RUN**, banked at `/mnt/raid0/llm/epyc-inference-research/data/batched_decode/a7-gemma4_26b_a4b_q4km_mtp-20260813T223750Z/` (the `...223703Z` sibling is the aborted attempt, no `cells.jsonl`); group `qwen36_27b_q8` is **EXCLUDED by operator ruling** (coordinator msg-94 2026-08-13 22:58:33Z, W3 dropped as GPU-resident tenant); remaining = `qwen36_q8_0` (12) + `qwen3_next_80b` (8) = **24 manifests**, launcher archived and still present at `/mnt/raid0/llm/tmp/a7-fire-20260813/a7-fire-all.sh`. Sizing the next exclusive window at 40 cells would burn hours redoing banked work |
+| B2 | **GPU shed-trade** — `P2-5c` (RUN the P2-5a measurement), `P2-5j` + its decision-bearing successor, `P2-5g` | `gpu-serving-tie-in-program.md` | P2-5c gate G2 is verbatim the uptime tier; P2-5g's deliverable is a decision-grade contention pair feeding `contention_matrix.yaml` | Design already committed (`docs/design/p2-5a-shed-trade-measurement-spec.md`, research `d5f5942f`; corpus re-frozen `5e7a1564`). Pre-register arms; design the saturation-knee calibration sweep; author the `contention_matrix.yaml` per-pair entry shape; **P2-5j must precede any q3 carve** — MI210 is on NUMA **node 1**, so today's 184-191 placement is already cross-node and the node-local candidates were never tried |
+| B3 | **Eval-tower model-gated cluster** — EV-5 ThinkPRM (4 rows), EV-7 Ouro T0, EV-8 diversity baseline, EV-10a skill efficacy, EV-13b review-F1 | `eval-tower-verification.md` | All five entries carry `quiet_window` + 7 d | **Highest-yield staging in the whole sweep** and 100 % non-inference: HF-pull ThinkPRM-1.5B → `convert_hf_to_gguf.py` → `llama-quantize` Q4_K_M; land the `orchestrator_stack.py` sequential-load config; implement `eval_t2()`; place Ouro-2.6B weights; freeze+pin EV-8's 20 prompts/role × 4 completions with seeds; assemble EV-13b's Augment-v1 145-bug golden set + semantic matcher and **author its batch entry** (it has none) |
+| B4 | **Reviewer quality-axis rows** — RC-8, TM-8, RM-2/3/5/6/7/8/10, GC-1a/2a/3a, H-Q1 | `reviewer-calibration-accounting.md`, `reviewer-trace-materialization.md`, `reviewer-model-ablations.md`, `glm52-reviewer-capability-gates.md` | FA/FR/CR/coverage are quality metrics — throttle-insensitive. The **binding** gate for most is RC-6a's `MEASUREMENT.md` amendment, not uptime | **Build TM-8's per-worker flag-introspection probe first** — the known 1-of-6 uvicorn propagation hazard silently corrupts TM-8 coverage, so the guard must exist *before* the window. Freeze the K-of-M protocol and corpus slice; author RM-5's 6 bias injections and RM-10's 3 prompt arms (100 % offline). Honour GC-1a's prohibition: do **not** rerun unchanged `multi_oracle`/binary-schema/answer-fragment slices without a new repair hypothesis. Stage the H-Q1 UD-IQ3_XXS download (~300-340 GB, not present) |
+| B5 | **Claim-grade singles** — P6 decision-grade confirmations, SWE `2b-confirm`, Gate-R `G3`, `I4` 33-flip re-run, 79-question judge suite on 27B | `inference-batch-loop.md`, `scoring-infra-standardization.md`, `fable5-window2-findings-03…md`, `autopilot-continuous-optimization.md` | Each deliverable is named claim-grade / decision-grade | Do SWE's gold-validation docker work now (non-inference) and pre-configure the scorer over the FULL slice (empty patches are absent from the report's lists and silently shrink the pairing). Do `G2` HIP build + op-coverage smoke — explicitly *"no window needed"* — and `G1` P-GPU-1 ratification, both of which clear G3's path; **repair `n5_frontdoor_drafter_retest.sh`, which pins a dead v5-only commit and must not run as-is**. Pin I4's 33 flip items to a manifest |
+| B6 | **Determinism / routing / placement** — D3 canonical bench + D4 era row, RI-10 canary (+RI-11/12), DCP-6, SS-BENCH-GATE-b, WP-9/WP-10, WP-6/WP-7 + ≥8-pair vision_escalation, Bridge residual 2, `real_suite_v1` discriminability, Q4, BEP-2/J8, W3 applicator, live-pool oracle | `prompt-construction-determinism.md`, `routing-intelligence.md`, `bep-dcp-falsification-harness.md`, `standardized-stack-update-pipeline-finalization.md`, `within-role-placement-state-machine.md`, `shape-keyed-contention-gating.md`, `loops-and-dashboards-audit-2026-07-05.md`, `contention-model-device-and-load-axes-rider.md`, `batched-edit-parallel-apply.md`, `capability-registry-and-promotion.md`, `autopilot-continuous-optimization.md` | Mixed: canonical certification (D3), env-only-at-restart (RI-10's `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED`, DCP-6's `AUTOPILOT_TOOL_SENTINELS`), instrument-boundary (pool rebuild), topology re-pin (WP-9/10) | **Stage every launch-env flag into the post-reboot bring-up so the canary window starts at t=0 instead of costing a second restart.** Land SS-BENCH-GATE-b's cpusets **before** the reboot so they are live from the first launch — the incident it prevents is a reload sidecar invalidating a decision-gating run 1h09m in, i.e. exactly how the first clean window gets wasted. Implement `shapekeyed_step2_smoke.py:718`'s `NotImplementedError` stub. Root-cause `real_suite_v1`'s 0/50-vs-35/50 flip offline by deterministic replay. **WP-9/WP-10 needs no reboot** (its own prep doc says so) but its recert bench must not run at 13 d uptime or it bakes throttle hysteresis into a durable topology pin that ~52 sites reference |
+
+##### 5.3 Category C — misfiled, or already satisfied
+
+**These inflate the gated queue and should be corrected, not dispatched.** The highest-value ones:
+
+| Item | Owning handoff | Evidence it is not gated |
+|---|---|---|
+| **EV-4, EV-4b, EV-11c** (3 rows + 2 dependents, + `RE-1` duplicate) | `eval-tower-verification.md`, `backlog-roi-audit-2026-07-14.md` | Ledger is terminal **`DONE_PASS` 2026-07-23** with `decision_grade=True` on both arms; EV-4 explicitly *supersedes* EV-4b. **Stale-open checkboxes — flip, do not dispatch.** |
+| **P1-1, P1-2, P1-3, P2-5f, P2-5i, P2-9** | `gpu-serving-tie-in-program.md` | Every reboot clause names the **07-29** reboot, which executed. Real gate is the E8 signature (P0-1). P1-2's own 08-11 annotation records Stage-B COMPLETE. P2-5i is a standing prohibition carrying `do not flip this box`. P2-9 mentions a reboot only as a download-hazard warning |
+| **RC-6a + its two amendment candidates**, **LB-6b**, **LB-6**, **LB-3**, **LB-8** | `reviewer-calibration-accounting.md`, `reviewer-latency-and-sampling-budget.md` | RC-6a is a **human PR against `MEASUREMENT.md`** with blocks already copy-paste-ready and a 4-step checklist. It gates every decision-grade reviewer claim. LB-6b is an operator threshold pick from three drafted candidates. **Both are free wins during the reboot wait** |
+| **`gpqa_diamond_cot` full n=198** | `architect-model-selection-bench.md` | GPU accuracy is device-independent and the sibling MMLU-Pro control ran **2026-08-12** at this uptime with released claims. Pinned manifest exists; A1/A3 run dirs exist. **Only the A4 arm is missing — dispatchable today** |
+| **Eval-tower A2 / C2 / E5 hardening** | `eval-tower-architecture-audit-2026-07-20.md` | Gate is mechanical and not uptime: *"`pgrep -f evaltower_window` returns nothing (and `:8000` idle)"*. Run the pgrep before assuming blocked |
+| **`llamacpp-v6-consolidation.md` "Post-reboot NUMA topology bench (the NEXT gate)"** | same | Dead prose with **no open checkbox**; the file's own line 391 records **"Reboot-necessity verdict: NO REBOOT NEEDED"**; v6 is three eras superseded. Its 3 open rows are upstream-parity items with no host gate |
+| **NPS / BIOS / NUMA-topology reboots** | `handoffs/completed/nps-reboot-runbook.md`, `wiki/hardware-optimization.md` § NPS4 48×4 notes | **The whole category is empty.** The runbook is closed — *"Reopen triggers: none"*, L3aaN is do-not-re-propose. the folded NPS4 48×4 notes in `wiki/hardware-optimization.md` are notes-only with **zero open checkboxes**. There is no live BIOS/boot-setting item |
+| **R1a — end-to-end bench claim** | `session-bus-thin-dispatcher.md` | Needs one short smoke (`-n 128 -r 1`, small model) under a *held claim*, not a signature (R2 ✅). **The stack is fully down, so this is the cheapest it will ever be — do it BEFORE the reboot**, since it de-risks every decision-grade bench in the first clean window (A0 is currently only structurally verified) |
+| **AP-3 / AP-3b**, **AP-WM-1**, **autopilot-pause interlock**, **worktree isolation phase 2** | `autopilot-control-plane-integration.md`, `autopilot-continuous-optimization.md`, `session-bus-thin-dispatcher.md` | "Restart-scoped" means *llama-server role reload*, not host reboot. AP-WM-1 matched a `decision-grade` keyword only because it **disclaims** it. The pause interlock is a code fix — but fix it **before** AutoPilot resumes, it caused a live outage 08-03 |
+| **RM-9** | `reviewer-model-ablations.md` | Its precondition is **falsified** — A4 failed admission (FA 41.7 %, FR 25.0 %, AUC 0.509). Close as a decline, do not carry as gated |
+| **GC-4** | `glm52-reviewer-capability-gates.md` | Operator decision, and it **collides with OP-8** (GLM-5.2 GO/WAIT/KILL, 222 GB). May be moot if OP-8 lands KILL — escalate the pairing |
+| **`ROUTE-A1` / `ROUTE-A2`** | (batch ledger) | Blocked by a `NotImplementedError` stub (`shapekeyed_step2_smoke.py:718`) and a missing corpus manifest. A reboot fixes neither; both will resurface as false post-reboot candidates |
+| **`reviewer-typed-artifacts.md` (4 rows) + `security-review-skill.md` (6 rows)** | those files | Zero host dependency, same intake source. **10 boxes, cleanest none-lane block available**, and the negative-control axis is a prerequisite for ever measuring a false-accept rate — which every A12 row depends on |
+| **`cpu-shape-specialized-gemv-decode.md`, `sarathi-serve-cpu-evaluation.md`, `gpu-drafter-mi200-investigation.md`** | those files | Say so explicitly: *"Does NOT require BIOS reboot or env var"* · *"Independent of L3aaN reboot"* · the clean-window retest is already `- [x]` decision-grade ✅ 2026-07-16 |
+
+**Also stale, and it matters:** `document-parser-table-bench.md` and `opendataloader-pipeline-integration.md` each carry **standing constraints wearing checkboxes** (`Do not download MinerU2.5-Pro…✅`, `NAME COLLISION — do not resolve by path`, `Route … away from LiteParse`). Same defect class the auditor escalated as `backlog-queue-template-rows`. Do not dispatch, do not flip.
+
+---
+
+#### 6. Run now at screening tier — do not leave these waiting
+
+The reboot changes a *label*, not a *number*, for everything in Category B. Running them now costs
+nothing and converts the post-reboot pass from discovery into confirmation. Label the tier honestly in
+the manifest (`decision_grade: false`) and say "quiesced host" in anything published — AutoPilot is
+down, so these numbers are not silently representative of production.
+
+**Highest value first:**
+
+1. **RC-8 baseline** (`reviewer-calibration-accounting.md`) — the entry states plainly that *"the
+   observation-grade run itself does not block on"* OP-5a. Corpus v1 already built
+   (`nearmiss-v1`, 11,516 rows, `content_sha256 1c50c025…`).
+2. **DCP-6 eval half** — `dcp_j7_ab.py` *"requires `--host-quiet-confirmed` and refuses if AutoPilot is
+   running"*. **AutoPilot is down, so it will not refuse today.** Last artifact: `decision.status=hold`.
+3. **RM-3 screening tier** — literally the screening tier; all four children ✅. Only the *promotion
+   rule* to confirmation tier needs post-reboot cost numbers.
+4. **D3 canonical bench, screening pass** — establishes effect direction at zero claim risk, then the
+   post-reboot run only has to confirm it.
+5. **RLM E1 / E3 / E3b** — the handoff already grades its n=20 numbers as observations; a screening pass
+   de-risks the harness.
+6. **ERNIE content-filter audit** — harness ready (`ed6f65f5`), 10 cases across 5 categories authored,
+   qualitative deliverable, throttle-insensitive.
+7. **AP-WM-1 offline archive comparison**, **`gpqa_diamond_cot` A4 arm**, **MD-9 sentinel A/B**, **TM-8
+   coverage** (after its introspection probe lands), **document-parser Phase B binary `<table>` gate**.
+8. **The seven `max_uptime_days: 14` entries** in `30-bulk-campaign.yaml` — eligible until **~13:37Z
+   today** and then not again until the reboot. They still fail the topology pin (§3), so this is only
+   reachable if S-01 lands first. Report the outcome either way.
+
+---
+
+#### 7. Capture before the reboot — restart destroys these
+
+**What survives:** `/workspace`, `/mnt/raid0/llm/**` (incl. `/mnt/raid0/llm/tmp`, 41 GB) and the
+agent-memory dir are all `/dev/md127`, one persistent RAID. The 2026-08-11 fleet-wide claim that
+*"uncommitted work does not survive a reboot"* was **false and was retracted** (F-21,
+`coordinator-role-failure-modes-and-refactor.md`). The real hazard to untracked work is `git clean
+-ffdx`, not the power button.
+
+**What does not:** `/tmp` is the **container overlay**, a different filesystem (22 GB, includes the
+agent scratchpads). It survives a container *restart* but not a container *recreate* — and
+`.devcontainer/Dockerfile` is currently modified in the working tree.
+
+| # | Artifact | Why it dies / why it matters | Where |
+|---|---|---|---|
+| C-1 | **`tmux list-windows -t agent`** — window names ↔ roster ids | The only record of the live roster shape; C25's endpoint/window mismatch was hand-fixed with `tmux rename-window` last time and *"nobody will remember next reboot"*. Currently: `0 coordinator · 1 htop · 2 btop · 3 inference · 4 auditor · 5 mainA · 6 mainB · 7 mainC · 8 mainD · 9 fish` (session created 2026-08-01 05:46) | kernel state |
+| C-2 | **Daemon epoch + pid + heartbeat**, plus supervisor/hub/fleet_watch pids | C26's guard refuses a live state when heartbeat `age` exceeds **system uptime** — only meaningful if the pre-reboot epoch is known. Live now: daemon 1728027 (11:28:48), supervisor 359336 (11:02:43), hub :8100 1367133 (11:19:37), fleet_watch 1448583 (11:20:37) | `heartbeats/coordinator-daemon.json` + `ps` |
+| C-3 | **`/proc/<uvicorn>/environ`** and **`/proc/3903691/environ`** | WP-10's entire safety argument rests on `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` having been *read from a live process*; that verification dies with the process. PID 3903691 is the pytest-escaped API carrying `PYTEST_CURRENT_TEST` — the surviving evidence for INC-20260806-pytest-api-escape | `/proc` |
+| C-4 | **NUMA page placement (`pages_by_node`) of every resident instance, and the warm production-wiring datapoint** | `--interleave` binds at **first touch only**, so it is a silent no-op on a warm cache. The defective placement (`{N0: 9226101} / 9226101`, all 35.2 GiB on node0 under a node0+node1 team) and the warm **7.81 ± 3.82 t/s** frontdoor figure are the AutoPilot operating point B1 is re-anchoring against | `/proc/<pid>/numa_maps` |
+| C-5 | **Page cache = 1046 GB warm.** Not a loss to prevent — a state to *declare* | The reboot drops it. That is the point (cold-cache opportunity) and the cost (every model load is cold). Post-boot the first re-read **pins one node** — the NUMA-interleave re-warm discipline must be in the boot runbook, never a bare re-read | measured |
+| C-6 | **Current CPU frequency profile** | min 1998 / avg 2412 / **max 4552 MHz** at load 12.0, no throttle. Capture it so a post-reboot delta can prove (or disprove) accumulated throttle rather than assuming it | `/proc/cpuinfo` |
+| C-7 | **Era-fenced ledger accrual — the highest-risk loss in the sweep** | Fence `1785004723.0` retains **16 trusted rows / 2 eligible items against a 40-item target** (shortfall 38) after excluding 1,317 pre-era rows. **If the reboot moves the kernel/topology era, this resets to zero again.** Snapshot the ledger, the fence value and the row counts, and decide *deliberately* whether the reboot opens a new era | `fable5-window2-findings-01/03` |
+| C-8 | **AutoPilot journal: duty-cycle + production-traffic history** | Needed for the P2-2 anchors (3 of 4 roles have none; `frontdoor` = median 35.7 t/s, n=154) and for P2-5f. AutoPilot has been down since `2026-07-27T08:23:07Z`; a restart resets the accumulation clock again. **Harvest what exists now** | `orchestration/` journal shards |
+| C-9 | **`logs/llama-server-*.log`** | Open row: *"UNEXPLAINED: every llama-server exited at ~07:00 on 2026-08-04"* — ends with an explicit instruction: **"If it recurs, capture `logs/llama-server-*.log` BEFORE restarting."** | `epyc-orchestrator/logs/` |
+| C-10 | **`autopilot.log` and the `tool_chains` rows** | A previous rotation already destroyed the historical REPL evidence (*"0 parseable historical REPL sessions"*). Archive before it happens again | `epyc-orchestrator/` |
+| C-11 | **In-flight session journals feeding P4c** | `next_turn_followup_command` is populated by reading the *next* bash command in the same session journal; a reboot ends every session, so unpaired rows are lost and the "1 week of data" restarts | `logs/tool_compression_monitor.jsonl` + journals |
+| C-12 | **M3 / M4 soak clocks** | M4 is a 48 h zero-idle acceptance; a reboot resets it, slipping the `triage` and `headless-worker` grants another two days | `token-queue.md` standing gates |
+| C-13 | **Pre-restart daemon tick cost** (~8.9 s, ~6.6 GiB transient dicts per 45 s tick, 29.5 % of a core) | The before-half of A6's A/B; unreproducible after the restart | measured |
+| C-14 | **`/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json`** (`2026-08-11T08:19:56Z`, `selected_servers: None`) | The stack-down control for A7's comparison; overwritten at the next reload | RAID (safe, but will be overwritten) |
+| C-15 | **Suspect anchors of unknown host provenance**, each labelled pre-reboot | Hermes *"much lower than raw 39 t/s"*; ColBERT's **180 ms** GTE baseline; PaddleOCR's `2918.78` / `3245.60` ms median page latencies; LB-1's 07-16 regression anchor (~68 backend requests + 11-17 plan-review prompts per 50-question replay). Capture them so the post-reboot delta separates *design problem* from *13-day-uptime problem* | various |
+| C-16 | **Region-lock flocks and the sealed `advisory*.jsonl` shard** | flocks are kernel state and vanish. C38 archives sealed shards to `EPYC_BUS_ARCHIVE_ROOT` (default `/mnt/raid0/llm/bus-archive/advisory`, outside the repo where `git clean -x` cannot reach). Confirm the current shard is sealed and archived | bus |
+| C-17 | **The accepted v9 control bundle and journal** — `ak-controls-v9-a4cb04ca-20260812-r2`, AutoPilot exact-stop at trial `1458`, the three-point speed frontier, and the Kernel-R&D surface state (frozen v9, 8/8 preflight, 5/5 controls, GPU `NOT_REPRODUCED`) | `CURRENT-CAMPAIGN.md` mandates preservation explicitly | RAID |
+
+---
+
+#### 8. Post-reboot first hour — the order these rows imply
+
+Not a proposal; this is the ordering the open rows already require, collected in one place.
+
+1. **`tmux new-session -d -s agent`** — C20. Nothing in the code does this; every spawn refuses until
+   it exists.
+2. **Re-apply the host tunables** — `sysctl -w kernel.numa_balancing=0`, `perf_event_paranoid=1`,
+   governor `performance`. **Verify with `health_check.sh` before anything measures.** Skipping this
+   swaps the uptime warning for a `numa_balancing` warning and wastes the fresh window (§4).
+3. **Restart the supervision tier** in order: coordinator-daemon (picks up C28/C38 for free) →
+   `bus_supervisor.sh` → `hub_supervisor.sh` → `fleet_watch.sh`. Verify each with `ps -p <pid>`, never
+   with `status` — the state file outlives the process that wrote it.
+4. **Respawn the roster onto the EXISTING ids.** A fresh alias orphans that identity's cursor, outbox
+   and triage `corr_id`s. Expect C40's staleness banner on the relayed backlog — last time 703 messages
+   landed in one burst and two mains burned tokens on 12-day-old work.
+5. **Launch the stack with the staged env**: `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true` (RI-10),
+   `AUTOPILOT_TOOL_SENTINELS` (DCP-6), SS-BENCH-GATE-b cpusets, `ORCHESTRATOR_SEARXNG_DEFAULT=1`
+   (SX-6). Each of these otherwise costs a second restart.
+6. **Run the launch verification**: the per-change checklist in
+   `model-stack-change-standardization-audit.md` (do-not-flip; it is a procedure, not a backlog row) +
+   the `-np` drift diff + the `selected_servers` assertion + `verify_ggml_linkage.sh` for every
+   launcher.
+7. **Re-derive and re-pin the live topology hash**, then re-run the batch-entry preflights.
+8. **Then** the window is genuinely clean. **CPU IQK, D3, and the E5 re-measurement all want the same
+   window and are mutually exclusive with any `llama-server` on the host** — co-schedule them
+   deliberately; the ordering is `inference`'s call.
+
+---
+
+#### 9. Pre-reboot staging tasks
+
+Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama-server`.
+
+- [x] **S-01 — Re-pin all 25 uptime-capped inference-batch entries to the current era and live topology
+      hash.** ✅ 2026-08-12 (commit `b92845c2`). Re-pinned **36** entries across 7 files to
+      `171f86f9188211e9` + `kernel_era: production-consolidated-v9`, and recompiled `manifest.yaml`
+      (the artifact the loop actually reads — editing only `entries/` would have left the fix with no
+      caller). Scope was the named 25 plus 11 more carrying the identical dead pin
+      (`00-rcp-prologue.yaml` 3, `10-reviewer-plane.yaml` 8). Deliberately excluded:
+      `60-glm-decision.yaml` (experimental-candidate eras are the comparison baseline) and
+      `90-coordination-rows.yaml` (`COORD-v7-promotion` is a historical record). `compile_inference_batch.py
+      validate` → 52/52 valid. **See §10 — the "all 25 fail closed today" premise was wrong.**
+- [x] **S-02 — Re-derive the live topology hash first and record it with its derivation.** ✅ 2026-08-12.
+      Live hash **`171f86f9188211e9`**, derived through the enforcing consumers' own path
+      (`preflight_gate._live_topology_hash()` → `contention.topology_fingerprint_for_matrix(NUMA_CONFIG,
+      matrix)`); no value was copied. **Recorded as a re-runnable deriver, not a number** —
+      `scripts/coordination/derive_topology_hash.py` hard-codes no hash and carries `--check-entries`
+      (fail-closed; refuses a vacuous empty-input pass). Recording a *number* is exactly how three stale
+      values entered circulation, so the number is deliberately not the deliverable.
+- [x] **S-03 — Write and validate a first-boot host-prep script.** ✅ 2026-08-12.
+      `scripts/session/host_prep.sh` (`--check` / `--apply` / `--install-boot` / `--verify-boot`) covers
+      the **eight** settings the gates actually check (§10), not the three named here. Boot persistence
+      installed on the HOST and verified (7/7). 39 fake-root mutation tests + 7 live mutation assertions,
+      all counted and exit-gated. **See §10 — the "no `/etc/sysctl.d` entry" premise was also wrong.**
+- [ ] **S-04 — Capture contemporaneous E5 Stage-B readiness before future execution.** The July staging record is historical. Research `main` publishes the current v10 dry-only runbook at `3caaf22fa853daab5c5ae055ca46b67809e2c938`; the already closed `VB-EVL49-S04-V10-DRY-PLAN` records three model-free planning controls. Before a future run, bind current host readiness, exclusive-window admission, CPU kernel-store alias/binary/version/linkage and the model/input identities required by that run. Dry planning does not establish these facts. Actual E5 measurements remain with their inference-window task.
+- [ ] **S-05 — Generate the corrected E5 re-measurement grid** per the RE-MEASURE row's five binding
+      requirements (full-machine `0-95` + `interleave=all` added for `qwen36_q8_0` and
+      `qwen3_next_80b`; explicit `--interleave` or a declared defect-replication control on every
+      straddling cell; `drop_caches` + `pages_by_node` per cell; per-instance numactl attestation that
+      fails closed on policy/cpuset disagreement; harness unchanged). Dry-run to exit 0.
+  - **Source phase accepted, 2026-10-21 (original event 2026-10-08):** the same capture closed by VB-EVL49-S05-CORRECTED-ROSTER-CAPTURE preserves original TRUE outer1/1, corrected saved-E1 33 manifests, two W1/W4 dry plans, 48 outputs and 2,764 inputs. Roster SHA-256 `c577e45a0d37682b1d536df5c12ce86fe43807b9f25fd08e0ae74d312a96ef2e`. [Original custody and exclusions](../../artifacts/ci/evl49-s05-native-source-20261008/README.md). S05 stays open for current 1.35 GB pool/placement and owner-window observations; synthetic observer capture is separately tracked by VB-EVL49-S05-OBSERVER-SOURCE-CAPTURE, not a new completed S05 source checkbox.
+  - **2026-11-02 BRF-T3 (ws58):** the existing `e5_manifests_a7_placement1` Qwen set (20) does NOT yet satisfy the five requirements. 10 C1b manifests fail (b), with straddling cpusets, policy none and no control declaration. 0/20 declare a per-cell drop for (c). (a) passes. The grid still needs generating, and the launcher `a7-fire-20260813` is MISSING. The box stays open. [belief: cc] `docs/design/backlog-refactor-2026-11/t3-evidence/e5-adjudication-20261102.json`
+
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-reboot-gated-inventory-and-staging on 2026-11-03 (BRF-T1-MEQ, operator D2): **S-06**.*
+- [ ] **S-07 — Acquire the OmniDocBench source PDFs and mint an immutable manifest.** Unblocks
+      `opendataloader-pipeline-integration.md` and `document-parser-table-bench.md` (same work filed
+      twice). Record that the real local ceiling is 51 eligible PDFs, not 200.
+- [x] ~~**S-08 — Regenerate the E8 context coverage scan.** `e8_quality_context_coverage_v4_20260727.json`~~ (closed 2026-10-29 audit: SUPERSEDED → ruling_op19_e8_chain_20260827.json / 1ee8bd7cc: E8 chain and A11 reseed retired; the E8 coverage scan only fed that decision)
+      reports `required_tokens` in **BYTES** and was taken against the pre-07-30 fleet. Both the A–D
+      options package and the two 19 MB replacement-map candidates inherit both errors — nobody should
+      act on them as they stand. Re-tokenize today; this directly unblocks A11's operator decision.
+- [ ] **S-09 — Delete the five `.staging-` bundles** left by the 2026-07-26→29 E8 `--execute` attempts.
+      The runner forbids reuse, so the post-reboot run fails on residue. (Coordinate with the row's
+      owner before deleting; this is their lane.)
+- [ ] **S-10 — Land SS-BENCH-GATE-b's cpuset pinning in the launch path before the reboot** so it is
+      live from the first post-reboot launch. It exists to stop a reload sidecar invalidating a
+      decision-gating run — which is exactly how the first clean window gets wasted.
+- [ ] **S-11 — Close the P-BENCH-1 host-health gap.** `bench_canonical.sh` performs no uptime or
+      host-health check, so the canonical CPU path can silently mint a policy-non-compliant
+      decision-grade number while the P-BENCH-3 path fails closed. Either add the gate or make the
+      attestation mandatory in the emitted artifact. Route to the measurement-protocol owner — the
+      trust boundary is human-amendment-only, so propose, do not amend.
+  - **Source checkpoint (2026-11-01):** Research `f311e004e2eaaf23bd87d2ab4a7530396c77830f`, proof `d41be316c941097f0e54a3ec4147ef67d07afe36`, captures the existing partial host observation after region-claim admission and embeds it in the benchmark log. Synthetic fixture tests only; cache drop, re-warm and THP are not attested. Missing uptime stays unknown; the existing warning uses > one week while Annex B says >= one week. No grade or protocol amendment; measurement-protocol-owner review of this proposed attestation remains required and S-11 stays open. Scratch: `/mnt/raid0/llm/tmp/codex3-s11-health-20261101`.
+- [ ] **S-12 — File OP-16 as a pre-validated token block in `tokens/token-queue.md`.** It currently
+      exists only as a master-index row, so the one signature the whole Category-A list waits on is
+      absent from the queue the operator reads. Include the earlyoom `--ignore` line (A8) and the OP-9
+      cron ruling (A5) so they ride the same authorization.
+- [ ] **S-13 — Correct the "OP-16 was declined by the operator" claim** in
+      `session-bus-thin-dispatcher.md`'s worktree-isolation row. No such decision exists; OP-16 is open
+      and deferred-with-announcement. The row's conclusion stands; its justification does not. (Owner:
+      `mainD`, C-OWN — route, do not edit.)
+- [ ] **S-14 — Execute the capture list in §7 into a dated snapshot directory** under
+      `/mnt/raid0/llm/tmp/pre-reboot-<UTC>/` (persistent array), and reference it from
+      `tasks/post-reboot-session.md`. Pattern to reuse:
+      `epyc-inference-research/scripts/benchmark/op2_quiet_window_prep.py`, which already creates a run
+      dir, records host/repo/process state, stamps a stage plan and writes `operator_next_commands.sh`
+      **without starting inference**.
+- [ ] **S-15 — Write the post-reboot runbook (§8) into
+      `coordination/session-bus/tasks/post-reboot-session.md`** with the roster respawn command list and
+      the endpoint→window-name mapping verified against `config.yaml` beforehand. That file is currently
+      the *coordinator handover brief*, not a reboot runbook; add the runbook as its Phase-0a section
+      rather than overwriting it. (Owner: coordinator-agent — route.)
+- [ ] **S-16 — Run the Category-C corrections**: flip EV-4 / EV-4b / EV-11c (terminal `DONE_PASS`);
+      close RM-9 as a decline (its precondition is falsified); run `pgrep -f evaltower_window` and
+      release the eval-tower hardening rows if it is empty; dispatch the `gpqa_diamond_cot` A4 arm;
+      collapse the three duplicate RE-4 / K-LCM-1 surfaces to one. Route each to its owning index rather
+      than flipping another agent's boxes.
+- [ ] **S-17 — Close R1a before the reboot, not after.** One short `-n 128 -r 1` smoke on a small model
+      under a *held* region claim proves a real `llama-bench` acquires, holds and releases it. The stack
+      is fully down, so this is the cheapest it will ever be, and it de-risks every decision-grade bench
+      in the first clean window. **Inference lane — route to `inference`, do not self-dispatch.**
+- [ ] **S-18 — Put the two free operator decisions in front of the operator during the wait**: RC-6a
+      (the `MEASUREMENT.md` P-REV-1 PR — blocks are copy-paste-ready, and it gates the entire
+      decision-grade reviewer tier) and LB-6b (pick one of three drafted thresholds). Land RC-6a's two
+      kappa/estimand amendment candidates first — the row says so.
+- [ ] **S-19 — Re-issue OP-6 before it is approved.** It names *"the v8 reference lineup"* while
+      production is v9, and its executable manifest (`00-rcp-prologue.yaml`) is a further era behind at
+      v7 with a stale topology pin. Approving it as written buys a v7/v8-stamped, throttle-contaminated
+      window.
+- [ ] **S-20 — Provision the pinned gfx90a training environment** (`torch`/`transformers`/`accelerate`/
+      `trl`/`peft`/`datasets`, absent from both uv envs). Pure provisioning, no host quiet needed, and it
+      is the stated blocker on OP-4 — which cascades to `frontier-f3-data-flywheel.md`,
+      `engram-conditional-memory.md`, `minddr-deep-research-mode.md` and the EV-9 judge model.
+
+---
+
+#### 10. Corrections from executing S-01/S-02/S-03 (2026-08-12)
+
+Both headline premises in §3 and §4 were measured **from inside the container** and are wrong about the
+host. Neither error changes the conclusion that the work was worth doing; both change *what the residual
+blocker is*, so they matter for the post-reboot ordering in §8.
+
+##### 10.1 §3 is inverted — the 25 entries were NOT failing closed, 21 were FALSE-PASSING
+
+`run_batch_entry.topology_gate` has **two** live-hash sources and the entries use the weaker one:
+
+* If the entry carries `topology_artifact`, live = `sha256(artifact)` — a **64**-char digest, which can
+  never equal a 16-char fingerprint. **No entry carries one.**
+* Otherwise `live` is taken **from the B4 attestation itself** (`run_batch_entry.py:681-687`), so the
+  gate compares the pin against an attestation rather than against the host.
+
+Measured through the real consumer before the fix: pin `8c8cfcbb13d2611d` → `verified=**True**`, because
+`attestations/20260720T191355.json` (2026-07-20) is stamped with that same stale hash. **A stale pin and
+a stale attestation agree with each other and both disagree with the host.** 21 entries
+(`20-eval-tower` 8, `30-bulk` 10, `40-routing` 3) were in that state; only the 4 `df373c79cc4af06f`
+entries genuinely refused, and for "no matching attestation", not "hash mismatch".
+
+The genuinely fail-closed consumer is the **other** one: `preflight_gate.check_topology_hashes(
+expected_topology_hash=…)` does an exact match against the live fingerprint, and it is invoked from
+inside `00-rcp-prologue.yaml`'s own command string. Measured: stale → `ok=False` "topology hash drift vs
+expected"; `171f86f9188211e9` → `ok=True`. That command is what **mints** the attestation the first
+consumer trusts, so the chain was: stale pin ⇒ minting refuses ⇒ no fresh attestation ⇒ the old one keeps
+certifying the old pin.
+
+**Consequence for §8 step 7:** re-pinning was necessary but is **not sufficient**. After the re-pin the
+gate returns `hash_match=true, verified=false` — an *honest* refusal reading *"no matching B4 attestation
+… execute refused"*. The residual blocker is a **fresh B4 attestation stamped `171f86f9188211e9` with
+live affinity verified**, and `preflight_gate.py` is invoked with `--require-servers`, so it needs a live
+lineup. That is genuinely post-relaunch work and belongs to `inference`. Mutation-verified 6/6: with a
+live-hash-stamped attestation the entries verify; with the old stale one they no longer do.
+
+> **Do not "fix" this by dropping a JSON into `coordination/inference-batch/attestations/`.**
+> `load_attestation()` globs every `*.json` there and takes the newest match, so a hand-written file
+> would silently re-create the false pass. The mutation tests for this were run against a temp dir for
+> exactly that reason.
+
+##### 10.2 §4 is wrong — the host DOES persist `numa_balancing`, by two mechanisms
+
+`/etc/sysctl.d` inside this container is an **overlayfs** path. The host's `/etc` is a different
+filesystem, reachable at `/proc/1/root/etc` (the container shares the host PID namespace, so PID 1 is the
+host's systemd; `stat -c %d` gives 45 vs 2050). Anything checked — or written — at the container path
+says nothing about host boot. On the **host**:
+
+* `/etc/sysctl.d/99-epyc-inference.conf` → `kernel.numa_balancing = 0` (dated 2026-05-06), overriding
+  `/etc/sysctl.d/20-numa.conf` which sets it to `1`.
+* `numa-balancing-off.service`, **enabled** in `multi-user.target.wants`, re-asserts it after
+  `systemd-sysctl`.
+
+So the predicted post-reboot `numa_balancing` warning **would not have happened**. What genuinely did not
+persist: `kernel.perf_event_paranoid` (absent from all host sysctl config; reverts to 4),
+`scaling_governor`, and THP `enabled`/`defrag` — no host unit set any of them.
+
+##### 10.3 What the gates actually check — eight settings, not three
+
+| Setting | Target | Checked by | Persisted at boot now? |
+|---|---|---|---|
+| `kernel.numa_balancing` | `0` | `host_health_warnings`, `health_check.sh`, `canonical_recipe` | ✅ was already (sysctl.d + unit) |
+| `kernel.perf_event_paranoid` | `≤1` | `health_check.sh`, `canonical_recipe` | ✅ **added** to host sysctl.d |
+| `scaling_governor` (all 192) | `performance` | `health_check.sh` (cpu0), `canonical_recipe` (cpu0), `cpu_bench_clean_preflight` (uniform) | ✅ **added** via `epyc-host-prep.service` |
+| THP `enabled` | `always` | `health_check.sh`, `canonical_recipe` | ✅ **added** via unit |
+| THP `defrag` | `always` | `health_check.sh`, `canonical_recipe` | ✅ **added** via unit |
+| `energy_performance_preference` | `performance`\|`balance_performance` | `cpu_bench_clean_preflight` | ✅ **added** via unit |
+| `cpufreq/boost` | `≠0` (absent OK) | `cpu_freq_static_warnings` | n/a — driver default |
+| `scaling_max_freq` (all) | `≥2500000` kHz | `cpu_freq_static_warnings` | **check-only by design** — a cap is throttle *evidence*; auto-raising it would defeat `feedback_host_throttle_check` |
+
+Not settable, reported for the runbook: uptime ≤ 7 d (reboot only), zero `llama-server`/`-bench`/`-cli`
+processes, RAM > 100 GB. Note `host_health_warnings()` *collects* `scaling_governors` but **never asserts
+it** — the governor gate lives only in `health_check.sh` / `canonical_recipe` / `cpu_bench_clean_preflight`.
+
+##### 10.4 Staged vs applied
+
+**Applied to the live host: nothing but a self-restored test mutation.** All eight settings were already
+at target, so `--apply` was a no-op. The one live write was `perf_event_paranoid 1→3→1` for the mutation
+test, guarded by re-verified quiescence (0 llama processes, all 4 GLOBAL region locks free) and restored
+by an EXIT trap. Chosen because it is a *permission* gate, not a performance knob — it cannot perturb a
+throughput measurement.
+
+**Deferred to boot** (inert now; nothing started, nothing restarted, no service reloaded):
+`kernel.perf_event_paranoid = 1` appended to the host's `99-epyc-inference.conf`, and
+`/etc/systemd/system/epyc-host-prep.service` + its `multi-user.target.wants` symlink (governor, THP
+enabled/defrag, EPP). `systemd-analyze verify` parses the unit clean and every `ExecStart` body passes
+`sh -n`. **Revert** = remove those two files and the symlink under `/proc/1/root/etc/...`.
+
+> **Trap worth keeping:** the installer's first version resolved the host root to `/` because
+> `/proc/1/root` is root-traversable only and an unprivileged `[[ -d ]]` probe silently returned false.
+> It would have written the container overlay, reported success, and changed nothing at boot. Its own
+> `--verify-boot` caught it (it claimed the host did not persist `numa_balancing`, which we knew to be
+> false). It now fails closed instead, and test **H** is the regression.
+
+##### 10.4a Observer-contract interaction (caught by the census hook, fixed by deletion)
+
+The first revision of `host_prep.sh` reported *"llama-family processes visible: N"* by listing process
+argv and grepping the llama binary names. That tripped Rule A of the observation contract
+(`ed38041d`) and, because the census scans **untracked** files, it blocked commits fleet-wide while the
+file was still a work in progress.
+
+**Resolved by deleting the observation, not by enrolling it** — the stronger option under
+`feedback_critique_panels_need_a_delete_lens`:
+
+* Nothing in the script branched on the count; it was decoration.
+* It was fail-open in exactly the contract's specimen shape. Under `set -o pipefail`, grep exiting 1 on a
+  genuine zero and the process lister failing outright both fall into the same `|| true` branch and print
+  `0`. **Absent and unobservable were byte-identical**, and the fail-open direction reported "nothing
+  running" when it could not see — the reading that would green-light a heavy workload onto a live model.
+* A better detector already owns the question: `server_np_sweep.find_llama_processes()` resolves
+  `/proc/<pid>/exe` instead of matching argv, and `host_health_warnings()` is what actually gates.
+  A second, worse copy of an observation this script does not consume is pure liability.
+
+Census now passes at **14 observers — unchanged**, i.e. the fix added no observer rather than legitimising
+one. Second-order note worth keeping: the replacement *comment* re-triggered the census because it quoted
+the offending idiom verbatim, discovery being a source-pattern match. The comment now describes the
+command instead of reproducing it — the same trap recorded for this hook's own commit message.
+
+##### 10.5 Flagged, not fixed — the uptime cap is self-defeating (§3 / `30-bulk-campaign.yaml`)
+
+`max_uptime_days` and the host-health gate pull in opposite directions and the interaction deserves an
+owner's decision, not a patch from this lane:
+
+* An entry needing `cache_state: warm` needs an *old* host; an entry capped at `max_uptime_days: 7|14`
+  needs a *young* one. `30-bulk-campaign.yaml` has entries asserting **both**.
+* **`max_uptime_days` has ZERO code consumers.** It appears only in
+  `scripts/coordination/inference_batch.schema.json:159` (declared) and in the entry YAML — no `.py` or
+  `.sh` in epyc-root, epyc-inference-research or epyc-orchestrator ever reads it. The only uptime
+  enforcement anywhere is the hard-coded `MAX_DECISION_GRADE_UPTIME_SECONDS = 7 d` in
+  `server_np_sweep.py:57,303`. So a `14` cap cannot buy the extra week it appears to promise, and a `1`
+  cap (`50-kernel-op2.yaml:154`) buys no extra strictness either. It is inert documentation wearing the
+  syntax of a gate.
+* So the 7 entries "expiring at ~13:36Z today" were never reachable *as decision-grade* anyway, and the
+  window question is moot independently of the pin.
+* Suggested reframing for the owner: express the real requirement (`cache_state`, `quiet_window`) and
+  drop `max_uptime_days` wherever it merely duplicates the hard 7 d ceiling, so the field stops implying
+  a per-entry override that no consumer honours.
+
+---
+
+#### Cross-references
+
+`autokernel-research-loop.md` §AK6.5 (OP-16) · `batched-decode-measurement.md` (E5) ·
+`gpu-serving-tie-in-program.md` (P2-5 series) · `session-bus-thin-dispatcher.md` (C20, supervision) ·
+`eval-tower-verification.md` (EV-5/7/8/10a/13b) · `CURRENT-CAMPAIGN.md` (live posture) ·
+`coordination/inference-batch/entries/` (the 25 gated entries) ·
+`measurement/protocols/bench-cpu.md` + `kernel-research.md` (the ratified ceiling).
+
+##### Source-validation continuation — 2026-10-21
+
+Prepared source validations remain unrun: NIB83 E17 has seven synthetic controls; CJ10's 10 Research and 19 ROOT counts are **file inventories, not control counts**; the S05 observer has eleven synthetic controls; CJ14 typed redundancy must include the actual current `spec_policy` closure, with native case count unknown until capture. CJ5/6/7 has six fixture source files and 3 reporting / 6 IFBench / 5 edit test functions; executed case counts remain unknown. Bind exact current hashes, request/readset/receipt, full native argv/status/JUnit and FALSE/NULL originals before new events. Reuse the existing CI source class and shared grade; no product import, live observer, inference, efficacy or protocol-grade claim follows.
+
+NIB77's refreshed 2026-10-21 frozen registration inventory contains **35 retained exact lane paths, 24 with tracked and/or untracked source status entries**. These counts do not identify active, retirable or owned lanes. Native historical PID fields are absent now; current working/compacting/idle and accountable stewardship remain unknown. Default recommendation is retain current custody and all bytes; an explicitly named willing steward is an optional operator choice. No migration, cleanup, deletion, process termination or ownership transfer is authorized. [Current package](../../artifacts/operator/decisions/NIB77-current-custody-20261021/README.md).
+
+## Track: contention-model-device-and-load-axes-rider
+<!-- gate: INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine -->
+
+> Folded from `handoffs/active/contention-model-device-and-load-axes-rider.md` @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5; retired row RTG-07 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### RIDER — Contention model: the device, batching and context axes
+
+**Rides on:** [`shape-keyed-contention-gating.md`](numa-placement-and-contention.md#track-shape-keyed-contention-gating) (Parts A/B/C) and
+W8 in [`numa-topology-cutover-resume-20260730.md`](numa-placement-and-contention.md).
+**Status:** DESIGN — audit + open questions. No code. Written 2026-08-01 while W1 was landing,
+so that when execution starts it is execution, not design.
+**Why a rider:** the parent plan is sound and largely built. This does not replace it. It records
+(1) what the W1 cutover invalidated in it, and (2) the one dimension it does not model at all.
+
+---
+
+#### 1. What W1 invalidated in the parent plan — fix before executing it
+
+The parent plan's **Decisions locked** section contains an assumption that is now false. Executing
+against it unmodified would encode a topology that no longer exists.
+
+| Parent plan says | Reality after W1 (2026-08-01) |
+|---|---|
+| *"`architect_general` is strictly solo — its only feasible instance is whole-machine, so every candidate placement overlaps any other holder."* | **FALSE.** `architect_general` is now Qwen3.6-27B on MI210 on the **shared 8-thread GPU host lane** `184-191` (`membind=3`). It is no longer whole-machine and no longer solo. MEASURED 2026-08-01: its worst pair went **0.66 block → 1.40 allow**; +`frontdoor` 0.90 → 1.43; +`worker_general` 0.91 → 1.57. It went from the *least* co-residency-friendly role to one of the *most*. (An interim 24-thread node-3 quarter was wired first and superseded by the operator's lane ruling.) |
+| Invariant 1: `vision_escalation` (8087) primary = upper half `{q2,q3}` | **Role has no server.** It is an alias on `worker_vision`'s `:8086`. Port 8087 is retired. |
+| Invariant 1: `architect_general` (8083) "full" = all four `{q0,q1,q2,q3}` | Now the shared GPU host lane `184-191`, 8 threads — SMT siblings of physical 88-95, so zero physical cores by the region formula. |
+| *"all of this assumes `topology_hash df373c79cc4af06f`"* | RESOLVED 2026-08-01: the matrix was re-benched for the live hash **`171f86f9`** (15 pairs, zero catastrophic). It had drifted through `df373c79` → `8c8cfcbb` → `911d3dea` → `1c654634` → `171f86f9`, spanning the half-fleet cutover (2026-07-30) and W1. |
+| — | **NEW role** `architect_critic` inherits the full `0-95` `interleave=all` instance on `:8074`. The "whole-machine solo heavy role" role did not disappear; it changed name. Every place the plan reasons about `architect_general`-the-whole-machine-blocker now means `architect_critic`. |
+
+**Consequence:** the matrix has never been regenerated for a topology in which a heavy architect
+role is GPU-resident. Every measured `architect_general` pair row in
+`orchestration/contention_matrix.yaml` describes a 96-thread CPU instance that no longer exists.
+They are not merely stale, they are **about a different machine configuration**.
+
+`tests/unit/test_scheduling_contention.py` carried 3 stale witnesses validating the matrix against
+live `NUMA_CONFIG`. The matrix is now regenerated; re-check them against `171f86f9`.
+
+---
+
+#### 2. The dimension the model does not have: DEVICE
+
+Verified 2026-08-01 by direct search: **zero** occurrences of `device`, `gpu`, `ROCm` or any
+equivalent in `src/scheduling/contention.py`, `src/scheduling/contention_gate.py`, or
+`src/runtime/cpu_region_lock.py`. Regions are derived purely from NUMA cpusets.
+
+So a role whose weights are VRAM-resident under `-ngl 999`, and whose cpuset exists only to give
+it host threads for tokenising and sampling, is accounted **identically to a CPU decode holding
+the same cpuset**.
+
+Two concrete wrong answers this produces today:
+
+1. **False exclusion.** `enumerate_feasible()` (`scripts/server/contention_matrix.py:658`) marks a
+   role-set `topology_infeasible` whenever no mutually-disjoint cpuset assignment exists. A GPU
+   lane and a half/full CPU instance overlap on cpuset, so the set is excluded — even though the
+   GPU role's actual draw on the contended resource (DRAM bandwidth on those regions) is close to
+   nil. *This is the operator's stated example: GPU-lane usage is not mutually exclusive with
+   running half B or a full instance.*
+2. **Unmodelled real contention.** Conversely, two GPU roles that share **no** cpuset at all
+   contend for HBM bandwidth and VRAM capacity — and the model cannot see it, because it has no
+   resource other than CPU regions. The measured four-model GPU steady state is **62.59 of
+   63.98 GiB (1.40 GiB headroom)**, and VRAM grows on first *execution*, not at load. Nothing in
+   the admission path checks it.
+
+The device axis is therefore not a refinement. It is the difference between the model's resource
+vocabulary and the machine's actual resources.
+
+---
+
+#### 3. Why batching and context cannot simply become matrix cells
+
+The natural instinct is to add `np` and context depth as further matrix dimensions. The
+combinatorics forbid it:
+
+```
+roles² × shapes² × np ∈ {1,2,4,8,16,32} × L-buckets
+```
+
+Even the 2D NUMA×batch cross alone — waypoint **E5** in
+[`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) — is described there as *"the
+never-measured 2D cross"*, is gated on a post-promotion quiet window, and has not run. The two
+axes have only ever been measured **separately**: NUMA-split built the pinning map, `-np` alone is
+E1 (`qwen36_q8_0` ladder `np=1,2,4,8,16` complete 2026-07-06).
+
+E5's own hypothesis is the reason this matters: batching amortises the per-token weight read, which
+shifts CPU decode from **bandwidth-bound to compute-bound** — so the NUMA-locality advantage *may
+flip at high K*, and the crossover point is unknown. A contention verdict measured at one `np` is
+therefore not valid at another, in a direction that can reverse.
+
+Enumerating that surface conflicts with the standing operator constraint: **do not re-bench
+anything already measured**. So the load axes have to enter as a *computed* quantity, not a
+measured cell.
+
+---
+
+#### 4. Proposed split: hard constraints vs soft costs
+
+This is the answer to the standing open question — *what belongs in contention management vs the
+autopilot/router-exposed surface*. Recommendation, stated so it can be ratified or rejected:
+
+> **Contention management owns hard constraints and must fail CLOSED.
+> The router/autopilot owns soft costs and must fail OPEN with a penalty.**
+
+Today's code conflates them, and that conflation is the root defect: a measured ratio of `0.37`
+becomes a hard `QUEUE`, so a *stale or missing* measurement can block work that is physically fine.
+A cost that cannot be computed should degrade to a penalty, never to a veto.
+
+This maps onto W8's three artifacts:
+
+| # | Artifact | Answers | Needs measurement? | Owner | Failure mode |
+|---|---|---|---|---|---|
+| 1 | **Feasibility** | *Can these placements coexist at all?* Pure topology + **device**: CPU regions, GPU host cores, exclusivity. | **No** — fully derived from `NUMA_CONFIG` + declared `device`. | Contention mgmt | Fail **closed** |
+| 2 | **Capacity fit** | *Does the set fit in the resources?* VRAM, host RAM, host cores. **Non-separable**: KV grows with `np × L`, so this is where batching and context enter — as arithmetic, not as measured cells. | **No** — computed from declared shapes. | Contention mgmt | Fail **closed** |
+| 3 | **Interference coefficients** | *How much do they slow each other?* Measured degradation, parameterised rather than enumerated. | **Yes** — the only artifact that does. | Router / autopilot, as a **cost term** | Fail **open** with a penalty |
+
+Two things fall out immediately:
+
+- **Artifact 1 fixes the GPU false-exclusion with zero benchmarking.** Give the feasibility model a
+  device concept and "GPU lane + half B" stops being a conflict, because the GPU role's claim is
+  *8 host cores*, not *the DRAM bandwidth of every region its cpuset spans*.
+- **Artifact 2 gives VRAM a first-class seat.** With 1.40 GiB headroom measured, VRAM is currently
+  the binding constraint on the GPU and is entirely unmodelled. It is also *non-separable* — you
+  cannot decide it per-pair, only for the whole resident set — which is exactly why W8 insisted the
+  raw per-cell vector be defined before any sweep.
+
+---
+
+#### 5. Open questions — need an operator ruling before implementation
+
+**Q1 — Ratify the constraint/cost split in §4?** If yes, the follow-on is mechanical: `admit_set`
+splits into a feasibility+capacity gate (fail closed) and an interference score (fail open), and
+`pair_policy`'s hard `QUEUE` on a low ratio becomes a cost.
+
+**Q2 — GPU host-core accounting.** The proven GPU recipe pins host threads to `taskset -c 184-191`
+with `-t 8` (8 logical = SMT siblings of physical 88-95, i.e. region `q3`). W1 currently gives
+`architect_general` a 24-thread quarter on `72-95,168-191` instead. Which is canonical? And does a
+GPU role hold its host cores **exclusively**, or may a CPU role share them? This decides whether
+two GPU roles can share one host lane.
+
+**Q3 — Is VRAM a contention resource or a placement precondition?** i.e. does it belong in
+artifact 2 (checked at admission, every request) or only at launch (checked once, when the server
+starts)? VRAM grows on first *execution*, which argues for admission-time.
+
+**Q4 — Does the interference model need E5 first?** E5 (NUMA×batch) is designed and unrun. Options:
+ship artifact 3 parameterised on the separately-measured axes and let E5 *calibrate* it later, or
+block artifact 3 until E5 runs. Shipping first is cheaper and testable; it risks a model whose
+crossover term is guessed. Note artifacts 1 and 2 need **neither** — they can land regardless.
+
+---
+
+#### 6. Sequencing once ratified
+
+1. **Refresh the parent plan against §1** — it has a locked decision that is now false.
+2. **Artifact 1 (feasibility + device)** ✅ 2026-08-01 — `src/scheduling/device_model.py`. Derived, no measurement. NOTE the honest result: on the LIVE topology it changes no verdict, because the GPU lane is SMT-siblings-only and already had empty region sets — the old model was right by accident. On the counterfactual node-3-quarter wiring it admits 10 sets the old model excluded (18/102 → 28/92).
+3. **Artifact 2 (capacity fit incl. VRAM)** — derived, no measurement.
+4. **Regenerate `contention_matrix.yaml`** ✅ 2026-08-01 — done for topology `171f86f9`, 15 pairs, ZERO catastrophic. `architect_general`+`ingest` 0.66 block → 1.40 allow; every GPU-involving pair concurrency-positive.
+5. **Artifact 3 (interference)** as a cost term; E5 calibrates per Q4.
+6. Only then the parent plan's Step-2 flag-on, its three bridge residuals, and Part C.
+
+Nothing in steps 2–3 requires inference, a quiet window, or the stack to be idle.
+
+---
+
+#### 7. RATIFIED 2026-08-01
+
+**Q1 — constraint/cost split: RATIFIED with an interference veto floor.**
+Feasibility and capacity fit are hard constraints owned by contention management and fail CLOSED.
+Interference is a router/autopilot cost term that fails OPEN with a penalty — **except** that a
+measured catastrophic pair (ratio below ~0.65) still vetoes. Unmeasured pairs get a cost plus a
+penalty, never a veto.
+*Note for the implementer:* on the current topology there is **no** pair below the floor — the
+re-benched matrix has zero catastrophic pairs — so the veto branch is presently unexercised. It must
+still be implemented (a future topology can reintroduce one), but it should not be treated as the
+common path, and the floor value needs an owner rather than being an anonymous constant.
+
+**Q2 — GPU host lane: RATIFIED as `184-191`, `-t 8`, SHARED between GPU roles.**
+Rationale: this is the placement every GPU measurement on this host was taken under (the 27B
+SWE-bench arm A3 and the Qwen3-VL MMMU-250 cutover both used `taskset -c 184-191 … -t 8`), so the
+deployed shape matches the measured shape and the quality/throughput transfers hold. Two roles
+needing ~8 host threads each do not justify fencing 48 physical cores from the CPU fleet.
+Consequence already handled: `_assert_instance_invariants` gained a device-aware branch, because
+`184-191` is all SMT siblings and reads as ZERO physical cores under the `-t == physical` rule —
+the correct placement would otherwise have been rejected at import as infinite oversubscription.
+
+- [x] **Q3 — is VRAM a contention resource or a launch precondition?** ✅ 2026-08-03 — **RESOLVED:
+      launch precondition.** `vram_fit` stays out of `admit_set`/`seam_admit`, and that is now a
+      decision rather than a deferral.
+
+      Two reasons, the second measured this session.
+
+      **Structural.** `admit_set`/`seam_admit` decide PAIRWISE; VRAM is a SET-WIDE capacity. "Do A
+      and B interfere?" and "does {A,B,C,D} fit in 64 GiB?" are different questions, and the second
+      has no per-pair answer — no pair is individually at fault when a fourth model overflows the
+      device. Wiring a set-wide constraint into a pairwise seam would either reject legal pairs or
+      pass illegal sets. This is a type mismatch, not a tuning choice.
+
+      **Empirical — and it overturns this question's own premise.** The rider argued "VRAM grows on
+      first EXECUTION, not at load, which argues for admission-time." For the llama-server roles
+      that is wrong: **KV is reserved AT LAUNCH** (`-c` is preallocated across `-np` slots), so a
+      role's footprint is fixed the moment it binds. Measured 2026-08-03 with four resident
+      processes: 36.10 + 22.47 + 2.77 + 2.31 = **63.67 GiB of 63.98**, steady, while the fleet
+      served real traffic all session.
+
+      The execution-time growth the rider observed is real but small and bounded — the four-model
+      set moved 61.66 → 62.59 GiB (~0.93 GiB) after each model executed once. That is compute
+      buffers, not KV, and it is **exactly what the 2.0 GiB headroom already covers** (~2x margin,
+      recorded in the implementation note above). A per-request admission check would re-verify a
+      quantity that cannot change between requests.
+
+      **Consequence, and the one caveat worth carrying:** the speech services DO allocate
+      per-request (whisper on long audio especially), and they are the only GPU tenants that do.
+      They are also the smallest (2.31 / 2.77 GiB). If a future GPU tenant has a large
+      execution-time footprint, this answer should be revisited — the reasoning is "launch-time
+      reservation dominates", not "VRAM never grows".
+- [ ] **Q4 — does the interference model need E5 (NUMA×batch) first?** STILL OPEN, but the premise
+      was STALE and is corrected here (2026-08-03). E5 is **not** "designed and unrun": a 31-cell
+      Stage-B sweep and a 69-cell W0 scout both RAN (2026-07-29/30) and were then **SUSPENDED
+      2026-07-30 pending re-measurement** — they swept placement shapes through wiring that the
+      canonical bench recipe beats, so every absolute throughput value in them is withdrawn. See
+      the suspension notice at the head of [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement).
+      So the real question is not "run E5 first?" but "does the interference model need E5's
+      RE-measurement first?", and the answer inherits E5's own queue position (it runs LAST,
+      after inference-batch-loop and architect-model-selection-bench). Artifacts 1 and 2 need
+      neither and are done/scoped.
+
+##### Implementation note recorded 2026-08-01
+
+Artifact 1 chose a **2.0 GiB VRAM headroom** (declared total 64 GiB, 63.98 usable). Justification:
+declared per-role figures are load-time, and the measured four-model set grew 61.66 → 62.59 GiB
+after each model executed once — about 0.93 GiB the sum cannot see. 2.0 covers that with ~2× margin
+and leaves the live pair (36.70 + 20.56 = 57.26) feasible with 4.74 spare. Configurable via
+`--vram-headroom` / `$ORCHESTRATOR_VRAM_HEADROOM_GIB`. **Nothing declares this number** — it is a
+judgement over measured values and is the one restated constant in the artifact.
+
+##### Open defect found at 2026-08-02 wrap-up — `slots_by_port` is compile-mode-scoped
+
+- [x] **Make `runtime.cache.slots_by_port` independent of the compile-time NUMA mode.** ✅ 2026-08-03 — fixed in epyc-orchestrator `9e14c069`; `status` now reports NO attestation warnings.
+      `orchestrator_stack.py status` reports four attestation warnings against
+      CORRECTLY-launched servers:
+
+          server_8080/8180 (frontdoor halves) runtime slots expected 16; live cmdline has 4
+          server_8082/8182 (worker halves)    runtime slots expected 16; live cmdline has 4
+
+      The halves are right — per-instance `-np` is full 16 / half 4, set 2026-08-02.
+      The producer is right too: `stack_manifest.declared_slots_by_port('frontdoor')`
+      returns `{8070: 16, 8080: 4, 8180: 4}`, and recompiling the priors with
+      `numa_mode='both'` reproduces exactly that map.
+
+      The COMPILED artifact carries only `{8070: 16}`, because
+      `orchestration/derived/stack_priors.yaml` was compiled in the default
+      `full` mode while the live fleet runs `both`. Attestation looks up the
+      live `--port`, misses, and falls back to the role-level `slots: 16`.
+
+      This is the precise failure `_slots_by_port`'s own docstring says it exists
+      to prevent — "it would report drift on correctly-launched servers, which is
+      the fastest way to teach a reader to ignore this output." It is now doing
+      that, so the warning channel is actively training readers to ignore it.
+
+      Fix direction: `slots_by_port` is a port -> slots LOOKUP, so carrying ports
+      that are not launched in the current mode costs nothing and makes
+      attestation correct in every mode. Merge the mode-independent
+      `declared_slots_by_port(role)` in as a floor. Watch for the circular import
+      between `src/registry/stack_priors` and `scripts/server/stack_manifest`
+      (already observed emitting "partially initialized module" warnings on the
+      `_stack_manifest_info` path) — a lazy import inside the function is likely
+      required.
+
+      RESOLVED. `declared_slots_by_port()` is merged in as a mode-independent
+      FLOOR, with mode-scoped values winning on conflict (verified: a launch
+      view resolving 8080 to 9 keeps 9 while the floor supplies 8070/8180).
+      Alias roles needed host inheritance too — they have no NUMA_CONFIG entry
+      of their own, so server_8082/8182 still attested against 16 until the
+      alias inherited its host's declared map. The lazy import mirrors
+      `_launch_runtime_record`'s existing pattern, so the circular-import risk
+      was already solved in this module.
+
+##### Worktree isolation + guard composition — closed 2026-08-03
+
+- [x] **Close the worktree-isolation leak at its root** ✅ 2026-08-03 — orchestrator `93e7f5a2`
+      + `cd76de50`. `_get_default_project_root()` RETURNED the literal, so ~14 modules leaked
+      through one function. 62 no-slash hits → 9; 18 → 14. Two classes grep could not find: a leak
+      in the same file using single quotes, and 12 test files doing
+      `sys.path.insert(0, "<literal>")` — a test in a worktree imported the MAIN checkout's `src/`
+      and could not have measured its own tree. Verified: 172 path constants identical / 0
+      divergent; HEAD-in-a-worktree baseline gave byte-identical failure sets both directions;
+      isolation went 17/17 leaking → 0.
+- [x] **Fix the packaging-level leak `Path(__file__)` cannot reach** ✅ 2026-08-03 — `pip install -e .`
+      bakes the checkout path into the venv `.pth`, so a plain `python script.py` from a worktree
+      imported main-checkout `src/` while every module's own anchor was correct. pytest masks it
+      (rootdir wins), so a green suite was never evidence. Tracked resolver + idempotent installer.
+- [x] **Make the unit suite reproducible** ✅ 2026-08-03 — `orchestration/runtime_flags.json` is
+      untracked live state the API rewrites; it changed MID-RUN during an attribution pass.
+      17 of 18 apparent regressions in a clean-worktree diff were this file, not code.
+- [x] **Secret scanning was advisory-only** ✅ 2026-08-03 — `.git/hooks/pre-commit` called its hooks
+      bare, so a failing PII check was discarded by a passing drift check. Reproduced: AWS key
+      staged, `BLOCKED` printed, commit landed. Fixed + tracked installer, since the wrapper was
+      untracked in all three repos and every fix died on a fresh clone.
+- [x] **Full non-pytest worktree isolation** ✅ 2026-08-03 — orchestrator `60637f77`. Closed WITHOUT
+      a per-worktree venv, which would have cost **803 MB per worktree** to fix a path-resolution
+      problem. The residual gap was `python /path/to/worktree/scripts/foo.py` run from outside that
+      worktree: CWD cannot see that invocation, and it is the ordinary shape of running a script by
+      absolute path. The shim now tries `sys.argv[0]`'s directory FIRST, then CWD — the entry script
+      states which checkout you mean regardless of where you are standing, while CWD still covers
+      `python -m pkg` and a bare REPL. Verified: script-in-worktree/cwd-elsewhere now resolves to
+      the worktree; main checkout unchanged; a script outside any checkout does not hijack; an
+      unrelated repo with `src/` + `orchestration/` but a different project name is not adopted.
+- [x] **Decide the durable-evidence form under the wiki-only ruling.** ✅ 2026-08-03 — RESOLVED: a durable citation is a reference to distilled knowledge in the wiki, where literature references are documented. Both bundles untracked (research `a752ca21`), kept locally with SHA256SUMS; `wiki/benchmark-methodology.md` gained a Reference section naming path, contents, verification and reproduction; the registry citation repoints at the wiki. `check_evidence_durability.py`: 0 errors. Superseded detail: Operator ruling 2026-08-03:
+      research reaches GitHub only as distilled knowledge and REFERENCES in the wiki, never as raw
+      material at any size. Two evidence bundles were committed to
+      `epyc-inference-research/data/` earlier the same day (`judge_suite_headtohead_20260802` 1.5 MB,
+      `swe_verified_preliminary_20260724` 72 KB) and are already pushed. They predate the ruling and
+      conflict with it; MEASUREMENT.md §5 requires a durable citation, so the question is what form
+      that citation takes — a wiki reference to a local path, or a committed bundle. Operator call.
+
+#### Research Intake Update — 2026-09-26 — llama-server capacity-signal map (C1-A5) + monitor triggers
+
+**Signal map, from production v10 source (server-context.cpp@ffc1bac8:698-722, 903-908, 4720-4760, per the intake-1797 dive).**
+- HW-Router's running/waiting counts map to `llamacpp:requests_processing` / `requests_deferred`. These exist only
+  with `--metrics`, which CPU launches do NOT pass today (orch `orchestrator_stack.py:1267` @fb7871ea, `:1272` at
+  `a439070e`, is GPU-only; live :8074 argv read 2026-09-26).
+- KV-cache % has NO analogue: KV is preallocated per slot at launch (:193). The nearest signal is per-slot fill from
+  `/slots` n_prompt_tokens + n_decoded vs n_ctx.
+- TTFT/TPOT averages must come from counter deltas. `prompt_seconds_total/prompt_tokens_total` excludes queue wait.
+  The `prompt_tokens_seconds` / `predicted_tokens_seconds` gauges are lifetime averages in v10, because
+  `metrics_reset_bucket` is never set.
+- Pending decode tokens are not exposed: `n_remain` is -1 without `n_predict`.
+- v10 `/slots` does emit n_prompt_tokens, n_prompt_tokens_processed and n_prompt_tokens_cache. Deferred-request
+  lengths are not exposed.
+- Never wire a vLLM-shaped KV% or a lifetime gauge into routing (intake-1797#01, intake-1796#01, intake-1798#02).
+
+**Where the soft load cost lives.** The per-request saturation guard is an instance of §7 Q1 ("soft cost, fail OPEN
+with a penalty"). It is owned by decision-aware-routing.md DAR-LAT-1/2 and reads the orchestrator's own admission
+ledger, not a second poller. No task here.
+
+**Triggers (prose, no checkbox; both entries are stage1-unverified, so no figure from them may be cited until dived):**
+- When Artifact 3 (interference cost) is parameterised with a batch-throughput lane in scope, dive intake-1812#record
+  first, as a candidate analytic prior for that lane.
+- If fable5-window2-findings-02-heterogeneous-gpu.md F1 (:239) shows the overlap is worth pursuing, dive
+  intake-1814#record before designing R-A5's async CPU backend. Any live device/PCIe load axis must reuse existing
+  readers (Axiom 1).
