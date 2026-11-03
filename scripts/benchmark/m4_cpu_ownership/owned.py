@@ -3,9 +3,30 @@ import ctypes, json, os, select, signal, stat, subprocess, sys, time
 from pathlib import Path
 
 SAFE_PATH='/usr/bin:/bin'
-TRUSTED_BARE={'numactl','taskset'}
+TRUSTED_BARE={'numactl','taskset','env'}
+# Reviewed launch-environment knobs the runner may set through the env wrapper (runtime_env_prefix + scenario_device_env).
+ENV_NAMES={'LD_LIBRARY_PATH','OMP_NUM_THREADS','ROCR_VISIBLE_DEVICES','HIP_VISIBLE_DEVICES','CUDA_VISIBLE_DEVICES'}
 
-def resolve_argv(argv):
+def _env_name_ok(name):
+    return name in ENV_NAMES or (name.startswith('GGML_') and name.replace('_','').isalnum())
+
+def resolve_env(binary, rest, depth):
+    # env only carries reviewed `-u NAME` / NAME=VALUE tokens; the first other token is the wrapped command and is
+    # validated by the same rules as any top-level argv (numactl/taskset chain, absolute path, no relative/bare).
+    i=0; head=[]
+    while i<len(rest):
+        t=rest[i]
+        if t=='-u':
+            if i+1>=len(rest) or not _env_name_ok(rest[i+1]): raise ValueError('unreviewed env unset')
+            head+=[t,rest[i+1]]; i+=2; continue
+        if t.startswith('-') or '=' not in t.split('/',1)[0]: break
+        if not _env_name_ok(t.split('=',1)[0]): raise ValueError('unreviewed env assignment')
+        head.append(t); i+=1
+    if i>=len(rest): raise ValueError('env wrapper without command')
+    if rest[i] in ('env','/usr/bin/env') or depth: raise ValueError('nested env wrapper forbidden')
+    return [str(binary),*head,*resolve_argv(rest[i:],depth+1)]
+
+def resolve_argv(argv,depth=0):
     if not argv or not isinstance(argv[0],str): raise ValueError('missing executable')
     name=argv[0]
     if '/' not in name:
@@ -15,14 +36,18 @@ def resolve_argv(argv):
         candidate=Path(name)
         if not candidate.is_absolute(): raise ValueError('relative executable forbidden')
     binary=candidate.resolve(strict=True)
-    if '/' not in name or name in ('/usr/bin/numactl','/usr/bin/taskset'):
-        if binary.parent!=Path('/usr/bin'): raise ValueError('untrusted wrapper target')
-        for component in (Path('/'),Path('/usr'),Path('/usr/bin'),binary):
+    if '/' not in name or name in ('/usr/bin/numactl','/usr/bin/taskset','/usr/bin/env'):
+        # /usr/bin/env is a link into the root-owned uutils multicall dir on this host's image; no other parent is trusted.
+        allowed={Path('/usr/bin')}|({Path('/usr/lib/cargo/bin/coreutils')} if binary.name=='env' else set())
+        if binary.parent not in allowed: raise ValueError('untrusted wrapper target')
+        for component in (*reversed(binary.parents),binary):
             info=component.stat()
             if info.st_uid!=0 or info.st_mode & (stat.S_IWGRP|stat.S_IWOTH):
                 raise ValueError('wrapper path is not root-owned and immutable to this user')
     if not binary.is_file() or not os.access(binary,os.X_OK):
         raise ValueError('executable unavailable')
+    if binary.name=='env' and name in ('env','/usr/bin/env'):
+        return resolve_env(binary,argv[1:],depth)
     if binary.name=='numactl':
         if len(argv)<4 or argv[2]!='--' or argv[3]!='taskset':
             raise ValueError('unexpected NUMA wrapper chain')
