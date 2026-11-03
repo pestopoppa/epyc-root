@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:38:44Z",
+  "generated_at": "2026-11-03T16:39:41Z",
   "nodes": [
     {
       "age_days": 0,
@@ -991,15 +991,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 62,
-      "dispatchable": 68,
+      "closed": 61,
+      "dispatchable": 30,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
       "last_advanced": "2026-11-03",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
-      "open": 68,
+      "open": 30,
       "priority": 0.7283,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample \u2014 reuse the existing hard-slice construction (n=53",
@@ -1021,56 +1021,56 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 31,
+          "dispatchable": 12,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 31,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 5,
-          "gates": [],
-          "line": 622,
-          "name": "agent-world-env-synthesis",
-          "open": 5,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 15,
-          "gates": [],
-          "line": 934,
-          "name": "mathsmith-hc-formalizer-eval",
-          "open": 15,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 6,
-          "gates": [],
-          "line": 1141,
-          "name": "multi-file-coding-completion-capability",
-          "open": 6,
+          "open": 12,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1467,
-          "name": "rlm-contested-claims-self-evaluation",
+          "line": 622,
+          "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 3,
+          "gates": [],
+          "line": 934,
+          "name": "mathsmith-hc-formalizer-eval",
+          "open": 3,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 4,
+          "gates": [],
+          "line": 1141,
+          "name": "multi-file-coding-completion-capability",
+          "open": 4,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1467,
+          "name": "rlm-contested-claims-self-evaluation",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 5,
           "gates": [],
           "line": 1702,
           "name": "tool-use-eval-contract",
-          "open": 7,
+          "open": 5,
           "readiness": "ready"
         }
       ]

@@ -16,7 +16,7 @@
       "blocked": 8,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 610
+      "open": 572
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -344,10 +344,10 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 62,
+      "closed": 61,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 68,
+      "open": 30,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -356,7 +356,7 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 130,
+      "total": 91,
       "tracks": [
         {
           "blocked": 0,
@@ -366,7 +366,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 31
+          "open": 12
         },
         {
           "blocked": 0,
@@ -376,7 +376,7 @@
           "line": 622,
           "markers": 1,
           "name": "agent-world-env-synthesis",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
@@ -386,17 +386,17 @@
           "line": 934,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
-          "open": 15
+          "open": 3
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 7,
           "gates": [],
           "guarded": 0,
           "line": 1141,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
-          "open": 6
+          "open": 4
         },
         {
           "blocked": 0,
@@ -406,7 +406,7 @@
           "line": 1467,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
-          "open": 4
+          "open": 2
         },
         {
           "blocked": 0,
@@ -416,7 +416,7 @@
           "line": 1702,
           "markers": 1,
           "name": "tool-use-eval-contract",
-          "open": 7
+          "open": 5
         }
       ]
     },
