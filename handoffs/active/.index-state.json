@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 12,
       "oldest_advance": "2026-08-03",
-      "open": 674
+      "open": 673
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -372,10 +372,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 52,
+      "closed": 53,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 6,
+      "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1691,7 +1691,7 @@
       "blocked": 4,
       "closed": 121,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 112,
       "owner_index": "research-evaluation-index.md",
       "prune": {

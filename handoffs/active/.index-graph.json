@@ -1009,10 +1009,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:39:26Z",
+  "generated_at": "2026-11-03T08:41:13Z",
   "nodes": [
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 4,
       "blocked_by": [],
       "closed": 121,
@@ -1021,7 +1021,7 @@
       "guarded": 0,
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
       "open": 116,
       "priority": 0.8208,
@@ -4151,15 +4151,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 52,
-      "dispatchable": 6,
+      "closed": 53,
+      "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 6,
+      "open": 5,
       "priority": 0.0209,
       "priority_basis": {
         "campaign": 0,
