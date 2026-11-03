@@ -142,3 +142,11 @@ def test_bare_compare_run_needs_no_owned_cgroup_or_canonical_grant(tmp_path,monk
     rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch)
     assert rc==0 and len(seen)==12
     assert json.loads((out/'RESULT.json').read_text())['status']=='COMPLETE_DIAGNOSTIC'
+
+
+def test_load_threads_reaches_server_args_without_touching_the_seal(tmp_path,monkeypatch):
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch,load_threads=96)
+    assert rc==0
+    assert all(cfg['extra_args'][-2:]==['--load-threads','96'] for cfg in seen)
+    sealed=json.loads((out/'comparison-plan.json').read_text())
+    assert all('--load-threads' not in (c.get('extra_args') or []) for c in sealed['recipes'].values())

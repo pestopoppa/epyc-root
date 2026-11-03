@@ -140,8 +140,13 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
 
 
 def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: Path, hold: Path,
-        deadline: float) -> int:
+        deadline: float, load_threads: int | None = None) -> int:
     bound=verify(plan_path,expected_sha);plan=bound['plan'];images=bound['images']
+    # Loader knobs are not part of the seal: --load-threads only changes how fast weights
+    # are read, so it is appended at run time and recorded beside the sealed scenario.
+    loader_args=[] if load_threads is None else ['--load-threads',str(load_threads)]
+    if load_threads is not None and (type(load_threads) is not int or not 1<=load_threads<=192):
+        raise ValueError('invalid --load-threads')
     entry._row_id(plan['row_id'])
     entry._grant(grant,'0-95',deadline,require_host_holds=True)
     if not hold.is_dir() or stop.exists() or any(hold.glob('HOLD_*')): raise ValueError('STOP or HOLD')
@@ -163,7 +168,9 @@ def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: 
         cmd=[sys.executable,'-B',str(PRODUCER/'native/k35_stack_context_matrix_runner.py'),'--execute',
              '--only',cfg['name'],'--context','8192','--max-tokens','128','--min-completion-tokens','128',
              '--reps','1','--binary',str(server),'--output-dir',str(case)]
-        env=dict(os.environ,M4_SCENARIO_JSON=json.dumps(cfg,sort_keys=True,separators=(',',':')),
+        effective=dict(cfg)
+        if loader_args: effective['extra_args']=[*(cfg.get('extra_args') or []),*loader_args]
+        env=dict(os.environ,M4_SCENARIO_JSON=json.dumps(effective,sort_keys=True,separators=(',',':')),
                  M4_TREATMENT='default-off' if arm=='baseline' else 'srpf-cap512')
         env.pop('LLAMA_ARG_PREFILL_ORDER',None);env.pop('LLAMA_ARG_PREFILL_CONTEND_CAP',None)
         child,fd,birth=owned.spawn(cmd,env=env)
@@ -178,7 +185,7 @@ def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: 
             finally: os.close(fd)
         summary=case/'summary.json';rows=comparator.load_arm([summary],server,arm)
         if len(rows)!=1: raise ValueError('native cell incomplete')
-        recipe={'scenario':cfg['name'],'scenario_config':cfg,'treatment':env['M4_TREATMENT']}
+        recipe={'scenario':cfg['name'],'scenario_config':cfg,'treatment':env['M4_TREATMENT'],'loader_args':loader_args}
         measurement=capture.capture(directory=case/'process-captures',row=rows[0],arm=arm,pair=rep,
             role='architect_general',model=plan['model']['path'],model_sha=plan['model']['sha256'],recipe=recipe,
             context=8192,binary=server,commit=plan['champion'] if arm=='baseline' else plan['candidate'],
@@ -197,9 +204,10 @@ def main() -> int:
     p.add_argument('--output',type=Path,required=True);p.add_argument('--execute',action='store_true')
     for name in ('grant','stop','hold'): p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--deadline',type=float,required=True)
+    p.add_argument('--load-threads',type=int,default=None,help='loader knob, outside the plan seal')
     args=p.parse_args()
     if not args.execute: raise SystemExit('REFUSED: explicit diagnostic execution required')
     return run(args.plan,args.plan_sha256,args.output,grant=args.grant,stop=args.stop,hold=args.hold,
-               deadline=args.deadline)
+               deadline=args.deadline,load_threads=args.load_threads)
 
 if __name__=='__main__': raise SystemExit(main())

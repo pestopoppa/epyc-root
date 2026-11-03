@@ -90,6 +90,7 @@ def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('plan','grant','stop','hold','output'): p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--plan-sha256',required=True);p.add_argument('--deadline',type=float,required=True)
+    p.add_argument('--load-threads',type=int,default=None,help='loader knob passed to llama-server; outside the plan seal')
     a=p.parse_args()
     try:
         if os.environ.get('FILLER_DRYRUN') == '1':
@@ -120,6 +121,7 @@ def main() -> int:
         command=[sys.executable,'-B',str(ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py'),
                  '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),
                  '--grant',str(a.grant),'--stop',str(a.stop),'--hold',str(a.hold),'--deadline',str(a.deadline),'--execute']
+        if a.load_threads is not None: command+=['--load-threads',str(a.load_threads)]
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         if rc or _sha(a.grant)!=original or a.stop.exists() or any(a.hold.glob('HOLD_*')):
