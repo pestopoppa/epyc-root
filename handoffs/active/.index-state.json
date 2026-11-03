@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 825
+      "open": 770
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1979,7 +1979,7 @@
       "closed": 248,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 96,
+      "open": 41,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1988,7 +1988,7 @@
       },
       "row_id": "INF-45",
       "state": "active",
-      "total": 347,
+      "total": 292,
       "tracks": [
         {
           "blocked": 0,
@@ -1998,7 +1998,7 @@
           "line": 37,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 42
+          "open": 20
         },
         {
           "blocked": 1,
@@ -2008,7 +2008,7 @@
           "line": 1660,
           "markers": 1,
           "name": "batched-decode-measurement",
-          "open": 11
+          "open": 3
         },
         {
           "blocked": 0,
@@ -2018,7 +2018,7 @@
           "line": 2736,
           "markers": 1,
           "name": "dynamic-stack-concurrency",
-          "open": 11
+          "open": 6
         },
         {
           "blocked": 1,
@@ -2028,7 +2028,7 @@
           "line": 3117,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
-          "open": 8
+          "open": 4
         },
         {
           "blocked": 0,
@@ -2038,7 +2038,7 @@
           "line": 4662,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
-          "open": 3
+          "open": 1
         },
         {
           "blocked": 1,
@@ -2070,7 +2070,7 @@
           "line": 5761,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
-          "open": 15
+          "open": 2
         },
         {
           "blocked": 0,
@@ -2087,7 +2087,7 @@
           "line": 6293,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
-          "open": 1
+          "open": 0
         }
       ]
     },

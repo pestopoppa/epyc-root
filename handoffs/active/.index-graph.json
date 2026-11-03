@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:46:10Z",
+  "generated_at": "2026-11-03T16:47:24Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1725,14 +1725,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 248,
-      "dispatchable": 96,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-03",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
-      "open": 99,
+      "open": 44,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1752,47 +1752,47 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 42,
+          "dispatchable": 20,
           "gates": [],
           "line": 37,
           "name": "numa-placement-and-contention",
-          "open": 42,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 11,
-          "gates": [],
-          "line": 1660,
-          "name": "batched-decode-measurement",
-          "open": 12,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 11,
-          "gates": [],
-          "line": 2736,
-          "name": "dynamic-stack-concurrency",
-          "open": 11,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 8,
-          "gates": [],
-          "line": 3117,
-          "name": "numa-placement-defect-20260730",
-          "open": 9,
+          "open": 20,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
+          "line": 1660,
+          "name": "batched-decode-measurement",
+          "open": 4,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 6,
+          "gates": [],
+          "line": 2736,
+          "name": "dynamic-stack-concurrency",
+          "open": 6,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 4,
+          "gates": [],
+          "line": 3117,
+          "name": "numa-placement-defect-20260730",
+          "open": 5,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
           "line": 4662,
           "name": "shape-keyed-contention-gating",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -1817,7 +1817,7 @@
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 15,
+          "dispatchable": 2,
           "gates": [
             "INF-06",
             "INF-45#numa-placement-and-contention",
@@ -1833,7 +1833,7 @@
           ],
           "line": 5761,
           "name": "reboot-gated-inventory-and-staging",
-          "open": 15,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -1845,7 +1845,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine"
           ],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
@@ -1856,8 +1856,8 @@
           ],
           "line": 6293,
           "name": "contention-model-device-and-load-axes-rider",
-          "open": 1,
-          "readiness": "blocked"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
