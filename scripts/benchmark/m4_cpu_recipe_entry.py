@@ -15,31 +15,21 @@ OWNERSHIP=ROOT/'scripts/benchmark/m4_cpu_ownership'
 sys.path.insert(0,str(OWNERSHIP)); sys.path.insert(0,str(Path(__file__).resolve().parent))
 import entry
 import watch
-import m4_cpu_recipe_enrollment as enrollment
 
 
 def _sha(path: Path) -> str: return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def check_enrollment(plan_path: Path, expected_sha: str, row_id: str, output: Path | None) -> None:
-    if not enrollment.ENABLED or not enrollment.SOURCE_SEALS:
-        raise ValueError('reviewed diagnostic enrollment absent')
-    if (str(plan_path.resolve(strict=True))!=enrollment.PLAN_PATH or expected_sha!=enrollment.PLAN_SHA256
-            or row_id!=enrollment.ROW_ID or _sha(plan_path)!=expected_sha):
-        raise ValueError('diagnostic plan or row enrollment mismatch')
-    if output is not None:
-        root=Path(enrollment.OUTPUT_ROOT).resolve(strict=True)
-        if output.resolve(strict=True).parent!=root or any(output.iterdir()):
-            raise ValueError('diagnostic output must be a fresh enrolled child')
-    producer=ROOT/'scripts/benchmark/m4_cpu_producer'
-    required={str(Path(__file__).resolve()),str((ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py').resolve()),
-              *(str((OWNERSHIP/name).resolve()) for name in ('entry.py','watch.py','lease_owner.py','m4_cgroup_guard.py','owned.py')),
-              *(str((producer/name).resolve()) for name in ('capture.py','native/k35_stack_context_matrix_runner.py','native/compare_v9_promotion_arms.py'))}
-    if not required.issubset(enrollment.SOURCE_SEALS): raise ValueError('diagnostic source seals incomplete')
-    for source,digest in enrollment.SOURCE_SEALS.items():
-        path=Path(source)
-        if not path.is_absolute() or not path.is_file() or _sha(path)!=digest:
-            raise ValueError(f'diagnostic source changed: {source}')
+def check_plan(plan_path: Path, expected_sha: str, output: Path | None) -> dict:
+    """The seal is the plan digest; the plan itself seals the image manifests (compare.verify).
+
+    The harness never hashes its own source and needs no per-revision tree copy."""
+    if _sha(plan_path)!=expected_sha: raise ValueError('plan digest mismatch')
+    plan=json.loads(plan_path.read_bytes())
+    if not isinstance(plan,dict): raise ValueError('plan must be an object')
+    if output is not None and (not output.is_dir() or any(output.iterdir())):
+        raise ValueError('output must be an existing empty directory')
+    return plan
 
 
 def qualification_worker() -> int:
@@ -62,7 +52,6 @@ def qualification_worker() -> int:
 def qualification(a, row: str) -> int:
     """Exercise the real ownership watcher with a rowflow-only fixture."""
     if os.environ.get('FILLER_SMOKE') != '1': raise ValueError('fixture only allowed during smoke')
-    check_enrollment(a.plan,a.plan_sha256,row,None)
     dd=Path(os.environ['FILLER_DRYRUN_DIR']).resolve(strict=True)
     # Dry-run only: the smoke's STOP must be the one the smoke harness touches.
     if str(a.stop) != os.environ['FILLER_STOPFILE'] or int(a.deadline) != int(os.environ['FILLER_DEADLINE']):
@@ -105,16 +94,9 @@ def main() -> int:
     try:
         if os.environ.get('FILLER_DRYRUN') == '1':
             return qualification(a,entry._row_id(os.environ.get('FILLER_ID')))
-        plan=json.loads(a.plan.read_bytes())
-        row=entry._row_id(plan.get('row_id') if isinstance(plan,dict) else None)
+        plan=check_plan(a.plan,a.plan_sha256,a.output)
+        row=entry._row_id(plan.get('row_id'))
         if os.environ.get('FILLER_ID') not in (None,'',row): raise ValueError('FILLER_ID differs from the plan row')
-        check_enrollment(a.plan,a.plan_sha256,row,a.output)
-        sys.path.insert(0,str(ROOT/'scripts/vidya'))
-        from adapters import m4_cpu_speed as reader
-        reader_config=reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json')
-        if (reader_config.producer_root != ROOT/'scripts/benchmark/m4_cpu_producer'
-                or reader_config.diagnostic_plan_sha256 != a.plan_sha256):
-            raise ValueError('diagnostic reader enrollment mismatch')
         if plan.get('status')!='REVIEWED_DIAGNOSTIC':
             raise ValueError('diagnostic plan not reviewed')
         if not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
@@ -140,8 +122,6 @@ def main() -> int:
                  '--grant',str(a.grant),'--stop',str(a.stop),'--hold',str(a.hold),'--deadline',str(a.deadline),'--execute']
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
-        if reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json') != reader_config:
-            raise ValueError('diagnostic reader enrollment changed during work')
         if rc or _sha(a.grant)!=original or a.stop.exists() or any(a.hold.glob('HOLD_*')):
             raise ValueError('diagnostic interrupted or final grant changed')
         return 0

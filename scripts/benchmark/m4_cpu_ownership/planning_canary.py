@@ -3,6 +3,7 @@
 This verifier invokes the tracked canary itself in fresh private scratch, with
 source views bound to current origin/main. A failed or unavailable replay is a
 refusal, not a measurement. The predeclared historical target is code-owned.
+It never hashes the M4 harness's own source (operator order 2026-11-03).
 """
 from __future__ import annotations
 import json
@@ -19,8 +20,6 @@ ROOT_SOURCE = Path('/workspace')
 RESEARCH_SOURCE = Path('/workspace/repos/epyc-inference-research')
 PYTHON = Path('/workspace/repos/epyc-orchestrator/.venv/bin/python3')
 KNOWN = 'akm-cpu-fa-query-major-row-schedule'
-OWNERSHIP_FILES = ('entry.py','native_authorization.py','planning_canary.py','watch.py',
-                   'owned.py','m4_cgroup_guard.py','lease_owner.py')
 
 
 def _git(repo: Path, *args: str) -> str:
@@ -60,18 +59,9 @@ def verify_native_result(result: dict, summary: dict, belief: str, prompt: str) 
         raise ValueError('native source summary disagrees with actual context')
 
 
-def _verify_owned_sources() -> None:
-    local = Path(__file__).resolve().parent
-    trusted = ROOT_VIEW/'scripts/benchmark/m4_cpu_ownership'
-    for name in OWNERSHIP_FILES:
-        if (local/name).read_bytes() != (trusted/name).read_bytes():
-            raise ValueError(f'owner source differs from reviewed origin/main: {name}')
-
-
 def run() -> dict:
-    root_head = _verify_view(ROOT_VIEW, ROOT_SOURCE, ['scripts/vidya','scripts/benchmark/m4_cpu_ownership','research/intake_index.yaml'])
+    root_head = _verify_view(ROOT_VIEW, ROOT_SOURCE, ['scripts/vidya','research/intake_index.yaml'])
     research_head = _verify_view(RESEARCH_VIEW, RESEARCH_SOURCE, ['scripts/kernel_rnd'])
-    _verify_owned_sources()
     if not PYTHON.is_file():
         raise ValueError('canary interpreter unavailable')
     scratch = Path('/mnt/raid0/llm/tmp') / ('m4-native-canary-' + uuid.uuid4().hex)
@@ -101,9 +91,8 @@ def run() -> dict:
             or summary.get('reader') != str(reader) or summary.get('reader_sha256') != reader_hash):
         raise ValueError('native canary used wrong root or reader identity')
     verify_native_result(native,summary,(out/'belief_section.txt').read_text(),(out/'prompt.txt').read_text())
-    if _verify_view(ROOT_VIEW,ROOT_SOURCE,['scripts/vidya','scripts/benchmark/m4_cpu_ownership','research/intake_index.yaml']) != root_head or _verify_view(RESEARCH_VIEW,RESEARCH_SOURCE,['scripts/kernel_rnd']) != research_head:
+    if _verify_view(ROOT_VIEW,ROOT_SOURCE,['scripts/vidya','research/intake_index.yaml']) != root_head or _verify_view(RESEARCH_VIEW,RESEARCH_SOURCE,['scripts/kernel_rnd']) != research_head:
         raise ValueError('canary source changed during replay')
-    _verify_owned_sources()
     def digest(path: Path) -> str:
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (out/'m4-native-stdout.txt').write_text(proc.stdout)

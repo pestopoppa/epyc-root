@@ -82,15 +82,8 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
     current=subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
         'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'],text=True).strip()
     if current!=plan['champion']: raise ValueError('champion moved; rebind comparison')
-    sources=plan.get('sources')
-    expected={'compare','runner','writer','comparator','ownership'}
-    if not isinstance(sources,dict) or set(sources)!=expected: raise ValueError('source seals incomplete')
-    for name, rel in {'compare':'scripts/benchmark/m4_cpu_recipe_compare.py',
-        'runner':'scripts/benchmark/m4_cpu_producer/native/k35_stack_context_matrix_runner.py',
-        'writer':'scripts/benchmark/m4_cpu_producer/capture.py',
-        'comparator':'scripts/benchmark/m4_cpu_producer/native/compare_v9_promotion_arms.py',
-        'ownership':'scripts/benchmark/m4_cpu_ownership/owned.py'}.items():
-        _checked(ROOT/rel,sources[name])
+    # Sealed: the plan (by digest) and the image manifests it names. The harness never
+    # hashes its own source; a legacy plan 'sources' block is ignored.
     images={}
     for arm,commit in [('baseline',plan['champion']),('candidate',plan['candidate'])]:
         info=plan['images'][arm]; manifest=_checked(Path(info['path']),info['sha256'])

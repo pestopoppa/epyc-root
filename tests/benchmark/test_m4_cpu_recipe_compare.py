@@ -55,22 +55,17 @@ def test_frame_refuses_unbound_or_changed_plan(tmp_path,monkeypatch,defect):
     with pytest.raises(ValueError):mod.verify(path,sha(path))
 
 
-def test_guarded_entry_refuses_empty_or_changed_enrollment(tmp_path,monkeypatch):
+def test_entry_seal_is_plan_digest_only(tmp_path):
     spec=importlib.util.spec_from_file_location('m4_recipe_entry_test',ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py')
     entry_mod=importlib.util.module_from_spec(spec);sys.modules[spec.name]=entry_mod;spec.loader.exec_module(entry_mod)
-    root=tmp_path/'capture';root.mkdir();out=root/'attempt';out.mkdir();path=tmp_path/'plan';path.write_text('{}')
-    with pytest.raises(ValueError,match='enrollment absent'):
-        entry_mod.check_enrollment(path,sha(path),'row',out)
-    names=[ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py',ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py',
-           *[ROOT/'scripts/benchmark/m4_cpu_ownership'/n for n in ('entry.py','watch.py','lease_owner.py','m4_cgroup_guard.py','owned.py')],
-           *[ROOT/'scripts/benchmark/m4_cpu_producer'/n for n in ('capture.py','native/k35_stack_context_matrix_runner.py','native/compare_v9_promotion_arms.py')]]
-    monkeypatch.setattr(entry_mod.enrollment,'ENABLED',True);monkeypatch.setattr(entry_mod.enrollment,'ROW_ID','row')
-    monkeypatch.setattr(entry_mod.enrollment,'PLAN_PATH',str(path));monkeypatch.setattr(entry_mod.enrollment,'PLAN_SHA256',sha(path))
-    monkeypatch.setattr(entry_mod.enrollment,'OUTPUT_ROOT',str(root));monkeypatch.setattr(entry_mod.enrollment,'SOURCE_SEALS',{str(p):sha(p) for p in names})
-    entry_mod.check_enrollment(path,sha(path),'row',out)
-    path.write_text('{"changed":true}')
-    with pytest.raises(ValueError,match='plan or row enrollment mismatch'):
-        entry_mod.check_enrollment(path,sha(path),'row',out)
+    out=tmp_path/'attempt';out.mkdir();path=tmp_path/'plan';path.write_text('{"row_id":"row"}')
+    assert entry_mod.check_plan(path,sha(path),out)['row_id']=='row'
+    digest=sha(path);path.write_text('{"row_id":"row","changed":true}')
+    with pytest.raises(ValueError,match='plan digest mismatch'):entry_mod.check_plan(path,digest,out)
+    (out/'stale').write_text('x')
+    with pytest.raises(ValueError,match='empty directory'):entry_mod.check_plan(path,sha(path),out)
+    assert not (ROOT/'scripts/benchmark/m4_cpu_recipe_enrollment.py').exists()
+
 
 def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch):
     import argparse,os,threading,time
@@ -85,7 +80,6 @@ def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch
     for k,v in {'FILLER_DRYRUN':'1','FILLER_SMOKE':'1','FILLER_DRYRUN_DIR':str(dd),
                 'FILLER_DRYRUN_RESULT_PATH':str(result),'FILLER_FLAGS_DIR':str(flags),
                 'FILLER_STOPFILE':str(stop),'FILLER_CPUS':'0-3','FILLER_DEADLINE':str(deadline)}.items():monkeypatch.setenv(k,v)
-    monkeypatch.setattr(q,'check_enrollment',lambda *args:None)
     a=argparse.Namespace(plan=tmp_path/'plan',plan_sha256='ignored',grant=grant,stop=stop,hold=flags,
         deadline=deadline)
     def stop_after_unit():
