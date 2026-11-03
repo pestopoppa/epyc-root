@@ -179,6 +179,25 @@ def publish_findings(txt, ch=0):
     return refuse, warn
 
 
+# Quiet-host claims (operator co-residency policy 2026-10-22, ws58 2026-11-03): strict GPU-quiet / whole-host is EARNED only
+# by a decision-grade champion/candidate baseline or an AutoKernel keep window. A box earns it by an explicit TAG,
+# `[decision-grade]` or `[ak-keep]`; prose never does (the policy sentence itself names "decision-grade" and "AK keep"
+# and is quoted in boxes that share the host). Advisory: publish_row turns a quiet/whole-host claim on an untagged box
+# into a WARNING, never a refusal.
+QUIET_EARNED = re.compile(r'\[(?:decision-grade|ak-keep)\]', re.I)
+WHOLE_HOST_THREADS = re.compile(r'(?:-t|--threads|threads?\s*[:=]?)\s*96\b|\b96[- ]threads?\b|\bt96\b', re.I)
+
+
+def quiet_earned(txt):
+    """True when the box marks its measurement decision-grade or an AK keep window (the only rows that earn gpu-quiet)."""
+    return bool(QUIET_EARNED.search(prose(own_block(txt))))
+
+
+def whole_host_declared(txt):
+    """True when the box declares a 96-thread (whole-host) job, so a 0-95 claim is the row's own thread count."""
+    return bool(WHOLE_HOST_THREADS.search(prose(own_block(txt))))
+
+
 def publish_text(txt, ch=0):
     """The REFUSAL reasons only (empty = publishable); warnings come from publish_findings."""
     return publish_findings(txt, ch)[0]
