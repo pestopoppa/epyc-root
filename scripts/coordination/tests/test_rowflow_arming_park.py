@@ -30,7 +30,9 @@ class Fixture(unittest.TestCase):
         for d in ("ready", "grants", "dryrun"):
             os.makedirs(os.path.join(self.flags, d))
         self.saved = {k: getattr(rf, k) for k in ("rl_status", "arm_one", "admit", "mem_available_gib", "start_gpu_batch",
-                                                   "underused", "vram_used_bytes", "row_shape")}
+                                                   "underused", "vram_used_bytes", "row_shape", "measure_util", "route_alert")}
+        rf.measure_util = lambda *a, **k: {"q0": 0.0, "q1": 0.0, "q2": 0.0, "q3": 0.0, "gpu": None}
+        rf.route_alert = lambda *a, **k: False
         rf.rl_status = lambda: {r: ("free", "") for r in rf.REGIONS}
         rf.mem_available_gib = lambda: 1000.0
         rf.start_gpu_batch = lambda flags, log: False
