@@ -57,5 +57,28 @@ class GpuQuietBooking(unittest.TestCase):
             self.assertEqual(len(assigned), 1)
 
 
+class CoRunWithGpuRow(unittest.TestCase):
+    """Operator 2026-11-03: the full-host CPU row carries NO --gpu-quiet (co-runs with a GPU row)."""
+
+    @staticmethod
+    def _free(busy):
+        return (set(rf.REGIONS) | set(rf.CORES) | set(rf.THREADS)) - rf.expand(busy)
+
+    def test_assigned_beside_a_yarn_like_gpu_grant(self):
+        # GPU row: gpu-quiet exclusive + host threads t184..t191 (--no-fold-siblings), no quarter
+        busy = {rf.GPU} | {f"t{k}" for k in range(184, 192)}
+        with tempfile.TemporaryDirectory() as td:
+            assigned, _i, _p = rf.plan(self._free(busy), [_cand(td, "")], 900)
+        self.assertEqual(len(assigned), 1)
+        self.assertEqual({r for r in assigned[0][1] if r in rf.QUARTERS}, set(rf.QUARTERS))
+        self.assertNotIn(rf.GPU, assigned[0][1])
+
+    def test_not_assigned_beside_an_aa_like_grant_on_q3(self):
+        busy = {"q3", rf.GPU}
+        with tempfile.TemporaryDirectory() as td:
+            assigned, _i, _p = rf.plan(self._free(busy), [_cand(td, "")], 900)
+        self.assertEqual(assigned, [])
+
+
 if __name__ == "__main__":
     unittest.main()
