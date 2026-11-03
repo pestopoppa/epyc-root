@@ -287,12 +287,6 @@
       "weight": 3
     },
     {
-      "from": "INF-22",
-      "kind": "ref",
-      "to": "RTG-63",
-      "weight": 2
-    },
-    {
       "from": "INF-45",
       "kind": "ref",
       "to": "EVL-02",
@@ -641,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T13:25:36Z",
+  "generated_at": "2026-11-03T13:26:59Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3595,30 +3589,6 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 63,
-      "dispatchable": 1,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "backlog-refactor-2026-11.md",
-      "id": "RTG-63",
-      "last_advanced": "2026-11-03",
-      "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 1,
-      "priority": 0.0142,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 30,
-      "readiness": "ready",
-      "state": "active",
-      "track": "backlog refactor 2026-11"
-    },
-    {
-      "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
       "closed": 221,
@@ -3947,14 +3917,12 @@
       "UFH-16"
     ],
     "method": "override file > backlog-priority.json > derived heuristic (no authored priority field exists in the index rows)",
-    "open_rows_missing_from_file": [
-      "RTG-63"
-    ],
+    "open_rows_missing_from_file": [],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 29,
-      "heuristic": 1,
+      "heuristic": 0,
       "override": 0
     },
     "tiers": {
@@ -3971,7 +3939,7 @@
   "readiness_counts": {
     "blocked": 1,
     "no_open": 0,
-    "ready": 29
+    "ready": 28
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",

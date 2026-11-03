@@ -1,5 +1,8 @@
 # Backlog refactor 2026-11 — execution
 
+> **COMPLETED 2026-11-03.** All 23 BRF boxes ticked: route 1a (26 folds) + route 1b (17 folds) took the active backlog 176 -> 29 handoffs; pilots closed REVISE (owner fixes filed); dashboard counters fixed (f44ffb114). Plan, manifests and decision records: `docs/design/backlog-refactor-2026-11/`.
+
+
 **Status**: ACTIVE — plan approved by the operator 2026-11-02 (D1–D7); plan landed, no fold executed yet.
 **Created**: 2026-11-02
 **Priority**: P1 — the backlog surface every session dispatches from

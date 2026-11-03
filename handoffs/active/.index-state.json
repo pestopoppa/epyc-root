@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 18,
-      "handoffs": 9,
+      "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 732
+      "open": 731
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -341,22 +341,6 @@
           "open": 2
         }
       ]
-    },
-    "backlog-refactor-2026-11.md": {
-      "blocked": 0,
-      "closed": 63,
-      "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 1,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-63",
-      "state": "active",
-      "total": 64
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -2670,7 +2654,7 @@
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "index": "routing-and-optimization-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2911,15 +2895,6 @@
       "line": 19,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
-    },
-    "RTG-63": {
-      "deps": [],
-      "handoff": "backlog-refactor-2026-11.md",
-      "id": "RTG-63",
-      "index": "routing-and-optimization-index.md",
-      "line": 20,
-      "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "track": "backlog refactor 2026-11"
     },
     "UFH-01": {
       "deps": [
