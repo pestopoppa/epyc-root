@@ -14,15 +14,15 @@
 **Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](../completed/mi210-kernel-rnd-loop-proposal.md)
 **Absorbed 2026-08-02:** the bootstrap-corpus design pass (now §19) and the full design audit
 (findings folded into §§2–15; the standalone audit document is retired)
-**Consumes rather than replaces:** [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md),
-[`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md),
+**Consumes rather than replaces:** [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring),
+[`rocm-verify-profile-backend.md`](rocm-kernel-authoring.md#track-rocm-verify-profile-backend),
 [`agent-collab-rnd-harness.md`](autokernel-loop.md#track-agent-collab-rnd-harness),
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
 ## Track: autokernel-research-loop
-<!-- gate: INF-48, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
+<!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
 > Folded from the body of `handoffs/active/autokernel-research-loop.md` (row INF-06), from its first `##` section on, @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
@@ -593,7 +593,7 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   checks failed. The exact-PID campaign processes were stopped and confirmed dead with no device claim
   remaining. R4's 5/64 checkpoint inventory remains diagnostic history only; it cannot be resumed,
   aggregated, ranked, banked, or used to select a controller. The owning repair and fresh-pilot tasks
-  live in [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md): parent-owned exact-PID
+  live in [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring): parent-owned exact-PID
   AF_UNIX brokerage is necessary, while a decision-bearing pilot additionally requires controller and
   candidate OS isolation. A broker-only live run is engineering smoke, not policy evidence.
 - [x] **AK-AUD-8 — Close the INF-03 broker/isolation implementation gap and admit exact-source
@@ -616,7 +616,7 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   failed with `Operation not permitted` before any completed response. All twelve attempts remain
   non-rankable engineering diagnostics; there is no candidate, kernel speedup, campaign aggregate,
   banked proposal, or promotion claim. The exact attempt ladder and next repair live in
-  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
+  [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring).
 - [x] **AK-AUD-10 — Close the governed INF-03 compatibility pilot and preserve its non-authority
   boundary.** ✅ 2026-08-12 — research main `15c61ed5` contains the complete broker/controller/
   evaluator isolation stack and the r13/r14 validator repairs. R15 completed exactly one task and one
@@ -640,7 +640,7 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   after its baseline even with those reads present. The test totals were observed but have no retained
   transcript, so they are regression notes rather than durable suite evidence. Therefore the probe
   proves only its narrow path; the owning open differential and fresh-attempt gate remain in
-  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). R5/r6 have no aggregate or
+  [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring). R5/r6 have no aggregate or
   decision authority, and both controller cgroups were verified empty and removed.
 - [x] **AK-AUD-12 — Close the r8-r10 actor-cell implementation defects and prove one full real
   actor-critic loop without upgrading a live partial into evidence.** ✅ 2026-08-12 — research
@@ -651,7 +651,7 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   source before iteration 2. This is an implementation/liveness checkpoint only. R11 is still live,
   has no terminal aggregate, and carries no comparison, belief, bank, champion, promotion, or release
   authority. Terminal receipt-chain validation remains owned by
-  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
+  [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring).
 - [x] **AK-AUD-13 — Prove measured critic feedback changes the next live proposal and close the
   confined host-runtime re-hash defect.** ✅ 2026-08-12 — r12 iteration one measured
   `0.9967805648538064×` and received `revise`; iteration two named and rejected that mechanism,
@@ -4517,8 +4517,8 @@ negatives so the planner cannot omit inconvenient history.
 | **P0.3 normalized scoreboard** | Correct derived view, but must not be a hand-maintained source of truth | Derive from journal events and capability rows; bind every row to regime and candidate identity |
 
 **GPU families.** Current anchors: [MI210 speed-campaign summary](../completed/mi210-speed-campaign-summary.md),
-[Q8/GEMV roofline](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline),
-[graph techniques](gemma-challenge-kernel-techniques-v7.md),
+[Q8/GEMV roofline](rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline),
+[graph techniques](rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7),
 [acceleration index](inference-research-index.md).
 
 | Draft family | Audit verdict | Seed disposition |
@@ -4541,7 +4541,7 @@ negatives so the planner cannot omit inconvenient history.
 non-GEMM findings that the original G1–G13 audit had no measurement to see. Their common premise: on this
 device **fp16 already attains 62.6% of spec bandwidth and vLLM-ROCm attains 69.2%**, so the memory system
 is not the limiter and the entire collapse is down the quant ladder — the ladder and its spec-vs-achievable
-calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline).
+calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline).
 
 | New family | Audit verdict | Seed disposition |
 |---|---|---|
@@ -4845,7 +4845,7 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   read a per-case table and not see which rows are inside the noise. Suppress or explicitly flag any
   delta below the floor at the point of display.
 - [x] **AK-TR-3 — Per-turn productivity accounting** — see
-  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) §"Loop-engineering
+  [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) §"Loop-engineering
   experiments", which owns it. Referenced here because §8.8 POST_RUN_CRITIC is where the tuple gets
   emitted. ✅ 2026-08-10 — routed to its single implementation owner as AK-PT-1; AutoKernel consumes
   that archive for AK-X-6 and does not duplicate the reducer.
@@ -4876,7 +4876,7 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   paired blocks do not protect against that. Separately, choose working-set sizes such that
   candidate-side caching of results is unprofitable **by construction**, which is cheaper and more
   durable than detecting it (complements RVP-C6-8 in
-  [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)).
+  [`rocm-verify-profile-backend.md`](rocm-kernel-authoring.md#track-rocm-verify-profile-backend)).
   ✅ 2026-08-11 — every live arm now receives a unique `(pid,start_ticks)`, an empty invocation-only
   writable tree, and verified teardown before the next arm. Hardened `llama-bench` commit `0492c231`
   keeps `2 × reps` contexts and input vectors simultaneously live, gives every timed repetition
@@ -5861,7 +5861,7 @@ Related existing work (do NOT duplicate — this stub is about the *collaboratio
 _Via /research-intake Stage-2 (intake-882#record + intake-883#record orx, intake-884#record HyRA, intake-885#record OpenHyra). NOTE: the HyRA/OpenHyra R&D-harness descriptor + scoring items were routed here rather than to the meta-harness completed ledger, which forbids new task checkboxes (the active compatibility pointer was retired 2026-08-23)._
 - [x] Compare OpenHyra's all-outcomes Experience Bank + LLM Context-Agent cross-round memory (`eb.py`, `context_agent.py`) against StructuralLab / agent-collab archive design ✅ 2026-07-22
 - [x] Adopt a uniform per-task descriptor {seed/baseline solution, run script -> solution.json, fixed objective scorer, always-valid fallback} for the R&D harness (HyRA cross-domain contract) ✅ 2026-07-22
-- [x] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md)) ✅ 2026-07-22 (research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor)
+- [x] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-kernel-authoring.md#track-rocm-verify-profile-backend)) ✅ 2026-07-22 (research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor)
 - [ ] (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (`--backend local`, custom OpenAI provider in `~/.config/opencode/opencode.json`) to validate the loop end-to-end. NOT a harness commitment — mining orx's patterns is unconditional and re-targeting to our eventual chosen harness is ~1 `impl Harness` file (`src/local/harness/mod.rs:1135`). Gate any long-term harness choice on [harness-selection-and-integration.md](harness-program.md#track-harness-selection-and-integration) **Constraint if ever authorized:** SINGLE-USER only on this shared host (orx's own README states the dashboard binds loopback with no application-level authentication, so other host users can reach it), and built from source (channel development) so telemetry is compile-time disabled. Strip overleaf_live / browser_cookies at import (intake-883#record).
 - [ ] (Optional spike) Add a 3rd OpenHyra llm_backend adapter (~30-60 LOC) targeting a local OpenAI-compatible coding agent -> llama.cpp; needs `OPENHYRA_ALLOW_UNSANDBOXED=1` + an external container (sandbox is macOS-only)
 - [x] **S3-ACH-01 — spike a PreToolUse read-only allowlist gate for planner/critic actors.** An actor may inspect evidence freely but cannot launch a build or benchmark until authorized. Classification is allowlist-only (unknown ⇒ gated), with a test asserting every allowlisted verb names a real command. Gates the ACTION, not the outcome: both our loops gate at promotion, so a misfiring planner can spend GPU-hours before a human sees a decision. Pattern: orx plan_gate, intake-883#record @3a8b0286. ROOT source `9414032c93e3a9ea0247bcab9f5158877ca6724a` (published main through `00ceac9c331a9b085f1b9169cbe24083e245b81f`); Git tests `scripts/hooks/tests/test_planner_readonly_gate.py` (6 passed), evidence `artifacts/codex3/s3ach01-20261031/`. ✅ 2026-10-31 [no-belief: source prototype and regression controls]

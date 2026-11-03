@@ -12,6 +12,10 @@
    "target": "benchmark-suites.md",
    "track": "agent-world-env-synthesis"
   },
+  "agentic-rocm-kernel-authoring.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "agentic-rocm-kernel-authoring"
+  },
   "agentic-serving-harness-fixes.md": {
    "target": "harness-program.md",
    "track": "agentic-serving-harness-fixes"
@@ -241,8 +245,12 @@
    "track": "frontier-f4-continuity-backup"
   },
   "frontier-f6-upstream-publication.md": {
-   "target": "gemma-challenge-kernel-techniques-v7.md",
+   "target": "rocm-kernel-authoring.md",
    "track": "frontier-f6-upstream-publication"
+  },
+  "gemma-challenge-kernel-techniques-v7.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "gemma-challenge-kernel-techniques-v7"
   },
   "gpu-acceleration-path.md": {
    "target": "mi210-serving-program.md",
@@ -325,7 +333,7 @@
    "track": "lightning-attention-port"
   },
   "llama-cpp-dsa-contribution.md": {
-   "target": "gemma-challenge-kernel-techniques-v7.md",
+   "target": "rocm-kernel-authoring.md",
    "track": "llama-cpp-dsa-contribution"
   },
   "loop-owned-fleet-implementation.md": {
@@ -353,7 +361,7 @@
    "track": "mi210-big-model-and-acceleration-roadmap"
   },
   "mi210-q8-dequant-gemv-roofline.md": {
-   "target": "agentic-rocm-kernel-authoring.md",
+   "target": "rocm-kernel-authoring.md",
    "track": "mi210-q8-dequant-gemv-roofline"
   },
   "minddr-deep-research-mode.md": {
@@ -524,6 +532,10 @@
   "rlm-contested-claims-self-evaluation.md": {
    "target": "benchmark-suites.md",
    "track": "rlm-contested-claims-self-evaluation"
+  },
+  "rocm-verify-profile-backend.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "rocm-verify-profile-backend"
   },
   "sarathi-serve-cpu-evaluation.md": {
    "target": "cpu-decode-roofline-program.md",
@@ -705,7 +717,7 @@
    "track": "frontier-f4-continuity-backup"
   },
   "EVL-27": {
-   "target": "INF-16",
+   "target": "INF-48",
    "track": "frontier-f6-upstream-publication"
   },
   "EVL-30": {
@@ -780,6 +792,10 @@
    "target": "INF-06",
    "track": "agent-collab-rnd-harness"
   },
+  "INF-03": {
+   "target": "INF-48",
+   "track": "agentic-rocm-kernel-authoring"
+  },
   "INF-04": {
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
@@ -799,6 +815,10 @@
   "INF-12": {
    "target": "EVL-02",
    "track": "delta-mem-reproduction"
+  },
+  "INF-16": {
+   "target": "INF-48",
+   "track": "gemma-challenge-kernel-techniques-v7"
   },
   "INF-18": {
    "target": "INF-22",
@@ -833,7 +853,7 @@
    "track": "lightning-attention-port"
   },
   "INF-31": {
-   "target": "INF-16",
+   "target": "INF-48",
    "track": "llama-cpp-dsa-contribution"
   },
   "INF-34": {
@@ -841,7 +861,7 @@
    "track": "mi210-big-model-and-acceleration-roadmap"
   },
   "INF-37": {
-   "target": "INF-03",
+   "target": "INF-48",
    "track": "mi210-q8-dequant-gemv-roofline"
   },
   "INF-40": {

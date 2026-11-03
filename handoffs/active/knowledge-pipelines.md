@@ -1860,7 +1860,7 @@ OBLIQ-Bench IS released (HF `dianetc/OBLIQ-Bench`, CC-BY-4.0) but its corpora (t
 **Created**: 2026-07-20 (via research intake deep dive — intake-864/865 reassessment)
 **Priority**: P1 — unblocks the long-open "stronger parser comparison" question in [`opendataloader-pipeline-integration.md`](knowledge-pipelines.md#track-opendataloader-pipeline-integration) (task K35.18)
 **Categories**: document_processing, multimodal, benchmark_methodology
-**Parent**: [`opendataloader-pipeline-integration.md`](knowledge-pipelines.md#track-opendataloader-pipeline-integration) · [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md) K35.18
+**Parent**: [`opendataloader-pipeline-integration.md`](knowledge-pipelines.md#track-opendataloader-pipeline-integration) · [`gemma-challenge-kernel-techniques-v7.md`](rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) K35.18
 
 #### Objective
 

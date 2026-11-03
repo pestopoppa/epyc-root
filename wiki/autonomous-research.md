@@ -1077,7 +1077,7 @@ Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25
 ### Key findings
 
 - **The Dream-RSI batch: 14 rows, 0 checkbox flips, and a corrected external record.** The operator-approved Stage-4 plan (2026-09-17) filed rows in `autokernel-research-loop` (AK-WM-3, adaptive policy panel, plateau pack, cost-credit, lineage diagnostics, promotion controls, integrity pack), `agent-collab-rnd-harness` (AC-CORAL, AC-branch-per-agent), `autokernel-rebuild-program` (RB-lineage telemetry), `harness-selection-and-integration` (HS-E1), `autopilot-sequential-allocation` (SEQ-4) and `agentic-rocm-kernel-authoring` (AR-RPUCG, AR-ROCm-eval). Explicit declines are on record: all `autopilot-continuous-optimization` mechanics (that handoff is STOPPED since 2026-08-10; restart needs explicit operator permission), the DeltaEvolve→TOC/CF mapping, the guidance-prompt task, monitor rows, HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (≥$1.1k, no decision depends on it). The load-bearing Stage-2 corrections: Dream-RSI's **implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, not Eq. 1**; the `1.22×/1.74×/zero-gradient` figures are companion-README-only; EvoX scores strategies **online only** (no replay); PACEvolve's MBB/CE require a **known target bound**; SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries; and the SwarmResearch 13/15 count is threshold-ambiguous. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
-- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
+- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 - **SEQ-4 re-folds the stored AutoPilot pool under a bandit allocator, offline.** 141 stored candidates / 393 trials are to be re-scored under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b) a fluid-style portfolio AUC objective (intake-1457), compared against the fixed budget=8 heuristic, reporting AUC-frontier vs endpoint. It deliberately does not touch the human-amendment-only SEQ-3/SEQ-B1 decision or re-arm any gate. ([autopilot-sequential-allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation))
 - **The promotion guard's identity rule: an ACTION hash is not a served config, so most what-if promotions were grouping artifacts.** Under rule (b), reproductions were keyed by the action hash; for `seed_batch` and `deep_eval` that hash does not identify what ran — `{"type":"seed_batch","n_questions":10}` covered 394 rows, and all 22 what-if promotions were such runs. `action_identity.row_config_identity` now identifies a served config only from an explicit delta (`structural_experiment` flags, `numeric_trial` resolved params) plus the AP-55 infra digest when recorded, and only identity-bearing clean rows are stamped representatives. After the fix: **rule (b) promotes nothing**; 441 decisions are refused for carrying no served-config identity (seed_batch 331, empty-params numeric_trial 72, deep_eval 18, 20 others); 4 promotions remain (3 seeds plus trial 755 under the frontier rule). Per the operator decision (`f083a0cd`), prompt/code/GEPA mutations are identified by `eval_details.served_content = {"files": {path: sha256}}`, hashed from the served file after the write and before the eval and kept off the action so fingerprints are unchanged; the regime digest is the AP-55 digest **without** the orchestrator HEAD/dirty component but **with** evaluator, kernel, recipe, models and host, so an unrelated orchestrator commit no longer splits a cluster. Rows without a content identity stay non-promotable and nothing is back-filled. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
 - **(c)+(b) are built: clean trials become frontier representatives, and an empty live frontier needs ≥3 comparable reproductions.** The loop fixes the row it will journal before the promotion decision (`_provisional_trial_row`) and passes it to `update_baseline`, so the guard's live archive includes the candidate; clean rows are stamped `eval_details.frontier_admission = "representative"` and cluster by config fingerprint, with one predicate (`row_is_representative_member`) serving replay, snapshot fold, recovery re-import and reproduction counting, and `upsert_representative` for the live archive (`AUTOPILOT_CLEAN_TRIAL_REPRESENTATIVES`, default on). Rule (b) needs `AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO` comparable live-regime reproductions (default 3; values below 2 are refused and fall back to 3), excludes NON_COMPARABLE rows, and promotes the **median** over them, which must still clear the quantum. `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is logged, returned, and written to the trial row and the `baseline_promotion` event. Review fixes: a provider exception or unreadable archive refuses promotion over an existing baseline (`refused_guard_unavailable`); the replay `compare()` restores the logger level; the live archive is built once per call. On the next restart every tier starts under rule (b), and no promotion happens until a config has 3 comparable reproductions in the new epoch. The W3e `-cost` axis drop itself is still open. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
@@ -1098,7 +1098,7 @@ Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25
 - [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the seven AutoKernel rows with their constants and their observe-only scope.
 - [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): RB-lineage telemetry.
 - [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
-- [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md): AR-RPUCG and AR-ROCm-eval.
+- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring): AR-RPUCG and AR-ROCm-eval.
 - [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) and [2026-09-16-sub-redtests.md](../progress/2026-09/2026-09-16-sub-redtests.md): the red research AutoKernel loop suites and the AKU-RED-LOOP handover.
 - [autopilot-sequential-allocation.md](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation): SEQ-4's offline allocation replay.
 - [2026-09-16-sub-train.md](../progress/2026-09/2026-09-16-sub-train.md): the AutoPilot merge train — AP-55 hold coverage at every `update_baseline` call site, the syntax-tree guard, and the final tip's test totals.
@@ -1709,7 +1709,7 @@ along; the blocker is external and named, and every non-external dependency is n
 - [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — the 2026-08-25 L5 closeout (vidya evidence paths, 13→6 queue with cause separation, guardrail pin, PII-gate surfacing).
 - [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record and regenerated 2026-08-25 readiness artifacts.
 - [`handoffs/completed/frontier-f1-real-task-corpus.md`](../handoffs/completed/frontier-f1-real-task-corpus.md) — the 2026-08-23 completion banner (10/10, stale-prose correction, AP-16 residual pointer) and the W3 ledger row.
-- [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
 - [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md#track-frontier-f4-continuity-backup) — the 2026-08-23 EVL-26 checkpoint (restic backend, corrected T0 manifest and size, operator target rejection, W2/W3 unchecked).
 
 ## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
@@ -1852,13 +1852,13 @@ problem" (which is how they get closed by mistake), never left as prose a planne
   AK-RUN-V3 / AK-ADM-1, the §22 AK-QL closures, and the staged AK-RUN-2 prep.
 - [`progress/2026-08/2026-08-16-inference.md`](../progress/2026-08/2026-08-16-inference.md) — the
   owning session's record of the seal, the planner/critic binding, and the portfolio decisions.
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C6-11/12/13
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-C6-11/12/13
   closures with mechanisms, and RVP-C2-6c/6d (the receipt binding and the committed-clean-source
   unlock).
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5-3a
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — C5-3a
   (sealed correctness-only provider), C5-4 (bound-quality classes), and the fp32/fp16 identity
   correction.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) —
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) —
   INF37-IQ-1: the latent-residency binding and its AK-ADM-1 enforcement hand-off.
 
 ## Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar
@@ -2038,7 +2038,7 @@ can unlock the 7/7 availability-conditioned panel.
 
 ### Source References (2026-08-12 governed pilot)
 
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — exact r1-r12 failure chain, authority boundary, and retry gates
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — exact r1-r12 failure chain, authority boundary, and retry gates
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
 
@@ -2061,7 +2061,7 @@ comparative conclusion.
 
 ### Source References (2026-08-12 terminal pilot)
 
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-10 system-level authority disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
 **Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
@@ -2104,7 +2104,7 @@ The five-control acceptance run that *did* execute passed **5/5** at a 3% contri
 
 ### Source References (2026-08-12, second pass)
 
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) — the GEAK substrate synthesis behind the compile round-trip.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the diagnostic controller speedups and the licensing block in session context.
@@ -3035,8 +3035,8 @@ threshold peeking.
 ### Source References
 
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — §21 (AK-TR-1…6 transfer machinery, AK-LN-1…5 screening lanes, AK-BH-1…3 baseline honesty, AK-OP-1/2 operator-only)
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — AK-PT-1 per-turn productivity accounting; AK-LE-1…5 loop-engineering experiments
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the oracle and reward-integrity side of the same design
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — AK-PT-1 per-turn productivity accounting; AK-LE-1…5 loop-engineering experiments
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the oracle and reward-integrity side of the same design
 - [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session record
 
@@ -3081,7 +3081,7 @@ Expected failure output is not evidence that discovery aborted.
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 differential and fresh-attempt gate
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 differential and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AutoKernel completion audit and evidence-authority boundary
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats
 
@@ -3108,7 +3108,7 @@ carry a second implementation of it inside the confined process.
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — matched-archive dependency and separation from AK-WM-2 evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence
 
@@ -3141,7 +3141,7 @@ broaden those contracts in opposite directions.
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning r9-r11 checklist, next terminal gate, and authority boundary
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning r9-r11 checklist, next terminal gate, and authority boundary
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — separation from the matched-archive and champion gates
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence
 
@@ -3175,7 +3175,7 @@ these implicitly turns a successful model/evaluator sequence into a late non-ter
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — feedback-memory completion evidence and separation from archive/champion authority
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r12/r13 receipts, hashes, measurements, failure paths, and teardown evidence
 
@@ -3227,7 +3227,7 @@ implementation gap.
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 live checkpoint and terminal receipt-chain gate
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r14 live checkpoint and terminal receipt-chain gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14 and AK-WM repair disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary
 
@@ -3256,7 +3256,7 @@ still wait on the post-reboot completed campaigns.
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 terminal refusal and immutable r15 receipt-chain gate
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r14 terminal refusal and immutable r15 receipt-chain gate
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14/15 and completed deterministic pair-producer task
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes
 
@@ -3439,7 +3439,7 @@ production v9 was not modified, rebuilt, or executed anywhere in this window.
   GO/NO-GO audit postures, the exact restart order, and the compute-hygiene record.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-22 v27 pre-launch banner:
   no campaign launched, rejected audit lines, pins unset, resume path.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — INF-48 status
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — INF-48 status
   "v27 C6 launch boundary remains open": the rejected `91a75a05` carrier list and the two-process
   oracle/Ghost wiring as the owning next action.
 
@@ -4529,7 +4529,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - The offline lineage detector is aligned to pinned EvoReplay `1773db16`; a synthetic fixture moved from (4 added, 2 recycled) to upstream's (4, 1). No real authoring-bound cohort exists, so AK-lineage diagnostics stay open. [research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [progress](../progress/2026-11/2026-11-01-lineage-parity.md)
 - Actor seat capture and CPU-window bus publication now use the shared ROOT resolver (70 + 9 controls passed); CPU-lock owner discovery stays separate by design. [progress](../progress/2026-11/2026-11-01-ak-root-consumers.md)
 - REPL-EMB-5.1 SEARCH primitive published (`ScoutSearch`, lexical BM25 pointer records, never dereferences pointers); wiring and retrieval quality are not established. OAB-31 discard-invariant test ticked (model-free). [actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
-- C5-14 (AutoKernel added to the controller roster) is docs-only (`ARENA_INTEGRATION.md`, Research `a23bd9c6`). [agentic-rocm](../handoffs/active/agentic-rocm-kernel-authoring.md)
+- C5-14 (AutoKernel added to the controller roster) is docs-only (`ARENA_INTEGRATION.md`, Research `a23bd9c6`). [agentic-rocm](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring)
 - Inference, last 12 h of 11-01: 16 runs ended and were filed, none decision-grade; 10 failed (5 admission, 5 harness). [ws58](../progress/2026-11/2026-11-01-workspace-58.md), [six filings](../progress/2026-11/2026-11-01-codex3-six-filing.md)
 - R18-A CUID forensics: the 141 HIP host-name differences are fully explained by ROCm 6.2 CUID hashing over source path/args plus a second ASTContext hash; identical TU bytes with relocated roots account for every pair. Next: test pinned per-TU `-cuid=` in a fresh complete build. [progress](../progress/2026-11/2026-11-01.md)
 

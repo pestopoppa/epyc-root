@@ -12,19 +12,17 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file) | INF-48, EVL-47 |
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47 |
 | INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion | INF-06, INF-50 |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
-| INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop | — |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
-| INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-16, RTG-58 |
+| INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-48, RTG-58 |
 | INF-79 | conversation stack (speech) | [speech-and-multimodal.md](speech-and-multimodal.md) | Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions | — |
 | INF-80 | exl3 cpu mi210 implementation | [quantization-and-low-bit.md](quantization-and-low-bit.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
 | INF-22 | gpu serving tie in program | [mi210-serving-program.md](mi210-serving-program.md) | Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route | — |
 | INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU | INF-48 |
 | INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | P0-3 — cold-start the stack, re-bench the contention matrix, commit + push all three repos | — |
-| INF-48 | rocm verify profile backend | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
+| INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-58 |
 ## Cross-domain

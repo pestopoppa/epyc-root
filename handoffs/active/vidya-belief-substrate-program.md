@@ -633,7 +633,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
 - [ ] SC18 **Wire the `test-backend-ops` property layer as a measurement source — write side FIRST**
       (filed 2026-08-10 per CLAUDE.md's belief-kernel rule, at the layer's *design* time rather than
       after it ships). The property layer specified as `RVP-C2-2` in
-      [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md) **produces measurements**:
+      [`rocm-verify-profile-backend.md`](rocm-kernel-authoring.md#track-rocm-verify-profile-backend) **produces measurements**:
       a per-op, per-backend, per-shape property residual. Two things make it a good source and both
       are cheap only right now — `RVP-C2-1` adds a deterministic `suite_seed`, which is what makes a
       residual re-derivable rather than an anecdote; and the layer is reference-free, so its residual

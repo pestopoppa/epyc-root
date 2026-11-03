@@ -60,7 +60,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, quantization, local_inference
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related / ownership boundary**: **infra tasks (download/sha256/load-smoke/CPU-bench/expert-routing-skew profile) live in [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)** (parallel-session-owned) — this handoff holds ONLY the reviewer-specific capability gates and must not duplicate that work. Kernel-side blockers live in [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md); GLM cache/runtime reconciliation is closed by K23 / experimental-v7 `3dee86a5a`, sparse final-attention remains kernel work, and current-source 32K needle/coherence currently fails with malformed `peg-native` output.
+**Related / ownership boundary**: **infra tasks (download/sha256/load-smoke/CPU-bench/expert-routing-skew profile) live in [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)** (parallel-session-owned) — this handoff holds ONLY the reviewer-specific capability gates and must not duplicate that work. Kernel-side blockers live in [`gemma-challenge-kernel-techniques-v7.md`](rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7); GLM cache/runtime reconciliation is closed by K23 / experimental-v7 `3dee86a5a`, sparse final-attention remains kernel work, and current-source 32K needle/coherence currently fails with malformed `peg-native` output.
 **Repo**: `epyc-orchestrator` + `epyc-inference-research`
 
 ## Objective
@@ -70,7 +70,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 **2026-07-18 acceleration-gating note (v7 lever audit).** GLM-5.2 **acceleration** EV is
 *contingent on this quality gate*, not standalone. The two real GLM kernel levers — the
 native-GLM-MTP forward-graph port ([tree-draft-forward-port-plan.md](../completed/tree-draft-forward-port-plan.md),
-+34–89% decode) and the real sparse final-attention path ([llama-cpp-dsa-contribution.md](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution)
++34–89% decode) and the real sparse final-attention path ([llama-cpp-dsa-contribution.md](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution)
 D2, currently DSA-DENSE-MASK) — are explicitly **sequenced AFTER GC-shadow-repair4b → P-REV-1**.
 Rationale: the flagship GLM role is cross-family patch reviewer, and patch-review still
 over-approves (FA up to 91.7%); ~1–3 weeks of kernel work on a model that cannot yet do its
@@ -161,7 +161,7 @@ human/test-oracle answer keys — no label-building, no self-certification, no c
 
 **Sequencing (important):**
 1. **Reviewer/judge quality gate = RUN NEXT.** These prompts fit GLM's coherent **≤12K** band, so this — the actual v7-promotion blocker after the failed C-CRAB P-REV-1 gate — does **not** wait for any kernel fix. Pick one judge-native set + SWE-bench-Verified, keep prompts ≤12K under the validated `indexer_top_k` schedule, score exact-match. This is what unblocks a broader claim-grade GLM quality verdict or a firm rejection of the role.
-2. **Long-context quality (>12K) is a SEPARATE, LATER track** gated behind the **`indexer_top_k` / sparse-final-attention fix** (D2 in [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution)). GLM currently emits malformed output past ~12K because the top-k cap doesn't scale (32K needle fails); that is the durable fix for long-context, and it is **orthogonal** to whether GLM is a good *patch* reviewer. Do not couple the reviewer-quality verdict to it.
+2. **Long-context quality (>12K) is a SEPARATE, LATER track** gated behind the **`indexer_top_k` / sparse-final-attention fix** (D2 in [`llama-cpp-dsa-contribution.md`](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution)). GLM currently emits malformed output past ~12K because the top-k cap doesn't scale (32K needle fails); that is the durable fix for long-context, and it is **orthogonal** to whether GLM is a good *patch* reviewer. Do not couple the reviewer-quality verdict to it.
 
 Concrete dataset pick + runner wiring being finalized; see [`../../docs/reference/model-probe-scoreboard.md`](../../docs/reference/model-probe-scoreboard.md). Do NOT re-run the observation-only nearmiss-v1 slices — they're superseded by this directive.
 

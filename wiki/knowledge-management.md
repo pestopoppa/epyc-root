@@ -233,7 +233,7 @@ The NI08 checkpoint records 168 completed scoped tasks (105 existing-task closur
 
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current scoped total and the accepted/prospective boundaries.
 - [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP2 exact source acceptance and parent gates.
-- [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md) — C-pointer source acceptance and retained original failure.
+- [ROCm verification backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — C-pointer source acceptance and retained original failure.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective C106 and generated-writer companions.
 - [NI08 daily progress](../progress/2026-10/2026-10-07.md) — dated source/publication and acceptance limits.
 
@@ -1000,7 +1000,7 @@ program); **verified** for the publication gates (frontier-f6 upstream publicati
 ### Source References (2026-09-15)
 
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — the carrier contract, the write-side rule, the citation gate, and the mutation audit.
-- [frontier-f6-upstream-publication.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
+- [frontier-f6-upstream-publication.md](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
 - [docs/publication/social/README.md](../docs/publication/social/README.md) — the append-only social conversation ledger schema and gates.
 
 ## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
@@ -1483,7 +1483,7 @@ routed to `retired_from_public_claims`. Three transferable design choices:
   projection contract and the dependency-evidence boundary the SC39 call extends
 - [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
   one-ladder-per-class invariant, read for this compile
-- [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication)
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication)
   W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
 - [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
   §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
@@ -2835,7 +2835,7 @@ as pool identity travels with a recall number.
 
 ### Source References
 
-- [`frontier-f6-upstream-publication.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication) —
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) —
   the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
   containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
 - [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)
@@ -3711,7 +3711,7 @@ The plan also drafted the exact text for its wiki corrections, and Stage 4 appli
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-PLACEMENT, the SC84 producer note, SC84a, VB-DS41-C57.
 - [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — gating, OD-1, P6, the declines table and the completeness gates.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF03-REGAUDIT-1 and its belief-kernel write side.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF03-REGAUDIT-1 and its belief-kernel write side.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — the intake record (renumbering, filed-task counts).
 

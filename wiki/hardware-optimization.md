@@ -157,7 +157,7 @@ Sources: [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promo
 **Confidence: verified** (run records in the cited handoffs).
 
 - **Champion C3 `dcc853b55`.** The champion advanced from `141e4bcf5` by one commit (V11-100: K-shift is a pure rotation, `build_rope_shift` no longer re-applies the YaRN magnitude factor; `test-yarn-kshift` added). Guarded CAS at 07:50Z with operator approval, fork pushed, production v10 untouched. CH-30 (GPU-LEAK fold) was re-cut on it as C4 `cdb4d8c77` (build gates pass; GPU correctness/leak gates armed). ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), CH-29/CH-30)
-- **G10 (INF-48) closed: case 25 was an oracle artifact.** On v10 the FP16 CPU `use_ref` reference failed 127/128 reps (ERR about 5.2e-4 vs 5e-4); the FP32-oracle store with the same GPU kernel passed 22/22. Not a GPU defect. The 25 imported shapes are a durable negative on CPU and ROCm0; case 7 (MLA) is a proven no-op NOT_SUPPORTED. Reading rule: a long-kv F16-V FA FAIL on v10 needs the FP32-oracle arm before it is read as a backend defect. ([rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md))
+- **G10 (INF-48) closed: case 25 was an oracle artifact.** On v10 the FP16 CPU `use_ref` reference failed 127/128 reps (ERR about 5.2e-4 vs 5e-4); the FP32-oracle store with the same GPU kernel passed 22/22. Not a GPU defect. The 25 imported shapes are a durable negative on CPU and ROCm0; case 7 (MLA) is a proven no-op NOT_SUPPORTED. Reading rule: a long-kv F16-V FA FAIL on v10 needs the FP32-oracle arm before it is read as a backend defect. ([rocm-verify-profile-backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend))
 - **FD-OFF-PROD.** Every Q38FN speed/correctness number (including `optimal_cpu_serving` 43.28 t/s) was measured with `GGML_FUSED_DECODE_OFF=1`, but production `architect_general` (:8074) does not set it, so it serves the default-ON fused path, which carries the open FD-DIV-1b defect. A ratification package is being prepared; this also corrects CH-24's premise (the fused qwen4exp patch was held out of C4). ([cpu-fused-decoder-blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks))
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): the iqk FA port gate passes on the champion line, and instrumentation rides default-OFF options
@@ -279,7 +279,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champ
 ### Source References (2026-10-22 wrap-up sweep 10)
 
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-LB4 iqk FA gates, AKX-ALL-27/27b width replay, LB2 production surfaces
-- [handoffs/active/agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-LB1 MMVQ ISA audit
+- [handoffs/active/rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-LB1 MMVQ ISA audit
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-LB1 GDN BF16-state guard, V11-086 oracle diagnosis
 - [docs/reference/kernel-manifests/llama-v11-manifest.md](../docs/reference/kernel-manifests/llama-v11-manifest.md) — V11-102 PEND row for iqk CPU FA
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — akx-all-27b-run outcome and V11 driver context
@@ -312,7 +312,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champ
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md)
 - [docs/reference/kernel-manifests/llama-v11-manifest.md](../docs/reference/kernel-manifests/llama-v11-manifest.md)
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md)
-- [handoffs/active/agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
+- [handoffs/active/rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
 
 ## Compiled Update — 2026-10-21 (wrap-up sweep 3: candidate C consolidation, HIP guard bands, rounding-step reading)
 
@@ -344,7 +344,7 @@ Cross-refs: [Inference Serving](inference-serving.md), [MoE Optimization](moe-op
 
 ### Source References (2026-10-20 sweep 2)
 
-- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — reframing, quant ladder, achievable-bandwidth basis.
+- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — reframing, quant ladder, achievable-bandwidth basis.
 - [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — row counts, IN rows, at-risk list.
 - [Speech v2 release manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md) — must-carry gfx90a patches, threadpool work.
 - [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md) — GPU lane context.
@@ -378,9 +378,9 @@ The MI210 transfer-mechanism review also distinguishes a throughput record from 
 
 ### Source References
 
-- [Agentic ROCm authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — persisted C5 join and exact policy carrier.
-- [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md) — suite-seed correction and SSM-ID gap.
-- [Gemma kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — isolated K28 scaffold custody.
+- [Agentic ROCm authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — persisted C5 join and exact policy carrier.
+- [ROCm verification backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — suite-seed correction and SSM-ID gap.
+- [Gemma kernel techniques](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) — isolated K28 scaffold custody.
 - [MI210 speed summary](../handoffs/completed/mi210-speed-campaign-summary.md) — withdrawn KernelBench attribution.
 - [GPU acceleration path](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — transfer-mechanism evidence limits.
 
@@ -388,9 +388,9 @@ The [CPU roofline program](../handoffs/active/cpu-decode-roofline-program.md) al
 
 ## Source References
 
-- [Agentic ROCm authoring](../handoffs/active/agentic-rocm-kernel-authoring.md)
-- [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md)
-- [Gemma kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md)
+- [Agentic ROCm authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring)
+- [ROCm verification backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend)
+- [Gemma kernel techniques](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7)
 - [MI210 speed summary](../handoffs/completed/mi210-speed-campaign-summary.md)
 - [GPU acceleration path](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path)
 - [CPU roofline program](../handoffs/active/cpu-decode-roofline-program.md)
@@ -405,7 +405,7 @@ The [CPU roofline program](../handoffs/active/cpu-decode-roofline-program.md) al
 - **Parity precedes llama.cpp integration.** The first architecture milestone compares complete real-fixture operator outputs from the portable oracle, CPU implementation, and gfx90a kernel. Only then does one canonical EXL3 linear or indexed-expert operator enter a fresh `llama.cpp-experimental` tree. The frozen v10 branch, kernel store, launchers, and serving lineup stay outside this program ([INF-80](../handoffs/active/quantization-and-low-bit.md)).
 - **Mixed-K MoE dispatch must be total.** The design keeps unified runtime-K and grouped K-specialized policies, with named batched, small-row, and single-expert fallbacks behind one capability table. Local tables contain exactly `E` experts even where count/sort arrays use sentinel `E`; gather preserves routing order and uses deterministic fixed-order FP32 unless an atomic mode is explicitly labeled. Full operator outputs or logits are the correctness signal; token equality alone is insufficient.
 - **Hybrid CPU/MI210 streaming comes after independent parity.** The later path uses a failure-atomic HIP registered shared arena, byte-exact DMA, explicit ownership, and deterministic teardown. It records CPU GEMV, transfer, GPU kernel, overlap, fallback, and residency timelines while comparing CPU-only, GPU-only, whole-layer offload, and expert-split offload under identical residency and prompts.
-- **The existing ROCm authoring substrate supplies the verify/profile dependency.** `INF-80` consumes that gfx90a machinery and owns EXL3 implementation and acceptance ([agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md)). Prospective measurement and verifier rows must bind the artifact, source, binary, library, toolchain, hardware, and active-residency identities before the first run ([Vidya contract](../handoffs/active/vidya-belief-substrate-program.md)).
+- **The existing ROCm authoring substrate supplies the verify/profile dependency.** `INF-80` consumes that gfx90a machinery and owns EXL3 implementation and acceptance ([agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring)). Prospective measurement and verifier rows must bind the artifact, source, binary, library, toolchain, hardware, and active-residency identities before the first run ([Vidya contract](../handoffs/active/vidya-belief-substrate-program.md)).
 
 ### Critical path
 
@@ -414,7 +414,7 @@ The [CPU roofline program](../handoffs/active/cpu-decode-roofline-program.md) al
 ### Source References (2026-09-25)
 
 - [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — kernel architecture, order, correctness gates, and exclusions.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — verify/profile substrate relationship.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — verify/profile substrate relationship.
 - [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — scope boundary between the retired Qwen CPU result and the successor program.
 - [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) — prospective native evidence schemas and grading boundary.
 - [EXL3 intake session record](../progress/2026-09/2026-09-25-codex-exl3-intake.md) — approved scope, dispositions, and publication validation.
@@ -747,7 +747,7 @@ admission: the GLM core held a −25.71% Flash-Next CPU signal. Expert multirow 
 
 ### Key findings
 
-- **The only cross-ISA artefact found is RDNA-only and is not gfx90a evidence.** A HIP-native SageAttention port exists but targets RDNA2/RDNA3 (`gfx103x`/`gfx110x`, WMMA/V_DOT — absent on CDNA2/MFMA). Cite it only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). **CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported** (standing rule). ([agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
+- **The only cross-ISA artefact found is RDNA-only and is not gfx90a evidence.** A HIP-native SageAttention port exists but targets RDNA2/RDNA3 (`gfx103x`/`gfx110x`, WMMA/V_DOT — absent on CDNA2/MFMA). Cite it only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). **CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported** (standing rule). ([agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 - **The agentic digest's port speed/latency claims are NON-CITABLE.** They have no fetchable primary source; the digest (intake-1461#record) and its consolidating essay (intake-1480#record) remain stage1-unverified, and the harness patterns it contributes are generic standard tooling only. ([2026-09-17-intake-jev-sageattn](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
 - **AK-PORT-1 — correctness-gated optimization order belongs in the loop spec.** Canonical order: compile → reference comparison (cosine similarity / PSNR for low-precision variants; max-abs/MSE otherwise) → only then timing. A fast wrong variant is discarded. ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **AK-PORT-2 — ordered test ladder with failure localization**: host wiring → kernel-side units → reference comparison, so a high-rung failure is not diagnosed at the wrong layer.
@@ -761,7 +761,7 @@ admission: the GLM core held a −25.71% Flash-Next CPU signal. Expert multirow 
 
 ### Source References (2026-09-17 research-intake delta)
 
-- [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the cross-ISA evidence rider (intake-1491) and the CuTeDSL standing rule.
+- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the cross-ISA evidence rider (intake-1491) and the CuTeDSL standing rule.
 - [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-PORT-1/2/3 and the non-citability note.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's porting-evidence finding.
 
@@ -797,14 +797,14 @@ GLM thread figures, which are a runtime-recipe diagnostic, not a matched-process
   - **Version mismatch.** The source names ROCm 6.2.4, while this host's `hipcc` reports 6.2.0.
   - **An external warning.** Issue #6 reports a released 1.390 ms TriMul artifact against a 1.841 ms
     independent MI300 search. Neither figure is an MI210 expectation, and nothing was re-measured.
-  - [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md), intake-1454#record
+  - [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring), intake-1454#record
 - **AR-RPUCG stays open, because the data it needs does not exist.**
   - **What RPUCG needs.** It selects from a parent→child DAG of evaluated nodes, using chain and visit state.
   - **What the archive has.** The r19 cell receipts have source hashes and scores, but no `parent_ids`,
     `chain_idx` or `visit_counts`.
   - **What a valid comparison would need.** A frozen pre-selection snapshot for one named task. Its result
     would show only how the two selectors disagree, not downstream kernel quality.
-  - [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md)
+  - [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring)
 - **GLM-5.3-Flash CPU thread diagnostic at experimental tip `614ff2ba`.** The CPU-only build used a frozen
   request under held CPU and MI210 claims.
   - **24 vs 48 threads.** Five alternating pairs gave a median 24-thread effect of **−6.391%**. The 48-thread
@@ -822,7 +822,7 @@ GLM thread figures, which are a runtime-recipe diagnostic, not a matched-process
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md): annotated preservation-risk note.
 - [autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program): PROD-1 and UP-1/UP-2 pointers.
 - [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): R23-57 evidence pointers.
-- [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md): AR-RPUCG data admission and the AR-ROCm-eval register.
+- [agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring): AR-RPUCG data admission and the AR-ROCm-eval register.
 - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): GLM thread diagnostic.
 - [2026-09-08-ak-rebuild-20260828](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md): evidence-provenance annotation.
 
@@ -834,11 +834,11 @@ The 2026-09-16 closure audit found that several SHAs this page's kernel record l
 
 ### Key findings
 
-- **The hardening instrument anchor `a4cb04ca8` is on no ref.** `a4cb04ca8f92fa4d665684490f609b380f9b5e96` is absent from every llama.cpp `fork` ref, the canonical tree and every local clone. The equivalent lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`), the tip of `fork/experimental-v9-autokernel-t1-hardening-final`. It is **not** the tip of `...-t1-hardening`; that branch ends at `0492c2319`, a separate commit. Six live `/mnt/raid0/llm/autokernel/iqk-*.json` manifests still pin the missing SHA, so the owner must re-point and re-hash them. ([rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
+- **The hardening instrument anchor `a4cb04ca8` is on no ref.** `a4cb04ca8f92fa4d665684490f609b380f9b5e96` is absent from every llama.cpp `fork` ref, the canonical tree and every local clone. The equivalent lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`), the tip of `fork/experimental-v9-autokernel-t1-hardening-final`. It is **not** the tip of `...-t1-hardening`; that branch ends at `0492c2319`, a separate commit. Six live `/mnt/raid0/llm/autokernel/iqk-*.json` manifests still pin the missing SHA, so the owner must re-point and re-hash them. ([rocm-verify-profile-backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **Branch-only foundations.** AK-V27's `caa22f42` and `cffb98d3` are not on root `origin/main`. They exist only on `codex/autokernel-v27-*`, with 33 commits unmerged. ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **The INF-70 evidence commit is not on research `origin/main`.** `1780fa7b` (on main as `56ef1404`) promotes the INF-70 evidence, the PROD-1 recipe draft and `data/inf70-upstream-patches-2026-09-08/`, the input to upstream publication. It exists only on the shared research clone (3 commits ahead) and on the pushed branches `origin/inf70/evidence-2026-09-08` and `origin/lane/autokernel-status-bounding-20260914`. It is not lost, but it is unmerged. ([cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md))
-- **The K28 fused-GDN scaffold was never committed.** In `llama.cpp-k28-prototype-20260720`, the design doc is staged and the `gated_delta_net.cu` hook is an uncommitted working-tree change. No ref carries the K28.5a scaffold. **K28.5a-COMMIT is filed (2026-09-17)** to commit it on the experimental prototype branch (not production); a `git diff HEAD` patch (85+/3−) and the doc are backed up in `/mnt/raid0/llm/backups/preserve-20260916/`. ([gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
-- **A selection-only controller candidate and a ROCm eval path are filed for the MI210 verify+profile loop.** AR-RPUCG would A/B SimpleTES's RPUCG DAG parent-selection against the current heuristic on one non-promotable task, with no re-execution of evaluated candidates (source code `47d3413d`). AR-ROCm-eval registers SimpleTES's ROCm eval path (`AMD_REQUIREMENTS` rocm6.2.4, `profile_program_roc`) and its issue #6 MI300 config as gfx90a port input, study-only under the no-external-re-measure rule (AK-RB-1). Both are zero-inference prep. ([agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
+- **The K28 fused-GDN scaffold was never committed.** In `llama.cpp-k28-prototype-20260720`, the design doc is staged and the `gated_delta_net.cu` hook is an uncommitted working-tree change. No ref carries the K28.5a scaffold. **K28.5a-COMMIT is filed (2026-09-17)** to commit it on the experimental prototype branch (not production); a `git diff HEAD` patch (85+/3−) and the doc are backed up in `/mnt/raid0/llm/backups/preserve-20260916/`. ([gemma-challenge-kernel-techniques-v7](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7))
+- **A selection-only controller candidate and a ROCm eval path are filed for the MI210 verify+profile loop.** AR-RPUCG would A/B SimpleTES's RPUCG DAG parent-selection against the current heuristic on one non-promotable task, with no re-execution of evaluated candidates (source code `47d3413d`). AR-ROCm-eval registers SimpleTES's ROCm eval path (`AMD_REQUIREMENTS` rocm6.2.4, `profile_program_roc`) and its issue #6 MI300 config as gfx90a port input, study-only under the no-external-re-measure rule (AK-RB-1). Both are zero-inference prep. ([agentic-rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 - **OP-34 was ruled option A, a scoped `--touch`. This supersedes the line compiled above:** "Stop there — `--touch` is blocked on OP-34 (PART 4)". Bare `compile_sources.py --touch` still rewrites the shared watermark for every session. A partial compile must pass only its own sources, e.g. `--touch progress/2026-09/2026-09-08-inf70-audit.md,handoffs/active/cpu-decode-roofline-program.md` under the wrap-up lease. That form carries every other manifest entry unchanged and leaves `.last_compile` alone. BLOCKER 1 (a stale untracked `.last_compile` that can report a watermark behind the tracked one) remains open. ([WIKI-DRAFT](../docs/design/inf70-close-out-20260908/WIKI-DRAFT.md))
 - **AK-INST-2 found a live defect: an exact instrument-commit pin refuses the current champion.** `controller/discovery_deployment_factory.py` checks `_INSTRUMENT_COMMIT = 270b48ed…` with `!=`. `270b48ed` is an ancestor of champion `ef81196d5`, so a deployment that names the current champion is refused as "unreviewed". The check should become "descends from", keeping the reviewed-delta diff check. `prior_art.py`'s `GGML_TYPE_ENUM_SOURCE_COMMIT = 0db32c06…` should become ancestry plus a re-hash of the enum block; that is safe, because `0db32c06e3e5..ef81196d5` touches only the `ggml_op` enum. Two sets of pins need an owner ruling: the T0/T1 campaign pins in `campaign.py` and `live_controls.py`. Frozen-production, speech-kernel, external and historical pins stay exact. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md))
 - **Designed but not built: a per-surface champion recipe.** Putting `champion_recipes` inside the loop `Bundle` would need a v3 snapshot schema plus a journal-validator change, and GitNexus rated that **HIGH** risk (15 symbols, 3 processes). The lower-risk alternative is a `champion-recipes.json` sidecar keyed by surface: `GGML_NOHUGEPAGE_PROCESS=1` on cpu-decode and unset on gpu-serving. `require_match` would refuse a mismatch and report `unverified` for legacy stores. It is blocked on a gap: **no codified CPU-decode `serving.Recipe` JSON exists**, only two GPU recipes, and neither sets `env`. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md))
@@ -855,11 +855,11 @@ The 2026-09-16 closure audit found that several SHAs this page's kernel record l
 
 ### Sources
 
-- [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md): the `a4cb04ca8` no-ref provenance notes.
+- [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend): the `a4cb04ca8` no-ref provenance notes.
 - [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): the same provenance note on R24.
 - [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the branch-only `caa22f42`/`cffb98d3` notes.
 - [cpu-decode-roofline-program.md](../handoffs/active/cpu-decode-roofline-program.md): the `1780fa7b` (on main as `56ef1404`) preservation-risk note.
-- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md): the uncommitted K28 scaffold note.
+- [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7): the uncommitted K28 scaffold note.
 - [WIKI-DRAFT.md](../docs/design/inf70-close-out-20260908/WIKI-DRAFT.md): OP-34 lifting BLOCKER 2 and the scoped `--touch`.
 - [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the AK-INST-2 audit, the champion-recipe design and the verify-route reading.
 - [2026-09-16-codex-autokernel.md](../progress/2026-09/2026-09-16-codex-autokernel.md): the GLM v15–v17 relaunch, the regression-label fix and the pointer deployment.
@@ -949,8 +949,8 @@ wall timeout, and bounded output.
 
 - [a10_iq2_vgpr_compiler_ab_20260915.md](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md) — the static A/B tables, method traps and addendum.
 - [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-QL-2b / AK-QL-7 / AK-QL-8.
-- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-IQ-2 / INF37-IQ-3.
-- [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the #19984 correction.
+- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-IQ-2 / INF37-IQ-3.
+- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the #19984 correction.
 - [rocm-upgrade-checklist.md](../docs/runbooks/rocm-upgrade-checklist.md) — unpin gates.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — SC84 write-side hook (VB-VGPR-STATIC; filed as SC76).
 - [2026-09-15-vgpr-compiler-ab.md](../progress/2026-09/2026-09-15-vgpr-compiler-ab.md) — session record including the +31 intake renumbering.
@@ -969,8 +969,8 @@ licensed sources.
 
 ### Source References (2026-09-15)
 
-- [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — GEAK gfx90a coverage, the LDS bank-topology measurement, the fp16 retarget, and the profiler-null result.
-- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the 62.6% fp16 attainment denominator and the gfx90a low-precision datapath facts.
+- [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — GEAK gfx90a coverage, the LDS bank-topology measurement, the fp16 retarget, and the profiler-null result.
+- [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the 62.6% fp16 attainment denominator and the gfx90a low-precision datapath facts.
 
 ## Compiled Update — 2026-09-08 (pm, R23-58): the THP shim is CPU-ONLY — a launch recipe is PER-SURFACE, so a commit hash plus one recipe still under-specifies a kernel
 
@@ -1443,7 +1443,7 @@ The mechanism was fully on disk before the ladder ran — the Q8_0 roofline work
 - [A10 quant-ladder occupancy knee](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung batch-1 table, the batched sweep, the suspected B=8 outlier, the GiB/GB unit hazard, and the full caveat list.
 - [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the re-aimed lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census.
 - [A10 IQ2 VGPR lever](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the static per-quant table and the extraction method that made the prediction four days early.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the "achieved-bandwidth/occupancy, NOT dequant-compute" prior, the 1433.3 GB/s measured achievable denominator, and the latent-exposure tripwire for the day an IQ-format role becomes GPU-resident.
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the "achieved-bandwidth/occupancy, NOT dequant-compute" prior, the 1433.3 GB/s measured achievable denominator, and the latent-exposure tripwire for the day an IQ-format role becomes GPU-resident.
 
 ## Compiled Update — 2026-08-14 (GPU-lane batch): KV placement dominates the decode number, op-offload prefill is a free 2.3×, and the KV-quant "alive at long context" hypothesis is dead
 
@@ -1481,8 +1481,8 @@ Both are architecture-independent mechanisms with a gfx90a-specific consequence,
 
 - [fable5 window-2 findings-02 — heterogeneous GPU](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) §5 — M1 residency bench (KV placement, the OOM root cause, the 40.22 anchor correction, MTP-on-GPU) and M3 op-offload prefill.
 - [fable5 window-2 findings-05c — lever × category matrix](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix) §4 — the L14 KV-quant falsification at 64k on both arms.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — the SOL-ExecBench bound-port checklist and the `LLC_BYTES` per-XCD trap.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — the non-syncing timed-loop bypass, its measured magnitude, and the fence-and-join fix.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the SOL-ExecBench bound-port checklist and the `LLC_BYTES` per-XCD trap.
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the non-syncing timed-loop bypass, its measured magnitude, and the fence-and-join fix.
 
 ## Compiled Update — 2026-08-14: three serving probes converged, but only at observation grade
 
@@ -1520,7 +1520,7 @@ than an active serving regression, but that path is not numerically trustworthy 
   — corrected gates, exact role probes, and evidence locations.
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — ratified P-GPU-1
   duty-cycle semantics and receipt.
-- [`llama-cpp-dsa-contribution.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) — D4 reproduction,
+- [`llama-cpp-dsa-contribution.md`](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) — D4 reproduction,
   root-cause boundary, production impact, and upstream next step.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
   execution, device proof, corrections, and arithmetic.
@@ -1611,12 +1611,12 @@ A NUMA placement-policy row believed stale by a day was actually still live: the
 The operator-gated OP-11 approval (a seeded synthetic-shape kernel-diagnostic producer) was resolved as **declined (Option B)** — no experimental commit or push, retained only as a local diagnostic. The decision turned on measurement, not policy: the IQ2 occupancy question OP-11 was blocking turned out to be answerable from artifacts already on disk. All 65 IQ2_XXS `mul_mat_vec_q` dispatches in the existing (non-synthetic) smoke carry `Arch_VGPR=64`, `Accum_VGPR=0`, `Scratch=0`, invariant across six grid sizes — on gfx90a's 512 unified VGPRs that is 8 waves/SIMD, the hardware maximum, so **IQ2_XXS MMVQ is not occupancy-limited** (corroborating the separate `a8afd338` L3 correction on a different quant).
 
 > **⚠ SUPERSEDED 2026-08-16 — the smoke measured the wrong template instantiation.** `Arch_VGPR=64` is the *synthetic* `mul_mat_vec_q<IQ2_XXS,1,false,false>` variant. **Production MoE decode runs `<IQ2_XXS,1,true,false>` (the `mm_ids` path) at 78 true / 80 rounded VGPR → 6 waves/SIMD, 75% of maximum**, so **"IQ2_XXS MMVQ is not occupancy-limited" is false for the kernel production actually runs.** The OP-11 *decline* still stands — the question was answerable without a new instrument, which is what that decision turned on — but the answer it recorded was wrong. See the 2026-08-12b register-pressure section and the 2026-08-16 occupancy-knee section for the corrected reading and the throughput measurement that confirms it. Generalisable: a synthetic op capture is a different kernel from the production one until the template arguments are compared. Independently, the real-model rocprof-v1 attribution path (which takes no seed flags) already passed on the same `qwen35moe` architecture at 21,896 dispatches. A genuine gap remains and is left open deliberately: rocprof-v1's SQ instruction counters (`SQ_WAVES`, `SQ_BUSY_CYCLES`, etc.) read exactly 0 for every IQ2 row on this box, so a governed *counter-level* op differential still has no path (`rocprofv2` segfaults on IQ2_XXS) — reopen OP-11 only if that becomes decision-gating.
-[`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) §OP-11
+[`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) §OP-11
 
 ### Source References (2026-08-12, NUMA fail-open audit and OP-11 resolution)
 
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — the `placement_policy` fail-loud gap and its 16/11 mutation pin, the fleet-wide `stack_numa` bare-except fail-open, and the `quarter_scheduler.py` DO-NOT-DELETE adjudication.
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the OP-11 decline rationale, the IQ2_XXS occupancy measurement (65 dispatches, 8 waves/SIMD), and the rocprof-v1 SQ-counter-zero caveat.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the OP-11 decline rationale, the IQ2_XXS occupancy measurement (65 dispatches, 8 waves/SIMD), and the rocprof-v1 SQ-counter-zero caveat.
 
 ## Compiled Update — 2026-08-12 (kernel-lever pass): four falsified ceilings, one falsified proxy, and a synthetic optimum that inverts on the real kernel
 
@@ -1681,11 +1681,11 @@ An evidence-authority audit draws a line this page must respect: the rows above 
 ### Source References (2026-08-12, kernel-lever pass)
 
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — G15/G17/G18 closures, async-prefetch replays, AK-BH baseline-honesty arms, AK-LN-2 split-depth calibration, and the evidence-authority audit.
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 saturation replications, the Q4_K MMQ root cause and 172/172 fix, and the RVP-C5-R historical expert replay.
-- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the stream-K retirement, Item A/B/C rungs, and the IQ2 fancy-SIMD one-row narrowing.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-T0-1 saturation replications, the Q4_K MMQ root cause and 172/172 fix, and the RVP-C5-R historical expert replay.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the stream-K retirement, Item A/B/C rungs, and the IQ2 fancy-SIMD one-row narrowing.
 - [`mi210-mfma-compute-bound-paths.md`](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — the synthetic WGM16 proxy optimum that the real MMQ sweep inverts.
-- [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) and [`gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — the K28 attribution and its closure.
-- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the LDS solver mis-stamp correction and its merge-note provenance.
+- [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) and [`gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) — the K28 attribution and its closure.
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the LDS solver mis-stamp correction and its merge-note provenance.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — same-day receipts, the fp64 oracle build, and the ISA accounting.
 
 **Last compiled**: 2026-08-12 (adds the INF-03 r4 integrity retraction and broker/isolation boundary; the AK-D39 ROCm-provider boundary; sustained AK-BH-1 vendor-baseline replication, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
@@ -1723,9 +1723,9 @@ This is diagnostic routing, not a cross-quant causal comparison.
 
 ### Source References (2026-08-12 r19/Q4 checkpoint)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r18
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r18
   disposition, copy-time identity repair, r19 live boundary, and overlap implementation task
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — exact Q4_K_M
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — exact Q4_K_M
   receipts, attribution shares, claim teardown, and prior-art routing
 - [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — immutable attempt boundary and
   prohibited partial-result upgrades
@@ -1798,7 +1798,7 @@ branch.
 
 ### Source References (2026-08-12 raw-HIP arm)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — arm acceptance,
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — arm acceptance,
   exact authority boundary, and residual decision-grade gate
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — task identity, claims, test counts, and
   immutable r4 receipt hashes
@@ -1827,7 +1827,7 @@ receipt predates producer-authored belief rows and is never retrofitted.
 
 ### Source References (2026-08-12 reward-integrity corpus)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — acceptance contract, exact result, claim, and receipt identity
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — acceptance contract, exact result, claim, and receipt identity
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — attempt chronology, test counts, and authority boundary
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — prospective write-side and no-backfill status
 
@@ -1878,8 +1878,8 @@ or ranking for an incomplete matrix. The full integrated AutoKernel regression a
 
 ### Source References (2026-08-12 INF-03 checkpoint)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, and claim-window evidence
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
@@ -1899,10 +1899,10 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 - [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the native C6 sandbox extension and AK-TR-4/AK-X-3/AK-X-5/AK-X-6 hardening controls
 - [`handoffs/completed/cpu-shape-specialized-gemv-decode.md`](../handoffs/completed/cpu-shape-specialized-gemv-decode.md) — A17 re-anchor to the barrier-count lever
 - [`handoffs/completed/cpu-kernel-env-flags-inventory.md`](../handoffs/completed/cpu-kernel-env-flags-inventory.md) — A18 trace-interpretation column, all 24 flags
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 hold, RVP-T0-2/T0-5 static probe results
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-T0-1 hold, RVP-T0-2/T0-5 static probe results
 ## Compiled Update — 2026-08-12 (second pass): the LDS solver had already run — the row named the wrong instrument
 
-**Confidence: verified** — read from the r4 receipt on disk, the live registry, `stack_topology.yaml`, and the same-day adjudications in [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) and [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md).
+**Confidence: verified** — read from the r4 receipt on disk, the live registry, `stack_topology.yaml`, and the same-day adjudications in [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) and [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend).
 
 ### gfx90a has 32 LDS banks and eight phase cliques — HipKittens' CDNA3 swizzle does not transfer
 
@@ -1919,7 +1919,7 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 
 > **Generalisation: a task row that names its instrument can go stale against a run that used a different one — and then a correct check of the named instrument returns a false BLOCKED.** Verify the *result*, not the tool the row happens to mention.
 
-**Status note for readers, deliberately explicit**: as of this compile the two branch states of [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) disagree — one records the row as settled/mis-stamped, the other re-asserts "still blocked, verify the counters are reachable via `rocprofv2` first". **The receipt is the tiebreaker and it says the counters were reachable and were read.** This article states the measured result; the handoff's own reconciliation is its owners' to land.
+**Status note for readers, deliberately explicit**: as of this compile the two branch states of [`agentic-rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) disagree — one records the row as settled/mis-stamped, the other re-asserts "still blocked, verify the counters are reachable via `rocprofv2` first". **The receipt is the tiebreaker and it says the counters were reachable and were read.** This article states the measured result; the handoff's own reconciliation is its owners' to land.
 
 ### The profiler toolchain is deliberately invisible to the obvious probe
 
@@ -1927,7 +1927,7 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 
 ### TileLang is a live gfx90a arm — an internal HARD_CONSTRAINT overstates its abandonment
 
-GEAK's own `perf_knowledge/languages/tilelang/overview.md` (updated 2026-06-08, HEAD `5107c7e4`) tags `gens: [gfx90a, gfx942]` and "validated on MI250". That agrees with [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) and **contradicts** the `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT in [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), whose TileLang clause would wrongly fence a live lever. This article's own line asserting the opposite was corrected the same night. Unchanged by the same sweep: **FlyDSL remains gfx942/gfx950-only** and is correctly *not* a current MI210 arm; and the vendor tile/template family (CK / CK-Tile / rocWMMA) carries real gfx90a baselines while our corpus records it only in passing as "CK = baseline to beat" — worth an explicit baseline-source row when the C4 profiler work lands.
+GEAK's own `perf_knowledge/languages/tilelang/overview.md` (updated 2026-06-08, HEAD `5107c7e4`) tags `gens: [gfx90a, gfx942]` and "validated on MI250". That agrees with [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) and **contradicts** the `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT in [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), whose TileLang clause would wrongly fence a live lever. This article's own line asserting the opposite was corrected the same night. Unchanged by the same sweep: **FlyDSL remains gfx942/gfx950-only** and is correctly *not* a current MI210 arm; and the vendor tile/template family (CK / CK-Tile / rocWMMA) carries real gfx90a baselines while our corpus records it only in passing as "CK = baseline to beat" — worth an explicit baseline-source row when the C4 profiler work lands.
 
 ### The CPU lineup retired quarters entirely; the names did not follow
 
@@ -1942,8 +1942,8 @@ Two consequences already banked:
 
 ### Source References (2026-08-12 second pass)
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the mis-stamped instrument row, the live profiler re-verification, and the omniperf dependency gap
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — gfx90a counter taxonomy, rocprofv2 path, per-block collection limits
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the mis-stamped instrument row, the live profiler re-verification, and the omniperf dependency gap
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — gfx90a counter taxonomy, rocprofv2 path, per-block collection limits
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §Freshness addendum — the TileLang/gfx90a contradiction, the agent-method taxonomy cross-check, and the CK/rocWMMA under-weighting
 - [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) §C4 — quarters retired, so the "status-quo production shape" label moves off C1 and onto C3
 - [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md) §P2-5l — the `NUMA_NODE0`/`NUMA_NODE1` deletion and the quarter-naming decline
@@ -2369,7 +2369,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 
 ### Key Findings (2026-07-20)
 
-- **v7 is promoted as `production-consolidated-v7`** — frozen at `experimental-v7-refresh-20260716 @ 6ad45fa3ff` (binary `10098`) and cut over on 2026-07-20. Banked, correctness-verified, runtime-gated-off wins: HIP per-decode graph capture **+25%** worker spec-dec (A4B MoE) / +4–14% base decode; MMVQ→MMQ small-batch verify-dispatch **+17.4%** MTP-verify / **+31.7%** gemma-31B; nwarps 2→4 +4.6%; async prefetch +3.3%; bf16 GDN recurrent-state **+21.5% @B32**; single-stream dense-Q8 **+37%** (29→40.4 t/s). K5 quality neutral (+0.0% MMLU-Pro/GPQA). ([v7-promotion](../handoffs/completed/v7-promotion.md), [gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
+- **v7 is promoted as `production-consolidated-v7`** — frozen at `experimental-v7-refresh-20260716 @ 6ad45fa3ff` (binary `10098`) and cut over on 2026-07-20. Banked, correctness-verified, runtime-gated-off wins: HIP per-decode graph capture **+25%** worker spec-dec (A4B MoE) / +4–14% base decode; MMVQ→MMQ small-batch verify-dispatch **+17.4%** MTP-verify / **+31.7%** gemma-31B; nwarps 2→4 +4.6%; async prefetch +3.3%; bf16 GDN recurrent-state **+21.5% @B32**; single-stream dense-Q8 **+37%** (29→40.4 t/s). K5 quality neutral (+0.0% MMLU-Pro/GPQA). ([v7-promotion](../handoffs/completed/v7-promotion.md), [gemma-challenge-kernel-techniques-v7](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7))
 - **v8 is the current frozen production kernel, `production-consolidated-v8`** — `67a433bf45a8a091d83b4ea0b32ff0735fd51800` / binary `10107`, ratified by [`ratify_v8_final_freeze_20260725.json`](../artifacts/operator/ratify_v8_final_freeze_20260725.json) (SHA-256 `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`). `GGML_IQK=1` now covers IQ2/IQ3 and IQ4_XS; IQ1 remains non-accelerated. v7 (`6ad45fa3ff6718c07c000061dbc6e29c1771f6e3` / `10098`) remains the rollback/history anchor.
 - **CPU prefill ≠ CPU decode roofline (verified).** Decode is DRAM-BW-bound (Qwen3.6-27B Q8 @96t = 0.17 IPC, 96.6% cycles memory-stalled); prefill is `M>1` GEMM, compute-bound. PC-0 confirmed positive: 122B architect Q4 `p8192` ≈ 108–122 t/s at 0.92–1.47 IPC, and prompt/prefill dominates wall-clock in the targeted large/long-context regimes (GLM-5.2 patch review 81% prompt-wall, ingest 31K 75.1%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models))
 - **The CPU-prefill hot path is OpenMP barriers, not math.** Symbolized profiling (PC-3/PC-4j) attributes 38–44% of prefill to `GOMP_barrier`/`__kmpc_barrier` (libomp spin/pause), ~22% to MoE `mul_mat_id`, and only ~1–2% each to GDN/SSM/RMS. The first landed lever is a **default-off CPU `CONCAT` dim0 row-partition** (`GGML_CPU_CONCAT_DIM0_ROWS=1`, experimental commit `93d945885`) targeting the `conv_input` CONCAT barrier in shared `build_conv_state()`: measured `pp8192` **+3.2% to +9.1%** single-seq and batched `pl=2` prompt **+22% to +54%**, cutting the target CONCAT barrier sum ~99%. It was **not part of frozen v7**; it is now carried default-off in frozen v8, with no default-on claim (one decode-only row regressed −5.8%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models), [progress 2026-07-20](../progress/2026-07/2026-07-20.md))
@@ -2386,7 +2386,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 
 - [cpu-prefill-compute-large-models.md](../handoffs/active/cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models) — PC-0..PC-4 profiling: prefill is compute-bound, hot path is OpenMP barriers, CONCAT dim0 row-partition lever.
 - [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench throughput table with provenance guards.
-- [v7-promotion.md](../handoffs/completed/v7-promotion.md) / [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — banked runtime-gated-off wins + readiness gate audit.
+- [v7-promotion.md](../handoffs/completed/v7-promotion.md) / [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) — banked runtime-gated-off wins + readiness gate audit.
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — GPU raw-speed frontier exhausted; residency/teleport is the live frontier.
 - [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency finding + measured no-go closeout.
 - [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5 NUMA×batch 2D sweep spec.
@@ -2403,14 +2403,14 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 
 - `P-GPU-1` is now ratified, but only production-named kernels can produce decision-grade MI210 throughput claims. Existing experimental-v7 Gate-R/K35/AXA rows remain observations and, at this 2026-07-19 boundary, required reruns on `production-consolidated-v7` with hardware, binary identity, host-interference, repetition, prompt/decode, draft-counter, and cleanup fields present. Current reruns must use the current production kernel named above. Sources: [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [P-GPU-1 amendment draft](../docs/reference/p-gpu-1-amendment-draft-2026-07-19.md), [v7 promotion](../handoffs/completed/v7-promotion.md).
 - OP-2 closed the CPU-regression check under the canonical measurement boundary: canonical CPU rows require the codified recipe, clean preflight, exact binary/repo identity, and attestation; ungrammatical numbers remain observations even when repeatable. This preserves the distinction between validating the candidate and certifying a production claim. Sources: [OP-2 canonical bench package](../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
-- The practical implication is a two-stage GPU record: use experimental-v7 measurements to choose and debug levers, then rerun the promoted production-named kernel before using throughput to gate deployment, rollback, or promotion. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [Gemma v7 kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
+- The practical implication is a two-stage GPU record: use experimental-v7 measurements to choose and debug levers, then rerun the promoted production-named kernel before using throughput to gate deployment, rollback, or promotion. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [Gemma v7 kernel techniques](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7).
 ## Key Findings
 
 ### 2026-07-16 — v7 refreshed candidate clears K5/readiness; MI210 validation must use candidate shared libraries
 
-- **The refreshed v7 candidate is quality-neutral against production on the K5 gate, so the remaining promotion question is operational readiness/promotion policy rather than an observed suite regression.** The corrected chat-endpoint harness ran matched v6 and v7 candidate `8e5c555ab` windows on CPU-only temp servers. MMLU-Pro was `73/200=36.5%` on both arms, GPQA was `50/195=25.6%` on both arms, errors were `0`, and the comparator passed at the `-5pp` suite threshold. The old raw `/v1/completions` run is explicitly non-evidence because it used the wrong endpoint contract. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
-- **The v7 ROCm binary is valid on MI210, but only when its own shared libraries are first in `LD_LIBRARY_PATH`.** A sidecar initially reported no GPU devices because `llama-bench` resolved shared libraries from the production CPU tree. Re-running with `LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build-hip/bin` made `llama-bench --list-devices` see `ROCm0: AMD Instinct MI210`; a bounded Gemma3 1B Q8 bench recorded `build_commit=8e5c555ab`, `backends="ROCm"`, `gpu_info="AMD Instinct MI210"`, prompt `15765.579 tok/s`, generation `197.773 tok/s`, and sampled GPU use `99%`. This is a deployment hygiene lesson as much as a GPU smoke. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-gpu-sidecar-20260716-corrected/bench-gemma3-1b-q8-ldpath.log`.
-- **Stack-launched CPU roles must explicitly hide ROCm devices when using a HIP-capable binary.** The v7 server A/B showed HIP-visible defaults on a CPU role could touch ROCm and regress the worker path, while `--device none` plus `--device-draft none` restored production-shaped behavior. The orchestrator launcher now appends those flags for stack-launched text roles, including speculative launches. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **The refreshed v7 candidate is quality-neutral against production on the K5 gate, so the remaining promotion question is operational readiness/promotion policy rather than an observed suite regression.** The corrected chat-endpoint harness ran matched v6 and v7 candidate `8e5c555ab` windows on CPU-only temp servers. MMLU-Pro was `73/200=36.5%` on both arms, GPQA was `50/195=25.6%` on both arms, errors were `0`, and the comparator passed at the `-5pp` suite threshold. The old raw `/v1/completions` run is explicitly non-evidence because it used the wrong endpoint contract. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
+- **The v7 ROCm binary is valid on MI210, but only when its own shared libraries are first in `LD_LIBRARY_PATH`.** A sidecar initially reported no GPU devices because `llama-bench` resolved shared libraries from the production CPU tree. Re-running with `LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build-hip/bin` made `llama-bench --list-devices` see `ROCm0: AMD Instinct MI210`; a bounded Gemma3 1B Q8 bench recorded `build_commit=8e5c555ab`, `backends="ROCm"`, `gpu_info="AMD Instinct MI210"`, prompt `15765.579 tok/s`, generation `197.773 tok/s`, and sampled GPU use `99%`. This is a deployment hygiene lesson as much as a GPU smoke. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-gpu-sidecar-20260716-corrected/bench-gemma3-1b-q8-ldpath.log`.
+- **Stack-launched CPU roles must explicitly hide ROCm devices when using a HIP-capable binary.** The v7 server A/B showed HIP-visible defaults on a CPU role could touch ROCm and regress the worker path, while `--device none` plus `--device-draft none` restored production-shaped behavior. The orchestrator launcher now appends those flags for stack-launched text roles, including speculative launches. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
 - **The N5 acceptance gate finally closed on the patched v7 candidate, so the authoritative GPU-drafter checkpoint is the execute artifact, not the earlier preflight.** Commit `da1bf5e2f` fixed the `draft-tree` output-capacity abort, the rebuilt `build-hip/bin/llama-server` reports `10077 (da1bf5e2f)`, and `/mnt/raid0/llm/epyc-inference-research/data/specdec_frontdoor_alpha/n5_retest_v7_execute_20260716T190836Z/summary.json` is `decision_grade=true` with `n5_spec_on` `376/376`, `positive_mtp` `355/401`, and `spec_off` `0/0`. Sources: [gpu-drafter-mi200-investigation.md](../handoffs/archived/gpu-drafter-mi200-investigation.md), [Progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
 ### 2026-07-06 — production-consolidated-**v7 candidate** built + validated (CPU-iqk + GPU-opts lines reconciled, zero conflict) + experimental-kernel-immutability workflow + verified aggregate spec sheet — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
@@ -2452,7 +2452,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **GDN recurrence is the aggregate/batch-scaling bottleneck and is qwen35-specific — but the GDN-MFMA kernel is KILLED by profile for decode.** GDN grows 2%→19.5% of decode across B1→B32 (absolute ×39); the qwen35 frontdoor batch-scales only 3.4× (B1→B32) vs gemma-MoE 5.9× / gemma-dense 8.6×. rocprofv2 on `gated_delta_net_cuda` @B=32 decode: **MemUnitBusy 65% vs VALUBusy 16%, MfmaUtil 0%, ~42% occupancy, ~130 GB/s of 1638** — memory-unit + occupancy/latency-bound (recurrent-state ~106 MB/disp, 48% L2 hit), NOT compute-bound. An MFMA kernel targets compute headroom that isn't the bottleneck → **do not build it for decode**; the real GDN lever is occupancy + recurrent-state traffic/layout. (Prefill is more ALU-active, VALUBusy ~50% — separate open question.) Tooling: rocprof v1 reads SQ/TA counters as zero on this box; **rocprofv2 required**.
 - **KV-quant does NOT help the weight-dominated MoE frontdoor.** q8_0-KV vs f16-KV on Qwen3.6-35B-A3B Q8 @98k context saves only ~0.94 GB VRAM and changes decode t/s by nothing (±1.5% noise); the ~36 GB Q8 weights dominate and ~15 GB is free even @128-way → VRAM is not the binding constraint and the **~430 t/s aggregate @128-way @80k plateau is compute/BW-bound**. Stay on f16-KV. (Alive in a KV-heavy regime — a dense model, or single-stream long-context where KV rivals the weights.) **UPDATE — SCOPED → DEFER (2026-07-05, findings-05c L14): no dedicated GPU run.** Resolving the "alive regime" against the deployed roster: only the **qwen35 ~1/4 full-global attention layers @ single-stream 32–64k** qualify — **GDN keeps KV O(1)**, **gemma SWA bounds it**, and **aggregate is weight-dominated**, so **3 of 4 resident model classes see ~0 payoff**. CPU precedent shows the **dequant cast COSTS throughput** (+9% wall / −30% gen). No deployed role needs it. Decision: run only as a cheap **~2–4h rider** on a *future* dense-full-global long-context role, to close the `[U]` with data — **it is a max-context / VRAM characterization, not a speed lever.**
 - **Throughput-vs-context: the "hybrid stays flat" hypothesis is FALSIFIED (SWA confound).** 1k→64k single-stream decode degrades qwen35 hybrid **−22.3%** vs gemma-4 **−7.9%** — the OPPOSITE of expected. Root cause (GGUF metadata): gemma-4 uses sliding-window attention (bounded per-layer KV → context-capped decode) while qwen35's ~1/4 attention layers are full-global (unbounded KV growth). GDN context-independence is real, but the full-global attention layers dominate degradation; a clean GDN-flatness test needs a non-SWA dense baseline (gemma-4 is not one). qwen35's full-global attention is a recall advantage, not a pure loss.
-- **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md)).
+- **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md)).
 - **CAMPAIGN OUTCOME (updated 2026-07-04 EOD — speed exhausted; frontier moved to capability).** Every kernel/occupancy bet has now been driven to a verdict, and the honest conclusion is convergence. Single-stream dense-Q8 banked **+37% (40.4 t/s)** — MMVQ +17.4%, nwarps 2→4 +4.6% (`5dc116130`), async-prefetch +3.3% (`7c28056b7`) — then **fused-prefetch, megakernel (Pass-2: MLP/memory floor — HIP graphs already capture the only +5.9% launch headroom), n-gram-GPU-spec, MFMA, and the L3-MoE MMQ-occupancy rewrite were all ruled out WITH DATA** (the last: *built* then falsified — Q8-MMQ at B=32 is **grid-limited** (104 WGs = 1/CU), not LDS-limited, and bf16 wins on native-MFMA not occupancy). Aggregate is solved by **config, not kernels**: **`-fa 1` is a WIN for MoE aggregate** (B≥8, +16–43%, peak **bf16+`-fa1` @B128 = 1548 t/s** — the *opposite* of dense-27B where FA hurt) and **bf16-for-aggregate / Q8-for-single-stream** (crossover B≈16–24). L20 GDN-occupancy scoped **NO-GO** (theoretical occupancy already 100% — nothing to free; the one modest lever is bf16 recurrent-state, ~+11%@B32, drift-gated). **Load-bearing meta-finding: a lever's sign is set by {arch × substrate × batch} — never carry a spec-dec / quant / FA verdict across dense↔MoE or GPU↔CPU.** With speed at bedrock, the frontier moved to **capability**: the CDNA2 sub-4-bit MMQ path is already numerically correct (`MUL_MAT_ID 789/789` across IQ2/IQ3/IQ1), so IQ2 unlocks **Qwen3.5-122B-A10B @ ~38 GB fully GPU-resident** — the residency bet's real prize (GLM-5.2 ~238 GB still won't fit). Top-line: [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) · [lever × model-category matrix (findings-05c)](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix).
 - **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-08-11): the historical four-phase scaffold is reconciled into the system-wide AutoKernel loop.** Design history: [mi210-kernel-rnd-loop-proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md); current owner: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop).
 
@@ -2504,7 +2504,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **v6 F5 122B architect: validated with f16 K; quantized-K shift crashes (not a production blocker).** The IMROPE K-shift fires and generates 600 tokens coherently at 13.65 t/s with f16 K. With Q4_0 K (the architect's prod cache), the shift crashes in `ggml_compute_forward_dup` — the well-known quantized-K + rope-shift CPU-backend gap. Not a blocker: neither `--context-shift` nor `--cache-reuse` is enabled in production config (zero matches in orchestrator config). Workaround if ever needed: f16 K. Sources: [llamacpp-v6-consolidation.md](../handoffs/archived/llamacpp-v6-consolidation.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
 - **gemma MTP confirmed on v6: ik_llama worker retirement viable.** gemma-4-26B-A4B MTP on v6 required (1) correct-lineage base model (self-convert from `google/gemma-4-26B-A4B-it`, not the unsloth QAT base — wrong-lineage weights produced 0% acceptance); (2) chat path via `--jinja`/`/v1/chat/completions` (instruct model, raw `/completion` degenerates). v6-iqk + Q8 head at 42.78 t/s beats ik_llama at 38.63 t/s. Sources: [llamacpp-v6-consolidation.md](../handoffs/archived/llamacpp-v6-consolidation.md), [progress 2026-06-25](../progress/2026-06/2026-06-25.md).
 
-- **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backend with reproducible artifacts, not an agent that writes kernels directly into production. This keeps generated GPU kernels behind correctness tests, profiler evidence, and an explicit backend contract before any routing or inference path consumes them. Sources: [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [agentic ROCm deep dive](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
+- **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backend with reproducible artifacts, not an agent that writes kernels directly into production. This keeps generated GPU kernels behind correctness tests, profiler evidence, and an explicit backend contract before any routing or inference path consumes them. Sources: [agentic-rocm-kernel-authoring.md](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring), [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [agentic ROCm deep dive](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
 - **GPU drafter work is a frontdoor-acceleration path, not a replacement for CPU topology optimization.** The GPU acceleration sources keep MI210 drafter experiments separate from CPU serving claims: CPU NUMA/matrix gates still govern production placement, while GPU experiments need their own verify/profile evidence and quality-preserving acceptance criteria before they can alter frontdoor or spec-dec routes. Sources: [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path), [gpu-drafter-mi200-investigation.md](../handoffs/archived/gpu-drafter-mi200-investigation.md), [single-instance-system-tuning.md](../handoffs/completed/single-instance-system-tuning.md).
 
 - **NUMA is the dominant optimization**: 4-way NUMA quarter pinning delivers 6-7x aggregate throughput on models up to 65 GB. Single-node (96 threads on one NUMA node) is 1.85x faster than all-cores (192 threads) for MoE models because cross-NUMA memory access penalty is devastating. [progress/2026-03-18, numa-orchestrator-deployment.md]
@@ -2614,7 +2614,7 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [Progress 2026-03-18](/workspace/progress/2026-03/2026-03-18.md) -- NUMA parallel decode S2 benchmark, production model sweep, T5/T6 tree+NUMA
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Comprehensive spec param sweep (1,290 measurements), corrected registry values
 - [GPU Acceleration Path](/workspace/handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) -- DGX Spark analysis, consumer GPU benchmarks, hybrid MoE offloading survey, KV cache split strategies; 2026-04-23 adds Lucebox + Hazy megakernel research; 2026-06-20 records the deployed CPU image-gen role (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp) and the UniRL DGX-gated watch-item (intake-709)
-- [llama.cpp DSA Contribution](/workspace/handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) -- PR #21149 tracking, DSA forward-pass-unimplemented (dense-MLA fallback) finding, three contribution sub-tracks (smoke test / PP sparse path / AVX-512BW Lightning Indexer), multi-model-for-1 unlock (V3.2 + GLM-5.1 + GLM-5.2)
+- [llama.cpp DSA Contribution](/workspace/handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) -- PR #21149 tracking, DSA forward-pass-unimplemented (dense-MLA fallback) finding, three contribution sub-tracks (smoke test / PP sparse path / AVX-512BW Lightning Indexer), multi-model-for-1 unlock (V3.2 + GLM-5.1 + GLM-5.2)
 - [Batched-Decode Measurement (E1/E2/E3)](/workspace/handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) -- CPU14 single-instance `-np` sweep harness, eval-driver A/B coordinator, non-decision-grade scout (`-np 8` candidate, p95 tail cost, MoE-vs-dense batching pitfall), clean-window manifest wiring
 - [CPU Shape-Specialized GEMV Decode](/workspace/handoffs/completed/cpu-shape-specialized-gemv-decode.md) -- new 2026-04-23 handoff stub for Zen 5 AVX-512 M=1 GEMV microkernel investigation; 4-phase plan with falsification gates
 - [Deep Dive: Lucebox Hub](/workspace/research/deep-dives/lucebox-hub-consumer-gpu-dflash.md) -- consumer-RTX-3090 DFlash GGUF port + DeltaNet-hybrid megakernel; resolves intake-158's "no llama.cpp / no GGUF" blocker on GPU side
@@ -2633,7 +2633,7 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [MI210 big-model residency + acceleration roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) -- the two-axis strategic thread (Axis A residency quant-ladder IQ2→offload/REAP→GLM-5.2 754B endgame; Axis B GPU drafter-farm with quant-asymmetric self-spec N5-free-by-construction); corrected architect baseline ~18–21 t/s (not 4.3); expert-routing-skew profile as the shared offload/REAP gating experiment
 - [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) -- completed top-line campaign verdict: single-stream dense-Q8 +37% banked, aggregate solved by config (bf16-for-aggregate / Q8-for-single-stream, `-fa 1` win for MoE), all occupancy rewrites (L3-MoE, L20) structurally dead, frontier moved speed→capability
 - [MI210 batch-1 latency-wall greenfield (prefetch→megakernel)](../handoffs/completed/mi210-batch1-latency-wall-greenfield.md) -- the 62→100% batch-1 MLP floor; async-prefetch `raw.buffer.load.lds` +3.3% (MemUnitStalled −62%, CDNA2 ceiling); megakernel RULED OUT (HIP graphs already capture the only +5.9% launch headroom; AMD Fleet arXiv 2604.15379 is the CDNA3/4 precedent, no CDNA2 megakernel exists); rocBLAS GEMV is dense-only (dequant-to-fp16 = fatal bytes-moved for BW-bound decode)
-- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) -- the batch-1 dequant gap decomposition (Q4_K 34%→Q8 50%→fp16 62.5% roofline); custom dequant-GEMV worth authoring only for a batch-1 *latency* role (GPU drafter); "self-compensates when served batched" holds for K-quants only — see the 2026-08-16 occupancy-knee section (IQ3_XXS/IQ2_XXS plateau at 0.77/0.88 of IQ4_XS at B=32)
+- [MI210 Q8 dequant-GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) -- the batch-1 dequant gap decomposition (Q4_K 34%→Q8 50%→fp16 62.5% roofline); custom dequant-GEMV worth authoring only for a batch-1 *latency* role (GPU drafter); "self-compensates when served batched" holds for K-quants only — see the 2026-08-16 occupancy-knee section (IQ3_XXS/IQ2_XXS plateau at 0.77/0.88 of IQ4_XS at B=32)
 - [MI210 MFMA compute-bound paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md) -- GDN-MFMA killed by profile for decode (MemUnitBusy 65% vs VALUBusy 16%, MfmaUtil 0% — memory/occupancy-bound, not compute); MFMA targets headroom that isn't the bottleneck
 - [MI210 kernel-R&D loop proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md) -- completed historical scaffold; the current system-wide owner is AutoKernel
 - [Progress 2026-07-03 — MI210 Qwen3.6-27B speed campaign](../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md) -- the running kernel/quant/regime campaign log (MMVQ→MMQ verify-dispatch, nwarps, async-prefetch, fused-prefetch/megakernel/L3-MoE-occupancy falsifications, bf16-for-aggregate crossover)
@@ -3764,7 +3764,7 @@ The GPU path (previously "parked behind hardware acquisition") gained a concrete
 
 **Standing caveat:** all AMD numbers (intake-674–679) are vendor-reported (AMD authors agent + benchmark + hardware) with no third-party reproduction; treat as provisional until reproduced on our own gfx90a. The first action when the card racks is reproducing GEAK-eval's MI250X numbers on the MI210.
 
-Sources: [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) (full reasoning + freshness appendix with GEAK repo pins) · [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) · [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) · `research/intake_index.yaml` intake-660–679 · master-handoff-index queue #62 · `progress/2026-06/2026-06-03.md`.
+Sources: [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) (full reasoning + freshness appendix with GEAK repo pins) · [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) · [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) · `research/intake_index.yaml` intake-660–679 · master-handoff-index queue #62 · `progress/2026-06/2026-06-03.md`.
 ## 2026-07-11 — MI210 HIP graph capture for inference decode (first empirical benefits)
 
 First end-to-end measurement of **HIP graph capture** (`GGML_HIP_GRAPHS=ON` → `USE_CUDA_GRAPH`) on the MI210 for *inference decode* (distinct from the GEAK kernel-authoring program above). Runtime toggle: `GGML_CUDA_DISABLE_GRAPHS=1` = direct dispatch. Arch gate `cc < GGML_CUDA_CC_AMPERE(800)` cannot trip on AMD (`cc` is offset by `0x1000000`, so MI210 CDNA2 = `0x100090a`); `MUL_MAT_ID` (MoE) does **not** disable graphs for quantized single-token decode (`mmvq_mmid_max=8`, `ne[2]=1`). All numbers observation-grade (MEASUREMENT.md), `build-hip` @ `46f876c12`, ROCm 6.2, Q8.
@@ -3779,13 +3779,13 @@ First end-to-end measurement of **HIP graph capture** (`GGML_HIP_GRAPHS=ON` → 
 - **gemma4 external-head MTP spec-dec is intermittently non-deterministic under host CPU load** (temp0/seed42 run-to-run output drift — a load-sensitive async-D2H-copy race); Qwen native-MTP is unaffected. So spec-dec A/B on the MI210 must run **quiesced + strictly sequential + fresh-server-per-run** (multi-request-per-server also drifts). Determinism held at load ~77, broke at ~100+.
 - The MI210 GPU can be idle while the **host CPU** is the confound — the MTP draft loop's per-step token/h_row round-trip runs on the CPU, so production CPU load depresses/scatters spec-dec throughput even with the model fully on the GPU.
 
-Sources: [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) (K2 empirical tables + Kernel-Optimization Levers + Non-gemma4 generalization) · [`handoffs/active/speculative-decoding.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) · [`progress/2026-07/2026-07-11.md`](../progress/2026-07/2026-07-11.md) · `project_mi210_hip_graph_capture` (memory) · `feedback_pair_speed_with_correctness_check` · `feedback_verify_test_method_before_calling_it_a_bug`.
+Sources: [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) (K2 empirical tables + Kernel-Optimization Levers + Non-gemma4 generalization) · [`handoffs/active/speculative-decoding.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) · [`progress/2026-07/2026-07-11.md`](../progress/2026-07/2026-07-11.md) · `project_mi210_hip_graph_capture` (memory) · `feedback_pair_speed_with_correctness_check` · `feedback_verify_test_method_before_calling_it_a_bug`.
 ## 2026-07-17 — Large cross-run CPU-decode "regressions" were transient host state, not source (K34/K24)
 
 A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions (architect `-9.24%`, frontdoor `-6.55%`) and root-caused them to **host/runtime state, not a kernel-source regression** — a recurring trap when A/B benches straddle different host conditions.
 
-- **The big deltas were repeatability noise, and current production itself had drifted far below its own prior guard cells.** A quiet, *paired* production-vs-current-v7 CPU rerun measured frontdoor `8.58 → 8.35 t/s` (−2.6%), architect `3.65 → 3.54` (−3.0%), ingest `9.80 → 9.90` (+1.0%) — but the same run showed *production* far below the 2026-07-16 production guard cells (architect old `5.85` vs now `3.65`; ingest old `13.89` vs `9.80`), so the headline "regression" was host-state drift affecting **both** arms, not a v7 source change. A HIP-enabled v7 build compared against a CPU-only production binary was itself a confound (a fresh CPU-only experimental artifact `build-k24-cpu` was needed to separate it). Under clean default placement the same cells recovered **+100–159%**, and v7 landed within ±4% of production. The source bisect against the two suspect commits (`3c2696b88` bf16 GDN recurrent-state, `90e0f5cfc` fused-op) was retired once the paired run falsified the premise. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) (K24/K34), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
-- **`--numa distribute` is not a universal remedy, and clean-run preflight is now the discipline.** The recovery came from default placement, not `--numa distribute`, which was mixed/noisy and actively hurt ingest (prod −8.05%, v7 −4.68%). Governor/EPP were already `performance` with boost on and auto-NUMA-balancing off, so the drift is page-cache/NUMA-imbalance/background-agent state, not config. A `cpu_bench_clean_preflight.py` records blockers, `numactl --hardware`, governor/EPP/boost/THP/NUMA-balancing, pinned `LD_LIBRARY_PATH`, and a sentinel decode (recovered reference `20.57 t/s`, retry threshold `18.0`) with an explicit "retry before source blame" rule. The generalizable lesson: **a CPU A/B must pair both arms in one quiet window against a live sentinel; cross-day/cross-host t/s deltas are host-state observations, never kernel evidence** (and they poison AutoPilot speed telemetry if trusted). Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) (K34.1/K34.2), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **The big deltas were repeatability noise, and current production itself had drifted far below its own prior guard cells.** A quiet, *paired* production-vs-current-v7 CPU rerun measured frontdoor `8.58 → 8.35 t/s` (−2.6%), architect `3.65 → 3.54` (−3.0%), ingest `9.80 → 9.90` (+1.0%) — but the same run showed *production* far below the 2026-07-16 production guard cells (architect old `5.85` vs now `3.65`; ingest old `13.89` vs `9.80`), so the headline "regression" was host-state drift affecting **both** arms, not a v7 source change. A HIP-enabled v7 build compared against a CPU-only production binary was itself a confound (a fresh CPU-only experimental artifact `build-k24-cpu` was needed to separate it). Under clean default placement the same cells recovered **+100–159%**, and v7 landed within ±4% of production. The source bisect against the two suspect commits (`3c2696b88` bf16 GDN recurrent-state, `90e0f5cfc` fused-op) was retired once the paired run falsified the premise. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) (K24/K34), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **`--numa distribute` is not a universal remedy, and clean-run preflight is now the discipline.** The recovery came from default placement, not `--numa distribute`, which was mixed/noisy and actively hurt ingest (prod −8.05%, v7 −4.68%). Governor/EPP were already `performance` with boost on and auto-NUMA-balancing off, so the drift is page-cache/NUMA-imbalance/background-agent state, not config. A `cpu_bench_clean_preflight.py` records blockers, `numactl --hardware`, governor/EPP/boost/THP/NUMA-balancing, pinned `LD_LIBRARY_PATH`, and a sentinel decode (recovered reference `20.57 t/s`, retry threshold `18.0`) with an explicit "retry before source blame" rule. The generalizable lesson: **a CPU A/B must pair both arms in one quiet window against a live sentinel; cross-day/cross-host t/s deltas are host-state observations, never kernel evidence** (and they poison AutoPilot speed telemetry if trusted). Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7) (K34.1/K34.2), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
 
 ### New (2026-07-21, iqk acceleration silently skipped every IQ-quant model)
 
@@ -3806,15 +3806,15 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 
 - **A production serving engine expresses the chunked Gated-DeltaNet recurrence as four *separately-autotuned Triton stages* behind one autograd wrapper, not as a single hand-fused kernel.** Verified in `sgl-project/sglang` at `main`: `chunk_local_cumsum` (`fla/cumsum.py`) → `recompute_w_u_fwd` (`fla/wy_fast.py`, the WY/UT transform) → `chunk_gated_delta_rule_fwd_h` (`fla/chunk_delta_h.py`) → `chunk_fwd_o` (`fla/chunk_o.py`), orchestrated by `chunk_gated_delta_rule_fwd` / `ChunkGatedDeltaRuleFunction` in `fla/chunk.py`. This design is retained as reference material; K28 itself later closed no-go on the measured whole-model ceiling. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap), intake-1030/intake-1025 in [research/intake_index.yaml](../research/intake_index.yaml).
 
-- **All four stage files are pure Triton with autotune and carry no `is_cuda` guard or device-capability check** — a necessary portability condition, not performance evidence. AutoKernel's GEAK/Arena round-trip has since proven Triton 3.1.0 compile/correctness/timing on physical gfx90a, but the K28-specific FLA probe was retired when direct whole-model attribution failed the parent gate. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1030.
+- **All four stage files are pure Triton with autotune and carry no `is_cuda` guard or device-capability check** — a necessary portability condition, not performance evidence. AutoKernel's GEAK/Arena round-trip has since proven Triton 3.1.0 compile/correctness/timing on physical gfx90a, but the K28-specific FLA probe was retired when direct whole-model attribution failed the parent gate. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), intake-1030.
 
 ### Two-phase capture: the mode our profiler survives is the mode that gives attribution
 
-- **CUDA graphs and kernel fusion destroy `kernel → cpu_op → source` attribution, so a single optimized trace tells you what is slow but not what produced it.** The upstream discipline is a *two-trace* protocol: a mapping trace captured with graphs disabled or lower fusion, then a formal trace with the real optimizations on. **The convergence worth recording is accidental and useful**: our own tooling audit independently found that `rocprof` v1 *aborts at init on graph-enabled builds*. The capture mode our profiler can survive is therefore the same one that yields source attribution — which turns a recorded tooling limitation into a two-phase protocol rather than a blocker. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1026, intake-1025.
+- **CUDA graphs and kernel fusion destroy `kernel → cpu_op → source` attribution, so a single optimized trace tells you what is slow but not what produced it.** The upstream discipline is a *two-trace* protocol: a mapping trace captured with graphs disabled or lower fusion, then a formal trace with the real optimizations on. **The convergence worth recording is accidental and useful**: our own tooling audit independently found that `rocprof` v1 *aborts at init on graph-enabled builds*. The capture mode our profiler can survive is therefore the same one that yields source attribution — which turns a recorded tooling limitation into a two-phase protocol rather than a blocker. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), intake-1026, intake-1025.
 
-- **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), intake-1026.
+- **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), intake-1026.
 
-- **A kernel-time-share table is structurally blind to an entire class of bottleneck.** The reference catalog excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" *by written policy*, so a host/device transfer cost has no row and cannot surface. Any analogue we build must widen that scope deliberately or pair it with a host-side catalog. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1029, intake-1027 (`stage1-unverified` — no figure from it may be cited).
+- **A kernel-time-share table is structurally blind to an entire class of bottleneck.** The reference catalog excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" *by written policy*, so a host/device transfer cost has no row and cannot surface. Any analogue we build must widen that scope deliberately or pair it with a host-side catalog. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), intake-1029, intake-1027 (`stage1-unverified` — no figure from it may be cited).
 ## Compiled Update — 2026-08-10: the gfx90a kernel-agent program re-aimed, and a claim compiled here retired
 
 > Freshness sweep of the agentic-kernel-authoring program (the sweep this handoff mandates at every
@@ -3905,10 +3905,10 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 
 ### Source References
 
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the amended GEAK scoping, the K1–K12 banded ceiling, and the 2026-08-03 index-backed leads
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the side-loaded profiler toolchain, per-block collection limits and the counter taxonomy
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — the amended GEAK scoping, the K1–K12 banded ceiling, and the 2026-08-03 index-backed leads
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — the side-loaded profiler toolchain, per-block collection limits and the counter taxonomy
 - [`handoffs/completed/mi210-mfma-compute-bound-paths.md`](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — the fragment-layout identity, the arch-independent HipKittens lessons and the vendor ridge-point error
-- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the attainment ladder behind the fp16 re-target and its calibration caveat
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the attainment ladder behind the fp16 re-target and its calibration caveat
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §9 — the freshness appendix this sweep executes
 ## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
 
@@ -3933,7 +3933,7 @@ windows rather than the whole controller wall-time budget.
 
 ### Source References (2026-08-12 INF-03 checkpoint)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r3 receipts, and claim-scope task
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r1/r2 invalidation boundaries, r3 receipts, and claim-scope task
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, claim, and measured-speedup evidence
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 ## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
@@ -4012,7 +4012,7 @@ consistent direction does not substitute for a predeclared material-effect thres
 ### Source References (2026-08-12 clean instrument and replay)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — instrument identity, control dependency order, and replay verdict
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — C6 instrument provenance and receipt-integrity boundary
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
 ## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
 
@@ -4037,7 +4037,7 @@ that every workload lacks a novel-kernel opportunity.
 ### Source References (2026-08-12 provenance audit)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — campaign dependency order and matched-archive gates
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — diagnostic receipt authority boundary
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
 ## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
 
@@ -4078,7 +4078,7 @@ quality or promotion claim.
 
 ### Source References (2026-08-11 Arena audit/smoke)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — fixed-panel coverage, source gates, receipt hashes, and live next actions
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — fixed-panel coverage, source gates, receipt hashes, and live next actions
 - [AutoKernel progress, 2026-08-11](../progress/2026-08/2026-08-11.md) — failed-smoke chronology, repairs, v3 measurements, and non-rankable scope
 - [Dashboard contract](../dashboard/README.md) — current-state snapshot and separation of audit, available-source, and empirical-smoke authority
 ## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
@@ -4101,7 +4101,7 @@ controls. No inference or production-stack change was needed.
 
 ### Source References (2026-08-11 C6 host sandbox)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — dated C6 closure and live red-team outcomes
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — syscall-confinement acceptance contract and live campaign ownership
 - [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
 ## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
@@ -4147,7 +4147,7 @@ claim.
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
 - [MI210 MFMA compute-bound paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — C5, RE-Bench, FP8, taxonomy and upgrade gates
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
 - [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary
 ## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
@@ -4306,7 +4306,7 @@ remain; the search must move below both the implementation choice and a one-para
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — live checkpoint,
   baseline-honesty receipts, independent fp64 oracle, and next calibration step.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-C2-5 triad
   contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
 - [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
   C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
@@ -4368,7 +4368,7 @@ dispatches against 45,021 in a real decode.
 - [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
   governed prefill receipt, non-governed decode capture, per-kernel shares, and the VGPR/occupancy
   correction with both template instantiations side by side.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the IQ2
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the IQ2
   tool-boundary row, its closure caveats, and the derived VGPR-pressure lever.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — commit hashes, residency samples, receipt
   paths, and the runner-defect chain.
@@ -4418,7 +4418,7 @@ Verify a tool exists before trusting its negative result.
   table, the four IQ2_XXS instantiations, the disassembly diff, and the extraction method.
 - [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
   the decode timings the occupancy question hangs off.
-- [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the filed
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the filed
   `v_perm_b32` re-expression task and its experimental-branch constraint.
 
 ## Compiled Update — 2026-08-12c (ROCm 6.3 wheels on a 6.2 host; the mixed-runtime rule)
@@ -4497,7 +4497,7 @@ experimental llama integration as required, and cannot affect dashboard freshnes
 
 ### Source References (2026-08-12 AutoKernel raw-HIP arm)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — sealed-suite,
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — sealed-suite,
   provider, per-arm admission, e-process, and authority contract.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — strict
   decision-receipt read-path acceptance and fail-closed cases.
@@ -4534,7 +4534,7 @@ improve dashboard health.
 
 ### Source References (2026-08-12 INF-03 retraction)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning repair,
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — owning repair,
   isolation, fresh-pilot tasks, exact r4 counts, and authority limits.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — cross-loop retraction
   and superseded completion-audit conclusion.
@@ -4584,11 +4584,11 @@ hook; reference or synthetic tensors cannot substitute.
 
 ### Source References (2026-08-12 AutoKernel decode and providers)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — paired
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — paired
   RVP-C4-4a/4b identities, attribution, released claims, and deterministic router results.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — operator-approved ROCm
   target hierarchy, provider/champion boundary, and isolated module lifecycle task.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r17 repair,
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — r17 repair,
   immutable r18 posture, C3/C5 capture seam, and exact remaining hook artifacts.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — self-contained receipt hashes,
   implementation commits, test counts, router replay, and authority limits.
@@ -4688,7 +4688,7 @@ win that is entirely a tokens-per-second win implies different next moves than o
   external-meter ground truth; the 35%/65% figure is an error REDUCTION from a protocol bundle, not a
   bias magnitude), `intake-1222` (corrected in place: energy-accumulator claim OVERTURNED by host
   measurement)
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) —
   `RVP-PWR-1..6` (PWR-3 ✅ ingested+verified; PWR-2 carries the runnable FFT protocol)
 
 ## Compiled Update — 2026-08-21 (late): the phase-lock hazard measured on REAL decode — bounded negative, and the full sensor parameter set
@@ -4718,7 +4718,7 @@ input class exists at any layer on this box.
 
 - [`repos/epyc-inference-research/scripts/benchmark/power_sensor_probe/`](../repos/epyc-inference-research/scripts/benchmark/power_sensor_probe/) —
   probes, traces, `phaselock_{fast,slow}.json`, `pcs_capability_probe.c` (@ `bf8fdd93`)
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) —
   RVP-PWR-1/2/3/5 ✅ with results inline; RVP-C4-10 ✅ (PC-sampling stub); PWR-4/PWR-6 open (protocol
   adoption, runtime-vs-power decomposition)
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC48 write-side wiring for the probe suite
@@ -4828,7 +4828,7 @@ the ParEval trials are open plans and compile nothing yet.
 
 ### Source References
 
-- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) —
   the (Z) fla #1156 closure and reattribution, the G6 gate inversion and `>=0.5.2` pin rule, the
   rocprofv3 provisioning note, and the GPA C4-template closure (RVP-C4-10 measured leg + intake-1242#record
   structural legs).
@@ -4997,10 +4997,10 @@ no new findings — its active-path pointer is the active handoff, already compi
   (frozen v9 untouched).
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-22 v27 pre-launch banner
   and the standing frozen-v9 operating boundary.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF-03
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF-03
   2026-08-22 posture: immutable r19 preserved, C5-3..16/Hawkeye relayed to backlog, zero-profiler
   arm mandatory while INF-48 repairs the C6 boundary.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — INF-48 status:
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — INF-48 status:
   v27 C6 launch boundary open, `91a75a05` rejected carrier list, two-process oracle/Ghost wiring as
   the next action, RVP-C4-10 closed.
 - [dFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build)
@@ -5048,7 +5048,7 @@ Two tooling fixes shipped in the same pass: the marker-polarity fix chose **REFU
 
 ### Source References (2026-08-23 evening)
 
-- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — G6 inversion, #1156 closed/reattributed, Z10 static read, G10 import gate, Z14 #1163 filing, the hard `flash-linear-attention>=0.5.2` pin
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — G6 inversion, #1156 closed/reattributed, Z10 static read, G10 import gate, Z14 #1163 filing, the hard `flash-linear-attention>=0.5.2` pin
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert GDN-2 delta, #26001's K==1 constraint (re-verified against frozen v9), G15 with the MIN_BLOCKS_PER_SM trap and the ≥8% gate, B5 stacking warning, B3's 512-token gate insufficiency
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction (closed-unmerged-but-exists, occupancy floor, fp-numerics caveat, ~6–9% realistic prefill)
 - [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the REFUSE marker-polarity decision, the matrix-truncation fix
@@ -6331,11 +6331,11 @@ An ATT thread-trace MFMA-efficiency metric (total MFMA cycles over the average h
 
 ### Source References
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — §Research Intake Update 2026-09-26; INF03-REGAUDIT-1 result, REGAUDIT-2/3, INF03-AGPR-1 (gate lifted), INF03-GLUON-X.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — §Research Intake Update 2026-09-26; INF03-REGAUDIT-1 result, REGAUDIT-2/3, INF03-AGPR-1 (gate lifted), INF03-GLUON-X.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — gfx90a MMQ seed set; AK-MMQ-H10 negative result and its falsifier.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the CH-6 correction note.
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — the MFMA-form-by-compiler audit row.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-ATT-1.
+- [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — RVP-ATT-1.
 - [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — the six dive-verified findings and the declines table.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) and [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — the intake record; the J-cap window.
 
@@ -6381,7 +6381,7 @@ That is about **+11%** for spinning (the arm ranges above; the ratified P-AK-SEA
 
 ### Source References
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF03-REGAUDIT-2 ✅, REGAUDIT-3 and AGPR-1 parks.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF03-REGAUDIT-2 ✅, REGAUDIT-3 and AGPR-1 parks.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-MMQ-H3/H5/H7/H8 parks and the H10a/H10b window-script notes.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — V6R-4c park.
 - [Fable5 window-2 findings 02 (heterogeneous GPU)](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — F7/F6 freeze.
@@ -6491,7 +6491,7 @@ A separate fused-decoder investigation found a correctness blocker: Flash-Next f
 
 The Oct 3 CPU quant research review separates measured speed from unresolved quality: local uniform IQ4_XS was +15.2% at N=1 before BIOS and +10.5% under clean placement versus UD-IQ4_XS, while the production MTP serving shape and file quality were still unmeasured. The DS41 lossless MXFP4 expert repack was estimated at at most +2%, below the stated 3.4–4.5% admission floor; it was retained as a quality option, not a decode-speed result. Follow-up IQ*_K/KS self-quant work for Q38FN is a gated proposal with download, port and quality requirements, not an executed measurement. The companion variant survey is a recommendation/derivation over that same evidence, not an independent benchmark.
 
-Sources: [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [Llama.cpp DSA contribution](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).
+Sources: [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [Llama.cpp DSA contribution](../handoffs/active/rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MI210 Q8 dequant GEMV roofline](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).
 
 ## Incremental synthesis — 2026-10-07: Q38FN on 2x DGX Spark is physics parity with our CPU champion
 
@@ -6526,7 +6526,7 @@ The [RT-4 scope-out](../handoffs/active/cpu-decode-roofline-program.md#track-moe
 
 The frozen v10 source already has suite-seed support and seeds ordinary SSM scan inputs. The independently prepared experimental repair addresses only rollback-case integer initialization through the existing per-tensor RNG, retaining unseeded fallback. Its prospective CPU initializer/reference verifier is enrolled before capture; no build, native acceptance, production change or live seeded event is established by this source review.
 
-Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-profile-backend.md).
+Source reference: [RVP source and parent gates](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend).
 
 
 ### Physical placement and seeded rollback source boundaries — 2026-10-07
@@ -6535,7 +6535,7 @@ Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-p
 
 [The fresh experimental rollback child](../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) consumes the existing per-tensor suite RNG for integer initialization. Actual hosted CPU programs passed3/3, retaining64 raw permutations across16seeds, same-seed replay/across-seed variation and unchanged reference-graph replay. Complete source/compiler/header/build/runtime inputs are preserved. Frozen production remains unchanged, and live seeded campaign events, full-device regression and production promotion remain independent parent gates.
 
-Source references: [stack pipeline finalization](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization), [RVP parent/source gates](../handoffs/active/rocm-verify-profile-backend.md), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).
+Source references: [stack pipeline finalization](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization), [RVP parent/source gates](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 The13:40Z owner checkpoint also records atomic activation of the exact reference-hook bytes after its separate seven-control validation; settings/mode/shared checkout HEAD are recorded unchanged. This wiki cites that owner record rather than asserting a new independent runtime verification. [Dated original owner progress](../progress/2026-10/2026-10-07.md), [unified campaign scope](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [all-device gate boundaries](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions).
 
@@ -6707,7 +6707,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 
 ### Source References (2026-10-23 wrap-up sweep 19)
 
-- [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md), [cpu-fused-decoder-blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — sweep 20: C3 dcc853b55, G10, FD-OFF-PROD.
+- [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [rocm-verify-profile-backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [cpu-fused-decoder-blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — sweep 20: C3 dcc853b55, G10, FD-OFF-PROD.
 
 - [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-W2
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — GPS-PIN-1c/1d
@@ -6723,7 +6723,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 - **Grant gate `grant_ok.sh` v2.** Adds a window rule (`--window-s >= --min-window + 300 s`; equal windows were refused rc=3 three times), a regions-vs-launcher check, a QUEUED check, and class reporting; exit codes 10-16 distinguish the refusals. Compute-fillers also records the standing directive that code blockers get a subagent in the same turn.
 - **Slot save/restore is cheap against re-prefill (graphs-off rates).** Qwen3.8-27B-Q8_0 at L = 8k/16k/32k: tmpfs restore 8.26/9.27/6.15 GB/s (52.7/77.1/206.8 ms), cold-disk restore 4.12/4.10/3.06 GB/s, tmpfs save about 3 GB/s, disk save 1.59/1.73/0.80 GB/s. Slot file is 34,844 B/token plus a fixed 150 MiB; crossover prefix about 14 tokens (tmpfs) to 28 (disk). The largest single transfer (1.58 s) is 27x below the 43.5 s ON-arm stall, so it does not explain it.
 
-Sources: [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md), [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [HSF-4 results](../docs/design/hsf-4-results-20261023.md).
+Sources: [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [ROCm verify/profile backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [HSF-4 results](../docs/design/hsf-4-results-20261023.md).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -6809,21 +6809,21 @@ Sources: [G16 accepted capsule](../artifacts/compute/codex-ni-g16-greedy-aligned
 - C5-7's conditional source seam adds a declaration-aware counter gate at the HIP decision-grade terminal. For opted-in rows, missing, wrong, or ambiguous counter declarations suppress the speedup belief and rankability; legacy rows without a declaration keep prior behavior. The reader hashes/parses one stable raw-CSV buffer and binds counter, kernel, dispatch, source, campaign, workload, units, and normalization. Zero-valued counters remain valid evidence.
 - The focused unit controls and compilation passed on the implementation commit. This replays supplied profiler receipts; it does not establish end-to-end PMC capture, a broader native caller, live activation, or completion of C5-7.
 
-Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) · [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)
+Sources: [agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) · [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
 - G16 greedy native comparisons matched first IDs but failed full UTF-8 byte equality at 2K, 8K, 16K and 24K; this does not resolve the separate NMSE branch or establish causality/promotion. ([G16](../handoffs/active/log-linear-gated-deltanet-readiness.md))
-- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation))
+- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Research 39b63b06 adds an opt-in counter-evidence decision gate and 19 synthetic controls; no end-to-end profiler capture, live activation or completed C5-7 is established. ISA capture and assembly-edit work are proposed. [Source](../handoffs/active/agentic-rocm-kernel-authoring.md)
+- Research 39b63b06 adds an opt-in counter-evidence decision gate and 19 synthetic controls; no end-to-end profiler capture, live activation or completed C5-7 is established. ISA capture and assembly-edit work are proposed. [Source](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring)
 - A manual GPU window park only writes a window file; executor open plus schedule and grant stops servers. The startup exact-flag evidence repair documents an older implementation; new edge-value and quant decoding gates remain proposals. [Source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - C6 IQK-FA remainder failed three times at the 8 GiB sampled-RSS guard (8.99/8.84/9.00 GB); zero of 28 missing cells were evaluated. Separate GPU identity run refused changed pair order despite native PASS; no promotion or identity gate conclusion follows. [Source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
 - Champion status is recorded as a workload vector with invocation identity and per-cell source/freshness; historical missing recipes stay UNKNOWN, and scalar compatibility is limited to a reference cell (root b3082210; research 61af96a9). [Source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
@@ -6972,7 +6972,7 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 - [R23-62 estimand and contention audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md)
 - [E5 batched-decode placement evidence](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)
 - [MI210 lever matrix correction](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix)
-- [MI210 Q8 GEMV correction](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
+- [MI210 Q8 GEMV correction](../handoffs/active/rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)
 - [CH-31 paired diagnostic](../artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/)
 - [C6 Q4 diagnostics](../artifacts/compute/inf65-c6-diagnostic-20261102/COMBINED-SUMMARY.json)
 - [Champion aggregate handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)

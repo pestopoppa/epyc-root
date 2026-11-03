@@ -5721,7 +5721,7 @@ operator-approved profile window.
   supporting evidence, and any PC-4 result under ~5% on the cold harness is UNRESOLVED, not a win.
   *A measured refutation is not a keep, and re-measuring a refuted lever is new research.*
 - Overlaps **GLM DSA D2 (sparse final-attention, prompt-path)** and **D3 (Lightning-Indexer
-  CPU kernel)** in [llama-cpp-dsa-contribution.md](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) — both are
+  CPU kernel)** in [llama-cpp-dsa-contribution.md](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) — both are
   prefill/long-context levers; coordinate profiling.
 - GPU sibling for hybrid models = **K28 GDN long-prefill recurrence kernel**
   ([mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)).

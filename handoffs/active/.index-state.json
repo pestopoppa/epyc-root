@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 15,
+      "handoffs": 13,
       "oldest_advance": "2026-10-30",
       "open": 1024
     },
@@ -40,47 +40,6 @@
   "duplicates": {},
   "gate_tasks": {},
   "handoffs": {
-    "agentic-rocm-kernel-authoring.md": {
-      "blocked": 0,
-      "closed": 113,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 36,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-03",
-      "state": "active",
-      "total": 149,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 91,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 25
-        },
-        {
-          "blocked": 0,
-          "closed": 22,
-          "gates": [
-            "INF-48",
-            "EVL-47"
-          ],
-          "guarded": 0,
-          "line": 1263,
-          "markers": 1,
-          "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 11
-        }
-      ]
-    },
     "autokernel-loop.md": {
       "blocked": 2,
       "closed": 747,
@@ -101,7 +60,7 @@
           "blocked": 1,
           "closed": 302,
           "gates": [
-            "INF-48",
+            "INF-48#rocm-verify-profile-backend",
             "EVL-47",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
@@ -196,7 +155,7 @@
       "blocked": 2,
       "closed": 286,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 110,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -378,7 +337,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 57,
+      "closed": 58,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -390,7 +349,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 62
+      "total": 63
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1081,54 +1040,6 @@
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 6
-        }
-      ]
-    },
-    "gemma-challenge-kernel-techniques-v7.md": {
-      "blocked": 1,
-      "closed": 122,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 14,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-16",
-      "state": "active",
-      "total": 137,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 111,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 7
-        },
-        {
-          "blocked": 0,
-          "closed": 1,
-          "gates": [],
-          "guarded": 0,
-          "line": 511,
-          "markers": 1,
-          "name": "frontier-f6-upstream-publication",
-          "open": 6
-        },
-        {
-          "blocked": 1,
-          "closed": 10,
-          "gates": [],
-          "guarded": 0,
-          "line": 622,
-          "markers": 1,
-          "name": "llama-cpp-dsa-contribution",
-          "open": 1
         }
       ]
     },
@@ -2320,12 +2231,12 @@
       "state": "active",
       "total": 25
     },
-    "rocm-verify-profile-backend.md": {
-      "blocked": 0,
-      "closed": 99,
+    "rocm-kernel-authoring.md": {
+      "blocked": 1,
+      "closed": 334,
       "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 49,
+      "last_advanced": null,
+      "open": 99,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2334,7 +2245,77 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 148
+      "total": 434,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 99,
+          "gates": [
+            "EVL-47"
+          ],
+          "guarded": 0,
+          "line": 35,
+          "markers": 1,
+          "name": "rocm-verify-profile-backend",
+          "open": 49
+        },
+        {
+          "blocked": 0,
+          "closed": 91,
+          "gates": [
+            "INF-48#rocm-verify-profile-backend",
+            "EVL-47"
+          ],
+          "guarded": 0,
+          "line": 1730,
+          "markers": 1,
+          "name": "agentic-rocm-kernel-authoring",
+          "open": 25
+        },
+        {
+          "blocked": 0,
+          "closed": 22,
+          "gates": [
+            "INF-48#rocm-verify-profile-backend",
+            "EVL-47"
+          ],
+          "guarded": 0,
+          "line": 2997,
+          "markers": 1,
+          "name": "mi210-q8-dequant-gemv-roofline",
+          "open": 11
+        },
+        {
+          "blocked": 0,
+          "closed": 111,
+          "gates": [],
+          "guarded": 0,
+          "line": 3402,
+          "markers": 1,
+          "name": "gemma-challenge-kernel-techniques-v7",
+          "open": 7
+        },
+        {
+          "blocked": 0,
+          "closed": 1,
+          "gates": [],
+          "guarded": 0,
+          "line": 3917,
+          "markers": 1,
+          "name": "frontier-f6-upstream-publication",
+          "open": 6
+        },
+        {
+          "blocked": 1,
+          "closed": 10,
+          "gates": [],
+          "guarded": 0,
+          "line": 4028,
+          "markers": 1,
+          "name": "llama-cpp-dsa-contribution",
+          "open": 1
+        }
+      ]
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2727,18 +2708,6 @@
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
-    "INF-03": {
-      "deps": [
-        "INF-48",
-        "EVL-47"
-      ],
-      "handoff": "agentic-rocm-kernel-authoring.md",
-      "id": "INF-03",
-      "index": "inference-research-index.md",
-      "line": 15,
-      "next_action": "the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file)",
-      "track": "agentic rocm kernel authoring"
-    },
     "INF-06": {
       "deps": [
         "INF-48",
@@ -2747,7 +2716,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "index": "inference-research-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
       "track": "autokernel research loop"
     },
@@ -2756,25 +2725,16 @@
       "handoff": "engram-conditional-memory.md",
       "id": "INF-13",
       "index": "inference-research-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "track": "engram conditional memory"
-    },
-    "INF-16": {
-      "deps": [],
-      "handoff": "gemma-challenge-kernel-techniques-v7.md",
-      "id": "INF-16",
-      "index": "inference-research-index.md",
-      "line": 19,
-      "next_action": "K10 \u2014 on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop",
-      "track": "gemma challenge kernel techniques v7"
     },
     "INF-22": {
       "deps": [],
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 22,
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
@@ -2785,7 +2745,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 23,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2794,7 +2754,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 24,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2802,10 +2762,10 @@
       "deps": [
         "EVL-47"
       ],
-      "handoff": "rocm-verify-profile-backend.md",
+      "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 25,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2814,7 +2774,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 26,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2825,7 +2785,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 29,
+      "line": 27,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2837,7 +2797,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "index": "inference-research-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
       "track": "autokernel aggregate candidate (champion)"
     },
@@ -2848,19 +2808,19 @@
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "index": "inference-research-index.md",
-      "line": 20,
+      "line": 18,
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
     "INF-77": {
       "deps": [
-        "INF-16",
+        "INF-48",
         "RTG-58"
       ],
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 21,
+      "line": 19,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -2869,7 +2829,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 20,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -2878,7 +2838,7 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 21,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
     },

@@ -206,7 +206,7 @@
 > aggregate, rank, bank, promote, release, or resume r4–r18.** Research `main` is later at `dfe265a1`
 > only because the controller-overlap safety contract was documented after r19's source was sealed;
 > overlap remains disabled for r19. Owner:
-> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+> [agentic-rocm-kernel-authoring.md](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) INF-03.
 
 > **🟡 2026-08-12 — INF-03 R14 FAILED CLOSED ON SOURCE-IDENTITY DRIFT; SEVEN-ARM R15 IS
 > LIVE FROM A DEDICATED IMMUTABLE WORKTREE.** R14's audit bound clean source `152ed0d9`, but that shared
@@ -220,7 +220,7 @@
 > planner call returned zero with clean teardown at the checkpoint. **R15 remains live: do not edit its
 > worktree, infer terminal state, aggregate, rank, bank, promote, or release before a terminal receipt and
 > complete chain validation. Never resume r4-r14.** Owner:
-> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+> [agentic-rocm-kernel-authoring.md](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) INF-03.
 
 > **🟡 2026-08-13 — AUTOKERNEL R4 BASELINE-MATCHED CONTROLS PASS; CLEAN PREFILL PAIR NEXT.**
 > Experimental direct-child `f744cc220` is the current CPU instrument. Its r4 controls are accepted

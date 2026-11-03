@@ -524,7 +524,7 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       plain GDN exactly inside an `fla.layers.GatedDeltaNet2` layer and confirm logits match at step 0
       to fp tolerance — one layer, PyTorch, CPU-feasible. **Blocked on the ROCm 6.2 / gfx90a
       torch+triton feasibility probe (`G6` in
-      [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md))**: there is no environment on
+      [rocm-verify-profile-backend.md](rocm-kernel-authoring.md#track-rocm-verify-profile-backend))**: there is no environment on
       this host in which that layer can currently be instantiated, and the fla floor is `>=0.5.2` —
       falling back to 0.4.2 is forbidden. If the equivalence holds, continued-pretraining retrofit is
       mathematically free of a cold start, which is the only route by which GDN-2 reaches our stack
