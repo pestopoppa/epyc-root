@@ -44,6 +44,16 @@ class KeeperStatic(unittest.TestCase):
         for f in (KEEPER, JANITOR, CHURN_UP):
             self.assertEqual(subprocess.run(["bash", "-n", f]).returncode, 0, f)
 
+    def test_tick_only_allocates_reaping_is_the_janitors(self):
+        # operator 2026-11-03 (session review 3.1): a ~100 s reap pass inside the tick blocked granting
+        s = open(KEEPER).read()
+        tick = re.search(r"^tick\(\) \{ (.*) \}$", s, re.M).group(1)
+        self.assertEqual(tick, 'if [ -n "$REAPONLY" ]; then reap_filed; return 0; fi; allocate_tick;')
+        loop = s.split('while [ "$(date -u +%s)" -lt "$STOP_AT" ]; do', 1)[1].split("\ndone\n", 1)[0]
+        self.assertNotIn("reap_filed", loop)
+        self.assertNotIn("REAP_EVERY_S", s)
+        self.assertIn('bash "$KEEPER" --reap-now', open(JANITOR).read())
+
     def test_janitor_cadence_and_churn_up_stop_leaves_it(self):
         j = open(JANITOR).read()
         self.assertIn("JANITOR_REAP_EVERY_S:-1800", j)

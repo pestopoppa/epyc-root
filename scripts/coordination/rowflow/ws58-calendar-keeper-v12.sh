@@ -4,14 +4,15 @@
 # grants + live dry runs per tick, dry runs and grants assigned together (starved lane, rank, grantable before dry run,
 # never the same region twice), grants WRITTEN by the allocator, dry runs spawned detached; self-healing invariants
 # (HEAL stale-grant / HEAL conflict / CONFLICT / IDLE-WHY / UNDERUSED / IDLE-VIOLATION / ALERT on the 3rd repeat); and
-# (6) REAP-AFTER-FILING unchanged from v5-v10. REMOVED vs v10: (1) quarter-queue carry-over, (2) FILLERS row lookup,
+# (6) REAP-AFTER-FILING (since 2026-11-03 only via --reap-now, run by the disk janitor; never in the tick). REMOVED vs v10: (1) quarter-queue carry-over, (2) FILLERS row lookup,
 # (3) quarter/GPU grant-writer succession (the writers are retired: grant-ws58-quarters-<day>.sh, grant-gpu-<MMDD>-v<n>.sh),
 # (4) the idle alarm (IDLE-WHY names the reason every tick instead), arm-time region resolution and dryrun-pick.
 # History: v10 rowflow (arm-tick + one dry run per lane per tick); v9 qualification-slot starvation fix; v8 keeper-owned
 # qualification; v7b-d succession rewriter; v5 reap-after-filing; v2 READY auto-arm; v1 2026-10-28.
-# Usage: ws58-calendar-keeper-v12.sh [--dry-run | --reap-dry-run | --backfill-report]   (all three: one pass, change nothing)
+# Usage: ws58-calendar-keeper-v12.sh [--dry-run | --reap-dry-run | --backfill-report]   (all three: one pass, change nothing;
+#        --dry-run = the allocation step only)
 #        ws58-calendar-keeper-v12.sh --reap-now   ONE live step-6 pass (legacy groups included), no allocation, then exit;
-#        scripts/coordination/churn/disk_janitor.sh runs it every 30 min so reaping never depends on the keeper loop.
+#        scripts/coordination/churn/disk_janitor.sh runs it every 30 min. Step 6 is NOT run by the loop (operator 2026-11-03).
 set -u
 F=/mnt/raid0/llm/tmp/compute-flags/
 G=/mnt/raid0/llm/tmp/compute-flags/grants/
@@ -70,13 +71,12 @@ allocate_tick() {
 # Caps per pass: REAP_MAX_GIB (50) and REAP_MAX_DIRS (200); every decision logged. Any guard error => that item is skipped (SKIP-ERR).
 # Hook exception: operator 2026-10-28: keeper v5 reap-after-filing (pinned path+sha256 in destructive_scratch_scan.py; see
 # disk-audit-20261028/destructive-scratch-keeper-v5.patch).
-REAP_DAYS=${REAP_DAYS:-1}; REAP_EVERY_S=${REAP_EVERY_S:-1800}
+REAP_DAYS=${REAP_DAYS:-1}
 REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE=${REAP_IDLE:-1}; REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-1}
-reap_filed() {
+reap_filed() {   # called only by --reap-now / --reap-dry-run / --backfill-report (never by the loop); the janitor owns the cadence
   local mode=live ln
   if [ $DRY = 1 ]; then mode=dry; else
-    [ -n "$REAPONLY" ] || [ $(( $(date +%s) - $(stat -c %Y "${S}reap-last" 2>/dev/null || echo 0) )) -ge "$REAP_EVERY_S" ] || return 0
-    touch "${S}reap-last"; mkdir -p "${S}reap"
+    touch "${S}reap-last"; mkdir -p "${S}reap"   # disk_janitor.sh reads this stamp so a manual --reap-now and its own pass never double up
   fi
   REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
   python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
@@ -486,7 +486,9 @@ if MODE == 'live' and os.path.isdir(TRASH):
     if r.stdout.strip(): out('SWEPT', 'trash-backstop', r.stdout.strip().splitlines()[-1][:160])
 PY
 }
-tick() { if [ -n "$REAPONLY" ]; then reap_filed; return 0; fi; allocate_tick; reap_filed; }
+# Operator 2026-11-03 (session review 3.1): the tick only allocates. Reaping runs from the disk janitor alone
+# (scripts/coordination/churn/disk_janitor.sh -> --reap-now every 30 min); a ~100 s reap pass inside the tick blocked granting.
+tick() { if [ -n "$REAPONLY" ]; then reap_filed; return 0; fi; allocate_tick; }
 
 if [ $DRY = 1 ]; then tick; echo "[dry-run] one pass done; nothing changed"; exit 0; fi
 if [ -n "$REAPONLY" ]; then reap_filed; echo "reap-now pass done"; exit 0; fi   # --reap-now (disk_janitor.sh): one live pass

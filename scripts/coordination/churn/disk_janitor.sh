@@ -5,8 +5,9 @@
 # stopped keeper meant no reaping, and /mnt/raid0/llm/.trash was freed only when someone remembered to sweep it.
 #
 #   every 30 min  the keeper's reap-only pass: `bash <keeper> --reap-now` (step 6 of ws58-calendar-keeper-v12.sh: filed
-#                 manifests + the idle rule at REAP_IDLE_DAYS=1, every keeper guard intact). Skipped while the keeper's own
-#                 reap stamp (ws58-keeper-state/reap-last) is younger than 30 min, so the two never double up.
+#                 manifests + the idle rule at REAP_IDLE_DAYS=1, every keeper guard intact). This is the ONLY scheduled reaper:
+#                 the keeper loop no longer reaps (operator 2026-11-03). Skipped while the reap stamp
+#                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
 #   every 60 min  `trash-sweep.sh --older-than 1` for /mnt/raid0/llm/.trash and, if it exists, /mnt/raid0/llm/.trash-reap.
 #   every pass    one FREE line (GiB available on /mnt/raid0) so disk-janitor.log carries the free-disk trend.
 #
