@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T13:23:41Z",
+  "generated_at": "2026-11-03T13:25:36Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2469,14 +2469,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 64,
-      "dispatchable": 42,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-02",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 43,
+      "open": 44,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2514,11 +2514,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 15,
           "gates": [],
           "line": 645,
           "name": "tq3-quantization-evaluation",
-          "open": 15,
+          "open": 16,
           "readiness": "ready"
         }
       ]
@@ -3597,15 +3597,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 61,
-      "dispatchable": 3,
+      "closed": 63,
+      "dispatchable": 1,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 3,
+      "open": 1,
       "priority": 0.0142,
       "priority_basis": {
         "campaign": 0,

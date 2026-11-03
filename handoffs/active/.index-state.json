@@ -4,7 +4,7 @@
       "blocked": 57,
       "handoffs": 12,
       "oldest_advance": "2026-10-30",
-      "open": 1025
+      "open": 1026
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 9,
       "oldest_advance": "2026-11-02",
-      "open": 734
+      "open": 732
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -344,10 +344,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 61,
+      "closed": 63,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 3,
+      "open": 1,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2112,7 +2112,7 @@
       "closed": 64,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 42,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2121,7 +2121,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 107,
+      "total": 108,
       "tracks": [
         {
           "blocked": 0,
@@ -2151,7 +2151,7 @@
           "line": 645,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
-          "open": 14
+          "open": 15
         }
       ]
     },
