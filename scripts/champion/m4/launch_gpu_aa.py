@@ -120,8 +120,6 @@ def render_launcher(spec, cgroup_parent):
     """A static rowflow-readable engine invocation, checked against real enrollment."""
     checker = shlex.join([sys.executable, '-B', str(Path(__file__).resolve()), '--check-launcher', spec_digest(spec)])
     return ('#!/bin/bash\nset -euo pipefail\n'
-            'export M4_OUTER_OWNER_PID=$$\n'
-            "export M4_OUTER_OWNER_BIRTH=$(sed 's/.*) //' /proc/$$/stat | awk '{print $20}')\n"
             'export M4_DELEGATED_CGROUP_PARENT=' + shlex.quote(cgroup_parent) + '\n'
             + checker + '\nexec ' + shlex.join(spec) + '\n')
 
