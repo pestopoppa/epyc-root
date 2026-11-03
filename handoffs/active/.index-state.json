@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 18,
-      "handoffs": 8,
+      "handoffs": 7,
       "oldest_advance": "2026-10-24",
-      "open": 751
+      "open": 741
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-10-21",
-      "open": 672
+      "open": 682
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -194,10 +194,10 @@
     },
     "autopilot-program.md": {
       "blocked": 2,
-      "closed": 246,
+      "closed": 286,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 100,
+      "open": 110,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -206,16 +206,16 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 348,
+      "total": 398,
       "tracks": [
         {
           "blocked": 2,
           "closed": 42,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 17,
+          "markers": 1,
+          "name": "autopilot-program",
           "open": 57
         },
         {
@@ -223,7 +223,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 988,
+          "line": 995,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 5
@@ -233,7 +233,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1396,
+          "line": 1403,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 2
@@ -243,7 +243,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2093,
+          "line": 2100,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 5
@@ -253,7 +253,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2229,
+          "line": 2236,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 2
@@ -263,7 +263,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2298,
+          "line": 2305,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -273,7 +273,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2491,
+          "line": 2498,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 4
@@ -283,7 +283,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2648,
+          "line": 2655,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -293,7 +293,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3032,
+          "line": 3039,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -303,7 +303,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3424,
+          "line": 3431,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -313,7 +313,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3767,
+          "line": 3774,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -323,47 +323,53 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4022,
+          "line": 4029,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 12
-        }
-      ]
-    },
-    "autopilot-sequential-allocation.md": {
-      "blocked": 0,
-      "closed": 40,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 10,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-04",
-      "state": "active",
-      "total": 50,
-      "tracks": [
+        },
         {
           "blocked": 0,
           "closed": 18,
-          "gates": null,
+          "gates": [
+            "RTG-02#autopilot-program",
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
+          ],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 4259,
+          "markers": 1,
+          "name": "autopilot-sequential-allocation",
           "open": 8
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [
-            "RTG-02"
+            "RTG-02#autopilot-program",
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 446,
+          "line": 4709,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 2
@@ -372,7 +378,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 56,
+      "closed": 57,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -384,7 +390,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 61
+      "total": 62
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -566,7 +572,7 @@
       "blocked": 0,
       "closed": 371,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 111,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2665,23 +2671,12 @@
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
       "track": "model evaluation queue"
     },
-    "EVL-04": {
-      "deps": [
-        "RTG-02"
-      ],
-      "handoff": "autopilot-sequential-allocation.md",
-      "id": "EVL-04",
-      "index": "research-evaluation-index.md",
-      "line": 14,
-      "next_action": "After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes",
-      "track": "autopilot sequential allocation"
-    },
     "EVL-08": {
       "deps": [],
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
       "index": "research-evaluation-index.md",
-      "line": 15,
+      "line": 14,
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
       "track": "canonical judge suite revamp"
     },
@@ -2690,7 +2685,7 @@
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "index": "research-evaluation-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2699,7 +2694,7 @@
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "index": "research-evaluation-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "track": "eval tower verification"
     },
@@ -2708,7 +2703,7 @@
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
@@ -2717,7 +2712,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2728,7 +2723,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },

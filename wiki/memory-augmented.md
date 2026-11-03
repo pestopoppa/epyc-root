@@ -259,7 +259,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
     across about 5.7k generic Fibonacci rows.
   - The live store went from 64,208 to 64,204 entries. The post-purge integrity check is HEALTHY:
     `id_map` in sync, 500/500 round-trips, and a vector diversity ratio of 1.187.
-  - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract)
+  - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
 - **The pinned production_best (v10) store is purged too**, but its manifest still pins the old digests
   until the MHS-3d re-pin is ratified. A v10 rewind no longer restores the memories.
   [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
@@ -299,7 +299,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
 - [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md)
 - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
-- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract)
+- [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract)
 - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed

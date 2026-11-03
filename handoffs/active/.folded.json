@@ -80,6 +80,10 @@
    "target": "autopilot-program.md",
    "track": "autopilot-decision-plane-audit-2026-07-22"
   },
+  "autopilot-sequential-allocation.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-sequential-allocation"
+  },
   "batched-decode-measurement.md": {
    "target": "numa-placement-and-contention.md",
    "track": "batched-decode-measurement"
@@ -450,7 +454,7 @@
    "track": "prompt-construction-determinism"
   },
   "promptforge-mutation-safety-contract.md": {
-   "target": "autopilot-sequential-allocation.md",
+   "target": "autopilot-program.md",
    "track": "promptforge-mutation-safety-contract"
   },
   "qwen-chat-template-evaluation.md": {
@@ -647,6 +651,10 @@
   "EVL-03": {
    "target": "RTG-02",
    "track": "autopilot-decision-plane-audit-2026-07-22"
+  },
+  "EVL-04": {
+   "target": "RTG-02",
+   "track": "autopilot-sequential-allocation"
   },
   "EVL-07": {
    "target": "EVL-14",
@@ -1124,7 +1132,7 @@
    "track": "qwen-chat-template-evaluation"
   },
   "RTG-55": {
-   "target": "EVL-04",
+   "target": "RTG-02",
    "track": "promptforge-mutation-safety-contract"
   },
   "RTG-56": {

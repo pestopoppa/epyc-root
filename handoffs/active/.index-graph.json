@@ -13,11 +13,6 @@
   },
   "edges": [
     {
-      "from": "EVL-04",
-      "kind": "dep",
-      "to": "RTG-02"
-    },
-    {
       "from": "EVL-52",
       "kind": "dep",
       "to": "EVL-10"
@@ -133,24 +128,6 @@
       "from": "EVL-02",
       "kind": "ref",
       "to": "REV-07",
-      "weight": 2
-    },
-    {
-      "from": "EVL-04",
-      "kind": "ref",
-      "to": "EVL-10",
-      "weight": 1
-    },
-    {
-      "from": "EVL-04",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 1
-    },
-    {
-      "from": "EVL-04",
-      "kind": "ref",
-      "to": "RTG-02",
       "weight": 2
     },
     {
@@ -367,7 +344,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 1
+      "weight": 2
     },
     {
       "from": "INF-06",
@@ -714,8 +691,14 @@
     {
       "from": "RTG-02",
       "kind": "ref",
+      "to": "EVL-10",
+      "weight": 1
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
       "to": "EVL-14",
-      "weight": 7
+      "weight": 8
     },
     {
       "from": "RTG-02",
@@ -877,7 +860,7 @@
       "from": "UFH-01",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "UFH-01",
@@ -892,7 +875,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:47:47Z",
+  "generated_at": "2026-11-03T08:50:30Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1248,64 +1231,6 @@
     {
       "age_days": 1,
       "blocked": 0,
-      "blocked_by": [
-        "RTG-02"
-      ],
-      "closed": 40,
-      "dispatchable": 10,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "autopilot-sequential-allocation.md",
-      "id": "EVL-04",
-      "last_advanced": "2026-11-02",
-      "next_action": "After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes",
-      "open": 10,
-      "priority": 0.5434,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): SEQ-3b \u2014 Re-run clean under E8 (expensive, no ruling needed). Restart the candidate at",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 80,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 27,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "autopilot sequential allocation",
-      "tracks": [
-        {
-          "blocked_by": [
-            "RTG-02"
-          ],
-          "dispatchable": 8,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
-          "open": 8,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [
-            "RTG-02"
-          ],
-          "dispatchable": 2,
-          "gates": [
-            "RTG-02"
-          ],
-          "line": 446,
-          "name": "promptforge-mutation-safety-contract",
-          "open": 2,
-          "readiness": "blocked"
-        }
-      ]
-    },
-    {
-      "age_days": 1,
-      "blocked": 0,
       "blocked_by": [],
       "closed": 61,
       "dispatchable": 69,
@@ -1475,7 +1400,7 @@
         "unblocks": 5,
         "unblocks_rows": []
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1752,7 +1677,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 32,
+      "priority_rank": 31,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic rocm kernel authoring",
@@ -2194,7 +2119,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 37,
+      "priority_rank": 36,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -3007,7 +2932,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 38,
+      "priority_rank": 37,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -3039,7 +2964,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 31,
+      "priority_rank": 30,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer escalation and human gate policy"
@@ -3069,7 +2994,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 30,
+      "priority_rank": 29,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer latency and sampling budget",
@@ -3139,15 +3064,15 @@
       "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 246,
-      "dispatchable": 100,
+      "closed": 286,
+      "dispatchable": 110,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-02",
       "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
-      "open": 102,
+      "open": 112,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -3157,7 +3082,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 1,
+        "unblocks": 0,
         "unblocks_rows": [
           "EVL-04",
           "RTG-55"
@@ -3171,9 +3096,9 @@
         {
           "blocked_by": [],
           "dispatchable": 57,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 17,
+          "name": "autopilot-program",
           "open": 59,
           "readiness": "ready"
         },
@@ -3181,7 +3106,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 988,
+          "line": 995,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 5,
           "readiness": "ready"
@@ -3190,7 +3115,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1396,
+          "line": 1403,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -3199,7 +3124,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 2093,
+          "line": 2100,
           "name": "batched-edit-parallel-apply",
           "open": 5,
           "readiness": "ready"
@@ -3208,7 +3133,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2229,
+          "line": 2236,
           "name": "bep-dcp-falsification-harness",
           "open": 2,
           "readiness": "ready"
@@ -3217,7 +3142,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2298,
+          "line": 2305,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
@@ -3226,7 +3151,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2491,
+          "line": 2498,
           "name": "evidence-plane-instrument-repair",
           "open": 4,
           "readiness": "ready"
@@ -3235,7 +3160,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2648,
+          "line": 2655,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -3244,7 +3169,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3032,
+          "line": 3039,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -3253,7 +3178,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3424,
+          "line": 3431,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -3262,7 +3187,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3767,
+          "line": 3774,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -3271,10 +3196,80 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 4022,
+          "line": 4029,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 12,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#autopilot-program",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
+          ],
+          "dispatchable": 8,
+          "gates": [
+            "RTG-02#autopilot-program",
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
+          ],
+          "line": 4259,
+          "name": "autopilot-sequential-allocation",
+          "open": 8,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#autopilot-program",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
+          ],
+          "dispatchable": 2,
+          "gates": [
+            "RTG-02#autopilot-program",
+            "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+            "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+            "RTG-02#batched-edit-parallel-apply",
+            "RTG-02#bep-dcp-falsification-harness",
+            "RTG-02#evidence-plane-event-sourcing-and-narrative",
+            "RTG-02#evidence-plane-instrument-repair",
+            "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+            "RTG-02#loops-and-dashboards-audit-2026-07-05",
+            "RTG-02#objective-task-rate-goodput",
+            "RTG-02#orchestration-robustness-audit-2026-07-11",
+            "RTG-02#scaffold-autopilot-cost-lever-deployment"
+          ],
+          "line": 4709,
+          "name": "promptforge-mutation-safety-contract",
+          "open": 2,
+          "readiness": "blocked"
         }
       ]
     },
@@ -3303,7 +3298,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3416,7 +3411,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 34,
+      "priority_rank": 33,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3617,13 +3612,13 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 33,
+      "priority_rank": 32,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 371,
@@ -3632,7 +3627,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "open": 111,
       "priority": 0.711,
@@ -3814,7 +3809,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 35,
+      "priority_rank": 34,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3972,7 +3967,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 56,
+      "closed": 57,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3981,13 +3976,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0192,
+      "priority": 0.018,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 39,
+      "priority_rank": 38,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -4150,7 +4145,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 36,
+      "priority_rank": 35,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -4163,6 +4158,7 @@
     "file_rows_unused": [
       "EVL-01",
       "EVL-03",
+      "EVL-04",
       "EVL-07",
       "EVL-11",
       "EVL-12",
@@ -4305,7 +4301,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 38,
+      "file": 37,
       "heuristic": 1,
       "override": 0
     },
@@ -4321,7 +4317,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 10,
+    "blocked": 9,
     "no_open": 0,
     "ready": 29
   },
