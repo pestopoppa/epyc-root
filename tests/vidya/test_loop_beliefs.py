@@ -1209,3 +1209,35 @@ def test_target_with_only_device_scope_claims_has_no_target_evidence(tmp_path, a
     assert "### Device-scope claims" in section
     assert "### Usable, target tier" not in section
     assert "3 of 3 device-scope (host) claim(s)" in section
+
+
+def _q38_claims(model, n, tag):
+    return [_loop(f"{tag}-{i}", model=model, quant="", mech=f"akm-{tag}-{i}",
+                  value=f"{20 + i}.5") for i in range(n)]
+
+
+def test_ac2_derives_a_model_with_no_scoped_claims_from_the_ledger(tmp_path):
+    """AC2 intent: a lineage member with no model-scoped claims gets the banner first and its
+    siblings' lines as 'transfer unproven'. The target is derived, not pinned: DS41-1017 here has
+    real claims (as in production now) and must not be chosen."""
+    import p1_acceptance as acc
+    path = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(DS41_1017, 3, "d17"),
+                  *_q38_claims(DS41_Q4, 3, "q4"))
+    r = acc.Reader(path, AS_OF, {})
+    result = acc.ac2(r)
+    assert result["pass"], result["detail"]
+    assert "Q38FN-IQ4_XS-uniform" in result["detail"] and "target tier 0" in result["detail"]
+
+
+def test_ac2_is_not_loosened_fails_without_banner_siblings_or_candidate(tmp_path):
+    import p1_acceptance as acc
+    # every lineage member has its own claims -> nothing to derive -> fail (never a free pass)
+    both = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(Q38_UNI, 2, "uni"),
+                  *_q38_claims(DS41_Q4, 10, "q4"), *_q38_claims(DS41_1017, 2, "d17"),
+                  name="both.jsonl")
+    res = acc.ac2(acc.Reader(both, AS_OF, {}))
+    assert not res["pass"] and "cannot be proven" in res["detail"]
+    # an empty member whose siblings have fewer than 8 lines -> fails the sibling floor
+    few = _write(tmp_path, *_q38_claims(Q38_UD, 3, "ud"), name="few.jsonl")
+    res = acc.ac2(acc.Reader(few, AS_OF, {}))
+    assert not res["pass"] and "sibling lines 3 (need 8)" in res["detail"]

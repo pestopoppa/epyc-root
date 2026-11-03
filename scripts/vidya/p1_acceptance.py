@@ -9,8 +9,9 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
 
   AC1  DS41-Q4 cpu: >=20 target-tier claims with value+unit+n; >=5 negative outcomes
        (regressed/null/refused) with mechanism ids; tried index >=60 mechanisms.
-  AC2  DS41-1017 cpu: target tier 0 with the empty-target banner; >=8 sibling-tier DS41-Q4 lines
-       labelled "transfer unproven"; <=3 host lines.
+  AC2  (retargeted 2026-11-03: DS41-1017 gained 151 real claims) a cpu MODEL_LINEAGE member DERIVED
+       from the ledger that has 0 model-scoped claims: target tier 0 with the empty-target banner;
+       >=8 sibling-tier lines labelled "transfer unproven"; <=3 host lines.
   AC3  Q38FN UD-IQ4_XS cpu: >=15 target-tier value-bearing claims; tried index >=35 mechanisms.
   AC4  Qwen3.8-27B-Q8_0 gpu: >=3 target-tier claims, including the serving floor (81.1 t/s,
        floor 0.81%, n=10) and 2 mechanisms refused by the correctness gate ("MUL_MAT failed on
@@ -199,19 +200,47 @@ def ac1(r: Reader) -> dict[str, Any]:
                              f"{ev['section_bytes']} B{r.quant_note('DS41-Q4')}")
 
 
+def _empty_lineage_target(r: Reader) -> tuple[lb.Target, dict, dict] | None:
+    """Derive, from THIS ledger, a declared-lineage member (cpu) that has NO model-scoped claims
+    but whose lineage siblings do. No target name is pinned: a member that gains claims simply
+    stops qualifying and the next one is used. Returns (target, evaluation, collection)."""
+    for family in sorted(lb.MODEL_LINEAGE):
+        for model_file in sorted(lb.MODEL_LINEAGE[family].members):
+            target = lb.Target.from_mapping({"model_file": model_file, "quant": "",
+                                             "backend": "cpu"})
+            ev = lb.evaluate_frames(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+            col = lb.collect(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+            if ev["tiers"]["target"] == 0 and not _tier_rows(col) and ev["tiers"]["sibling"] > 0:
+                return target, ev, col
+    return None
+
+
 def ac2(r: Reader) -> dict[str, Any]:
-    ev, _ = r.read("DS41-1017")
-    q4 = r.target("DS41-Q4").model_file
+    """Intent (DESIGN 'AC2'): a target with NO model-scoped claims renders the empty-target
+    banner first, shows >=8 lineage-sibling lines labelled 'transfer unproven', <=3 host lines,
+    and counts 0 target-tier claims. The target is derived at run time (see above) and proven
+    empty three ways (tier count, collected target rows, no row scoped to its model file)."""
+    found = _empty_lineage_target(r)
+    if found is None:
+        return _check("AC2", False, "no declared-lineage cpu model with 0 model-scoped claims "
+                                    "and sibling claims exists in this ledger; AC2 cannot be "
+                                    "proven here (not weakened: add a synthetic-target test)")
+    target, ev, col = found
+    family = lb._FAMILY_OF[target.model_file]
+    sibs = [f for f in family.members if f != target.model_file]
+    scoped = [x for x in col["rows"] if x["model_file"] == target.model_file]
     lines = _section_lines(ev)
     banner_first = (len(lines) > 1 and lines[0] == lb.SECTION_HEADER and bool(ev["banner"])
                     and lines[1] == ev["banner"])
     sibling = [ln for ln in lines if ln.startswith("- ") and "transfer unproven" in ln
-               and f"measured on {q4}" in ln]
+               and any(f"measured on {f}" in ln for f in sibs)]
     hosts = _host_lines(ev)
-    ok = ev["tiers"]["target"] == 0 and banner_first and len(sibling) >= 8 and hosts <= 3
-    return _check("AC2", ok, f"DS41-1017 target tier {ev['tiers']['target']} (need 0); banner "
-                             f"first {banner_first}; sibling DS41-Q4 lines {len(sibling)} (need 8)"
-                             f"; host lines {hosts} (max 3); section {ev['section_bytes']} B")
+    ok = (ev["tiers"]["target"] == 0 and not scoped and banner_first and len(sibling) >= 8
+          and hosts <= 3)
+    return _check("AC2", ok, f"{lb.model_label(target.model_file)} (derived: 0 model-scoped "
+                             f"claims) target tier {ev['tiers']['target']} (need 0); banner "
+                             f"first {banner_first}; sibling lines {len(sibling)} (need 8); "
+                             f"host lines {hosts} (max 3); section {ev['section_bytes']} B")
 
 
 def ac3(r: Reader) -> dict[str, Any]:
