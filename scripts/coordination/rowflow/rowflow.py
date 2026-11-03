@@ -1252,8 +1252,8 @@ def _same(pid, birth):
 
 def reap_pids(tracked, grace=20):
     """TERM every still-same process (and every process group one of them leads), wait up to grace s, KILL, verify via
-    /proc. Only pids this harness started (or captured by row id) with a matching start time are signalled. Returns
-    (reaped, survivors)."""
+    /proc. Only pids this harness started (tracked by harness_tree: pid + start time) are signalled; nothing is ever
+    selected by name, argv or cwd (2026-11-03 session review). Returns (reaped, survivors)."""
     live = {p: b for p, b in tracked.items() if _same(p, b) and p != os.getpid()}
     if not live:
         return [], []
@@ -1277,46 +1277,6 @@ def reap_pids(tracked, grace=20):
         if not any(_same(p, b) for p, b in live.items()):
             break
     return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
-
-
-def _owned_by_other_row(pid, rid, cmdline):
-    """True when this process is demonstrably ANOTHER row's: its argv carries `--id <other>` or its environment FILLER_ID is
-    another id. A row's argv may name a sibling's path (inf22 custody launched filler_run15.sh out of the recipe row's source
-    dir, so the dry-run teardown of the recipe row killed the armed custody launcher, rc=143, 2026-11-03). Unattributed
-    processes that merely name rid still count as its orphans."""
-    argv = cmdline.split("\0")
-    for i, a in enumerate(argv):
-        other = a[5:] if a.startswith("--id=") else (argv[i + 1] if a == "--id" and i + 1 < len(argv) else None)
-        if other is not None and other != rid:
-            return True
-    try:
-        for kv in open(f"/proc/{pid}/environ", "rb").read().decode("utf8", "replace").split("\0"):
-            if kv.startswith("FILLER_ID="):
-                return kv[10:] != rid
-    except OSError:
-        pass
-    return False
-
-
-def row_dir_procs(rid, dirs):
-    """pids (not ours) whose argv names rid or whose cwd lies under one of the row's own dirs, with start times."""
-    out = {}
-    dirs = [os.path.realpath(x) + os.sep for x in dirs if x and rid in x]  # only dirs that are the row's own
-    for q in os.listdir("/proc"):
-        if not q.isdigit() or int(q) == os.getpid():
-            continue
-        try:
-            raw = open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace")
-            hit = rid in raw and not _owned_by_other_row(q, rid, raw)
-            if not hit and dirs:
-                cwd = os.path.realpath(os.readlink(f"/proc/{q}/cwd")) + os.sep
-                hit = any(cwd.startswith(x) for x in dirs)
-        except OSError:
-            continue
-        st = _proc_stat(int(q))
-        if hit and st:
-            out[int(q)] = st[2]
-    return out
 
 
 def record_fail(flags, rid, d, reason, extra):
@@ -1586,8 +1546,11 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                 except subprocess.TimeoutExpired:
                     pass
         # ws58 2026-11-02: the harness owns every process it started, PASS, FAIL or timeout alike (a private engine copy
-        # included): TERM the group + tracked descendants, 20 s, KILL, verify. Then anything still naming the row (argv,
-        # or cwd under the row's own dirs) is stopped by its captured pid. Never left for the owner, never by name.
+        # included): TERM the group + tracked descendants, 20 s, KILL, verify. ONLY tracked descendants (pid + start
+        # time captured while the run was live) are ever signalled. 2026-11-03 (session review, DELETE verdict): the
+        # argv/cwd "still naming the row" sweep is gone - on a shared host a row id in another process's command line
+        # is not ownership (it killed the publisher's own tool shells 3x, exit 144, and an armed sibling launcher,
+        # rc=143). Anything it would have found is reported read-only by row_orphans() in the record, never killed.
         harness_tree(p.pid, tracked)
         reaped, surv = reap_pids(tracked)
         try:
@@ -1596,11 +1559,9 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             pass
         if reaped:
             out.write(f"==== REAPED {reaped}\n")
-        orphans = row_dir_procs(rid, [x for x in (dd, d.get("workdir")) if x and rid in x])  # a shared workdir never counts
-        if orphans:
-            r2, s2 = reap_pids(orphans)
-            out.write(f"==== ORPHANS {sorted(orphans)} still naming this row after the dry run ended; REAPED {r2}\n")
-            surv += s2
+        leftover = sorted(set(row_orphans(rid)) - set(tracked))
+        if leftover:
+            out.write(f"==== NOTE {leftover} name this row but were not started by this dry run; left alone (never kill by name)\n")
         if surv:
             warning = (warning + "; " if warning else "") + f"UNREAPED {sorted(set(surv))}: survived TERM+KILL"
             out.write(f"==== {warning}\n")

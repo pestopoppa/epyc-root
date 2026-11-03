@@ -1,5 +1,6 @@
-"""ws58 2026-11-02: the dry-run/smoke harness reaps every process it started (own group, setsid'd grandchildren, detached
-processes naming the row) on PASS/FAIL/timeout; nothing is left for the operator."""
+"""ws58 2026-11-02: the dry-run/smoke harness reaps every process it started (own group, setsid'd grandchildren) on
+PASS/FAIL/timeout; nothing is left for the operator. 2026-11-03 (session review): it reaps ONLY tracked descendants -
+the id-substring/cwd sweep (row_dir_procs) is deleted; a process that merely names the row id is never signalled."""
 import os
 import subprocess
 import sys
@@ -38,29 +39,39 @@ class ReapTest(unittest.TestCase):
             reaped, surv = rf.reap_pids(tracked, grace=5)
             p.wait(timeout=10)
             self.assertEqual(surv, [])
-            left = rf.row_dir_procs(rid, [td])
-            r2, s2 = rf.reap_pids(left, grace=5)
-            self.assertEqual(s2, [])
             time.sleep(0.5)
             for pid in spawned + [p.pid]:
                 self.assertFalse(_alive(pid), f"pid {pid} survived")
-            self.assertEqual(rf.row_dir_procs(rid, [td]), {})
 
-    def test_bystander_launcher_naming_row_in_path_survives(self):
-        rid = "ws58-bystander-%d" % os.getpid()
-        other = "ws58-sibling-%d" % os.getpid()
-        # another row's launcher whose argv names this row's path (the inf22 custody/recipe shape) must not be an orphan
-        p = subprocess.Popen(["bash", "-c", "sleep 30", "x", "/tmp/%s/source/filler_run15.sh" % rid, "--id", other])
-        try:
-            time.sleep(0.3)
-            self.assertNotIn(p.pid, rf.row_dir_procs(rid, []))
-            self.assertTrue(_alive(p.pid))
-        finally:
-            p.terminate()
-            p.wait(timeout=10)
+    def test_id_substring_reaper_is_gone(self):
+        # 2026-11-03: the argv/cwd sweep killed the publisher's own shells (exit 144 x3) and an armed sibling launcher (rc=143)
+        self.assertFalse(hasattr(rf, "row_dir_procs"))
+        self.assertFalse(hasattr(rf, "_owned_by_other_row"))
 
-    def test_shared_workdir_never_matches_by_cwd(self):
-        self.assertEqual(rf.row_dir_procs("q" + os.urandom(8).hex(), ["/workspace", "/"]), {})
+    def test_foreign_process_naming_the_row_id_survives_the_reap(self):
+        rid = "ws58-foreign-%d" % os.getpid()
+        # a process that is NOT a descendant of the dry run but names the row id in its argv (an operator shell, another
+        # session's tool, a sibling launcher) must survive: ownership is pid + start time, never a name
+        foreign = subprocess.Popen(["bash", "-c", "sleep 30; true", "x", rid + "-foreign"], start_new_session=True)  # ; true: no exec-optimisation
+        with tempfile.TemporaryDirectory() as td:
+            lp = os.path.join(td, "launcher.sh")
+            with open(lp, "w") as f:
+                f.write("#!/bin/bash\nsleep 600\n")
+            run = subprocess.Popen(["bash", lp], start_new_session=True)
+            try:
+                tracked = {run.pid: rf._proc_stat(run.pid)[2]}
+                for _ in range(4):
+                    time.sleep(0.25)
+                    rf.harness_tree(run.pid, tracked)
+                self.assertNotIn(foreign.pid, tracked)
+                self.assertIn(foreign.pid, rf.row_orphans(rid))   # reported read-only
+                reaped, surv = rf.reap_pids(tracked, grace=5)
+                run.wait(timeout=10)
+                self.assertEqual(surv, [])
+                self.assertTrue(_alive(foreign.pid), "foreign process naming the row id was killed")
+            finally:
+                foreign.terminate()
+                foreign.wait(timeout=10)
 
 
 if __name__ == "__main__":
