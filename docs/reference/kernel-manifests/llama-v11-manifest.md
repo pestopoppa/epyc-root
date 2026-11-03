@@ -185,6 +185,23 @@ Stack changes that ride the v11 promotion as ONE change (kernel-promotion step 8
 | R4 `routing_graph` `DOUBLE[1024]` tables | REPL-EMB-R4 | tables at 256 (ALTER or drop/recreate, repopulated), dimension from `src.embedding_dims` | open |
 | R5 BGE-calibrated similarity thresholds | REPL-EMB-R5 | each threshold has a dated sweep on EG2@256 cosines, old BGE value recorded | open |
 
+### INF22-Q38-T48: architect_general serves the t48 recipe bundle (operator decision 2026-11-03)
+
+**Decision.** The Q38 recipe comparison (INF-22 M4-Q38-RECIPE-COMPARISON, 2026-11-03) found the `q38fn_canonical_t48` bundle better than the configured `q38fn_configured_t96` on both the C5 baseline and the M4 candidate image: decode +7.2 %, prefill +23-40 %, well outside noise. The operator ruled it is FOLDED INTO THE CHAMPION and ships with the v11 promotion; it is not a separate stack change.
+
+**Stack-change items applied together at the freeze (nothing is applied by this manifest edit).**
+1. `architect_general` (Qwen3.8-Flash-Next UD-IQ4_XS, physical CPU server): threads 96 → 48.
+2. Add `GGML_FUSED_DECODE_OFF=1` and `GGML_NOHUGEPAGE_PROCESS=1` to that server's env (the t48 bundle; keep `GGML_FA_SPLIT_KV=0`).
+3. Launch with `--load-threads <claimed cpus>` (V11-002).
+
+**Presence gate.** The candidate stack's compiled launch argv for architect_general shows `-t 48` and the two env keys, read from the compiled registry output, never from prose.
+
+**Re-check at the candidate build.** The evidence is an indicative bare run (n=3 per cell, GPU co-tenant). Re-run the same 12 cells on the final candidate binary; the fold stands if t48 still beats t96 on decode by more than the same-window noise.
+
+**Rollback.** Revert items 1-2 (threads 96, drop the two env keys).
+
+Evidence: `handoffs/active/mi210-serving-program.md` → M4-Q38-RECIPE-COMPARISON (2026-11-03 result).
+
 ## Not features, but v11 promotion-checklist items (kept here so they are not dropped)
 
 CH-17 (re-select each role's spec-decode recipe at every freeze), V6R-4a (prove `25132e042` / `90c12df42` ancestry, `test-repack-parallel`, load A/B and the full-pair decode A/B on the candidate), V6R-4b (OP-58 forward-port rule, still unratified), KPF-19.1 rebase check, KVU-12.2 gate (b) re-run, GPU serving validation of the HIP image `gpu-20261020-dd3d9721c` (compile and linkage only so far), `:8083` prefill-budget switch (KVU-16g-2 in `kv-unified-stack-rollout.md`), checkpoint size on Qwen3.6 MTP slots, explicit `--spec-draft-p-min` / `--spec-draft-n-max` in launch recipes, CH-24 (the qwen4exp fused-path debug prints and per-token `/tmp/qwen4exp-builds` writes from `78922ed81` / `a56a79cc0` are unconditional in v10 and inert only under `GGML_FUSED_DECODE_OFF=1`: gate them via `14c57cbe9` or strip them).
