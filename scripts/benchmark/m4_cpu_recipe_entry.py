@@ -43,6 +43,43 @@ def check_enrollment(plan_path: Path, expected_sha: str, row_id: str, output: Pa
             raise ValueError(f'diagnostic source changed: {source}')
 
 
+def _cotenant(flags: Path, row: str) -> dict:
+    """Who else holds the GPU right now: open grants naming gpu-quiet, and live gpu-quiet lock holders. Evidence only."""
+    out={'at':time.time(),'grants_holding_gpu_quiet':[],'gpu_quiet_lock_holders':None}
+    try:
+        for g in sorted((flags/'grants').glob('*.grant')):
+            if g.stem==row: continue
+            holds=dict(f.split('=',1) for f in g.read_text().split() if '=' in f).get('holds','').split(',')
+            if 'gpu-quiet' in holds: out['grants_holding_gpu_quiet'].append(g.stem)
+    except OSError as exc: out['grants_error']=str(exc)
+    try:
+        sys.path.insert(0,'/workspace/repos/epyc-orchestrator')
+        from src.runtime.gpu_quiet_lock import holders
+        out['gpu_quiet_lock_holders']=holders()
+    except Exception as exc: out['holders_error']=type(exc).__name__
+    return out
+
+
+class _CotenantSampler:
+    """Samples _cotenant every 60 s on a thread inside this process (no child process) for the whole watched run."""
+    def __init__(self, flags: Path, row: str):
+        import threading
+        self.flags,self.row,self.samples,self.stop=flags,row,[],threading.Event()
+        self.thread=threading.Thread(target=self._run,daemon=True)
+    def _run(self):
+        while True:
+            self.samples.append(_cotenant(self.flags,self.row))
+            if self.stop.wait(60): break
+    def start(self): self.thread.start()
+    def finish(self, path: Path):
+        self.stop.set(); self.thread.join(timeout=10)
+        live=[s for s in self.samples if s['grants_holding_gpu_quiet']]
+        with path.open('x') as f:
+            json.dump({'schema':'epyc.m4.q38.host-cotenancy-samples.v1','n_samples':len(self.samples),
+                       'n_samples_with_gpu_quiet_grant':len(live),'gpu_job_live_during_run':bool(live),
+                       'samples':self.samples},f,sort_keys=True);f.write('\n');f.flush();os.fsync(f.fileno())
+
+
 def qualification_worker() -> int:
     """One synthetic unit inside the actual watcher; never emits a measurement."""
     if (os.environ.get('FILLER_DRYRUN') != '1' or os.environ.get('FILLER_SMOKE') != '1'
@@ -154,12 +191,12 @@ def main() -> int:
         # keep windows. This descriptive diagnostic may share the host with a GPU job (lease 'shared'); the mode and
         # the grant's holds are recorded in HOST-COTENANCY.json beside the capture, never assumed.
         quiet_mode=os.environ.get('M4_GPU_QUIET_MODE')
-        if quiet_mode not in ('shared','exclusive'): raise ValueError('GPU-quiet lease mode missing or invalid')
+        if quiet_mode not in ('shared','exclusive','none'): raise ValueError('GPU-quiet lease mode missing or invalid')
         if sorted(os.sched_getaffinity(0))!=list(range(96)): raise ValueError('full physical-host affinity required')
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         original=_sha(a.grant)
         fds=[int(x) for x in os.environ.get('M4_LEASE_FDS','').split(',') if x]
-        expected={f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)}|{'gpu_quiet.lock'}; found={}
+        expected={f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)}|(set() if quiet_mode=='none' else {'gpu_quiet.lock'}); found={}
         for fd in fds:
             path=Path(os.readlink(f'/proc/self/fd/{fd}'))
             if path.parent==Path('/mnt/raid0/llm/tmp') and path.name in expected:
@@ -178,12 +215,15 @@ def main() -> int:
                  '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),'--execute']
         holds=dict(f.split('=',1) for f in a.grant.read_text().split()).get('holds','').split(',')
         gpu_quiet_held=quiet_mode=='exclusive' and 'gpu-quiet' in holds
+        first=_cotenant(a.hold,row)
         with (a.output/'HOST-COTENANCY.json').open('x') as f:
             json.dump({'schema':'epyc.m4.q38.host-cotenancy.v1','gpu_quiet_lease':quiet_mode,'grant_holds':sorted(holds),
-                       'gpu_quiet_held':gpu_quiet_held,'evidence_grade':'gpu-quiet held (still descriptive only)' if gpu_quiet_held else
+                       'gpu_quiet_held':gpu_quiet_held,'gpu_cotenant_at_start':first,'evidence_grade':'gpu-quiet held (still descriptive only)' if gpu_quiet_held else
                        'indicative: shares host with GPU job (operator co-residency policy 2026-10-22)'},f,sort_keys=True)
             f.write('\n');f.flush();os.fsync(f.fileno())
-        rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
+        sampler=_CotenantSampler(a.hold,row); sampler.start()
+        try: rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
+        finally: sampler.finish(a.output/'HOST-COTENANCY-SAMPLES.json')
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         if reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json') != reader_config:
             raise ValueError('diagnostic reader enrollment changed during work')

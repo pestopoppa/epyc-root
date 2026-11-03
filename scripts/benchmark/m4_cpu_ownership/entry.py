@@ -62,7 +62,11 @@ def _grant(path: Path, expected_region: str, deadline: float, *, require_host_ho
         # on a full-host grant WITHOUT gpu-quiet (host shared with a GPU job; the caller labels it). Without the
         # shared lease the strict full host + gpu-quiet holds stay required.
         shared_ok = os.environ.get('M4_GPU_QUIET_MODE') == 'shared' and len(holds) == 4 and set(holds) == host
-        if not shared_ok and (len(holds) != 5 or set(holds) != host | {'gpu-quiet'}):
+        # 'none' lease (operator co-run decision 2026-11-03): exactly q0-q3, never gpu-quiet; the caller records the live GPU co-tenant.
+        none_lease = os.environ.get('M4_GPU_QUIET_MODE') == 'none'
+        none_ok = none_lease and len(holds) == 4 and set(holds) == host
+        if none_lease and not none_ok: raise ValueError('none lease requires exactly the q0-q3 holds (no gpu-quiet)')
+        if not (shared_ok or none_ok) and (len(holds) != 5 or set(holds) != host | {'gpu-quiet'}):
             raise ValueError('full host and GPU-quiet holds required (or full host holds under a shared GPU-quiet lease)')
     elif keys in (required | {'holds', 'schema', 'id', 'kind'}, required | {'holds', 'schema', 'id', 'kind', 'admission_class'}):
         if (not allow_dryrun or os.environ.get('FILLER_DRYRUN') != '1'

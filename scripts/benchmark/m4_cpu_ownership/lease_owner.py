@@ -24,9 +24,11 @@ LOCK_ROOT = Path('/mnt/raid0/llm/tmp')
 
 
 def lease_fds(gpu_quiet: str = "shared") -> tuple[int, ...]:
-    if gpu_quiet not in ('shared', 'exclusive'):
+    if gpu_quiet not in ('shared', 'exclusive', 'none'):
         raise ValueError('invalid GPU-quiet lease mode')
-    expected = {f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)} | {'gpu_quiet.lock'}
+    # 'none' (operator co-run decision 2026-11-03): hold ONLY q0-q3; the GPU lock is never touched, so a GPU row that
+    # holds gpu-quiet EXCLUSIVE keeps running beside this CPU lease.
+    expected = {f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)} | (set() if gpu_quiet == 'none' else {'gpu_quiet.lock'})
     found = {}
     for name in os.listdir('/proc/self/fd'):
         try:
@@ -49,7 +51,7 @@ def main() -> int:
     parser.add_argument('--caller-pid',type=int,required=True)
     parser.add_argument('--caller-birth',type=int,required=True)
     parser.add_argument('--timeout',type=float,default=0)
-    parser.add_argument('--gpu-quiet', choices=('shared', 'exclusive'), default='shared')
+    parser.add_argument('--gpu-quiet', choices=('shared', 'exclusive', 'none'), default='shared')
     parser.add_argument('command',nargs=argparse.REMAINDER)
     args=parser.parse_args()
     command=args.command[1:] if args.command and args.command[0]=='--' else args.command
@@ -64,7 +66,7 @@ def main() -> int:
         sys.path.insert(0,'/workspace/repos/epyc-orchestrator')
         from src.runtime.gpu_quiet_lock import gpu_quiet_then_regions
         def caller_gone(): return bool(select.select([caller_fd],[],[],0)[0])
-        with gpu_quiet_then_regions('bench', {'q0','q1','q2','q3'},gpu_quiet=args.gpu_quiet,
+        with gpu_quiet_then_regions('bench', {'q0','q1','q2','q3'},gpu_quiet=(None if args.gpu_quiet == 'none' else args.gpu_quiet),
                                    timeout_s=args.timeout,request_tag='inf22-m4-cpu',cancel_check=caller_gone):
             try:
                 if caller_gone(): raise RuntimeError('caller exited before lease admission')

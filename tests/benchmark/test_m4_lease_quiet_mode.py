@@ -51,6 +51,9 @@ def _host_grant(tmp_path, holds):
     (None, 'q0,q1,q2,q3,gpu-quiet', True),
     ('exclusive', 'q0,q1,q2,q3', False),
     (None, 'q0,q1,q2,q3', False),
+    ('none', 'q0,q1,q2,q3', True),
+    ('none', 'q0,q1,q2,q3,gpu-quiet', False),
+    ('none', 'q0,q1,q2', False),
     ('shared', 'q0,q1,q2', False),
     ('shared', 'q0,q1,q2,q3,q3', False),
 ])
@@ -64,3 +67,22 @@ def test_host_holds_relaxed_only_under_shared_lease(tmp_path, monkeypatch, mode,
     else:
         with pytest.raises(ValueError, match='holds'):
             entry._grant(grant, '0-95', deadline, require_host_holds=True)
+
+
+def test_none_lease_holds_only_the_four_quarters_and_never_touches_gpu_lock(tmp_path, monkeypatch):
+    names=[f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)]
+    handles=[(tmp_path/name).open('w') for name in names]
+    gpu=(tmp_path/'gpu_quiet.lock').open('w')
+    try:
+        fcntl.flock(gpu,fcntl.LOCK_EX|fcntl.LOCK_NB)   # a GPU row holding gpu-quiet EXCLUSIVE elsewhere
+        for handle in handles: fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        fds={str(h.fileno()):'/mnt/raid0/llm/tmp/'+name for h,name in zip(handles,names,strict=True)}
+        orig_listdir=os.listdir; orig_readlink=os.readlink
+        monkeypatch.setattr(owner.os,'listdir',lambda p: list(fds) if p=='/proc/self/fd' else orig_listdir(p))
+        monkeypatch.setattr(owner.os,'readlink',lambda p: fds[p.rsplit('/',1)[-1]] if p.startswith('/proc/self/fd/') else orig_readlink(p))
+        assert set(owner.lease_fds('none')) == {h.fileno() for h in handles}
+        with pytest.raises(RuntimeError):
+            owner.lease_fds('shared')   # the other modes still require the gpu_quiet.lock descriptor
+    finally:
+        gpu.close()
+        for handle in handles: handle.close()
