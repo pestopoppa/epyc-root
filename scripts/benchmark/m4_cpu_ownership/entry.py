@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """M4 CPU entry integration fixture. Real inference remains hard-disabled.
 
-This exercises the real guard/watch ownership path with a source-pinned dummy
-workload. It does not accept the retired job or a model-bearing command.
+This exercises the real watch path (pidfd stop; cgroup.kill when a cgroup is
+delegated, else a private session) with a source-pinned dummy workload. The CPU
+lease is the caller's `region-lock run`; the caller is not authenticated and no
+lease descriptor is re-verified here. It does not accept the retired job or a
+model-bearing command.
 """
 from __future__ import annotations
 

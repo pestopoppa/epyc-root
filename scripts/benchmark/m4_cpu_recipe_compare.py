@@ -2,7 +2,8 @@
 """Run the predeclared M4 same-frame CPU recipe comparison under an owned lease.
 
 The output is a diagnostic capture, not a best-recipe, fold or promotion verdict.
-Invocation is allowed only through the admitted M4 ownership entry.
+It is launched by m4_cpu_recipe_entry.py under watch.run, which supplies the server
+PID registry; the seal is the plan digest plus the image manifests the plan names.
 """
 from __future__ import annotations
 import argparse

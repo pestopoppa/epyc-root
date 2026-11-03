@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
-"""Guarded entry for the narrowly scoped M4 Q38FN recipe diagnostic."""
+"""Entry for the narrowly scoped M4 Q38FN recipe diagnostic.
+
+Run it under the plain region lock; nothing else holds or re-verifies a lease:
+
+    region-lock run --regions q0,q1,q2,q3 [--gpu-quiet shared|exclusive] --role bench \
+        --timeout-s 600 -- python3 scripts/benchmark/m4_cpu_recipe_entry.py \
+        --plan PLAN.json --plan-sha256 SHA --grant G --stop S --hold H \
+        --output EMPTY_DIR --deadline EPOCH [--load-threads 96]
+
+Checks: plan digest (the plan seals its image manifests), grant content (0-95,
+q0-q3 holds, gpu-quiet optional, interval), STOP/HOLD absence, remaining window,
+RAM and disk headroom. The caller is not authenticated; the harness does not hash
+itself. The comparison runs under watch.run (cgroup.kill when a cgroup is
+delegated, else a private session); --load-threads stays outside the seal.
+"""
 from __future__ import annotations
 import argparse
 import hashlib

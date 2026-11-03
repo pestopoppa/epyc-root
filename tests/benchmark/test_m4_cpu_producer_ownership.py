@@ -30,7 +30,7 @@ def test_actual_runner_pidfd_cleanup_in_real_cgroup(tmp_path):
     script=tmp_path/'worker.py'
     script.write_text('''import importlib.util,json,os,subprocess,sys\nfrom pathlib import Path\np=Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('k35_owned_test',p);m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)\nc,fd,b=m.m4_owned.spawn([sys.executable,'-c','import time;time.sleep(60)'],env=os.environ.copy(),registry=os.environ['M4_SERVER_PID_REGISTRY'])\nPath(sys.argv[2]).write_text(json.dumps(m.terminate(c,fd,b)))\n''')
     entry=tmp_path/'entry.py'
-    entry.write_text('''import os,sys,time,watch\nenv=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',M4_OUTER_OWNER_PID=sys.argv[1],M4_OUTER_OWNER_BIRTH=sys.argv[2])\nraise SystemExit(watch.run([sys.executable,sys.argv[3],sys.argv[4],sys.argv[5]],sys.argv[6],sys.argv[7],sys.argv[8],time.time()+20,sys.argv[9],env))\n''')
+    entry.write_text('''import os,sys,time,watch\nenv=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')\nraise SystemExit(watch.run([sys.executable,sys.argv[3],sys.argv[4],sys.argv[5]],sys.argv[6],sys.argv[7],sys.argv[8],time.time()+20,sys.argv[9],env))\n''')
     cmd=[sys.executable,str(entry),str(os.getpid()),str(guard.birth(os.getpid())),str(script),str(RUNNER),str(receipt),str(grant),str(tmp_path/'stop'),str(hold),str(out)]
     result=subprocess.run(cmd,env=dict(os.environ,PYTHONPATH=str(OWNERSHIP)),capture_output=True,text=True,timeout=20)
     assert result.returncode==0, result.stderr

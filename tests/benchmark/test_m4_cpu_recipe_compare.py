@@ -150,3 +150,24 @@ def test_load_threads_reaches_server_args_without_touching_the_seal(tmp_path,mon
     assert all(cfg['extra_args'][-2:]==['--load-threads','96'] for cfg in seen)
     sealed=json.loads((out/'comparison-plan.json').read_text())
     assert all('--load-threads' not in (c.get('extra_args') or []) for c in sealed['recipes'].values())
+
+
+HARNESS=[ROOT/'scripts/benchmark'/n for n in ('m4_cpu_recipe_entry.py','m4_cpu_recipe_compare.py')]+\
+        [ROOT/'scripts/benchmark/m4_cpu_ownership'/n for n in ('entry.py','m4_cgroup_guard.py','native_authorization.py',
+                                                                'owned.py','planning_canary.py','watch.py')]
+
+
+def test_harness_has_no_caller_identity_check():
+    # Operator order 2026-11-03: region-lock holds the lease; nothing authenticates its caller.
+    assert not (ROOT/'scripts/benchmark/m4_cpu_ownership/lease_owner.py').exists()
+    for path in HARNESS:
+        text=path.read_text().lower()
+        for needle in ('lease_owner','getppid','outer owner','m4_outer_owner','owner-pid','owner_pid','m4_lease_fds','m4_gpu_quiet_mode'):
+            assert needle not in text, (path.name,needle)
+
+
+def test_harness_never_hashes_its_own_source():
+    for path in HARNESS:
+        text=path.read_text()
+        assert 'SOURCE_SEALS' not in text and 'm4_cpu_recipe_enrollment' not in text, path.name
+        assert "compute-flags/grants" not in text, path.name
