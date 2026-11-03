@@ -1,5 +1,7 @@
 # Decision-Aware Routing for Q-Scorer
 
+> **Fold destination** (BRF-T7-F16, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `routing-program`, `routing-intelligence` (rows RTG-30 retired into RTG-09). The former `routing-program.md` body is `## Track: routing-program`; tracks those handoffs already had are lifted verbatim after their owner.
+
 > **Fold destination** (BRF-T1-F26, BRF-T1-1, route 1a, 2026-11-02): renamed from `decision-aware-routing.md`; absorbs 7 handoff(s) as `## Track:` sections at the end of this file (`internal-interaction-lifecycle.md`, `learned-routing-controller.md`, `model-capability-descriptors.md`, `retrain-routing-models.md`, `tri-role-coordinator-architecture.md`, `typed-decision-plane.md`, `x-mas-text-routing.md`). The body above the first track is the former `decision-aware-routing.md`.
 
 **Status**: ACTIVE, mostly waiting — DAR-2 contrastive is live-ON; DAR-3/DAR-6 FROZEN (fable5-02); DAR-3/4/5 re-aimed 2026-07-21 (§ RESCOPE); the reward carries the wall-clock axis since era E18 (2026-09-24); DAR-LAT is ❄ FROZEN (2026-09-27; unfreeze trigger since 2026-09-29: autopilot has trained on the swapped stack AND UFH-13 re-opened). Completed DAR-1/DAR-2/DAR-1.5 record: § Completed Scope.
@@ -10,7 +12,12 @@
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
 **Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
 
-## Start here (2026-09-27)
+## Track: routing-program
+<!-- gate: none -->
+
+> Folded from the body of `handoffs/active/routing-program.md` (row RTG-09), from its first `##` section on, @ `1befe3bc860d` on 2026-11-03 (BRF-T7-F16, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+
+#### Start here (2026-09-27)
 
 - DAR-LAT is ❄ FROZEN, with a per-box unfreeze trigger; since 2026-09-29 (operator ruling, `typed-decision-plane.md` → *Operator rulings — 2026-09-29*, Q2) that trigger is "autopilot has trained on the swapped stack AND UFH-13 re-opened", replacing UFH-13's TE-6 verdict (UFH-13 PARKED 2026-09-28). DAR-LAT-3h is ✅.
 - The first box to unfreeze when the trigger above fires is DAR-SPLIT-1, then the `stage`/`producer_role` split.
@@ -18,14 +25,14 @@
 - Standing, never flip: no production epsilon-greedy; do not close DAR-3/4/5 as signal-bound; any reward redesign carries the speed axis.
 - Do not dispatch the DAR-3 SPO+ boxes.
 
-## Completed Scope
+#### Completed Scope
 
 | Scope | Where |
 |---|---|
 | DAR-1, DAR-1 current-traffic replays, DAR-2, DAR-1.5 (phases + audit deliverable), the 2026-07-21 reward-saturation tables and root-cause evidence, the wall-clock speed-axis requirement (landed as E18), and the DAR-LAT-3h full box text | [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md) |
 | April dependency graph, research-intake updates 2026-04-18 / 04-26 / 04-28 / 05-27, the superseded Status line and Start here (nothing dispatchable) | [archived history](../archived/decision-aware-routing-history-through-2026-09-27.md) |
 
-## Problem / Context
+#### Problem / Context
 
 The difficulty signal shows **zero predictive spread**: escalation rates are flat at 62.2% / 60.7% / 62.2% across easy/medium/hard bands (Package B Phase 4, n=635, research-eval P0). The current Q-scorer cannot differentiate routing needs because the training objective is detached from the routing decision.
 
@@ -38,7 +45,7 @@ The TD update pushes Q-values toward observed rewards **independently per model*
 
 **Decision-aware learning** aligns training with the routing DECISION, not prediction accuracy. The gradient is zero when the routing decision is already correct — it only provides learning signal when the prediction would lead to a wrong decision.
 
-## Key Insight: Trivial Tractability
+#### Key Insight: Trivial Tractability
 
 The intractability concerns from intake-366 (differentiating through LP/MIP solvers in operations research) **do not apply** to our problem:
 
@@ -50,7 +57,7 @@ The intractability concerns from intake-366 (differentiating through LP/MIP solv
 
 **This is one of the rare cases where the theoretically superior approach is also simpler to implement.**
 
-## Research Context
+#### Research Context
 
 | Intake | Title | Key Contribution |
 |--------|-------|-----------------|
@@ -62,11 +69,11 @@ The intractability concerns from intake-366 (differentiating through LP/MIP solv
 
 **Key comparison**: xRouter and Router-R1 require multi-GPU RL training. But their conceptual contribution — aligning training with routing decisions — can be achieved without RL via decision-aware losses on our existing CPU Q-scorer.
 
-## Implementation Phases
+#### Implementation Phases
 
 DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2026-06-12, 2026-07-03), DAR-2 contrastive (✅ 2026-04-15, live-ON via `CONTRASTIVE_Q_UPDATES`) and the DAR-1.5 REINFORCE-pathology audit (✅ 2026-05-07) moved to the [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md); see § *Completed Scope*.
 
-### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions) — superseded by § RESCOPE (do not dispatch)
+##### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions) — superseded by § RESCOPE (do not dispatch)
 
 **Motivation note (intake-495 BaRP)**: BaRP frames this as the train/test mismatch fix — production logs only record the chosen specialist's outcome, not counterfactuals for un-routed models. DAR-3 SPO+ adopts the bandit-feedback *rationale* (don't require labels for un-chosen specialists) with a convex surrogate loss instead of REINFORCE. The 10% epsilon-greedy exploration step is what manufactures counterfactual data; SPO+ is what learns from it without REINFORCE's high-variance gradient.
 
@@ -83,7 +90,7 @@ DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2
 
 **Files**: `q_scorer.py`, `retriever.py` L225-368, `routing.py` L48-314
 
-### DAR-4: Model-Feature-Conditioned Q (~200 lines, 4-5 sessions)
+##### DAR-4: Model-Feature-Conditioned Q (~200 lines, 4-5 sessions)
 
 - [ ] Replace per-action Q-values with bilinear scorer:
   ```
@@ -107,7 +114,7 @@ DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2
 - DAR-1.5 verdict (2026-05-07; P4.2 resolved 2026-06-27): DAR-4 proceeds full-rank; sep-CMA-ES only for cold-start/no-label surfaces. Gate artifact: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/p42_block_separability/report_20260627_sample80k.json`.
 - Feature candidate withdrawn (2026-10-07 citation audit): no independent rationale is recorded in this handoff for adding `is_reasoning_model` to `ModelFeatures`; the cited record contains five claims about an episodic-memory benchmark and none about this descriptor (`intake-408#record`).
 
-### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
+##### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
 
 Source: intake-495 (BaRP) — preference-tunable inference. Modulates the trained DAR-4 bilinear scorer at inference WITHOUT retraining.
 
@@ -133,7 +140,7 @@ Source: intake-495 (BaRP) — preference-tunable inference. Modulates the traine
 
 **Why orthogonal to DAR-4**: DAR-4 trains the bilinear scorer; DAR-4b modulates its outputs at inference. Can ship independently of DAR-4 by applying ω/τ to the existing per-action Q-table if DAR-4 slips.
 
-### DAR-5: IRT-Augmented Prompt Features + Learned Model-Identity Vectors (~150 lines, 3-5 sessions, conditional on DAR-4)
+##### DAR-5: IRT-Augmented Prompt Features + Learned Model-Identity Vectors (~150 lines, 3-5 sessions, conditional on DAR-4)
 
 Source: intake-496 (LLM Bandit) — IRT (Item Response Theory) score predictor + d-dim model identity vectors trained jointly. Replaces hard-coded model-feature specs in the bilinear scorer with end-to-end learned embeddings.
 
@@ -147,7 +154,7 @@ Source: intake-496 (LLM Bandit) — IRT (Item Response Theory) score predictor +
 
 **Conditional on**: DAR-4 (bilinear scorer) shipping first. If DAR-4 hard-coded features prove sufficient (no measured benefit from learned features), DAR-5 closes as `not_pursued`.
 
-### Escalation Language (added 2026-04-28 from intake-495/496/474/493)
+##### Escalation Language (added 2026-04-28 from intake-495/496/474/493)
 
 If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pathology:
 
@@ -157,7 +164,7 @@ If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pat
 
 The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Options 2 and 3 are recorded for completeness, not roadmap commitments.
 
-### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run) — ❄ FROZEN (fable5-02)
+##### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run) — ❄ FROZEN (fable5-02)
 
 **Source**: arxiv:2510.24801 (intake-615) — peer-ranked consensus across heterogeneous models reportedly shows 0.12% adversarial-degradation vs 6.20% for single-model baseline on prompt injection. If even a third of that delta survives independent replication on our suite, swarm-fanout is a routing **mode**, not just a research curiosity.
 
@@ -170,7 +177,7 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 **Implementation sketch** (~150–250 LOC):
 > **Note 2026-09-16:** `dispatch_swarm_fanout` and `src/swarm_fanout.py` (with `SwarmCompletion`, `SwarmFanoutResult`, `bradley_terry_aggregate` and `length_proxy_aggregator`) **no longer exist**. They were deleted as dead code in orchestrator `771348c8` (2026-06-16, "delete dead DAR-6 swarm_fanout module", an ancestor of `main`). Only the default-off `swarm_fanout` FeatureSpec in `src/features.py` remains. The DAR-6.3/6.4 text below and the Default-off safety bullet are historical, and DAR-6.5/J14 would have to rebuild the dispatcher first.
 - [x] **DAR-6.1 ✅ 2026-05-27** (epyc-orchestrator commit pending): Feature flag `swarm_fanout` added to `src/features.py` registry (`SWARM_FANOUT` env var; default-off in BOTH test and prod). `Features.swarm_fanout` boolean field. **Production routing is not affected** until a caller explicitly invokes `dispatch_swarm_fanout` AND the flag is on — two safety layers.
-- [ ] **DAR-6.2 (NOT YET BUILT — prereq for production gating)**: Trigger signal — extend the injection-risk classifier (or reuse the existing factual-risk classifier from [`routing-intelligence.md`](routing-intelligence.md) if it carries an injection axis) to produce a 0–1 score; threshold tunable. For the cheap-first DAR-6.5 A/B variant ([J14](eval-tower-program.md#track-bulk-inference-campaign) in bulk-inference), this can be deferred — fan unconditionally on a fixed injection-prompt set first.
+- [ ] **DAR-6.2 (NOT YET BUILT — prereq for production gating)**: Trigger signal — extend the injection-risk classifier (or reuse the existing factual-risk classifier from [`routing-intelligence.md`](routing-program.md#track-routing-intelligence) if it carries an injection axis) to produce a 0–1 score; threshold tunable. For the cheap-first DAR-6.5 A/B variant ([J14](eval-tower-program.md#track-bulk-inference-campaign) in bulk-inference), this can be deferred — fan unconditionally on a fixed injection-prompt set first.
 - [x] **DAR-6.3 ✅ 2026-05-27 — SUPERSEDED/REMOVED 2026-06-16 (code deleted by orchestrator `771348c8`; see the note below)**: `dispatch_swarm_fanout(request, targets, ...)` in **`src/swarm_fanout.py`** fans the request to N≥2 backends concurrently via `ThreadPoolExecutor`. Per-backend failures (exceptions OR `success=False` results) are caught and surfaced as `SwarmCompletion(success=False, error=...)` rather than crashing the dispatch. Returns a `SwarmFanoutResult` with all N completions, per-role wall-clock, and optional aggregation.
 - [x] **DAR-6.4 ✅ 2026-05-27 — SUPERSEDED/REMOVED 2026-06-16 (aggregator deleted by orchestrator `771348c8`; `src/bradley_terry.py` itself survives)**: `bradley_terry_aggregate(pairwise_scorer)` builds an aggregator that calls **`src/bradley_terry.py`** (moved from scripts/autopilot/ on 2026-05-27 to keep it a single-source-of-truth for the three consumers — autopilot P17.BT-2, DAR-6.4 here, swarm-dataset-distillation Phase 3). The aggregator returns `(winner_completion, diagnostics)` carrying BT log_skills, warnings, Condorcet cycles, and dominance skew. Also included: `length_proxy_aggregator` as an explicit cheap-baseline (BT on length-difference sigmoid) — labeled in its docstring as "NOT a meaningful aggregation" so no future agent confuses it with a real peer-judged scorer.
   - **Removal note 2026-09-16 (sub-closure-fix):** DAR-6.3 and DAR-6.4 stay ticked because the work was really built (orchestrator `5f5fd8f6`, 2026-05-27). It was then deleted as dead code by `771348c8` (2026-06-16, "delete dead DAR-6 swarm_fanout module", an ancestor of orchestrator `origin/main` @ `88a2902d`). `src/swarm_fanout.py`, `dispatch_swarm_fanout`, `SwarmFanoutResult`, `SwarmCompletion`, `bradley_terry_aggregate` and `length_proxy_aggregator` exist on no ref at main. **Neither box is a live capability.** Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #5).
@@ -180,7 +187,7 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 **Cross-task interactions**:
 - BT aggregation module **lives at `src/bradley_terry.py`** (moved from scripts/autopilot/ during DAR-6 scaffolding) and is shared with autopilot P17 (selection step) and [`swarm-dataset-distillation.md`](../completed/swarm-dataset-distillation.md) Phase 3 (training-data filtering). One implementation, three consumers.
 - Concurrent-serve infrastructure dependency is [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) — verify Phase B observability is sufficient to detect 2-of-N inference-thread contention before relying on this mode. (Phase B was already complete per dynamic-stack-concurrency.md status — no new dependency.)
-- Injection-risk classifier may not exist yet; if not, that's a prerequisite task that should be raised in [`routing-intelligence.md`](routing-intelligence.md) as a new RI-phase, not buried inside DAR-6.
+- Injection-risk classifier may not exist yet; if not, that's a prerequisite task that should be raised in [`routing-intelligence.md`](routing-program.md#track-routing-intelligence) as a new RI-phase, not buried inside DAR-6.
 - **Default-off safety**: `dispatch_swarm_fanout` requires no aggregator by default; if called without one, returns all N completions and the caller picks. This is deliberate — the most faithful Fortytwo-style aggregator (peer-judged pairwise) needs N*(N-1) extra inference calls and is exactly the cost the DAR-6.5 A/B is designed to measure. Picking a default would prejudge the experiment.
 
 **Non-goals for DAR-6**:
@@ -188,21 +195,21 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 - Replicating Fortytwo's reputation-staking / Sybil resistance (single-user single-host stack — out of scope).
 - Multi-model fan-out for general (non-injection) prompts — that's a latency burn without a clear quality justification at our scale.
 
-## Cross-Cutting Concerns
+#### Cross-Cutting Concerns
 
-### 1. Q-Scorer Baselines
+##### 1. Q-Scorer Baselines
 Q-scorer baselines (`baseline_tps_by_role`, `baseline_quality_by_role`) must be re-established after any DAR-2/3/4 change. Current baselines from 2026-03-21 sweep (see memory: project_qscorer_calibration.md).
 
-### 2. Difficulty Signal (research-eval P0)
+##### 2. Difficulty Signal (research-eval P0)
 The zero-predictive-spread pathology in `difficulty_signal.py` motivated this work. If contrastive Q-scoring (DAR-2) resolves the flat-band problem, the difficulty signal becomes useful as a routing feature again rather than being stuck in shadow mode.
 
-### 3. AP-27 RLVR Eval Tower
+##### 3. AP-27 RLVR Eval Tower
 Decision-aware routing changes the reward signal that the eval tower must evaluate. The eval tower verification framework ([eval-tower-verification.md](eval-tower-program.md) EV-1–EV-7) must be able to assess whether the new routing reward is well-calibrated (ECE) and discriminative (AUC).
 
-### 4. Existing RL Routing Research (R&O intake-275)
+##### 4. Existing RL Routing Research (R&O intake-275)
 The BaRP (arxiv:2510.07429) lightweight policy network and LLM Bandit (arxiv:2502.02743) from the 2026-04-07 research intake update are complementary approaches. DAR-2/3 operate on the existing Q-scorer; BaRP/Bandit would replace it entirely with a trained policy. If DAR-2/3 show insufficient gains, BaRP is the next escalation path.
 
-## Key Files
+#### Key Files
 
 | File | Purpose | Lines of Interest |
 |------|---------|-------------------|
@@ -213,13 +220,13 @@ The BaRP (arxiv:2510.07429) lightweight policy network and LLM Bandit (arxiv:250
 | `epyc-orchestrator/src/classifiers/difficulty_signal.py` | Difficulty classification (zero-spread diagnostic) | L201-236 (scoring + banding) |
 | `epyc-orchestrator/tests/unit/test_q_scorer.py` | Q-scorer unit tests | — |
 
-## Known Issues
+#### Known Issues
 
 - The zero predictive spread diagnostic came from Package B Phase 4 with n=635. If the underlying issue is data sparsity rather than architectural, DAR-1 regret analysis will reveal this — regret would be near-zero because there are too few samples to establish reliable counterfactuals.
 - DAR-3 exploration routing (10% random) will temporarily degrade routing quality during data collection. Must run in shadow mode or during low-priority tasks.
 - DAR-4 bilinear scorer assumes model features are informative predictors of per-prompt quality. If all models perform similarly on most prompts (low variance), the feature-conditioned approach adds complexity without benefit.
 
-## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.5)
+#### Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.5)
 
 DAR optimizes routing/escalation along a **quality** axis (learned Q-values + contrastive sharpening). The Code-as-Agent-Harness survey (§5.2.5) names a *different* axis worth adding: **decision uncertainty**, with the escalation decision recorded as first-class harness state for accountability. Audit pass tightened this into a calibration-first plan.
 
@@ -245,7 +252,7 @@ DAR optimizes routing/escalation along a **quality** axis (learned Q-values + co
 
 Additive to DAR-2/3/4 (which sharpen the *quality* Q), not a replacement — uncertainty is a second axis. Interacts with AP-27 (RLVR eval tower must score the uncertainty-augmented reward). Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § Additional task additions. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
 
-## Post-calibration conditional workflow + mitigation (URE-1 / bulk-inference J10)
+#### Post-calibration conditional workflow + mitigation (URE-1 / bulk-inference J10)
 
 Wiring status: shadow logger **WIRED** on main (merged 2026-05-26) (`src/uncertainty_shadow.py`, flag `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`, default off, hooked at the single chokepoint `hybrid_router._record_decision_meta`, exception-safe). J10 collects shadow records → `ingest_uncertainty_shadow()` → `approval_record` → analyze. **The shadow score is UNCALIBRATED first-pass; calibration precedes enforcement (audit #1).**
 
@@ -255,21 +262,21 @@ Decision tree (after J10 analysis):
 
 Mitigation: shadow→enforce is a deliberate second flag flip (shadow logging alone never changes routing); keep a frozen calibration set; re-run calibration after any DAR-3/DAR-4 change (audit #4, avoid feedback loop); separate aleatoric vs epistemic components so "ask/approve" vs "route-to-stronger-model" interventions stay distinct. Operator decision tree mirrored in [`bulk-inference-campaign.md`](eval-tower-program.md#track-bulk-inference-campaign) Package J.
 
-## Research Intake Update — 2026-06-03
+#### Research Intake Update — 2026-06-03
 
-### New Related Research
+##### New Related Research
 - **[intake-657] "Choosing Your Model — Factory CLI (Droid)"** (https://docs.factory.ai/cli/user-guides/choosing-your-model)
   - Relevance: a closed-source competitor's *human-readable routing policy*, useful here as a hand-tuned **cold-start prior** to A/B our learned escalation against. Factory exposes a task-type→model-tier decision table (deep planning/architecture → flagship; repeatable edits/summarization/boilerplate → cheap tier; CI/CD automation loops → cheapest-predictable; high-volume quick turns → cheapest-capable) plus a per-model reasoning-effort knob (Off/Low/Medium/High/Max) with the explicit rule "**start low, escalate as needed**."
   - Key technique: their "start-cheap-escalate-on-need" heuristic is exactly the escalation policy DAR is trying to *learn* — and our current pain point is that escalation rates are **flat across difficulty bands**. Their hand-tuned task→tier mapping is a sanity prior: difficulty/task-class should monotonically raise both the tier and the reasoning-effort default.
   - Delta from current approach: selection in Factory is manual *by default*. The harvest is narrow: (1) encode their task-type→tier table as explicit cold-start labels / a baseline policy for the shadow comparison; (2) wire the reasoning-effort taxonomy + "start-low" default into [`per-request-reasoning-budget.md`](context-and-token-economy.md#track-per-request-reasoning-budget). No new inference; pure policy-prior work. Verdict: adopt_patterns.
 
-#### Deep-dive correction & high-value harvest (2026-06-03)
+###### Deep-dive correction & high-value harvest (2026-06-03)
 Full mining of `docs.factory.ai` (→ [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md)) **corrects** the "no auto-routing" read above: **Factory Router** exists (opt-in Research Preview, `/web/factory-router.md`) — *"a per-task router that uses a mix of **session and per-request** routing"* that *"strongly considers **prompt cache** maintenance and savings,"* claiming **~20–25% cost reduction** vs always-top-tier at frontier-level perf. So we are *not* ahead on the existence of auto-routing, but it hands us a validated design + a concrete savings target. **Three router patterns to harvest here (Tier-1 backlog):**
   - [ ] **Prompt-cache-aware routing reward term** — add a `cache_affinity_bonus` (+ cold re-prefill penalty) favoring the role-server already holding the conversation prefix in slot-KV. This is a direct lever on **the flat-escalation-across-difficulty-bands open problem**: escalate only when `quality_gap` justifies the re-prefill cost.
   - [ ] **Session-sticky + per-request hybrid** — we decide per-request only; add a session-stickiness state to the outer coordinator (keep the role across turns unless escalation threshold crossed), combined with the cache-affinity term to stop flapping/cache-thrash.
   - [ ] **Reasoning-level as a first-class routing action** — make the action space `model × thinking-level` (not a fixed per-role thinking constant), operationalizing the phase-based spec/execution split.
 
-## Deep-Dive Correction — 2026-07-21 (The DAR-1 gate metric is a tautology; root cause is the reward, not the policy)
+#### Deep-Dive Correction — 2026-07-21 (The DAR-1 gate metric is a tautology; root cause is the reward, not the policy)
 
 Triggered by an intake deep-dive (intake-866/867). **The two RLM sources contributed nothing to routing** (~85% overlap with intake-536 RAO — advantage inheritance, mean-of-children, depth weighting all pre-held). What the dive found instead is a defect in this handoff's own evidence base. **All figures below were independently re-verified against source and the live store on 2026-07-21.**
 
@@ -321,7 +328,7 @@ Consequences for the frozen phases, stated plainly:
   the one rule protecting production from that pickup invisible.)*
 - [x] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected). ✅ 2026-07-22
 
-### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
+##### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
 
 Pre-registered disposition was: *"if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound`."* **The audit SPLITS: condition 1 fires, condition 2 does not. The close-as-signal-bound disposition therefore DOES NOT FIRE.**
 
@@ -334,7 +341,7 @@ Result: reward entropy 0.6877 bits (saturated) but role spread 11.06pp; within-o
 - [ ] Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, this is a success/failure flag wearing a continuous type. Graded reward on the decisive subset is likely worth more than any loss-function change.
 - NOTE the confound that still stands: role assignment is not randomised, so marginal per-role means conflate role quality with the conditions under which each role is selected. The matched within-objective figures control for task identity but NOT for selection-within-task. Everything above is an OBSERVATION under MEASUREMENT.md; none of it is protocol-attested and none of it gates a promotion.
 
-#### Operator qualification (2026-07-21) — the 78% figure is quality-only, and the corpus is tier-skewed
+###### Operator qualification (2026-07-21) — the 78% figure is quality-only, and the corpus is tier-skewed
 
 Two corrections to the audit reading above, from the operator:
 
@@ -346,11 +353,11 @@ Combined implication: the triage-gate framing survives, but its target sharpens.
 - [x] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record. ✅ 2026-07-22
 - [x] Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quality and the current `reward` collapses to success/failure. This is a prerequisite for the majority regime, where cost is the operative term. ✅ 2026-10-29 (audit: wall-clock speed axis landed as era E18-routing-reward-duration-axis ratified 2026-09-24 (orch b8035db9, 88e24ef0, 60bfc4c4; instrument_eras.yaml:452; header line 3 states it)) [no-belief: audit-reconciliation]
 
-## ROOT CAUSE FOUND — 2026-07-21: the cost/speed half of the reward was dead due to a key-name mismatch
+#### ROOT CAUSE FOUND — 2026-07-21: the cost/speed half of the reward was dead due to a key-name mismatch
 
 compute_reward read role, telemetry wrote producer_role, so every cost dimension was skipped (0/20,521 rows carried role). The fix reads role → producer_role → final_answer_role; replay 0.0000 → 2.4580 bits. Evidence in the [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
 
-### Retroactive rescoring is possible
+##### Retroactive rescoring is possible
 
 - **94.5%** of `task_completed` entries carry usable speed telemetry (`tokens_generated` 99.8%, `generation_ms` 99.8%, `prompt_eval_ms` 99.8%, `http_overhead_ms` 99.8%).
 - **20,516 `task_started`/`task_completed` pairs** carry timestamps, so **true wall-clock task duration is recoverable** — 85 days of progress logs are retained.
@@ -364,7 +371,7 @@ compute_reward read role, telemetry wrote producer_role, so every cost dimension
   - [x] **Pre-validated human-amendment token authored ✅ 2026-07-29**: `RATIFY-E9-ROUTING-REWARD-ERA-20260729` is in `outbox/mainB.jsonl` with an append-only, SHA-pinned command and copy-only YAML validation (`dry_run_exit=0`). Await operator signature; agents did not edit `orchestration/instrument_eras.yaml`.
 - [ ] Optional: replay-rescore historical rows so the episodic store carries post-fix rewards. Not indispensable (the logs are the source of truth and can be replayed on demand), but it would make the 174K-row store trainable without a join.
 
-## DAR-3 / DAR-4 / DAR-5 RESCOPE — approved 2026-07-21
+#### DAR-3 / DAR-4 / DAR-5 RESCOPE — approved 2026-07-21
 
 Superseding the "FROZEN pending a ≥5% regret replay" status. That gate was measured by a metric that cannot return non-zero (see the tautology finding above), so it was never a real gate.
 
@@ -377,7 +384,7 @@ New shape:
 - [ ] **DAR-5 → gated behind the reward redesign, not behind a regret replay.** Precondition is a reward carrying a wall-clock speed axis (above), since the cost-dominated majority is where most traffic lives and the current reward cannot price it.
 - [x] Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before sizing any of this. 21.9% is derived from a T0/T1-dominated sample and is expected to rise at T3, where routing errors are most expensive. ✅ 2026-07-22
 
-### Reward-integrity follow-up — 2026-07-21 (role-field validation)
+##### Reward-integrity follow-up — 2026-07-21 (role-field validation)
 
 The rescore surfaced a second defect of the same shape as the `role`/`producer_role` miss. `ChatRequest.role` and `.force_role` were unvalidated `str` fields, and `stream_adapter.py:178` feeds `request.role` straight into telemetry as `producer_role`. Because `compute_reward` uses that value as a `baseline_tps_by_role` key, **an unresolvable role skips every cost dimension and scores the full base reward** — so unvalidated client input could suppress the entire cost/speed penalty. That is a latent reward-hacking surface, not just a hygiene issue, and it matters more now that the cost path actually fires.
 
@@ -386,7 +393,7 @@ The rescore surfaced a second defect of the same shape as the `role`/`producer_r
 - [x] Confirmed `architect_coding` is genuinely deprecated (rows stop 2026-06-13), so its post-fix `+1.0000` is historical replay, not a live scoring gap; allow-listed alongside `mock`/`plan_review` to keep rescores quiet. ✅ 2026-07-21
 - [x] Consider splitting a separate `stage` field out of `producer_role`: the same field currently carries real roles AND pipeline sentinels (`plan`, `stream_init`, `proactive_delegation`, `mock`). Harmless today, but overloading the key that prices the reward is how this class of bug recurs. ✅ 2026-11-01 — APP source `3011c9e9271ecebd50892b818530f21de0e22c75`, published on main in `da163c70cc347337f7d76d3ce5acc14fafc75411`; hosted CI run [41283762176](https://github.com/pestopoppa/epyc-orchestrator/actions/runs/41283762176) passed 399/399 (0 failures, errors, skips); original custody: [artifact](../../artifacts/engineering/decision-aware-routing-producer-stage-20261101/README.md). [no-belief: software verification]
 
-## Research Intake Update — 2026-09-07
+#### Research Intake Update — 2026-09-07
 
 **Risk note — orchestration features carry a capability floor** (`intake-1333#01`, dive-verified).
 Richer orchestration **REGRESSED** quality on all three smaller models, concentrated in
@@ -394,7 +401,7 @@ orchestration-heavy capabilities (Qwen 3.6 MCP .65 → .50), and sub-agent deleg
 on the fast tier. Directional and vendor-internal, so it **cannot gate a decision** — but it suggests
 routing on **feature demand** rather than prompt difficulty. Zero compute.
 
-## Research Intake Update — 2026-09-26 (orchestration prior art: static latency prior + saturation guard; intake-1796/1797/1798/1815)
+#### Research Intake Update — 2026-09-26 (orchestration prior art: static latency prior + saturation guard; intake-1796/1797/1798/1815)
 
 Selection has no latency or load term today. The only cost is historical elapsed from memory
 (orch @fb7871ea `retriever.py:46-57`, fed by :113-142), and `baseline_tps_by_role` is reward-side only
@@ -403,7 +410,7 @@ learned live estimate (intake-1796#02). The regime left open is ours: single-ins
 saturated (intake-1798#05; intake-1797#04). The terms land at weight 0 like DAR-4b: they do not reopen the
 DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 decides.
 
-### DAR-LAT — ❄ FROZEN 2026-09-27 (do not dispatch; each box carries its unfreeze trigger — since 2026-09-29: autopilot has trained on the swapped stack AND UFH-13 re-opened)
+##### DAR-LAT — ❄ FROZEN 2026-09-27 (do not dispatch; each box carries its unfreeze trigger — since 2026-09-29: autopilot has trained on the swapped stack AND UFH-13 re-opened)
 
 - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
   Role-keyed over the role's backend URLs:
@@ -537,7 +544,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
-**Related**: [`delegation-context-preassembly.md`](context-and-token-economy.md#track-delegation-context-preassembly), [`routing-intelligence.md`](routing-intelligence.md), [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md), intake-655
+**Related**: [`delegation-context-preassembly.md`](context-and-token-economy.md#track-delegation-context-preassembly), [`routing-intelligence.md`](routing-program.md#track-routing-intelligence), [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md), intake-655
 **Provenance**: 2026-05-31 deep-dive on intake-655 (A2A protocol). Two-question framing: adopt A2A *lifecycle semantics* internally; defer A2A *wire transport*.
 
 #### Objective
@@ -1012,7 +1019,7 @@ The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is reg
 the EPD-1b backfill), then EPD-3. Open follow-ups: LRC-1 (autopilot data as MLP training data), LRC-2 (the inert
 `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`); LRC-TD-1 was folded into `typed-decision-plane.md` TD-11 on 2026-09-29. Completed history is linked from *Completed Scope*.
 **Priority**: ACTIVE for rollout decision of the repaired BGE+MLP fast path; FROZEN for expansion. Do not promote logit/hidden-state/GraphRouter-style expansion until the fable5 routing-freeze gates clear.
-**Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-program.md), [retrain-routing-models.md](routing-program.md#track-retrain-routing-models), [decision-aware-routing.md](routing-program.md), SkillBank (completed handoff)
+**Related**: [routing-intelligence.md](routing-program.md#track-routing-intelligence), [autopilot-continuous-optimization.md](autopilot-program.md), [retrain-routing-models.md](routing-program.md#track-retrain-routing-models), [decision-aware-routing.md](routing-program.md), SkillBank (completed handoff)
 **Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes. (With weights missing, flag-ON is already functionally equivalent to fallback — but the flag should be reconciled with reality.)
 
 ---
@@ -2477,7 +2484,7 @@ export ORCHESTRATOR_SKILLBANK=1
 **Updated**: 2026-06-20 (N10 telemetry report refreshed; clean-week and non-degeneracy gates passed)
 **Priority**: HIGH (architectural — unblocks Trinity's strongest empirical lever)
 **Categories**: agent_architecture, routing_intelligence, cost_aware_routing
-**Related**: [decision-aware-routing.md](routing-program.md), [learned-routing-controller.md](routing-program.md#track-learned-routing-controller), [routing-intelligence.md](routing-intelligence.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Related**: [decision-aware-routing.md](routing-program.md), [learned-routing-controller.md](routing-program.md#track-learned-routing-controller), [routing-intelligence.md](routing-program.md#track-routing-intelligence), [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
 
 > **Fable 5 review (2026-06-12, refreshed 2026-06-20)**: the shadow-telemetry keep-or-kill decision was resolved by [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W7: keep the signal and persist it in progress JSONL. N10 follow-through added `scripts/analysis/trinity_shadow_telemetry.py`; the refreshed report `orchestration/reports/trinity_shadow_telemetry_2026-06-20.md` scans 10,868 routing-decision rows with 10,686 role-bearing rows (98.3%), worker 87.0% / thinker 10.4% / verifier 2.6%, and both TR-3.3 clean-week collection and TR-3.4 non-degenerate distribution PASS. TR-4/5 remain frozen per fable5-findings-02 until DAR evidence justifies routing expansion and per-question vectors exist.
@@ -3561,3 +3568,477 @@ uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/r
 - X-MAS paper: `https://arxiv.org/abs/2505.16997`
 - X-MAS repo: `https://github.com/MASWorks/X-MAS` (no license — methodology only)
 - Related handoffs: `routing-intelligence.md`, `routing-and-optimization-index.md`, `learned-routing-controller.md`, `hermes-outer-shell.md`, `../completed/meta-harness-optimization.md`
+
+## Track: routing-intelligence
+<!-- gate: UFH-01 -->
+
+> Folded from `handoffs/active/routing-intelligence.md` @ `1befe3bc860d` on 2026-11-03 (BRF-T7-F16, route 1b, operator D1/D5; retired row RTG-30 → RTG-09). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Routing Intelligence: Factual-Risk Rollout
+
+**Status**: ACTIVE. Live work is the routing audit RI-16..RI-20 (filed 2026-09-26). The factual-risk rollout (RI-10..RI-12) holds on `hold_quality_scored_no_lift` (packet 2026-07-06; § Start Here).
+**Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
+**Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
+**Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
+**Updated**: 2026-10-03 (RI-18 scored 2026-10-01: DROP; RI-18c filed to apply it; RI-18a/b declined. 2026-10-01: RI-16 closed, RI-24 filed)
+
+#### Start Here
+
+**Current priority (2026-10-03):** RI-18c, apply RI-18's pre-registered **DROP**: remove the review gate, verdict and
+revision from all five call sites plus `review_low_q_threshold`. RI-18 was scored 2026-10-01: reviewing every answer
+costs a net −38.3 per 100 items, and the production gate never fires. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s
+p95 before generation); RI-19, RI-24 and RI-18c cut it. The numbered steps below concern the older RI-10 factual-risk canary.
+
+Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
+
+1. Pull current RI-10 canary data from logs before deciding anything; elapsed calendar time is not sufficient.
+2. Confirm the current decision-ready sample still has enough arm-attributed rows in both enforce and shadow.
+3. Use `scripts/analysis/ri10_canary_decision_report.py --scored-summary ...` to compare operational proxies with the attached scored factuality evidence. Current packet: `orchestration/reports/ri10_canary_decision_report_20260706T065654Z.{json,md}`.
+4. Keep RI-11 frozen unless a future scored packet shows enforce-arm factuality lift, or the operator explicitly accepts a lower-evidence rollout decision.
+
+Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collection_blocker=decision_ready`, and the scored canary response report is attached to the rollout decision packet. `epyc-orchestrator` `adf010b4` extends `ri10_canary_decision_report.py` with `--scored-summary`, generates `orchestration/reports/ri10_canary_decision_report_20260706T065654Z.{json,md}`, and records status `hold_quality_scored_no_lift`. The scored packet `ri10_canary_scored_summary_20260705T185001Z` is complete (`60/60` scored, no missing responses), but exact accuracy is tied (`3/30` enforce vs `3/30` shadow). The earlier 2026-07-04 reports (`ri10_canary_sample_report_20260704T095500Z.json`, `ri10_canary_sample_report_all_roles_20260704T005332Z.json`) and the 2026-07-05 `hold_quality_unscored` packet remain historical diagnostics only.
+
+#### Live Tasks
+
+- [ ] **RI-10 — Shadow-to-enforce canary decision**: current canary is configured as 25% enforce / 75% shadow on `frontdoor`, `worker_general`, and `worker_vision`, and `7647b32e` exposes the chosen arm in routing progress metadata. The 2026-07-04 deterministic sampler fix makes future arm assignment stable per task id instead of process-RNG sampled, and the 2026-07-06 refresh shows telemetry depth and scored-response completeness are ready. Decision packet `20260706T065654Z` holds on `factuality_no_enforce_lift`; do not expand to RI-11 from favorable operational proxies alone. Decision requires:
+  - controlled restart/window with `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`; `ORCHESTRATOR_FACTUAL_RISK_MODE` is not the canary switch because it only accepts `off|shadow|enforce`;
+  - >=50 arm-attributed high-risk samples or a documented reason to use a lower-powered decision; current refresh satisfies the depth gate with `31` enforce and `50` shadow high-risk rows;
+  - no p95 latency regression >10%;
+  - no cost regression >5% at equal factuality;
+  - no unexplained escalation/review inflation >20%;
+  - no 5xx/error cluster attributable to factual-risk scoring.
+  - scored factuality/accuracy showing enforce-arm lift, or an explicit operator-approved lower-evidence decision. Current scored packet: `ri10_canary_scored_summary_20260705T185001Z` (`accuracy_delta=0.0`, token-F1 delta `+0.000531`).
+- [ ] **RI-11 — Enforce expand**: if RI-10 passes, expand to frontdoor 100% plus worker_general for 7 days. Keep a rollback flag path to shadow.
+- [ ] **RI-12 — Global enforce**: only after RI-11 passes; update dashboards/alerts and q-scorer baseline dependencies.
+- [ ] **RI-9b — Threshold/Pareto sweep if thresholds change**: Package B already produced risk-distribution profiling. Run a fresh threshold sweep only if RI-10 suggests changing bands or enforcement thresholds.
+- [ ] **RI-13 — Injection-risk classifier fork (DAR-6/J14)**: do not build until the cheap-first unconditional J14 swarm-fanout A/B clears its gate. If it clears, add an injection-risk axis to this handoff rather than burying it in DAR.
+- [ ] **RI-X — New-model onboarding contract**: if learned-routing-controller P5.2 passes, document cold-start workflow here and link the `tools/onboard_specialist.py` wrapper from that handoff.
+
+- [x] **RI-16 — PRIORITY: measure end-to-end routing-decision latency on live `/chat`.** ✅ 2026-10-01 (filed 2026-09-26, code+live-process audit) A routed request makes ~3-4 embed+KNN lookups — role priors (`chat_routing.py:316-343` `_heuristic_role_priors` → `ClassificationRetriever`), route (`chat_pipeline/routing_decision.py:314` → `hybrid_router.py:388`), mode (`chat_routing.py:182` → `route_with_mode`), and the post-answer review gate (`chat_review.py:57-96`) — and none is timed; the "<1 ms MLP / 10-50 ms KNN" figures in docs are claims. Add per-stage timers to routing telemetry, report p50/p95 per stage and total, and set them beside typed routing (590 ms native single-token / ~2.5 s JSON, `typed-decision-plane.md`). Wire the telemetry into the belief kernel (`vidya-belief-substrate-program.md` VB-ROUTE-LAT).
+  - 2026-09-29: the operator directs RI-16, then RI-18, as workspace-8d's next work, right after that day's wrap-up.
+    Next step: add per-stage timers (role priors, route, mode, review gate, and the total) to the routing telemetry,
+    with unit tests (zero inference). Then land them, do an API-only reload, and read p50/p95 per stage from live
+    `/chat` requests.
+  - 2026-09-30: landed as orch `78847544` (per-stage timers `memrl_init`, `priors`, `route`, `xmas`, `factual_risk`,
+    `failure_veto`, `difficulty`, `trinity`, `route_total`, `mode`, `routing_context`, `review_gate`,
+    `review_verdict`, `total`; a stage that did not run is `None`, never 0). `routing_path` + `stage_ms` ride the
+    progress JSONL `routing_decision` and `task_completed`/`task_failed` events; reader
+    `scripts/analysis/routing_stage_latency.py`. Deployed to the API 2026-09-30 04:52Z (master PID 1930724) by the
+    NIB2-91 planned restart (`non-inference-backlog.md`). The box stays open: it ticks when p50/p95 per stage are read
+    from live `/chat`. Belief-kernel adapter: `vidya-belief-substrate-program.md` VB-ROUTE-LAT.
+  - ✅ 2026-10-01 — read from live `/chat`. 30 requests from ~03:06Z (request set `/mnt/raid0/llm/tmp/ri16/ri16_load.py`,
+    results `/mnt/raid0/llm/tmp/ri16/load-20260930/results.jsonl`) against orch `78847544` (deployed 2026-09-30 04:52Z).
+    Reader: `python3 scripts/analysis/routing_stage_latency.py --since 2026-10-01T03:00:00Z --path all` (orchestrator).
+    n=30, all on the chat path:
+
+    | stage | p50 ms | p95 ms |
+    |---|---|---|
+    | priors | 156 | 275 |
+    | route | 197 | 529 |
+    | xmas | 26 | 96 |
+    | factual_risk | 0.06 | 85 |
+    | route_total | 542 | 1027 |
+    | mode | 58 | 69 |
+    | review_gate | 69 | 105 |
+    | total | 622 | 1159 |
+
+    `memrl_init`, `failure_veto`, `difficulty` and `trinity` are each under 2 ms at p95.
+    - Routing costs ~0.6 s at p50 and ~1.2 s at p95 before generation starts. That is the same order as typed
+      routing's 590 ms native single-token median. The docs' "<1 ms MLP / 10-50 ms KNN" figures do not describe the
+      request path.
+    - Priors plus route (embedding + KNN) are 353 ms of the 542 ms `route_total` p50. `priors` is
+      `_classify_and_route` + `_should_use_direct` (`chat_routing.py:318-343`), which is the MemRL
+      `ClassificationRetriever` path that RI-19 shows has 0 memories to retrieve. RI-19 is therefore worth ~156 ms p50
+      / ~275 ms p95 per request, not hygiene only.
+    - Caveats: n=30 from one session; the GPU was busy with workspace-76's 27B harness replays; the CPU was quiet
+      under the announced DS41 pause, but production frontdoor shares cores 0-95.
+    - Belief kernel: the VB-ROUTE-LAT write side now holds these 30 records; the adapter is still owed.
+- [ ] **RI-17 — compare live `/chat` routing against rules-only routing** on the same frozen workload (quality, cost, latency per request), so the KNN/memory layer has to earn its lookups. Reuse the counterfactual harness from `typed-decision-plane.md` TD-10 where it fits. (filed 2026-09-26)
+- [x] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26) ✅ 2026-10-01 — **DROP** (pre-registered clause 1); verdict block at the end of this task, applied by RI-18c.
+  - 2026-09-28: the "do reviewed answers improve" half waits on RI-22. Until RI-22 lands, the gate has not produced a
+    usable verdict on the 27B, so a measurement now would count triggers and zero revisions.
+  - 2026-09-29: unblocked. RI-22 is fixed in production (below), so the gate now returns real `OK`/`WRONG` verdicts on
+    the 27B and an unparseable verdict is counted as `unavailable`. The "do reviewed answers improve" half can run.
+  - 2026-09-29: the operator directs it next, after RI-16. Next step: read the trigger rate and review cost from the
+    RI-22 verdict telemetry on live `/chat` (zero new code if RI-16's timers cover the gate), then run the
+    "do reviewed answers improve" comparison.
+  - 2026-09-30: live traffic cannot answer RI-18 (0 `POST /chat` from the RI-23 reload to ~00:30Z; 0 answer-review prompts and
+    0 `v1_escalation` receipts in the whole tap window 2026-08-24 → 2026-09-29). Design: a forced-review
+    counterfactual with exact policy evaluation, `/mnt/raid0/llm/tmp/ri18/DESIGN.md`. Instrument:
+    `epyc-inference-research/scripts/benchmark/ri18_review_gate/` (research main
+    `6b2366e2`). Orchestrator changes landed on orch main as `08edc054` (2026-09-30; NOT yet deployed — C1 goes
+    live at the API-only reload the owning session times; the driver's in-process calls use `--code-root` at `08edc054`):
+    - **C1** persistent `review_gate` tap event (`inference_tap.emit_request_event("review_gate", ...)`) for every gate
+      evaluation on all five call sites; the three `_architect_verdict` callers switch to
+      `_architect_verdict_with_status`.
+    - **C2** `review_gate_score(state, role, answer, *, key_text=None) -> GateScore` accessor. `_should_review` is left
+      untouched (gitnexus HIGH); the five call sites decide through the accessor (one KNN, timed into RI-16's
+      `review_gate` stage), and a fixture-grid test pins `_should_review(...) == review_gate_score(...).triggered`,
+      KNN key included.
+    - **C3** `question_cap` (and `answer_cap`) on `build_review_verdict_prompt`, defaults 300/1500, so the production
+      prompt is unchanged.
+    - Belief-kernel wiring: `vidya-belief-substrate-program.md` VB-REVIEW-GATE (C1 events) and VB-RI18 (the
+      `belief_measurements.jsonl` sidecar).
+  - 2026-09-30 structural findings. These are **observations** (design §1: read-only code and data, no protocol);
+    they gate nothing.
+    - (a) **Answers under 50 chars skip the gate**, so it is inert on letter-only prompts. The UFH-13 frozen suite and
+      pilot pool both end "Answer with the letter only"; on the A4 proxy (same base model) the median answer is 1 char
+      and 58-77% are under 50 chars. So A2's review-gate trigger is structurally inert on the frozen letter-only suite
+      (routed to `thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen).
+    - (b) **The KNN never sees Q < 0.3 failures** (`min_q_value=0.3`): 5,484 of 33,293 frontdoor routing memories
+      (16.5%) are invisible to it, and of the 27,809 retrievable ones only 8.4% have Q < 0.6. The reachable trigger
+      rate is low by construction.
+    - (c) **The verdict prompt truncates the question to 300 chars** (and the answer to 1,500). 86% of pilot-pool
+      prompts exceed 300 chars, so the reviewer usually never sees the MC options.
+  - **PRE-REGISTERED 2026-09-30, operator-approved in chat (Q1-Q3 as recommended).** Frozen 2026-09-30; changes are
+    new registrations, never edits. Source: `/mnt/raid0/llm/tmp/ri18/DESIGN.md` §5 (operator questions §6).
+    - **Question:** does the post-answer review (27B verdict → `worker_general` revision) improve frontdoor answers,
+      and does the MemRL Q gate (`avg_q < 0.6` over an answer-keyed KNN) select the answers where it helps?
+    - **Instrument:** `ri18_review_gate` driver at the served orch commit (pinned). Workload (Q2): S1 = the UFH-13
+      pilot pool re-rendered, 453 items, render `ri18-brief-justify-v1` (the letter-only last line replaced by
+      "Justify briefly (at most three sentences), then end with a final line `Answer: <letter>`"; sha pinned); S2 =
+      `olympiadbench_hard`, 155 items (sha pinned). Not letter-only, and no LLM judge. Frozen 395 excluded (asserted).
+      Production functions `_architect_verdict_with_status` / `_fast_revise` forced on every item. Gate computed
+      offline against a sha-pinned store snapshot with the production retrieval config. Scorers:
+      `extract_letter_answer` (S1), `math_symbolic` (S2). One sample per call. instrument_class = `serving`
+      (production recipe, production functions); category OPTIMUM (production reviewer config).
+    - **n:** 608 items (primary population = items with a scored original answer and the quality detector not fired;
+      expected ≈ 560-600). Split: seeded (`seed=18`) 50/50 **tune (A) / confirm (B)**, stratified by suite.
+    - **Primary metrics:** net(π) = fixed − broken per 100 items for π1 (review all eligible) and πQ(0.6)
+      (production); AUROC of −avg_q for frontdoor-wrong; device-seconds per net fix (GPU and CPU separately).
+    - **Power:** a paired test detects |net| ≥ 2.8·√D items at 80% power (D = discordant items). With D ≈ 40-120 on
+      the full set, that is roughly 3-5 per 100 items; on split B alone, roughly 6-7 per 100 items. Effects below
+      those are not excluded, and the verdict says so.
+    - **Cost cap X (Q1):** at most 60 GPU device-seconds and at most 120 CPU device-seconds per net fix, and at most
+      +20% added p50 latency on reviewed requests.
+    - **Decision rule** (applied in order; each clause cites its CI):
+      0. **VOID** if the canary pair fails in either direction, the `unavailable` rate exceeds 5%, the gate controls
+         fail, or the served commit or store sha drifts. Fix, re-run; no decision.
+      1. **DROP**: remove the gate, verdict and revision from all five call sites plus the `review_low_q_threshold`
+         config. Applies if net(π1) has a 95% CI upper bound < 0, **or** if no policy in {π1, πQ(t*)} (t* tuned on A
+         over t ∈ {0.30..1.00 step 0.05}, maximising net subject to review rate ≤ 50%) has a split-B net 95% CI lower
+         bound > 0.
+      2. **KEEP at 0.6** if πQ(0.6)'s net CI lower bound (full set) > 0, AUROC CI lower bound > 0.5, and neither
+         πQ(t*) nor π1 beats it on split B by ≥ 2 net fixes per 100 items at a cost of at most 60 GPU device-seconds
+         and at most 120 CPU device-seconds per net fix, with at most +20% added p50 latency on reviewed requests.
+      3. **RETUNE to t*** if πQ(t*) has a split-B net CI lower bound > 0, AUROC CI lower bound > 0.5, and it beats
+         πQ(0.6) on B by ≥ 2 per 100 at a cost of at most 60 GPU device-seconds and at most 120 CPU device-seconds
+         per net fix, with at most +20% added p50 latency on reviewed requests.
+      4. **REPLACE THE TRIGGER** (Q is uninformative): if the AUROC CI contains 0.5, π1's net CI lower bound > 0, and
+         π1's cost per net fix is at most 60 GPU device-seconds and at most 120 CPU device-seconds, with at most +20%
+         added p50 latency on reviewed requests. The Q gate goes, and review-all or a new trigger (e.g. the quality
+         detector, or RI-9 factual risk; exploratory `avg_q_question` reported) goes to a decision package.
+      5. If eligible gate@0.6 triggers number < 30, πQ(0.6)'s own net is reported **untested** (BOUNDED-NULL-1), and
+         clauses 2 and 3 fall back to AUROC plus π1.
+    - **Secondary (own rule; Q3 latitude granted):** V-full vs the production cap. If V-full's verdict sensitivity at
+      equal or better specificity beats the cap-300 verdict on split B with a paired CI lower bound > 0, land
+      `question_cap=1500` (C3) as the production reviewer prompt without a separate A/B (operator Q3, 2026-09-30:
+      the reviewer verdict question cap 300 → 1500 may land under this rule), then re-run stages 3-4 on the banked
+      answers only (replay, no frontdoor inference) before re-applying the rule.
+    - **Reported regardless:** coverage by skip reason, precision/recall at every t (eligible and population),
+      reviewer sensitivity/specificity/unavailable rate, revision fix/break/no-op rates, infra rate by reason, verdict
+      and revision noise, per-stratum tables, and the external-validity caveat (closed-form tasks, not open chat).
+    - **Stopping rule:** the split-B table is FINAL. No confirmation re-runs unless the result would change the
+      decision.
+  - 2026-09-30 **run plan** (instrument built and landed, no inference run yet). From the research repo root:
+    `PY=/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python; M="-m scripts.benchmark.ri18_review_gate.run_ri18"`;
+    real: `$PY $M <segment> [args] --out /mnt/raid0/llm/tmp/ri18/run-v1 --run-id ri18-v1 --code-root <orch checkout at
+    08edc054 or later>`; dry-run: the same with `--dry-run --out /mnt/raid0/llm/tmp/ri18/dev/dry --run-id dry`. Every
+    segment is resumable per item and fsyncs per record. rc 3 = window refused/closed mid-segment (resume next
+    window), 5 = VOID, 6 = instrument fault, 7 = all `:8083` slots busy, 9 = manifest drift.
+    - `snapshot --source-root /mnt/raid0/llm/epyc-orchestrator` — right before the first `answer`; no inference.
+    - `answer --suite s1` (453) and `answer --suite s2` (155) — CPU window (`open`, `loop_holds_claim=false`, item +
+      120 s before `est_close_at`, re-checked per item); ~35-50 and ~30-50 min.
+    - `verdict` (incl. V-full on S1) and `noise-verdict` — GPU `:8083`, one slot, no CPU window; ~18-27 and ~1-2 min.
+    - `revise`, then `noise-revise` — CPU window; ~25-45 and ~3-7 min. The per-call frontdoor region claim is taken by
+      `llm_call` itself (the segment sets the per-region-lock flags and asserts `:8070` → frontdoor instance 0).
+    - `gate` — CPU embedders, CPU window, against the snapshot; < 3 min. `score` — offline, seconds.
+    - Rule readings the driver encodes (confirm before the first `score`): clause 5 → clause 2 uses π1's full-set CI
+      lower bound > 0 in place of πQ(0.6)'s; clause 3 adds "π1 full-set lower bound > 0"; "beats by ≥ 2 per 100" is
+      the point estimate (paired CI cited); the latency cap is median added latency on reviewed requests ≤ 0.20 ×
+      the median frontdoor wall time on those same requests.
+      - ✅ CONFIRMED by the operator in chat on 2026-09-30 ("Confirm all four"), before any item ran: these four
+        readings are part of the pre-registration. `score` may run once the segments complete.
+  - 2026-10-01 run status (read-only, `/mnt/raid0/llm/tmp/ri18/run-v1/segments.jsonl`), first pass under the announced
+    DS41 pause. The `answer` segment hit its 5400 s wall budget at 366 of 453 S1 items. `verdict` also hit its budget, at
+    358 items; `noise-verdict` completed (32). `revise` has been running on CPU since 05:51Z (item 191 of 274 at ~06:12Z).
+    Next step: the resume pass (`/mnt/raid0/llm/tmp/sequencer-8d/run_ri18_resume_pause.sh`, per-item resume, no
+    re-snapshot) covers the remaining 87 S1 items and S2 (155), then verdict, revise, noise-revise and `gate`; then
+    `score`.
+  - 2026-10-01 status (NOT complete): all 608 answers are in, and `verdict`, `noise-verdict`, `noise-revise` (pinned)
+    and `gate` are done.
+    - The gate never fired on the 579 scored items. avg_q ≈ 1.0, far above the 0.6 threshold, which matches
+      structural finding (b): the KNN cannot see Q < 0.3 failures.
+    - The 90 final revisions were VOIDED by the driver (`segments.jsonl` 12:59:07Z, segment
+      `revise-20261001T121657Z-2fbb99`: "code_root commit drifted during the segment"). workspace-8d had
+      fast-forwarded the shared orchestrator clone at 12:22Z to deploy UFH-12 (REPL-EMB-4.4). The integrity check
+      worked as designed; see `INC-20261001-shared-clone-drift-voided-ri18-revise`.
+    - The redo runs with `--code-root` pinned to the detached worktree
+      `/mnt/raid0/llm/worktrees/orch-ri18-pin-08edc054` (the run's commit, `08edc054`), in normal DS41 windows.
+      `score` runs automatically after it.
+    - A `score` attempt before the redo returned VOID (clause 0: incomplete, revise missing 90). INTERIM only, not a
+      verdict: AUROC of Q against wrong answers 0.56 [0.51, 0.62]; π1 net per 100 −36.8 [−41.5, −32.3].
+    - Next step: let the pinned redo finish, then read `score`.
+  - ✅ **2026-10-01 18:53Z — VERDICT: DROP (clause 1 fired).** The pinned revise redo (orch `08edc054`, worktree
+    `/mnt/raid0/llm/worktrees/orch-ri18-pin-08edc054`) finished 90/90 in workspace-76's granted gap: segment
+    `revise-20261001T181047Z-1960bd`, end `exit 0`. `score` ran automatically afterwards.
+    - Evidence: `/mnt/raid0/llm/tmp/ri18/run-v1/score.json` (schema `ri18-review-gate-score/v1`, `records_sha256`
+      `134d7ed3…c282f8`, `items_sha256` `af3033f0…b66a`), log `/mnt/raid0/llm/tmp/ri18/score-final.log`, belief sidecar
+      `/mnt/raid0/llm/tmp/ri18/run-v1/belief_measurements.jsonl` (6 rows), manifest `run_manifest.json` (served
+      `08edc054`, research `5f09e028`, reviewer `architect_critic`, store snapshot sha-pinned).
+    - Population: 608 items; 29 answers returned an HTTP error, so `n_primary` = 579 (S1 447, S2 132; split A 289,
+      B 290). Quality detector fired 0; verdict `unavailable` 0; revision failures 0; verdict and revision noise
+      both 1.0 agreement (n 32 and 30).
+    - **Clause 0 (VOID): did not fire.** The earlier void segment (`revise-20261001T121657Z-2fbb99`, code-root drift)
+      is superseded by the pinned redo.
+    - **Clause 1 (DROP): FIRED on its first limb.** π1 (review every eligible answer) has a full-set net of
+      **−38.3 per 100 items, 95% CI [−42.7, −34.0]** (paired bootstrap, 10,000 resamples, stratified by suite):
+      12 fixed, 234 broken, accuracy 72.2% → 33.9%. The upper bound is below 0. The second limb holds too: no
+      policy in {π1, πQ(t*)} has a split-B lower bound above 0 (π1 B [−44.8, −32.4]; πQ(t*) B [0, 0]).
+    - **t\* = 0.30.** Tuned on A, no threshold from 0.30 to 0.90 reviews anything; 0.95 reviews 1 item (net 0) and
+      1.00 reviews 83 (net −32). So t* is the lowest feasible tie at net 0.
+    - **Clause 5 (BOUNDED-NULL-1) applies: 0 eligible gate@0.6 triggers (< 30).** The production policy πQ(0.6) has a
+      net of exactly 0 [0, 0] because it never fires, so its own net is reported **untested**. Clauses 2 and 3 fall
+      back to AUROC plus π1, and π1 is net-harmful, so neither can fire.
+    - **AUROC of −avg_q for frontdoor-wrong: 0.558 [0.511, 0.607].** Q carries a weak signal, but the gate cannot
+      act on it: avg_q ≈ 1.0 on nearly every item, so nothing falls under any threshold below 0.95.
+    - **Clause 4 (REPLACE THE TRIGGER) cannot fire.** It needs π1's lower bound above 0.
+    - **Mechanism:** the cap-300 reviewer says WRONG too often. Sensitivity is 0.94 / 0.91 (A / B), but specificity
+      is only 0.21 / 0.25. `worker_general`'s revision then breaks most of the correct answers it rewrites (break rate
+      0.70 / 0.75) and fixes few wrong ones (fix rate 0.065 / 0.097). Reviewing every answer also adds 9.8 s of p50
+      latency (p95 52 s), 1.7× the frontdoor answer wall, and costs 6,545 CPU-s plus 3,488 GPU-s over 579 items with
+      no net fix, so it fails cost cap X as well.
+    - **Secondary rule (V-full vs the cap-300 prompt): HOLD_CAP_300.** On B, the sensitivity delta is −0.016
+      [−0.098, 0.067], so the lower bound is not above 0. Specificity improves (0.55 vs 0.29), but that is not the
+      rule. `question_cap=1500` does not land.
+    - **Power:** D = 246 discordant items, so the test resolves |net| down to ~7.6 per 100. The observed effect is
+      five times that.
+    - **Caveat (pre-registered, reported regardless):** both strata are closed-form scored tasks (MC with a brief
+      justification; olympiad math), not open chat.
+    - **What DROP means for production.** The gate as configured (`review_low_q_threshold` 0.6, reviewer
+      `architect_critic`) is inert: on this workload it never fires. When review does run, revision is net-harmful.
+      So production loses nothing by the removal, and every request saves the `review_gate` KNN stage (RI-16: 69 ms
+      p50 / 105 ms p95). The pre-registered action is RI-18c below. Under the stopping rule there is no
+      confirmation re-run.
+    - Belief kernel: the write side is the sidecar above (`scripts/vidya/adapters/README.md` row "RI-18 review-gate
+      counterfactual"). The read side is `vidya-belief-substrate-program.md` VB-RI18; the sidecar gaps against its
+      contract are filed there as VB-RI18a.
+  - [ ] **RI-18c — apply the DROP (clause 1's pre-registered action).** (filed 2026-10-03, from the RI-18 verdict)
+    - **BUILT 2026-10-03, NOT DEPLOYED** (workspace-ec): orch 88d885c6 (gate, verdict and revision removed at all five
+      call sites; `chat_review` verdict/revise helpers, C1-C3, the review/revision prompt builders and files, and
+      `review_low_q_threshold` with its env/autopilot/swarm surfaces removed; plan review kept; RI-16 `stage_ms` keys kept,
+      now always null) + 8e379f13 (docs). Integrated on orch `integ/api-reload-2-ec` 10bc5681. Not ticked: the done-when
+      needs the live `/chat` reading, which follows UFH14-DEPLOY-EC (`agentic-serving-harness-fixes.md`).
+    - **DEPLOYED 2026-10-03 ~14:50Z, pending live verification** (workspace-ec): merged to orch main (10bc5681, now
+      aa1d6894) and deployed by an API-only reload (PID 1628390). Of the done-when, the code removal is live, and
+      the suite is green: full `tests/unit` 15979 passed, 0 failed (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`).
+      The live `/chat` RI-16 reading (`review_gate` / `review_verdict` null) is still open. It waits for the :8083
+      restore (KVU-16e in `kv-unified-stack-rollout.md`; X0 hand-back ~17:15Z), tracked as UFH14-DEPLOY-EC-2. Not
+      ticked until that reading exists.
+    - **2026-10-03 ~15:40Z, after the :8083 restore: suggestive, NOT proof** (workspace-ec). A live `/chat` showed
+      `routing_stage_ms.review_gate` and `review_verdict` both null, but the call failed with "placement timeout
+      role=frontdoor": DS41 holds the CPU regions. The gate, when present, ran only after an answer existed, so a null on a call that
+      never produced an answer cannot show it was removed. Still open: one COMPLETED `/chat` in a DS41 open window
+      (`cpu-window.json`), read with the RI-16 reader. Not ticked.
+    - Remove the gate, the verdict and the revision from all five call sites: `repl_executor.py` ~779-826,
+      `direct_stage.py` ~223-242, `stream_adapter.py` ~346-360, `chat.py` ~1613-1628 and `v1_escalation.py` ~405-466.
+      Also remove the `review_low_q_threshold` config.
+    - C1-C3 (orch `08edc054`) go with it. Each one instruments or parameterises code that DROP deletes: C1 is the
+      `review_gate` tap event, C2 is `review_gate_score`, C3 is the `question_cap`/`answer_cap` parameters. Keeping C1
+      telemetry is **declined**: with no gate there is no evaluation to record. Its adapter VB-REVIEW-GATE is
+      declined with it.
+    - Before editing, run `gitnexus impact _should_review --direction upstream`. The 2026-09-30 build rated it HIGH.
+      Delete the dead tests with the code. Land on orch main; the owning session times the API-only reload.
+    - Done when: the five sites no longer call the verdict or revision; the RI-16 reader shows `review_gate` and
+      `review_verdict` as `null` on live `/chat`; and the targeted suite is green.
+    - Cross-handoff: removing the `v1_escalation` site removes one of the thesis experiment's two A2 escalation
+      triggers. UFH-13 is parked, and TE-reopen's escalation-design review takes this in
+      (`thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen, 2026-10-03 note).
+  - [x] **RI-18a — the driver's `--retriever` default must mirror production's resolution.** The default is `graph`.
+    Production falls back to `TwoPhaseRetriever` when the kuzu graph backend is unavailable
+    (`src/api/services/memrl.py` ~488-520, "failure/hypothesis graph scoring inactive, using TwoPhaseRetriever").
+    This run's `gate` used `--retriever two_phase` explicitly. Fix: resolve the default the way `memrl.py` does,
+    and record the resolved retriever in the segment header. (filed 2026-10-01)
+    - **DECLINED 2026-10-03** ✅ 2026-10-03. Still unfixed in the driver (research `5f09e028` defaults to `graph`). The
+      scored run passed `--retriever two_phase` explicitly, so the verdict is unaffected. DROP retires what the driver
+      measures, and the stopping rule forbids a re-run, so the driver has no next run. Trigger: any reuse of
+      `ri18_review_gate` under a new registration fixes this first.
+  - [x] **RI-18b — the wrapper scripts must read segment `end` and `void` events, not trust the process rc.** The
+    VOIDED `revise` segment logged `void`, then an `end` with `exit: 5` but `reason: complete`, and the chain
+    started `noise-revise` 23 s later. The `sequencer-8d` wrappers (`run_ri18_resume_pause.sh`,
+    `run_ri18_revise_redo.sh`) must not rely on the process rc alone. Fix: after each segment, read its last `end` event
+    from `segments.jsonl`; stop the chain on a `void` event or a non-zero `exit`. (filed 2026-10-01)
+    - ✅ 2026-10-01 for the wrapper that still ran: `run_ri18_revise_redo.sh` reads the last `revise-` segment's
+      `void`/`end` event and stops on a void or a non-zero `exit`. It produced the final 90 revisions. The
+      `run_ri18_resume_pause.sh` half is **DECLINED** (✅ 2026-10-03): that wrapper is retired with the run. The
+      root cause, that the driver's process rc can disagree with the segment's own `end` event, stays in the driver.
+      It is fixed under the same trigger as RI-18a.
+- [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** [too-big: owner must run the required matched 30-request comparison before deleting the branch] The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
+  - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
+    set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the
+    same routed roles; then delete the branch.
+  - 2026-10-06 MAIN source preparation accepted: [isolated comparison branch](https://github.com/pestopoppa/epyc-orchestrator/tree/codex/ni08-ri19-disable-memrl-config-proposal-20261006) at83d530e80e7c308c9b71477eaf9ba6605b50175a (base79abe3ec) changes only `routing_classifiers.direct_mode.use_memrl` and `routing_classifiers.specialist_routing.use_memrl` to false. Both existing callers retain keyword fallback. No main integration, live store read, seeding, inference or reload. The historical store/timing baseline is not remeasured here. RI19 remains open for the owning session's identical30-request RI16/role comparison; no threshold invented and no dead-code deletion before that result.
+- [ ] **RI-24 — cut the `route` stage cost (197 ms p50 / 529 ms p95 on live `/chat`, RI-16).** (filed 2026-10-01) After
+  RI-19 removes `priors`, `route` is the largest routing stage. Next step: count the prompt embeddings per request
+  across `route`, `mode` and `review_gate`. If the same text is embedded more than once, compute it once per request
+  and pass it down. Then re-run the RI-16 set and report the per-stage delta. RI-17 decides whether the KNN layer
+  stays at all; this task only makes it cheaper while it does.
+- [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
+- RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
+  RI-23a/RI-23b (2026-09-29, OP-69 option (a): thinking-on roles on the chat-completions lane, flag
+  `thinking_roles_chat_lane`, live) are done. § *Completed Scope*.
+
+#### Dependency Graph
+
+```text
+AR-3 / production traffic
+    -> RI-10 canary sample counts
+        -> RI-11 expand
+            -> RI-12 global enforce
+
+RI-10 threshold pathology
+    -> RI-9b threshold/Pareto sweep
+        -> repeat RI-10 decision
+
+DAR-6.5 unconditional J14 A/B pass
+    -> RI-13 injection-risk classifier
+        -> conditional swarm-fanout routing
+```
+
+#### Forks And Mitigations
+
+| Condition | Action |
+|-----------|--------|
+| RI-10 lacks high-risk samples | Keep canary; route traffic generation through AR-3/bulk-inference rather than changing thresholds blindly. |
+| Enforce improves factuality but inflates cost | Sweep thresholds with RI-9b; prefer role-specific thresholds over global rollback. |
+| Enforce regresses factuality or latency | Roll back to shadow; preserve logs and add a short failure analysis before retesting. |
+| Verifier role lands via tri-role coordinator | Keep factual-risk review trigger as a substrate; Verifier may subsume review execution but not the risk signal. |
+| SAE-feature classifier looks attractive | Treat as audit/interpretability layer only until difference-in-means and linear-probe baselines are run on the same v2 calibration slice. |
+| Deep-research classifier work is needed | Use [`minddr-deep-research-mode.md`](model-evaluation-queue.md#track-minddr-deep-research-mode); do not expand this handoff for MindDR. |
+| P3 consult gating becomes downstream consumer | Provide `factual_risk_score` / `difficulty_band` / shadow-routing signals as inputs to [`internal-interaction-lifecycle.md`](routing-program.md#track-internal-interaction-lifecycle) P3 `should_consult()` policy; routing-intelligence owns signal QUALITY, not lifecycle. |
+
+#### Key Files
+
+| Repo | Path | Purpose |
+|------|------|---------|
+| epyc-orchestrator | `src/classifiers/factual_risk.py` | prompt-side factual-risk scorer |
+| epyc-orchestrator | `orchestration/classifier_config.yaml` | classifier/factual-risk config and thresholds |
+| epyc-orchestrator | `src/api/routes/chat.py` | cheap-first bypass and request routing surface |
+| epyc-orchestrator | `src/api/routes/chat_pipeline/routing.py` | plan review gate, failure graph veto, routing metadata |
+| epyc-orchestrator | `src/escalation.py` | risk-aware escalation policy |
+| epyc-orchestrator | `scripts/analysis/ri10_canary_sample_report.py` | RI-10 telemetry-depth gate |
+| epyc-orchestrator | `scripts/analysis/ri10_canary_decision_report.py` | RI-10 operational-proxy + factuality-readiness decision packet |
+| epyc-orchestrator | `scripts/analysis/ri10_canary_score_responses.py` | RI-10 scored factuality response report after quiet-window dispatch |
+| epyc-research | `scripts/benchmark/seed_specialist_routing.py` | seeding/eval harness for A/B and threshold sweeps |
+| epyc-research | `orchestration/factual_risk_calibration_v2.jsonl` | 2,600-example v2 calibration dataset |
+
+#### Completed Scope
+
+| Scope | Outcome | Evidence |
+|-------|---------|----------|
+| Phase 0 telemetry | Delegation/routing telemetry fields repaired. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| Phase 1 classifier module | Types/config/output parsers and keyword delegating wrappers completed. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| Phase 2 MemRL classifier | `ClassificationRetriever` and exemplar seeding completed. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| Phase 3 factual-risk scorer | Regex scorer and shadow logging completed. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| Phase 4 enforcement code | RI-1 through RI-7 implemented and A/B tested; initial A/B underpowered. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| Phase 5 seeding fields | RI-8 verified on `RoleResult`; v2 calibration dataset built via NIB2-34. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| RI-10 arm telemetry repair | Routing now logs the sampled factual-risk canary arm as `routing_meta.factual_risk_mode`, and the plan-review gate reuses that persisted arm instead of resampling. Existing 2026-06-20 rows remain insufficient; collect fresh post-fix rows before a rollout decision. | `epyc-orchestrator` `7647b32e`; `uv run pytest -q tests/unit/test_factual_risk.py tests/unit/test_pipeline_routing.py` -> `110 passed` |
+| RI-10 report/gate semantics hardening | `ri10_canary_sample_report.py` now distinguishes raw high-risk volume from decision-grade arm-attributed telemetry, separates historical missing-mode rows from the current telemetry-health window, and derives default canary-role scope from `classifier_config.yaml`. DS-E1/Fable5 aggregate gates stay blocked when only raw count is ready. The 2026-07-04 current report has `464` raw high-risk rows since canary start, `20` current-window high-risk rows with `0` missing mode, and all `20` current rows fall inside the widened canary role scope; the scope-free diagnostic returns the same current-window count, so the blocker is insufficient arm count/balance. | `orchestration/reports/ri10_canary_sample_report_20260704T005256Z.json`; `orchestration/reports/ri10_canary_sample_report_all_roles_20260704T005332Z.json`; `orchestration/reports/fable5_gate_report_20260704T005355Z.md` |
+| RI-10 deficit surfacing | Current report consumers now expose the exact collection deficits instead of only repeating "not ready": `canary_role_sample_deficit=30`, `canary_arm_volume_deficit=30`, and balance deficits `enforce=9`, `shadow=0`, plus by-role and by-role-arm counts in DS-E1/Fable next-action evidence. DS-E1 also refreshes from live progress logs when the latest saved RI-10 artifact predates the new schema. | `epyc-orchestrator` `807939fa`; `uv run python -m pytest -q tests/unit/test_ri10_canary_sample_report.py tests/unit/test_dynamic_stack_evidence_packet.py tests/unit/test_fable5_gate_report.py` -> `47 passed` |
+| RI-10 decision-ready refresh | Live Fable/DS-E1 reads now show RI-10 no longer blocks the aggregate gate: current-window arm counts are sufficient (`enforce_high_risk=31`, `shadow_high_risk=50`), role coverage is populated (`frontdoor=11/11`, `worker_general=10/23`, `worker_vision=10/16`), and the current deficit counters are zero. Treat the July 4 insufficient-sample notes above as historical pre-accrual state. | 2026-07-05 live read-only refresh; `ri10_telemetry_collection_blocker=decision_ready`; Fable gate after W8 repair blocks only on W6 audit clearance |
+| RI-10 decision packet | Standalone decision report now joins current canary rows to task outcomes, escalation events, plan-review events, and optional scored-response evidence. Current packet is `hold_quality_scored_no_lift`: operational proxies favor enforce, but scored factuality has no exact-accuracy lift (`0.10` vs `0.10`). | `epyc-orchestrator` `adf010b4`; `orchestration/reports/ri10_canary_decision_report_20260706T065654Z.{json,md}`; `uv run pytest -q tests/unit/test_ri10_canary_decision_report.py tests/unit/test_ri10_canary_score_responses.py tests/unit/test_ri10_canary_request_plan.py` -> `19 passed` |
+| RI-10 scored collection packet | Request planner now supports dataset-backed expected-answer rows, answer-key JSONL output, and self-leak filtering. Generated a balanced scored canary packet: `60` requests, `30` enforce / `30` shadow, `20` per canary role, answer key separated from payloads, and no nontrivial expected-answer leakage. | `epyc-orchestrator` `8455af52`; `orchestration/reports/ri10_canary_scored_request_plan_20260705T151725Z.{json,payloads.jsonl,answer_key.jsonl}`; `uv run pytest tests/unit/test_ri10_canary_request_plan.py -q` -> `7 passed`; `ruff` passed |
+| RI-10 scored response scorer | Response scorer joins quiet-window response JSONL to the answer key, extracts common response shapes, scores deterministic answer equivalence, and summarizes accuracy/token-F1 by role and enforce/shadow arm. | `epyc-orchestrator` `92ab4de7`; `scripts/analysis/ri10_canary_score_responses.py`; `uv run pytest tests/unit/test_ri10_canary_score_responses.py tests/unit/test_ri10_canary_request_plan.py -q` -> `11 passed`; focused `ruff` and `py_compile` passed |
+| RI-10 scored response result | Quiet-window scored response artifacts are complete: `60` rows, `60` scored, `0` missing; enforce and shadow exact accuracy tie at `3/30` each, with only a tiny token-F1 enforce delta. This closes the "unscored" blocker and replaces it with "no enforce factuality lift." | `orchestration/reports/ri10_canary_scored_summary_20260705T185001Z.{json,md}`; `orchestration/reports/ri10_canary_scored_rows_20260705T185001Z.jsonl` |
+| G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](eval-tower-program.md#track-bulk-inference-campaign) |
+| Research intake | AA-Omniscience, STOP, Qwen-Scope SAE caveats, BaRP/Conductor context captured. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| RI-21, RI-22, RI-23 (+RI-23a, RI-23b), 2026-09-28/29 | Escalation map ends at `architect_general`; the review gate parses on the 27B; thinking-on roles speak chat-completions (OP-69 (a), live). | [completed ledger § 2026-09-29](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+
+#### Research Intake Update — 2026-07-08: J-Space Interpretability (rec-009)
+
+**Source**: Anthropic J-space (intake-782)
+
+**Key finding**: Anthropic's J-space work on geometric interpretability of model representations could inform routing intelligence — understanding the geometric structure of model capabilities may enable better routing decisions than current embedding-based approaches.
+
+**Applicability to EPYC**: Our current routing relies on embedding-based similarity (MemRL, factual-risk regex scorer, difficulty-signal regex features). J-space's geometric interpretability could provide a more principled routing substrate by mapping model capability geometry rather than prompt embedding similarity.
+
+**Integration points**:
+- Could replace/augment MemRL's embedding-based retrieval with geometric routing
+- May enable the learned-head routing in `outer-coordinator-learned-head.md` with geometric priors
+- Complements the tri-role architecture's role-axis by providing geometric capability mapping per role
+
+**Action**: Monitor J-space development; evaluate integration with learned-head routing when the geometric interpretability substrate is available for open-weight models.
+
+- [ ] **RI-JS-1** — monitor J-space interpretability tools for open-weight model compatibility
+- [ ] **RI-JS-2** — evaluate geometric routing as an augmentation to MemRL embedding retrieval
+
+#### Research Intake Update — 2026-07-29: LFM2.5-Encoder-350M-Prompt-Router
+
+**Filed as a `monitor_only` comparator, not a work item.** The MLP learned-routing controller
+(Phase 1 complete; Phases 1.5–3 unfinished) owns the routing-classifier line — see
+[`learned-routing-controller.md`](routing-program.md#track-learned-routing-controller). LFM2.5-Encoder-350M-Prompt-Router
+is a purpose-built prompt-router encoder and is therefore a useful external reference point for what
+a dedicated router head buys over our MLP; it is **not** a replacement candidate, and opening it as
+one would fork an already-unfinished program.
+
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-routing-intelligence on 2026-11-03 (BRF-T1-MEQ, operator D2): **RI-CMP-1**.*
+
+#### Reporting Instructions
+
+- Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P6 after RI-10/11/12 status changes.
+- Update [`bulk-inference-campaign.md`](eval-tower-program.md#track-bulk-inference-campaign) if AR-3/J-package traffic is used to collect RI samples.
+- If a new injection-risk classifier is opened, add it here as RI-13 and cross-link DAR-6/J14.
+- If a stack/model change changes role throughput or cost, update q-scorer baselines and note the dependency in the routing index.
+
+#### Research Intake Update — 2026-08-15 (harness selection as a routing dimension; intake-1140)
+
+**Record only — no task, no build.** Filed because a plausible misreading of this source would push
+routing work in the wrong direction, and the misreading was made once already during intake.
+
+`intake-1140` (HarnessOpt-Bench, Scale AI) reports that "model choice has a larger effect than
+coding-harness choice" — 0.142 vs 0.079 mean gain movement, about 1.8×. **That is not a routing
+result, and citing it as one is backwards.** The harness varied in that contrast is the **optimizer's
+own coding agent** (Claude Code vs opencode vs codex vs kimi-cli), not the harness being optimized.
+
+On the **target** axis — the one our routing work cares about — the same paper's Table 3 is a
+controlled swap where the harness is the only variable (same dataset, partition, rounds and target
+model), and it shows the largest effects anywhere in the paper: OfficeQA 0.341 → 0.734,
+BrowseComp-Plus 0.462 → 0.701, Terminal-Bench 0.241 → 0.607, GAIA 0.000 → 0.508. Converting those to
+normalized gain and comparing against the best of **111** frontier-optimizer runs — an arithmetic the
+dive performed and the paper never states — **the best off-the-shelf harness is statistically
+unresolved from the best optimizer run on three of four tasks, and beats every optimizer on
+Terminal-Bench by about 3.6 resolution bands.**
+
+**The citable implication is therefore the opposite of the headline**: harness/scaffold selection is
+worth about as much as an entire frontier-model optimization campaign, and should be treated as a
+**first-class routing dimension rather than a fixed substrate**. Cite `intake-1140#record`, never as
+"model > harness".
+
+#### Research Intake Update — 2026-09-17 (Jev typed-decision cluster; intake-1472/1473/1474/1487)
+
+- [x] **RI-14 — Typed-decision fast path for closed-set routing questions.** Once TD-2 calibration lands, evaluate a Choice-style candidate-logit call as the routing classifier fast path; never gate on uncalibrated confidence; report agreement + calibration + wall time vs the current classifier. (Evidence: intake-1472/1473/1474/1487; owner stub `typed-decision-plane.md`, RTG-56.) ✅ 2026-09-29 — folded into TD-11 (`typed-decision-plane.md`; operator ruling Q5: TD-11 is the single typed-routing owner). The classifier comparison, the calibration rule and the intake-1501 question shape moved there.
+  - *Question-shape template 2026-09-23 (intake-1501):* tier choice with criteria + ordinal effort score, with a 20-card OOD
+    probe whose labels come from a distribution the arm was not tuned on.
+- [ ] **RI-15 — (conditional) Generation-side comparator for factual_risk.** When factual_risk.py is assessed for shadow→enforce, report on the same rows a generation-side comparator (spec-OFF mean/min token log-prob of the served answer), not only the calibration set. Evidence: intake-1521 (zero-shot log-prob ties a simplified supervised router in distribution; no calibration measured).
+  - *Cross-link (2026-09-29, Jev-techniques map §3.2):* the same intake-1521 log-prob signal is EV-CONF-2's
+    salient-token confidence source on the autopilot eval surface (`autopilot-decision-plane-audit-2026-07-22.md`).
+    Different surfaces, one evidence base: reuse EV-CONF-2's spec-OFF capture rather than building a second one.
+- [x] **ROUTE-COP-GUARD — Reliability floor for any router objective that uses cost-of-pass.** Cost-of-pass as the sole routing objective is gamed by a cheap near-random strategy, so any router or controller using the frontier form needs a reliability floor (pass rate at or above tau, or pass^k) before a candidate enters the frontier, and must state that retries are not independent when context carries over (intake-2262#record). Add the floor and the caveat to the router-objective section of this handoff and to the learned-routing evaluation protocol; a unit test on a synthetic frontier containing a cheap random candidate must show it excluded. Acceptance: the section edit is filed and the synthetic-frontier test passes. Estimate: 0.5-1 day. ✅ 2026-10-21
+  - *(2026-10-21, dpf-specs.)* Section filed in this handoff and in learned-routing-controller.md; `cop_frontier.py` + `test_cop_frontier.py` (epyc-orchestrator orchestrator a350b690); synthetic-frontier test passes (cheap random candidate excluded).
+
+#### Router objective: cost-of-pass needs a reliability floor (ROUTE-COP-GUARD, 2026-10-21)
+
+Cost-of-pass (expected spend per solved task, `cost_per_attempt / pass_rate`) used as the SOLE routing objective is gamed by a cheap near-random strategy: a nearly free candidate that passes a small share of tasks has a low, sometimes frontier-leading, cost-of-pass while being useless to route to (`intake-2262#record`). Rules for any router or controller that uses the frontier form:
+
+1. **Reliability floor before frontier entry.** A candidate enters the cost-of-pass frontier only if its pass rate is at or above a declared `tau`, or, where the surface retries, its pass^k (all k attempts pass) is at or above `tau`. `tau` and `k` are declared before the run and written next to the frontier; there is no floor-free frontier.
+2. **Retries are not independent when context carries over.** `pass_rate ** k` is the optimistic independent bound. A retry that inherits the failed attempt's transcript, errors or anchoring is correlated with it, so a surface that carries context between attempts must measure its k-attempt pass rate directly and pass that in; it must not be derived from the single-attempt rate.
+3. **Report the excluded set.** The frontier report lists the candidates excluded by the floor and their cost-of-pass, so a reader sees what the objective alone would have chosen.
+
+Reference implementation and test: `epyc-orchestrator` `scripts/analysis/cop_frontier.py` and `tests/unit/test_cop_frontier.py` (synthetic frontier with a cheap random candidate; the test asserts it has the lowest unguarded cost-of-pass and is excluded under the floor). The same rule is copied into the learned-routing evaluation protocol: `learned-routing-controller.md` section "Evaluation protocol: cost-of-pass objective needs a reliability floor".
+
+##### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+- [ ] **RI-25 — Zero-inference fold replay over delegation records (intake-2565#record).** Apply the fold criteria (fold a sub-agent only if the folded version does not score worse; inspect which tasks flip; repeat runs) to existing orchestrator delegation records: for each delegate() role (worker_math, worker_general, worker_summarize share one model), measure from records how often a chain needs the role's own context, how much of the 4,000-character truncated hand-off (src/repl_environment/routing.py:581) reaches the worker, and how often the delegated answer is re-asked by the caller. Output a per-role fold-candidate table; no serving change.
+  - 2026-11-01 bounded record-adequacy screen: [capsule](../../artifacts/analysis/ri25-delegation-screen-20261101/README.md). The frozen progress and compact runtime/benchmark JSON/JSONL prefixes contain zero `delegate:<role>` values for `worker_math`, `worker_general`, or `worker_summarize`; 500 existing benchmark delegation events target `coder_escalation` and do not carry replayable inputs, answers, or caller follow-up linkage. Source inspection confirms the 4,000-character cap is not captured in persisted call records. Context delivered, role-specific context need, caller re-asks, task flips, repeat outcomes and folded quality therefore remain UNKNOWN. This bounded screen makes no fold claim and does not satisfy the full repeat/counterfactual replay criterion; leave RI-25 unchecked and open pending adequate captures.

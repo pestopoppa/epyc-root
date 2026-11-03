@@ -68,7 +68,7 @@ Reopen criteria: only promote new context-folding code if clean live telemetry s
 - `/mnt/raid0/llm/epyc-orchestrator/src/graph/session_summary.py`
 - `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/`
 - [tool-output-compression.md](context-and-token-economy.md#track-tool-output-compression)
-- [routing-intelligence.md](routing-intelligence.md)
+- [routing-intelligence.md](routing-program.md#track-routing-intelligence)
 - [non-inference-backlog.md](engineering-hygiene-backlog.md)
 
 ## Reporting Instructions

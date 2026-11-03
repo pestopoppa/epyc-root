@@ -409,7 +409,7 @@ On 2026-10-01 at 12:22Z workspace-8d fast-forwarded the shared orchestrator clon
 `revise` segment was running in-process from that same clone. The driver's integrity check voided all 90 revisions
 at 12:59:07Z ("code_root commit drifted during the segment"), and they must be redone. Rule fed: an
 in-process run pins `--code-root` to a detached worktree at its commit, never the shared clone
-(`handoffs/active/routing-intelligence.md` RI-18; wrapper fix RI-18b).
+(`handoffs/active/routing-program.md` RI-18; wrapper fix RI-18b).
 
 ## INC-20261003-start-dry-run-launched-stack
 On 2026-10-03, on a freshly rebooted host, workspace-ec ran `orchestrator_stack.py start --dry-run`, expecting a

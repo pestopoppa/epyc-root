@@ -557,6 +557,10 @@
    "target": "rocm-kernel-authoring.md",
    "track": "rocm-verify-profile-backend"
   },
+  "routing-intelligence.md": {
+   "target": "routing-program.md",
+   "track": "routing-intelligence"
+  },
   "sarathi-serve-cpu-evaluation.md": {
    "target": "cpu-decode-roofline-program.md",
    "track": "sarathi-serve-cpu-evaluation"
@@ -1117,6 +1121,10 @@
   "RTG-29": {
    "target": "RTG-09",
    "track": "retrain-routing-models"
+  },
+  "RTG-30": {
+   "target": "RTG-09",
+   "track": "routing-intelligence"
   },
   "RTG-32": {
    "target": "RTG-02",

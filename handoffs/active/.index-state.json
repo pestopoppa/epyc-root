@@ -21,13 +21,13 @@
     "reviewer-control-plane-index.md": {
       "blocked": 12,
       "handoffs": 1,
-      "oldest_advance": null,
+      "oldest_advance": "2026-11-03",
       "open": 25
     },
     "routing-and-optimization-index.md": {
       "blocked": 18,
-      "handoffs": 10,
-      "oldest_advance": "2026-10-21",
+      "handoffs": 9,
+      "oldest_advance": "2026-11-02",
       "open": 735
     },
     "user-facing-harness-index.md": {
@@ -140,7 +140,14 @@
             "INF-06#autokernel-rebuild-program",
             "UFH-01#repl-turn-efficiency",
             "UFH-01#qwen-chat-template-evaluation",
-            "RTG-09",
+            "RTG-09#routing-program",
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
@@ -337,7 +344,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 60,
+      "closed": 61,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -349,7 +356,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 65
+      "total": 66
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1047,7 +1054,14 @@
           "blocked": 12,
           "closed": 26,
           "gates": [
-            "RTG-09"
+            "RTG-09#routing-program",
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing"
           ],
           "guarded": 0,
           "line": 14,
@@ -2137,7 +2151,7 @@
       "blocked": 12,
       "closed": 100,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 25,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
@@ -2303,28 +2317,12 @@
         }
       ]
     },
-    "routing-intelligence.md": {
-      "blocked": 0,
-      "closed": 6,
-      "guarded": 0,
-      "last_advanced": "2026-10-21",
-      "open": 15,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-30",
-      "state": "active",
-      "total": 21
-    },
     "routing-program.md": {
       "blocked": 4,
-      "closed": 171,
+      "closed": 177,
       "guarded": 1,
       "last_advanced": "2026-11-03",
-      "open": 96,
+      "open": 111,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2333,16 +2331,16 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 272,
+      "total": 293,
       "tracks": [
         {
           "blocked": 1,
           "closed": 42,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 15,
+          "markers": 1,
+          "name": "routing-program",
           "open": 30
         },
         {
@@ -2350,7 +2348,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 529,
+          "line": 536,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 5
@@ -2360,7 +2358,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 1,
-          "line": 1000,
+          "line": 1007,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 22
@@ -2370,7 +2368,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2259,
+          "line": 2266,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 1
@@ -2380,7 +2378,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2335,
+          "line": 2342,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 2
@@ -2390,7 +2388,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2468,
+          "line": 2475,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 7
@@ -2400,7 +2398,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 2768,
+          "line": 2775,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 28
@@ -2410,10 +2408,22 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3484,
+          "line": 3491,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 6,
+          "gates": [
+            "UFH-01"
+          ],
+          "guarded": 0,
+          "line": 3572,
+          "markers": 1,
+          "name": "routing-intelligence",
+          "open": 15
         }
       ]
     },
@@ -2652,7 +2662,7 @@
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "index": "routing-and-optimization-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2873,23 +2883,12 @@
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
       "track": "non inference backlog"
     },
-    "RTG-30": {
-      "deps": [
-        "UFH-01"
-      ],
-      "handoff": "routing-intelligence.md",
-      "id": "RTG-30",
-      "index": "routing-and-optimization-index.md",
-      "line": 17,
-      "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
-      "track": "routing intelligence"
-    },
     "RTG-34": {
       "deps": [],
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -2898,7 +2897,7 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -2910,7 +2909,7 @@
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -2919,7 +2918,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

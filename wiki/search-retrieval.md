@@ -867,14 +867,14 @@ recorded as a `monitor_only` **comparator** for what a dedicated router head buy
 over our MLP learned-routing controller — explicitly **not** a replacement
 candidate, because opening it as one would fork an already-unfinished program
 (Phase 1 complete, Phases 1.5–3 outstanding).
-[`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) §RI-CMP-1
+[`routing-intelligence.md`](../handoffs/active/routing-program.md#track-routing-intelligence) §RI-CMP-1
 
 ### Source References
 
 - [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the struck PyLate/PLAID-only premise; three GGUF repos and the seven-quant/reference-script surface; the v8 conversion + graph-builder support chain; the English-vs-multilingual counterweight; K-eval re-scope; corrected grep-count reading
 - [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — the replication that failed at the retriever after an embedder swap; k-ablation decay
-- [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — the prompt-router encoder filed as a `monitor_only` comparator
+- [`routing-intelligence.md`](../handoffs/active/routing-program.md#track-routing-intelligence) — the prompt-router encoder filed as a `monitor_only` comparator
 
 ## Compiled Update — 2026-08-22: the encoder swap's stated rationale was false, the lexical signal bought nothing, and the live index has outgrown its record
 

@@ -12,7 +12,7 @@ Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retir
 **Related (precedent)**: [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) (backend-side session/compaction boundary), [`../archived/claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md) (archived ACP-as-Path-B precedent)
 
 ## Track: harness-selection-and-integration
-<!-- gate: RTG-09 -->
+<!-- gate: RTG-09#routing-program, RTG-09#internal-interaction-lifecycle, RTG-09#learned-routing-controller, RTG-09#model-capability-descriptors, RTG-09#retrain-routing-models, RTG-09#tri-role-coordinator-architecture, RTG-09#typed-decision-plane, RTG-09#x-mas-text-routing -->
 
 > Folded from the body of `handoffs/active/harness-selection-and-integration.md` (row UFH-01), from its first `##` section on, @ `d221498dc150` on 2026-11-03 (BRF-T7-F6, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 

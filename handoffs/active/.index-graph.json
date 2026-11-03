@@ -68,11 +68,6 @@
       "to": "INF-77"
     },
     {
-      "from": "RTG-30",
-      "kind": "dep",
-      "to": "UFH-01"
-    },
-    {
       "from": "RTG-58",
       "kind": "dep",
       "to": "EVL-14"
@@ -163,13 +158,7 @@
       "from": "EVL-14",
       "kind": "ref",
       "to": "RTG-09",
-      "weight": 9
-    },
-    {
-      "from": "EVL-14",
-      "kind": "ref",
-      "to": "RTG-30",
-      "weight": 11
+      "weight": 14
     },
     {
       "from": "EVL-29",
@@ -568,16 +557,10 @@
       "weight": 2
     },
     {
-      "from": "RTG-08",
-      "kind": "ref",
-      "to": "RTG-30",
-      "weight": 4
-    },
-    {
       "from": "RTG-09",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 2
+      "weight": 5
     },
     {
       "from": "RTG-09",
@@ -589,7 +572,7 @@
       "from": "RTG-09",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 6
+      "weight": 8
     },
     {
       "from": "RTG-09",
@@ -598,22 +581,10 @@
       "weight": 1
     },
     {
-      "from": "RTG-09",
-      "kind": "ref",
-      "to": "RTG-30",
-      "weight": 19
-    },
-    {
       "from": "RTG-22",
       "kind": "ref",
       "to": "EVL-47",
       "weight": 4
-    },
-    {
-      "from": "RTG-30",
-      "kind": "ref",
-      "to": "EVL-02",
-      "weight": 3
     },
     {
       "from": "RTG-58",
@@ -694,7 +665,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:57:27Z",
+  "generated_at": "2026-11-03T08:59:54Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1585,7 +1556,14 @@
           "blocked_by": [
             "INF-06#autokernel-rebuild-program",
             "INF-77",
-            "RTG-09",
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#routing-program",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration",
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
@@ -1596,7 +1574,14 @@
             "INF-06#autokernel-rebuild-program",
             "UFH-01#repl-turn-efficiency",
             "UFH-01#qwen-chat-template-evaluation",
-            "RTG-09",
+            "RTG-09#routing-program",
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 13968,
@@ -1802,7 +1787,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 30,
+      "priority_rank": 29,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2657,7 +2642,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 12,
       "blocked_by": [],
       "closed": 100,
@@ -2666,7 +2651,7 @@
       "guarded": 0,
       "handoff": "reviewer-control-plane.md",
       "id": "REV-02",
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
       "open": 37,
       "priority": 0.0636,
@@ -2683,7 +2668,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 31,
+      "priority_rank": 30,
       "readiness": "ready",
       "state": "active",
       "track": "glm52 reviewer capability gates",
@@ -3077,15 +3062,15 @@
       "age_days": 0,
       "blocked": 4,
       "blocked_by": [],
-      "closed": 171,
-      "dispatchable": 96,
+      "closed": 177,
+      "dispatchable": 111,
       "domain": "routing-and-optimization",
       "guarded": 1,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-03",
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
-      "open": 101,
+      "open": 116,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3095,7 +3080,7 @@
         "source": "file",
         "tier": 7,
         "tier_name": "T7 held / blocked",
-        "unblocks": 2,
+        "unblocks": 1,
         "unblocks_rows": [
           "INF-78",
           "REV-05",
@@ -3107,7 +3092,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3115,9 +3100,9 @@
         {
           "blocked_by": [],
           "dispatchable": 30,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 15,
+          "name": "routing-program",
           "open": 31,
           "readiness": "ready"
         },
@@ -3125,7 +3110,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 529,
+          "line": 536,
           "name": "internal-interaction-lifecycle",
           "open": 5,
           "readiness": "ready"
@@ -3134,7 +3119,7 @@
           "blocked_by": [],
           "dispatchable": 22,
           "gates": [],
-          "line": 1000,
+          "line": 1007,
           "name": "learned-routing-controller",
           "open": 25,
           "readiness": "ready"
@@ -3143,7 +3128,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2259,
+          "line": 2266,
           "name": "model-capability-descriptors",
           "open": 1,
           "readiness": "ready"
@@ -3152,7 +3137,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2335,
+          "line": 2342,
           "name": "retrain-routing-models",
           "open": 3,
           "readiness": "ready"
@@ -3161,7 +3146,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2468,
+          "line": 2475,
           "name": "tri-role-coordinator-architecture",
           "open": 7,
           "readiness": "ready"
@@ -3170,7 +3155,7 @@
           "blocked_by": [],
           "dispatchable": 28,
           "gates": [],
-          "line": 2768,
+          "line": 2775,
           "name": "typed-decision-plane",
           "open": 28,
           "readiness": "ready"
@@ -3179,10 +3164,23 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3484,
+          "line": 3491,
           "name": "x-mas-text-routing",
           "open": 1,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "UFH-01"
+          ],
+          "dispatchable": 15,
+          "gates": [
+            "UFH-01"
+          ],
+          "line": 3572,
+          "name": "routing-intelligence",
+          "open": 15,
+          "readiness": "blocked"
         }
       ]
     },
@@ -3280,38 +3278,6 @@
           "readiness": "ready"
         }
       ]
-    },
-    {
-      "age_days": 13,
-      "blocked": 0,
-      "blocked_by": [
-        "UFH-01"
-      ],
-      "closed": 6,
-      "dispatchable": 15,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "routing-intelligence.md",
-      "id": "RTG-30",
-      "last_advanced": "2026-10-21",
-      "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
-      "open": 15,
-      "priority": 0.1734,
-      "priority_basis": {
-        "basis": "T7 non-inference best open item (N): RI-25 \u2014 Zero-inference fold replay over delegation records (intake-2565#record). Apply the",
-        "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
-        "campaign": 0,
-        "file_rank": 144,
-        "source": "file",
-        "tier": 7,
-        "tier_name": "T7 held / blocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 26,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "routing intelligence"
     },
     {
       "age_days": 0,
@@ -3505,7 +3471,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3663,7 +3629,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 60,
+      "closed": 61,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3672,13 +3638,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0164,
+      "priority": 0.0159,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 32,
+      "priority_rank": 31,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -3705,7 +3671,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 1,
+        "unblocks": 0,
         "unblocks_rows": [
           "INF-78",
           "REV-05",
@@ -3723,11 +3689,25 @@
       "tracks": [
         {
           "blocked_by": [
-            "RTG-09"
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#routing-program",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing"
           ],
           "dispatchable": 16,
           "gates": [
-            "RTG-09"
+            "RTG-09#routing-program",
+            "RTG-09#internal-interaction-lifecycle",
+            "RTG-09#learned-routing-controller",
+            "RTG-09#model-capability-descriptors",
+            "RTG-09#retrain-routing-models",
+            "RTG-09#tri-role-coordinator-architecture",
+            "RTG-09#typed-decision-plane",
+            "RTG-09#x-mas-text-routing"
           ],
           "line": 14,
           "name": "harness-selection-and-integration",
@@ -3841,7 +3821,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -3962,6 +3942,7 @@
       "RTG-27",
       "RTG-28",
       "RTG-29",
+      "RTG-30",
       "RTG-32",
       "RTG-33",
       "RTG-35",
@@ -4003,7 +3984,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 31,
+      "file": 30,
       "heuristic": 1,
       "override": 0
     },
@@ -4019,7 +4000,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 3,
+    "blocked": 2,
     "no_open": 0,
     "ready": 29
   },

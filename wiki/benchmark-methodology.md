@@ -7096,7 +7096,7 @@ which is n=1 per arm on one CPU profile. That is not a production-profile number
 - [2026-09-29 workspace-8d progress](../progress/2026-09/2026-09-29-workspace-8d.md) — the lessons and their rule homes.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the floor contaminated by the owner's own tests.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the log-derived method.
-- [Routing intelligence](../handoffs/active/routing-intelligence.md) — RI-18 pre-registration and stopping rule.
+- [Routing intelligence](../handoffs/active/routing-program.md#track-routing-intelligence) — RI-18 pre-registration and stopping rule.
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-91.
 - [Canonical judge suite revamp](../handoffs/active/benchmark-suites.md) — CJ-17 renumbering.
 

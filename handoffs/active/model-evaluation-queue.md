@@ -1343,7 +1343,7 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 ## Track: meq-carve-routing-intelligence
 <!-- gate: UFH-01#agentic-serving-harness-fixes -->
 
-> Carved from `handoffs/active/routing-intelligence.md` (in `routing-intelligence.md`, row RTG-30) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+> Carved from `handoffs/active/routing-program.md` (in `routing-intelligence.md`, row RTG-30) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
 - [ ] **RI-CMP-1** — file LFM2.5-Encoder-350M-Prompt-Router as a `monitor_only` comparator against the MLP learned-routing controller. Do NOT open a work item: Phases 1.5-3 are unfinished and this is a comparator, not a replacement.
   - *2026-09-23 (intake-1502, intake-1501):* also file Laya (laya / laya-multilingual) as a `monitor_only` comparator — near

@@ -13966,7 +13966,7 @@ The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish
 - [ ] **INF-74-CGROUP-ROOT — land the root-owned cgroup delegation script.** (filed 2026-10-28, workspace-58 wrap-up) Operator chose root-owned cgroup delegation as the fix for the same-UID descendant escape above. Codex delivers the script (operator runs it, it is a protected-authority change); then add the escape/cleanup tests named above and re-run the INF-74 gate before any cutover. Cutover stays rejected until this box and the owner-bound grant→quiet→receipt handoff land. [no-belief: not-a-result]
 
 ## Track: autokernel-orchestrator-actor-backend
-<!-- gate: INF-77, INF-06#autokernel-rebuild-program, UFH-01#repl-turn-efficiency, UFH-01#qwen-chat-template-evaluation, RTG-09, UFH-01#harness-selection-and-integration -->
+<!-- gate: INF-77, INF-06#autokernel-rebuild-program, UFH-01#repl-turn-efficiency, UFH-01#qwen-chat-template-evaluation, RTG-09#routing-program, RTG-09#internal-interaction-lifecycle, RTG-09#learned-routing-controller, RTG-09#model-capability-descriptors, RTG-09#retrain-routing-models, RTG-09#tri-role-coordinator-architecture, RTG-09#typed-decision-plane, RTG-09#x-mas-text-routing, UFH-01#harness-selection-and-integration -->
 
 > Folded from `handoffs/active/autokernel-orchestrator-actor-backend.md` @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5; retired row INF-78 → INF-06). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

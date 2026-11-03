@@ -1989,7 +1989,7 @@ The model is systematically **overconfident on wrong short answers** (e.g. `529`
 - `research/intake_index.yaml` intake-601..604 (committed `27e86f0`)
 - `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5` module+flag, `3f4eaee` runner+adapter+tests) — default-OFF, not merged
 - [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) P21 (A1 done / A2 negative / A3 do-not-proceed)
-- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget), [`handoffs/active/routing-program.md`](../handoffs/active/routing-program.md#track-routing-intelligence) — research-intake updates
 ## 2026-05-25 — Within-role full↔quarter placement is unmodeled (architectural gap)
 
 `ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and place requests by lock availability + NUMA disjointness, but they do NOT model the within-role full↔quarter cpuset overlap relation. For each role with `full + N quarters` deployed, the dispatcher tries full first (via non-blocking try-acquire), then falls through to NUMA-disjoint quarters first, overlapping quarters last. The `same_role` matrix verdict in `orchestration/contention_matrix.yaml` is a single `allow / block / n/a` value with no instance-pair granularity — it was measured for quarters-only co-placement, not full+quarter.

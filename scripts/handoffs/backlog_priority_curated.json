@@ -177,7 +177,6 @@
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
   "REV-02": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
-  "RTG-30": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
   "UFH-13": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-09": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
@@ -231,7 +230,8 @@
   "REV-02#reviewer-latency-and-sampling-budget": "",
   "REV-02#reviewer-calibration-accounting": "",
   "REV-02#reviewer-typed-artifacts": "operator decision or approval pending",
-  "REV-02#reviewer-model-ablations": ""
+  "REV-02#reviewer-model-ablations": "",
+  "RTG-09#routing-intelligence": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
  },
  "park": {
   "INF-06": "MMQ",
@@ -2675,12 +2675,6 @@
     "next_action": "OAB-30 stub e2e (incl. keep→continuation); OAB-34 16384 output-cap hit rate per role"
    }
   ],
-  "RTG-30>UFH-01": [
-   {
-    "track": "agentic-serving-harness-fixes",
-    "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun"
-   }
-  ],
   "EVL-02>INF-22": [
    {
     "track": "qwen38-27b-replace-qwen36",
@@ -2719,6 +2713,12 @@
    {
     "track": "unified-trace-memory-service",
     "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing"
+   }
+  ],
+  "RTG-09>UFH-01": [
+   {
+    "track": "agentic-serving-harness-fixes",
+    "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun"
    }
   ]
  }
