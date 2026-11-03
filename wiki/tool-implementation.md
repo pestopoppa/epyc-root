@@ -167,7 +167,7 @@ The [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-pre
 
 ### Source References (2026-09-25)
 
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-orchestrator-actor-backend.md) —
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
   OAB-7/OAB-9/OAB-12 and the actor-call metrics contract.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
   DS41-C25, DS41-C27, and DS41-C28.
@@ -210,7 +210,7 @@ the premise check.
 ### Source References (2026-09-24 speech-lane)
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Tool-output caching*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §3 (key, placement,
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §3 (key, placement,
   premise check).
 - [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression): TOC-RD-1b.
 
@@ -1363,7 +1363,7 @@ window.
 
 ### Source References
 
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-14 root cause and fixes.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-14 root cause and fixes.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — incident chronology.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — campaign and actor observability rules.
 
@@ -1699,7 +1699,7 @@ The [INF64 importer/path matrix](../artifacts/ni08/inf64-source-reachability-rev
 
 At the06:42 checkpoint, [voice HTTP/WAV and W6 producer source preparation](../docs/reference/ni08-non-inference-continuation.md) was reviewed and prospectively enrolled; the later HTTP/WAV acceptance is recorded below. Voice controls exercise injected controller/cascade/HTTP boundaries and bounded WAV/PCM CLI handling. The W6 block describes core-minus-fresh quality with explicit scored-plus-task-failed denominators, excluded infra/scoring failures, nullable absence/reasons and incomparable suite/question mixes.34 source functions expand to38 native identities. Optional future journal support preserves authored metadata without changing objective, quality grade or historical rows.
 
-Source references: [INF64 active work](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip), [voice parent](../handoffs/active/speech-and-multimodal.md), [W6 metric direction and source gates](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md).
+Source references: [INF64 active work](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip), [voice parent](../handoffs/active/speech-and-multimodal.md), [W6 metric direction and source gates](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ### Real subprocess gates and isolated voice source — 2026-10-07 07:38 checkpoint
@@ -1722,7 +1722,7 @@ The [completed INF64 manifest review](../artifacts/ni08/inf64-source-reachabilit
 
 Two newly enrolled source fixes are still prospective: [K11](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) requires all requested repeats with actual successful boolean task verdicts and refuses nonpositive repeats before launch; [PIP02](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) derives the launcher's library directory from the resolved selected experimental executable. Private source proposals and synthetic controls have been reviewed, but their final hosted captures and source acceptance remain open. No live model, kernel execution, table-quality or sampler warrant is claimed.
 
-Source references: [W6 parent](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [pin-report parent](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [INF64 parent](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip), [prospective belief tasks](../handoffs/active/vidya-belief-substrate-program.md), [source table](../scripts/vidya/adapters/README.md), [NI08 boundaries](../docs/reference/ni08-non-inference-continuation.md).
+Source references: [W6 parent](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [pin-report parent](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [INF64 parent](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip), [prospective belief tasks](../handoffs/active/vidya-belief-substrate-program.md), [source table](../scripts/vidya/adapters/README.md), [NI08 boundaries](../docs/reference/ni08-non-inference-continuation.md).
 
 ### Requested-repeat reporting and honest route attribution — 2026-10-07
 

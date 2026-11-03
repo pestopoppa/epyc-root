@@ -4,7 +4,7 @@ freshness envelope, and the transport watchdog.
 
 WHY THIS MODULE EXISTS
 ----------------------
-Quoting the AK6 rider in ``handoffs/active/autokernel-research-loop.md``:
+Quoting the AK6 rider in ``handoffs/active/autokernel-loop.md``:
 
     The former ``/kernel`` page was ABSENCE-TOLERANT OVER A MISSING DIRECTORY —
     it rendered clean when its producer was dead, which is the exact shape of

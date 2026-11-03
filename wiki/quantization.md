@@ -404,7 +404,7 @@ The same hazard bit the analysis itself: an earlier pass reported the `%HBM` fig
 ### Source References (2026-08-16)
 
 - [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung ladder table, the batched sweep, the manifest unit correction, and the caveat list.
-- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-research-loop.md) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
+- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
 - [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the per-quant static VGPR table that predicted the knee four days early, and the IQ2_XXS-vs-IQ4_XS disassembly diff.
 - [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
 
@@ -1107,7 +1107,7 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 - **27B IQ2 pair dropped; the low-bit follow-on is Q38FN only (C-L3-Q38FN).** Operator ruling: the 27B runs Q8 on the GPU, so C-L3 closed superseded. Evidence for the live task: prefill from UD-IQ4_XS into GSQ IQ3_XXS decode recovers 28% of the KLD gap (R 0.28 [0.25, 0.32]) but GSQ IQ3_XXS decode is about 28% slower (15.8-15.9 vs 21.9-22.6 tok/s). Step 1 profiles why: iqk fast-path coverage for these shapes (NEW-10 recorded 12 decode-only iqk fallback tensors) and Q2_0 `ffn_down_exps`. The 75.84 GB GSQ weights are kept instead of deleted.
 - **AutoKernel hardened-row check is strict where new claims are gated.** `strict_unknown=True` at `microbench.py:4389` and `screening_baseline.py:202`, so a row with no `autokernel_hardened` field is refused (could-not-check is not a pass); 1190 execution tests pass with 3 pre-existing failures identical on a clean checkout.
 
-Sources: [iqk iquant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [autokernel rebuild program](../handoffs/active/autokernel-rebuild-program.md).
+Sources: [iqk iquant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [autokernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 

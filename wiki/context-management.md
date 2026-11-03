@@ -112,7 +112,7 @@ DCP now verifies a bound file-body hash again before rendering FULL, SLICES or C
 
 ### Source References (2026-09-25)
 
-- [AutoKernel actor backend handoff](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-9 setup, paired measurements, and limits.
+- [AutoKernel actor backend handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-9 setup, paired measurements, and limits.
 - [September 25 AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — run chronology and checked predictions.
 - [Agent loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — implementation and the same scoped A/B result.
 
@@ -160,7 +160,7 @@ critic acceptance change? Does it just read everything anyway? The predictions a
 ### Source References (2026-09-24 speech-lane)
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (numbers,
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §1 (numbers,
   inline-set rationale, predictions).
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 8 (no MCP on a bare seat; `--auto` out-of-tree reads).
 
@@ -1138,7 +1138,7 @@ and scout cost against the plain seat under the same server generation and KV mo
 
 ### Source References
 
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-7 implementation and measurement.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-7 implementation and measurement.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41 comparison boundary.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — context and campaign lifecycle guidance.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day chronology.

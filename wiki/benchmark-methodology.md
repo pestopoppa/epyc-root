@@ -264,7 +264,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
   - Result: **51 ordinary, 50 hardened, 34 unresolved.**
   - Unresolved: 31 units are timing-ambiguous, because a cold 91 GB model load or an eviction wait inflates the clock. The other 3 are depth sweeps whose fill time is not modelled.
   - No ambiguous unit is called either class. The leans (7 ordinary, 24 hardened) are recorded but carry no verdict.
-  - Dispositions are in `cpu-decode-roofline-program.md`, and a one-row-per-file manifest is kept ([autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md)).
+  - Dispositions are in `cpu-decode-roofline-program.md`, and a one-row-per-file manifest is kept ([autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)).
 - **LBH-2 closed.** Task-name citations of INF-70 numbers in the wiki and in `docs/design/inf70` carry dated notes. The other INF-70 scratch subdirs are unaffected. Re-running the unresolved units is LOW-PRIORITY backlog (LBH-2.1).
 - **Champion llama-bench is clean from `141e4bcf5`.** CH-28 folded the `cmd_params` initialisation fix (manifest V11-103). A llama-bench row from that champion or later can be read without the hardened-protocol doubt.
 - **A guard that lands with its strict mode off is half-landed.** LBH-3 is on research main (`5c3ad96c3`). `check_row` now FAILs a hardened row the argv did not request, and treats a row without the field as UNKNOWN. UNKNOWN is accepted with a note by default, and becomes COULD_NOT_CHECK only with `strict_unknown=True`. Both production call sites still use the default (`microbench.py` unit agreement, `screening_baseline.py`), so a new verdict can still rest on an UNKNOWN row. Filed as LBH-3.1.
@@ -276,7 +276,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
 
-- [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (LBH-1, LBH-2, LBH-2.1, LBH-3, LBH-3.1)
+- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (LBH-1, LBH-2, LBH-2.1, LBH-3, LBH-3.1)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (INF-70 claim dispositions)
 - [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-28, CH-28b)
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-18.0d item 3 correction, KPF-18-S1.7g)
@@ -287,7 +287,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 **Confidence: verified** for the defect (source read, fix branch, per-row evidence) and the dispositions recorded so far; the fleet audit (LBH-1) is not finished.
 
-- **The defect.** `parse_cmd_params()` in `tools/llama-bench` declared `cmd_params params;` and never copied `autokernel_harden`, `autokernel_seed` or `autokernel_ready_timeout_ms` from the defaults. The bool was indeterminate, so a run WITHOUT `--autokernel-harden` sometimes ran the hardened protocol: a separate depth fill per context and per rep, no per-rep progress lines, and rows tagged `"autokernel_hardened": true`. It reached the champion line through `f744cc220` (2026-08-13) and is in v10, `dd3d9721c` and `49550eda5`. Fix: `experimental/llama-bench-harden-init-20261023` @ `141e4bcf5` (value-initialise plus an explicit defaults copy, with a test), folding as CH-28 / manifest V11-103 ([autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) LBH section).
+- **The defect.** `parse_cmd_params()` in `tools/llama-bench` declared `cmd_params params;` and never copied `autokernel_harden`, `autokernel_seed` or `autokernel_ready_timeout_ms` from the defaults. The bool was indeterminate, so a run WITHOUT `--autokernel-harden` sometimes ran the hardened protocol: a separate depth fill per context and per rep, no per-rep progress lines, and rows tagged `"autokernel_hardened": true`. It reached the champion line through `f744cc220` (2026-08-13) and is in v10, `dd3d9721c` and `49550eda5`. Fix: `experimental/llama-bench-harden-init-20261023` @ `141e4bcf5` (value-initialise plus an explicit defaults copy, with a test), folding as CH-28 / manifest V11-103 ([autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) LBH section).
 - **How it surfaced.** KVU-LB1.b run 1 hit its time limit (rc 124). The F32 arm looked catastrophically slow; it was really doing 40 x 8k depth fills per benchmark under the hardened protocol, against one cached fill for the F16 arm ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
 - **Exposure, first count.** Recent tmp result files carrying the field: 22 of 53 had hardened rows, none requested (about 42%, consistent with an uninitialised bool). All 320 hardened rows in AK campaign stores were requested. Serving floors and serving A/Bs go through llama-server and are outside the defect.
 - **Dispositions so far (LBH-2).** DS41-W5 llama-bench "1017 vs Sept Q4" (tg128 -5.1%, pp512 -29.9%) crossed protocols: INVALID, and the AK seed that rested on the -29.9% is blocked. The DS41-C112 bisect, re-analysed on like-protocol pairs only, keeps its verdict at low strength (first bad `9b148baab`). The Q38FN thread-at-depth d0 anchor ran hardened on both arms, so it is relabelled a hardened-protocol reading. LBH-2 stays open for the September INF-70 markdown outputs, whose protocol cannot be recovered (REQUEST-UNKNOWN) ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md)).
@@ -296,7 +296,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (llama-bench harden-init UB, LBH-1..3)
+- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (llama-bench harden-init UB, LBH-1..3)
 - [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-LB1.b run 1 post-mortem, run 2 guard)
 - [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) (DS41-W5 INVALID, C112 re-analysis)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (thread-at-depth d0 re-grade)
@@ -369,9 +369,9 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 ### Source References (2026-10-22 sweep 7)
 - [docs/design/gpu-cpu-noise-contribution-prereg-20261021.md](../docs/design/gpu-cpu-noise-contribution-prereg-20261021.md)
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
-- [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
 - [progress/2026-10/2026-10-21-gpu-cpu-noise-design.md](../progress/2026-10/2026-10-21-gpu-cpu-noise-design.md)
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): predeclared gates that failed honestly, and what a probe may claim
@@ -391,7 +391,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 ### Source References (2026-10-20 sweep 2, methodology)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-HR-1/2 gates, census counts, ranked-recall audit.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2 gates, census counts, ranked-recall audit.
 - [All-devices program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — frozen-prediction scoring and AKX-ALL-26 halves.
 - [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay, sample-size arithmetic, parity contract.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — HIL-2 checklist.
@@ -666,7 +666,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
   - **V1:** teacher provenance — a BF16-stored reference of an FP8/FP4-native release is `dequantized_from_quant` unless audited (1507.D2).
   - **V9:** a mandatory treatment field separating weight codec, KV-cache type and activation scheme (1507.D3, 1508.D2).
 
-  Adoption is the operator's call through the OP-38 ratify package (R23-47). A session may only prepare it. ([autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) R23-47)
+  Adoption is the operator's call through the OP-38 ratify package (R23-47). A session may only prepare it. ([autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) R23-47)
 - **Two "corroborating" sources are not independent of our annex.** QFS (quant-fidelity-suite) is a sibling implementation of the same community rtx6kpro protocol that our staged annex distils (intake-1507#09). arXiv 2608.11212 is upstream of the annex's V4 wording, because rtx6kpro cites it (intake-1520#record). Agreement between them and our annex is shared lineage, not replication.
 - **The worked example of an undeclared estimand is a KV treatment reported as a weight format.** In a public GLM-5.3-Flash KLD table, the "NVFP4 0.0605" and "same-stack FP8 0.0246" rows read as weight formats. Per the quantizer's own receipts (the "v44" runs), they are EXL3-4bpw *weights* served with an NVFP4 or FP8 *KV cache*. They are single-window rows (2,047 positions), mixed into a 51,175-position panel (intake-1508#00, intake-1508#01, intake-1508#05). The mislabel was never corrected in-thread, and it propagated into QFS's comparability registry (intake-1507#06). A treatment field that names the weight codec, KV type and activation scheme separately would have made it impossible to write. That is why V9 proposes one.
 - **Teacher provenance is now a gate step for DeepSeek-V4.1-Flash.** DS41-T3 audits whether its reference is a dequantized upcast before any KLD/divergence claim, because a "BF16" release can sit on the FP8 grid (intake-1508#04). ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
@@ -689,7 +689,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 ### Source References (2026-09-23 wrap-up compile)
 
 - [p-kld-annex-proposals-20260923.md](../docs/research-intake/p-kld-annex-proposals-20260923.md) — the drafted annex wording, source-lineage table and per-section proposal map.
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-47 PREPARE-only pointer to the proposals.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-47 PREPARE-only pointer to the proposals.
 - [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — the flip-counting amendment.
 - [autopilot-decision-plane-audit-2026-07-22.md](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22) — spec-OFF AUROC expectation and the `n_max: 0` probe.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b-gate, DS41-C2c, DS41-T3 provenance note.
@@ -833,14 +833,14 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
   decomposition itself as wrong ([hardware optimization](hardware-optimization.md)).
 - **Dispersion comparisons use CIs.** R23-61b post-BIOS p95_dev was 7.249% [6.024, 9.371] and pre-BIOS
   was 7.897% [5.520, 11.322]. The intervals overlap, so there is no claimed change, and the unit
-  (`process`) is recorded ([rebuild program](../handoffs/active/autokernel-rebuild-program.md)).
+  (`process`) is recorded ([rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)).
 
 ### Source References (2026-09-21/22)
 
 - [`progress/2026-09/2026-09-21.md`](../progress/2026-09/2026-09-21.md) — contamination false positive, falsified prediction, v10 gate results
 - [`progress/2026-09/2026-09-22-kernel-promotion.md`](../progress/2026-09/2026-09-22-kernel-promotion.md) — max-performance ruling
 - [`kernel-freeze-runbook.md`](../docs/reference/kernel-freeze-runbook.md) — scope-as-output rule, eval-not-bitwise gate
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-61b
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-61b
 
 ## Compiled Update — 2026-09-19: the first judge-redundancy run — accuracy and agreement reported apart, and the free-form reader mostly failed to parse
 
@@ -1004,9 +1004,9 @@ This is the same family the 2026-09-14 harness-search section opened: an aggrega
 ### Key findings
 
 - **30 budget-matched harnesses, 3.1M rollouts, no universally superior harness (intake-1444).** The external study's own summary statistic is a checkpoint-pruned portfolio at 85.75% against 82.49% for the best fixed choice, i.e. the gain comes from selecting per checkpoint, not from any one harness winning everywhere. Filed as HS-E1 into the HS-4 evidence base as context only; HS-4 selection stays operator-owned and nothing in the packet gates it. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md), [research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md))
-- **An independent 12-task convergence and a fluid-bandit portfolio (intake-1457).** A second study reports no universally best harness on its 12-task set, and a fluid bandit at 0.780 against 0.718 for its comparator. Same evidentiary role: external motivation for SEQ-4's offline allocation replay and for the AC-CORAL portfolio spike, not a result to quote as ours. ([autopilot-sequential-allocation](../handoffs/active/autopilot-sequential-allocation.md), [agent-collab-rnd-harness](../handoffs/active/agent-collab-rnd-harness.md))
-- **A swarm-search artifact has two confounds before it has a finding (intake-1450, intake-1451).** The SwarmResearch reproduction count (13/15) is **threshold-ambiguous and therefore unverifiable as stated** — a derived rate is not a measured one. The EvoReplay study's line-level cycling rate (~30%) and its BO tuning ceiling (13/15) come with a **knob-exposure confound**: how much of the search space was actually reachable is a property of the harness, not the search policy. The lineage adapter's first job is to report the cycling rate and the per-edit-type yield beside the exposure, not to adopt the constants. ([autokernel-research-loop](../handoffs/active/autokernel-research-loop.md))
-- **Dream-RSI's own record needed four corrections, and they are the measurement content of its intake.** The implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, **not the paper's Eq. 1**; the `1.22× / 1.74× / zero-gradient` claims live only in the companion README; EvoX scores strategies online only, so it has no replay number to import; PACEvolve's MBB/CE mechanisms require a known target bound (kernels have none); and SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries. Cite the corrected form or not at all. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md))
+- **An independent 12-task convergence and a fluid-bandit portfolio (intake-1457).** A second study reports no universally best harness on its 12-task set, and a fluid bandit at 0.780 against 0.718 for its comparator. Same evidentiary role: external motivation for SEQ-4's offline allocation replay and for the AC-CORAL portfolio spike, not a result to quote as ours. ([autopilot-sequential-allocation](../handoffs/active/autopilot-sequential-allocation.md), [agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+- **A swarm-search artifact has two confounds before it has a finding (intake-1450, intake-1451).** The SwarmResearch reproduction count (13/15) is **threshold-ambiguous and therefore unverifiable as stated** — a derived rate is not a measured one. The EvoReplay study's line-level cycling rate (~30%) and its BO tuning ceiling (13/15) come with a **knob-exposure confound**: how much of the search space was actually reachable is a property of the harness, not the search policy. The lineage adapter's first job is to report the cycling rate and the per-edit-type yield beside the exposure, not to adopt the constants. ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
+- **Dream-RSI's own record needed four corrections, and they are the measurement content of its intake.** The implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, **not the paper's Eq. 1**; the `1.22× / 1.74× / zero-gradient` claims live only in the companion README; EvoX scores strategies online only, so it has no replay number to import; PACEvolve's MBB/CE mechanisms require a known target bound (kernels have none); and SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries. Cite the corrected form or not at all. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **The promotion verdict now records which RULE produced it.** `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is written to the trial row and the `baseline_promotion` event, alongside `eval_details.frontier_admission = "representative"` on clean rows — the field exists because the same promotion can come from three different admission rules and a bare pass/fail hides which one. VB-AP-PROMO-RULE files the projection of both fields into the belief-kernel support frame as an additive change with no grade change. ([objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **The PRB-T4 scorer fix now exists on orchestrator main.** `f0015306` (the stale live pool, the A–H multiple-choice scorer and the first-n loader fixes described in the section below) landed on orchestrator `main` as of 2026-09-17; the previous note that landing was blocked by the held orchestrator push lock is superseded. The live-pool swap and the mmlu_pro re-stamp still need the tower owner or inference. ([per-request-reasoning-budget](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget))
 - **The v7 runner pins were re-sealed by an operator-gated ratify run, and the package discloses exactly what the new seal crosses.** The package (`sub/v7-repin-20260916` `fc6610b9`, built off research `e4576171`) updates `dflash2_followups.py`'s `EXPECTED.runner_sha256` and the P3 bakeoff manifest's two runner pins; because the eval tower is a §5 trust boundary, the apply script shows a dry-run, requires the operator to type `RESEAL`, commits exactly six paths and never pushes. The 2026-09-17 wrap-up records the apply as **RATIFIED** at research `6d010a92`. The decision text names only `79721927`, but the re-seal also crosses `baf36757` (via `6dea92dd`) — an **additive** change that alters no request byte and no scoring decision, adding two output keys (`effective_request`, `meta.sampling_fields_are_requested_not_effective`); no P3 capture exists, so nothing banked is re-labelled. Zero-inference stub-server equivalence evidence: request bytes identical in 6/6 scenarios, outputs identical modulo the two added keys, and negative controls detect a request mutant and a scoring mutant. `critic_tasks_v1.json` (LiveCodeBench text, redistribution licence unclear) deliberately stays out of git. ([sub-v7-repin](../progress/2026-09/2026-09-16-sub-v7-repin.md), [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md))
@@ -1020,7 +1020,7 @@ This is the same family the 2026-09-14 harness-search section opened: an aggrega
 
 - [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the batch record and the per-entry corrections.
 - [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md): the HS-E1 filing.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md): the lineage/cycling and EvoTrace confound rows.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the lineage/cycling and EvoTrace confound rows.
 - [autopilot-sequential-allocation.md](../handoffs/active/autopilot-sequential-allocation.md): SEQ-4's BaSE/fluid replay.
 - [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput): `promotion_rule` and `frontier_admission`.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AP-PROMO-RULE.
@@ -1201,7 +1201,7 @@ than one — Qwen3.8-27B `tg128` **+5.633%**, Qwen3.8-27B `dec-b4` **+22.443%**,
 
 Sources: [`progress/2026-09/2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
 (§§ *Production-anchored dashboard trajectory*, *Trajectory correction*, *Keep-history and browser-interaction
-correction*), [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md),
+correction*), [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program),
 and the commits named above. Related: the *static anchor makes every effect cumulative* finding of
 2026-08-30 below is the same defect measured one level down, at the per-commit A/B rather than the campaign
 curve.
@@ -1519,7 +1519,7 @@ More data made it slightly **wider**. The reflex reading — "n=3 was a small sa
 
 - [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
 - [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08 (pm, INF-66/R23-58): a BENCH number is not a SERVING number, a null needs its power AND its positive control, and a floor from n=10 on a tail statistic cannot gate
@@ -1603,7 +1603,7 @@ trustworthy than a single reading at np = 1.** Anything gated at the serving ope
 
 ### Source References
 
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-58 verdict block, R23-61 floor arithmetic and the `n ≥ 24` rule
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-58 verdict block, R23-61 floor arithmetic and the `n ≥ 24` rule
 - [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the bench-vs-serving caution and the retraction of `tg128` as a rate
 - [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the np sweep, its residency evidence, and the recipe it was measured under
 - [2026-09-08-ak-rebuild-20260828.md](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — session record, including the self-correction
@@ -1629,8 +1629,8 @@ the correct **session-unit** answer is **4,780** — a **1200-fold** underestima
 spent as real host hours before anyone noticed the design could not converge. The durable rules: every
 floor record writes `unit ∈ {arm, session, process}` alongside its other conditions, and **a gate that
 compares an effect to a floor of a different unit REFUSES rather than warns**. Sources:
-[autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) (R23-55),
-[autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) (U2/P2).
+[autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (R23-55),
+[autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) (U2/P2).
 
 **The instability is in the CANDIDATE arm, not the harness — which is why a control that reproduces does
 not clear a headline.** An *identical* champion configuration measured **24.4 → 27.4 tok/s** plain across
@@ -1708,16 +1708,16 @@ is a post-mortem, not a gate.**
 two fields a gate depends on outside the digest, where an edit leaves no trace. The writer refuses a sealed
 row that lacks them rather than adding them.
 
-Sources: [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) (R23-55, R23-61),
-[`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) (U2),
+Sources: [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (R23-55, R23-61),
+[`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) (U2),
 [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md), and
 `epyc-inference-research` branch `fix/noninf-floorunit`
 (`scripts/kernel_rnd/autokernel/loop/{serving,bench,instruments,serving_gate,run,source_loo}.py`).
 
 ### Source References
 
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-55 (floor `unit`), R23-56 (close-out and the confound correction), R23-57 (champion launch-to-launch instability).
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — §3.2 U2 makes headline admissibility a property of the surface track; P2 carries the floor-`unit` refusal and the two new admissibility tasks.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-55 (floor `unit`), R23-56 (close-out and the confound correction), R23-57 (champion launch-to-launch instability).
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — §3.2 U2 makes headline admissibility a property of the surface track; P2 carries the floor-`unit` refusal and the two new admissibility tasks.
 - [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CHAMP-2 (the registered paired sign test and its pre-fixed verdicts), CHAMP-3 (multi-launch headline).
 - [progress 2026-09-08 (ak-rebuild)](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session record of the spreads, the controls, and the host-state change.
 
@@ -1895,7 +1895,7 @@ that consumes this floor.
 
 ### Source References (2026-09-04 serving-vs-bench methodology)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — R23-42 (the
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-42 (the
   proxy divergence), R23-43 (serving re-architecture, the floor options and the chosen per-request
   metric), R23-44 (compound-then-gate).
 - [Serving-floor noise reduction](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md) — the
@@ -1968,7 +1968,7 @@ on one comparison.
 
 ### Source References (2026-08-30 noise floor and anchor drift)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — CURRENT STATE
   carries the floor table, `bench.MEASURED_FLOOR_PCT`, and the anchor-drift record (D8, D9, D14).
 - [Runs 11–18 chronology](../progress/2026-08/2026-08-30.md) and
   [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-level evidence for both defects.
@@ -2434,7 +2434,7 @@ The joint rule is strict: a decision A/B must faithfully replay the production p
 
 ### Source References (2026-08-13 matched-frame rule)
 
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — r29 drift/contamination refusal and fresh-pair requirements.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — r29 drift/contamination refusal and fresh-pair requirements.
 - [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) — prefix harness defects and repaired semantic gate.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent audit verdict and focused verification.
 - [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — CPU instrument and paired-attempt disposition.
@@ -4288,7 +4288,7 @@ host was in use.
 stderr, the runner, and `SHA256SUMS`. Preserved there rather than in `/mnt/raid0/llm/tmp/` because
 the 2026-07-04 async-prefetch win was written to a tmp path that no longer exists.
 
-_Sources: `handoffs/active/autokernel-research-loop.md`; `progress/2026-08/2026-08-04.md`;
+_Sources: `handoffs/active/autokernel-loop.md`; `progress/2026-08/2026-08-04.md`;
 epyc-inference-research `6e5f33c1`._
 ## A cited measurement can name the wrong arm — re-derive it, then bound the defect (2026-08-04)
 
@@ -4359,7 +4359,7 @@ comparison frame, stopping rule, and objective identity therefore travel togethe
 
 ### Source References
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [Objective task-rate goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput)
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 999 and 1000 (control design and archive safeguards)
@@ -5172,7 +5172,7 @@ failure mode is bimodality, which a median hides — and flags any arm whose max
 ### Source References (2026-08-28)
 
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-6 settlement with both artifacts and the corrected re-run design
-- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the AK-VIS findings and the vacuous-test record
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — the AK-VIS findings and the vacuous-test record
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — the ngram exposure retraction (DF2-6b-bis)
 
 ## Compiled Update — 2026-08-30: EV-14a's first real band attempt — fail-closed refusal, corrected attribution, and the pinned reference that made it possible
@@ -5283,25 +5283,25 @@ touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`,
   it.** +171.7% compounded against +8.524% measured is not a rounding error; quoting one of those
   commit messages as a marginal effect is a false claim. Where commit messages are immutable, the
   correction has to be placed where a reader lands — the branch tip and the actors' own settled-facts
-  document. [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md),
+  document. [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program),
   [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
 - **Half a calibrated floor table is a trap, because the uncalibrated half still returns a verdict.**
   Both surfaces share one `decisive` predicate; only one had been recalibrated. Nothing in the
   verdict says which. A floor table that mixes calibrated and superseded rows should refuse on the
   superseded ones rather than answering from them.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **When a diff predicts the null, say so — it is stronger than the floor.** "~0 prefill because
   nothing in the batched prefill path was touched" is an argument from the changed file set, and it
   survives the floor being wrong. Pair every surface verdict with the file-scope reading that either
   corroborates or contradicts it.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **Choose a guard's predicate to answer the guard's own subject.** A post-promotion A/A guard was
   written as magnitude-vs-floor and deliberately **not** as `Comparison.decisive`, because `decisive`
   returns `False` for a drifting arm *regardless of effect size* — so a `decisive`-based guard would
   have certified a −9.539% regime as indistinguishable from zero. The stated subject was "is the
   anchor right?"; `decisive` answers "is this comparison trustworthy?", and the two come apart
   exactly when the anchor is wrong.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A utilization metric that under-counts its numerator produces work items for the metric.** GPU
   idle-while-claimed was reported at 35–40% and written into a handoff as "the next efficiency
   target". The busy term summed only per-comparison seconds, so warmup pairs, `test-backend-ops` and
@@ -5309,11 +5309,11 @@ touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`,
   closer to **~88% busy**. A companion 13.5% serialized-tail figure was retired at the same time: it
   was a single-lane number from an older run, and the current tail measures 265.8 s median (IQR
   263.3–270.6), i.e. saturated.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ### Source References (2026-08-30, champion-vs-production)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the champion-vs-production table and its supporting conditions; the per-commit inflation warning; the noise-floor bullet and R18-D; the idle-metric correction and R18-E.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — CURRENT STATE: the champion-vs-production table and its supporting conditions; the per-commit inflation warning; the noise-floor bullet and R18-D; the idle-metric correction and R18-E.
 - [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the 2026-08-30 section distinguishing the manual-admission champion from the loop champion, and CH-16 on the per-commit correction.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §1 (the measurement and the inflation), §5 (both self-corrections).
 
@@ -5333,7 +5333,7 @@ The methodology content is in how the decision around that number was structured
   reset-to-manual — so the decision rule was fixed before any data could argue for a softer one.
   The measured +12.618% fell in the proceed band and the other three responses never activated.
   A decision rule written after the number is a rationalization with a timestamp.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A chain estimate makes "additive" a testable claim instead of an assumption.** The two
   lineages' independent standings chained to a predicted band of **[11.2–15.3]** for the merge.
   The block landing inside it is evidence of *no interaction* — the merge is worth the sum of its
@@ -5348,7 +5348,7 @@ The methodology content is in how the decision around that number was structured
   accident of history into tomorrow's claims. The dashboard and the loop's `production.py` now
   both resolve rather than remember (with a source-guard test banning 40-hex literals on the
   dashboard side).
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A future timestamp is a refusable defect, and the refusal is the system working.** The
   published bundle's `generated_at` was stamped ~5.5 minutes in the future by the publishing
   agent; the freshness reader refused to age it rather than inventing a negative age. The repair
@@ -5358,7 +5358,7 @@ The methodology content is in how the decision around that number was structured
 
 Sources:
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2 (the merge, the bands, the measurement); R18-D (the prefill floor caveat the pp512 row re-confirms).
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L2 (the merge, the bands, the measurement); R18-D (the prefill floor caveat the pp512 row re-confirms).
 - [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the reconciled-champion standing block.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3 (the reconciliation and the bundle correction).
 
@@ -5397,7 +5397,7 @@ anecdotes from three ecosystems into a falsifiable placement of the gap.
 
 - Research `a95581c8` — run-22 surface extension, floor discipline, `--calibrate-surface`, flag
   admission + greedy-parity harness.
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L8, R21-8, R22-1/R22-2, R21-5 pilot sub-items.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L8, R21-8, R22-1/R22-2, R21-5 pilot sub-items.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §10, §11.
 
 ## Compiled Update — 2026-09-02: retracting a number is not done until you chase what was derived from it
@@ -5509,7 +5509,7 @@ promise about magnitude.
    cheap rung owns null-killing and the production rung owns every claim that leaves the system.
 
 **Sources**
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-19
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-19
   (the finding and its evidence), R23-20 (the first 27B keyed floor), R23-11 §5.2/§5.3 (floor
   keying and the `model` provenance field).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
@@ -5642,7 +5642,7 @@ different GEMM dimensions. Treat them as leads to re-measure, never as banked nu
 promotion consequence: such paths ship **performance-unvalidated** unless deliberately exercised.
 
 **Sources**
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-27
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-27
   (the reconfiguration and both profiles), R23-28 (screen fidelity axes), R23-29 (quant-gating and
   the promotion condition).
 - [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md) —
@@ -5688,7 +5688,7 @@ decode** win. Three workloads, three answers, one build.
 **Sources**
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
   champion's standing, now recorded as three measured workloads with evidence paths.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-29
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-29
   (quant gating), R23-31 (the signal), R23-32 (the claim), R23-26 (headline surface).
 - [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
 
@@ -6201,7 +6201,7 @@ staged-vs-published, draft-vs-reviewed) that is *derived* from a mutable pointer
 process start will re-derive the wrong answer across a restart unless the confirmation state
 is itself persisted and validated against — never rebuilt from — the pointer.
 Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"Did relaunches lose keeps?"),
-`handoffs/active/autokernel-rebuild-program.md` (R23-51), research commit `706e6894` →
+`handoffs/active/autokernel-loop.md` (R23-51), research commit `706e6894` →
 main `2de94d08`.
 
 ### a same-day multi-percent measurement spread is instrument noise, not a lost prize, until re-measured at the current floor
@@ -6226,7 +6226,7 @@ stated plainly). Generalizes: an unreachable/orphaned artifact's *historical* me
 evidence the mechanism once existed, never evidence of the gain it will produce on re-measurement
 — re-verify at the current floor before compounding anything into a live total.
 Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"orphan-keep recovery seeded",
-§"Did relaunches lose keeps?" second half), `handoffs/active/autokernel-rebuild-program.md`
+§"Did relaunches lose keeps?" second half), `handoffs/active/autokernel-loop.md`
 (R23-50, R23-50a), tag `ak/orphan-keeps-quantize-20260829`.
 
 
@@ -6564,7 +6564,7 @@ it.
   STATE header (unit = LAUNCH, the conditions clause, the supersession block) and CLOSE-1 (a floor
   carries its unit), CLOSE-2 (the vacuous-instrument pattern and the three guards), CLOSE-3 (`ps -p`
   is not a death test), CLOSE-10 (the per-arm sampler's coverage gap).
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
   — U2: per-surface floors carry their measurement conditions, not just a number; the U3
   `RUNTIME_CONFIG` arm type into which the THP shim was filed on the GPU side.
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
@@ -6626,7 +6626,7 @@ of one change is itself the measurement of whether the change moved the variance
 
 ### Source References (2026-09-08, era boundary)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md)
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
   — **R23-65** (post-reboot floor recalibration, the floors-and-units table, and the `R23-61a`
   interaction) and **R23-64** (the gated re-sweep the rule was written for).
 - [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md)
@@ -6733,7 +6733,7 @@ crashes. AutoPilot's AP-66 takes the opposite rules:
 - [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) —
   §2 problem and recorded instances, §5 leak taxonomy, §7 footprint/proof tiers/fail-closed classification,
   §8 non-inferiority gate and multiplicity, §10 compute budget.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   S3-AKU-08 (U3-PROPOSER): the Spearman ≥0.4 staged-screen rule and its heuristic provenance.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) —
   AP-66: INFEASIBLE configs told as constraint violations, with normalised crash encoding.
@@ -6974,7 +6974,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C57, DS41-C59 acceptance (floor recalibration and regime labels), keep 2 and the compounded bench.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the CH-6 correction.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — MMQ-reaching shapes; AK-MMQ-H10, H10a, H10b.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — MMQ-reaching shapes; AK-MMQ-H10, H10a, H10b.
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-85.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — the spin/sleep table.
 
@@ -7206,7 +7206,7 @@ The [TU-GR-1 boundary specification](../docs/design/tu-grader-isolation-boundary
 
 The original 352-entry triage is closed for its authorized 22 re-dives and eight verification demotions (waves 10/10/2). Application verdicts remain unchanged; `intake-982#record` changed verification and `intake-989#record` changed credibility, with prior history preserved. The native producer retires only named warrants, gives reviewed source claims 108 Verified replacements, and retains 22 Hinted discovery replacements for demotions; two administrative slots receive no source warrant. The 420-frame append passed full-fold review and zero-append retry. All 29 targeted checks, current validator and current citation gate passed; peer ledger/index records remain intact. The original 352 flags remain a historical screen, while the current risk count is a new screen, not a count of failed claims. All 79 recommendation records and task bindings are retained; no applicability declines or new source adoption are implied. Earlier same-day preparation paragraphs are historical checkpoints, superseded by this closeout. [Final findings](../docs/reference/intake-reverification-20261006.md), [completed handoff](../handoffs/completed/intake-reverification.md), [actual receipts](../artifacts/intake-reverification-20261006/final-application/README.md).
 
-The consumer corrections preserve existing operational work while fixing its rationale: all-task KernelBench denominators and bounded runtime studies in [RVP](../handoffs/active/rocm-verify-profile-backend.md) and [architect selection](../handoffs/active/model-evaluation-queue.md); numerical error versus calibration and model-conditional skill ablations in [kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) and [AutoKernel](../handoffs/active/autokernel-research-loop.md); SPCS/PACE setup and retrieval distinctions in [internal KB](../handoffs/active/knowledge-pipelines.md); iterative learning versus persistent memory in [Engram](../handoffs/active/engram-conditional-memory.md); and artifact-specific counts and harness-level audit obligations in [scoring infrastructure](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization). Existing declines, reopening triggers, memory freezes, local implementation results and every foreign checkbox state remain as previously owned. These are rationale repairs, with no new local performance result. The final producer wiring is recorded by owned VB-RI-CORRECTION-REFRESH-1 in the [belief program](../handoffs/active/vidya-belief-substrate-program.md).
+The consumer corrections preserve existing operational work while fixing its rationale: all-task KernelBench denominators and bounded runtime studies in [RVP](../handoffs/active/rocm-verify-profile-backend.md) and [architect selection](../handoffs/active/model-evaluation-queue.md); numerical error versus calibration and model-conditional skill ablations in [kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) and [AutoKernel](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop); SPCS/PACE setup and retrieval distinctions in [internal KB](../handoffs/active/knowledge-pipelines.md); iterative learning versus persistent memory in [Engram](../handoffs/active/engram-conditional-memory.md); and artifact-specific counts and harness-level audit obligations in [scoring infrastructure](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization). Existing declines, reopening triggers, memory freezes, local implementation results and every foreign checkbox state remain as previously owned. These are rationale repairs, with no new local performance result. The final producer wiring is recorded by owned VB-RI-CORRECTION-REFRESH-1 in the [belief program](../handoffs/active/vidya-belief-substrate-program.md).
 
 The final intake correction was published as `d0c2365cf425283ff05cdffc2e7be803a713324f` and promoted by `8bbfbf15718b7ecd57bf9e019ffc214c8ad377d3`; [publication progress](../progress/2026-10/2026-10-06-intake-reverify-main.md) records the passing gates and retained evidence.
 
@@ -7305,10 +7305,10 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 
 ### Source References (2026-10-22 wrap-up sweep 12)
 
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-1 result, U4-NOISE-W2
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-1 result, U4-NOISE-W2
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md) — rules 22-26
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 17.2 and 17.6
-- [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md) — CTC-Q-A2 (grant_ok class and min-window checks)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-A2 (grant_ok class and min-window checks)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 15, workspace-58): booking class is derived from the decision, W2 is armed, and the KPF-26.1 format check
 
@@ -7325,8 +7325,8 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 
 ### Source References (2026-10-22 wrap-up sweep 15)
 
-- [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md) — CTC-Q-C, CTC-Q-C.1
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-W2
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-C, CTC-Q-C.1
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-W2
 - [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-26.1g0 / KPF-26.1g
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 18.3-18.4
 
@@ -7342,7 +7342,7 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 ### Source References (2026-10-23 wrap-up sweep 19)
 
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md) — owner duties 24, 27-30
-- [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md) — CTC-Q-A2
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-A2
 - [progress/2026-10/2026-10-23-workspace-58.md](../progress/2026-10/2026-10-23-workspace-58.md) — section 19 (19.1, 19.2)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)

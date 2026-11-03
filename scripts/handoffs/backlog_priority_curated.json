@@ -4,16 +4,12 @@
   "INF-65": 0.95,
   "INF-70": 0.85,
   "RTG-58": 0.85,
-  "INF-66": 0.8,
   "INF-22": 0.7,
-  "INF-73": 0.7,
   "INF-06": 0.62,
   "INF-48": 0.55,
   "INF-50": 0.55,
   "UFH-14": 0.55,
   "INF-59": 0.5,
-  "INF-74": 0.5,
-  "INF-78": 0.5,
   "EVL-37": 0.5,
   "EVL-47": 0.5,
   "UFH-12": 0.5,
@@ -29,7 +25,6 @@
   "EVL-10": 0.35,
   "EVL-50": 0.35,
   "RTG-02": 0.35,
-  "INF-02": 0.3,
   "INF-05": 0.3,
   "INF-16": 0.3,
   "INF-20": 0.3,
@@ -103,7 +98,6 @@
   "INF-22#gpu-acceleration-path": 0.3,
   "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
   "INF-22#qwen38-27b-replace-qwen36": 0.75,
-  "INF-02#autokernel-restart-and-strip": 0.6,
   "UFH-08#opencode-shell-integration": 0.15,
   "EVL-37#qwen-chat-template-evaluation": 0.65,
   "INF-05#multiscreen-attention-evaluation": 0.15,
@@ -170,7 +164,13 @@
   "RTG-58#heterogeneous-slot-fabric-residency": 0.45,
   "RTG-58#kv-unified-stack-rollout": 0.8,
   "INF-22#numa-prefill-decode-disaggregation": 0.1,
-  "INF-50#dflash2-block-drafter-experimental-build": 0.45
+  "INF-50#dflash2-block-drafter-experimental-build": 0.45,
+  "INF-06#agent-collab-rnd-harness": 0.3,
+  "INF-06#autokernel-restart-and-strip": 0.6,
+  "INF-06#autokernel-rebuild-program": 0.8,
+  "INF-06#autokernel-unified-surface-program": 0.7,
+  "INF-06#autokernel-concurrent-target-coordination": 0.5,
+  "INF-06#autokernel-orchestrator-actor-backend": 0.5
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -229,7 +229,13 @@
  "park": {
   "INF-06": "MMQ",
   "INF-03": "REGAUDIT|AGPR",
-  "INF-03#mi210-q8-dequant-gemv-roofline": ""
+  "INF-03#mi210-q8-dequant-gemv-roofline": "",
+  "INF-06#agent-collab-rnd-harness": "",
+  "INF-06#autokernel-restart-and-strip": "",
+  "INF-06#autokernel-rebuild-program": "",
+  "INF-06#autokernel-unified-surface-program": "",
+  "INF-06#autokernel-concurrent-target-coordination": "",
+  "INF-06#autokernel-orchestrator-actor-backend": ""
  },
  "briefs": {
   "VB-FOLDGATE-WRITE": "Write the belief-kernel write side for the CH-28/CH-30 fold gate outputs (gate_{cpu,gpu}.v2.out + GATE_ACCEPTANCE.md): add the adapter row in scripts/vidya/adapters/README.md and a projector to ClaimTuple; do not write a grading rule. Zero inference; land before c4-gate-e / c4-gpu-correctness run.",
@@ -928,7 +934,7 @@
    "before": ""
   },
   {
-   "row": "INF-66",
+   "row": "INF-06",
    "tok": "R23-64",
    "kind": "I",
    "cls": "live",
@@ -1056,7 +1062,7 @@
    "before": ""
   },
   {
-   "row": "INF-02",
+   "row": "INF-06",
    "tok": "Re-screen the 19",
    "kind": "N",
    "cls": "N",
@@ -1070,7 +1076,7 @@
    "before": "INF-65:CH-30 -"
   },
   {
-   "row": "INF-74",
+   "row": "INF-06",
    "tok": "CTC-Q-D",
    "kind": "N",
    "cls": "N",
@@ -1084,7 +1090,7 @@
    "before": ""
   },
   {
-   "row": "INF-74",
+   "row": "INF-06",
    "tok": "CTC-Q-F",
    "kind": "N",
    "cls": "N",
@@ -1901,7 +1907,7 @@
    "before": ""
   },
   {
-   "row": "INF-02",
+   "row": "INF-06",
    "tok": "S3-ACH-01",
    "kind": "N",
    "cls": "N",
@@ -2594,24 +2600,6 @@
     "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after"
    }
   ],
-  "INF-06>INF-02": [
-   {
-    "track": "autokernel-restart-and-strip",
-    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
-   }
-  ],
-  "INF-65>INF-02": [
-   {
-    "track": "autokernel-restart-and-strip",
-    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
-   }
-  ],
-  "INF-66>INF-02": [
-   {
-    "track": "autokernel-restart-and-strip",
-    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
-   }
-  ],
   "EVL-49>INF-45": [
    {
     "track": "batched-decode-measurement",
@@ -2640,12 +2628,6 @@
    {
     "track": "unified-trace-memory-service",
     "next_action": "UTM-LB2.2 ingest projector events; UTM-B1 catalog-growth; UTM-B2 pairing"
-   }
-  ],
-  "INF-78>RTG-09": [
-   {
-    "track": "typed-decision-plane",
-    "next_action": "Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates"
    }
   ],
   "INF-70>INF-65": [
@@ -2692,6 +2674,40 @@
    {
     "track": "dflash2-block-drafter-experimental-build",
     "next_action": "DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27"
+   }
+  ],
+  "INF-06>INF-06": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   }
+  ],
+  "INF-65>INF-06": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   },
+   {
+    "track": "autokernel-research-loop",
+    "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm"
+   }
+  ],
+  "INF-66>INF-06": [
+   {
+    "track": "autokernel-restart-and-strip",
+    "next_action": "Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes"
+   }
+  ],
+  "INF-06>RTG-09": [
+   {
+    "track": "typed-decision-plane",
+    "next_action": "Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates"
+   }
+  ],
+  "UFH-12>INF-06": [
+   {
+    "track": "autokernel-orchestrator-actor-backend",
+    "next_action": "OAB-30 stub e2e (incl. keep→continuation); OAB-34 16384 output-cap hit rate per role"
    }
   ]
  }

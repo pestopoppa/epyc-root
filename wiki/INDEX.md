@@ -354,7 +354,7 @@ These categories have intake entries but insufficient depth for a compiled artic
 **2026-09-17 intake-delta categories below the 3-source compile threshold (not compiled this pass; content placed instead):**
 - `training_distillation` — PAW's compile-by-training line ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md), intake-1477/1478/1483): one substantive source; its availability/license findings are compiled into [Local Inference](local-inference.md) and [Agent Architecture](agent-architecture.md).
 - `cost_aware_routing` — the judge cost-order anchor (ECR-TD-1, intake-1475) is compiled into [Benchmark Methodology](benchmark-methodology.md).
-- `autonomous_research` — the verifiable-porting-loop spec (AK-PORT-1/2/3, [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md)) is compiled into [Hardware Optimization](hardware-optimization.md).
+- `autonomous_research` — the verifiable-porting-loop spec (AK-PORT-1/2/3, [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)) is compiled into [Hardware Optimization](hardware-optimization.md).
 - `knowledge_management` — the vidya write-side rule (VB-TDP-1) is compiled into [Benchmark Methodology](benchmark-methodology.md).
 
 **2026-07-29 sources held back for insufficient corroboration (not compiled this pass):**

@@ -493,7 +493,7 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
   release timestamp and the post-run device check found no KFD process or VRAM allocation.
   Drive a saturating gfx90a GEMM and log `power_w`
   and `sclk_mhz` at 250 ms intervals for 60 s. **If the card never approaches its 300 W cap, the entire
-  clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-research-loop.md)
+  clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-loop.md#track-autokernel-research-loop)
   §21 is declined without spending anything. That condition was met, so the branch is closed. Facts
   verified on-box 2026-08-10 before designing the probe: `power1_cap_max` = 300 W
   (`rocm-smi --showmaxpower` agrees), the card exposes only **three**

@@ -410,7 +410,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       graph nodes fell only 13%, so the barrier/dispatch term — the one term that scales with thread
       count — is now a far larger fraction of the token than when 48 won here. The re-sweep is filed
       and **gated behind the operator's planned host reboot + BIOS session** as **R23-64** in
-      [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md); the post-reboot recalibration
+      [`autokernel-rebuild-program.md`](autokernel-loop.md#track-autokernel-rebuild-program); the post-reboot recalibration
       of every FLOOR (dispersion, which gates A/B decisions — not the absolute headline numbers, which
       stay directly comparable) is **R23-65** there. **This entry is also the disproof of MEAS-4's
       "why 48" framing** below — see the correction block under the MEAS-4 heading.
@@ -1179,7 +1179,7 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
 
       **Follow-up.** The re-sweep this correction implies (t48 / t64 / t96 on the champion, plus the
       6-CCD-vs-12-CCD arm D4 planned and never ran) is filed as **R23-64** in
-      [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md), **gated behind the operator's
+      [`autokernel-rebuild-program.md`](autokernel-loop.md#track-autokernel-rebuild-program), **gated behind the operator's
       planned host reboot + BIOS session**; the post-reboot recalibration of every calibrated FLOOR is
       **R23-65** there. See also **C8** in Axis C above (the prepared BIOS checklist).
 

@@ -356,7 +356,7 @@ Full record: [AutoKernel local-actor bring-up retrospective](../../design/autoke
 Rules fed:
 - the new-actor checklist, `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new
   actor model or backend*;
-- the gates `handoffs/active/autokernel-orchestrator-actor-backend.md` OAB-29..OAB-32;
+- the gates `handoffs/active/autokernel-loop.md` OAB-29..OAB-32;
 - proposed for operator ratification: a wire test before any new actor seat runs live
   (`scripts/operator/ratify_actor_seat_wire_test_20260926.sh`, into
   `agents/shared/OPERATING_CONSTRAINTS.md`).

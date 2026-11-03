@@ -109,11 +109,11 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ## Compiled Update — 2026-10-28 (ws58 delta): AK flakes resolved, OAB-31 candidate validated on the focused suite, unified-surface CPU leg passes
 
-- **AK test flakes RESOLVED (2026-10-27):** the two `test_serial_roster.py` authenticated-control failures were fixed by a subprocess `PYTHONPATH` fix (research `1ff090cc`, merged `dc77ce388`); on research `08fe38e7ec99` 29 focused tests passed; ToolRunner fix `21ef67e69` is an ancestor of that baseline. [handoff](../handoffs/active/autokernel-research-loop.md), [progress](../progress/2026-10/2026-10-27-ak-flake-blocker.md)
+- **AK test flakes RESOLVED (2026-10-27):** the two `test_serial_roster.py` authenticated-control failures were fixed by a subprocess `PYTHONPATH` fix (research `1ff090cc`, merged `dc77ce388`); on research `08fe38e7ec99` 29 focused tests passed; ToolRunner fix `21ef67e69` is an ancestor of that baseline. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [progress](../progress/2026-10/2026-10-27-ak-flake-blocker.md)
 - **Gate-verdict subshell defect already repaired:** current C3/C4/C5 fold gate scripts set `GATE_VERDICT=FAIL` in gate-process scope; rc=0 and rc=7 controls pass on all three (does not run the full gates). [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
-- **OAB-31:** the assertion-fix candidate passed the focused suite (418 passed, 48 subtests); growth-guard status and merge are not shown, so it stays open. [handoff](../handoffs/active/autokernel-orchestrator-actor-backend.md)
-- **Unified surface:** CPU source+runtime leg satisfied (r10 `bdb52d951`, SOURCE_AND_RUNTIME_PASS); DRY receipt only 17 of 23 refs reproducible (6 original assets missing). LIVE GPU leg still needs a serving-owner grant. [handoff](../handoffs/active/autokernel-unified-surface-program.md)
-- **Open question:** INF-74 concurrent-target cutover is blocked until root-owned cgroup delegation lands and the owner-bound grant handoff is built. [handoff](../handoffs/active/autokernel-concurrent-target-coordination.md)
+- **OAB-31:** the assertion-fix candidate passed the focused suite (418 passed, 48 subtests); growth-guard status and merge are not shown, so it stays open. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
+- **Unified surface:** CPU source+runtime leg satisfied (r10 `bdb52d951`, SOURCE_AND_RUNTIME_PASS); DRY receipt only 17 of 23 refs reproducible (6 original assets missing). LIVE GPU leg still needs a serving-owner grant. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
+- **Open question:** INF-74 concurrent-target cutover is blocked until root-owned cgroup delegation lands and the owner-bound grant handoff is built. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
 - **Recorded finding (not a result):** the 2026-10-27 RTG57 belief wiring was exercised only with synthetic canaries. [progress](../progress/2026-10/2026-10-27-rtg57-vkq-wire.md)
 
 ## Compiled Update — 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): the first planning-context canaries, with AutoKernel PASS with caveats and AutoPilot PARTIAL/FAIL
@@ -168,7 +168,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champ
 - **New dimensions and ranking.** A `threads_batch` runtime arm (`-tb` decoupled from `-t`, normalised so existing recipe hashes and floors are unchanged); a `GGML_FA_SPLIT_KV=0` width-invariance plan; GPU serving profiles now carry tokens and per-kernel `launches_per_token` / `ns_per_token`, ordering the planner's hotspot table and the candidate timing queue (ranking only, no verdict path touched). `-tb 96` needs the whole host, so the draft run is BACKLOG until the CH-27 floors are calibrated on the current champion. AKX-AUTO-6 (auto re-anchor on champion advance) is ticked: a dry-run `plan` names the C3 advance and is actionable; the live exercise waits on workspace-7b's Q38FN relaunch and should take the `dcc853b55` image. AKX-ALL-LB3.2a wrote the attribution instrument (40 tests; critical path = a measurement build).
 - **Harness lessons (this session).** (1) A non-executable re-exec returned rc 126 and `c5-cpu-correctness` recorded it as a verdict; wrappers now treat 3 / 64 / 124-127 / >= 128 as harness errors, never verdicts. (2) A stale-build check grepped the thin `llama-server` launcher, but the option table lives in `libllama-common`; check the library that holds the symbol. (3) The C4 A/B gate now guards on its own noise floor (> 10% / 4% = NOISY, retry). (4) The registry rebuild reads the master registry from research origin/main; a regen on a stale shared clone dropped 10 `ctx_checkpoints: 32` lines and repointed the master, so guard `3c4d6881` refuses a registry blob that differs from origin/main (override `--allow-stale-research-registry` offline only) and the clean regen `e0ba98fe` keeps every `ctx_checkpoints: 32`; never sync the shared clone to make a rebuild work.
 
-Sources: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+Sources: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 11): a launcher's class must match the grant shape; C2 b-rerun has no verdict yet
 
@@ -196,13 +196,13 @@ Sources: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md) — CTC-Q-A/B/G/H and the wire-in evidence
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination) — CTC-Q-A/B/G/H and the wire-in evidence
 - [progress/2026-10/2026-10-22-a4-launcher-sidecars.md](../progress/2026-10/2026-10-22-a4-launcher-sidecars.md) — filler_run5 dry-run proof
 - [progress/2026-10/2026-10-22-gpu-grant-hardening.md](../progress/2026-10/2026-10-22-gpu-grant-hardening.md) — run7 and cpuset fixes
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — q3 fold incidents and grant calendar
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — job outcomes, run5/run6 history
-- [handoffs/active/autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md) — AK-PORT-LB1
-- [handoffs/active/autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-LB1 sample
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-PORT-LB1
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-LB1 sample
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — INF37-LB1 ISA audit
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): grant-driven fillers, v11 drivers, Locals intake seeds for AutoKernel
@@ -216,8 +216,8 @@ Sources: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.
 
 ### Source References (2026-10-22 sweep 7)
 - [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
-- [handoffs/active/autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
-- [handoffs/active/autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [progress/2026-10/2026-10-21-v11-drivers.md](../progress/2026-10/2026-10-21-v11-drivers.md)
 - [progress/2026-10/2026-10-21-fillers-3c4ca599.md](../progress/2026-10/2026-10-21-fillers-3c4ca599.md)
 
@@ -225,13 +225,13 @@ Sources: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.
 
 **Confidence: inferred** for design records (no read side is built); **verified** for the code/test counts as recorded. The AKX-ALL-27 replay had not run when these sources were written and is not recorded as a result.
 
-- **AK lesson entries are schema and write-side lint only (AK-PM-18).** No LLM-authored AK lesson library exists; the planner's memory is the deterministic do-not-repeat fold (`controller/do_not_repeat.py:640 @cb6b08fea`). The record extends AK-PM-17: a per-edit verdict in {helped, hurt, no observed effect, confounded} (confounded whenever several components changed and no run isolates one), at most one durable lesson per round with cue, component-naming lesson, evidence ids that resolve to journal rows, and confidence, an explicit NO_ENTRY, and a lint rejecting an empty cue/lesson/evidence or evidence made only of confounded rows. A revision is a new entry with `supersedes`, never an overwrite, with a grounded/leaked/unsupported audit on a 20-entry sample before any enablement. Lessons are observations (no ClaimTuple); admission stays the execution-gated rule of AK-PM-12; nothing is built before the AK-PM-11 ablation returns. Monitor M10: a self-test arm needs the oracle admission rule and one held-out call in its spec, and no such arm exists. ([AutoKernel research loop](../handoffs/active/autokernel-research-loop.md))
+- **AK lesson entries are schema and write-side lint only (AK-PM-18).** No LLM-authored AK lesson library exists; the planner's memory is the deterministic do-not-repeat fold (`controller/do_not_repeat.py:640 @cb6b08fea`). The record extends AK-PM-17: a per-edit verdict in {helped, hurt, no observed effect, confounded} (confounded whenever several components changed and no run isolates one), at most one durable lesson per round with cue, component-naming lesson, evidence ids that resolve to journal rows, and confidence, an explicit NO_ENTRY, and a lint rejecting an empty cue/lesson/evidence or evidence made only of confounded rows. A revision is a new entry with `supersedes`, never an overwrite, with a grounded/leaked/unsupported audit on a 20-entry sample before any enablement. Lessons are observations (no ClaimTuple); admission stays the execution-gated rule of AK-PM-12; nothing is built before the AK-PM-11 ablation returns. Monitor M10: a self-test arm needs the oracle admission rule and one held-out call in its spec, and no such arm exists. ([AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **Width invariance enters keep evaluation as an observe-only record, not a gate.** `width_dimension.py` (research `main` `e46ba5fb2`) produces `epyc.autokernel.width_invariance_dimension.v1` carried under its own key outside `dimensions` (`KEEP_DIMENSIONS` unchanged; no keep/reject change). States: `not_applicable`, `not_measured` (touched but a table is absent, never a pass), or `measured` with a cell-by-cell RELATIVE comparison to the anchor (verdict worse/improved/mixed/unchanged; UNSUPPORTED/ERR/void go to `indeterminate`). A model-level companion carries the DF2-18 recipe fields per width 2/4/5/8, and zero flips with no near-ties is `uninformative`, not a pass. 77 tests passed; not wired into `run.py`, and the replay (parent `gpu-20261004-1bceceb05` vs keep `gpu-20261004-656c9a66b`) needs the GPU. Its predicted unchanged verdict is a prediction. ([AutoKernel all devices, all dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions))
 - **Instruments must prove they can fire, and a null needs the controls.** The HIP guard-band judge reported NO_CATCH only after default-off, negative and positive device-inject controls behaved as designed; the first run's 130 violations were harness false positives (band sized by `ggml_nbytes`, not the backend alloc size). The same pass found two staging bugs, a stale `sys.path` crash and a `strings | grep -q` SIGPIPE false negative under `pipefail`. ([AutoKernel all devices, all dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions))
 - **A harness file that was never committed is a protocol hazard.** `ab_probe.py` was recovered byte-exact from session transcripts and its sha256 matched the recorded `probe_version`, which is what made the 2026-10-04 receipts comparable again. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
 - **Offline analytics can be NOT JUDGEABLE, and that is the correct record.** GPU-ZOS-1 (no decode timers in any :8083 log era) and DSpark T7.1 (drafter graph accumulated 0) were closed as not judgeable rather than estimated. ([GPU serving tie-in program](../handoffs/active/mi210-serving-program.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
 
-**Sources (sweep 3):** [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md); [AutoKernel all devices, all dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md).
+**Sources (sweep 3):** [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop); [AutoKernel all devices, all dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md).
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): AutoKernel reads its own history, widens its probes, and the champion advances
 
@@ -265,7 +265,7 @@ The standing champion moved from `e33229348` to `dd3d9721c` through the fold led
 
 ### Source References (2026-10-20 sweep 2)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-HR-1/2/3, ranked-recall default, test-debt notes.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2/3, ranked-recall default, test-debt notes.
 - [All-devices AutoKernel program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-26/28/29 results and routed items.
 - [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — slotdraft fold ledger, CH-18 pull list, manifests.
 - [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay and speculation parity contract.
@@ -300,7 +300,7 @@ The matched-floor guard refuses suspect carry and an unguarded floor above three
 - [DeepSeek evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — C127/C128 calibration and epoch transitions.
 - [October 7 lane coordinator record](../progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md) — later disk/request resolution and test repair limits.
 - [Master decision queue](../handoffs/active/master-handoff-index.md) — decided OP-80 wiring scope.
-- [Unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — incomplete full-suite and pause work.
+- [Unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — incomplete full-suite and pause work.
 
 ## Source synthesis — improvement-loop design and admission stages
 
@@ -322,7 +322,7 @@ The admission comparison also separates decisions that can otherwise be conflate
 - [DeepSeek evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)
 - [October 7 lane coordinator record](../progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md)
 - [Master decision queue](../handoffs/active/master-handoff-index.md)
-- [Unified-surface program](../handoffs/active/autokernel-unified-surface-program.md)
+- [Unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - [HIL reviewed design](../docs/design/harness-improvement-loop-design-20261006.md)
 - [current handoff](../handoffs/active/harness-improvement-loop.md)
 - [Admission and skill granularity](../docs/reference/ni08-admission-and-skill-granularity.md)
@@ -358,7 +358,7 @@ floor reuse and actor-call stop record. The A/B has two limits: `n=2`, and inlin
 
 ### Source References (2026-09-25)
 
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-orchestrator-actor-backend.md) —
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
   OAB-7, OAB-9, OAB-12, and *Techniques learned in the opencode seat*.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C24,
   DS41-C25, DS41-C27, and DS41-C28.
@@ -428,7 +428,7 @@ reproduction and the cache timing; **inferred** for the OAB-9 predictions. Three
 
 ### Source References (2026-09-24, late evening)
 
-- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-orchestrator-actor-backend.md) —
+- [`autokernel-orchestrator-actor-backend.md`](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) —
   §Techniques learned in the opencode seat; OAB-7s, OAB-4m, R4c, OAB-9–OAB-12; §Baseline perf-tool attribution
   marked doubted.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C20d
@@ -552,7 +552,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
     the same server generation.
   - OAB-7's "~38k of the 98k slot" is the split-KV ceiling.
 
-  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) OAB-4a)
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) OAB-4a)
 - **Generalisable shape:** the empty reply became a diagnosis rather than a fabricated proposal because of two
   pieces landed earlier the same day. The C20 refusal kept the loop from inventing content, and the call record kept
   the evidence (rc 0, 1235.7 s, 0 bytes) that pointed at the slot ceiling instead of at the model.
@@ -564,7 +564,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
 - [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-1, KVU-11a.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-SEAT-b1v
   (proven), VB-AK-SEAT-b1w.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): OAB-4a.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): OAB-4a.
 - [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"Stack-configuration window".
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile #2): the seat A/B resolved — plain wins on wall, bounded loses on tool time, and nobody delegates
@@ -608,7 +608,7 @@ prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
   because the shared clone's working tree is stale. Releasing that pin before run 9 is DS41-C24, and proving
   the producer on run 8's first real call is VB-AK-SEAT-b1v.
   ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20/C20c/C20d/C22–C24;
-  [autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) §Baseline, OAB-7, OAB-8;
+  [autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) §Baseline, OAB-7, OAB-8;
   [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT;
   [completed DS41 §C ledger](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md))
 - **The standing homes for these lessons are now repo docs, readable by every agent.**
@@ -680,7 +680,7 @@ prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
 
   The bounded seat is the reference that backend must beat on the same driver. The operator dropped the idea of
   splitting heavy planning from fast authoring; it is not filed.
-  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md);
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend);
   [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md) S4-T1 — `RoleResult.turns` was never
   copied, so every seeding record carries `turns=0`)
 - **Belief-kernel wiring filed on the write side** (VB-AK-SEAT): per-call `actor-calls.jsonl` and the A/B's
@@ -816,7 +816,7 @@ kernel keep, serving-quality result or campaign outcome.
 - **A store carries the champion-of-record, and the loop refuses to relabel a new tip as the old one.** Run 2 was refused: the shared store pinned run 1's COR `ad932bbd9` against the new anchor `ebb68dc55` ("supply `--cor-build` or `--resume-run`"). The rule the refusal encodes — *a campaign whose anchor moves with no keeps behind it needs a FRESH store, not a pinned one* — is the right default, because silently relabelling the tip would make every later comparison read against an identity that was never measured. Run 3 therefore uses a fresh store with the hypothesis inbox carried over (`state-run3/serial-run.pid` = 1953258); run 1 was archived as `store-run1-ad932bbd9`. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C13)
 - **Calibration is the loop's entry fee, and its cost is a property of what is being measured.** 48 matched A/A launches, roughly 2 h, each reloading 519 GB, measure **relaunch dispersion** — the noise every candidate pays, since a new binary is a new process. It is not reducible without keeping weights in RAM across launches, which would mean mmap, which changes NUMA placement and is therefore a *different measured condition*. Recorded explicitly as nothing to act on, so a future session does not "optimise" it into a comparability break. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md), DS41-C10)
 - **Hypotheses reach the planner through the inbox, not through the profile form.** Seeded as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked: H2 requant ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted, H6, H7), each with its measured basis and a falsifier, re-read every iteration. The `opportunities.json` profile form stays unbound with placeholder digests — the inbox is the channel. Budget guidance carried with it: **decode is flat 24→96 threads**, so barrier and dispatch levers cannot pay on this model; point the campaign at the memory path. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C5)
-- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) AK-INST-2)
+- **AK-INST-2 audit: no second champion-drift pin, but a v10 folded-lineage defect.** Auditing every 40-hex / `*_COMMIT` equality in the discovery plane found no other pin of the `READY_CONTINUE_INSTRUMENT_COMMIT` shape (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks; the review-pin at `discovery_deployment_factory.py:1516` stays exact by design and is re-pinned per freeze). It did surface a different defect: once `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, the rule "instrument parents == (production,)" became **unsatisfiable** in both `live_controls` preflight and `candidate_record.build_candidate_record`. Fixed by a shared `worktree.instrument_lineage_ok` that accepts the folded identity (research `714777e4`). A consolidation that merges two identities can invalidate a rule written when they were distinct. ([autokernel-restart-and-strip](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) AK-INST-2)
 
 ### Open questions
 
@@ -827,7 +827,7 @@ kernel keep, serving-quality result or campaign outcome.
 
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2b (launch), C2e, C5 (hypotheses and budget guidance), C10, C11, C13 (run 3).
 - [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — "AutoKernel campaign STARTED" and "campaign restarted as run 3" sections: identities, contract details, the COR refusal, the calibration rationale.
-- [autokernel-restart-and-strip.md](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
+- [autokernel-restart-and-strip.md](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-2 audit outcome and the v10 folded-lineage fix (research `714777e4`).
 
 ## Compiled Update — 2026-09-18: GLM AutoKernel watch stopped without semantic acceptance
 
@@ -838,7 +838,7 @@ was orderly process termination, **not** the requested 20 healthy research
 loops: no new source candidate reached measurement or keep, and no champion
 advancement was established. The 28 earlier keeps and source history remain
 retained. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
-[active loop handoff](../handoffs/active/autokernel-research-loop.md)
+[active loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 
 The read-only audit found a narrower future diagnostic, not a launch: older
 per-node GLM captures contain zero per-thread timing columns, so they cannot
@@ -847,13 +847,13 @@ profile would be needed before treating either as causal. The handoff records
 that further campaign work needs a new operator instruction; repeated
 abstentions and observation-only runtime arms cannot be counted as source
 research progress. [Monitor record](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md),
-[loop handoff](../handoffs/active/autokernel-research-loop.md),
+[loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop),
 [prior implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Source references
 
 - [GLM v27/v28 monitor and terminal evidence](../progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md)
-- [AutoKernel research-loop execution pointer](../handoffs/active/autokernel-research-loop.md)
+- [AutoKernel research-loop execution pointer](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [Source-aware correctness and observation-route implementation checkpoint](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ## Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
@@ -924,13 +924,13 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - **RB-lineage telemetry is closed on the experimental lane.** The journal commit is `85c7b91e`, and the
   prospective evidence sidecar is `a6288858`. The fields are nullable, and no search policy changed. SC87
   records the write side, and its strict reader is still pending.
-  [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md), intake-1439#record
+  [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), intake-1439#record
 - **The research-loop rows stay open, with a stated boundary.**
   - **Archives.** They keep final attempt and round counts, but not per-idea contexts. A five-idea cap, a
     summarize-every-20 comparison or an ancestor-revert A/B therefore cannot be scored retrospectively.
   - **C6 scanner.** It now refuses explicit benchmark and capture-phase probes (`84aaaf8d`).
   - **Fresh-input checks.** They are opt-in and report-only.
-  - [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md)
+  - [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - **AK-integrity audit: the existing guards cover the basics, and one narrower gap remains.**
   - **What exists.** Hardened `llama-bench` receipts need distinct per-repetition input digests and rotated
     addresses. A versioned reward-hack scan covers the whole candidate diff.
@@ -1034,7 +1034,7 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
 - [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md): source-aware gate, codegen evidence, v23 start and remaining coverage limits.
 - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
-- [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): row checkpoints.
+- [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): row checkpoints.
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): prospective codegen write-side task.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
 
@@ -1076,15 +1076,15 @@ Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25
 
 ### Key findings
 
-- **The Dream-RSI batch: 14 rows, 0 checkbox flips, and a corrected external record.** The operator-approved Stage-4 plan (2026-09-17) filed rows in `autokernel-research-loop` (AK-WM-3, adaptive policy panel, plateau pack, cost-credit, lineage diagnostics, promotion controls, integrity pack), `agent-collab-rnd-harness` (AC-CORAL, AC-branch-per-agent), `autokernel-rebuild-program` (RB-lineage telemetry), `harness-selection-and-integration` (HS-E1), `autopilot-sequential-allocation` (SEQ-4) and `agentic-rocm-kernel-authoring` (AR-RPUCG, AR-ROCm-eval). Explicit declines are on record: all `autopilot-continuous-optimization` mechanics (that handoff is STOPPED since 2026-08-10; restart needs explicit operator permission), the DeltaEvolve→TOC/CF mapping, the guidance-prompt task, monitor rows, HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (≥$1.1k, no decision depends on it). The load-bearing Stage-2 corrections: Dream-RSI's **implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, not Eq. 1**; the `1.22×/1.74×/zero-gradient` figures are companion-README-only; EvoX scores strategies **online only** (no replay); PACEvolve's MBB/CE require a **known target bound**; SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries; and the SwarmResearch 13/15 count is threshold-ambiguous. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [agent-collab-rnd-harness](../handoffs/active/agent-collab-rnd-harness.md))
-- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md), [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
+- **The Dream-RSI batch: 14 rows, 0 checkbox flips, and a corrected external record.** The operator-approved Stage-4 plan (2026-09-17) filed rows in `autokernel-research-loop` (AK-WM-3, adaptive policy panel, plateau pack, cost-credit, lineage diagnostics, promotion controls, integrity pack), `agent-collab-rnd-harness` (AC-CORAL, AC-branch-per-agent), `autokernel-rebuild-program` (RB-lineage telemetry), `harness-selection-and-integration` (HS-E1), `autopilot-sequential-allocation` (SEQ-4) and `agentic-rocm-kernel-authoring` (AR-RPUCG, AR-ROCm-eval). Explicit declines are on record: all `autopilot-continuous-optimization` mechanics (that handoff is STOPPED since 2026-08-10; restart needs explicit operator permission), the DeltaEvolve→TOC/CF mapping, the guidance-prompt task, monitor rows, HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (≥$1.1k, no decision depends on it). The load-bearing Stage-2 corrections: Dream-RSI's **implemented replay reward is App. B.2's `pareto.auc − λ·parallel_penalty`, not Eq. 1**; the `1.22×/1.74×/zero-gradient` figures are companion-README-only; EvoX scores strategies **online only** (no replay); PACEvolve's MBB/CE require a **known target bound**; SimpleTES's "generations" is Dream-RSI's relabeling of evaluator queries; and the SwarmResearch 13/15 count is threshold-ambiguous. ([research-intake-dreamrsi](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+- **The AutoKernel rows are replay-only by construction.** AK-WM-3 evaluates candidate-ordering/branch/stop policies offline against the recorded AK-WM-2a archive under the implemented App. B.2 objective and the prefix-only contract, reporting AUC-frontier as well as endpoint. The adaptive policy panel shadows EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB, τ_S 0.02 / τ_M 0.12) and BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) over recorded histories only, separating the pool effect from the routing effect. The plateau pack ports PACEvolve's portable half (idea cap 5, summarize-per-idea every 20, momentum detector β=0.85 / ε_rel=0.001, α=1.5 ancestor revert vs cold restart; constants ground-truthed at `google/pacevolve @ 22798d9f`). CostAda's cost-calibrated frontier utility and the EvoReplay lineage layer (deterministic line-level cycling detector + 9-label edit taxonomy via a ~40-line `programs.jsonl` adapter) are offline re-scores, with the vidya source row and write-side tuple required **before** the first run. Promotion controls are report-only (N=10 same-prompt replays; post-hoc BO tuning-ceiling probe). ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
 - **SEQ-4 re-folds the stored AutoPilot pool under a bandit allocator, offline.** 141 stored candidates / 393 trials are to be re-scored under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b) a fluid-style portfolio AUC objective (intake-1457), compared against the fixed budget=8 heuristic, reporting AUC-frontier vs endpoint. It deliberately does not touch the human-amendment-only SEQ-3/SEQ-B1 decision or re-arm any gate. ([autopilot-sequential-allocation](../handoffs/active/autopilot-sequential-allocation.md))
 - **The promotion guard's identity rule: an ACTION hash is not a served config, so most what-if promotions were grouping artifacts.** Under rule (b), reproductions were keyed by the action hash; for `seed_batch` and `deep_eval` that hash does not identify what ran — `{"type":"seed_batch","n_questions":10}` covered 394 rows, and all 22 what-if promotions were such runs. `action_identity.row_config_identity` now identifies a served config only from an explicit delta (`structural_experiment` flags, `numeric_trial` resolved params) plus the AP-55 infra digest when recorded, and only identity-bearing clean rows are stamped representatives. After the fix: **rule (b) promotes nothing**; 441 decisions are refused for carrying no served-config identity (seed_batch 331, empty-params numeric_trial 72, deep_eval 18, 20 others); 4 promotions remain (3 seeds plus trial 755 under the frontier rule). Per the operator decision (`f083a0cd`), prompt/code/GEPA mutations are identified by `eval_details.served_content = {"files": {path: sha256}}`, hashed from the served file after the write and before the eval and kept off the action so fingerprints are unchanged; the regime digest is the AP-55 digest **without** the orchestrator HEAD/dirty component but **with** evaluator, kernel, recipe, models and host, so an unrelated orchestrator commit no longer splits a cluster. Rows without a content identity stay non-promotable and nothing is back-filled. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
 - **(c)+(b) are built: clean trials become frontier representatives, and an empty live frontier needs ≥3 comparable reproductions.** The loop fixes the row it will journal before the promotion decision (`_provisional_trial_row`) and passes it to `update_baseline`, so the guard's live archive includes the candidate; clean rows are stamped `eval_details.frontier_admission = "representative"` and cluster by config fingerprint, with one predicate (`row_is_representative_member`) serving replay, snapshot fold, recovery re-import and reproduction counting, and `upsert_representative` for the live archive (`AUTOPILOT_CLEAN_TRIAL_REPRESENTATIVES`, default on). Rule (b) needs `AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO` comparable live-regime reproductions (default 3; values below 2 are refused and fall back to 3), excludes NON_COMPARABLE rows, and promotes the **median** over them, which must still clear the quantum. `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is logged, returned, and written to the trial row and the `baseline_promotion` event. Review fixes: a provider exception or unreadable archive refuses promotion over an existing baseline (`refused_guard_unavailable`); the replay `compare()` restores the logger level; the live archive is built once per call. On the next restart every tier starts under rule (b), and no promotion happens until a config has 3 comparable reproductions in the new epoch. The W3e `-cost` axis drop itself is still open. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [objective-task-rate-goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **Mutation candidates now stage under multitier, with a scoped rollback and an external-change refusal.** Prompt/code/GEPA candidates with a `served_content` sha and an exact restore preimage can be staged (`c12f17f5`); every forced stage re-hashes the served files before the eval and again after it, a change or missing file refuses and rolls back, and `structural_prune` stays out of scope. The Fable review (`25c8e913`) then bounded the rollback: it skips the checkpoint's prompt copytree (`restore_prompts=False`) and attests the file's final on-disk state; if the current sha no longer equals the served sha nothing is written and the candidate is retired `rejected_external_change` with an ERROR log and the `autopilot-multitier-rollback-external-change` alarm; all PromptForge commits are path-limited (`git add -A -- p` + `git commit --only -- p`); the preimage is stripped from snapshots; and rollback retries are capped (3 failures → staging refused, `autopilot-multitier-rollback-stalled` alarm). Tests: 21 for multitier mutation candidates; full suite 13,383 passed / 1 known tripwire failure at review time. ([sub-gate-frontier](../progress/2026-09/2026-09-16-sub-gate-frontier.md), [promptforge-mutation-safety-contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract))
 - **AP-55's seed re-run now has an arming flag, a bootstrap, and bounded attempts.** After the Fable review fix `0e6e2288`, a regime change schedules the seed re-run only when `AUTOPILOT_AP55_SEED_RERUN=1` is set (with seq on or off; unset by default, in which case nothing is fingerprinted on the force path and the seq cadence is unchanged from before AP-55). A tier with no reference draw schedules one (`NO_REFERENCE`) — without it `enforce` would hold forever on `seed_rerun:MISSING` — and a forced re-run whose eval comes back invalid or skipped is retried at most `AUTOPILOT_AP55_SEED_RERUN_MAX_ATTEMPTS` (default 3) times per reference, spaced by `AP55_REGIME_REFRESH_MIN_TRIALS` trial ids, with the deferral and the cap logged and a landing reference draw resetting the count. The observe-only paired diagnostic now changes its `seq_paired_baseline` payload even in shadow mode (it may pair against an older same-regime draw or report no reference) while staying `used_for_gating=False`. AP-55-ARM is filed: read the counterfactual `eval_details.ap55_promotion_gate.hold` rate after one shadow run, then arm enforce plus seed re-runs, and it needs the AutoPilot merge train (`sub/autopilot-train-20260916`, carrying the within-noise hold fix `f76e65cd`) on main first. **The train's integration fix is verified:** every `update_baseline` call site (within-noise, clean-trial `else`, multitier `final_t1`) is under an AP-55 hold, and `tests/unit/test_ap55_hold_call_sites.py` walks `autopilot.py`'s syntax tree to reject any new unguarded call; the final train tip `e12fb691` ran 13,665 unit tests with 0 failures. The push itself was denied by the permission classifier and left for the operator. ([sub-ap55bc](../progress/2026-09/2026-09-16-sub-ap55bc.md), [sub-train](../progress/2026-09/2026-09-16-sub-train.md), [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md))
 
-- **AKU-RED-LOOP filed: the research AutoKernel loop suites are red, and the cause is unclassified.** Under `python3`, `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. The clusters: a `test_serial_run.py` settlement refusal, `ProducerSourceRefused` in 13 errors, `test_seed.py` prompt text, missing `samples_ts`/`n_threads`/`build_commit`, and one test path in a removed worktree. The task is classification first — stale test, code bug, or environment — then fix or delete. A first pass the same day fixed two research-side defects behind `test_autokernel_serving_feedback.py` (the CPU-run fixture wrote a root-level `kernel.c` the allowlist refuses; an accumulator cor-vs-tip compare rebound the planner feedback anchor to the old champion): 13/13 after, 8 research tests cleared, but 28 failures in the dependent suites (serial_run settlement, cor-build `StartupRefused`) predate those fixes and are not covered by the task's clusters. ([autokernel-unified-surface-program](../handoffs/active/autokernel-unified-surface-program.md), [sub-misc](../progress/2026-09/2026-09-16-sub-misc.md), [sub-redtests](../progress/2026-09/2026-09-16-sub-redtests.md))
+- **AKU-RED-LOOP filed: the research AutoKernel loop suites are red, and the cause is unclassified.** Under `python3`, `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. The clusters: a `test_serial_run.py` settlement refusal, `ProducerSourceRefused` in 13 errors, `test_seed.py` prompt text, missing `samples_ts`/`n_threads`/`build_commit`, and one test path in a removed worktree. The task is classification first — stale test, code bug, or environment — then fix or delete. A first pass the same day fixed two research-side defects behind `test_autokernel_serving_feedback.py` (the CPU-run fixture wrote a root-level `kernel.c` the allowlist refuses; an accumulator cor-vs-tip compare rebound the planner feedback anchor to the old champion): 13/13 after, 8 research tests cleared, but 28 failures in the dependent suites (serial_run settlement, cor-build `StartupRefused`) predate those fixes and are not covered by the task's clusters. ([autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [sub-misc](../progress/2026-09/2026-09-16-sub-misc.md), [sub-redtests](../progress/2026-09/2026-09-16-sub-redtests.md))
 
 ### Open questions
 
@@ -1095,11 +1095,11 @@ Two unrelated-looking threads closed the same day. The Dream-RSI batch turned 25
 ### Source References (2026-09-17 Dream-RSI intake and promotion-guard follow-through)
 
 - [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the 25-entry batch record, the Stage-2 corrections, and the decline list.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md): the seven AutoKernel rows with their constants and their observe-only scope.
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md): RB-lineage telemetry.
-- [agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md): AC-CORAL and AC-branch-per-agent.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the seven AutoKernel rows with their constants and their observe-only scope.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): RB-lineage telemetry.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md): AR-RPUCG and AR-ROCm-eval.
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) and [2026-09-16-sub-redtests.md](../progress/2026-09/2026-09-16-sub-redtests.md): the red research AutoKernel loop suites and the AKU-RED-LOOP handover.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) and [2026-09-16-sub-redtests.md](../progress/2026-09/2026-09-16-sub-redtests.md): the red research AutoKernel loop suites and the AKU-RED-LOOP handover.
 - [autopilot-sequential-allocation.md](../handoffs/active/autopilot-sequential-allocation.md): SEQ-4's offline allocation replay.
 - [2026-09-16-sub-train.md](../progress/2026-09/2026-09-16-sub-train.md): the AutoPilot merge train — AP-55 hold coverage at every `update_baseline` call site, the syntax-tree guard, and the final tip's test totals.
 - [2026-09-16-sub-gate-frontier.md](../progress/2026-09/2026-09-16-sub-gate-frontier.md): (c)+(b), the served-config identity fix (`f083a0cd`, `53dea5aa`), multitier mutations (`c12f17f5`, `25c8e913`), and the replay goldens.
@@ -1148,7 +1148,7 @@ The common thread is that AutoPilot could not tell whether a promotion was real.
 
 **Confidence: verified** for the installed zero-compute controls, tested worktree tools, and receipted retirement. This is not a new kernel-speed, serving, production, or live cross-workload keep claim.
 
-**A guard is useful only when the live path reaches it and the candidate cannot control its instrument.** The R24 review found five concrete gaps: the installed hardened bench was unused; the candidate could build its own `llama-bench` and hide undeclared edits; an edit-capable critic could change the tree after review; process-level GPU residency did not prove per-op placement; and a purported determinism gate compared return codes rather than outputs. R24-1 through R24-5 are now wired at the run boundary: candidate arms share a hardening seed and require its receipt, whole-tree/protected-path checks and reward-hack scanning run before build, critics are read-only over delimited candidate data with tree-identity checks, scheduler traces refuse missing or CPU-assigned target-op evidence, and repeated hardened outputs must hash alike. The combined zero-compute verification passed 455 tests and 31 subtests. The advisory anti-gaming prompt, keep-drought and no-measurement alarms, same-code tripwire, randomized near-tie draws, and planner dispatch census remain open; none of these changes authorizes a loop relaunch. ([rebuild handoff](../handoffs/active/autokernel-rebuild-program.md), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
+**A guard is useful only when the live path reaches it and the candidate cannot control its instrument.** The R24 review found five concrete gaps: the installed hardened bench was unused; the candidate could build its own `llama-bench` and hide undeclared edits; an edit-capable critic could change the tree after review; process-level GPU residency did not prove per-op placement; and a purported determinism gate compared return codes rather than outputs. R24-1 through R24-5 are now wired at the run boundary: candidate arms share a hardening seed and require its receipt, whole-tree/protected-path checks and reward-hack scanning run before build, critics are read-only over delimited candidate data with tree-identity checks, scheduler traces refuse missing or CPU-assigned target-op evidence, and repeated hardened outputs must hash alike. The combined zero-compute verification passed 455 tests and 31 subtests. The advisory anti-gaming prompt, keep-drought and no-measurement alarms, same-code tripwire, randomized near-tie draws, and planner dispatch census remain open; none of these changes authorizes a loop relaunch. ([rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
 
 **Cross-workload validation now has a refusal path, but not yet a live keep proof.** The census and footprint producers, full-dirty-set integrity precondition, interim unit-matched `k_delta=1` rule for non-author workloads, and controller refusal on a failed required-source row are installed. Remaining gates include production-workload floors, historical replay/control fixtures, the first live refuse-mode GPU keep, and a composed ValidationBatch/FOLD boundary. A `failed` row is no longer merely an annotation, while `pending` and uncalibrated rows are not converted into passes. ([cross-workload keep gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), [hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md))
 
@@ -1158,7 +1158,7 @@ The common thread is that AutoPilot could not tell whether a promotion was real.
 
 ### Source References (2026-09-16)
 
-- [AutoKernel rebuild handoff](../handoffs/active/autokernel-rebuild-program.md) — R24 guard defects, landed wiring, and still-open advisory rows.
+- [AutoKernel rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R24 guard defects, landed wiring, and still-open advisory rows.
 - [Cross-workload keep-gate handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) — installed refusal logic and outstanding live/calibration gates.
 - [AutoKernel hardening record](../progress/2026-09/2026-09-15-autokernel-hardening.md) — zero-compute tests, control-plane scope, and serial reserve/output controls.
 - [Disk-hygiene design review](../docs/design/autokernel-disk-hygiene-20260915.md) — pre-retirement inventory, lifecycle causes, and prospective recommendations.
@@ -1173,7 +1173,7 @@ The common thread is that AutoPilot could not tell whether a promotion was real.
 (INF-66 / INF-73 / INF-75 handoffs, each receipted). The autopilot and collaboration-harness findings
 are `observation`-grade design records.
 
-**The largest lever on an autonomous optimization loop is not a kernel — it is whether the loop can reproduce its own result.** A month of promotions sat at zero on **five independently-sufficient verified causes**: `"promotion_claim": false` appears 4,797 times and `true` zero times; the benchmark model (`Qwen2.5-Coder-0.5B-Q4_K_M`) has a GGUF header that is actually 132×Q5_0, so the optimized path never dispatched in production; a mean-anchor-vs-median-candidate estimator bias of **+2.01 pp** flipped the sign of **10 of 25** results; the planner had no memory (`RESOLVED 0 · ADOPTED 0`); and the drift bound was raised **0.0308→0.1850 (6.0×)**, which produced every KEEP. The per-commit record on `ak/loop-champion-20260828` was inflated **~20×** — 36 commit messages claiming **+171.7% compounded** against a measured block effect of **+8.524%** (264.918→287.499 t/s, 20 pairs, floor 1.188%). The diagnosis in one line: **the loop chose verification by *proof* where verification by *reproduction* was available** — a `llama-bench` re-run costs 90 s and the tree is a git commit, while proving a run was honest cost 3,869 LOC to deliver one float. ([autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md))
+**The largest lever on an autonomous optimization loop is not a kernel — it is whether the loop can reproduce its own result.** A month of promotions sat at zero on **five independently-sufficient verified causes**: `"promotion_claim": false` appears 4,797 times and `true` zero times; the benchmark model (`Qwen2.5-Coder-0.5B-Q4_K_M`) has a GGUF header that is actually 132×Q5_0, so the optimized path never dispatched in production; a mean-anchor-vs-median-candidate estimator bias of **+2.01 pp** flipped the sign of **10 of 25** results; the planner had no memory (`RESOLVED 0 · ADOPTED 0`); and the drift bound was raised **0.0308→0.1850 (6.0×)**, which produced every KEEP. The per-commit record on `ak/loop-champion-20260828` was inflated **~20×** — 36 commit messages claiming **+171.7% compounded** against a measured block effect of **+8.524%** (264.918→287.499 t/s, 20 pairs, floor 1.188%). The diagnosis in one line: **the loop chose verification by *proof* where verification by *reproduction* was available** — a `llama-bench` re-run costs 90 s and the tree is a git commit, while proving a run was honest cost 3,869 LOC to deliver one float. ([autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program))
 
 - **A floor without its unit is a 1200-fold error.** Within-session arm sd **0.501%** vs between-session process-launch sd **2.793%** (~13× coarser); sizing a THP test on the arm unit produced 4 sessions/side where the session-unit answer is **4,780**.
 - **A floor estimated from n=10 on an extreme order statistic cannot gate.** Bootstrap of n=10 draws from 24 spanned **4.200–7.821%**; recalibrate at n≥24 and record n + a CI. The D8 decode floor was rebuilt by bootstrap to **1.188% at 20 pairs** (superseding 0.067%).
@@ -1181,13 +1181,13 @@ are `observation`-grade design records.
 - **A keep is not a gate until it can refuse or revert.** The required-target validation runs *after* the keep lands, fails only on a decisive negative, and a `failed` aggregate does not refuse the keep — today's row is an annotation, not a gate. ([autokernel-cross-workload-keep-gate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate))
 - **Anchor drift was DVFS**: the card idled at 800 MHz and jumped to 1700 MHz (**2.125×**) at each benchmark window, paid by every `llama-bench` process; pinning clocks resolved it. `libggml-hip.so` is non-reproducible at `-j64` (hipcc gfx90a code-object generation); `-j1` (~13 min) is byte-identical and fixes the anchor guard.
 
-**The single-champion invariant is ratified.** One champion per production kernel tree aggregates **all** work between promotions; seed-from-production is legal only immediately after a promotion; a second lineage is a defect the moment it exists. **A launch recipe is PER-SURFACE** — one champion commit carries two recipes: `GGML_NOHUGEPAGE_PROCESS=1` is adopted on CPU decode but must NOT be added to GPU serving (R23-58 bounded null: `p95_dev` ratio 0.713, p=0.3159, 48 launches/24 couples), and cross-surface transfer was tested and did not transfer. ([autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md))
+**The single-champion invariant is ratified.** One champion per production kernel tree aggregates **all** work between promotions; seed-from-production is legal only immediately after a promotion; a second lineage is a defect the moment it exists. **A launch recipe is PER-SURFACE** — one champion commit carries two recipes: `GGML_NOHUGEPAGE_PROCESS=1` is adopted on CPU decode but must NOT be added to GPU serving (R23-58 bounded null: `p95_dev` ratio 0.713, p=0.3159, 48 launches/24 couples), and cross-surface transfer was tested and did not transfer. ([autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program))
 
 **The contention channel is DRAM bandwidth, not cores.** Prefill stayed flat (±2%) while decode fell 7%; mutual degradation was **4.2× / 2.9×** with both sides correctly pinned; a third-party disturbance cost **~17% in arms**. No CPU-occupancy screen can see it — the case for admission control over cooperative locking ("region-lock serialises those who call it; nothing constrains those who don't").
 
 **Autopilot findings** (`observation`, design): per-role evaluation replaced a 3-way eval whose Q-values were **96% uniform after 7,211 decisions**; GEPA was a **guaranteed no-op** (`propose_new_texts` raised `NotImplementedError`); a permanently-red check is indistinguishable from an absent one (autokernel-guards red on **43/43 runs** on `No module named pytest`); and a test can cover all the machinery without touching whether it is *reached* (`sub_decision` 0 of 642,328 rows; `binding_router` dead at three layers). ([autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md))
 
-**Agent-collaboration harness** (`observation`): **Agent Collapse** — agents converge on a narrow axis set and avoid the hard custom-kernel wins — is the headline risk; layered/rotating quality gates defeat metric-gaming, taskforces+channels defeat collapse, and trace sharing defeats repeated dead-ends. ([agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md))
+**Agent-collaboration harness** (`observation`): **Agent Collapse** — agents converge on a narrow axis set and avoid the hard custom-kernel wins — is the headline risk; layered/rotating quality gates defeat metric-gaming, taskforces+channels defeat collapse, and trace sharing defeats repeated dead-ends. ([agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
 
 ### Open Questions (2026-09-15)
 
@@ -1196,11 +1196,11 @@ are `observation`-grade design records.
 
 ### Source References (2026-09-15)
 
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — the five zero-promotion causes, the 20× inflated per-commit record, the floor-unit and DVFS root causes.
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — the single-champion invariant, per-surface recipe, and the DRAM-bandwidth contention channel.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — the five zero-promotion causes, the 20× inflated per-commit record, the floor-unit and DVFS root causes.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the single-champion invariant, per-surface recipe, and the DRAM-bandwidth contention channel.
 - [autokernel-cross-workload-keep-gate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) — the cross-workload sign flip and the keep-is-not-a-gate finding.
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — per-role evaluation, the GEPA no-op, and the red-check/reachability defects.
-- [agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md) — Agent Collapse and the layered-gate / taskforce / trace-sharing patterns.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — Agent Collapse and the layered-gate / taskforce / trace-sharing patterns.
 
 ## Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
 
@@ -1265,12 +1265,12 @@ the deadlock only became visible on a surface where candidate payoff is genuinel
 
 Sources: [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
 (§ *GLM planner/critic formation-payoff deadlock*),
-[Unified-surface program handoff](../handoffs/active/autokernel-unified-surface-program.md), and
+[Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), and
 `epyc-inference-research` `5ac7b7e4`.
 
 ### Source References (2026-09-14 GLM continuous acceptance)
 
-- [Unified-surface program handoff](../handoffs/active/autokernel-unified-surface-program.md) — the 2026-09-14 acceptance paragraph, AKU-12d (done) and AKU-12e (open).
+- [Unified-surface program handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the 2026-09-14 acceptance paragraph, AKU-12d (done) and AKU-12e (open).
 - [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) — per-state composition, digests, final mechanism, the loop-49 cadence gate and runtime disposition.
 - [GLM-5.3 AutoKernel reference](../docs/reference/models/glm53-autokernel-handoff.md) — the continuous result section, the published accumulator branch and the non-admission statement.
 - [2026-09-11 AutoKernel progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — the preceding five-loop GLM trial this run extends.
@@ -1314,7 +1314,7 @@ classifies it as `serial_router` / `complete`.
 
 ### Source References (2026-09-10 unified implementation)
 
-- [Unified-surface implementation handoff](../handoffs/active/autokernel-unified-surface-program.md) — exact controller, LOO, resource, dry-run and acceptance contracts.
+- [Unified-surface implementation handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — exact controller, LOO, resource, dry-run and acceptance contracts.
 - [Unified implementation progress](../progress/2026-09/2026-09-10-autokernel-unified-20260908.md) — commits, test totals, hardware outcomes and live dashboard verification.
 - [Final mixed-campaign progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — exact v6 state, outcomes, artifact hashes, recovery repair and live dashboard closure.
 - [GLM CPU optimization report](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — preliminary GLM kernel lineage, measured rates and admission limits.
@@ -1350,7 +1350,7 @@ by this planning session. The next step is iteration on that notebook, not execu
 
 ### Source References (September 8 close-out and autonomy design)
 
-- [Unified-surface handoff, §8](../handoffs/active/autokernel-unified-surface-program.md) — accepted preferences, explicit authority boundary and implementation proposals.
+- [Unified-surface handoff, §8](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — accepted preferences, explicit authority boundary and implementation proposals.
 - [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — current assembled identity and separate record/production gates.
 - [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — serving repeat, fold gates and final retest dispositions.
 - [Rescued-ref consolidation audit](../docs/design/champion-consolidation-audit-20260908.md) — corrected provenance and candidate/refuted/must-not-fold distinctions.
@@ -1467,7 +1467,7 @@ build and runs per-keep only, while lane builds stay `-j64`.
 
 ### Source References (2026-09-04 AutoKernel serving re-architecture)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66; R23-40
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66; R23-40
   (`-j1` fix), R23-42 (bench→serving non-transfer), R23-43 (serving re-architecture), R23-44
   (compound-then-gate two-tier champion).
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
@@ -1547,13 +1547,13 @@ recoverable (D14) and is not worth the device time. Run 18 was live at compile t
 
 ### Source References (2026-08-30 AutoKernel runs 11–18)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66, the
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, the
   program of record: CURRENT STATE, the phase ledger P0–P7, and the D1–D3 operator decisions.
 - [Run 11–18 chronology](../progress/2026-08/2026-08-30.md) and
   [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-by-run counters and defects D7–D14.
 - [Surface and CI half of the day](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
   CI-never-ran finding, the suite-floor guard, and the deploy-path correction.
-- [AutoKernel restart-and-strip rider](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — INF-64,
+- [AutoKernel restart-and-strip rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — INF-64,
   the predecessor campaign this rebuild replaces.
 - [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
@@ -1622,9 +1622,9 @@ pipe, which independently produced a false "process gone" reading in the same in
 
 ### Source References (2026-08-27 AutoKernel audit and v28 launch)
 
-- [AutoKernel restart-loop fix rider](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the four
+- [AutoKernel restart-loop fix rider](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — the four
   fixes, the v28 launch identities, the verified-dead module list, and the remaining disk-expiry task.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the parent campaign
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the parent campaign
   handoff whose v3→v27 history is the zero-science record analysed here.
 - [Audit session progress](../progress/2026-08/2026-08-27-autokernel-audit.md) — self-contained
   chronology: audit findings, v27 stop, disk reclamation, v28 launch, first disposition, and the
@@ -1747,7 +1747,7 @@ that the later GPU phase failed to run.
 
 ### Source References (2026-08-20 v19 checkpoint)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
 - [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — sibling runtime campaign boundary and write-side evidence requirement.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
@@ -1847,7 +1847,7 @@ problem" (which is how they get closed by mistake), never left as prose a planne
 
 ### Source References (2026-08-18 sealed controller)
 
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the 2026-08-16
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the 2026-08-16
   checkpoint: merge/tip/bundle/graph identities, the 303/303 gate, the spend set, AK-RSM-1 /
   AK-RUN-V3 / AK-ADM-1, the §22 AK-QL closures, and the staged AK-RUN-2 prep.
 - [`progress/2026-08/2026-08-16-inference.md`](../progress/2026-08/2026-08-16-inference.md) — the
@@ -1994,7 +1994,7 @@ by the hardened absolute-path contract.
 
 ### Source References (2026-08-13 sequencer reconciliation)
 
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-RUN-3
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-RUN-3
   element-by-element verification and original restoration pointer.
 - [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — independent
   premise check and focused-test result.
@@ -2013,7 +2013,7 @@ The first completed intervention attempt still did not become evidence. R29 reac
 ### Source References (2026-08-13 CPU IQK checkpoint)
 
 - [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — frozen-v9 operating boundary and campaign authority.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — f744 instrument, control bundle, r25-r29 dispositions, and fresh-pair gate.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — f744 instrument, control bundle, r25-r29 dispositions, and fresh-pair gate.
 - [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — self-contained empirical checkpoint and exact residual work.
 
 ## Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
@@ -2039,7 +2039,7 @@ can unlock the 7/7 availability-conditioned panel.
 ### Source References (2026-08-12 governed pilot)
 
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — exact r1-r12 failure chain, authority boundary, and retry gates
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
 
 ## Compiled Update — 2026-08-12: a terminal pilot proves execution compatibility, not comparative merit
@@ -2062,7 +2062,7 @@ comparative conclusion.
 ### Source References (2026-08-12 terminal pilot)
 
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-10 system-level authority disposition
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-10 system-level authority disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
 **Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
 **Sources**: 101+ documents
@@ -2105,7 +2105,7 @@ The five-control acceptance run that *did* execute passed **5/5** at a 3% contri
 ### Source References (2026-08-12, second pass)
 
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) — the GEAK substrate synthesis behind the compile round-trip.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the diagnostic controller speedups and the licensing block in session context.
 
@@ -2181,7 +2181,7 @@ AutoPilot's sequential-allocation policy carries a live tension: the underlying 
 
 ### Source References (2026-08-11)
 
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the sandbox/input-rotation/roofline hardening checkpoint (AK-TR-4/5, AK-X-3/5/6)
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the sandbox/input-rotation/roofline hardening checkpoint (AK-TR-4/5, AK-X-3/5/6)
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the AutoKernel non-inference hardening checkpoint narrative
 - [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md) — the v10 multi-tier baseline seal and consolidated ratifier
 - [`handoffs/active/autopilot-sequential-allocation.md`](../handoffs/active/autopilot-sequential-allocation.md) — SEQ-A0, the neutral `sticky_refuted` mechanism, and the still-open SEQ-A1 operator decision
@@ -2904,7 +2904,7 @@ now typed inputs rather than ambient assumptions.
 
 ### Source References
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [AutoPilot continuous optimization](../handoffs/active/autopilot-program.md)
 - [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
 - [Objective task-rate goodput](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput)
@@ -2932,7 +2932,7 @@ matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
 
 ### Source References
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — owning tasks, archive gate, and empirical remainder
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — owning tasks, archive gate, and empirical remainder
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact commands, artifact hashes, and validation
 - [System-wide inference-kernel optimization program](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — autonomy and evidence-boundary design
 
@@ -2950,7 +2950,7 @@ matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
 
 - **Paper-vs-code disagreement on a load-bearing constant is the reusable caution.** The published parent-selection weights (`1.0/0.6/0.3`, appearing only in case-study prose) **ship nowhere**; the released configuration uses `1.0/0.4/0.25`, present in two places, and the island machinery the paper describes is inert in every shipped profile. Any port must take the shipped values, and the general rule is to read the config before porting a number from a paper's narrative. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), intake-1024, intake-940#02.
 
-- **An execution sandbox can be professionally built and still not be a sandbox.** A purpose-built distributed grading service — controller, dispatcher, router, containerized workers with CPU/memory/device limits — launches **every** worker with seccomp disabled, on containers whose entire job is running untrusted model-generated code; and a file in the same project named for a sandbox, documented as executing "inside the configured OS sandbox", performs an in-process module exec with no isolation at all. The durable lesson for our own harness-sandbox criteria is that *"runs in a container"* is not *"sandboxed"*, and acceptance criteria must name syscall confinement explicitly. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), intake-1028.
+- **An execution sandbox can be professionally built and still not be a sandbox.** A purpose-built distributed grading service — controller, dispatcher, router, containerized workers with CPU/memory/device limits — launches **every** worker with seccomp disabled, on containers whose entire job is running untrusted model-generated code; and a file in the same project named for a sandbox, documented as executing "inside the configured OS sandbox", performs an in-process module exec with no isolation at all. The durable lesson for our own harness-sandbox criteria is that *"runs in a container"* is not *"sandboxed"*, and acceptance criteria must name syscall confinement explicitly. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), intake-1028.
 
 ## Compiled Update — 2026-08-10: a baseline becomes an authority only at a deliberate promotion boundary
 
@@ -3034,7 +3034,7 @@ threshold peeking.
 
 ### Source References
 
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — §21 (AK-TR-1…6 transfer machinery, AK-LN-1…5 screening lanes, AK-BH-1…3 baseline honesty, AK-OP-1/2 operator-only)
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — §21 (AK-TR-1…6 transfer machinery, AK-LN-1…5 screening lanes, AK-BH-1…3 baseline honesty, AK-OP-1/2 operator-only)
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — AK-PT-1 per-turn productivity accounting; AK-LE-1…5 loop-engineering experiments
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the oracle and reward-integrity side of the same design
 - [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
@@ -3054,7 +3054,7 @@ entry point uses.
 
 ### Source References
 
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a durable producer state and empirical next action
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-WM-2a durable producer state and empirical next action
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact v4 artifact identities and validation results
 
 ## Compiled Update — 2026-08-12: a narrow sandbox probe does not prove the full controller cell
@@ -3082,7 +3082,7 @@ Expected failure output is not evidence that discovery aborted.
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 differential and fresh-attempt gate
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AutoKernel completion audit and evidence-authority boundary
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AutoKernel completion audit and evidence-authority boundary
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats
 
 ## Compiled Update — 2026-08-12: bind self-referential sandbox paths to the process that consumes them
@@ -3109,7 +3109,7 @@ carry a second implementation of it inside the confined process.
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — matched-archive dependency and separation from AK-WM-2 evidence
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — matched-archive dependency and separation from AK-WM-2 evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence
 
 ## Compiled Update — 2026-08-12: broker authority and semantic task state need explicit interfaces
@@ -3142,7 +3142,7 @@ broaden those contracts in opposite directions.
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning r9-r11 checklist, next terminal gate, and authority boundary
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — separation from the matched-archive and champion gates
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — separation from the matched-archive and champion gates
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence
 
 ## Compiled Update — 2026-08-12: feedback is part of the loop only when the next planner consumes it
@@ -3176,7 +3176,7 @@ these implicitly turns a successful model/evaluator sequence into a late non-ter
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — feedback-memory completion evidence and separation from archive/champion authority
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — feedback-memory completion evidence and separation from archive/champion authority
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r12/r13 receipts, hashes, measurements, failure paths, and teardown evidence
 
 ## Compiled Update — 2026-08-12: repair derived evidence semantics before spending the empirical run
@@ -3197,7 +3197,7 @@ spending the measurement window.
 
 ### Source References
 
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a task-level repair contract and real-archive boundary
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-WM-2a task-level repair contract and real-archive boundary
 - [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — live pre-reboot ordering and refusal posture
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — audit finding-to-task mapping and no-inference wrap boundary
 
@@ -3228,7 +3228,7 @@ implementation gap.
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 live checkpoint and terminal receipt-chain gate
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14 and AK-WM repair disposition
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14 and AK-WM repair disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary
 
 ## Compiled Update — 2026-08-12: immutable source identity is part of the campaign
@@ -3257,7 +3257,7 @@ still wait on the post-reboot completed campaigns.
 ### Source References
 
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 terminal refusal and immutable r15 receipt-chain gate
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14/15 and completed deterministic pair-producer task
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-AUD-14/15 and completed deterministic pair-producer task
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes
 
 ## Compiled Update — 2026-08-22: deployment identity must bind logical content, not paths — and a durable supervisor is proven only by surviving its launcher's death
@@ -3361,7 +3361,7 @@ history. Ordering an event stream by wall time is not enough — **precedence mu
 ### Source References
 
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — primary chronology: v20–v24 forensic terminals, all repair/product commit ids, suite counts, dashboard lineage, and the explicit v25/CPU-TP in-flight boundaries
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — standing campaign handoff; the v18/v19 identities and typed-refusal repair boundary this update extends
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — standing campaign handoff; the v18/v19 identities and typed-refusal repair boundary this update extends
 - epyc-inference-research `b62d63f8f9caecac597ebd9f1b3b7b098623dc71` / `b12c672af1f205ae0262f6de8f8ea30e04cf779e` / `8022aa764d0bdae06064033cfddac8aa78f24af6` / `a0fdad399bbbf050180c1c69423479e1b8b14be6` — promoted repair products cited by the source (graph v5, dual-identity carrier, `run_build` boundary test, verdict disposition)
 - epyc-root `130d41c5688a41e4f93df3720c15a011cb1fe646` / `35c2663d1e4331b7df21889a439eadd68cdb0fc8` / `7752ed72d6fd0388b2c886a2176503f6cffb5aaa` — audited dashboard commits (strict grammars, v2 build-receipt adapter, lineage-typed refusal precedence)
 
@@ -3432,7 +3432,7 @@ production v9 was not modified, rebuilt, or executed anywhere in this window.
 
 ### Source References (2026-08-23 v27 loop state)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the v27 restart
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the v27 restart
   checkpoint: science 0/10, the `a7aaa47a` provider-policy skip, AK-V27-C6/PERF/DASH/10 rows, and
   the audited foundations list.
 - [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — the durable branch map with
@@ -3522,7 +3522,7 @@ Closing one half and reporting the loop as available is a category error, not a 
 
 ### Source References (2026-08-28)
 
-- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — the DF2 gates the champion carries
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
@@ -3556,42 +3556,42 @@ caught the class.
   A loop's own health signal must be a property of its *results distribution*, not of its throughput.
   A regime in which the best achievable outcome is below the keep threshold is detectable from the
   rows alone and is invisible to every liveness check.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **The state a long-running loop mutates about itself is the state to re-verify after mutating it.**
   The fix that landed is a post-promotion A/A guard: after every promotion, the new anchor is benched
   against a freshly built champion and must read inside the noise floor, else the run aborts. The
   promotion path was also changed from moving a binary to **building** one and writing a
   `provenance.json` beside it — the previous path installed an artifact whose identity nothing
   recorded, which is precisely the hole the forensics fell into.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A guard is inert if its abort is laundered into an ordinary error.** The run-ending exception was
   being caught by a blanket handler and filed as a per-iteration fault, so the loop drew the next
   iteration and continued. Re-raise before the blanket handler, and — where the mutated state is
   *shared* across lanes — end the run rather than the lane: a refused anchor voids every lane's next
   measurement, continuous runs included.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **Refuting three hypotheses is not a licence to ship the fourth.** No fix was written for the
   unidentified mechanism, because a fix for a cause that has not been identified is
   indistinguishable from a coincidence — and the one probe that did run pointed the *wrong way*
   (the anchor slot benched ~2.8% faster than a clean champion build) on a single unpaired sample
   near the noise floor, so it was explicitly recorded as not-a-finding.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A decision package can be closed by measuring the thing it was justified by.** A proposal to add
   a lighter screening tier below T0 was declined on measurement rather than deferred: the four
   preconditions it proposed to drop are **not implemented in the rebuilt loop at all**, so the
   time-saving that justified it is 0.0 s per iteration. What survived was a different question
   (conformance — the loop produces records no ratified tier authorizes), which needs its own framing
   rather than inheriting the original request's.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **An approved amendment does not deliver a capability.** The ranking amendment was approved, but the
   flag it unlocks is a defaulted-`False` parameter that **no production call site passes** — the only
   caller that sets it true is a unit test. The handoff had claimed the store "already ships" it.
   Ratification and implementation are two separate deliverables and must be tracked as two.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ### Source References (2026-08-30, run 18)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the run-18 split table and the six-hour detection gap; the R18 section (R18-L1 the guard and the abort-propagation fix, R18-B the open forensics, R18-G the unbuilt ranking capability); the operator decision package with D1 approved / D2 declined on measurement / D3 shipped.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — CURRENT STATE: the run-18 split table and the six-hour detection gap; the R18 section (R18-L1 the guard and the abort-propagation fix, R18-B the open forensics, R18-G the unbuilt ranking capability); the operator decision package with D1 approved / D2 declined on measurement / D3 shipped.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §2 (the collapse and the three refuted hypotheses), §3 (what landed instead), §7 (the decisions), §8 (the two declines).
 
 ## Compiled Update — 2026-08-31: one champion per tree — a lineage fork becomes doctrine, and a STOP that kept spending
@@ -3639,7 +3639,7 @@ precompiled branch.
 
 Sources:
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — the R21 block (R21-L1..L5, the open follow-ups, the declines); CURRENT STATE.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — the R21 block (R21-L1..L5, the open follow-ups, the declines); CURRENT STATE.
 - [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the reconciled single-champion standing.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §1 (the incident and the ruling), §2 (run 20), §4 (the research commits), §6 (the process rulings).
 
@@ -3682,7 +3682,7 @@ gates live in code (cf. the single-champion startup refusal).
 
 - Research `a95581c8` (run-22 prep + flag admission), `8179dde0` (serving-evidence refresh
   runbook, claim-held).
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 (pilot sub-items), R21-6.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L6, R21-5 (pilot sub-items), R21-6.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10, §14.
 
 ---
@@ -3785,7 +3785,7 @@ protocol; it is not silently promoted into either a clean result or a universal 
 
 ### Source References (2026-09-08/09 unified AutoKernel)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   current design, authority boundaries, implementation ledger and still-open parent tasks.
 - [`2026-09-08-autokernel-plan.md`](../progress/2026-09/2026-09-08-autokernel-plan.md) — planning,
   final-session audit and the corrections that preceded implementation.
@@ -3812,11 +3812,11 @@ name an unavailable diagnostic as mandatory admission evidence.
 
 ### Source References (2026-09-14 AutoKernel formation correction)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   AKU-12f root cause, retained safety grounds, implementation identity and live deployment boundary.
 - [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) —
   observed batch sequence, Qwen comparison, validation result and operational campaign correction.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — actor preparation,
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — actor preparation,
   context and refusal-feedback boundary that the live planner/critic contract implements.
 
 ## Compiled Update — 2026-09-15: an accumulator screen is not a champion-promotion result
@@ -3839,7 +3839,7 @@ remains frozen; the live batch is an operational health monitor, not authority t
 
 ### Source References (2026-09-15 GLM recovery and trajectory scope)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
   — AKU-12g/h completed checkpoint, AKU-12i operational remainder and production boundary.
 - [`2026-09-15-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-15-autokernel-unified-20260908.md)
   — exact recovery commits, 26-keep checkpoint and dashboard commit.
@@ -3924,7 +3924,7 @@ Published rates for this behaviour:
 | intake-1396#record (ImpossibleBench) | Read-only or reverted tests cut test-edit cheating (Opus 4.1 50% → 1%) but leave special-casing and operator overloading (GPT-5 54% → 39%). An abort option cut GPT-5 cheating 54% → 9%. LLM transcript monitors caught only 42–65% on SWE-bench-shaped tasks. | Immutability is necessary but not sufficient. A legitimate "cannot do" exit is itself a mitigation. An LLM monitor is not a keep gate. |
 | intake-1395#record (BAITBENCH) | Planted optional data shortcuts were taken in 57.1% of judged runs. A validity-rule prompt reduced that by only 6.2 pp. | Instruction text is not a fix. The held-out gap separates hacks from honest runs. |
 
-Filed remedies, all in [the unified-surface program](../handoffs/active/autokernel-unified-surface-program.md):
+Filed remedies, all in [the unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program):
 
 - **S3-AKU-15 (AK-RH-1).** The dirty set must equal the declared set, restricted to a kernel-source
   allowlist. Oracle and bench sources are immutable, and the kept commit must equal the measured tree.
@@ -3966,11 +3966,11 @@ gate).
 
 ### Source References (2026-09-15, research-intake noninf-20260914)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   *Research-intake 2026-09-15 — judge/critic hardening* (S3-AKU-01/05/15/16/17/18) and S3-AKU-08 inside U3-SEED.
 - [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) —
   §7.1 AK-RH-1 integrity precondition; §2.3/§8.5 the annotation-vs-gate upgrade of the required-source aggregate.
-- [`agent-collab-rnd-harness.md`](../handoffs/active/agent-collab-rnd-harness.md) — S3-ACH-01 action-layer
+- [`agent-collab-rnd-harness.md`](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — S3-ACH-01 action-layer
   plan gate (orx `plan_gate` pattern).
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) —
   AP-63 orx-refill preconditions, AP-66..68 proposer/crash rows.
@@ -4030,7 +4030,7 @@ dives found four of ours that nothing reads:
 | read-only critic | — | critic runs `--dangerously-skip-permissions` in the lane worktree under a "make edits directly" note |
 | determinism gate | `loop/gates.py:127-150` | nothing; and it compares return codes, never outputs |
 
-Filed as R24-1..R24-5 in [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md),
+Filed as R24-1..R24-5 in [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program),
 with RVP-C6-26 for the within-pair content-memo hole in the hardened bench itself.
 
 ### Two mechanisms worth adopting, both warranted by our own history rather than theirs
@@ -4063,7 +4063,7 @@ every NVIDIA/B200 kernel technique.
 
 - [`research/deep-dives/mlsys26-contest-loops-vs-autokernel.md`](../research/deep-dives/mlsys26-contest-loops-vs-autokernel.md)
   — the full pattern-by-pattern comparison, the corrections list, and the "do not cite for" list.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) § R24 — R24-1..11 and the
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) § R24 — R24-1..11 and the
   dated declined block.
 - `research/intake_index.yaml` — intake-1425#record … intake-1434#record.
 
@@ -4088,8 +4088,8 @@ Autonomous-science claims need separate grades for execution success, artifact c
 
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
 - [Autopilot sequential allocation](../handoffs/active/autopilot-sequential-allocation.md)
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
-- [Agent collaboration R&D harness](../handoffs/active/agent-collab-rnd-harness.md)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- [Agent collaboration R&D harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Reviewer calibration accounting](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-calibration-accounting)
 
@@ -4141,7 +4141,7 @@ new backend.
 ### Source References
 
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — dedicated worktrees, recovery, disposition retention, and gate-loss record.
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — prompt-overhead and planner-timeline measurements.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — prompt-overhead and planner-timeline measurements.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign resume and re-anchor state.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day chronology and censored comparison.
 
@@ -4199,7 +4199,7 @@ Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live o
 
 ### Source References
 
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-23..OAB-28.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-23..OAB-28.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C35..C44.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md).
 
@@ -4274,7 +4274,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — timeline, failure-class table, store counts, attribution, prevention map.
 - [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the incident record and the rules it fed.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C39 (first keep), DS41-C45..C48.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-29..OAB-32 filed from the retrospective.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-29..OAB-32 filed from the retrospective.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the keep and the post-keep findings.
 - epyc-inference-research commits `eae75696` (COR continuation), `36ebe3a7` and `846bef21` (resume carry-forward), `77f8bf58`, `7037165f`, `b8d6a046`, `2a060a41`.
 
@@ -4295,7 +4295,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 
 ### Source References
 
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-22 result, the start-here next steps.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-22 result, the start-here next steps.
 - [CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-09-26 ~19:40Z DS41 posture block.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — Evening: run 10j, the CPU windows.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) and its [completed-through-2026-09-26 sibling](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-26.md) — the INF-77 compaction.
@@ -4320,8 +4320,8 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 ### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — keep 2, DS41-C42/C47/C53/C55/C56/C59/C63/C64/C65.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-33, OAB-34.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the gate-lifted note on the MMQ seed set.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33, OAB-34.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the gate-lifted note on the MMQ seed set.
 - [Kernel-research protocol](../measurement/protocols/kernel-research.md) and [MEASUREMENT.md](../MEASUREMENT.md) — the ratified P-AK-SEARCH-1-A4 text.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — results, research commits, governance, disk.
 
@@ -4353,9 +4353,9 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C52 park, DS41-C66, DS41-C67 and the triage follow-ups.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § DS41-C66, § DS41-C67.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — the OAB park notes.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — the OAB park notes.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — V6R-4c park (loader team follows threads).
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — MMQ seed park notes.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — MMQ seed park notes.
 
 
 ## Compiled Update — 2026-09-29: the planner, not the CPU, was the DS41 bottleneck — and a steering rule made both lanes abstain
@@ -4384,7 +4384,7 @@ continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C69 through DS41-C77.
 - [2026-09-28 ak-ds41-main progress](../progress/2026-09/2026-09-28-ak-ds41-main.md) — DS41-C69 governance finding and dry check, C70–C72 session comparisons and rejected alternatives.
 - [2026-09-29 ak-ds41-main progress](../progress/2026-09/2026-09-29-ak-ds41-main.md) — DS41-C73–C76, the arm B per-call table and arm A baseline.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-34 premise change for the planner cap.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-34 premise change for the planner cap.
 
 
 ## Compiled Update — 2026-10-03: DS41 runs on external planners, and the bench keeps stopped adding up
@@ -4467,7 +4467,7 @@ The 2026-10-20 AutoKernel-methodology intake (records `intake-1980#record`, `int
 
 ### Source References (2026-10-20 AK methodology)
 
-- [AutoKernel research loop handoff](../handoffs/active/autokernel-research-loop.md) — AK-HR-1/2/3 and the M1-M5 monitor prose.
+- [AutoKernel research loop handoff](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2/3 and the M1-M5 monitor prose.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-HISTORY write-side capture.
 - [AutoKernel cross-workload keep gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) — deployment-gap fixture trigger record.
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — batch scope and dispositions.
@@ -4511,9 +4511,9 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Prospective actor metrics writer has 34 controls, but four historic exports are absent and the original acceptance remains open. One private export reports 29,003 reasoning tokens estimated from characters across six steps, not native token usage; decoded count overlaps reasoning. [Source](../handoffs/active/autokernel-orchestrator-actor-backend.md)
-- Current controller/execution triage classified 71 unique test/subtest IDs; focused alias repairs passed, but the entire suite was not rerun. R18 compiler-identity forensics explains 141 pairs via matching double hashes and relocation; full symbol identity and production-recipe verification remain false. [Source](../handoffs/active/autokernel-rebuild-program.md)
-- AK-PM-12 reopened: initial schema and tests did not wire an operational producer. A subsequent labeled-control producer exists, but arbitrary ceiling and uncaptured producer bytes do not establish operational admission; workload-specific ceiling remains missing and submissions UNKNOWN. [Source](../handoffs/active/autokernel-research-loop.md)
+- Prospective actor metrics writer has 34 controls, but four historic exports are absent and the original acceptance remains open. One private export reports 29,003 reasoning tokens estimated from characters across six steps, not native token usage; decoded count overlaps reasoning. [Source](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
+- Current controller/execution triage classified 71 unique test/subtest IDs; focused alias repairs passed, but the entire suite was not rerun. R18 compiler-identity forensics explains 141 pairs via matching double hashes and relocation; full symbol identity and production-recipe verification remain false. [Source](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- AK-PM-12 reopened: initial schema and tests did not wire an operational producer. A subsequent labeled-control producer exists, but arbitrary ceiling and uncaptured producer bytes do not establish operational admission; workload-specific ceiling remains missing and submissions UNKNOWN. [Source](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - AP-66 finite-table replay at 100 calls reported mean rule-infeasible rates .782/.754/.754 for FAIL/raw/bounded and .191 for qLogNEHVI; at 50 calls FAIL/raw/bounded all .828, so no 50-call improvement. Ten seeds, 20-row matched starts, native table hits and joint-row repair constrain interpretation; live optimizer gain is unproven. [Source](../handoffs/active/autopilot-program.md)
 - Refutation capture now carries observed k_rate for new records and reconstruction, preserving legacy fallback where counts are absent; 36 controls, policy thresholds unchanged (orchestrator bd2f7105). [Source](../handoffs/active/autopilot-sequential-allocation.md)
 
@@ -4524,11 +4524,11 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 - AKX-P4a (per-keep dashboard card) landed: workload x {INERT(T0/T1)/TOUCHED/UNKNOWN} matrix with row verdicts and a refusal remedy; Research `12c5b907`, ROOT `e67dd91a`. 47 Research tests (+2 subtests) and 6 ROOT tests passed; absent/stale/malformed/unbound screens stay UNKNOWN. SC81 producer adoption and the canary stay open. [keep-gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), [progress](../progress/2026-11/2026-11-01-codex-ni-akx-p4a.md)
 - AKX-AUTO-8 (every lane has a watchdog by construction) ticked: serial/standalone/direct-CLI entries build a supervisor by default, and serial children must prove the inherited store-lock FD and live parent/supervisor identity. Non-restartable providers refuse before lane action. Compatibility selection: 307 passed, 19 skipped, 1 runtime-interruption failure reproduced at the unchanged base. [all-devices](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - AKX-ALL8 C5 declared-floor r4 is a harness FAILED-RUN (rc=127): the launcher could not execute `region-lock` at the `/workspace/repos/...` path in the host namespace. The 24+24 predeclared A/A pairs were never established, so there is no floor, gain, keep or CAS decision. [all-devices](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
-- Unified surface: the U3-EXPRESS audit (24 pre-fix cases: 8 pass, 12 fail, 4 error) closes the audit deliverable, not recipe readiness. `Bundle.surface`/per-surface stores and stale-baseline-on-COR-advance landed under test. [unified-surface](../handoffs/active/autokernel-unified-surface-program.md)
-- Rebuild program P6 (reconnect surfaces) completed: 535 tests + 181 subtests passed with 4 unchanged baseline navigation failures; P6.5 retired `/api/kernel*`; P6.8 restored lost render coverage. R18-A-CUID-FORENSICS published a per-TU `-cuid=` replay tool and a causal report on the 141 host CUID changes. No live reload, inference or measurement claim. [rebuild](../handoffs/active/autokernel-rebuild-program.md)
-- The offline lineage detector is aligned to pinned EvoReplay `1773db16`; a synthetic fixture moved from (4 added, 2 recycled) to upstream's (4, 1). No real authoring-bound cohort exists, so AK-lineage diagnostics stay open. [research-loop](../handoffs/active/autokernel-research-loop.md), [progress](../progress/2026-11/2026-11-01-lineage-parity.md)
+- Unified surface: the U3-EXPRESS audit (24 pre-fix cases: 8 pass, 12 fail, 4 error) closes the audit deliverable, not recipe readiness. `Bundle.surface`/per-surface stores and stale-baseline-on-COR-advance landed under test. [unified-surface](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
+- Rebuild program P6 (reconnect surfaces) completed: 535 tests + 181 subtests passed with 4 unchanged baseline navigation failures; P6.5 retired `/api/kernel*`; P6.8 restored lost render coverage. R18-A-CUID-FORENSICS published a per-TU `-cuid=` replay tool and a causal report on the 141 host CUID changes. No live reload, inference or measurement claim. [rebuild](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
+- The offline lineage detector is aligned to pinned EvoReplay `1773db16`; a synthetic fixture moved from (4 added, 2 recycled) to upstream's (4, 1). No real authoring-bound cohort exists, so AK-lineage diagnostics stay open. [research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [progress](../progress/2026-11/2026-11-01-lineage-parity.md)
 - Actor seat capture and CPU-window bus publication now use the shared ROOT resolver (70 + 9 controls passed); CPU-lock owner discovery stays separate by design. [progress](../progress/2026-11/2026-11-01-ak-root-consumers.md)
-- REPL-EMB-5.1 SEARCH primitive published (`ScoutSearch`, lexical BM25 pointer records, never dereferences pointers); wiring and retrieval quality are not established. OAB-31 discard-invariant test ticked (model-free). [actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md)
+- REPL-EMB-5.1 SEARCH primitive published (`ScoutSearch`, lexical BM25 pointer records, never dereferences pointers); wiring and retrieval quality are not established. OAB-31 discard-invariant test ticked (model-free). [actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)
 - C5-14 (AutoKernel added to the controller roster) is docs-only (`ARENA_INTEGRATION.md`, Research `a23bd9c6`). [agentic-rocm](../handoffs/active/agentic-rocm-kernel-authoring.md)
 - Inference, last 12 h of 11-01: 16 runs ended and were filed, none decision-grade; 10 failed (5 admission, 5 harness). [ws58](../progress/2026-11/2026-11-01-workspace-58.md), [six filings](../progress/2026-11/2026-11-01-codex3-six-filing.md)
 - R18-A CUID forensics: the 141 HIP host-name differences are fully explained by ROCm 6.2 CUID hashing over source path/args plus a second ASTContext hash; identical TU bytes with relocated roots account for every pair. Next: test pinned per-TU `-cuid=` in a fresh complete build. [progress](../progress/2026-11/2026-11-01.md)

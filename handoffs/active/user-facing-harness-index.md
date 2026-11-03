@@ -18,7 +18,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun | INF-77, UFH-01 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts | UFH-01 |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision | RTG-08, INF-78, EVL-37, UFH-01 |
+| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision | RTG-08, INF-06, EVL-37, UFH-01 |
 
 ## Cross-domain
 

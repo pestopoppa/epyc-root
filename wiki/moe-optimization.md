@@ -250,7 +250,7 @@ The dense 27B's aggregate throughput turns over between 4 and 8 slots (+6.8% for
 
 - [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
 - [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08: the routing-locality instrument (INF-72) — SRP/SCH/EOR scope, chance baselines, and the bounded payoff of a reopen

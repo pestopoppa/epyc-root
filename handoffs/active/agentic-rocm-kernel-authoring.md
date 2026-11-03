@@ -867,7 +867,7 @@ section costs **zero GPU and zero local inference**.
 **Declined here (recorded so it is not re-derived):** adopting the note's evaluation cadence. It rests
 on elastic external accelerator capacity and a free third-party adversarial verifier; we have one
 MI210 and a verifier we own. **The orchestration is reproducible almost fully; the cadence is not** —
-and per AK-LN-1/AK-LN-4 in [`autokernel-research-loop.md`](autokernel-research-loop.md) §21, our
+and per AK-LN-1/AK-LN-4 in [`autokernel-research-loop.md`](autokernel-loop.md#track-autokernel-research-loop) §21, our
 answer to cadence is concurrent screening lanes, not more devices.
 
 ## Research Intake Update — 2026-08-15 (SOL-ExecBench as a gfx90a correctness oracle; intake-1102)

@@ -125,7 +125,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
 
 - Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
-- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md)).
+- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
 - HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): the HIL-6 pilot is deferred past the second GPU; a coder-child redesign (D1) is costed; the L2 detectors are calibrated on TRAIL
@@ -323,7 +323,7 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): rows 8–10.
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md): S4-T1 *Comparability target*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §2.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §2.
 
 ## Compiled Update — 2026-09-24 (wrap-up #4): TD-21 is complete — the last residual was the writer itself
 
@@ -877,7 +877,7 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 - **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
 - **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
 - **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/agent-collab-rnd-harness.md))
+- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
 - **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
 
 ### Open questions
@@ -889,7 +889,7 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 ### Source References (2026-09-17 later pass)
 
 - [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
-- [agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md): AC-CORAL and AC-branch-per-agent.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
 - [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the intake batch behind the HS-E1 rows.
 - [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md): the P0 lane record the filed items reference.
 
@@ -1646,7 +1646,7 @@ wins**, and it costs one `tail` to find out.
 
 ### Source References (2026-08-30 kernel surface merge)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66, phase P6:
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, phase P6:
   what landed (P6.1–P6.4), what is knowingly open (P6.5–P6.8), and the *Declined 2026-08-30* block.
 - [Surface and CI session record](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
   commit-by-commit account, the mutation results and the route sweep.
@@ -4270,7 +4270,7 @@ collapsing into one self-justifying channel.
 ### Source References
 
 - [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
 - [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
 - Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
@@ -4490,24 +4490,24 @@ Both are now green, in both repos.
 - **A permanently-red check is worse than an absent one, because it occupies the slot where a working
   check would go.** The cost is not the red X; it is that the check's output is uncorrelated with the
   code, so nobody can learn anything from either state of it.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **When a check fails, ask what input it was given before asking what it found.** In both cases the
   assertion logic was correct and the subject was healthy; the defect was upstream, in what CI handed
   the check — a truncated clone in one, a missing interpreter dependency in the other. A shallow
   clone is the specific trap for any tool that reads git *history* rather than the working tree, and
   pickaxe-based freshness generators are exactly that class.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **Closing the hole is not the same as closing its shape.** Installing pytest fixed the red; it did
   not fix the fact that a suite running *fewer* assertions reports the same green. pytest exits 5 on
   zero collected, but a **partial** collapse exits 0. The follow-on was a declared per-suite floor
   asserted with `>=` rather than `==`, so the guard does not become a second thing to update on every
   added test — and the floor guard found two defects in itself on first run, including laundering a
   collection error into a plausible count by reading a number off a line it had not validated.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ### Source References (2026-08-30, CI inputs)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
 
 ## Compiled Update — 2026-08-31: a dashboard that remembers is a dashboard that lies later
@@ -4541,7 +4541,7 @@ source of truth had moved on — and were replaced with resolution (root `2a3881
 
 Sources:
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L4 and R21-1.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L4 and R21-1.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).
 
 ---
@@ -4575,7 +4575,7 @@ invoker's discipline.
 ### Source References (2026-08-31 evening)
 
 - Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L7, R21-L9.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L7, R21-L9.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.
 
 
@@ -4670,7 +4670,7 @@ state of that day. Re-verify before executing, because the safe command and the 
 differ by a flag that only becomes necessary once the tree has drifted dirty.
 
 **Sources**
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-3 (the
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-3 (the
   retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record.
@@ -4825,10 +4825,10 @@ cheaper than the proof apparatus built to avoid it.
 - [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
   — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
   90-second / 3,869-line comparison, and the A/A noise-floor measurement.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
   AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
   `critic_revise` budget split.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — P4.1 (2026-08-28),
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — P4.1 (2026-08-28),
   where the loop block was adopted as the program's normative spec, with the ratification recorded inline.
 - [`progress/2026-09/2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md)
   — the run-27 planner transient storm and the stdout/stderr capture fix in the addendum.
@@ -4870,7 +4870,7 @@ happens to sit on.
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
   "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
   144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
   filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
   cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
@@ -4935,7 +4935,7 @@ planner's prior session.
 
 ### Source References
 
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — deployed components, direct-context measurement, scout gap, and store incident.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — deployed components, direct-context measurement, scout gap, and store incident.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign boundary and pending A/B.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — lifecycle and dedicated-worktree conventions.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — deployment chronology and measured timings.
@@ -5024,7 +5024,7 @@ because records bind it by digest.
 - [agent-loop-design → *Bringing up a new actor model or backend* and *Scratch disk is the flow's job*](../docs/guides/agent-workflows/agent-loop-design.md) — the checklist and the registry contract.
 - [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — §5/§6, the prevention list and where each is filed.
 - [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the rules the incident fed.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-29..OAB-32 acceptance criteria.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-29..OAB-32 acceptance criteria.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the ratify bundle and the decline of a second in-loop gate (INF-78 moves actors behind the orchestrator, which already gates agentic local-model use).
 
 
@@ -5107,7 +5107,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 - [HS-19a linked subagents spec](../docs/design/hs19a-linked-subagents-20260927.md) — operator decisions, identity resolution, refusals, profile rules.
 - [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19a.1–.6, the live PASS and the S6 flush fix.
 - [2026-09-27 HS-19a progress](../progress/2026-09/2026-09-27-hs19a.md) — the stage-1 build record and test counts.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-33.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33.
 - [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d, SSU-F9e.
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 ratified, NIB2-84.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § Disk, § Coordination.
@@ -5233,7 +5233,7 @@ OAB-35 is verified: a regression test reproduces the crash on the old code.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C83, C95, C102, C103.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the C95 arm table, reasoning carry-over, the proxy defect.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35 root cause and fix, OAB-36.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35 root cause and fix, OAB-36.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the serving evidence behind D5–D8.
 
 
@@ -5294,11 +5294,11 @@ The orchestrator added a FIFO ticket queue across role and global region locks p
 
 - [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — F12 results, contamination, offline A3/A4 status.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — observed arm counts and limits.
-- [Agent-collaboration R&D harness](../handoffs/active/agent-collab-rnd-harness.md) — proposed checkpoint-pruned allocation and support constraints.
+- [Agent-collaboration R&D harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — proposed checkpoint-pruned allocation and support constraints.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — shared-window interference and cleanup incidents; operational rules remain distinct from measured model results.
 - [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — pinned OpenCode lifecycle signal behavior.
-- [AutoKernel unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — FIFO region-lock implementation status and gates.
+- [AutoKernel unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — FIFO region-lock implementation status and gates.
 - [AutoKernel disk hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md) — harness transcript/state retention boundary.
 
 ## Compiled Update — 2026-10-06: future launcher references and retained reports cross ownership boundaries
@@ -5489,7 +5489,7 @@ Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.
 
 **Confidence: verified** for the owner-confirmed source merges and native registration record. OAB-30's continuation-after-keep fixture and INF78's per-file code-budget ratchet are merged and owner-confirmed. Separately, the ORCH recovery result proves native registration only (20 entries, 19 unchanged, 3,804 hashes, 0 mismatches); consumer query was NOT_RUN and risk NOT_ASSESSED. T1-A's same-entry process-limit gate is accepted on a private pushed branch, not canonically merged or deployed. Keep these as separate gates: code merge, native registration, and same-entry launch acceptance do not imply consumer execution or deployment.
 
-Sources: [actor-backend handoff](../handoffs/active/autokernel-orchestrator-actor-backend.md); [non-inference WS58 checkpoints](../handoffs/active/engineering-hygiene-backlog.md); [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md).
+Sources: [actor-backend handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend); [non-inference WS58 checkpoints](../handoffs/active/engineering-hygiene-backlog.md); [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md).
 
 
 ## Compiled Update — 2026-10-27: resource admission evidence
@@ -5545,7 +5545,7 @@ Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex
 - **Scorer quality priors are live-only.** `_baseline_quality_by_role()` excludes records not marked `live_stack` (one measured non-live record, `qwen36_35b_a3b_mtp_q8_local`, was affected); direction and 0.75 reference unchanged, 102 q_scorer/q_reward tests passed, no live reload. ([daily log](../progress/2026-10/2026-10-30.md), orchestrator commit 0815be05e)
 - **P6.7 closed:** `/api/loop/health` now folds the loop verdict with the operator-gate bundle's five-state verdict (`relevant`->ok, `absent`->absent, others->degraded); the global `/api/health` is unchanged and nothing was deployed. **D-f3a** graph-snapshot retention (100 runs x 100 rows) is implemented and published but stays unchecked pending live-volume confirmation with D-f1.
 
-Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [NI worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md), [ROOT NI retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md)
+Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [NI worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md), [ROOT NI retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
@@ -5588,7 +5588,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/agent-collab-rnd-harness.md)
+- Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
 - Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement)
 - HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-improvement-loop.md)
 
@@ -5722,7 +5722,7 @@ Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-correct
 
 ## Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
 
-The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
+The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 
 ## Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
 

@@ -151,7 +151,7 @@
 >   lane and its frozen binary rejects the drafter GGUF.
 > - **Production stays FROZEN and untouched at v9** (`0db32c06e3e5`, binary `10125`).
 > - Owner: [autokernel-champion-aggregate.md](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) ·
->   [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66).
+>   [autokernel-rebuild-program.md](autokernel-loop.md#track-autokernel-rebuild-program) (INF-66).
 
 > **STALE (amended 2026-10-28, operator-approved disk reclaim):** the notice below is historical.
 > `ps -p 2767457` returns no process and `worktrees/champ2` no longer exists, so its OFF-LIMITS list
@@ -168,14 +168,14 @@
 > production kernel tree** — all improvement work aggregates there between promotions;
 > seed-from-production only immediately after a promotion; the loop refuses to start off the
 > canonical branch. **Run starts are operator-gated** behind a verifiable readiness package.
-> Owner: [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66, R21 block).
+> Owner: [autokernel-rebuild-program.md](autokernel-loop.md#track-autokernel-rebuild-program) (INF-66, R21 block).
 
 > **⛔ 2026-08-22 — AUTOKERNEL V27 REMAINS PRE-LAUNCH AT SCIENCE 0/10.** No provider banner stopped
 > a running campaign: no v27 campaign was launched. The frozen comparator base `cffb98d3` and ordinary
 > refusal recovery fix `caa22f42` are closed, but independent audits rejected the current evaluator
 > (`91a75a05`), C6 integration (`8a0ffc7d`), performance carrier (`5be84b4a`), and dependent dashboard
 > lines. All v27 dashboard pins remain unset. Resume from
-> [autokernel-research-loop.md](autokernel-research-loop.md) §Restart checkpoint: repair C6 isolation
+> [autokernel-research-loop.md](autokernel-loop.md#track-autokernel-research-loop) §Restart checkpoint: repair C6 isolation
 > and immutable performance authority, freeze one descendant, obtain exact-SHA audits, validate twice
 > without inference, then spend the ten-science run. Production v9 stays frozen and untouched.
 
@@ -191,7 +191,7 @@
 > launch a successor campaign.** First land and independently review the deterministic discovery
 > controller being built in the isolated Terra worktree. It must consume sealed measurements rather
 > than planner prose and remain unable to invoke calibration, heldout, champion, promotion, package,
-> or release paths. Owner: [autokernel-research-loop.md](autokernel-research-loop.md) §AK6.5.
+> or release paths. Owner: [autokernel-research-loop.md](autokernel-loop.md#track-autokernel-research-loop) §AK6.5.
 
 > **🟡 2026-08-12 — INF-03 R18 IS TERMINAL-NONCOMPLETE; SEVEN-ARM R19 IS LIVE FROM
 > IMMUTABLE RESEARCH `0b1fdbe9`.** R18 completed its baseline and full Claude/Codex 2h controller
@@ -229,7 +229,7 @@
 > OpenCode load refusal before T1) are terminal non-evidence; r36 A/A did not run. Next is a fresh
 > r37-or-later 15-block matched pair after the independent quiet-host gate, followed by the decode
 > holdout, heldout-bound prefill pair, strict archive, and observe-only evaluation. Owner:
-> [autokernel-research-loop.md](autokernel-research-loop.md) §AK6.5.
+> [autokernel-research-loop.md](autokernel-loop.md#track-autokernel-research-loop) §AK6.5.
 
 > **Historical 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; ALL SIX AK-WM IMPLEMENTATION DEFECTS
 > ARE PATCHED.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
@@ -255,7 +255,7 @@
 > mains wrap.** Post-reboot, create the `agent` tmux
 > session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
 > construct the real matched archive, and execute the
-> least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-research-loop.md)
+> least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-loop.md#track-autokernel-research-loop)
 > §AK6.5 Step 3.
 
 > **⛔ 2026-08-09 — AUTOPILOT IS INTENTIONALLY STOPPED; STAGED MULTI-TIER EVIDENCE IS BEING BUILT.**

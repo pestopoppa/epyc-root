@@ -697,7 +697,7 @@ The three constants that actually decide `passed` on quality are all **chosen, n
 
 **This is not a new idea here** — we already declare noise floors elsewhere (K-RAG-1's 2pp floor in
 [`bulk-inference-campaign.md`](eval-tower-program.md#track-bulk-inference-campaign), where a 1.31pp gap was correctly called
-below-floor; and calibrated floors throughout [`autokernel-research-loop.md`](autokernel-research-loop.md)).
+below-floor; and calibrated floors throughout [`autokernel-research-loop.md`](autokernel-loop.md#track-autokernel-research-loop)).
 The eval-tower *quality* lane is the one place the instrument is missing, and its absence is already
 documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_resolution_artifact`.
 

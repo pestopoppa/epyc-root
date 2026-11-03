@@ -5,7 +5,7 @@
 **Scratch**: `/mnt/raid0/llm/tmp/codex-c6-mmqfix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-remain-q4k-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-combined-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-q4k-fix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-fp64-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-route-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-mmvq-fix-20261102/` · `/mnt/raid0/llm/tmp/ch33-private-20261102-v7g1tu/` · `/mnt/raid0/llm/tmp/codex-ch27-custody-20261102/` · `/mnt/raid0/llm/tmp/codex-ch31-server-20261102/` · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/` (live paired route diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/` (live CH-31 diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch26b-20261101/` (live CH-26b row; keeper reaps only after filing receipt) · `/mnt/raid0/llm/tmp/codex-ni-nemo-accepted-wrap-20261031/` · retained evidence: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/` · C6 fold: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` · C6 build evidence: `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/` · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-01a16fc3/full-wrapup-20261031/`, `/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/`, `/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r3-20261031/`
 
 ## Track: autokernel-champion-aggregate
-<!-- gate: INF-06, INF-50#dflash2-block-drafter-experimental-build, INF-02 -->
+<!-- gate: INF-06#autokernel-research-loop, INF-50#dflash2-block-drafter-experimental-build, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
 > Folded from the body of `handoffs/active/autokernel-champion-aggregate.md` (row INF-65), from its first `##` section on, @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
@@ -62,9 +62,9 @@ frozen production v10.
   reconcile the final source SHA, store manifests and remaining gate evidence with the owner before
   dispatch. Preserve the failed wrapper results; do not convert native diagnostics into gate passes.
 - **CH-16 and FOLD-0:** the run-19 blocker on CH-16 is stale: the owning
-  [rebuild handoff](autokernel-rebuild-program.md) R18-C permits the program-document correction now;
+  [rebuild handoff](autokernel-loop.md#track-autokernel-rebuild-program) R18-C permits the program-document correction now;
   coordinate branch/tag work with R21-3. FOLD-0 was superseded by FOLD-1–3 in the owning
-  [unified-surface handoff](autokernel-unified-surface-program.md); do not redispatch it.
+  [unified-surface handoff](autokernel-loop.md#track-autokernel-unified-surface-program); do not redispatch it.
 - **CH-26b / CH-27:** the published CH-26b job measures C2, not the current C5 anchor; inspect the
   keeper's current result and use any floor only for the exact declared C2 recipe. CH-27's single
   C5 recalibration exception and its successor/custody requirements are in the child item below.
@@ -496,7 +496,7 @@ DS41's champion of record on its own campaign lineage is `a1faab471e83`, with 4 
 | **CH-8** | AutoKernel's GPU builder omits `GGML_HIP_ROCWMMA_FATTN` |
 | **CH-14 / CH-16** | Manual-research loop runbook (start from `scripts/benchmark/serving_evidence_refresh_runbook.md`, research repo); correct the loop champion's inflated per-commit claims |
 | **FOLD-0 / V6R-1..3** | INF-70's residual fold items; v6-fork triage (DiffT-V2, KV context-shift, paged-attn) |
-| **not on this page** | `AK-INST-3`, `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](agent-collab-rnd-harness.md#track-autokernel-restart-and-strip). |
+| **not on this page** | `AK-INST-3`, `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-loop.md#track-autokernel-restart-and-strip). |
 
 Closed work and superseded champion-state narration: § *Completed Scope*.
 
@@ -1433,7 +1433,7 @@ On completing a row: delete it here, update owning handoff + domain index, appen
 **Related**:
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the direct predecessor: same diagnosis (barrier/op-count-bound, not BW), 4 fusion arms REFUTED, the +2.6% DeltaNet-native-fused-wqkv precedent this project scales up
 - [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) — the NUMA×placement canonical recipe (interleave+no-mmap), the same family's reference numbers
-- [`autokernel-research-loop.md`](autokernel-research-loop.md) — the GPU megakernel/persistent-kernel literature (L4 lever) this project is the CPU analogue of
+- [`autokernel-research-loop.md`](autokernel-loop.md#track-autokernel-research-loop) — the GPU megakernel/persistent-kernel literature (L4 lever) this project is the CPU analogue of
 - `handoffs/active/master-handoff-index.md` — the router
 
 **Framing superseded 2026-09-02 (INF-70 audit)**: this file remains the fused decoder's design record
@@ -2574,7 +2574,7 @@ it against this handoff by association.
   artifact §01 "Design decision — the recipe carries `ngram-mod`".
 
 ## Track: autokernel-cross-workload-keep-gate
-<!-- gate: INF-73, INF-66, INF-65#autokernel-champion-aggregate -->
+<!-- gate: INF-06#autokernel-unified-surface-program, INF-06#autokernel-rebuild-program, INF-65#autokernel-champion-aggregate -->
 
 > Folded from `handoffs/active/autokernel-cross-workload-keep-gate.md` @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5; retired row INF-75 → INF-65). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -2590,16 +2590,16 @@ it against this handoff by association.
 
 **2026-10-30 R6 qualification checkpoint; full W5s census remains open.** The clock-domain repair passes 86 focused tests, including the actual monitor `main()` regression (log SHA-256 `f2ea84f7329fdb0c653ac07940a095becde7669b5ec40a397a873120f5861f5f`). Same-launcher R11 smoke completed 11 real 128-context requests with writer and cleanup in 122.54s at `/mnt/micron/codex-w5s-current-census-r6-20261030/smoke-20261030T082150Z-4056373/result.json` (SHA-256 `ed71a66ea0ec162d589448a0f4e16ed3a7d196b166dae1456cc275ba4c96d7a1`); this is smoke-only. It does not complete the requested 5,700-second run (5,400-second minimum) or its t96/ctx262144/ub2048/MTP4/1,224-target ordered-shard 0/373/851 census. The normal keeper first skipped the READY record because its retention globs were absolute; the metadata-only correction now uses packet-relative globs and covers every `SOURCES.sha256` member. The first launcher preflight correctly refused before native work at RAID 161,195,106,304 B versus 161,195,491,328 B required; Micron passed. After the unchanged RAID floor cleared, the exact refused row/manifest were restored at 12:34Z; at 12:35:44Z the normal keeper accepted the READY schema but logged `READY-WAIT` because CPUs 0-95 were not fittable; no launcher has been queued. Metadata estimate is 0.125 GiB, while the independent original 6-GiB native-output budget and Micron reserve remain unchanged. [no-belief: bounded diagnostic smoke and admission only; full census remains open]
 **Related (Deps edges)**:
-- **INF-73** [`autokernel-unified-surface-program.md`](autokernel-unified-surface-program.md) is the parent.
+- **INF-73** [`autokernel-unified-surface-program.md`](autokernel-loop.md#track-autokernel-unified-surface-program) is the parent.
   - It owns the serial controller, required-target validation, U2 floors, U3 oracle extension, §8.17C validation batch and OP-41.
   - This handoff specifies two design items that point here from that file.
-- **INF-66** [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md) supplies:
+- **INF-66** [`autokernel-rebuild-program.md`](autokernel-loop.md#track-autokernel-rebuild-program) supplies:
   - R23-48 (LOO), R23-53 (Q4_K-gated dead weight), R23-54 (serving-gate cadence), R23-55 (floor unit), R23-57 (headline admissibility), and the R23-28/29 transfer lessons.
 - **INF-65** [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) supplies:
   - FOLD-2 G4 dispatch probe, the DO-NOT-FOLD ledger, and the 732389d6 three-workload standing.
 - **INF-70** [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) supplies:
   - the `GGML_CPU_PROF` per-node census, the SYNC-17 knobs, and the sync17-fix2 regression.
-- **INF-74** [`autokernel-concurrent-target-coordination.md`](autokernel-concurrent-target-coordination.md): the census forwards and non-regression arms are stage claims under its coordination.
+- **INF-74** [`autokernel-concurrent-target-coordination.md`](autokernel-loop.md#track-autokernel-concurrent-target-coordination): the census forwards and non-regression arms are stage claims under its coordination.
 - **EVL-47** [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): write-side wiring for census and classification records (task AKX-P4c).
 
 > **Revision anchors.**
@@ -3376,8 +3376,8 @@ Not operator decisions, handled in-spec:
 #### 14. Key files
 
 **Root (lane `noninf-20260914`)**
-- `handoffs/active/autokernel-unified-surface-program.md`: parent (§3.2 U2 floors/unit `:659-704`; §3.3 fall-through `:706-712`; P3 oracle item `:1045`; OP-41 `:890-902`; §8.10 `:1474-1502`; §8.17C `:1988-2040`)
-- `handoffs/active/autokernel-rebuild-program.md`: R23-26 `:1420`, R23-48 `:2362`, R23-53 `:2353`, R23-54 `:1813`, R23-55 `:1824`, R23-57 `:1944`
+- `handoffs/active/autokernel-loop.md`: parent (§3.2 U2 floors/unit `:659-704`; §3.3 fall-through `:706-712`; P3 oracle item `:1045`; OP-41 `:890-902`; §8.10 `:1474-1502`; §8.17C `:1988-2040`)
+- `handoffs/active/autokernel-loop.md`: R23-26 `:1420`, R23-48 `:2362`, R23-53 `:2353`, R23-54 `:1813`, R23-55 `:1824`, R23-57 `:1944`
 - `handoffs/active/kernel-champion-and-promotion.md`: 732389d6 standing `:47-65`, FOLD-2 `:653-661`, DO-NOT-FOLD `:700-710`, per-surface recipe `:767-787`
 - `handoffs/active/cpu-decode-roofline-program.md`: SYNC-17 knobs `:1615-1642`, CPU_PROF census `:328-342`, SYNC-21 `:1167-1172`
 - `progress/2026-09/2026-09-01-ak-rebuild-20260828.md` (transfer / dec-b8 sign flip), `progress/2026-09/2026-09-03-ak-rebuild-20260828.md` (Q4_K claim, screen-model kernel mismatch)
@@ -3416,7 +3416,7 @@ Not operator decisions, handled in-spec:
 The armed packet uses separate scratch files. Its source manifest remains SHA-256 `ddb15b7d8fa741baf54cf9563710df2ab9dade4ef3471eaed0a62aec2fe90d78`; no scratch source, seal, or launcher was changed. The branch retains original preparation commit `5d5d5f98906bf1ba0b0bee2ad27959a0e017d989`. This appendix records only the source hygiene repair; the owner retains the census and index row.
 
 ## Track: autokernel-all-devices-all-dimensions
-<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-50#dflash2-block-drafter-experimental-build, RTG-58#kv-unified-stack-rollout, RTG-58#kv-prefix-fork-and-paged-attention -->
+<!-- gate: INF-06#autokernel-unified-surface-program, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-50#dflash2-block-drafter-experimental-build, RTG-58#kv-unified-stack-rollout, RTG-58#kv-prefix-fork-and-paged-attention -->
 
 > Folded from `handoffs/active/autokernel-all-devices-all-dimensions.md` @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5; retired row INF-81 → INF-65). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -3441,7 +3441,7 @@ audit `/mnt/raid0/llm/tmp/ak-longctx-audit-20261004/` · research worktrees
 **Owners**: **ak-ds41-main** keeps this handoff and its index row, and runs the CPU and GPU subagents.
 **workspace-ec** owns `:8083` and executes its side of G1 (drain, unload, reload). The INF-73 loop owner reviews
 every merge into research main.
-**Depends on**: INF-73 [`autokernel-unified-surface-program.md`](autokernel-unified-surface-program.md) (the
+**Depends on**: INF-73 [`autokernel-unified-surface-program.md`](autokernel-loop.md#track-autokernel-unified-surface-program) (the
 loop, serial router and target model), INF-75 [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
 (the keep gate G5 extends), RTG-57 [`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout) (`:8083` argv and
 its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](speculative-decoding.md#track-dflash2-block-drafter-experimental-build)
@@ -3449,7 +3449,7 @@ its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](speculative
 **Related**: INF-77 [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) (DS41 lane; finding 1,
 DS41-C9, DS41-T2, DS41-B14), RTG-58 [`kv-prefix-fork-and-paged-attention.md`](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 (np=4 × ~80k is its regime too; KPF gates share G4's slot restore), INF-74
-[`autokernel-concurrent-target-coordination.md`](autokernel-concurrent-target-coordination.md) (stage claims),
+[`autokernel-concurrent-target-coordination.md`](autokernel-loop.md#track-autokernel-concurrent-target-coordination) (stage claims),
 INF-31 [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) (dense-mask vs sparse gather), INF-70
 [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (the 0.80% → 7.22% GPU-overlap floor and
 be2-fa row-exactness), [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) (VB-AK-LONGCTX)

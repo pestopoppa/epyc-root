@@ -453,7 +453,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 **Status**: stub
 **Created**: 2026-09-07 (research intake, operator-approved plan; successor of ../completed/meta-harness-optimization.md whose active pointer was retired 2026-08-23)
 **Categories**: meta_harness, autopilot, safety
-**Related**: [autopilot-continuous-optimization.md](autopilot-program.md) (RTG-02) · [eval-tower-verification.md](eval-tower-program.md) (EVL-14) · [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md)
+**Related**: [autopilot-continuous-optimization.md](autopilot-program.md) (RTG-02) · [eval-tower-verification.md](eval-tower-program.md) (EVL-14) · [agent-collab-rnd-harness.md](autokernel-loop.md#track-agent-collab-rnd-harness)
 
 #### Objective
 

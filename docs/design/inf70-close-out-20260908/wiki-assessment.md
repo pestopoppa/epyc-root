@@ -70,7 +70,7 @@ manifest), `C` = changed (content hash differs).
 
 | # | Δ | type | path | primary category | secondary |
 |---|---|---|---|---|---|
-| 1 | C | handoff-active | `handoffs/active/autokernel-unified-surface-program.md` | `hardware_optimization` | `benchmark_methodology` (per-surface floors carry their conditions; LOO/re-baseline receipts), `agent_architecture` (resource broker, one-monitoring-session) |
+| 1 | C | handoff-active | `handoffs/active/autokernel-loop.md` | `hardware_optimization` | `benchmark_methodology` (per-surface floors carry their conditions; LOO/re-baseline receipts), `agent_architecture` (resource broker, one-monitoring-session) |
 | 2 | C | handoff-active | `handoffs/active/numa-placement-and-contention.md` | `hardware_optimization` | `inference_serving`, `benchmark_methodology` |
 | 3 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `benchmark_methodology` (champion/floor/harness), `quantization` (Q4_K gating) |
 | 4 | C | handoff-active | `handoffs/active/kernel-champion-and-promotion.md` | `hardware_optimization` | — |

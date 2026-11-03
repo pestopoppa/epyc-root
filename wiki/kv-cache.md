@@ -160,7 +160,7 @@ Sources: [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-progr
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
 - [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-LB1.b run 1 and run 2, KVU-LB1.d)
-- [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (the llama-bench defect behind run 1)
+- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) (the llama-bench defect behind run 1)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 

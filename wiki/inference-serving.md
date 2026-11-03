@@ -248,7 +248,7 @@ Two source proposals remain separate from this accepted behavior. The temporary-
 
 - [Per-call reader contract](../docs/reference/serving-call-reader-contract.md) — metric semantics, custody and judge linkage.
 - [Standalone NUMA guard](../docs/reference/standalone-numa-guard.md) — source acceptance and fail-closed declaration.
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — corrected remediation command.
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — corrected remediation command.
 - [Model-stack update pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — W4 real-gate proposal.
 - [Stack-update finalization](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization) — physical SMT closure proposal.
 
@@ -256,7 +256,7 @@ Two source proposals remain separate from this accepted behavior. The temporary-
 
 - [Per-call reader contract](../docs/reference/serving-call-reader-contract.md)
 - [Standalone NUMA guard](../docs/reference/standalone-numa-guard.md)
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md)
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - [Model-stack update pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline)
 - [Stack-update finalization](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization)
 
@@ -494,7 +494,7 @@ loads it yet.
   and compiled the legacy single-port lineup, so it was reverted. The guard's own remediation string
   still points at the numa-blind command (R23-70). Other residue was filed as R23-71 (a live
   `--skip-stack-change-gate` in benchmark automation) and R23-72 (`executor.py` fallbacks still
-  hardcode v9 paths) in [the rebuild program](../handoffs/active/autokernel-rebuild-program.md).
+  hardcode v9 paths) in [the rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program).
 
 ### GLM-5.3-Flash retired, DeepSeek-V4.1-Flash is the novel-under-test model (INF-69 → INF-77)
 
@@ -559,7 +559,7 @@ checks. The public release is a convenience distribution surface, not a serving 
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77 artifact identity, runtime status, gate translation
 - [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — INF-69 closure banner
 - [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — disposition gate 2, GC-4b sizing
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-70/71/72
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-70/71/72
 
 ## Compiled Update — 2026-09-17: the MTP n-max 8 grid is not the batched optimum, the contention waiver now separates lineup servers from foreign ones, and topology tests are green again
 
@@ -615,7 +615,7 @@ and an alias that still resolves is not evidence the two are the same recipe. Th
 instance of the measurement-pin rule on [Benchmark Methodology](benchmark-methodology.md) — an identity that
 still resolves is not an identity that was measured.
 
-Sources: [`autokernel-concurrent-target-coordination.md`](../handoffs/active/autokernel-concurrent-target-coordination.md)
+Sources: [`autokernel-concurrent-target-coordination.md`](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
 (§10, the alias/recipe trap),
 [`progress/2026-09/2026-09-14-autokernel-concurrency-plan.md`](../progress/2026-09/2026-09-14-autokernel-concurrency-plan.md),
 and the research checkout pin `5ac7b7e47c52f6fe8ce2db4aca99679374d0652f`. Note the handoff that carries it is
@@ -701,7 +701,7 @@ A dense model saturates the memory system early, so extra slots stop buying thro
 
 - [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
 - [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08 (pm): the champion's measured serving ceiling — 79.25 tok/s single user, 179.12 aggregate — and why np=4 is the operating point
@@ -762,7 +762,7 @@ either way. Proof is non-zero VRAM sampled **during** the run plus the KFD proce
 
 - [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the canonical table, exact recipe, build digests, per-point `recipe_hash` and residency evidence
 - [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the headline as booked, and why no production ratio accompanies it
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-60 (serving-path residency proof) and R23-61 (floor sizing at the operating point)
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-60 (serving-path residency proof) and R23-61 (floor sizing at the operating point)
 
 ## Compiled Update — 2026-09-08: Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — INF-63 is blocked, and the Qwen fleet census opens the offload question
 
@@ -1045,7 +1045,7 @@ is immutable pre-hook evidence and must not be upgraded by a read-side reconstru
 
 - [Qwen3.8 replacement handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — production-successor context and existing registry boundary.
 - [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — matched metrics, build identity, and mandatory residual gates.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — governed `experimental_runtime` stage/receipt chain and nonpromotion boundary.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — governed `experimental_runtime` stage/receipt chain and nonpromotion boundary.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact branch, evidence hashes, cleanup, and carrier integration order.
 
 ## Compiled Update — 2026-08-18: the declined coding ladder ran — and the stale axis table got reconciled the right way
@@ -2885,7 +2885,7 @@ The [strict per-call reader](../docs/reference/serving-call-reader-contract.md) 
 
 A GPU measurement window that needs gpu-quiet EXCLUSIVE can wait forever while AutoKernel lanes take shared claims back to back. Measured 2026-10-07 02:42Z: the Jet-Long 27B window stopped :8083, then the EXCLUSIVE acquire timed out after 600 s with FIFO admission off; the executor restored :8083 and the window was lost. A shared claim is never observed to be free, so absent FIFO default-on or writer preference an exclusive request cannot be served. Task GPUQUIET-WRITER-PREFERENCE (autokernel-concurrent-target-coordination.md); the scripts now use a prefill-only pattern with a 1800 s acquire timeout. Related: standing GPU-window approval branch (GPUWIN-STANDING-APPROVAL, gpu-serving-tie-in-program.md).
 
-Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [concurrent target coordination](../handoffs/active/autokernel-concurrent-target-coordination.md).
+Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [concurrent target coordination](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination).
 
 ## Incremental synthesis — 2026-10-20: slotdraft fold and np x ctx study reopening
 
@@ -2956,7 +2956,7 @@ Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/inci
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
-- **The queue validator enforcing "queued means ready" is on main** (`03a4b109d`, `a367d1df0`, operator D9 acks): ready=y needs ARMED plus a live launcher pid; ready=n rows are BACKLOG with blocker and owner; REGISTERED with ready=n is an error; terminal rows (COMPLETE/CANCELLED) skip field checks; `min_effect` accepts `n/a (<reason>)`. It is not yet called by any grant writer, so it gates nothing until that wiring lands (CTC-Q-A/B open). ([compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md), [autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md))
+- **The queue validator enforcing "queued means ready" is on main** (`03a4b109d`, `a367d1df0`, operator D9 acks): ready=y needs ARMED plus a live launcher pid; ready=n rows are BACKLOG with blocker and owner; REGISTERED with ready=n is an error; terminal rows (COMPLETE/CANCELLED) skip field checks; `min_effect` accepts `n/a (<reason>)`. It is not yet called by any grant writer, so it gates nothing until that wiring lands (CTC-Q-A/B open). ([compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md), [autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination))
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-58): the HIP-graph VRAM leak does not reach the production :8083 argv
 
@@ -2980,7 +2980,7 @@ Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/inci
 - **FD-DIV-1a: the GSQ IQ3_XXS fused-decode double free is fixed by `14c57cbe9`.** Fused ON is byte-identical to the graph path on 4 prompts (GSQ) and on UD-IQ4_XS; unpatched v10 still aborts (rc 134). On UD-IQ4_XS v10 fused-ON decode is about 1500-2000 ms/token versus 70-87 on the graph path (single runs); production keeps `GGML_FUSED_DECODE_OFF=1`. The ASAN repro port is FD-DIV-1b.
 - **Operational:** actors keep fan-out orchestrator-owned (OAB-33 closed, no seat-prompt change); `ram_admit` is now enforced before all four AutoKernel server launches (DS41 class needs 739 GiB).
 
-Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): what the :8083 sampler settings rule out, and the host KV mirror cost
@@ -3074,7 +3074,7 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - The 27B post-compaction paired treatment timed out without exact restoration, so no paired cache/prompt measurements or keep verdict exists. Refusal records and parked-role escalation have source fixes with tests; live adoption is not implied. [Source](../handoffs/active/agentic-serving-harness-fixes.md)
-- A deterministic lock-fairness negative control passed 24 tests and deliberately fails the three FIFO-off assertions; source verification does not imply default-on deployment. Other additions repair historical evidence metadata. [Source](../handoffs/active/autokernel-unified-surface-program.md)
+- A deterministic lock-fairness negative control passed 24 tests and deliberately fails the three FIFO-off assertions; source verification does not imply default-on deployment. Other additions repair historical evidence metadata. [Source](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - Opt-in machine frame drops only an equal duplicated alias; 143 API and 15 page controls passed. Fixture bytes reduced 47,524 to 24,580 and 91,652 to 46,835; no live bandwidth, producer-work or deployment outcome is claimed (APP ec6f8176; ROOT 8318ce32). [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
 - Registry master ubatch default is corrected to 2048; both script executors do read it, contrary to the original premise. Lean compilation preserves 23 active roles; the separate shared full-registry target was still 8192 at observation, with no deployment claim. [Source](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency)
 - The production llama-server log-retention hole remains open: prior append change was in an uncalled legacy script and did not diagnose production. A later wrapper default-path fix is separate and cannot establish the cause of the historical gap. [Source](../handoffs/active/autopilot-program.md#track-evidence-plane-instrument-repair)

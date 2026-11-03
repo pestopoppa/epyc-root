@@ -561,7 +561,7 @@ sessions in one shared clone, and cleared.
   **"[Subject deleted 2026-09-22]"** and left **unticked**. Unrunnable is not done. Model-agnostic
   rows were marked as carrying over
   ([reviewer gates](../handoffs/active/glm52-reviewer-capability-gates.md),
-  [research loop](../handoffs/active/autokernel-research-loop.md)).
+  [research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)).
 - **Belief kernel.** VB-GLM53-MTP produces no further records, and its completed evidence stays as
   history to project. **VB-DSV41** was filed to wire the `deepseek41` validation/serving producer at
   write time, **before DS41-T1**, the first measured run. It reuses the VB-GLM53-MTP carrier and adds
@@ -1262,7 +1262,7 @@ witnesses still exist.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
 - [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — immutable DF2-4 evidence and DF2-5 measurement plan.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — runtime-campaign receipt chain and no-source-champion authority.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — runtime-campaign receipt chain and no-source-champion authority.
 
 ## Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
 
@@ -2145,7 +2145,7 @@ post-approval round, so the rest of the plan was authored without their findings
 
 - **The generalizable failure is that a broken graph does not announce itself — it produces plausible, wrong rankings.** Repair reordered the most-cited list substantially (one entry moved 12 → 27 inbound and became the index's most-cited; another moved 3 → 17; **239 entries gained edges**). A backfill population that had been *scoped by inbound-citation count* was therefore measuring the wrong set and had to be recomputed against the repaired graph. **Any selection rule computed over a reference graph inherits that graph's defects silently**, which is the same class of error as gating on a metric whose scope does not match the measured subset. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [progress 2026-08-09](../progress/2026-08/2026-08-09.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md).
 
-- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
+- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
 
 - **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
 ## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
@@ -3660,7 +3660,7 @@ manufacturing warrant.
 
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BELIEF, producer/adapter mismatch, and applicability gap.
 - [Vidya adapter registry](../scripts/vidya/adapters/README.md) — canonical source and consumer contracts.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — planner consumer boundary.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — planner consumer boundary.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day reader review.
 
 **Confidence:** verified from code review and strict failing fixtures; no historical record is backfilled.
@@ -3712,7 +3712,7 @@ The plan also drafted the exact text for its wiki corrections, and Stage 4 appli
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-PLACEMENT, the SC84 producer note, SC84a, VB-DS41-C57.
 - [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — gating, OD-1, P6, the declines table and the completeness gates.
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF03-REGAUDIT-1 and its belief-kernel write side.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — the intake record (renumbering, filed-task counts).
 
 

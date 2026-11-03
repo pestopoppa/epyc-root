@@ -1,5 +1,9 @@
 {
  "files": {
+  "agent-collab-rnd-harness.md": {
+   "target": "autokernel-loop.md",
+   "track": "agent-collab-rnd-harness"
+  },
   "agent-file-prose-compression.md": {
    "target": "frontier-lab-automation.md",
    "track": "agent-file-prose-compression"
@@ -28,13 +32,33 @@
    "target": "kernel-champion-and-promotion.md",
    "track": "autokernel-champion-aggregate"
   },
+  "autokernel-concurrent-target-coordination.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-concurrent-target-coordination"
+  },
   "autokernel-cross-workload-keep-gate.md": {
    "target": "kernel-champion-and-promotion.md",
    "track": "autokernel-cross-workload-keep-gate"
   },
+  "autokernel-orchestrator-actor-backend.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-orchestrator-actor-backend"
+  },
+  "autokernel-rebuild-program.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-rebuild-program"
+  },
+  "autokernel-research-loop.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-research-loop"
+  },
   "autokernel-restart-and-strip.md": {
-   "target": "agent-collab-rnd-harness.md",
+   "target": "autokernel-loop.md",
    "track": "autokernel-restart-and-strip"
+  },
+  "autokernel-unified-surface-program.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-unified-surface-program"
   },
   "autopilot-continuous-optimization.md": {
    "target": "autopilot-program.md",
@@ -676,6 +700,10 @@
    "target": "INF-22",
    "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
   },
+  "INF-02": {
+   "target": "INF-06",
+   "track": "agent-collab-rnd-harness"
+  },
   "INF-04": {
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
@@ -793,16 +821,32 @@
    "track": "dflash2-block-drafter-experimental-build"
   },
   "INF-64": {
-   "target": "INF-02",
+   "target": "INF-06",
    "track": "autokernel-restart-and-strip"
+  },
+  "INF-66": {
+   "target": "INF-06",
+   "track": "autokernel-rebuild-program"
   },
   "INF-67": {
    "target": "INF-65",
    "track": "cpu-fused-decoder-blocks"
   },
+  "INF-73": {
+   "target": "INF-06",
+   "track": "autokernel-unified-surface-program"
+  },
+  "INF-74": {
+   "target": "INF-06",
+   "track": "autokernel-concurrent-target-coordination"
+  },
   "INF-75": {
    "target": "INF-65",
    "track": "autokernel-cross-workload-keep-gate"
+  },
+  "INF-78": {
+   "target": "INF-06",
+   "track": "autokernel-orchestrator-actor-backend"
   },
   "INF-81": {
    "target": "INF-65",

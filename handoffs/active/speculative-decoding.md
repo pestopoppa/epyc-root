@@ -655,7 +655,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - *Intake trigger record (no checkbox until it fires), M1, row SPEC2-3 (intake-2577#record):* Note thinking-mode default sampling repetition risk: issue says model card recommends presence_penalty 0-2 and attributes loops to degenerate state amplified by temp 1.0 / top_k 20 / top_p 0.95; check the Flash-Next architect_general request sampler against ...
 
 ## Track: dflash2-block-drafter-experimental-build
-<!-- gate: INF-06, INF-50#speculative-decoding-mtp-refresh -->
+<!-- gate: INF-06#autokernel-research-loop, INF-50#speculative-decoding-mtp-refresh -->
 
 > Folded from `handoffs/active/dflash2-block-drafter-experimental-build.md` @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5; retired row INF-62 → INF-50). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -666,7 +666,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) (this is its Qwen3.8 rider),
 [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md) (historical DFlash-family sidecar workflow on v9),
-[`autokernel-research-loop.md`](autokernel-research-loop.md); completed:
+[`autokernel-research-loop.md`](autokernel-loop.md#track-autokernel-research-loop); completed:
 [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) (DFlash NO-GO on **CPU** — sequential
 DeltaNet verification, not a DFlash defect; does not apply to this GPU path)
 

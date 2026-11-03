@@ -65,11 +65,11 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **FD-DIV-1b re-run on champion C5 `c72ec82f5`: PERSISTS_ON_C5.** ASAN build, cells: ctl CLEAN, w=0.05 DIVERGE, w=0.3 DIVERGE, w=1.0 ABORT (nonfinite router guard); no AddressSanitizer ERROR. Synthetic correctness finding only; does not identify the fix site; FD-DIV-2 stays OPEN. [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
 - **INF-75 AKX-P0d W3 v6-interval: one host-excluding structural facet ACCEPTED** (rc0). Foreign-load intervals contained in both clocks: 145/16/10 (prefill/decode/verify); graphs 6/98/70, nodes 12,036/196,588/55,896. v5 was MAIN-REJECTED (observer timestamps preceded decode/verify requests; v3 failed on a /slots timeout). Full W3/P0d, perf, quality, promotion remain OPEN; no rate claim. [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
 - **W1 on C5 (diagnostic only):** real-server decode smoke accepted as a narrow observation (71 complete graphs, 344,705 nodes, 39,831 ROCm0 MUL_MAT, 40 four-sequence decode witnesses, same-PID/PCI); the constructed prefill attempt was INCONCLUSIVE (52 graphs; R3 prefill remains UNKNOWN); GPU ABI canary r2 succeeded (128 graphs/126,208 nodes, 1.05 GB own VRAM) with independent replay pending. W5s census (target-only; 1,224 primary tensors) acceptance WITHHELD on two evidence defects (UTC-only intervals, stale eviction receipt).
-- **INF-74 / RUN14 joint gate: no deployment.** The audit reproduced a same-UID child escaping the proposed cgroup, false acceptance of asserted `attachment_fenced=true`, and an owner-death/pidfd race, so `MUTATORS_SHARE_LEASE=false`. Operator chose root-owned cgroup delegation (INF-74-CGROUP-ROOT); cutover stays rejected. Controls were synthetic. [handoff](../handoffs/active/autokernel-concurrent-target-coordination.md)
+- **INF-74 / RUN14 joint gate: no deployment.** The audit reproduced a same-UID child escaping the proposed cgroup, false acceptance of asserted `attachment_fenced=true`, and an owner-death/pidfd race, so `MUTATORS_SHARE_LEASE=false`. Operator chose root-owned cgroup delegation (INF-74-CGROUP-ROOT); cutover stays rejected. Controls were synthetic. [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-concurrent-target-coordination)
 - **LB4.9 C5 graph read-only qualification** ended rc1 by design (HIGH/CRITICAL upstream-impact STOP); kept open. [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - **HARNESS-2 caller binding** passed (model-free: enforces object set, restores champion, rejects wrong set); no build-speed claim. [handoff](../handoffs/active/cpu-decode-roofline-program.md)
 - **RTG57 F32 VKQ:** C5 defaults to hybrid F16 VKQ; prospective T48/T96 HYBRID/F32 packets prepared and belief wiring canaried (synthetic, 99 tests passed); no run, no F32 adoption evidence. PF1 launchers prepared. [progress](../progress/2026-10/2026-10-27-rtg57-f32-prep.md), [roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
-- AK-DEPLOY-2: the hub now serves a read-only full-tree view at origin/main (verified 19:31Z). [handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip)
+- AK-DEPLOY-2: the hub now serves a read-only full-tree view at origin/main (verified 19:31Z). [handoff](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip)
 
 ### Source References (2026-10-28 ws58 delta)
 - [champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [cross-workload keep gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), [fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
@@ -359,7 +359,7 @@ The current AutoKernel records separate accepted source composition, native cont
 
 ### Source References
 
-- [AutoKernel unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — current candidate, admission, capture, and activation boundaries.
+- [AutoKernel unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — current candidate, admission, capture, and activation boundaries.
 - [AutoKernel all devices and dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — DS41 source/build status and remaining tests/capture work.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — named DS41 source children and parent scopes.
 - [AutoKernel coordinator progress](../progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md) — bounded coordinator checkpoint and open runtime outcomes.
@@ -654,7 +654,7 @@ across the boundary) and the bisected GPU regression. The roofline prediction is
   itself (see [benchmark methodology](benchmark-methodology.md)).
 - R23-61b repeated the GPU serving floor post-BIOS: p95_dev 7.249% [6.024, 9.371] against 7.897%
   [5.520, 11.322] before. The CIs overlap, so **the BIOS bundle did not move GPU serving dispersion**
-  ([rebuild program](../handoffs/active/autokernel-rebuild-program.md)).
+  ([rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)).
 
 ### v10 qualification: two champion defects, each caught by a gate a headline would have skipped
 
@@ -693,8 +693,8 @@ cross-workload admission against v10 under the
 v11 candidate through the four-step workflow. The 11 unmeasured in-flight lane diffs are saved as
 seeds for DS41-K2. The GLM-bound AutoKernel rows (AK-SERIAL-26, AKU-12e) are marked "subject deleted"
 and left unticked. AKU-12j retires the leftover GLM `active_campaign` pin in `historical_trajectory.py`. Until then the hub's `autokernel_loop` panel reads `degraded / stopped_reporting`, which is accurate while no loop runs. The rows' semantic-health criterion carries over to any future campaign, e.g. on V4.1
-after its port ([research loop](../handoffs/active/autokernel-research-loop.md),
-[unified surface](../handoffs/active/autokernel-unified-surface-program.md),
+after its port ([research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop),
+[unified surface](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program),
 [GLM-5.3 source handoff](../docs/reference/models/glm53-autokernel-handoff.md)).
 
 The INF-69 closure extracted findings that transfer to any MTP port. Parallel verification must be
@@ -710,7 +710,7 @@ admission: the GLM core held a −25.71% Flash-Next CPU signal. Expert multirow 
 - [`progress/2026-09/2026-09-22-kernel-promotion.md`](../progress/2026-09/2026-09-22-kernel-promotion.md) — store cutover and freeze
 - [`progress/2026-09/2026-09-22-main-dsv41.md`](../progress/2026-09/2026-09-22-main-dsv41.md) — GLM keeps ported onto v10, AutoKernel worktree cleanup
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — C8 closure
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-61b, R23-64, R23-70/71/72
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-61b, R23-64, R23-70/71/72
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — MTP-27B-1 / PROD-BASE-1 denominators
 - [`kernel-freeze-runbook.md`](../docs/reference/kernel-freeze-runbook.md) — pre-flight P1-P5, rollback drill, eval-not-bitwise gate
 - [`glm53-autokernel-handoff.md`](../docs/reference/models/glm53-autokernel-handoff.md) — findings extracted at INF-69 closure
@@ -749,7 +749,7 @@ admission: the GLM core held a −25.71% Flash-Next CPU signal. Expert multirow 
 
 - **The only cross-ISA artefact found is RDNA-only and is not gfx90a evidence.** A HIP-native SageAttention port exists but targets RDNA2/RDNA3 (`gfx103x`/`gfx110x`, WMMA/V_DOT — absent on CDNA2/MFMA). Cite it only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). **CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported** (standing rule). ([agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
 - **The agentic digest's port speed/latency claims are NON-CITABLE.** They have no fetchable primary source; the digest (intake-1461#record) and its consolidating essay (intake-1480#record) remain stage1-unverified, and the harness patterns it contributes are generic standard tooling only. ([2026-09-17-intake-jev-sageattn](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
-- **AK-PORT-1 — correctness-gated optimization order belongs in the loop spec.** Canonical order: compile → reference comparison (cosine similarity / PSNR for low-precision variants; max-abs/MSE otherwise) → only then timing. A fast wrong variant is discarded. ([autokernel-research-loop](../handoffs/active/autokernel-research-loop.md))
+- **AK-PORT-1 — correctness-gated optimization order belongs in the loop spec.** Canonical order: compile → reference comparison (cosine similarity / PSNR for low-precision variants; max-abs/MSE otherwise) → only then timing. A fast wrong variant is discarded. ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **AK-PORT-2 — ordered test ladder with failure localization**: host wiring → kernel-side units → reference comparison, so a high-rung failure is not diagnosed at the wrong layer.
 - **AK-PORT-3 — assembly-summary artifact per retained variant** (PTX/SASS/CUBIN dump summary: register spills, instruction mix, vectorization, occupancy), enabling assembly-driven refinement.
 - **What the discipline is for**: the off-NVIDIA collapse measured for AutoKernel (87%→25%, KernelGenBench) is over-determined by an agent playbook whose largest claimed-gain tier is block-size tuning with warp-32 intuitions that do not carry to CDNA2's 64-wide wavefronts (recorded in the same handoff, not filed). The three port items are methodology only — deliberately filed without numbers.
@@ -762,7 +762,7 @@ admission: the GLM core held a −25.71% Flash-Next CPU signal. Expert multirow 
 ### Source References (2026-09-17 research-intake delta)
 
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the cross-ISA evidence rider (intake-1491) and the CuTeDSL standing rule.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md) — AK-PORT-1/2/3 and the non-citability note.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-PORT-1/2/3 and the non-citability note.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's porting-evidence finding.
 
 ## Compiled Update — 2026-09-17 (evening): the INF-70 evidence is on research main, main's INF-61 driver lacked its own fence, and the SimpleTES ROCm path is registered as study input
@@ -783,7 +783,7 @@ GLM thread figures, which are a runtime-recipe diagnostic, not a matched-process
   - **Annotations.** Root citations carry "(on main as `56ef1404`)", and history text is unchanged.
   - [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md),
     [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md),
-    [autokernel-unified-surface-program](../handoffs/active/autokernel-unified-surface-program.md)
+    [autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - **Main's INF-61 driver could not reproduce its own evidence.** Main's port (`a280853d`) lacked the
   `taskset -apc` fence from `0608f2f2`, which produced the `0a711890` evidence. The fence was ported as
   research **`c6e63877`**. A dry plan printed 48 launches. [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md)
@@ -820,8 +820,8 @@ GLM thread figures, which are a runtime-recipe diagnostic, not a matched-process
 
 - [sub-land-evidence](../progress/2026-09/2026-09-17-sub-land-evidence.md): classification table, landings, declines.
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md): annotated preservation-risk note.
-- [autokernel-unified-surface-program](../handoffs/active/autokernel-unified-surface-program.md): PROD-1 and UP-1/UP-2 pointers.
-- [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): R23-57 evidence pointers.
+- [autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program): PROD-1 and UP-1/UP-2 pointers.
+- [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): R23-57 evidence pointers.
 - [agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md): AR-RPUCG data admission and the AR-ROCm-eval register.
 - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): GLM thread diagnostic.
 - [2026-09-08-ak-rebuild-20260828](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md): evidence-provenance annotation.
@@ -834,8 +834,8 @@ The 2026-09-16 closure audit found that several SHAs this page's kernel record l
 
 ### Key findings
 
-- **The hardening instrument anchor `a4cb04ca8` is on no ref.** `a4cb04ca8f92fa4d665684490f609b380f9b5e96` is absent from every llama.cpp `fork` ref, the canonical tree and every local clone. The equivalent lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`), the tip of `fork/experimental-v9-autokernel-t1-hardening-final`. It is **not** the tip of `...-t1-hardening`; that branch ends at `0492c2319`, a separate commit. Six live `/mnt/raid0/llm/autokernel/iqk-*.json` manifests still pin the missing SHA, so the owner must re-point and re-hash them. ([rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md), [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md))
-- **Branch-only foundations.** AK-V27's `caa22f42` and `cffb98d3` are not on root `origin/main`. They exist only on `codex/autokernel-v27-*`, with 33 commits unmerged. ([autokernel-research-loop](../handoffs/active/autokernel-research-loop.md))
+- **The hardening instrument anchor `a4cb04ca8` is on no ref.** `a4cb04ca8f92fa4d665684490f609b380f9b5e96` is absent from every llama.cpp `fork` ref, the canonical tree and every local clone. The equivalent lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`), the tip of `fork/experimental-v9-autokernel-t1-hardening-final`. It is **not** the tip of `...-t1-hardening`; that branch ends at `0492c2319`, a separate commit. Six live `/mnt/raid0/llm/autokernel/iqk-*.json` manifests still pin the missing SHA, so the owner must re-point and re-hash them. ([rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program), [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
+- **Branch-only foundations.** AK-V27's `caa22f42` and `cffb98d3` are not on root `origin/main`. They exist only on `codex/autokernel-v27-*`, with 33 commits unmerged. ([autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **The INF-70 evidence commit is not on research `origin/main`.** `1780fa7b` (on main as `56ef1404`) promotes the INF-70 evidence, the PROD-1 recipe draft and `data/inf70-upstream-patches-2026-09-08/`, the input to upstream publication. It exists only on the shared research clone (3 commits ahead) and on the pushed branches `origin/inf70/evidence-2026-09-08` and `origin/lane/autokernel-status-bounding-20260914`. It is not lost, but it is unmerged. ([cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md))
 - **The K28 fused-GDN scaffold was never committed.** In `llama.cpp-k28-prototype-20260720`, the design doc is staged and the `gated_delta_net.cu` hook is an uncommitted working-tree change. No ref carries the K28.5a scaffold. **K28.5a-COMMIT is filed (2026-09-17)** to commit it on the experimental prototype branch (not production); a `git diff HEAD` patch (85+/3−) and the doc are backed up in `/mnt/raid0/llm/backups/preserve-20260916/`. ([gemma-challenge-kernel-techniques-v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md))
 - **A selection-only controller candidate and a ROCm eval path are filed for the MI210 verify+profile loop.** AR-RPUCG would A/B SimpleTES's RPUCG DAG parent-selection against the current heuristic on one non-promotable task, with no re-execution of evaluated candidates (source code `47d3413d`). AR-ROCm-eval registers SimpleTES's ROCm eval path (`AMD_REQUIREMENTS` rocm6.2.4, `profile_program_roc`) and its issue #6 MI300 config as gfx90a port input, study-only under the no-external-re-measure rule (AK-RB-1). Both are zero-inference prep. ([agentic-rocm-kernel-authoring](../handoffs/active/agentic-rocm-kernel-authoring.md))
@@ -843,7 +843,7 @@ The 2026-09-16 closure audit found that several SHAs this page's kernel record l
 - **AK-INST-2 found a live defect: an exact instrument-commit pin refuses the current champion.** `controller/discovery_deployment_factory.py` checks `_INSTRUMENT_COMMIT = 270b48ed…` with `!=`. `270b48ed` is an ancestor of champion `ef81196d5`, so a deployment that names the current champion is refused as "unreviewed". The check should become "descends from", keeping the reviewed-delta diff check. `prior_art.py`'s `GGML_TYPE_ENUM_SOURCE_COMMIT = 0db32c06…` should become ancestry plus a re-hash of the enum block; that is safe, because `0db32c06e3e5..ef81196d5` touches only the `ggml_op` enum. Two sets of pins need an owner ruling: the T0/T1 campaign pins in `campaign.py` and `live_controls.py`. Frozen-production, speech-kernel, external and historical pins stay exact. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md))
 - **Designed but not built: a per-surface champion recipe.** Putting `champion_recipes` inside the loop `Bundle` would need a v3 snapshot schema plus a journal-validator change, and GitNexus rated that **HIGH** risk (15 symbols, 3 processes). The lower-risk alternative is a `champion-recipes.json` sidecar keyed by surface: `GGML_NOHUGEPAGE_PROCESS=1` on cpu-decode and unset on gpu-serving. `require_match` would refuse a mismatch and report `unverified` for legacy stores. It is blocked on a gap: **no codified CPU-decode `serving.Recipe` JSON exists**, only two GPU recipes, and neither sets `env`. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md))
 - **The GLM continuous loop ran its first full candidate, which regressed.** v15's CPU history hint timed out on the 4.7 GB journal because an unindexed `recorded_at` sort blew the 200 ms deadline. Reverse-append order fixed it (≈2 ms; research `a7100681`). v16 then ran profile → planner → critic → patch → build → five-pair `matched_process_v2` A/B. `akm-moe-fused-global-slab-balance` measured **−0.953%** against a 0.708% floor and was not kept. A decisive negative had been labelled `measured_null`; it is now `regression` (research `be6bbad9`; root dashboard `5a1250ff`). The CPU lifecycle census exceeded its 2,048-process/0.1 s bounds during the A/B, so **that census cannot be read as proof of a quiet host**. v17 is running continuously (`--rounds 0`) from the same store. ([codex-autokernel](../progress/2026-09/2026-09-16-codex-autokernel.md))
-- **Two AutoKernel control-plane fixes.** First, a science abstention now settles as a charged, non-measurement `abstained` outcome instead of stopping the campaign with `SerialSchedulingRefused` (research `fb8a8273`). Second, the hub had been reading a stale `AUTOKERNEL_LOOP_STORE_ROOT` pin, which produced the "v12 unexplained stale" banner; it now follows a guarded durable `current-serial-run.json` pointer (research `8b3b95f6`, root `7ec9f779`). Live `/api/loop` then followed v15 → v16 → v17, and v16's terminal `complete` did not masquerade as running. Champion and knowledge readers do not move with the pointer. ([autokernel-unified-surface-program](../handoffs/active/autokernel-unified-surface-program.md), [codex-autokernel](../progress/2026-09/2026-09-16-codex-autokernel.md))
+- **Two AutoKernel control-plane fixes.** First, a science abstention now settles as a charged, non-measurement `abstained` outcome instead of stopping the campaign with `SerialSchedulingRefused` (research `fb8a8273`). Second, the hub had been reading a stale `AUTOKERNEL_LOOP_STORE_ROOT` pin, which produced the "v12 unexplained stale" banner; it now follows a guarded durable `current-serial-run.json` pointer (research `8b3b95f6`, root `7ec9f779`). Live `/api/loop` then followed v15 → v16 → v17, and v16's terminal `complete` did not masquerade as running. Champion and knowledge readers do not move with the pointer. ([autokernel-unified-surface-program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [codex-autokernel](../progress/2026-09/2026-09-16-codex-autokernel.md))
 - **The 35B champion max-performance sweep is promoted and recomputed.** It is in research `8c5a9652` + `1eb4a89b`, byte-identical to scratch. Every §6.1/§6.3/§6.6 figure, §6.2 step and §7 ratio, the 24-launch / 2,952-sample / 736.8 s totals and the 19:37:30–20:14:00Z window match. HEAD-4 is closed. ([champion-max-performance](../docs/design/champion-max-performance-20260908.md), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
 - **On the GPU verify path, the batch width picks the kernel.** A DFlash2 verify at n_max 8 has 9 rows, above `MMVQ_MAX_BATCH_SIZE` = 8, so it takes MMQ regardless of the `a6b4b5263` routing patch; that patch now reads `ne11 <= 4` at `ef81196d5`. The resulting 1-row vs multi-row numeric split (also GDN and FA vec vs rocWMMA) is the confirmed cause of the DF2-6 greedy non-parity. `GGML_CUDA_LOG_MMVQ_ROUTE=2` emitted zero lines even though it is compiled in, probably because `GGML_LOG_INFO` is filtered. See [Speculative Decoding](speculative-decoding.md). ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md))
 
@@ -856,14 +856,14 @@ The 2026-09-16 closure audit found that several SHAs this page's kernel record l
 ### Sources
 
 - [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md): the `a4cb04ca8` no-ref provenance notes.
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md): the same provenance note on R24.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md): the branch-only `caa22f42`/`cffb98d3` notes.
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program): the same provenance note on R24.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop): the branch-only `caa22f42`/`cffb98d3` notes.
 - [cpu-decode-roofline-program.md](../handoffs/active/cpu-decode-roofline-program.md): the `1780fa7b` (on main as `56ef1404`) preservation-risk note.
 - [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md): the uncommitted K28 scaffold note.
 - [WIKI-DRAFT.md](../docs/design/inf70-close-out-20260908/WIKI-DRAFT.md): OP-34 lifting BLOCKER 2 and the scoped `--touch`.
 - [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the AK-INST-2 audit, the champion-recipe design and the verify-route reading.
 - [2026-09-16-codex-autokernel.md](../progress/2026-09/2026-09-16-codex-autokernel.md): the GLM v15–v17 relaunch, the regression-label fix and the pointer deployment.
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md): AKU-09l and S3-AKU-18a acceptance.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program): AKU-09l and S3-AKU-18a acceptance.
 - [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) and [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate): the 35B promotion and recompute.
 
 ## Compiled Update — 2026-09-15 (late): AutoKernel disk pressure is a lifecycle-wiring failure, not evidence that every artifact must stay hot
@@ -901,7 +901,7 @@ wall timeout, and bounded output.
   — reviewed manifest totals and non-deletion boundary.
 - [`2026-09-15-autokernel-hardening.md`](../progress/2026-09/2026-09-15-autokernel-hardening.md) — serial
   reaper verification and the contained W4 coverage incident.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   AKU-10 retention ownership and the completed bounded serial-cache slice.
 - [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) —
   invalidated P0c attempt and retry contract.
@@ -948,7 +948,7 @@ wall timeout, and bounded output.
 ### Source References (2026-09-15 pm)
 
 - [a10_iq2_vgpr_compiler_ab_20260915.md](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md) — the static A/B tables, method traps and addendum.
-- [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md) — AK-QL-2b / AK-QL-7 / AK-QL-8.
+- [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-QL-2b / AK-QL-7 / AK-QL-8.
 - [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — INF37-IQ-2 / INF37-IQ-3.
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the #19984 correction.
 - [rocm-upgrade-checklist.md](../docs/runbooks/rocm-upgrade-checklist.md) — unpin gates.
@@ -1034,9 +1034,9 @@ negative, bounded**; never as "demonstrated" on the strength of the source surfa
 
 ### Source References
 
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-58 design, verdict, controls and evidence manifest
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-58 design, verdict, controls and evidence manifest
 - [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CHAMP-2, the per-surface table and the two-knob distinction
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — the correction of record on the cross-surface-transfer ledger entry, and U3-DEFAULTS resolved negative
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the correction of record on the cross-surface-transfer ledger entry, and U3-DEFAULTS resolved negative
 - [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the GPU serving recipe as measured, with the shim absent by design
 
 ## Compiled Update — 2026-09-08 (pm): the CPU champion's throughput varies ~12% between process launches while the pristine build does not
@@ -1076,9 +1076,9 @@ previously recorded "candidate (unproven)" source of foreign load.
 
 ### Source References
 
-- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-57 (the spread, the controls, the named suspects), R23-56 (host-state record and the confound correction).
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-57 (the spread, the controls, the named suspects), R23-56 (host-state record and the confound correction).
 - [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CHAMP-2 (THP under test on the consolidated champion), CHAMP-3 (multi-launch headline requirement).
-- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — §3.2 U2: per-surface floors carry `unit`, and headline admissibility is a surface property.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — §3.2 U2: per-surface floors carry `unit`, and headline admissibility is a surface property.
 - [progress 2026-09-08 (ak-rebuild)](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — session record of the four sessions, the pristine control, and the 12:05Z host change.
 
 ## Compiled Update — 2026-09-08: measurement scope and close-out corrections
@@ -1119,7 +1119,7 @@ orders build/oracle/A–B/commit within that process; it does not serialize fore
 - [CPU roofline, MEAS-6](../handoffs/active/cpu-decode-roofline-program.md) — drain versus seed-chain observations and their attribution limit.
 - [September 8 CPU audit](../progress/2026-09/2026-09-08-inf70-audit.md) — arm-level replication, unresolved effects and hot-harness timing.
 - [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — foreign-load loss, completed fold and nonempty evidence guards.
-- [Unified-surface design audit](../handoffs/active/autokernel-unified-surface-program.md) — serialized-tail scope and conditional partition/coexistence proposals.
+- [Unified-surface design audit](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — serialized-tail scope and conditional partition/coexistence proposals.
 - [Batched decode](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) and [NUMA placement](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — sub-floor claims qualified separately from operational mechanisms.
 - [Fused decoder](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [prefill](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models), and [shape-specialized decode](../handoffs/completed/cpu-shape-specialized-gemv-decode.md) — superseded opportunity framing and prior branch dispositions.
 
@@ -1153,8 +1153,8 @@ Fold window: `inf70/champion3` folds unchanged; `cor 445e93a8` built at `/mnt/ra
 
 ### Source References (2026-09-08, unified surface)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — the directive, tracks U1–U5, phases P0–P5, the UD-0/UD-4 decision rows, and the risk list.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-48 (LOO), R23-49 (co-tenancy), R23-50a, R23-51a, R23-52/52b (heartbeat), R23-53 (headline audit).
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — the directive, tracks U1–U5, phases P0–P5, the UD-0/UD-4 decision rows, and the risk list.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-48 (LOO), R23-49 (co-tenancy), R23-50a, R23-51a, R23-52/52b (heartbeat), R23-53 (headline audit).
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the three complaint fixes and the fold-window state.
 - [`progress/2026-09/2026-09-07-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-07-ak-rebuild-20260828.md) — run-29/30 launch day: durable bundle, orphan-keep audit, P4-0 merge, actor defaults.
 
@@ -1275,7 +1275,7 @@ consolidated; **lifting the directive is the operator's call.**
 - [`docs/design/champion-consolidation-audit-20260908.md`](../docs/design/champion-consolidation-audit-20260908.md)
   — the consolidation audit: git custody of the fold, ancestry containment, and the `--branches`
   backup lesson.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
   — U1/U3: CPU keeps entering the durable bundle, and the `RUNTIME_CONFIG` arm type under which the
   THP shim was filed on the GPU surface (its first worked instance).
 ```
@@ -1359,7 +1359,7 @@ The decision package is three options — (A) SERIALIZE heavy tooling against be
 - [`progress/2026-09/2026-09-07-inf70-audit.md`](../progress/2026-09/2026-09-07-inf70-audit.md) — UP-1/UP-2, HYG-1b/2/2b/3, PROD-1, INF-71, HARNESS-1, MEAS-1/MEAS-2/MEAS-3, and the reclaim ledger.
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — the champion block and HARNESS-1 arms; CHAMP-2/CHAMP-3, PROD-1, the B4 artifact ruling.
 - [`exl3-trellis-cpu-kernel.md`](../handoffs/completed/exl3-trellis-cpu-kernel.md) — the NO-GO status line, the four corrections, and the X0 format-spec record (no separate MTP head; vision on 3.05; K3/K4 pairing).
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — champion-3 identity at the fold boundary and the provisional-magnitude labelling of CPU keeps.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — champion-3 identity at the fold boundary and the provisional-magnitude labelling of CPU keeps.
 
 ## Compiled Update — 2026-09-08: the rtx6kpro intake — a CUDA-side field wiki read for stealable kernel hypotheses
 
@@ -1379,7 +1379,7 @@ The intake record is a community field wiki for serving frontier open-weight LLM
 ### Source References (2026-09-08, rtx6kpro)
 
 - [`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md) — credibility audit, the filed-candidate table, the INF-70 CPU-path note, contradictions 1–10, and the complete not-transferable list.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-42/43 (bench≠serving), R23-46/47 (protocol filings), AK-H-SV-1/SV-2, AK-H-AQ-1/LD-1/CP-1 inbox rows.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-42/43 (bench≠serving), R23-46/47 (protocol filings), AK-H-SV-1/SV-2, AK-H-AQ-1/LD-1/CP-1 inbox rows.
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — SL-1..SL-5, DF2-RNG, RULE-RESCOPE destinations.
 
 ## Compiled Update — 2026-09-07: a capability probe that asks the wrong runtime can only answer NO
@@ -1441,7 +1441,7 @@ The mechanism was fully on disk before the ladder ran — the Q8_0 roofline work
 ### Source References (2026-08-16)
 
 - [A10 quant-ladder occupancy knee](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung batch-1 table, the batched sweep, the suspected B=8 outlier, the GiB/GB unit hazard, and the full caveat list.
-- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-research-loop.md) — the re-aimed lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census.
+- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the re-aimed lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census.
 - [A10 IQ2 VGPR lever](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the static per-quant table and the extraction method that made the prediction four days early.
 - [MI210 Q8 dequant GEMV roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the "achieved-bandwidth/occupancy, NOT dequant-compute" prior, the 1433.3 GB/s measured achievable denominator, and the latent-exposure tripwire for the day an IQ-format role becomes GPU-resident.
 
@@ -1518,7 +1518,7 @@ than an active serving regression, but that path is not numerically trustworthy 
 
 - [`fable5-window2-findings-02-heterogeneous-gpu.md`](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu)
   — corrected gates, exact role probes, and evidence locations.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — ratified P-GPU-1
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — ratified P-GPU-1
   duty-cycle semantics and receipt.
 - [`llama-cpp-dsa-contribution.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) — D4 reproduction,
   root-cause boundary, production impact, and upstream next step.
@@ -1582,7 +1582,7 @@ does not convert discovery records into promotion authority.
 
 ### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — current task and
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — current task and
   evidence ledger, strict failure repair, r6 stop, and controller boundary.
 - [Inference progress](../progress/2026-08/2026-08-13-inference.md) — exact discovery outcomes,
   correctness failure, post-fix calibration prefix, and release verification.
@@ -1680,7 +1680,7 @@ An evidence-authority audit draws a line this page must respect: the rows above 
 
 ### Source References (2026-08-12, kernel-lever pass)
 
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — G15/G17/G18 closures, async-prefetch replays, AK-BH baseline-honesty arms, AK-LN-2 split-depth calibration, and the evidence-authority audit.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — G15/G17/G18 closures, async-prefetch replays, AK-BH baseline-honesty arms, AK-LN-2 split-depth calibration, and the evidence-authority audit.
 - [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 saturation replications, the Q4_K MMQ root cause and 172/172 fix, and the RVP-C5-R historical expert replay.
 - [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline) — the stream-K retirement, Item A/B/C rungs, and the IQ2 fancy-SIMD one-row narrowing.
 - [`mi210-mfma-compute-bound-paths.md`](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — the synthetic WGM16 proxy optimum that the real MMQ sweep inverts.
@@ -1763,7 +1763,7 @@ build identity.
 
 ### Source References (2026-08-12 ROCm-provider boundary)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-D39 and the binding provider/integration rules
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-D39 and the binding provider/integration rules
 - [System-wide kernel optimization design](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — mutation hierarchy and hardware caveat
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured rationale and operator acceptance
 
@@ -1896,7 +1896,7 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the v9 freeze narrative, certification results, and the AutoKernel non-inference hardening checkpoint (§"production-consolidated-v9 final freeze", §"AutoKernel non-inference hardening checkpoint")
 - [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) §C — the stale-by-v9 sweep across three repos, with per-surface owner triage
 - [`artifacts/operator/ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — the operator freeze ratification receipt
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the native C6 sandbox extension and AK-TR-4/AK-X-3/AK-X-5/AK-X-6 hardening controls
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the native C6 sandbox extension and AK-TR-4/AK-X-3/AK-X-5/AK-X-6 hardening controls
 - [`handoffs/completed/cpu-shape-specialized-gemv-decode.md`](../handoffs/completed/cpu-shape-specialized-gemv-decode.md) — A17 re-anchor to the barrier-count lever
 - [`handoffs/completed/cpu-kernel-env-flags-inventory.md`](../handoffs/completed/cpu-kernel-env-flags-inventory.md) — A18 trace-interpretation column, all 24 flags
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 hold, RVP-T0-2/T0-5 static probe results
@@ -1927,7 +1927,7 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 
 ### TileLang is a live gfx90a arm — an internal HARD_CONSTRAINT overstates its abandonment
 
-GEAK's own `perf_knowledge/languages/tilelang/overview.md` (updated 2026-06-08, HEAD `5107c7e4`) tags `gens: [gfx90a, gfx942]` and "validated on MI250". That agrees with [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) and **contradicts** the `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT in [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md), whose TileLang clause would wrongly fence a live lever. This article's own line asserting the opposite was corrected the same night. Unchanged by the same sweep: **FlyDSL remains gfx942/gfx950-only** and is correctly *not* a current MI210 arm; and the vendor tile/template family (CK / CK-Tile / rocWMMA) carries real gfx90a baselines while our corpus records it only in passing as "CK = baseline to beat" — worth an explicit baseline-source row when the C4 profiler work lands.
+GEAK's own `perf_knowledge/languages/tilelang/overview.md` (updated 2026-06-08, HEAD `5107c7e4`) tags `gens: [gfx90a, gfx942]` and "validated on MI250". That agrees with [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) and **contradicts** the `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT in [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), whose TileLang clause would wrongly fence a live lever. This article's own line asserting the opposite was corrected the same night. Unchanged by the same sweep: **FlyDSL remains gfx942/gfx950-only** and is correctly *not* a current MI210 arm; and the vendor tile/template family (CK / CK-Tile / rocWMMA) carries real gfx90a baselines while our corpus records it only in passing as "CK = baseline to beat" — worth an explicit baseline-source row when the C4 profiler work lands.
 
 ### The CPU lineup retired quarters entirely; the names did not follow
 
@@ -2454,7 +2454,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **Throughput-vs-context: the "hybrid stays flat" hypothesis is FALSIFIED (SWA confound).** 1k→64k single-stream decode degrades qwen35 hybrid **−22.3%** vs gemma-4 **−7.9%** — the OPPOSITE of expected. Root cause (GGUF metadata): gemma-4 uses sliding-window attention (bounded per-layer KV → context-capped decode) while qwen35's ~1/4 attention layers are full-global (unbounded KV growth). GDN context-independence is real, but the full-global attention layers dominate degradation; a clean GDN-flatness test needs a non-SWA dense baseline (gemma-4 is not one). qwen35's full-global attention is a recall advantage, not a pure loss.
 - **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/agentic-rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md)).
 - **CAMPAIGN OUTCOME (updated 2026-07-04 EOD — speed exhausted; frontier moved to capability).** Every kernel/occupancy bet has now been driven to a verdict, and the honest conclusion is convergence. Single-stream dense-Q8 banked **+37% (40.4 t/s)** — MMVQ +17.4%, nwarps 2→4 +4.6% (`5dc116130`), async-prefetch +3.3% (`7c28056b7`) — then **fused-prefetch, megakernel (Pass-2: MLP/memory floor — HIP graphs already capture the only +5.9% launch headroom), n-gram-GPU-spec, MFMA, and the L3-MoE MMQ-occupancy rewrite were all ruled out WITH DATA** (the last: *built* then falsified — Q8-MMQ at B=32 is **grid-limited** (104 WGs = 1/CU), not LDS-limited, and bf16 wins on native-MFMA not occupancy). Aggregate is solved by **config, not kernels**: **`-fa 1` is a WIN for MoE aggregate** (B≥8, +16–43%, peak **bf16+`-fa1` @B128 = 1548 t/s** — the *opposite* of dense-27B where FA hurt) and **bf16-for-aggregate / Q8-for-single-stream** (crossover B≈16–24). L20 GDN-occupancy scoped **NO-GO** (theoretical occupancy already 100% — nothing to free; the one modest lever is bf16 recurrent-state, ~+11%@B32, drift-gated). **Load-bearing meta-finding: a lever's sign is set by {arch × substrate × batch} — never carry a spec-dec / quant / FA verdict across dense↔MoE or GPU↔CPU.** With speed at bedrock, the frontier moved to **capability**: the CDNA2 sub-4-bit MMQ path is already numerically correct (`MUL_MAT_ID 789/789` across IQ2/IQ3/IQ1), so IQ2 unlocks **Qwen3.5-122B-A10B @ ~38 GB fully GPU-resident** — the residency bet's real prize (GLM-5.2 ~238 GB still won't fit). Top-line: [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) · [lever × model-category matrix (findings-05c)](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-05c-mi210-lever-category-matrix).
-- **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-08-11): the historical four-phase scaffold is reconciled into the system-wide AutoKernel loop.** Design history: [mi210-kernel-rnd-loop-proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md); current owner: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md).
+- **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-08-11): the historical four-phase scaffold is reconciled into the system-wide AutoKernel loop.** Design history: [mi210-kernel-rnd-loop-proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md); current owner: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop).
 
 ### 2026-07-03 — Roofline-gap synthesis (CPU v6+iqk & MI210) and the GPU-program un-gating
 
@@ -3812,7 +3812,7 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 
 - **CUDA graphs and kernel fusion destroy `kernel → cpu_op → source` attribution, so a single optimized trace tells you what is slow but not what produced it.** The upstream discipline is a *two-trace* protocol: a mapping trace captured with graphs disabled or lower fusion, then a formal trace with the real optimizations on. **The convergence worth recording is accidental and useful**: our own tooling audit independently found that `rocprof` v1 *aborts at init on graph-enabled builds*. The capture mode our profiler can survive is therefore the same one that yields source attribution — which turns a recorded tooling limitation into a two-phase protocol rather than a blocker. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1026, intake-1025.
 
-- **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), intake-1026.
+- **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), intake-1026.
 
 - **A kernel-time-share table is structurally blind to an entire class of bottleneck.** The reference catalog excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" *by written policy*, so a host/device transfer cost has no row and cannot surface. Any analogue we build must widen that scope deliberately or pair it with a host-side catalog. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1029, intake-1027 (`stage1-unverified` — no figure from it may be cited).
 ## Compiled Update — 2026-08-10: the gfx90a kernel-agent program re-aimed, and a claim compiled here retired
@@ -3987,7 +3987,7 @@ gap left deliberately open.
 
 ### Source References (2026-08-12 current-v9 controls)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — exact control receipts, archive-builder boundary, and Step-3 gate
 - [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
 - [Kernel-R&D operational-truth audit](../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md) — selector, producer, health, and production-attestation findings
@@ -4011,7 +4011,7 @@ consistent direction does not substitute for a predeclared material-effect thres
 
 ### Source References (2026-08-12 clean instrument and replay)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — instrument identity, control dependency order, and replay verdict
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — instrument identity, control dependency order, and replay verdict
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
 ## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
@@ -4036,7 +4036,7 @@ that every workload lacks a novel-kernel opportunity.
 
 ### Source References (2026-08-12 provenance audit)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — campaign dependency order and matched-archive gates
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
 ## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
@@ -4102,7 +4102,7 @@ controls. No inference or production-stack change was needed.
 ### Source References (2026-08-11 C6 host sandbox)
 
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — syscall-confinement acceptance contract and live campaign ownership
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — syscall-confinement acceptance contract and live campaign ownership
 - [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
 ## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
 
@@ -4145,7 +4145,7 @@ claim.
 
 ### Source References (2026-08-11 WGM/authoring closeout)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
 - [MI210 MFMA compute-bound paths](../handoffs/completed/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
@@ -4304,7 +4304,7 @@ remain; the search must move below both the implementation choice and a one-para
 
 ### Source References (2026-08-11 AutoKernel correctness)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — live checkpoint,
   baseline-honesty receipts, independent fp64 oracle, and next calibration step.
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
   contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
@@ -4536,7 +4536,7 @@ improve dashboard health.
 
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning repair,
   isolation, fresh-pilot tasks, exact r4 counts, and authority limits.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — cross-loop retraction
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — cross-loop retraction
   and superseded completion-audit conclusion.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — receipt/log findings, teardown, dashboard
   projection, and derived-actionable sweep.
@@ -4586,7 +4586,7 @@ hook; reference or synthetic tensors cannot substitute.
 
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — paired
   RVP-C4-4a/4b identities, attribution, released claims, and deterministic router results.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — operator-approved ROCm
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — operator-approved ROCm
   target hierarchy, provider/champion boundary, and isolated module lifecycle task.
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r17 repair,
   immutable r18 posture, C3/C5 capture seam, and exact remaining hook artifacts.
@@ -4633,7 +4633,7 @@ pair, then project AK-WM-2a and run AK-WM-2b observe-only.
 
 ### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — ratified discovery
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — ratified discovery
   contract, exact live screen identities, r42/r43 terminal outcomes, and remaining empirical chain.
 - [Inference progress, 2026-08-13](../progress/2026-08/2026-08-13-inference.md) — the preceding r41
   strict result, evaluator-identity race, and candidate-only execution implementation checkpoint.
@@ -4989,7 +4989,7 @@ no new findings — its active-path pointer is the active handoff, already compi
 
 ### Source References (2026-08-23 v27 pre-launch)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the v27 restart
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the v27 restart
   checkpoint: science 0/10, the `a7aaa47a` provider-policy skip, both new commits with their
   remaining items, and the AK-V27 row list.
 - [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — the durable branch map with
@@ -5157,7 +5157,7 @@ for that surface only.**
 
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-8 build-flag ruling, CH-6 settlement, and the CH-4 anchor validation
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — DF2-9, the build-flag trap and the prompt-length discriminator
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the original MMQ_MFMA screen and the AK-BH factorial it replicates against
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the original MMQ_MFMA screen and the AK-BH factorial it replicates against
 
 ## Compiled Update — 2026-08-30: the champion exists to be beaten — and the fused decoder block is the plan for batch-1 CPU decode
 
@@ -5262,22 +5262,22 @@ dispatch path is taken at run time.
   is often available when the first is not.** The recipe was declared unverifiable and the question
   was dropped; comparing the artifacts the recipe produces was available the whole time, and it is
   the claim that actually licenses using the recipe as a production stand-in.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **Symbol-set identity across two independently produced shared objects is a strong, cheap
   equivalence check** — 584/584 on the CPU backend and 918/918 distinct device kernels on HIP, with
   zero symbols unique to either side. It does not prove instruction-level identity, and should not be
   claimed to; it does exclude the whole class of "a flag we did not set dropped a code path".
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **A build-time flag and a runtime env gate look identical from a `cmake` invocation that omits
   both.** `GGML_IQK` being absent from a candidate's cmake line said nothing about whether iqk was in
   the binary, because it was never a cmake option; the discriminator is `nm` on the produced library,
   not the configure command. Any reasoning that treated its absence from the build line as evidence
   of absence from the build is void.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ### Source References (2026-08-30, build equivalence)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the "NEW FACT" bullet with the symbol counts and the R18-A follow-on; the iqk correction bullet.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — CURRENT STATE: the "NEW FACT" bullet with the symbol counts and the R18-A follow-on; the iqk correction bullet.
 - [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-15, which records why this matters to the champion's anchor identity and to CH-1's build recipe.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §5 (the iqk correction) and §6 (the symbol-identity table).
 
@@ -5303,7 +5303,7 @@ oracle 3/3 — inside the chain-estimate band [11.2–15.3], so the manual and l
 Sources:
 
 - [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the reconciled standing and the capability rules.
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2, R21-2.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L2, R21-2.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3.
 
 ---
@@ -5336,7 +5336,7 @@ surface, not a build detail.
 
 ### Source References (2026-08-31 evening)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 pilot sub-items, R21-6.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L6, R21-5 pilot sub-items, R21-6.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10.
 
 ## Compiled Update — 2026-08-31 (incremental): external audit corrections; the INF-68 quant-type-mix baseline control
@@ -5989,7 +5989,7 @@ cores.
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CLOSE-8
   (admission control, not screening; the row is a POINTER, not a second owner — the operator owns the
   admission-control design under OP-41 → INF-73 §3.4) and CLOSE-10 (the sampler's coverage gap).
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
   — U4: the resource broker, arm-second budgets, and the structural resolution of OP-41.
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
   — the peer campaign's serving-floor recalibration and its side of the shared window.
@@ -6017,7 +6017,7 @@ opt-in rather than a silent side effect. Generalizes: "disjoint core ranges" is 
 isolation on any SMT host without checking siblings; and co-tenancy audits should look for
 *build/compile* contention as a first-class candidate, not just the benchmark process itself.
 Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"CPU co-tenancy with INF-70"),
-`handoffs/active/autokernel-rebuild-program.md` (R23-49), research commit `da3b0368` →
+`handoffs/active/autokernel-loop.md` (R23-49), research commit `da3b0368` →
 main `7996467f`.
 
 ## 48 threads is a MEASURED OPTIMUM, not a comparability convention — and its measurement expired when the floor moved 2.76× (2026-09-08)
@@ -6106,7 +6106,7 @@ operator. The companion **R23-65** recalibrates every floor after that reboot.
   — `D4` (the closed thread sweep, its re-open condition, and the 2026-09-08 pointer recording that
   the condition is met), the `MEAS-4` correction block, and the C5 decode-anchor and DRAM-bandwidth
   ledger rows.
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md)
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
   — **R23-64** (the reboot-gated thread re-sweep, with its unit and floor) and **R23-65**
   (post-reboot floor recalibration).
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
@@ -6183,7 +6183,7 @@ recorded for the broker design are:
 
 ### Source References (2026-09-15, research-intake noninf-20260914)
 
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) —
   U4-SEQ *Off-the-shelf admission check — CLOSED*: patterns (i)–(x) and cpuset/resctrl options A–E.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) —
   AP-63(b): the lane-arbiter precondition re-pointed at OP-41 after the queue check.
@@ -6237,7 +6237,7 @@ premise. The in-loop serving-shape decomposition for DS41 is:
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C36, DS41-C43, DS41-C7a.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the run 10g/10h narrative.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — the planner/author context.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — the planner/author context.
 
 **Confidence:** measured on one host, one day, not idle; repeat on an idle host before quoting it as the
 ceiling.
@@ -6332,7 +6332,7 @@ An ATT thread-trace MFMA-efficiency metric (total MFMA cycles over the average h
 ### Source References
 
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — §Research Intake Update 2026-09-26; INF03-REGAUDIT-1 result, REGAUDIT-2/3, INF03-AGPR-1 (gate lifted), INF03-GLUON-X.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — gfx90a MMQ seed set; AK-MMQ-H10 negative result and its falsifier.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — gfx90a MMQ seed set; AK-MMQ-H10 negative result and its falsifier.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the CH-6 correction note.
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — the MFMA-form-by-compiler audit row.
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-ATT-1.
@@ -6382,7 +6382,7 @@ That is about **+11%** for spinning (the arm ranges above; the ratified P-AK-SEA
 ### Source References
 
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF03-REGAUDIT-2 ✅, REGAUDIT-3 and AGPR-1 parks.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-MMQ-H3/H5/H7/H8 parks and the H10a/H10b window-script notes.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-MMQ-H3/H5/H7/H8 parks and the H10a/H10b window-script notes.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — V6R-4c park.
 - [Fable5 window-2 findings 02 (heterogeneous GPU)](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — F7/F6 freeze.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — the SC84 read side at `341fef03`.
@@ -6471,7 +6471,7 @@ The first low-bit profile measured a Q8_0-to-Q4_K roofline gap (70.2% vs 46.5% f
 ### Source References
 
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, serving receipt, held-out candidates.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — seed #1 route and single-run candidate results.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — seed #1 route and single-run candidate results.
 - [EXL3 CPU and MI210 implementation](../handoffs/active/quantization-and-low-bit.md) — preregistered X0 rule, results and open device-correctness gates.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — first LB1 profile and X0 result summary.
 - [Agent loop design](../docs/guides/agent-workflows/agent-loop-design.md) — campaign scope, Fable seed role and model-specific dispatch guidance.
@@ -6537,14 +6537,14 @@ Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-p
 
 Source references: [stack pipeline finalization](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization), [RVP parent/source gates](../handoffs/active/rocm-verify-profile-backend.md), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
-The13:40Z owner checkpoint also records atomic activation of the exact reference-hook bytes after its separate seven-control validation; settings/mode/shared checkout HEAD are recorded unchanged. This wiki cites that owner record rather than asserting a new independent runtime verification. [Dated original owner progress](../progress/2026-10/2026-10-07.md), [unified campaign scope](../handoffs/active/autokernel-unified-surface-program.md), [all-device gate boundaries](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions).
+The13:40Z owner checkpoint also records atomic activation of the exact reference-hook bytes after its separate seven-control validation; settings/mode/shared checkout HEAD are recorded unchanged. This wiki cites that owner record rather than asserting a new independent runtime verification. [Dated original owner progress](../progress/2026-10/2026-10-07.md), [unified campaign scope](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [all-device gate boundaries](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions).
 
 
 ### Owner-reported full-gate failure remains a failure — 2026-10-07
 
 The14:18Z owner checkpoint records focused394/394 passing while the original full gate has5,129 passed/103failed/11skipped/two xfailed. Full/native waits1 and full-stage cleanup false remain distinct from later worker-final cleanup true. Targeted repair passes do not establish consolidated acceptance or activation. G3 mask/64k progress retains native identity, grade and cleanup prerequisites. This synthesis attributes findings to the dated owning-session record and adds no independent inference, cleanup or runtime warrant.
 
-Source references: [owner original checkpoint](../progress/2026-10/2026-10-07.md), [unified-surface campaign](../handoffs/active/autokernel-unified-surface-program.md), [NI08 source-only scope](../docs/reference/ni08-non-inference-continuation.md).
+Source references: [owner original checkpoint](../progress/2026-10/2026-10-07.md), [unified-surface campaign](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [NI08 source-only scope](../docs/reference/ni08-non-inference-continuation.md).
 
 ## Owned capacity recovery and separate AutoKernel verification — 2026-10-07
 
@@ -6552,9 +6552,9 @@ Source references: [owner original checkpoint](../progress/2026-10/2026-10-07.md
 
 The parallel AutoKernel owner independently retains the failed r5 full run and its103 failures. Its later G3 verification preserves all16 original masks and records98 new native terminal observations after the canonical-path producer repair, with original waits zero and provider-held cleanup. The shared Judged/Located result qualifies same-build self-conformance; complete r6 validation and corpus publication remain separate owner gates. The NI08 capacity acknowledgment supplies receipt/custody only, without granting a runtime or GPU boundary.
 
-Source references: [capacity originals and limits](../artifacts/ni08/sparse-capacity-second-request-20261007/README.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [owner daily record](../progress/2026-10/2026-10-07.md), [NI08 capacity and source progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [capacity originals and limits](../artifacts/ni08/sparse-capacity-second-request-20261007/README.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [owner daily record](../progress/2026-10/2026-10-07.md), [NI08 capacity and source progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
-Later preserved owner checkpoint: r6 focused394/394 and fresh CPU launcher telemetry8observations/16child waits passed under their original owner boundary, with source/cleanup checks retained. Full-runtime wait and validated marker remain absent, and live GPU still needs an authentic owner window. This is a separate qualified source/fixture result, not clearance for NI08 or the production stack. Source references: [current AutoKernel owner record](../handoffs/active/autokernel-unified-surface-program.md), [daily checkpoint](../progress/2026-10/2026-10-07.md), [MAIN scope](../docs/reference/ni08-non-inference-continuation.md).
+Later preserved owner checkpoint: r6 focused394/394 and fresh CPU launcher telemetry8observations/16child waits passed under their original owner boundary, with source/cleanup checks retained. Full-runtime wait and validated marker remain absent, and live GPU still needs an authentic owner window. This is a separate qualified source/fixture result, not clearance for NI08 or the production stack. Source references: [current AutoKernel owner record](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [daily checkpoint](../progress/2026-10/2026-10-07.md), [MAIN scope](../docs/reference/ni08-non-inference-continuation.md).
 
 ## Source-view hydration conserves originals — 2026-10-07
 
@@ -6562,7 +6562,7 @@ Later preserved owner checkpoint: r6 focused394/394 and fresh CPU launcher telem
 
 ## Parallel AutoKernel owner: retained full-run failure — 2026-10-07
 
-**Confidence: attributed to the published owner checkpoint.** The other session’s r7 focused gate passed 495 tests, including all 30 cases affected by its missing-reader-fixture repair. Its original full run subsequently finished with one failure, 5,243 passes, 11 skips, two expected failures and 287 passing subtests. Original full/native/driver waits remain nonzero, with no validated receipt or runtime clearance. The remaining experimental GPU roster fixture has a privately reviewed scheduler-cost repair; its targeted and fresh full results remain pending. The maintenance window resumed its original owners and renewal refused before signaling. CPU fixture evidence does not grant a live GPU window or authorize NI08 to activate the stack. [Published owner record](../handoffs/active/autokernel-unified-surface-program.md), [owner progress](../progress/2026-10/2026-10-07.md).
+**Confidence: attributed to the published owner checkpoint.** The other session’s r7 focused gate passed 495 tests, including all 30 cases affected by its missing-reader-fixture repair. Its original full run subsequently finished with one failure, 5,243 passes, 11 skips, two expected failures and 287 passing subtests. Original full/native/driver waits remain nonzero, with no validated receipt or runtime clearance. The remaining experimental GPU roster fixture has a privately reviewed scheduler-cost repair; its targeted and fresh full results remain pending. The maintenance window resumed its original owners and renewal refused before signaling. CPU fixture evidence does not grant a live GPU window or authorize NI08 to activate the stack. [Published owner record](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [owner progress](../progress/2026-10/2026-10-07.md).
 
 ## Later r8 owner checkpoint — 2026-10-07
 
@@ -6570,18 +6570,18 @@ Later preserved owner checkpoint: r6 focused394/394 and fresh CPU launcher telem
 
 At that dated checkpoint the foreground dry run and CPU batch-boundary activation were still progressing. Live GPU work continued to require an authenticated executor, native schedule/grant and serving-owner window. Publication of the experimental candidate does not modify frozen production or authorize this session to reload, activate or run inference.
 
-Source references: [published owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [dated owner progress](../progress/2026-10/2026-10-07.md), [NI08 source-only boundaries](../docs/reference/ni08-non-inference-continuation.md).
+Source references: [published owner checkpoint](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [dated owner progress](../progress/2026-10/2026-10-07.md), [NI08 source-only boundaries](../docs/reference/ni08-non-inference-continuation.md).
 
-The later published18:11 UTC owner record reports corpus publication followed by a failed CPU startup: the serial parser refused the explicit actor-sandbox option before a native batch started. The owner preserved the failed generation and reaped its nine captured process identities; CPU lanes are stopped while the separately tested parser correction awaits whole-candidate validation and publication. The GPU dry runs also retain their original failures, with a fresh campaign store and strict MI210 identity checks under review. No actual GPU measurement or serving park is reported. These are dated owner findings, without a new runtime warrant or NI08 task closure. [Later owner record](../handoffs/active/autokernel-unified-surface-program.md), [original daily checkpoint](../progress/2026-10/2026-10-07.md).
+The later published18:11 UTC owner record reports corpus publication followed by a failed CPU startup: the serial parser refused the explicit actor-sandbox option before a native batch started. The owner preserved the failed generation and reaped its nine captured process identities; CPU lanes are stopped while the separately tested parser correction awaits whole-candidate validation and publication. The GPU dry runs also retain their original failures, with a fresh campaign store and strict MI210 identity checks under review. No actual GPU measurement or serving park is reported. These are dated owner findings, without a new runtime warrant or NI08 task closure. [Later owner record](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [original daily checkpoint](../progress/2026-10/2026-10-07.md).
 
 
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence
 
-The 19:03 owner handoff reports that the r9 focused/full software suites passed (495 focused tests; 5,255 full tests, 287 subtests, 11 skips and 2 expected failures) and the accepted ROOT r9 runtime record and Research publication were preserved. That dated handoff records its runtime limit: DS8/Q5 CPU batches were active, but the activation helper exited 1 on its detached-launcher ancestry assumption, so startup timing and first native physical-window release/reacquisition are not a pass; GPU validation still needs an authenticated serving executor and scheduled grant. This is an attributed handoff report, not MAIN's independent runtime verification, a measurement/performance claim, or NI completion. [AutoKernel campaign record](../handoffs/active/autokernel-unified-surface-program.md) · [dated progress](../progress/2026-10/2026-10-07.md).
+The 19:03 owner handoff reports that the r9 focused/full software suites passed (495 focused tests; 5,255 full tests, 287 subtests, 11 skips and 2 expected failures) and the accepted ROOT r9 runtime record and Research publication were preserved. That dated handoff records its runtime limit: DS8/Q5 CPU batches were active, but the activation helper exited 1 on its detached-launcher ancestry assumption, so startup timing and first native physical-window release/reacquisition are not a pass; GPU validation still needs an authenticated serving executor and scheduled grant. This is an attributed handoff report, not MAIN's independent runtime verification, a measurement/performance claim, or NI completion. [AutoKernel campaign record](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) · [dated progress](../progress/2026-10/2026-10-07.md).
 
 ### Dated owner update — 2026-10-07 19:43 UTC
 
-The [AutoKernel owner report](../handoffs/active/autokernel-unified-surface-program.md) records a 300-second CPU activation/health validation, an active lane monitor, and a first DS batch with six abstentions and no candidate measurement or keep. It reports eight native CPU-v2 locks held for 224.124 seconds and one settled scheduler receipt, with no subsequent reacquisition recorded because no candidate reached measurement. GPU foreground dry validation still awaited the existing build-claim holder; live serving changes awaited an authenticated owner window. These are dated owner-reported outcomes, with the original acceptance paths and hashes retained in the handoff; this non-inference session did not re-run or independently validate the runtime work.
+The [AutoKernel owner report](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) records a 300-second CPU activation/health validation, an active lane monitor, and a first DS batch with six abstentions and no candidate measurement or keep. It reports eight native CPU-v2 locks held for 224.124 seconds and one settled scheduler receipt, with no subsequent reacquisition recorded because no candidate reached measurement. GPU foreground dry validation still awaited the existing build-claim holder; live serving changes awaited an authenticated owner window. These are dated owner-reported outcomes, with the original acceptance paths and hashes retained in the handoff; this non-inference session did not re-run or independently validate the runtime work.
 
 ### Capacity and runtime claims stay within their evidence windows — 2026-10-07
 
@@ -6591,15 +6591,15 @@ The C26 46/46 result is a mocked source/control observation, not a physical serv
 
 ### Dated AutoKernel owner update — 2026-10-07 21:43 UTC
 
-The [owner’s 21:43 handoff and matching daily checkpoint](../handoffs/active/autokernel-unified-surface-program.md) report a fresh serving-ownership correction and paused CPU recovery. A dependency audit found four C26 cancellation files on Research main; the proposed CPU candidate was normally rebased/merged to include them, but its new source/runner/control approval and 15 socket controls remain unexecuted. A common CPU/GPU serving fix is committed, while the combined focused/full validation remains pending. The report separately records a GPU window-cap correction published and activated, 101 focused tests and final gates passed, an installed R8 foreground DRY, and a new R10 candidate awaiting its full result. These owner-reported source and software-control outcomes do not establish live GPU measurement, current runtime admission, or an NI08 completion.
+The [owner’s 21:43 handoff and matching daily checkpoint](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) report a fresh serving-ownership correction and paused CPU recovery. A dependency audit found four C26 cancellation files on Research main; the proposed CPU candidate was normally rebased/merged to include them, but its new source/runner/control approval and 15 socket controls remain unexecuted. A common CPU/GPU serving fix is committed, while the combined focused/full validation remains pending. The report separately records a GPU window-cap correction published and activated, 101 focused tests and final gates passed, an installed R8 foreground DRY, and a new R10 candidate awaiting its full result. These owner-reported source and software-control outcomes do not establish live GPU measurement, current runtime admission, or an NI08 completion.
 
 The same owner update reports reversible sparse exclusions across four owned idle checkouts, recovering 833,712,128 allocated bytes while observed free space remained below the existing 100 GiB floor. A capacity request reached the allocation owner with queue wait zero, but acknowledgment/review is not recovery or admission. The DS41 placement recipe remains locally adopted and unpromoted; live GPU still requires a genuine serving-owner window. Attribute these statements to the dated owner report; this session did not perform the runtime or capacity operations.
 
-Source: [AutoKernel owner handoff](../handoffs/active/autokernel-unified-surface-program.md) · [matching dated owner progress](../progress/2026-10/2026-10-07.md).
+Source: [AutoKernel owner handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) · [matching dated owner progress](../progress/2026-10/2026-10-07.md).
 
 ### Dated AutoKernel owner update — 2026-10-07 22:12 UTC
 
-The [owner handoff](../handoffs/active/autokernel-unified-surface-program.md) and [matching daily checkpoint](../progress/2026-10/2026-10-07.md) report final serving candidate `a150351b794ae5613d97251adb822c49aed7ee8e`, including the socket-ownership correction, current-main calibration cancellation and six explicitly synthetic serving fixtures; its exact 138-file source map is `725f3721`. ROOT completed source reviews for the targeted and full runners, targeted proof publisher, approved-false full proposal writer, DS9/Q6 activation, paused DS8/Q5 retirement and read-only monitor. The report claims no new native run, full-suite pass or activation pass. Its 23-file GPU R11 proposal binds that candidate and published provider 22, with the fresh `b0ba1d427` store absent; genuine runtime, foreground DRY, serving-owner/window and restore evidence remain pending. The allocation-owner request is acknowledged and safe recovery review is underway, but admission still requires two actual above-100-GiB observations and a fresh post-materialization floor check. Reported recovery retained its evidence and recovered 833,712,128 bytes; this does not establish storage admission or a serving grant. These are dated owner findings, not independent runtime verification or an NI08 completion.
+The [owner handoff](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) and [matching daily checkpoint](../progress/2026-10/2026-10-07.md) report final serving candidate `a150351b794ae5613d97251adb822c49aed7ee8e`, including the socket-ownership correction, current-main calibration cancellation and six explicitly synthetic serving fixtures; its exact 138-file source map is `725f3721`. ROOT completed source reviews for the targeted and full runners, targeted proof publisher, approved-false full proposal writer, DS9/Q6 activation, paused DS8/Q5 retirement and read-only monitor. The report claims no new native run, full-suite pass or activation pass. Its 23-file GPU R11 proposal binds that candidate and published provider 22, with the fresh `b0ba1d427` store absent; genuine runtime, foreground DRY, serving-owner/window and restore evidence remain pending. The allocation-owner request is acknowledged and safe recovery review is underway, but admission still requires two actual above-100-GiB observations and a fresh post-materialization floor check. Reported recovery retained its evidence and recovered 833,712,128 bytes; this does not establish storage admission or a serving grant. These are dated owner findings, not independent runtime verification or an NI08 completion.
 
 
 ## Dated capacity recovery and unchanged live gate — 2026-10-07
@@ -6608,7 +6608,7 @@ The NI08 owner recovered duplicated checkout payloads through ten reversible spa
 
 The parallel AutoKernel owner preserved its original full11-failure result, then recorded149 affected controls passing at the corrected entrypoint/source140 candidate. Its fresh combined run remains pending in the checkpoint; no CPU activation, GPU installation or production action follows from source preparation or focused controls.
 
-Sources: [NI08 capacity acceptance](../artifacts/ni08/own-source-capacity-recovery-20261007/README.md), [current non-inference queue](../handoffs/active/engineering-hygiene-backlog.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [dated progress](../progress/2026-10/2026-10-07.md).
+Sources: [NI08 capacity acceptance](../artifacts/ni08/own-source-capacity-recovery-20261007/README.md), [current non-inference queue](../handoffs/active/engineering-hygiene-backlog.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [dated progress](../progress/2026-10/2026-10-07.md).
 
 
 ## Dated capacity and peer CPU activation — 2026-10-08
@@ -6617,7 +6617,7 @@ MAIN accepted four additional OWN reversible sparse exclusions, conserving all s
 
 The parallel AutoKernel owner's published `ab53a8e` report records source `bdb52d9` active on both CPU lanes, its 300-second ownership proof and live read-only monitoring, following its final full-suite pass. Its later startup samples exceed the live floor, while its growth target remains unmet. Attribute these to that dated owner report: our source checkpoint does not independently accept those runtime observations. The GPU still requires an authorized serving-owner window; the report preserves unknown original waits and distinguishes monitor READY from final process exit.
 
-Sources: [MAIN capacity checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md), [compact original acceptance](../artifacts/ni08/periodic-full-governance-20261008/README.md), [AutoKernel owner report](../handoffs/active/autokernel-unified-surface-program.md), [peer daily progress](../progress/2026-10/2026-10-08.md).
+Sources: [MAIN capacity checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md), [compact original acceptance](../artifacts/ni08/periodic-full-governance-20261008/README.md), [AutoKernel owner report](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program), [peer daily progress](../progress/2026-10/2026-10-08.md).
 
 ## Compiled Update — 2026-10-20: thread count is not the long-context lever, and the CPU headlines now belong to a retired artifact
 
@@ -6665,7 +6665,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
-- **AK-RX-1 / AK-RX-1.1 (REx repair-chain arm): bounded NULL.** Real-archive replay (research `a13a267d2`) over 7 stores / 172 chains (125 of length 1, 47 of length 2): no arm beats the fixed policy (AUC-frontier minus fixed, REx C5 -0.023 [-0.248, 0.136]; C10 -0.022, C20 -0.027, C50 -0.023; i.i.d. control +0.009 [-0.120, 0.144]; endpoint deltas 0). REx coverage is only ~0.62, so this is a shallow-archive null, not evidence of absence. ([autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md))
+- **AK-RX-1 / AK-RX-1.1 (REx repair-chain arm): bounded NULL.** Real-archive replay (research `a13a267d2`) over 7 stores / 172 chains (125 of length 1, 47 of length 2): no arm beats the fixed policy (AUC-frontier minus fixed, REx C5 -0.023 [-0.248, 0.136]; C10 -0.022, C20 -0.027, C50 -0.023; i.i.d. control +0.009 [-0.120, 0.144]; endpoint deltas 0). REx coverage is only ~0.62, so this is a shallow-archive null, not evidence of absence. ([autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **V11-086 (CPU FA-VKQ register-resident FP32 accumulation) un-held and re-ported onto C** as `experimental/fa-vkq-reg-on-c-20261022` @ `8110933ba` (net content of `5bde1b83d` + `13bdbdc4d`, without `2ad8bff36`); workload retargeted from DS41 to Qwen3.8-Flash-Next (f16 KV, D=256) because frontdoor's q8_0 KV runs no FA-VKQ path. Rule pinned in `PREDECLARED_086v2.md`; build + correctness filler armed. No measurement yet. ([progress](../progress/2026-10/2026-10-22-v11-086-unhold.md), [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): `taskset` does not pin every ROCr thread, and production will re-pin and refuse
@@ -6679,7 +6679,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 ### Source References (2026-10-22 wrap-up sweep 12)
 
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — GPS-PIN-1/2/3
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-1 first-session abort
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-1 first-session abort
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 17.3 (package, launch paths, tests, decisions)
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md) — rule 25 (re-pin until the package lands)
 
@@ -6695,7 +6695,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 ### Source References (2026-10-22 wrap-up sweep 15)
 
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — GPS-PIN-1a..1d
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-LAND
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-LAND
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 18.2-18.3
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-58): a pinned GPU decode job costs served Q38FN about 1%, and the ROCr env knob alone keeps every thread pinned
@@ -6709,7 +6709,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 
 - [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [rocm-verify-profile-backend](../handoffs/active/rocm-verify-profile-backend.md), [cpu-fused-decoder-blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) — sweep 20: C3 dcc853b55, G10, FD-OFF-PROD.
 
-- [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-W2
+- [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — U4-NOISE-W2
 - [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — GPS-PIN-1c/1d
 - [progress/2026-10/2026-10-23-workspace-58.md](../progress/2026-10/2026-10-23-workspace-58.md) — section 19 (19.2, 19.3)
 
@@ -6777,13 +6777,13 @@ Sources: [codex3 inference pipeline](../progress/2026-10/2026-10-30-codex3-infer
 **Confidence: verified** for diagnostic and filed original events (C5/C6 builds, NEMO-PROF-RESEG, AK-PM-16, LB4.9 FU-DIVERGE-06); no champion fold, keep, speed or promotion result exists (C6 full G-AK is null).
 
 - **NEMO profile resegmentation replaces invalid per-token busy numbers.** The old 50 us gap segmenter was invalid under HIP graphs; exact repeated kernel-fingerprint graph boundaries give Qwen3.8-27B Q8_0 plain 32.8851 ms summed kernel busy vs 57.3104 ms graph span vs 56.9829 ms server wall per token (156 steady graphs), and Bolt IQ2_XXS 20.5130 ms busy / 22.0249 ms span / 33.9236 ms wall (94 graphs). Kernel busy, span and wall are separate observables (ms, lower is better); no paired Qwen3.6 comparison or hardware-counter causality follows. ([source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **AK-PM-16: the upstream Amdahl selector does not transfer directly.** Replayed against the frozen-v9 G15 B=128 table, the pinned classifier marks the rank-2 gather kernel (k_get_rows_float, 18.55% of GPU time) and rank-3 recurrent kernel (gated_delta_net_cuda, 16.69%) as unsupported `other`, so a top-5 extract drops both; a bare `nll` substring also mislabels 9.89% of MI210 matrix time as cross-entropy. The arithmetic family counterfactual does rank gather/scatter (18.63%) above recurrent (17.46%); G15's 20% floor and CLOSED_NO_GO are unchanged. ([source](../handoffs/active/autokernel-research-loop.md))
+- **AK-PM-16: the upstream Amdahl selector does not transfer directly.** Replayed against the frozen-v9 G15 B=128 table, the pinned classifier marks the rank-2 gather kernel (k_get_rows_float, 18.55% of GPU time) and rank-3 recurrent kernel (gated_delta_net_cuda, 16.69%) as unsupported `other`, so a top-5 extract drops both; a bare `nll` substring also mislabels 9.89% of MI210 matrix time as cross-entropy. The arithmetic family counterfactual does rank gather/scatter (18.63%) above recurrent (17.46%); G15's 20% floor and CLOSED_NO_GO are unchanged. ([source](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop))
 - **C6 candidate 729599d69: builds and CPU correctness exist, full G-AK is null.** Both CPU and GPU 29-target stores built as COMPLETE_BUILD_ONLY (several outer rc1 results were missing --complete-cmd harness failures, not native failures). CPU ops R3 native: MUL_MAT 1,145 OK + 326 unsupported of 1,471, MUL_MAT_ID 815 OK, FLASH_ATTN_EXT 5,207 OK (unsupported is not a pass). The GPU baseline C5 MUL_MAT shows 1,080 OK / 65 FAIL (q4_0 27, q4_K 38 above their own fp64-error-ratio tolerances) with cause not established, so `full_gak_pass=null` and nothing is keep- or CAS-eligible. ([source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
-- **R18-A independent symbol comparison is a valid negative on HIP host symbols.** With private verified anchors the unchanged comparator found CPU 0/0 differences (590 symbols) and gfx90a device 0/0 (6,141 symbols), but 141 added/141 removed HIP host symbols, all `__hip_cuid_*`; `symbol_identity_pass=false` and the v10 recipe is not yet verifiable. The earlier r2 run is INSTRUMENT_INVALID (unversioned anchor), and CUID forensics remain open without filtering. ([source](../handoffs/active/autokernel-rebuild-program.md))
+- **R18-A independent symbol comparison is a valid negative on HIP host symbols.** With private verified anchors the unchanged comparator found CPU 0/0 differences (590 symbols) and gfx90a device 0/0 (6,141 symbols), but 141 added/141 removed HIP host symbols, all `__hip_cuid_*`; `symbol_identity_pass=false` and the v10 recipe is not yet verifiable. The earlier r2 run is INSTRUMENT_INVALID (unversioned anchor), and CUID forensics remain open without filtering. ([source](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program))
 - **LB4.9 IQK-FA on DS41: step-zero logits differ, forced-step flips are rare but real.** With IQK-FA off, baseline and candidate step-0 logits (129,280 elements) are bit-identical; with it on, all differ, max 0.4093 logit units, 19/20 top-token overlap. The preserved 3-prompt x (step 0 + 64 forced steps) capture has bitwise-equal baseline repeats and flips of 0/65, 0/65 and 2/65 (first at position 7, open-ended prompt, thin margins). FU-DIVERGE-03 CLI repeat: candidate response region differs trivially from baseline (`Paris<|im_end|>` vs `Paris.<|`), template-vs-kernel attribution unresolved; no fold, tolerance or promotion claim. ([source](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions))
 - **C5 CPU build recovered; floor-registry keyed by execution digest verified.** C5 image c72ec82f5 (server version 10419) was re-linked after a host `rg` harness failure with eight artifact hashes revalidated and the fused-decode knobs present in the binary; it is built_unenrolled and carries no timing or keep. AKX-AUTO-11 (launchers query a floor registry keyed by execution equivalence; one atomic recalibration claim per champion advance) is implementation-verified on research main d1c7a8ff; live exercise and CH-27 stay open. ([source](../progress/2026-10/2026-10-31-c5-cpu-r6-result.md))
 
-Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) · [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) · [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md) · [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [C6 CPU ops R3](../progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md) · [LB4.9 FU06 closeout](../progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md) · [FU03 CLI R3](../progress/2026-10/2026-10-31-fu03-cli-r3-0817.md)
+Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) · [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) · [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) · [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [C6 CPU ops R3](../progress/2026-10/2026-10-31-codex3-c6-r3-correctness.md) · [LB4.9 FU06 closeout](../progress/2026-10/2026-10-31-codex-ni-lb49-fu06-closeout.md) · [FU03 CLI R3](../progress/2026-10/2026-10-31-fu03-cli-r3-0817.md)
 
 ### Compiled Update — 2026-10-31 (Codex NI accepted diagnostic packets; cutoff 08:34:03Z)
 
@@ -6809,7 +6809,7 @@ Sources: [G16 accepted capsule](../artifacts/compute/codex-ni-g16-greedy-aligned
 - C5-7's conditional source seam adds a declaration-aware counter gate at the HIP decision-grade terminal. For opted-in rows, missing, wrong, or ambiguous counter declarations suppress the speedup belief and rankability; legacy rows without a declaration keep prior behavior. The reader hashes/parses one stable raw-CSV buffer and binds counter, kernel, dispatch, source, campaign, workload, units, and normalization. Zero-valued counters remain valid evidence.
 - The focused unit controls and compilation passed on the implementation commit. This replays supplied profiler receipts; it does not establish end-to-end PMC capture, a broader native caller, live activation, or completion of C5-7.
 
-Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) · [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)
+Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) · [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) · [counter-gate progress record](../progress/2026-10/2026-10-31-c5-7-counter-gate.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
@@ -6967,7 +6967,7 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 
 ### Source references
 
-- [AutoKernel rebuild handoff](../handoffs/active/autokernel-rebuild-program.md)
+- [AutoKernel rebuild handoff](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - [R18-A comparison and CUID witnesses](../artifacts/compute/r18a-r4-20261102/README.md)
 - [R23-62 estimand and contention audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md)
 - [E5 batched-decode placement evidence](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement)

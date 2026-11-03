@@ -1499,7 +1499,7 @@ No retrieval-quality result exists yet. REPL-EMB-2.2, the offline eval, still de
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-1.1/1.2/1.3 (landed), 4.4 (deployed), 4.5 (filed), the kill rule.
 - [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — the context.search landing and the deploy for `orsv`.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-runtime-flag-survived-reboot.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35, the dict-idiom crash that blocked the arm.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35, the dict-idiom crash that blocked the arm.
 
 ## Tokenizer provenance in KB catalogs — 2026-10-06
 

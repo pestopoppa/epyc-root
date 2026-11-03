@@ -261,7 +261,7 @@ for the prescriptions, which have not been A/B'd (INF-78 OAB-9).
 ### Source References (2026-09-24 speech-lane)
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files* and its *Traps*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (*Avoid*
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §1 (*Avoid*
   list).
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 6 (restrict agents through `permission`, not through a flag that only looks restrictive).
 

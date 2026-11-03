@@ -12,18 +12,15 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | Spike S3-ACH-01's actor allowlist; scope AC-CHECKPOINT-ALLOC against eligible independent continuations | — |
 | INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file) | INF-48, EVL-47 |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | Add exact PrefixRouter-key fingerprints to serving records; rerun KV-1 rolling-window count | — |
-| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47, INF-02 |
-| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion | INF-06, INF-50, INF-02 |
-| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | Investigate R23-62 champion divergence under its recorded controls | INF-06, INF-02, INF-65 |
+| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47 |
+| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion | INF-06, INF-50 |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop | — |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
 | INF-72 | moe routing locality tap | [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md) | RT-1 (Q38FN) + RT-9 (Q36) traced/analysed, RT-5 gate not met; RT-10 DS41 tap hook (C++), then RT-6/7 on DS41 | INF-22, INF-70 |
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-16, RTG-58 |
-| INF-78 | autokernel orchestrator actor backend | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) | OAB-30 stub e2e (incl. keep→continuation); OAB-34 16384 output-cap hit rate per role | INF-77, INF-66, EVL-37, RTG-09, UFH-01 |
 | INF-79 | conversation stack (speech) | [speech-and-multimodal.md](speech-and-multimodal.md) | Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions | — |
 | INF-80 | exl3 cpu mi210 implementation | [quantization-and-low-bit.md](quantization-and-low-bit.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
 | INF-22 | gpu serving tie in program | [mi210-serving-program.md](mi210-serving-program.md) | Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route | — |
@@ -34,8 +31,6 @@
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-58 |
 | INF-61 | model evaluation queue (INF-60-gated) | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Run a same-window n-max 4 vs 8 ABA at np≥2 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna | INF-22 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | LIVE GPU leg (serving-owner grant, ws58) | INF-66, INF-65, INF-70 |
-| INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then | INF-73 |
 | INF-76 | model evaluation queue (EVL-08-gated) | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 

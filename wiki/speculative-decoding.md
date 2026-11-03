@@ -782,7 +782,7 @@ number that reproduces the DF2-5 np4 grid (~155) and that a serving keep must no
 
 ### Source References (2026-09-04 DFlash2 serving decode)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — R23-42 (dec-b4
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-42 (dec-b4
   keeps do not move DFlash2 decode), R23-43 (the serving recipe pins DFlash2 at np4).
 - [DFlash2 decode measurement and the tg128 pivot](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
 - [Per-request np4 serving metric](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
@@ -2352,7 +2352,7 @@ to account for it.
 
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — DF2-5 grid, DF2-6 per-prompt verdicts, the ngram retraction and DF2-6b-bis
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-5 gate closure and the champion the measurements were taken against
-- [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the route-capture instrument and its verbosity gate
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — the route-capture instrument and its verbosity gate
 
 
 ## Compiled Update — 2026-09-01 (incremental): MTP depth on datacenter silicon — n-max 8 wins where consumer cards lose
