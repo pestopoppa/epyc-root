@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T19:35:01Z",
+  "generated_at": "2026-11-03T20:13:02Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1351,18 +1351,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 342,
-      "dispatchable": 83,
+      "closed": 343,
+      "dispatchable": 82,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 85,
+      "open": 84,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1600,7 +1600,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 622,
+          "line": 624,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 981,
+          "line": 983,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1258,
+          "line": 1260,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1893,
+          "line": 1895,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2188,
+          "line": 2190,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2797,
+          "line": 2799,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2,
           "readiness": "blocked"
