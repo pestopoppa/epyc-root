@@ -1517,23 +1517,50 @@ def kill_group(pid, grace=20):
         pass
 
 
-_ACQ = re.compile(r"\[region-lock\] acquiring regions \[([^\]]*)\]")
-_HELD = re.compile(r"\[region-lock\] held \[([^\]]*)\]")
+# region-lock's real stderr lines (epyc-orchestrator src/runtime/region_lock_cli.py):
+#   [region-lock] acquiring regions ['q1'] as role='build' (timeout_s=10.0) …
+#   [region-lock] acquiring gpu-quiet exclusive + regions ['q0'] as role='bench' (timeout_s=600.0) …
+#   [region-lock] waiting 15.0s for q0 (q0.lock) as role='bench' tag='t': held by pid N role=... tag=... age=...
+#   [region-lock] held ['q1'] after 0.0s wait; running: ...      /  held gpu-quiet exclusive + regions ['q0'] after ...
+#   [region-lock] TIMEOUT acquiring regions ['q1']: ...
+_RL_ACQ = re.compile(r"\[region-lock\] acquiring (.+?) as role=")
+_RL_WAIT = re.compile(r"\[region-lock\] waiting [\d.]+s for (\S+) \(")
+_RL_HELD = re.compile(r"\[region-lock\] held (.+?) after [\d.]+s wait")
+_RL_TIMEOUT = re.compile(r"\[region-lock\] TIMEOUT acquiring (.+?):")
+
+
+def _rl_regions(what):
+    """{regions} named by an acquire/held phrase: `regions ['q0', 'q1']`, `['q1']`, `gpu-quiet <mode> [+ regions [...]]`."""
+    what = what.strip()
+    m = re.search(r"regions \[([^\]]*)\]", what) or re.fullmatch(r"\[([^\]]*)\]", what)
+    got = {x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()} if m else set()
+    if what.startswith("gpu-quiet"):
+        got.add(GPU)
+    return got
 
 
 def lock_waits(lines, holds):
-    """Region sets a job asked region-lock for and has NOT been granted (acquire lines without a matching held line)."""
-    asked = []
+    """Region sets the job asked region-lock for and has NOT been granted: an `acquiring` line with no later `held` (or
+    TIMEOUT) line covering it, or a `waiting Ns for <region>` line outside every open acquire. `holds` is unused here;
+    the caller compares."""
+    pending = []
     for l in lines:
-        m = _ACQ.search(l)
+        m = _RL_ACQ.search(l)
         if m:
-            asked.append({x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()})
+            got = _rl_regions(m.group(1))
+            if got:
+                pending.append(got)
             continue
-        m = _HELD.search(l)
+        m = _RL_WAIT.search(l)
         if m:
-            got = {x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()}
-            asked = [a for a in asked if a != got]
-    return asked
+            if not any(m.group(1) in a for a in pending):
+                pending.append({m.group(1)})
+            continue
+        m = _RL_HELD.search(l) or _RL_TIMEOUT.search(l)
+        if m:
+            got = _rl_regions(m.group(1))
+            pending = [a for a in pending if not a <= got]
+    return pending
 
 
 def busy_pct(s0, s1, cpus):
@@ -1818,6 +1845,8 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
         f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
     out = open(os.path.join(dd, "launcher.out"), "a")
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
+    lout = os.path.join(dd, "launcher.out")
+    out_lines0 = len(tail(lout, 10**6))  # counted BEFORE the launch: a region-lock line the job prints at once is this run's
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
     tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
     atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
@@ -1830,8 +1859,6 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     warning = None
     ended = os.path.join(dd, "ended")
     verdict, reason = None, None
-    lout = os.path.join(dd, "launcher.out")
-    out_lines0 = len(tail(lout, 10**6))
     try:
         while True:
             for _ in range(5):
@@ -1845,9 +1872,10 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
             waits = lock_waits(tail(lout, 10**6)[out_lines0:], holds)
             if waits and (waits[0] - holds or time.time() - t0 > 60):
-                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the dry run holds "
-                                           f"{','.join(sorted(holds))}: a smoke never waits on a held region; the job's own "
-                                           "region-lock claim must honour WS58_REGIONS under FILLER_SMOKE)")
+                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the smoke holds "
+                                           f"{','.join(sorted(holds)) or '-'} (a smoke never waits on a held region); fix: make "
+                                           "the job's own region-lock claim use $WS58_REGIONS under FILLER_SMOKE, then re-run "
+                                           "publish_row.py <spec.json>")
                 break
             if first_unit_at is None:
                 hit, why = probe.check()
