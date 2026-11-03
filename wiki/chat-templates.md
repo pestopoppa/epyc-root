@@ -716,9 +716,9 @@ Sources: [qwen-chat-template-evaluation handoff](../handoffs/active/repl-turn-ef
 **Confidence: verified** for the template-rendering confirmation (CPU rendering/tokenization only); no GPU compute, throughput or quality claim.
 
 - **Static template results held on the live server path.** The predeclared all-four P1/P2/P3 rule confirmed `35b-terse`, `27b-embedded`, `vl-embedded` and `fn-embedded` (each passed four original fixtures and the shared trunk), joining the earlier 27b-terse result. HIP/KFD/VRAM samples prove model residency only; this closes LB5.1's live-path check, nothing broader. ([source](../handoffs/active/agentic-serving-harness-fixes.md))
-- **The typed-vs-tool prompt diverges right after the user turn marker.** In the TD-29 pair, rendered prompts shared 17 bytes / 3 tokens, diverging immediately after `<|im_start|>user\n` (`Fill in` vs `Answer`); reported and tokenized lengths matched. One pair, no cohort cache verdict. ([source](../handoffs/active/typed-decision-plane.md))
+- **The typed-vs-tool prompt diverges right after the user turn marker.** In the TD-29 pair, rendered prompts shared 17 bytes / 3 tokens, diverging immediately after `<|im_start|>user\n` (`Fill in` vs `Answer`); reported and tokenized lengths matched. One pair, no cohort cache verdict. ([source](../handoffs/active/routing-program.md#track-typed-decision-plane))
 
-Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [typed-decision-plane](../handoffs/active/typed-decision-plane.md)
+Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 
 ### Compiled Update — 2026-11-01 (incremental source review)
 

@@ -88,6 +88,10 @@
    "target": "coordination-and-churn-pipeline.md",
    "track": "dashboard-architecture-restructure"
   },
+  "decision-aware-routing.md": {
+   "target": "routing-program.md",
+   "track": null
+  },
   "delegation-context-preassembly.md": {
    "target": "context-and-token-economy.md",
    "track": "delegation-context-preassembly"
@@ -204,6 +208,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "integration-test-coverage"
   },
+  "internal-interaction-lifecycle.md": {
+   "target": "routing-program.md",
+   "track": "internal-interaction-lifecycle"
+  },
   "internal-kb-rag.md": {
    "target": "knowledge-pipelines.md",
    "track": null
@@ -219,6 +227,10 @@
   "large-moe-expert-parallelism.md": {
    "target": "sarathi-serve-cpu-evaluation.md",
    "track": "large-moe-expert-parallelism"
+  },
+  "learned-routing-controller.md": {
+   "target": "routing-program.md",
+   "track": "learned-routing-controller"
   },
   "lightning-attention-port.md": {
    "target": "model-evaluation-queue.md",
@@ -263,6 +275,10 @@
   "model-artifact-integrity.md": {
    "target": "stack-lifecycle-program.md",
    "track": "model-artifact-integrity"
+  },
+  "model-capability-descriptors.md": {
+   "target": "routing-program.md",
+   "track": "model-capability-descriptors"
   },
   "model-exec-containment.md": {
    "target": "stack-lifecycle-program.md",
@@ -377,6 +393,10 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "repo-readiness-scorer"
   },
+  "retrain-routing-models.md": {
+   "target": "routing-program.md",
+   "track": "retrain-routing-models"
+  },
   "reviewer-calibration-accounting.md": {
    "target": "reviewer-latency-and-sampling-budget.md",
    "track": "reviewer-calibration-accounting"
@@ -458,9 +478,17 @@
    "target": "quantization-and-low-bit.md",
    "track": "tq3-quantization-evaluation"
   },
+  "tri-role-coordinator-architecture.md": {
+   "target": "routing-program.md",
+   "track": "tri-role-coordinator-architecture"
+  },
   "triattention-kv-selection.md": {
    "target": "attention-matching-kv-compaction.md",
    "track": "triattention-kv-selection"
+  },
+  "typed-decision-plane.md": {
+   "target": "routing-program.md",
+   "track": "typed-decision-plane"
   },
   "unified-trace-memory-service.md": {
    "target": "memory-program.md",
@@ -481,6 +509,10 @@
   "wrap-up-division-of-labor-policy.md": {
    "target": "loop-owned-fleet-implementation.md",
    "track": "wrap-up-division-of-labor-policy"
+  },
+  "x-mas-text-routing.md": {
+   "target": "routing-program.md",
+   "track": "x-mas-text-routing"
   }
  },
  "ids": {
@@ -768,9 +800,21 @@
    "target": "RTG-02",
    "track": "evidence-plane-event-sourcing-and-narrative"
   },
+  "RTG-14": {
+   "target": "RTG-09",
+   "track": "internal-interaction-lifecycle"
+  },
+  "RTG-15": {
+   "target": "RTG-09",
+   "track": "learned-routing-controller"
+  },
   "RTG-16": {
    "target": "RTG-02",
    "track": "loops-and-dashboards-audit-2026-07-05"
+  },
+  "RTG-17": {
+   "target": "RTG-09",
+   "track": "model-capability-descriptors"
   },
   "RTG-18": {
    "target": "handoffs/completed/model-stack-change-standardization-audit.md",
@@ -806,6 +850,10 @@
    "target": "RTG-08",
    "track": "reasoning-effort-levels"
   },
+  "RTG-29": {
+   "target": "RTG-09",
+   "track": "retrain-routing-models"
+  },
   "RTG-32": {
    "target": "RTG-02",
    "track": "scaffold-autopilot-cost-lever-deployment"
@@ -827,6 +875,10 @@
    "track": null,
    "retired": "D4 2026-11-02"
   },
+  "RTG-40": {
+   "target": "RTG-09",
+   "track": "tri-role-coordinator-architecture"
+  },
   "RTG-41": {
    "target": "EVL-10",
    "track": "unified-trace-memory-service"
@@ -838,6 +890,10 @@
   "RTG-43": {
    "target": "RTG-36",
    "track": "wp12-fleet-layer-design"
+  },
+  "RTG-45": {
+   "target": "RTG-09",
+   "track": "x-mas-text-routing"
   },
   "RTG-46": {
    "target": "RTG-34",
@@ -862,6 +918,10 @@
   "RTG-55": {
    "target": "EVL-04",
    "track": "promptforge-mutation-safety-contract"
+  },
+  "RTG-56": {
+   "target": "RTG-09",
+   "track": "typed-decision-plane"
   },
   "RTG-59": {
    "target": "RTG-36",

@@ -3531,7 +3531,7 @@ benchmark recreation available for claims that later require it.
 - [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical minimum execution contract and consumer map.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — worked compression from paper-specific tasks to one shared screen.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — worked compression from paper-specific tasks to one shared screen.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.
 
 **Confidence:** verified as the installed Claude/Codex research-intake workflow and committed project task structure.
@@ -4020,7 +4020,7 @@ C104's prospectively enrolled source/native pair is now accepted after original 
 ### Source References
 
 - [MAIN native-record attribution evidence](../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) — exact five-claim entries and original source hashes.
-- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — repaired bounded annotation and retained risk limitations.
+- [Decision-aware routing](../handoffs/active/routing-program.md) — repaired bounded annotation and retained risk limitations.
 - [Canonical intake source](../research/intake_index.yaml) — unchanged entry claims and verification corrections.
 
 
@@ -4030,7 +4030,7 @@ At this earlier checkpoint the corrected citation to intake-1333#01 remained sou
 
 INF50's first native-writer archive omitted hidden cache bytes despite a typed64-byte hash record; it remains an immutable partial diagnostic. The separately approved direct-child upload correction has a new original. MAIN independently reopened all361 members,19 Git inputs,23roles/all47 locked wheel hashes and actual hidden cache0644/64bytes/hash. Native banner and typed YAML match the dry run with only the retired prose scalar changed. The record remains ungraded with receipt/JUnit/ClaimTuple NULL; product publication/task acceptance remain separate.
 
-Source references: [source ownership](../handoffs/active/vidya-belief-substrate-program.md), [bounded NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [MAIN dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [original citation correction](../handoffs/active/decision-aware-routing.md).
+Source references: [source ownership](../handoffs/active/vidya-belief-substrate-program.md), [bounded NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [MAIN dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [original citation correction](../handoffs/active/routing-program.md).
 
 ## Completed document projection and operational custody — 2026-10-07
 
@@ -4063,7 +4063,7 @@ UFH12's existing spill-summary context-budget companion now has accepted origina
 
 ### Prospective source controls — 2026-10-07 FULL review
 
-The [typed-decision handoff](../handoffs/active/typed-decision-plane.md) now files TD-29.M0a.S0 and its [belief companion](../handoffs/active/vidya-belief-substrate-program.md) before any hosted capture. Their three complete unit modules contain 119 AST test definitions at proposal time; the original JUnit will determine executed case counts. Raw server prefill counts and duration preserve missing values as unknown. The source proposal remains private, and the three-arm sidecar/runtime parent remains open. C26's accepted original cancellation control run failed 10 GPU fixture cases, with 36 passing; the existing shared grade records FALSE while the workflow-final result is NULL. Its one-file ownership-preflight fixture correction is private and has no new native result at this review cut. The [FULL custody](../artifacts/ni08/periodic-full-wrapup-20261007-1930/README.md) preserves that distinction.
+The [typed-decision handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) now files TD-29.M0a.S0 and its [belief companion](../handoffs/active/vidya-belief-substrate-program.md) before any hosted capture. Their three complete unit modules contain 119 AST test definitions at proposal time; the original JUnit will determine executed case counts. Raw server prefill counts and duration preserve missing values as unknown. The source proposal remains private, and the three-arm sidecar/runtime parent remains open. C26's accepted original cancellation control run failed 10 GPU fixture cases, with 36 passing; the existing shared grade records FALSE while the workflow-final result is NULL. Its one-file ownership-preflight fixture correction is private and has no new native result at this review cut. The [FULL custody](../artifacts/ni08/periodic-full-wrapup-20261007-1930/README.md) preserves that distinction.
 
 ### EVL180 and C26 accepted source checkpoints — 2026-10-07
 
@@ -4130,7 +4130,7 @@ Sources: [SC54 and ingestion enrollment](../handoffs/active/vidya-belief-substra
 
 MAIN accepted the original ROOT `11f1b00` source recipe and hosted run `37729628899` attempt 1: all 209 cases passed across seven whole mocked modules, including TD122 plus the unchanged HG87 controls. The paired TD-29.M0a.S0 and VB source rows close as one bounded source child, bringing NI08 to 189 scoped completions (118 existing checkbox closures plus 71 completed scoped children); the two checkbox transitions are not two task completions, and 209 test cases are not task completions. TD-29.M0a, TD-29.M4, and the inference/three-arm sidecar gates remain open. The accepted result does not establish runtime behavior, model quality, inference or performance.
 
-Sources: [original acceptance and custody](../artifacts/ni08/td29-current-source209-acceptance-20261008/README.md) · [TD-29 source task](../handoffs/active/typed-decision-plane.md) · [belief companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 scope record](../handoffs/active/engineering-hygiene-backlog.md) · [current progress record](../progress/2026-10/2026-10-08-codex-ni-main.md).
+Sources: [original acceptance and custody](../artifacts/ni08/td29-current-source209-acceptance-20261008/README.md) · [TD-29 source task](../handoffs/active/routing-program.md#track-typed-decision-plane) · [belief companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 scope record](../handoffs/active/engineering-hygiene-backlog.md) · [current progress record](../progress/2026-10/2026-10-08-codex-ni-main.md).
 
 ### RTG-48 source adjudications and prospective M-12h custody — 2026-10-08
 

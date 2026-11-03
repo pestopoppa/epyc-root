@@ -15,7 +15,7 @@ completed governance history through 2026-06-19 is compacted under
 **Created**: 2026-06-13
 **Updated**: 2026-07-26
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
-**Related**: [standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](../completed/routing-truth-restoration.md), [dynamic-stack-concurrency.md](numa-placement-and-contention.md#track-dynamic-stack-concurrency), [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign), [MEASUREMENT.md](../../MEASUREMENT.md)
+**Related**: [standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization), [model-capability-descriptors.md](routing-program.md#track-model-capability-descriptors), [routing-truth-restoration.md](../completed/routing-truth-restoration.md), [dynamic-stack-concurrency.md](numa-placement-and-contention.md#track-dynamic-stack-concurrency), [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign), [MEASUREMENT.md](../../MEASUREMENT.md)
 
 > **2026-06-13 finalization bridge**: [standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization) consolidates the older audits into the main workflow pickup plan. Use that file for the next implementation pass; continue recording commit-level progress and guard counts here.
 
@@ -814,7 +814,7 @@ preserve completed chronology compacted out of this active handoff.
 [model-stack-update-pipeline-audit.md](stack-lifecycle-program.md#track-model-stack-update-pipeline-audit),
 [model-stack-change-standardization-audit.md](../completed/model-stack-change-standardization-audit.md),
 [stack-change-governance-pipeline.md](stack-lifecycle-program.md),
-[model-capability-descriptors.md](model-capability-descriptors.md)
+[model-capability-descriptors.md](routing-program.md#track-model-capability-descriptors)
 
 #### Start here
 
@@ -1365,7 +1365,7 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 **Status**: IN PROGRESS 2026-06-14 - W1/W2 stack-prior consumer migration active; this audit is now historical-detail support for the concise pickup contract in `model-stack-single-source-update-pipeline.md`. Core pipeline/gate work is live through q_scorer provenance gating, runtime attestation, launch/AutoPilot promotion wiring, scanner-rule ownership, consumer-surface inventory, generated summaries, and N11a cleanup through `epyc-orchestrator` `5f0f248` (`rule_count=27`, `consumer_surface_count=13`, promotion gate 163 passed, warning buckets unchanged: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`). Remaining work is residual classified docs/tests, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk consumer migrations after focused GitNexus impact checks.
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
-**Related**: [stack-change-governance-pipeline.md](stack-lifecycle-program.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](../completed/routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
+**Related**: [stack-change-governance-pipeline.md](stack-lifecycle-program.md), [model-capability-descriptors.md](routing-program.md#track-model-capability-descriptors), [routing-truth-restoration.md](../completed/routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
 
 > **📎 2026-07-18 stale-open audit note.** This doc self-demotes to "historical-detail support" for the SSoT, but it still holds **2 orphan-live boxes tracked in _neither_ authoritative doc** — the `ctx_model_max` contract extension and the tap / policy-hint projection. Kept **LIVE** (deliberately *not* superseded) until those migrate to [`model-stack-single-source-update-pipeline.md`](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline); its other 2 boxes are covered/deferred. See [`stale-open-audit-2026-07-18.md`](frontier-lab-automation.md#track-stale-open-audit-2026-07-18) finding #5.
 
@@ -2043,7 +2043,7 @@ preserves the completed chronology compacted out of this active handoff.
 [stack-change-governance-pipeline.md](stack-lifecycle-program.md),
 [model-stack-update-pipeline-audit.md](stack-lifecycle-program.md#track-model-stack-update-pipeline-audit),
 [model-stack-change-standardization-audit.md](../completed/model-stack-change-standardization-audit.md),
-[model-capability-descriptors.md](model-capability-descriptors.md),
+[model-capability-descriptors.md](routing-program.md#track-model-capability-descriptors),
 [routing-truth-restoration.md](../completed/routing-truth-restoration.md),
 [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md)
 

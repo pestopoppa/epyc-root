@@ -574,7 +574,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
   Acceptance for the scorer conversions is therefore stated up front: **report the per-arm parse-failure
   rate beside every accuracy, before and after** — the warrant being the verbose arm's 15% false
   parse-failures vs 0% and the gpqa 43.4% → 53.0% re-score.
-  ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21, TD-21.9–21.14)
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21, TD-21.9–21.14)
 - **A throughput number taken from an 8-token probe is not a throughput number.** The AutoKernel planner
   server was reported at "17 t/s"; measured properly it decodes 53 t/s. Self-corrected in-session. Short
   probes measure the launch and prefill path, not steady-state decode.
@@ -595,7 +595,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
   RTG-16 root cause, the fix, the re-score, and the remaining MDE half.
 - [scoring-infra-standardization.md](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — track 1d, the
   pinned `test` extra and the four scorer suites.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-21's parse-failure-as-wrong-answer
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21's parse-failure-as-wrong-answer
   count and the per-arm acceptance rule for the scorer conversions.
 - [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — RTG-16 and EVL-42 rows plus
   the main-thread review corrections; follow-up EVL-42 1e — the research `scripts/benchmark/` directory has 4
@@ -867,7 +867,7 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 
 ### Key findings
 
-- **TD-1d was accepted at 11.98x from one run per arm; four alternated rounds put the same arm at 9.60x, below the ≥10x bar.** Same 24-question catalogue and state hash, one untimed warm pass per arm, then 4 rounds with every arm run before the next round and arm order rotated. `native_id_only` 1.46 ± 0.03 s vs JSON 14.02 ± 1.82 s (11.34–15.45). Agreement is met everywhere (60/64 pooled = 15/16, the same `n01` disagreement as TD-1c) — speed is not. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [td1d-remeasure](../progress/2026-09/2026-09-18-td1d-remeasure.md))
+- **TD-1d was accepted at 11.98x from one run per arm; four alternated rounds put the same arm at 9.60x, below the ≥10x bar.** Same 24-question catalogue and state hash, one untimed warm pass per arm, then 4 rounds with every arm run before the next round and arm order rotated. `native_id_only` 1.46 ± 0.03 s vs JSON 14.02 ± 1.82 s (11.34–15.45). Agreement is met everywhere (60/64 pooled = 15/16, the same `n01` disagreement as TD-1c) — speed is not. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [td1d-remeasure](../progress/2026-09/2026-09-18-td1d-remeasure.md))
 - **The disagreement is entirely the baseline.** The two native measurements agree (1.46 s vs 1.6 s); the 09-17 JSON sample (19.3 s) sits **above the maximum of four samples** taken here (15.45 s). Pairing each side's baseline against the other's treatment spans 8.8x–13.2x. A single baseline sample cannot see that spread — **a speed bar needs a repeated, alternated baseline, not just a repeated treatment.** Filed as TD-1d.0 for the accepting session: re-run at n≥4 alternated and keep the tick if it survives, or downgrade it; do not adopt `id_only` as the default on n=1. The tick was left standing with the evidence beside it — the box belongs to the accepting session.
 - **The bar never stated its denominator.** Native decides 16/24 (c01–c08 fail closed on multi-token option labels), so the ratio compares a 16-decision run to a 24-decision one. Per decision: 584 ms vs 91 ms = **6.40x**. Neither 11.98x nor 9.60x is like-for-like, and neither passes a per-decision reading. TD-1d.4: handle the 8 multi-token questions natively, or take per-question fallback as a routing policy — not a speed fix.
 - **Option (b) parallel reads are a measured loser**: 3 slots 2.67x vs 6.69x on one slot; independent corroboration of the 09-17 `heavy_model` lock note. Two mechanisms recorded: concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock` (parallel wall == serial wall, TD-1d.2), and `qwen35moe` is hybrid-recurrent so prefix reuse is checkpoint-quantized (TD-1d.3) — see [local-inference](local-inference.md).
@@ -881,7 +881,7 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 ### Source References (2026-09-18)
 
 - [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the run, the table, the three mechanism findings.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — the ⚠️ re-measurement note and TD-1d.0–TD-1d.4.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the ⚠️ re-measurement note and TD-1d.0–TD-1d.4.
 - [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — why the tick was not touched.
 
 ## Compiled Update — 2026-09-17 (wrap-up sweep): the typed-decision measurement design — receipts, directions, and a no-gate rule
@@ -890,13 +890,13 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 
 ### Key findings
 
-- **Write side first, and receipts over claims.** Before the first TD measurement run, VB-TDP-1 wired `scripts/vidya/adapters/typed_decisions_measurement.py`; each study (TD-2 contamination/calibration, TD-3 fan-out, TD-4 tool args) emits one self-hashed ClaimTuple projected through the shared `claim_tuple.grade()`, with `metric_direction` recorded (a write-side gap was found and fixed in the producer). 8 receipts → 28 claims / 84 frames cumulatively; **3 bench reports were refused as non-measurements** — a screening instrument is not a protocol-grade measurement. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **Contamination is an order statistic, measured by permutation.** Question-order permutation on one batched call vs singleton calls, 24-question decision set, 48 pairs: flip rate **6.25%** (Qwen3.8-27B, 3/48) vs **37.5%** (LFM2.5-2.6B, 18/48). This is the local counterpart of the external 24.7% order sensitivity (intake-1486) — smaller at our batch size, but the failure mode reproduces. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
-- **Calibration: ECE and Brier per (model, schema), and the tail is not empty.** 27B: 91.7% accuracy / mean confidence 0.8875 / ECE 0.0625 / Brier 0.078. LFM2.5-2.6B: 50.0% / 0.567 / 0.267 / 0.313. One 27B miss sat at ~0.90 confidence, so a high-confidence wrong answer is possible. **The confidence statistic is not calibrated and no gate may threshold on it**; TD-5 is satisfied only for a first shadow. FW-1 L2's confidence-branching lift is per `(model pin, question catalogue)` on an operator-ratified calibration record, never global — the 27B number says nothing about LFM, and one catalogue's ECE says nothing about another's. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
-- **Fan-out agreement needs a content-anchored catalogue; a content-neutral probe cannot measure it.** TD-3 measured 1.54x (3 batched vs 12 singleton calls, 100% agreement, small state) and 3.22x long-context (three 40k-char states) — but the long-context catalogue was deliberately content-neutral, so its agreement number is uninterpretable. TD-3b re-ran with the real 24-question catalogue: **87.5% agreement (21/24) at 2.2x** (17.2 s batched vs 37.9 s singleton), consistent with the 6.25% order-flip rate. Design rule: an agreement metric needs anchored answers; a speed metric does not. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
-- **A speed claim needs its parity arm and its cue named.** TD-1b's 18.9x pre-fix was not semantically equivalent (agreement 11/16, native 68.8% vs JSON 91.7% on the overlap); only after TD-1c fixed prompt cueing did 15/16 parity hold at 2.08x; TD-1d recovered **11.98x at 15/16** with the id-only cue (full 2.66x, short 6.0x). Report the cue style with the multiplier, and never promote a native-arm speed past its agreement check. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
-- **A parse failure is a scoring artifact, and the closed-set arm wins on it.** TD-4's free-form tool-argument arm failed 12/18 — parse/schema failures, not wrong values — against closed-set 18/18 exact (per-argument exact 66 vs 24). Score the failure classes separately or the number reads as a capability gap. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
-- **Screening instruments are refused a belief-kernel carrier by design.** The cue sweep and bench reports were explicitly declined: the strict reader refuses them, and revisiting needs a ratified `P-TDP` protocol. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **Write side first, and receipts over claims.** Before the first TD measurement run, VB-TDP-1 wired `scripts/vidya/adapters/typed_decisions_measurement.py`; each study (TD-2 contamination/calibration, TD-3 fan-out, TD-4 tool args) emits one self-hashed ClaimTuple projected through the shared `claim_tuple.grade()`, with `metric_direction` recorded (a write-side gap was found and fixed in the producer). 8 receipts → 28 claims / 84 frames cumulatively; **3 bench reports were refused as non-measurements** — a screening instrument is not a protocol-grade measurement. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **Contamination is an order statistic, measured by permutation.** Question-order permutation on one batched call vs singleton calls, 24-question decision set, 48 pairs: flip rate **6.25%** (Qwen3.8-27B, 3/48) vs **37.5%** (LFM2.5-2.6B, 18/48). This is the local counterpart of the external 24.7% order sensitivity (intake-1486) — smaller at our batch size, but the failure mode reproduces. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Calibration: ECE and Brier per (model, schema), and the tail is not empty.** 27B: 91.7% accuracy / mean confidence 0.8875 / ECE 0.0625 / Brier 0.078. LFM2.5-2.6B: 50.0% / 0.567 / 0.267 / 0.313. One 27B miss sat at ~0.90 confidence, so a high-confidence wrong answer is possible. **The confidence statistic is not calibrated and no gate may threshold on it**; TD-5 is satisfied only for a first shadow. FW-1 L2's confidence-branching lift is per `(model pin, question catalogue)` on an operator-ratified calibration record, never global — the 27B number says nothing about LFM, and one catalogue's ECE says nothing about another's. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
+- **Fan-out agreement needs a content-anchored catalogue; a content-neutral probe cannot measure it.** TD-3 measured 1.54x (3 batched vs 12 singleton calls, 100% agreement, small state) and 3.22x long-context (three 40k-char states) — but the long-context catalogue was deliberately content-neutral, so its agreement number is uninterpretable. TD-3b re-ran with the real 24-question catalogue: **87.5% agreement (21/24) at 2.2x** (17.2 s batched vs 37.9 s singleton), consistent with the 6.25% order-flip rate. Design rule: an agreement metric needs anchored answers; a speed metric does not. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **A speed claim needs its parity arm and its cue named.** TD-1b's 18.9x pre-fix was not semantically equivalent (agreement 11/16, native 68.8% vs JSON 91.7% on the overlap); only after TD-1c fixed prompt cueing did 15/16 parity hold at 2.08x; TD-1d recovered **11.98x at 15/16** with the id-only cue (full 2.66x, short 6.0x). Report the cue style with the multiplier, and never promote a native-arm speed past its agreement check. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **A parse failure is a scoring artifact, and the closed-set arm wins on it.** TD-4's free-form tool-argument arm failed 12/18 — parse/schema failures, not wrong values — against closed-set 18/18 exact (per-argument exact 66 vs 24). Score the failure classes separately or the number reads as a capability gap. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Screening instruments are refused a belief-kernel carrier by design.** The cue sweep and bench reports were explicitly declined: the strict reader refuses them, and revisiting needs a ratified `P-TDP` protocol. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Reviewer truncation was a latent scoring bias on the reward path; fixed 2026-09-17** (orchestrator `9a7181f2`). `ArchitectReviewService.condense_output()` replaces the 500-char prefix cut (`review_service.py`, feeding `all_approved` → memrl reward) with head 60% + tail 40% + an explicit elision marker (config `review_output_max_chars`, default 4000). Same commit deprecated (not removed) the dead `ChatRequest.tools` fields. ([scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
 - **The same write-side-before-first-run rule is now standing for GUI-authored workflows (VB-FW-1).** One ClaimTuple per run carries the workflow-document hash, executed node types, each fuzzy node's model pin and question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. Filed at design time, not at first run. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 
@@ -908,7 +908,7 @@ existed. Same session, same shape as rule 3: an unmeasured quantity standing in 
 
 ### Source References (2026-09-17 wrap-up sweep)
 
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-2/TD-3/TD-3b/TD-4/TD-5 studies, the refused bench reports, the cue sweep.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-2/TD-3/TD-3b/TD-4/TD-5 studies, the refused bench reports, the cue sweep.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the measurement rounds and receipt counts.
 - [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the per-(pin, catalogue) calibration amendment.
 - [scoring-infra-standardization.md](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — reviewer truncation, deprecated `/chat` fields.
@@ -939,7 +939,7 @@ Three eval-consumer disciplines arrive from the same intake batch: a redundancy 
 
 - [canonical-judge-suite-revamp.md](../handoffs/active/benchmark-suites.md) — CJ-13/CJ-14.
 - [eval-benchmark-cost-reduction.md](../handoffs/active/eval-tower-program.md#track-eval-benchmark-cost-reduction) — ECR-TD-1/ECR-TD-2.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-2's calibration/contamination protocol.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-2's calibration/contamination protocol.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record and gates.
 
@@ -3415,7 +3415,7 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 - **A production-query eval suite is being built as a substitute for synthetic benchmarks, but its first packaging attempt failed on a contaminated window — not adopted yet.** F1 captures real session tasks (`task_record.v1` embedded in progress events; W1 taxonomy of 7 measured workload classes landed; 372 training-eligible records by 2026-06-20, weighted-dominance gate `true` at 0.585). W3 curated a 50-row YAML real-suite across 7 classes (46/50 prompts recovered, 39/50 expected-backed), but the first standalone EvalTower packaging run was during a concurrent/contested window and scored 11/50 correct with 34/50 errors (connection-refused dominated, ~0.66 quality on 0-3). A clean-window rerun is still required before any decision use; W4 (wire into decisions) is blocked on it. This reinforces the standing rule that contested-window runs are diagnostics, not evidence. Sources: [frontier-f1-real-task-corpus.md](../handoffs/completed/frontier-f1-real-task-corpus.md), [progress 2026-06-21](../progress/2026-06/2026-06-21.md).
 - **Public benchmark publication is gated on protocol/attestation backfill, with unverified historical rows now retired from public claims.** The public-results generator, protocol-backfill parser, public-scrub gate, internal-alias scrub, generated review queue, and review-decision overlay now classify all 374 generated rows as public-safe while routing 325 unverified historical rows to `retired_from_public_claims`. The remaining active publication blockers are 31 pre-attestation historical rows that need a real historical attestation artifact, current rerun, or retirement, plus 18 evidence-linked rows that need protocol tags. The methodology-post draft documents the April-26 canonical collapse (`+17%` -> `+1.6%`) as the main exact-number candidate, but the April 24 Q8 microkernel exact rows are paraphrase-only unless raw repack logs are found or remeasured. Sources: [frontier-f6-upstream-publication.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md#track-frontier-f6-upstream-publication), [docs/publication/public-results-draft.md](../docs/publication/public-results-draft.md), [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md).
-- **Clean-window evidence discipline held across two more A/B-style decisions, both of which recorded `hold`.** DCP-6's first live A/B (n=3/arm) cut tokens but regressed p50 latency (20.2s→32.6s) with quality unscored → `decision.status=hold`. X-MAS's constrained-policy quiet-window A/B (100 rows) improved latency (ratio 0.714) but regressed score (-0.250 vs required +0.050) → still blocked. Bulk-inference J7/DCP-6 offline replay likewise recorded `decision=hold` (latency 32.6s vs 20.2s, zero quality scoring). The pattern: a single-axis win (tokens or latency) is not a pass when the gate requires a quality-scored, regression-excluding verdict. Sources: [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
+- **Clean-window evidence discipline held across two more A/B-style decisions, both of which recorded `hold`.** DCP-6's first live A/B (n=3/arm) cut tokens but regressed p50 latency (20.2s→32.6s) with quality unscored → `decision.status=hold`. X-MAS's constrained-policy quiet-window A/B (100 rows) improved latency (ratio 0.714) but regressed score (-0.250 vs required +0.050) → still blocked. Bulk-inference J7/DCP-6 offline replay likewise recorded `decision=hold` (latency 32.6s vs 20.2s, zero quality scoring). The pattern: a single-axis win (tokens or latency) is not a pass when the gate requires a quality-scored, regression-excluding verdict. Sources: [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [x-mas-text-routing.md](../handoffs/active/routing-program.md#track-x-mas-text-routing).
 - **J9 HLE observe-only meta-metrics did not earn Pareto promotion.** Over 580 metric-bearing trials, `execution_fidelity` and `planning_stability` separate keep/revert but only mirror existing quality/safety signals; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` stay dashboard-only. No promotion eligibility until the N2 ledger/sequential-verdict redesign — a negative meta-optimization result recorded as such. Source: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md).
 
 - **Tool-use experiments must prove the trial actually exercised tools before using the result as optimization signal (2026-06-05).** The active tool-use eval contract separates "model with tools available" from "model actually used the tool path." For AutoPilot/Pareto learning, the measurement contract needs per-trial evidence of tool invocation, helpfulness, and no-tool baseline comparison; otherwise a nominal tool-enabled trial can look like a tool result while measuring only ordinary text behavior. Sources: [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract), [progress 2026-06-03](../progress/2026-06/2026-06-03.md), [progress 2026-06-04](../progress/2026-06/2026-06-04.md).
@@ -3531,7 +3531,7 @@ Pre-generated datasets are available on Figshare (MIT license). Integration into
 
 2026-06-20 EPYC baseline: `epyc-inference-research` run `20260619_141212` completed the documented 20ch/456-QA Tulving slice on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research commit `b6edc64`; research `9e63af0` fixed Tulving ground-truth parsing for NumPy-array/list-repr answers and regenerated the score artifacts plus `tulving_failure_modes.md`. The corrected deterministic scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness `0.1593` — kept, with the caveat that 37/45 tau questions now fail closed for partial coverage and 30/45 carry <2 ground-truth items — and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This result is a mixed baseline: usable lexical entity/time/location recall, poor event-content/full-detail retrieval, weak chronology, and failed zero-answer hallucination checks. It should drive targeted follow-up model-batched comparisons, not routing/memory promotion. **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
 
-> Source: [intake-408#record](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
+> Source: [intake-408#record](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
 > Source: [Integration Test Coverage](/workspace/handoffs/active/engineering-hygiene-backlog.md#track-integration-test-coverage) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
 ## Math-Verify Integration for Math Benchmarks
@@ -3976,7 +3976,7 @@ degenerate class (`worker_vision`: 4 failures in 1,456 rows) is skipped rather t
 number.
 
 Sources: `scripts/analysis/escalation_prediction_probe.py`, `scripts/analysis/comp_region_probe.py`,
-`handoffs/active/learned-routing-controller.md`, `progress/2026-07/2026-07-27.md`.
+`handoffs/active/routing-program.md`, `progress/2026-07/2026-07-27.md`.
 ## Compiled Update — 2026-07-29: eval-instrument correctness, the (model, scaffold) unit of report, and external-figure provenance
 
 **Confidence**: verified for the first-party code/host findings (each closed by
@@ -6823,7 +6823,7 @@ New Vidya adapters registered during this intake are prospective write-side cont
 ### Source References
 
 - [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md)
-- [Decision-aware routing](../handoffs/active/decision-aware-routing.md)
+- [Decision-aware routing](../handoffs/active/routing-program.md)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 - [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
@@ -6857,8 +6857,8 @@ outputs before any enforcement decision.
 
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical six-control floor and evidence ladder.
 - [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md) — local fixture and hosted shadow sequence.
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — common backend screen and trigger-gated follow-ons.
-- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — incumbent-authoritative shadow boundary.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — common backend screen and trigger-gated follow-ons.
+- [Decision-aware routing](../handoffs/active/routing-program.md) — incumbent-authoritative shadow boundary.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — reconciliation and validation record.
 
 **Confidence:** verified as the repository's adopted execution contract; no new model-performance claim is made.
@@ -7020,7 +7020,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 
 ### Source References
 
-- [Typed-decision plane](../handoffs/active/typed-decision-plane.md) — rulings Q1–Q5 and ruling 6, the TD-4 cost decomposition, TD-29 and M0–M4, the sidecar native result, TD-29.K1/K2, TD-15a.
+- [Typed-decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — rulings Q1–Q5 and ruling 6, the TD-4 cost decomposition, TD-29 and M0–M4, the sidecar native result, TD-29.K1/K2, TD-15a.
 - [Canonical judge suite revamp](../handoffs/active/benchmark-suites.md) — CJ-13 absorbing ECR-TD-1, CJ-16 retargeted to a local cascade and kept separate.
 - [Eval benchmark cost reduction](../handoffs/active/eval-tower-program.md#track-eval-benchmark-cost-reduction) and [tool-use eval contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — the ECR-TD-1 and TU-TD-1 folds.
 - [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the park, its reasons and TE-reopen.
@@ -7091,7 +7091,7 @@ which is n=1 per arm on one CPU profile. That is not a production-profile number
 
 - [Benchmark analyst guide](../docs/guides/agent-workflows/benchmark-analyst.md) — *Scarce windows*.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — the four INC-20260929 entries.
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — TD-29.K2, TD-29.M0, TD-29.M0a, the M2/M3 decision note, ruling 6 window discipline.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-29.K2, TD-29.M0, TD-29.M0a, the M2/M3 decision note, ruling 6 window discipline.
 - [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — TD-29.K2 and OP-70 ratified.
 - [2026-09-29 workspace-8d progress](../progress/2026-09/2026-09-29-workspace-8d.md) — the lessons and their rule homes.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the floor contaminated by the owner's own tests.
@@ -7138,7 +7138,7 @@ Evaluation archive completeness, offline SFT eligibility and off-policy RL eligi
 
 The TD-30 coherence judge library and localhost typed endpoint are implemented and the endpoint was deployed by API reload. Calibration, champion-sidecar backend integration, consumer migration and instrument-era ratification remain open. The historical chat-client classifier near-no-op does not certify the new judge: implementation and endpoint availability establish neither calibrated quality nor a new accepted coherence instrument era.
 
-[Typed decision plane — coherence judge rollout](../handoffs/active/typed-decision-plane.md#coherence-judge-and-coherence_gate-rollout-filed-2026-10-04-workspace-ec) records these distinct boundaries.
+[Typed decision plane — coherence judge rollout](../handoffs/active/routing-program.md#coherence-judge-and-coherence_gate-rollout-filed-2026-10-04-workspace-ec) records these distinct boundaries.
 
 ## Compiled Update — 2026-10-06: native fixture conformance has its own denominator and custody boundary
 

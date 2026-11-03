@@ -540,7 +540,7 @@ OCC-2, documentation-only):
 No claim was contradicted. The one material drift (Anthropic's tile model replacement) is exactly
 the failure mode the 2026-08-18 section warned about ("pinned to provider pricing, so it can go
 stale silently"). The consumer surface for any future routing use is
-[`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-4b (the `ω_cost`
+[`decision-aware-routing.md`](../handoffs/active/routing-program.md) DAR-4b (the `ω_cost`
 preference vector + cost-scaling τ at the retriever selection score) — not a GPU-residency cost
 lever.
 
@@ -551,7 +551,7 @@ lever.
   the DAR-4b consumer pointer.
 - [`optical-context-compression.md`](../handoffs/completed/optical-context-compression.md) — the OCC-2
   owning handoff section this record was drafted for (text prepared; main thread applies).
-- [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — DAR-4b, the live
+- [`decision-aware-routing.md`](../handoffs/active/routing-program.md) — DAR-4b, the live
   cost-aware-routing surface the billing facts feed.
 
 ## Compiled Update — 2026-08-25: edit-format rules, the trajectory-artifact shape, and the query_memory↔spill-pointer key mismatch
@@ -953,7 +953,7 @@ The Repo Prompt deep dive (intake-605) surfaced a context philosophy this page h
 
 The internal interaction-lifecycle handoff makes DCP a shared context-packaging substrate for both delegation and consult, but not the owner of consult lifecycle. P2 consult reuses the existing `_maybe_dcp_seed_context()` ranking/rendering path behind `features().dcp_for_consult` (requiring `dcp_pre_assembly`), and preserves the DCP invariant that pre-assembly is advisory only: reactive discovery/top-ups remain available. This avoids a parallel context packer and keeps the assemble-side scoring/ranking decisions in one place.
 
-**Sources**: [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) dependency note · [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) P2-4 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+**Sources**: [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) dependency note · [`internal-interaction-lifecycle.md`](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) P2-4 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
 
 ## Updates — 2026-07-05
 

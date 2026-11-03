@@ -1210,7 +1210,7 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
         > operator), during which production frontdoor `/chat` placement timed out (HTTP 504) — the REPL
         > layer masked this as a model-quality regression ("all comments" no-progress failures) until fixed
         > (orch `32a52fba`), and a first OP-51 A/B ran invalid inside the same window before being repeated
-        > clean once the region was free (`handoffs/active/typed-decision-plane.md` TD-21.1a). This is the
+        > clean once the region was free (`handoffs/active/routing-program.md` TD-21.1a). This is the
         > same cooperative-lock-has-no-priority-tiers gap E above already names, sharpened to a concrete
         > production-availability cost (not just a research-arm cost/tax): the standing behaviour has no
         > notion that a production role's admission request should ever outrank a research calibration's.

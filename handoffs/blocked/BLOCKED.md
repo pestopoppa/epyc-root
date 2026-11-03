@@ -11,7 +11,7 @@ This index tracks work that cannot proceed until an external condition changes. 
 
 Removed 2026-06-12 (Fable 5 portfolio pass): Ouroboros multi-model validation → moved to [`../archived/09-ouroboros-multi-model-validation.md`](../archived/09-ouroboros-multi-model-validation.md) — never executed, references a deprecated model stack (pre-30B-A3B/gemma4 worker swaps); closure note in the file.
 
-Removed 2026-06-12 (BGE repair complete): Retrain routing models + GraphRouter + SkillBank → returned to active work in [`../active/retrain-routing-models.md`](../active/retrain-routing-models.md). Post-repair diagnose-only report was HEALTHY with 275,960 FAISS vectors and 94.6% coverage.
+Removed 2026-06-12 (BGE repair complete): Retrain routing models + GraphRouter + SkillBank → returned to active work in [`../active/retrain-routing-models.md`](../active/routing-program.md#track-retrain-routing-models). Post-repair diagnose-only report was HEALTHY with 275,960 FAISS vectors and 94.6% coverage.
 
 ## Reporting Instructions
 

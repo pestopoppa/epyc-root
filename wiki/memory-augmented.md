@@ -179,7 +179,7 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 - **Why the record needs per-question probabilities at all** (inferred): the public typed-decision contract calls confidence an undisclosed statistic (intake-1472) and the local candidate-softmax readout is uncalibrated (intake-1474). A record that stores only the chosen value cannot be re-graded when a later calibration changes which answers were trustworthy.
 - **Order effects are part of the record's truth conditions.** The independent rerank reproduction shows **24.7% order sensitivity** (intake-1486) — the same batching that makes the write cheap is the contamination axis TD-2 must measure, so the record should carry enough context (question order / batch shape) to audit it.
 - **Write-side wiring precedes the first measurement run.** VB-TDP-1 requires one self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the vidya source table — a tuple invented on read cannot gate a decision. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **Operator steering names episodic-memory writes as a first-class target** for the one-pass call ("may also be relevant for fast routing and episodic memory writing"), which is why the memory record — not just the routing path — is in scope. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **Operator steering names episodic-memory writes as a first-class target** for the one-pass call ("may also be relevant for fast routing and episodic memory writing"), which is why the memory record — not just the routing path — is in scope. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 
 ### Open questions
 
@@ -189,7 +189,7 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 ### Source References (2026-09-17 research-intake delta)
 
 - [episodic-memory-integrity.md](../handoffs/active/memory-program.md) — M-19 (record spec open; the live gate waits on a calibration record).
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — the typed-decision contract and the calibration constraint.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the typed-decision contract and the calibration constraint.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule covering RTG-56.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
 
@@ -291,7 +291,7 @@ inference ran, and the production `kuzu_db` files were only copied, never opened
 - **One embedding-segment assembler (EPD-3-R8, `d3f6062c`).** It is byte-identical to the old serializers
   over 3,000 randomized cases, except that texts over 2,000 chars are now capped and a None-valued failure key
   no longer embeds `None`. No re-embed is needed. `seed_memory` now raises after flushing a partial load (R6).
-  [learned-routing-controller](../handoffs/active/learned-routing-controller.md)
+  [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller)
 
 ### Source References (2026-09-17 afternoon)
 
@@ -937,7 +937,7 @@ The connection between memory and the autopilot is especially significant. Befor
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
 - [rao-redel-substrate-spike.md](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
 - [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547#01 model-dependent depth caveat, ReDel substrate viability
-- [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) -- RTG-15 EPD-3: the canonical `MemoryRecord.embedding_text()` with no live callers, the three drifted production writers, the corpus-pinned golden plus delegation guard (EPD-3-R2/R3), and the inference-gated `priority` drop (EPD-3-R1). Landed as `epyc-orchestrator` `9096a600`
+- [learned-routing-controller.md](../handoffs/active/routing-program.md#track-learned-routing-controller) -- RTG-15 EPD-3: the canonical `MemoryRecord.embedding_text()` with no live callers, the three drifted production writers, the corpus-pinned golden plus delegation guard (EPD-3-R2/R3), and the inference-gated `priority` drop (EPD-3-R1). Landed as `epyc-orchestrator` `9096a600`
 - [progress/2026-09/2026-09-14-noninf-backlog.md](../progress/2026-09/2026-09-14-noninf-backlog.md) -- the noninf sweep: the per-writer embedding-drift table, the M-12e Tulving re-score attribution split (subset-only 0.5755 / bin-only 0.5402 / both 0.5684), and the CAS-validity counts (37/45 partial, 30/45 with <2 ground-truth items)
 - [intake-408#record](../research/intake_index.yaml) -- the Tulving episodic-memory benchmark record; its shipped per-question results file settled the Simple Recall subset by counting rather than by reading the paper prose. Scorer fixes and `SCORER_VERSION = 2` in `epyc-inference-research` `dcb769c1`
 
@@ -1169,7 +1169,7 @@ Dropping `priority` from the canonical text (still present, still leaking the wr
 of rows) is EPD-3-R1 and is gated on an inference window: the recipe change and the re-embed must
 flip together, or live queries mismatch 100% of the store instead of today's 45.4%.
 
-Sources: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) — RTG-15
+Sources: [`learned-routing-controller.md`](../handoffs/active/routing-program.md#track-learned-routing-controller) — RTG-15
 EPD-3-R2/R3 (the delegation guard and corpus-pinned golden) and EPD-3-R1 (the `priority` drop, still
 inference-gated); [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md)
 — the sweep entry with the per-writer drift table; `epyc-orchestrator` `9096a600` — the canonical

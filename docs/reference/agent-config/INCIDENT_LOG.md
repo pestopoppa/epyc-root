@@ -367,7 +367,7 @@ window. Its watcher treated `closing` as still usable. The sidecar stayed up pas
 DS41's pre-measurement build and died at 03:36:17Z (overlap about 03:33-03:36Z). There was no
 contamination: it died before lane 1's A/B began, which workspace-76 confirmed. Rules fed:
 - `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
-- the champion-sidecar gate, `handoffs/active/typed-decision-plane.md` → operator ruling 6;
+- the champion-sidecar gate, `handoffs/active/routing-program.md` → operator ruling 6;
 - proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
   Benchmarks: `artifacts/operator/lessons-20260929-operating-constraints.patch`.
 

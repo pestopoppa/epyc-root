@@ -577,7 +577,7 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
-**Related**: [frontier-f2-self-running-lab.md](frontier-lab-automation.md#track-frontier-f2-self-running-lab) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](retrain-routing-models.md) (routing-classifier stack reuse); [../completed/frontier-f7-economic-ledger.md](../completed/frontier-f7-economic-ledger.md) (planner-distill economic justification)
+**Related**: [frontier-f2-self-running-lab.md](frontier-lab-automation.md#track-frontier-f2-self-running-lab) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](routing-program.md#track-retrain-routing-models) (routing-classifier stack reuse); [../completed/frontier-f7-economic-ledger.md](../completed/frontier-f7-economic-ledger.md) (planner-distill economic justification)
 
 #### Why
 
@@ -812,13 +812,13 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 
 | Handoff | Open | Live | Verdict | Recommendation |
 |---|---:|---:|---|---|
-| [decision-aware-routing](decision-aware-routing.md) | 26 | 3 | PARKED | re-anchor — core FROZEN/closed in routing-truth-restoration W8; keep only Factory-ai/URE backlog |
-| [learned-routing-controller](learned-routing-controller.md) | 17 | 2 | MIXED | split — live BGE+MLP rollout decision vs FROZEN Phase 1.5+ expansion |
+| [decision-aware-routing](routing-program.md) | 26 | 3 | PARKED | re-anchor — core FROZEN/closed in routing-truth-restoration W8; keep only Factory-ai/URE backlog |
+| [learned-routing-controller](routing-program.md#track-learned-routing-controller) | 17 | 2 | MIXED | split — live BGE+MLP rollout decision vs FROZEN Phase 1.5+ expansion |
 | [glm51-reap-cpu-evaluation](glm51-reap-cpu-evaluation.md) | 11 | 9 | LIVE | keep — real work; true blocker = operator-approved GLM inference runs |
 | [colbert-reranker-web-research](knowledge-pipelines.md#track-colbert-reranker-web-research) | 10 | 2 | PARKED | re-anchor — close S5 request-path NO-GO; keep inference-gated LateOn/DenseOn latency+A/B |
 | [internal-kb-rag](knowledge-pipelines.md) | 8 | 0 | LANDED | re-anchor — K1–K7 CERTIFIED 2026-06-13; keep only deferred K8 + optional Hy-MT2 |
 | [minddr-deep-research-mode](model-evaluation-queue.md#track-minddr-deep-research-mode) | 8 | 2 | LIVE | keep — MD-9 A/B inference-gated. **Reactivate note**: Phase-2 hardware gate flipped (DGX→MI210 present) |
-| [x-mas-text-routing](x-mas-text-routing.md) | 1 | 1 | LANDED | re-anchor — enforce enabled (`d4a6c927`); convert to standing telemetry-watch |
+| [x-mas-text-routing](routing-program.md#track-x-mas-text-routing) | 1 | 1 | LANDED | re-anchor — enforce enabled (`d4a6c927`); convert to standing telemetry-watch |
 
 ##### Batch C — stack / infra
 

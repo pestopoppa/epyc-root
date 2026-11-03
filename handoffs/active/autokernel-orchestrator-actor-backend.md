@@ -17,7 +17,7 @@ metric), RTG-56 (TD-21 repair ladder), UFH-01 (MCP tool convergence, opencode sh
 **Related**: [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) §C (DS41-C16..C21),
 [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md) R23-37 (opencode `Backend`), R24-3
 (read-only critic), [`repl-turn-efficiency.md`](repl-turn-efficiency.md) S4-T1/T2,
-[`typed-decision-plane.md`](typed-decision-plane.md) TD-21.30/21.33,
+[`typed-decision-plane.md`](routing-program.md#track-typed-decision-plane) TD-21.30/21.33,
 [`harness-selection-and-integration.md`](harness-selection-and-integration.md) HS-4 P6/P7, HS-OD-4
 
 ## NI18 source-correlated fixture route — 2026-10-05

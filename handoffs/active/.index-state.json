@@ -21,13 +21,13 @@
     "reviewer-control-plane-index.md": {
       "blocked": 12,
       "handoffs": 4,
-      "oldest_advance": "2026-07-29",
+      "oldest_advance": "2026-10-06",
       "open": 26
     },
     "routing-and-optimization-index.md": {
       "blocked": 14,
-      "handoffs": 20,
-      "oldest_advance": "2026-07-29",
+      "handoffs": 13,
+      "oldest_advance": "2026-08-03",
       "open": 662
     },
     "user-facing-harness-index.md": {
@@ -501,7 +501,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 38,
+      "closed": 39,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 11,
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 49
+      "total": 50
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -796,22 +796,6 @@
       "row_id": "INF-70",
       "state": "active",
       "total": 167
-    },
-    "decision-aware-routing.md": {
-      "blocked": 1,
-      "closed": 42,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 30,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-09",
-      "state": "active",
-      "total": 73
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
@@ -1371,22 +1355,6 @@
       "state": "active",
       "total": 31
     },
-    "internal-interaction-lifecycle.md": {
-      "blocked": 0,
-      "closed": 27,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 5,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-14",
-      "state": "active",
-      "total": 32
-    },
     "knowledge-pipelines.md": {
       "blocked": 3,
       "closed": 99,
@@ -1496,22 +1464,6 @@
       "row_id": "RTG-57",
       "state": "active",
       "total": 156
-    },
-    "learned-routing-controller.md": {
-      "blocked": 2,
-      "closed": 45,
-      "guarded": 1,
-      "last_advanced": "2026-10-31",
-      "open": 22,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-15",
-      "state": "active",
-      "total": 70
     },
     "log-linear-gated-deltanet-readiness.md": {
       "blocked": 1,
@@ -1708,22 +1660,6 @@
           "open": 3
         }
       ]
-    },
-    "model-capability-descriptors.md": {
-      "blocked": 0,
-      "closed": 4,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 1,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-17",
-      "state": "active",
-      "total": 5
     },
     "model-evaluation-queue.md": {
       "blocked": 4,
@@ -2107,22 +2043,6 @@
         }
       ]
     },
-    "retrain-routing-models.md": {
-      "blocked": 1,
-      "closed": 4,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 2,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-29",
-      "state": "active",
-      "total": 7
-    },
     "reviewer-escalation-and-human-gate-policy.md": {
       "blocked": 5,
       "closed": 3,
@@ -2143,7 +2063,7 @@
       "blocked": 5,
       "closed": 31,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-11-03",
       "open": 8,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
@@ -2234,6 +2154,104 @@
       "row_id": "RTG-30",
       "state": "active",
       "total": 22
+    },
+    "routing-program.md": {
+      "blocked": 4,
+      "closed": 171,
+      "guarded": 1,
+      "last_advanced": null,
+      "open": 97,
+      "owner_index": "routing-and-optimization-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "RTG-09",
+      "state": "active",
+      "total": 273,
+      "tracks": [
+        {
+          "blocked": 1,
+          "closed": 42,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 30
+        },
+        {
+          "blocked": 0,
+          "closed": 27,
+          "gates": [],
+          "guarded": 0,
+          "line": 529,
+          "markers": 1,
+          "name": "internal-interaction-lifecycle",
+          "open": 5
+        },
+        {
+          "blocked": 2,
+          "closed": 45,
+          "gates": [],
+          "guarded": 1,
+          "line": 1000,
+          "markers": 1,
+          "name": "learned-routing-controller",
+          "open": 22
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [],
+          "guarded": 0,
+          "line": 2259,
+          "markers": 1,
+          "name": "model-capability-descriptors",
+          "open": 1
+        },
+        {
+          "blocked": 1,
+          "closed": 4,
+          "gates": [],
+          "guarded": 0,
+          "line": 2335,
+          "markers": 1,
+          "name": "retrain-routing-models",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 21,
+          "gates": [],
+          "guarded": 0,
+          "line": 2468,
+          "markers": 1,
+          "name": "tri-role-coordinator-architecture",
+          "open": 7
+        },
+        {
+          "blocked": 0,
+          "closed": 26,
+          "gates": [],
+          "guarded": 0,
+          "line": 2768,
+          "markers": 1,
+          "name": "typed-decision-plane",
+          "open": 29
+        },
+        {
+          "blocked": 0,
+          "closed": 2,
+          "gates": [],
+          "guarded": 0,
+          "line": 3484,
+          "markers": 1,
+          "name": "x-mas-text-routing",
+          "open": 1
+        }
+      ]
     },
     "sarathi-serve-cpu-evaluation.md": {
       "blocked": 1,
@@ -2451,38 +2469,6 @@
       "state": "active",
       "total": 11
     },
-    "tri-role-coordinator-architecture.md": {
-      "blocked": 0,
-      "closed": 21,
-      "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 7,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-40",
-      "state": "active",
-      "total": 28
-    },
-    "typed-decision-plane.md": {
-      "blocked": 0,
-      "closed": 26,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 29,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-56",
-      "state": "active",
-      "total": 55
-    },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,
       "closed": 336,
@@ -2498,22 +2484,6 @@
       "row_id": "EVL-47",
       "state": "active",
       "total": 754
-    },
-    "x-mas-text-routing.md": {
-      "blocked": 0,
-      "closed": 2,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 1,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-45",
-      "state": "active",
-      "total": 3
     },
     "yarn-context-extension-research.md": {
       "blocked": 0,
@@ -2928,7 +2898,7 @@
         "INF-77",
         "INF-66",
         "EVL-37",
-        "RTG-56",
+        "RTG-09",
         "UFH-01"
       ],
       "handoff": "autokernel-orchestrator-actor-backend.md",
@@ -3054,57 +3024,21 @@
     },
     "RTG-09": {
       "deps": [],
-      "handoff": "decision-aware-routing.md",
+      "handoff": "routing-program.md",
       "id": "RTG-09",
       "index": "routing-and-optimization-index.md",
       "line": 16,
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
       "track": "decision aware routing"
     },
-    "RTG-14": {
-      "deps": [],
-      "handoff": "internal-interaction-lifecycle.md",
-      "id": "RTG-14",
-      "index": "routing-and-optimization-index.md",
-      "line": 17,
-      "next_action": "P3-3 \u2014 run consult_gate_probe on T2/T3 hard slices: always-consult vs targeted gate on quality, tasks/hour, false skips",
-      "track": "internal interaction lifecycle"
-    },
-    "RTG-15": {
-      "deps": [],
-      "handoff": "learned-routing-controller.md",
-      "id": "RTG-15",
-      "index": "routing-and-optimization-index.md",
-      "line": 18,
-      "next_action": "EP-5 \u2014 re-run the outcome-label probe on rows updated after 24b43990 (or after the EPD-1b backfill); then EPD-3",
-      "track": "learned routing controller"
-    },
-    "RTG-17": {
-      "deps": [],
-      "handoff": "model-capability-descriptors.md",
-      "id": "RTG-17",
-      "index": "routing-and-optimization-index.md",
-      "line": 19,
-      "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
-      "track": "model capability descriptors"
-    },
     "RTG-22": {
       "deps": [],
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
-      "line": 20,
+      "line": 17,
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
       "track": "non inference backlog"
-    },
-    "RTG-29": {
-      "deps": [],
-      "handoff": "retrain-routing-models.md",
-      "id": "RTG-29",
-      "index": "routing-and-optimization-index.md",
-      "line": 21,
-      "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
-      "track": "retrain routing models"
     },
     "RTG-30": {
       "deps": [
@@ -3113,7 +3047,7 @@
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "index": "routing-and-optimization-index.md",
-      "line": 22,
+      "line": 18,
       "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
       "track": "routing intelligence"
     },
@@ -3122,7 +3056,7 @@
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
-      "line": 23,
+      "line": 19,
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
       "track": "session bus thin dispatcher"
     },
@@ -3131,27 +3065,9 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 24,
+      "line": 20,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
-    },
-    "RTG-40": {
-      "deps": [],
-      "handoff": "tri-role-coordinator-architecture.md",
-      "id": "RTG-40",
-      "index": "routing-and-optimization-index.md",
-      "line": 25,
-      "next_action": "TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing",
-      "track": "tri role coordinator architecture"
-    },
-    "RTG-45": {
-      "deps": [],
-      "handoff": "x-mas-text-routing.md",
-      "id": "RTG-45",
-      "index": "routing-and-optimization-index.md",
-      "line": 26,
-      "next_action": "Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload",
-      "track": "x mas text routing"
     },
     "RTG-48": {
       "deps": [
@@ -3160,7 +3076,7 @@
       "handoff": "coordinator-role-failure-modes-and-refactor.md",
       "id": "RTG-48",
       "index": "routing-and-optimization-index.md",
-      "line": 27,
+      "line": 21,
       "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
       "track": "coordinator role failure modes"
     },
@@ -3172,18 +3088,9 @@
       "handoff": "loop-owned-fleet-implementation.md",
       "id": "RTG-52",
       "index": "routing-and-optimization-index.md",
-      "line": 28,
+      "line": 22,
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
-    },
-    "RTG-56": {
-      "deps": [],
-      "handoff": "typed-decision-plane.md",
-      "id": "RTG-56",
-      "index": "routing-and-optimization-index.md",
-      "line": 29,
-      "next_action": "Run fresh three-arm shadow at the inference owner\u2019s boundary; retain inference gates",
-      "track": "typed decision plane"
     },
     "RTG-57": {
       "deps": [
@@ -3193,7 +3100,7 @@
       "handoff": "kv-unified-stack-rollout.md",
       "id": "RTG-57",
       "index": "routing-and-optimization-index.md",
-      "line": 30,
+      "line": 23,
       "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
       "track": "kv unified stack rollout"
     },
@@ -3206,7 +3113,7 @@
       "handoff": "kv-prefix-fork-and-paged-attention.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 31,
+      "line": 24,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3215,7 +3122,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 32,
+      "line": 25,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

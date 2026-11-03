@@ -146,7 +146,7 @@ NG5 source-by-source scope and remaining provenance gaps: [2026-11-02 audit](../
 - [x] **SW-6 — canonicalize the `--master` path in `_format_header_banner`, or refuse a non-canonical one**, since it is embedded verbatim and compiling from a worktree or temp copy produces an artifact advertising that throwaway path as the source of truth (corrected by hand in `a1d36daf`) (`src/registry/registry_compiler.py:303-320`) (found 2026-09-14, noninf sweep). ✅ 2026-10-07 — [MAIN original97/97 acceptance](../../artifacts/ni08/registry-banner-override-source-20261007/README.md).
 - [x] **SW-9 — the MTP speculative-accept path never populates token probabilities** (`tools/server/server-context.cpp`,
   `// TODO: set result.probs`), found 2026-09-24 while re-measuring the typed-decision native arm
-  (`handoffs/active/typed-decision-plane.md` TD-1d.2/TD-1d.5): on frontdoor ~94% of served tokens come from
+  (`handoffs/active/routing-program.md` TD-1d.2/TD-1d.5): on frontdoor ~94% of served tokens come from
   accepted MTP drafts, and none of them carry `result.probs`, so any consumer of per-token probabilities
   (native typed decisions, calibration, confidence-gated routing) silently gets nothing on the majority of
   tokens regardless of request-level flags (`post_sampling_probs`, orch `71be6ed3`, ruled out as the cause).

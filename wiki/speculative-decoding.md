@@ -322,7 +322,7 @@ the DS41 session's report, cross-checked by ancestry and binary hash.
 
 - [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9 (fold record,
   validation numbers, DS41 anchor record)
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) TD-1d.2 / TD-1d.5 (native-arm re-bench,
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.2 / TD-1d.5 (native-arm re-bench,
   consumer-side closure)
 - [progress/2026-09/2026-09-24-td21.md](../progress/2026-09/2026-09-24-td21.md) (session log)
 
@@ -393,7 +393,7 @@ at this compile (superseded: folded and validated — see the late section above
     MTP-accepted tokens. TD-1d.5 stays the consumer-side row and is closed by SW-9.
 
   ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9;
-  [typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-1d.5;
+  [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.5;
   [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C25)
 
 ### Source References (2026-09-24 evening)
@@ -402,7 +402,7 @@ at this compile (superseded: folded and validated — see the late section above
   pool-full exception), KVU-1, KVU-1b, KVU-7.
 - [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md): SW-9 (patch ready,
   ADMIT, sequence), SR-6.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md): TD-1d.5 (pointer to SW-9).
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane): TD-1d.5 (pointer to SW-9).
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C25 (run-9 order).
 - [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"GPU sweeps", §"TD-21 coordination".
 
@@ -412,13 +412,13 @@ at this compile (superseded: folded and validated — see the late section above
 
 ### Key findings
 
-- **The frozen production kernel's MTP speculative-accept path never populates `result.probs`.** Found while re-measuring the typed-decision plane's native arm through `LLMPrimitives` on frontdoor: raising the JSON arm's token budget fixed that arm (24/24 decisions, 23/24 vs labels), but the native arm stayed broken even after the request set `post_sampling_probs` (orch `71be6ed3`). Root cause is not the request flag: `tools/server/server-context.cpp` has a standing `// TODO: set result.probs` on the code path that accepts an MTP-drafted token, so accepted-draft tokens carry no probability data regardless of what the caller asks for. On frontdoor, **~94% of served tokens come from accepted MTP drafts** — so this is not an edge case, it silently starves nearly every token of probability data for any consumer that wants it (native typed decisions, calibration, confidence-gated routing). ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-1d.2, TD-1d.5; [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9)
+- **The frozen production kernel's MTP speculative-accept path never populates `result.probs`.** Found while re-measuring the typed-decision plane's native arm through `LLMPrimitives` on frontdoor: raising the JSON arm's token budget fixed that arm (24/24 decisions, 23/24 vs labels), but the native arm stayed broken even after the request set `post_sampling_probs` (orch `71be6ed3`). Root cause is not the request flag: `tools/server/server-context.cpp` has a standing `// TODO: set result.probs` on the code path that accepts an MTP-drafted token, so accepted-draft tokens carry no probability data regardless of what the caller asks for. On frontdoor, **~94% of served tokens come from accepted MTP drafts** — so this is not an edge case, it silently starves nearly every token of probability data for any consumer that wants it (native typed decisions, calibration, confidence-gated routing). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-1d.2, TD-1d.5; [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9)
 - **Operator decision (2026-09-24 ~15:45Z): patch it in kernel research, not by disabling MTP.** The two alternatives considered — disabling MTP for frontdoor, or reworking the request-flag path further — were both declined in favor of fixing the actual defect: patch the spec-accept path on a fresh `llama.cpp-experimental` branch pulled from current production (never the frozen tree in place, per the standing four-step kernel workflow), validate, and advance the AutoKernel champion so campaigns pick up the fix. Until that lands, native-mode typed decisions are **explicitly out of reach on the current production kernel** — a named, dated operator disposition, not an open question.
 - **Generalisable shape**: a request-level flag (`post_sampling_probs`) can be entirely correct and still read as broken, because the field it is supposed to gate was never wired on the code path that actually produces most of the tokens. Diagnosing "the flag isn't reaching the server" without checking whether the *token's origin* (drafted-and-accepted vs. verified-from-scratch) even has the field wired would have cost another cycle chasing the wrong layer.
 
 ### Source References (2026-09-24 operator wrap-up)
 
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-1d.2 (native-arm re-measurement, root cause), TD-1d.5 (kernel-work tracking row).
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1d.2 (native-arm re-measurement, root cause), TD-1d.5 (kernel-work tracking row).
 - [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) — SW-9 (kernel-side owner, patch plan).
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the recipe layer can express DSpark at last, and a declared exactness key must REFUSE rather than fall back
@@ -1503,7 +1503,7 @@ Verdict: `worth_investigating`. Tracked in [`inference-acceleration-index.md`](.
 
 The spike is preserved in `handoffs/active/` (not archived) as a frozen reference for the four re-evaluation conditions. Negative results with concrete gating numbers and triggers are more useful than verdicts like "not practical" — the next reviewer can compare new evidence against the recorded gate thresholds in O(1).
 
-Sources: [`handoffs/completed/peer-verifier-speculation-spike.md`](../handoffs/completed/peer-verifier-speculation-spike.md) · [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) § DAR-6 · `research/intake_index.yaml` intake-614/615 · `epyc-orchestrator/src/backends/llama_server.py` · `progress/2026-05/2026-05-27.md`.
+Sources: [`handoffs/completed/peer-verifier-speculation-spike.md`](../handoffs/completed/peer-verifier-speculation-spike.md) · [`handoffs/active/routing-program.md`](../handoffs/active/routing-program.md) § DAR-6 · `research/intake_index.yaml` intake-614/615 · `epyc-orchestrator/src/backends/llama_server.py` · `progress/2026-05/2026-05-27.md`.
 
 ### New Findings (2026-05-27 evening — Cross-tokenizer SD, MTP-split feasibility, FastDraft gating)
 

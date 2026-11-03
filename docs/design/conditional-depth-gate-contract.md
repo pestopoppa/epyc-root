@@ -54,7 +54,7 @@ net value.
 be converted with `p_base_fail = 1 - p_success`. A raw competence score, ranking,
 classifier margin or AUC is not a calibrated probability.
 
-The [escalation-prediction probe](../../handoffs/active/learned-routing-controller.md#escalation-prediction-probe--2026-07-27-provisional-adversarial-verification-pending)
+The [escalation-prediction probe](../../handoffs/active/routing-program.md#escalation-prediction-probe--2026-07-27-provisional-adversarial-verification-pending)
 records a refuted result and requires outcome-label repair before another probe.
 Its historical "Ready" dataset designation does not satisfy this input contract.
 Keep the gate unavailable for that predictor until replacement calibration and
