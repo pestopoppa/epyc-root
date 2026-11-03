@@ -380,3 +380,9 @@ The S3/v30 window ended at its deadline with one additional completed A0 and no 
 The E1-MEM split-proof candidate passed seven offline proof tests, eight model-free qualification controls and verification of 53 source-dependency hashes. It also refuses the N15 missing-control case. Request-manifest rebinding and canonical v14 integration remain incomplete, followed by booking and keeper qualification; this is preparation evidence only and includes no inference or long-context result. The separately recorded S3 partial and its original 120-pair denominator remain as described above. ([YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md); [YaRN handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md))
 
 Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) · [YaRN handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md)
+
+## Compiled update — 2026-11-03: YaRN E1 memory replay (split stage groups)
+
+The historical E1 (9a3f1392a) vs W (b0ba1d427) replay on the 27B Q8 found own-PID VRAM flat at every stage and identical between images: A0 (262k) 37.13 GiB, A1 (YaRN 524k) 47.63 GiB through 500k. The ~10.5 GiB A1−A0 gap is load-time KV sizing, not prefill growth. Caveat: the replay reset the server between the 128k/240k and 400k/500k groups, while the original E1 ran one unbroken chain, so cross-chain growth is still open (YARN-E1-MEM-CHAIN). Indicative np1 decode: ~33 tok/s at 3k, 17.2 at 128k, 12.3 at 240k, 8.3 at 400k, 7.0 at 500k.
+
+Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/active/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)

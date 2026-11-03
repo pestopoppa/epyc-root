@@ -6980,3 +6980,12 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 - [CH-31 paired diagnostic](../artifacts/compute/akagg-ch31-rowexact-pair-result-20261101/)
 - [C6 Q4 diagnostics](../artifacts/compute/inf65-c6-diagnostic-20261102/COMBINED-SUMMARY.json)
 - [Champion aggregate handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
+
+## Compiled update — 2026-11-03: INF-22 CPU/MI210 placement and prefill findings
+
+- **E5 Stage-B (qwen36_q8_0, champion candidate `181483cfc-lbt`, indicative).** One full-machine server (`interleave=all`) saturates at ~84 tok/s aggregate decode from np1 to np4. Two half-machine servers, each interleaved over its own two NUMA nodes, reach 99.2 tok/s at np16 (+19 %), but lose below np4. Without a per-half NUMA policy both halves first-touch onto node 0 (85-99.8 %) and C1b collapses to 30-67 tok/s.
+- **PF1 prefill crossover (Q38FN UD-IQ4_XS, champion candidate C6).** The MI210 beats the CPU at both 2k and 8k prompts: CPU 228/210, op-offload 479/465, `-ngl 99 -ncmoe 48` 513/492 tok/s (2.1-2.3×). The offload-disabled control matches the CPU, so the gain is the offload. The crossover sits below 2k tokens. GPU-arm weights live in HIP pinned host memory, which `numactl --interleave` does not govern, so a CPU placement cap is meaningless on GPU arms.
+- **Q38FN recipe.** The t48 bundle (48 threads + `GGML_FUSED_DECODE_OFF=1` + `GGML_NOHUGEPAGE_PROCESS=1`) beats t96 by +7 % decode and +23-40 % prefill on both C5 and the M4 candidate; folded into the v11 champion bundle keyed to the model (INF22-Q38-T48).
+- **Model load.** Champion `llama-server --load-threads 96` loads 87 GiB in ~25 s (single-threaded load took minutes); champion `llama-bench` only gained the flag in `181483cfc-lbt` (manifest V11-120).
+
+Sources: [INF-22 handoff](../handoffs/active/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)

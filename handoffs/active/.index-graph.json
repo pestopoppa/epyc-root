@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T22:43:35Z",
+  "generated_at": "2026-11-03T23:52:20Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1561,15 +1561,15 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 181,
-      "dispatchable": 51,
+      "closed": 184,
+      "dispatchable": 48,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-03",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 54,
+      "open": 51,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,11 +1589,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 31,
+          "dispatchable": 28,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 32,
+          "open": 29,
           "readiness": "ready"
         },
         {

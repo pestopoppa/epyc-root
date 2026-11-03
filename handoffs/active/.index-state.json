@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 685
+      "open": 682
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 3,
-      "closed": 181,
+      "closed": 184,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 51,
+      "open": 48,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1509,13 +1509,13 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 93,
+          "closed": 96,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 31
+          "open": 28
         },
         {
           "blocked": 2,
