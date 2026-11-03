@@ -25,7 +25,7 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 18,
+      "blocked": 17,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
       "open": 730
@@ -2499,9 +2499,9 @@
       ]
     },
     "stack-lifecycle-program.md": {
-      "blocked": 2,
+      "blocked": 1,
       "closed": 120,
-      "guarded": 9,
+      "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 29,
       "owner_index": "routing-and-optimization-index.md",
@@ -2512,7 +2512,7 @@
       },
       "row_id": "RTG-36",
       "state": "active",
-      "total": 160,
+      "total": 150,
       "tracks": [
         {
           "blocked": 0,
@@ -2522,7 +2522,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 1,
@@ -2558,27 +2558,27 @@
           "blocked": 0,
           "closed": 48,
           "gates": [],
-          "guarded": 7,
+          "guarded": 0,
           "line": 795,
           "markers": 1,
           "name": "model-stack-single-source-update-pipeline",
           "open": 4
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
           "line": 1358,
           "markers": 1,
           "name": "model-stack-update-pipeline-audit",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 9,
           "gates": [],
-          "guarded": 2,
+          "guarded": 0,
           "line": 2019,
           "markers": 1,
           "name": "standardized-stack-update-pipeline-finalization",

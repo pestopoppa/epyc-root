@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:17:42Z",
+  "generated_at": "2026-11-03T16:18:37Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3398,17 +3398,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 120,
       "dispatchable": 29,
       "domain": "routing-and-optimization",
-      "guarded": 9,
+      "guarded": 0,
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "last_advanced": "2026-11-02",
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
-      "open": 40,
+      "open": 30,
       "priority": 0.1387,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM \u2014 `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
@@ -3440,11 +3440,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
@@ -3480,12 +3480,12 @@
           "gates": [],
           "line": 795,
           "name": "model-stack-single-source-update-pipeline",
-          "open": 11,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 1358,
           "name": "model-stack-update-pipeline-audit",
@@ -3498,7 +3498,7 @@
           "gates": [],
           "line": 2019,
           "name": "standardized-stack-update-pipeline-finalization",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
