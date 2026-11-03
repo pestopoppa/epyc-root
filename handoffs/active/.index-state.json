@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 840
+      "open": 825
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -717,7 +717,7 @@
       "closed": 107,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 135,
+      "open": 120,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -726,7 +726,7 @@
       },
       "row_id": "INF-77",
       "state": "active",
-      "total": 243
+      "total": 228
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,

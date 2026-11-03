@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:45:13Z",
+  "generated_at": "2026-11-03T16:46:10Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2370,14 +2370,14 @@
         "RTG-58"
       ],
       "closed": 107,
-      "dispatchable": 135,
+      "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "last_advanced": "2026-11-03",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
-      "open": 136,
+      "open": 121,
       "priority": 0.6069,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): DS41-W5d \u2014 1017 baseline + MUL_MAT_ID premise microbench (operator choice \"1017-only + mic",

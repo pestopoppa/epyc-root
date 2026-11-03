@@ -343,7 +343,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     assert mismatch refusal text or acceptance without an override. The refusal offers original
     `--cor-build` / `--resume-run`, not the requested fresh-store / rebind-anchor remedies. Keep C27
     open for the missing diagnostic guidance and focused regression cases; the core guard exists.
-- [ ] DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
+- **[declined: ws58 2026-11-03 content-review: superseded — runs 10m and later ran on newer anchors; the first-results read has no consumer now]** DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
   - The half-screen floor is written. Compare its interval and between-launch SD with `5a60152ae`'s 5.789%
     (2.91-9.55%): the loader changed, the decode kernels did not.
   - Record the mean launch time over the whole series and the calibration's total wall, against run 9's ~4 h.
@@ -400,7 +400,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     bundle). Libs: `libggml-base` SAME; `libggml-cpu`, `libggml`, `libllama` EXPLAINED (code identical, build-path/build-id
     only) via libcmp. Closes the "holds under concurrent lane-build load" clause; `-j64` CPU anchor builds stay valid
     (`anchor_build_jobs`, research `f1bf8d17d`). HIP stays `-j1` until R23-41.
-- [ ] DS41-C47 — **Confirm the first keep at the serving gate.**
+- **[declined: ws58 2026-11-03 content-review: resolved — the DS41 AK keeps (+7.11% serving) were confirmed at the serving gate (project record 2026-09-26)]** DS41-C47 — **Confirm the first keep at the serving gate.**
   - Operator 2026-09-27: let the loop's serving gate decide (fires at 13.81% compounded or every 4 keeps); no early
     confirmation run. The keep's commit `cafb59c3` is now durable on `fork/experimental/fastload-ds41-20260925`
     (it was local-only). Not in `ak/champion` / v10.
@@ -584,7 +584,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     **re-authored** patch of the mechanism (batch 2 loaded the fixed witness), not the resumed build-stage
     checkpoint of the earlier refused patch (`43982b2b` / `e4ce1b1f`), passed the corrected Q4/Q5 dot witness at
     20:08Z and was measured and kept as `47b6865de` (+5.683%, DS41-C68 keep 3).
-  - [ ] Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
+  - **[declined: ws58 2026-11-03 content-review: merged into DS41-C11 (same pre-existing failure triage)]** Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
     caused by `1f7979d4`): wider than first scoped — 72 failures across 22 files in the autokernel loop suite
     (e.g. `test_serial_roster`, `test_serving::LifecycleObservationHook`, `test_validation_semantic_adapter`,
     `test_gpu_runtime` x2, `test_seed` x3, `test_aggregate_feedback` x2, `test_native_server_t0_witness` errors).
@@ -739,7 +739,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     salvage turn `23305d81`), effective from the next batch.
   - Note: routing Q8_0 into iqk changes the activation quantization, so outputs are not bit-identical to
     tinyBLAS (the route's own documented caveat) — the correctness gates will judge it.
-  - [ ] Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch with no trigger]** Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
     (dense Q8_0 is the largest single lever, ~40% of cycles).
 - [x] DS41-C74 — **Two lanes, lane 1 on an external planner/author model (deepseek/deepseek-flash).**
   ✅ 2026-09-29 (~01:30-03:25Z), `ak-ds41-main`. Operator decision (AskUserQuestion): second lane on an
@@ -767,10 +767,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     lane 1 is deepseek authoring + deepseek critic (self-review); lane-1 prompts (up to ~100-170k tokens)
     egress to the external provider; `_last_call_evidence` may attribute authoring-failure evidence to the
     other lane's row.
-  - [ ] Follow-up: confirm lane 1 (deepseek) produces proposals/patches that reach measurement and that the
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch]** Follow-up: confirm lane 1 (deepseek) produces proposals/patches that reach measurement and that the
     shared tail serializes measurements (no overlap).
-  - [ ] Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
-  - [ ] Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
+  - **[declined: ws58 2026-11-03 content-review: no decision rule; the loop's own metrics (LOOP-5) report measurements per hour]** Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch]** Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
 - [x] DS41-C75 — **Batch size 6, dead-end steering, planner context arms (arm B live).** ✅ 2026-09-29
   (~07:30-11:31Z), `ak-ds41-main`. With `--batch-iterations 2`, each child gave each lane one iteration, so
   fast lane 1 (deepseek, ~15-20 min/iteration) idled while lane 0 (27B, 1-2 h/iteration) finished — the pool
@@ -822,11 +822,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     context (`context_max_tokens`), compactions, output-capped steps vs arm A baseline (runs 10n/10o lane-0
     sessions). ✅ 2026-09-29 — arm B 0/3 valid; superseded by arm C (DS41-C76).
   - [x] Follow-up: then run arm C for ≥3 sessions. (Tracked as DS41-C77.) ✅ 2026-09-30 — arm C 5/5 valid.
-  - [ ] Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
+  - **[declined: ws58 2026-11-03 content-review: conditional ("if arms hold") with no trigger evidence]** Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
     worst case, over the 196,608 pool — needs C≈77k and author output under 40,960, or lane-0-only limits via
     `lane_actors.seat_for`).
-  - [ ] Follow-up: planner effort "high" arm, later.
-  - [ ] Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
+  - **[declined: ws58 2026-11-03 content-review: "later" with no trigger]** Follow-up: planner effort "high" arm, later.
+  - **[declined: ws58 2026-11-03 content-review: "consider" with no decision]** Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
     wanted.
 - [x] DS41-C76 — **Escape mandate confined the search to four closed categories → abstention storm; fixed.**
   ✅ 2026-09-29, `ak-ds41-main`. Experiments rows 134-143 (14:18-14:53Z) were all
@@ -954,11 +954,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C100 — UFH-12 context.search (hybrid lexical+dense, rrf_fuse, pointers only) in the orchestrator REPL; add an orsv arm to C95 once deployed (coordinate the API reload with workspace-8d).
   - 2026-10-01: built and live (orch `b384cdbb`; branch d02942f7 + 002b6fc4, dense-index timeout fix by workspace-8d →
     `lexical_fallback:index_timeout`). `repl_embedding_pool` is runtime-only: any API reload resets it. orsv pending C102.
-- [ ] DS41-C101 — wire the C95 graded results into the belief kernel (source row in scripts/vidya/adapters/README.md + task in vidya-belief-substrate-program.md), per CLAUDE.md.
+- **[declined: ws58 2026-11-03 content-review: duplicate — vidya-belief-substrate-program VB-DS41-C95 carries this wiring]** DS41-C101 — wire the C95 graded results into the belief kernel (source row in scripts/vidya/adapters/README.md + task in vidya-belief-substrate-program.md), per CLAUDE.md.
   - 2026-10-01: graded results `/mnt/raid0/llm/tmp/ds41-c95/grading/report.json` (+ `report.md`, `grades/`, `key.json`);
     source row and task drafted in the C95 wrap-up, applied by the owning session. Copy the dir durably first (`tmp` is scratch).
 - [ ] DS41-C102 — orv/orsv arms (27B via orchestrator REPL; + UFH-12 context.search) orchestrator 500 int('') bug FIXED 2026-10-01 (orch 2d97ade2: context.get dict-style default; root cause model wrote context.get('inbox','')); operator chose a DS41 pause to run them 2026-10-01; needs frontdoor quiet (REPL delegates to worker roles on :8070) and repl_embedding_pool re-enabled after any API reload.
-- [ ] DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
+- **[declined: ws58 2026-11-03 content-review: conditional on a reconsideration nobody has filed]** DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
 - [x] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling. ✅ 2026-10-29 (audit: research 9299b0a6f (2026-10-07, on origin/main) 'Require decisive comparisons for verified keep effects': claims.py + test_claims.py +33; re-projection of existing rows not evidenced) [no-belief: audit-reconciliation]
 - [x] DS41-C105 — ✅ 2026-10-04 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
   - 2026-10-03: **fixed, pending deploy.** Research main `4a815f00` adds `--cpu-measurement-gpu-quiet {off,q3}`, default `off`. Root cause: `loop/run.py:124-153` `_q3_cpu_gpu_quiet_window` took the claim on purpose — measurement hygiene from INF-70 (2026-09-08) to keep GPU work off the CPU floor — and it never excluded production :8083 anyway. It deploys through the DS41 boundary swap already armed (`/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_noclaim_10aa.log`; at 15:23Z it showed only the run 10z pause request). Flip when that log shows run 10aa alive and a live run holds no `mi210_0` claim.
@@ -1074,7 +1074,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
   watchdog from falling to fallback args on a missing-dependency death. Robustness work in progress by another ak-ds41-main subagent; close when the relaunched loop runs on the new path.
   - [x] DS41-C113a — declare the two load-bearing worktrees. ✅ 2026-10-04 — `root-main-epyc-root-repo` is git-locked as "load-bearing: DS41 EPYC_ROOT_REPO (INC-20261004)" and `research-ds41-run10` as "load-bearing: DS41 live loop worktree". `scripts/system/worktree_gate.py` (root `837ebf6f`) refuses locked trees and trees named by a live process environment or launcher.
-  - [ ] DS41-C113b — the launchers still hardcode the path (`ds41_watchdog{,2,3}.sh`, `swap_*.sh`, `pause_probe_restart.sh`), and none of them fails fast when it is missing. Do the fail-fast check and the watchdog no-fallback change at the next DS41 relaunch. Never edit a running script; copy it to a new name.
+  - **[declined: ws58 2026-11-03 content-review: merged into C113 (the same hardcoded-path fix)]** DS41-C113b — the launchers still hardcode the path (`ds41_watchdog{,2,3}.sh`, `swap_*.sh`, `pause_probe_restart.sh`), and none of them fails fast when it is missing. Do the fail-fast check and the watchdog no-fallback change at the next DS41 relaunch. Never edit a running script; copy it to a new name.
 - [x] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
   2026-10-04: gate (i), the MXFP4-vs-Q4_K microbench, is a step in CPU window 2 (armed, waiting).
   2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`). [declined: operator 2026-11-03 model-audit: superseded by DS41-W5 (vendor 1017 release ships native MXFP4 routed experts (artifact on disk, load validated in DS41-W5))]
@@ -1160,7 +1160,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
       `EC_8083_RELAUNCH_DONE`; 120-min bound). Structural follow-up, still open: the loop should schedule a
       newcomer lane's calibration ahead of the incumbent's next batch automatically, rather than needing this
       per-incident watcher.
-    - [ ] **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
+    - **[declined: ws58 2026-11-03 content-review: duplicate — kernel-champion-and-promotion AKX-AUTO-7 owns the drained-lane resume]** **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
 - [x] DS41-C127 — **served-shape calibration landed and applied on both lanes; new anchors.** ✅
   2026-10-06/07 Research commits, in order: `9a548baf` (`--timeout-s`, calibration exceeds 1h on
   DS41), `bed81e59` (three-regime NMSE cap: keep the old served-shape bound wherever the old policy
@@ -1762,7 +1762,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
       - *(2026-10-21, workspace-58 queue prep, no inference run; offline analysis of `ds41-t33c-1017b`)* Findings: **(6) BOS decided** = `add_special=true`: the template emits no BOS, the server adds it; 9/13 evaluated cases are token-identical with it, 0/13 without. **(3) golden1 localized**: the residual divergence of golden1 (id 586/622) and golden2/3/4 is in the FINAL assistant turn only (<= 165 chars from the end): golden1 served `<think><think>` where encoding.py has one; golden2/3 re-render the final assistant reasoning as `<think>..</think>` in chat mode where encoding.py drops it; golden4 loses the `<｜action｜>` task marker (the `task` field does not reach the template). **(4) arguments probe still UNDETERMINED** in v2 (the call was the last message; both forms rendered neither form). (1), (2), (5), (7) done earlier. What still needs running: ONE rerun, `t33.py` v3 (round-trip probe + reasoning_content/task variants for golden1-4; ~0.5 h, one load, no generation); the residual divergences themselves need a template/server fix first (not made here), then a second rerun to close. Analysis `t33c/analyze_t33c.py`, result `/mnt/raid0/llm/tmp/ds41-queue-20261021/t33c_offline_analysis.json`; research `2a40ce4b4`, `artifacts/ds41_queue_20261021/` and `artifacts/ds41_w6_dspark_1017_20261021/w6.1c/`; queue row in `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (launcher armed, idles until a grant; DS41-class, refuses via ps scan if another DS41 server is live), id `ds41-t33c`.
     - [x] **DS41-T3.3 1017 shard rerun (job 60-ds41-t33-token-parity-1017)** ✅ 2026-10-21: ran without the template; 0/14 vs both encodings with the ChatML fallback — the same artefact as the Sept run, not a parity result. Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t33-token-parity-1017/`.
     - 2026-11-02 operator decision: Adopt after parity results (decisions-batch2-4-20261102.json)
-  - [ ] **DS41-T3a note — Sept vs 1017 encoding differ** in `find_last_user_index` under thinking mode: Sept counts a tool-result-only user turn as the last user turn (dropping the earlier assistant reasoning), 1017 does not. The cutover checkpoint must be served with the 1017 rule; add a T3.3 case for a trailing tool-result-only turn in thinking mode.
+  - **[declined: ws58 2026-11-03 content-review: a note, not a task; T3.3c carries the divergence closure]** **DS41-T3a note — Sept vs 1017 encoding differ** in `find_last_user_index` under thinking mode: Sept counts a tool-result-only user turn as the last user turn (dropping the earlier assistant reasoning), 1017 does not. The cutover checkpoint must be served with the 1017 rule; add a T3.3 case for a trailing tool-result-only turn in thinking mode.
 - [ ] **DS41-T4.1 — Golden-forced exactness driver for DS41-T4/T5 (intake-2116#record).** Force one fixed token sequence (>=8 prompts, 2 context lengths) through the DS41 server once batched-with-DSpark and once single-plain, diff (token id, logprob, top-5) per row at zero tolerance and report the first diverging row with its top-1/top-2 margin; reuse the LLAMA_SPEC_EXACT modes. Observation grade until the unit and noise floor are named.
   - *(2026-10-21, job 60-ds41-t41-golden-exactness, sept-q4, n=1 per cell.)* The zero-tolerance diff's "16/16 diverge" is dominated by missing logprobs: the speculative serial path returned no logprob/top-5 for 491/512 rows (ids identical). At token-id level, serial is 16/16 identical to plain; batched 11/16 (first id divergences ctx512 p6 row 10, p7 row 22; ctx2048 p0 row 14, p1 row 29, p4 row 13). Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t41-golden-exactness/`.
   - [ ] **DS41-T4.1.1 — obtain logprobs/top-5 on the speculative serial path** (the server returns none for accepted tokens), then rerun the logprob/top-5 diff; until then only the token-id result stands.
