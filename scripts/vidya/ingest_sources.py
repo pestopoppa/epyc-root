@@ -563,6 +563,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("inf66-r2364", "inf66_r2364", lambda p: importlib.import_module("adapters.inf66_r2364").units(p),
+           default=Path("/workspace/repos/epyc-inference-research/data/inf66/r23-64-thread-sweep-20261025"),
+           task="VB-R2364-SWEEP-WIRE",
+           note="INF-66 R23-64 CPU decode thread sweep (ANALYSIS.json + runs/*.rows.jsonl, SHA256SUMS-sealed): per-arm mean t/s "
+                "and per-arm effect vs t48, launch-unit floor sd 0.609%; per-launch t/s re-derived from rows; "
+                "RESOLVED/UNRESOLVED carried verbatim from RESULT.txt, never re-derived"),
     Source("m4-cpu-recipe-speed", "m4_cpu_speed", _files("**/process-captures/*.json"),
            note="prospective M4 process captures only, source-sealed and partial-safe",
            task="VB-M4-FOLD-SPEED-WRITE"),
