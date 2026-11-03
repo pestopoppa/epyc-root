@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 52,
+      "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 770
+      "open": 680
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -41,11 +41,11 @@
   "gate_tasks": {},
   "handoffs": {
     "autokernel-loop.md": {
-      "blocked": 2,
+      "blocked": 1,
       "closed": 747,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 220,
+      "open": 130,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 969,
+      "total": 878,
       "tracks": [
         {
           "blocked": 1,
@@ -69,7 +69,7 @@
           "line": 24,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 73
+          "open": 31
         },
         {
           "blocked": 0,
@@ -79,7 +79,7 @@
           "line": 5815,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
-          "open": 6
+          "open": 1
         },
         {
           "blocked": 0,
@@ -89,10 +89,10 @@
           "line": 5895,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
-          "open": 3
+          "open": 2
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 168,
           "gates": [
             "INF-06#autokernel-research-loop",
@@ -104,7 +104,7 @@
           "line": 6192,
           "markers": 1,
           "name": "autokernel-rebuild-program",
-          "open": 40
+          "open": 20
         },
         {
           "blocked": 0,
@@ -118,7 +118,7 @@
           "line": 9406,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 69
+          "open": 59
         },
         {
           "blocked": 0,
@@ -130,7 +130,7 @@
           "line": 13756,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
-          "open": 13
+          "open": 3
         },
         {
           "blocked": 0,
@@ -154,7 +154,7 @@
           "line": 13968,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 16
+          "open": 14
         }
       ]
     },

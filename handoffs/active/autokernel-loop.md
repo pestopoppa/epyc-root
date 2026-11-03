@@ -98,7 +98,7 @@ experimental branches wholesale: every later launch candidate below still has a 
       Independent audit GO at `cffb98d3eb06aa81e8bdf990e22520444fd94adb`; 21 runtime objects and
       the approved `readelf` identity are pinned and rechecked. ✅ 2026-08-22
   - **Branch-only note 2026-09-16 (sub-closure-fix; annotation only):** `caa22f42` and `cffb98d3` are **not on root `origin/main`**. They exist only on the `codex/autokernel-v27-*` branches (33 commits unmerged; 0 of their added lines are on main). AK-V27-C6 lists them as foundations to reuse, so treat them as branch-only until promoted. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #8).
-- [ ] **AK-V27-C6 — finish the live C6 trust boundary before launch.** `8a0ffc7d` is only a bounded
+- **[declined: ws58 2026-11-03 content-review: superseded — the 2026-08-22 V27 restart checkpoint was replaced by the AKU unified-loop slices (AKU-01..12), which carry trust-boundary, performance binding and dashboard acceptance]** **AK-V27-C6 — finish the live C6 trust boundary before launch.** `8a0ffc7d` is only a bounded
       checkpoint: retain its C6-before-targeted ordering, recursive restart, Q5_0 route, >=11 S1
       capacity, float64 precision gate, derived seed, source recheck, and roofline cap; replace the
       rejected `91a75a05` carriers with verified sandbox activation/teardown, per-leg same-input and
@@ -106,17 +106,17 @@ experimental branches wholesale: every later launch candidate below still has a 
       structural precision evidence, dtype-safe perturbations, timing algebra, and complete cache-metric
       deny aliases. Then execute oracle, three candidate trials, and native Ghost Replay as distinct
       confined processes on the live producer path.
-- [ ] **AK-V27-PERF — bind cumulative performance to immutable pre-run and result authority.** The
+- **[declined: ws58 2026-11-03 content-review: superseded by AKU-04/AKU-05 (evidence-use validator, candidate manifests)]** **AK-V27-PERF — bind cumulative performance to immutable pre-run and result authority.** The
       audited `5be84b4a` line remains NO-GO: owner-resealed plans can substitute routes, workload,
       frames, frozen build identity, metric authority, nested metrics, and the terminal verdict.
       Journal pre-run/result digests in an independently bound append-only checkpoint; reopen the exact
       frozen comparator; require strict duplicate-key JSON; and rederive every duplicated metric and
       workload/runtime field before a promotion decision.
-- [ ] **AK-V27-DASH — adapt and independently audit the dashboard only after the final producer schema
+- **[declined: ws58 2026-11-03 content-review: superseded by AKU-09 (dashboard/control surface)]** **AK-V27-DASH — adapt and independently audit the dashboard only after the final producer schema
       freezes.** The headline must always show the validated cumulative candidate effect versus exact
       frozen production—including a valid nonpositive result—while keeping incremental effect secondary
       and producer-owned promotion eligibility authoritative. Keep all v27 pins unset until then.
-- [ ] **AK-V27-10 — assemble one descendant of the audited foundations, validate twice with
+- **[declined: ws58 2026-11-03 content-review: superseded by AKU-12 (live cutover and unattended acceptance)]** **AK-V27-10 — assemble one descendant of the audited foundations, validate twice with
       `inference_executed=false`, obtain independent exact-SHA GO, then run ten unique S1 scientific
       dispositions without a crash.** Typed provider-policy skips and precompute refusals advance the
       portfolio but spend zero science and cannot satisfy this row.
@@ -718,7 +718,7 @@ not a reopening of empirical work:
   pre-existing module-list drift (new `execution/inference_window.py`, `execution/screening_baseline.py`,
   `heldout_bound_pipeline.py` lack FOOTPRINT.md rows from later AutoKernel commits) — reproduced on a
   clean detached origin/main checkout, unrelated to AK-RUN-1.
-- [ ] **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
+- **[declined: ws58 2026-11-03 content-review: merged into AKU-06l (source/build dispatch with content-addressed patch binding)]** **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
@@ -745,7 +745,7 @@ not a reopening of empirical work:
   is a pre-existing environment issue (rehearsal passes relative `--model test`, which hardened
   campaign rejects as non-absolute) — reproduced on a clean detached origin/main checkout, unrelated
   to the sequencer.
-- [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
+- **[declined: ws58 2026-11-03 content-review: merged into the AK6 row (operator-triggered package plane is its exit)]** **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
   or reload authority.
@@ -3504,7 +3504,7 @@ cannot retrigger the expensive gate unchanged.
     - **Option B — retain the current attestation:** keep llama generation explicitly unverified and
       accept that the complete-set fold cannot become intact.
     - **Default:** Option B; no attestation or production state changes.
-  - [ ] **After OP-16's reboot, re-check the live dashboard process environment.** Durable host and
+  - **[declined: ws58 2026-11-03 content-review: stale reboot item (reboot 2026-08-13 done)]** **After OP-16's reboot, re-check the live dashboard process environment.** Durable host and
     devcontainer configuration are clean. The dashboard hub was already reloaded cleanly before the
     reboot decision (PID `2478391`, `LD_LIBRARY_PATH` absent), replacing the earlier long-lived process
     that inherited two ggml-bearing entries. Still require a fresh post-reboot
@@ -3967,7 +3967,7 @@ future sweep.)*
       claim, and 2,544 device samples across 635.76 s:
       `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260812-r1/receipt.json`, SHA-256
       `7321f2a640a7cc0b3169544867e26e3102a3efe3ebd5b0ebc732e154398339b0`.
-- [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
+- **[declined: ws58 2026-11-03 content-review: vague run instruction; the seed ledger (DS41-C107) and R21-5 pipeline supply hypotheses]** Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 
 The command, from `epyc-inference-research`:
@@ -3990,8 +3990,8 @@ well-formed null with every gate passing.
 
 ##### Step 4 — to a champion
 
-- [ ] Run to a first banked candidate, then compose a champion lineage.
-- [ ] Seed further hypotheses from the §19.8 queue and the operator channel.
+- **[declined: ws58 2026-11-03 content-review: resolved — the champion lineage exists (C5/C6 in kernel-champion-and-promotion)]** Run to a first banked candidate, then compose a champion lineage.
+- **[declined: ws58 2026-11-03 content-review: unbounded]** Seed further hypotheses from the §19.8 queue and the operator channel.
 
 **What "it is working" looks like:** the negative control REFUSED and the iqk replay PROMOTED;
 e-values that move with effect size instead of pinning at a ceiling (they pinned at 5.5687 for every
@@ -4011,11 +4011,11 @@ the operator can read — which is exactly what AK7 requires as its input.
 
 ##### Phase AK7 — first supervised freeze
 
-- [ ] Operator requests a freeze on a real champion; AutoKernel produces the package.
-- [ ] Operator executes the freeze, era rows, and rebaseline; AutoKernel records the receipts.
-- [ ] Run T4 post-cutover verification and the watch window.
-- [ ] Re-anchor the champion onto the new tip and re-measure (§8.9); record the true cost.
-- [ ] Post-mortem the package: what the operator had to add, correct, or reject. Fold back into §10.
+- **[declined: ws58 2026-11-03 content-review: superseded by the kernel-promotion skill and the v10 freeze (2026-09-22); v11 is tracked in kernel-champion-and-promotion C6]** Operator requests a freeze on a real champion; AutoKernel produces the package.
+- **[declined: ws58 2026-11-03 content-review: superseded by the kernel-promotion skill]** Operator executes the freeze, era rows, and rebaseline; AutoKernel records the receipts.
+- **[declined: ws58 2026-11-03 content-review: superseded by the kernel-promotion skill's verify step]** Run T4 post-cutover verification and the watch window.
+- **[declined: ws58 2026-11-03 content-review: duplicate — CH-27 / CH-26b recalibrate floors on the current champion]** Re-anchor the champion onto the new tip and re-measure (§8.9); record the true cost.
+- **[declined: ws58 2026-11-03 content-review: superseded; the v10 ratification record is the post-mortem]** Post-mortem the package: what the operator had to add, correct, or reject. Fold back into §10.
 
 **Exit:** one production version has been created from an AutoKernel champion, with reconstructible
 evidence, and the loop has re-anchored cleanly.
@@ -4027,11 +4027,11 @@ evidence, and the loop has re-anchored cleanly.
   `task_rate` rather than tokens/s, latency and SLO cells as first-class outputs, comparison against
   the pinned production configuration. ✅ 2026-08-03
 - [x] Prove the adapter **refuses** the kernel-freeze path rather than degrading to it. ✅ 2026-08-03
-- [ ] Populate campaigns from the §19.8 seed queue after fresh profiling.
-- [ ] Activate `oracle_port` campaigns; consider an upstream-delta scanner once the manual path works.
-- [ ] Seed external kernel-authoring suites only after license, gfx90a, honest baseline, quarantine,
+- **[declined: ws58 2026-11-03 content-review: unbounded; DS41-C107 is the seed ledger]** Populate campaigns from the §19.8 seed queue after fresh profiling.
+- **[declined: ws58 2026-11-03 content-review: no trigger; rocm-kernel-authoring RVP-C5 owns oracle substrates]** Activate `oracle_port` campaigns; consider an upstream-delta scanner once the manual path works.
+- **[declined: ws58 2026-11-03 content-review: conditional; rocm-kernel-authoring RVP-C5-4/5 own it]** Seed external kernel-authoring suites only after license, gfx90a, honest baseline, quarantine,
   and evaluator-integrity gates pass.
-- [ ] Retire/supersede narrower loop handoffs once their remaining tasks are owned here or by a
+- **[declined: ws58 2026-11-03 content-review: done by the 2026-11 backlog refactor]** Retire/supersede narrower loop handoffs once their remaining tasks are owned here or by a
   backend leaf.
 
 ##### Phase AK9 — speech backends
@@ -5172,7 +5172,7 @@ they pay.
 
 ##### 22.1 Hypotheses (operator-channel form, §8.4.0 — each carries its falsifier)
 
-- [ ] **AK-H-QL-1 — The sub-4-bpw decode cliff is an occupancy cliff, and the 64-VGPR/8-wave boundary
+- **[declined: ws58 2026-11-03 content-review: merged into the tripwire-gated AK-QL-7 (same IQ-residency trigger)]** **AK-H-QL-1 — The sub-4-bpw decode cliff is an occupancy cliff, and the 64-VGPR/8-wave boundary
       is the whole mechanism.** Entering at `design_prior`; the supporting VGPR table is static, read
       from the shipped code object, and the throughput half is n=1 on one model.
       **Falsifier:** a wall-share / occupancy map of IQ3_XXS or IQ2_XXS batch-1 decode showing
@@ -5180,7 +5180,7 @@ they pay.
       an IQ2_XXS variant reduced below 64 VGPR whose measured decode does not move into the ≥90 t/s
       band. Either result kills the mechanism and the lever set must be re-derived from a fresh
       profile rather than from register pressure.
-- [ ] **AK-H-QL-2 — The residual IQ3/IQ2 deficit that survives batching is wave-slot-bound, not
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-H-QL-2 — The residual IQ3/IQ2 deficit that survives batching is wave-slot-bound, not
       per-read.** Measured ratio to IQ4_XS rises but plateaus short of parity — IQ3_XXS 0.60→0.77,
       IQ2_XXS 0.66→0.88 across B=1→32 — while Q4_K_M converges to ~0.99. A purely per-weight-read cost
       amortizes away as B grows (read once, reuse B times); a wave-slot ceiling does not.
@@ -5188,7 +5188,7 @@ they pay.
       occupancy unchanged, **or** a fixed additive per-read cost that reproduces the whole 0.60→0.77
       curve without invoking occupancy. Note this hypothesis is currently supported by an
       **unreplicated** sweep; AK-QL-3 is its precondition, not a follow-up.
-- [ ] **AK-H-QL-3 — IQ1_S will NOT show the cliff.** The static table puts IQ1_S at **42 VGPR → 8
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-H-QL-3 — IQ1_S will NOT show the cliff.** The static table puts IQ1_S at **42 VGPR → 8
       waves**, below IQ4_XS's 64. If the mechanism is register pressure and not bit-width, the
       smallest format on the shelf should land in the fast band, inverting the monotonic
       "fewer bits = slower below 4 bpw" reading of the ladder. This is the cheapest discriminating
@@ -5202,7 +5202,7 @@ they pay.
 - [x] **AK-QL-1 — Catalogue the missing rungs.** ✅ 2026-08-16 — research `02307322d166...` adds
       immutable IQ4_XS, Q5_K_M and IQ1_S evidence and portfolio records. IQ1 remains memory-only and
       inactive; catalogue presence grants no GPU or authoring spend.
-- [ ] **AK-QL-2 — Re-state every ranked IQ2/IQ3 lever with an explicit VGPR target and a
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-QL-2 — Re-state every ranked IQ2/IQ3 lever with an explicit VGPR target and a
       threshold-shaped payoff.** A lever that does not cross 64 does not regain the 8th wave and
       should say so in its own value case. Levers whose stated benefit is "fewer instructions" without
       a register target are currently unrankable against AK-H-QL-1 and must be re-scoped or declined.
@@ -5213,7 +5213,7 @@ they pay.
         and allocated VGPR, scratch=0, `vgpr_spill_count=0`, and eight waves/SIMD. A 65–70 VGPR result
         has no predicted occupancy payoff. IQ3 still lacks equivalent source-level attribution, so
         the broader parent remains open.
-- [ ] **AK-QL-3 — Replicate the ladder and sweep with an A/A band before any of this gates a
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-QL-3 — Replicate the ladder and sweep with an A/A band before any of this gates a
       decision.** n=1 per cell today, no band. The IQ4_XS B=8 cell (408.5) is a suspected outlier —
       it breaks its own monotonic trend and is the single point where Q4_K_M inverts above it.
       This is a conditional real-graph/T1b characterization, not §9.3's operator-microbenchmark T1a.
@@ -5224,7 +5224,7 @@ they pay.
       operator direction says there is no practical need to run IQ1. The portfolio preserves its
       sign-discriminating falsifier with zero expected value, empty templates and no GPU/source spend.
       Reopen only on explicit operator direction plus a practical IQ1 serving decision.
-- [ ] **AK-QL-5 — Pair the ladder with correctness before any rung is proposed for production.**
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-QL-5 — Pair the ladder with correctness before any rung is proposed for production.**
       The ladder is speed-only; the IQ2/IQ3 rungs were built on a 1.23 MB / 30-chunk imatrix and are
       performance probes, explicitly not quality-grade models. Standing project rule is to pair speed
       with a correctness check. **No rung on this ladder may be cited in a promotion argument until
@@ -5250,7 +5250,7 @@ they pay.
       (b) batch-1 decode ABA vs v9 in one window with residency proof and a correctness pair; (c) sample
       `SPI_RA_VGPR_SIMD_FULL_CSN` vs `SPI_RA_WAVE/SGPR_SIMD_FULL_CSN` and `SPI_VWC_CSC_WR` on both
       arms — the documented test of the undocumented 64-VGPR rule. Hold the MI210 claim and schedule
-      outside AutoKernel CPU-anchor windows (a GPU run's host threads perturb the CPU floor).
+      outside AutoKernel CPU-anchor windows (a GPU run's host threads perturb the CPU floor). Absorbs the sub-4-bpw family (H-QL-1/2/3 hypotheses with their falsifiers, QL-2 VGPR-target restatement, QL-3 A/A band replication, QL-5 correctness pairing, S3-AKU-19 BUILD_RECIPE per-arm A/B): all activate on the same IQ-residency tripwire (rocm-kernel-authoring TRIPWIRE); nothing here runs while no IQ-format role is GPU-resident.
 - [x] **AK-QL-8 — Operator decision: no general autocompiler; compile control is a latent search
       space.** ✅ 2026-09-15 — no LLVM/hipcc fork and no toolchain unpin for VGPR (no toolchain
       reduces vector-ALU VGPR: CoExec is MFMA-only, device PGO moves spills, LLVM 23 adds runtime
@@ -5328,13 +5328,13 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
 
 ##### 23.2 Tasks
 
-- [ ] **AK-PM-1 — Correct the G17 3c disposition note (§19.6).** Name the transformation actually tested
+- **[declined: ws58 2026-11-03 content-review: record correction, no behaviour change]** **AK-PM-1 — Correct the G17 3c disposition note (§19.6).** Name the transformation actually tested
       (`GROUP_SIZE_M` tile grouping, `autokernel_wgm_proxy.cpp:38-46`); record that SwizzlePerf's
       `pid = (pid % num_xcds)*b_per_xcd + (pid // num_xcds)` is the IDENTITY at num_xcds=1 and was never
       tested here; attribute the negative to M-heavy grid shape plus persistent stream-K tile ownership
       rather than to XCD absence. Retire the "strong internal contradiction" framing. Cite
       `intake-1221#record`. Decision (retain WGM0) UNCHANGED.
-- [ ] **AK-PM-2 — Re-scope the G17 effect size wherever it is cited.** "Regressed 1.286-4.050%" is an
+- **[declined: ws58 2026-11-03 content-review: record re-scoping, no behaviour change]** **AK-PM-2 — Re-scope the G17 effect size wherever it is cited.** "Regressed 1.286-4.050%" is an
       END-TO-END llama-batched-bench figure in which MMQ is one kernel family among several. The same
       campaign's per-dispatch counter capture at identical dispatch counts (`dispatch_count_equal: true`,
       4,013 MMQ dispatches) gives WGM8-vs-WGM0 device-duration deltas of **all_mmq +0.234%, q4_k_12
@@ -5386,8 +5386,8 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
       written — 48-72 h per arm, >=200 tasks/arm, go/no-go = success +2% with escalation flat.
       **Cost estimate for the whole A/B: one distillation run plus 4-6 days of alternating live traffic,
       zero new code.** AK-PM-5/6/7 stay blocked on this; AK-PM-11's kernel-side ablation is independent
-      and is NOT blocked by it.
-- [ ] **AK-PM-5 — Add a POSITIVE-side record type to the planner-memory registry (§19.2).** The registry
+      and is NOT blocked by it. If the decision is to build (absorbs PM-5/6/7/8/11): a positive-side record type, a scalar value + stage tag on retrieval, an explicit portability class, and the profiling-constant ablation (daVinci Ablation-1 shape on our hardware) that gates any extension.
+- **[declined: ws58 2026-11-03 content-review: merged into the cross-run-memory decision (build only if PM-4 says yes)]** **AK-PM-5 — Add a POSITIVE-side record type to the planner-memory registry (§19.2).** The registry
       today carries only suppressions across its six classes (`HARD_CONSTRAINT`, `MATCHED_NEGATIVE`,
       `CONDITIONAL_NEGATIVE`, `CONFOUNDED_RESULT`, `SUPERSEDED_FACT`, `LOW_VALUE`); there is no way to
       record that a transformation WORKED and under what profile state. Adopt the
@@ -5397,12 +5397,12 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
       fabricated warrant and collides head-on with the measured `mfma-decode-kernels-are-worth-zero`
       constraint, where the top-ranked CUDA advice returns exactly 0 at our batch-1 arithmetic intensity.
       Schema-only change; no GPU-hours. BLOCKED ON AK-PM-4.
-- [ ] **AK-PM-6 — Attach a scalar value and a stage tag to registry retrieval.** Train-free incremental
+- **[declined: ws58 2026-11-03 content-review: merged into the cross-run-memory decision]** **AK-PM-6 — Attach a scalar value and a stage tag to registry retrieval.** Train-free incremental
       mean `Q(s,m) <- Q(s,m) + alpha*(r - Q(s,m))` over `(stage, entry)`, from `intake-1230#record`, with
       exactly two stages: *feasibility* (does it compile and verify) and *latency* (is it faster). That
       source's evidence is that the same memory item has different value in each. A scalar table, no model
       weights, no GPU-hours. Depends on AK-PM-5; BLOCKED ON AK-PM-4.
-- [ ] **AK-PM-7 — Decide whether registry entries need an explicit PORTABILITY class.** `intake-1231#record`
+- **[declined: ws58 2026-11-03 content-review: merged into the cross-run-memory decision]** **AK-PM-7 — Decide whether registry entries need an explicit PORTABILITY class.** `intake-1231#record`
       partitions its knowledge base three ways — `constraints/` (correctness invariants), `guidance/`
       (platform-AGNOSTIC optimization knowledge), `hardware/` (vendor-quarantined) — the only design in that
       family treating "what survives a hardware move" as SCHEMA rather than an afterthought. Our §19.2 types
@@ -5410,7 +5410,7 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
       field or record the decision not to. **Reading-and-design only, no build**: that paper ships no
       ablation and no code, so nothing may be adopted on its authority alone. BLOCKED ON AK-PM-4.
   - 2026-11-02 operator decision: Record the decision not to (decisions-batch2-4-20261102.json)
-- [ ] **AK-PM-8 — Gate any memory extension on an ablation this literature never ran.** Hold PROFILING
+- **[declined: ws58 2026-11-03 content-review: merged into the cross-run-memory decision as its gating ablation]** **AK-PM-8 — Gate any memory extension on an ablation this literature never ran.** Hold PROFILING
       CONSTANT while toggling memory — the `no_mem_agent` design from `intake-1228#record` is the one
       methodologically sound thing in that family, because it isolates memory from profiling rather than
       confounding them — with seeds, repeats and a significance test. **Pre-register the effect size we
@@ -5434,9 +5434,9 @@ variance and repeats? **Answer: NO.** Across all nine systems the count of signi
 ablation is **zero**, exactly as it was across intake-1228..1231. The round is nonetheless not a null result,
 because the best-CONSTRUCTED ablation in the family now exists and it **cuts against building.**_
 
-- [ ] **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`
+- **[declined: ws58 2026-11-03 content-review: a record, not a task]** **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`
       with an explicit `reopen_when`.** Current arXiv v3 Table 2 (`intake-1248#01`; `dive-1248/source.txt:L149-L150,L176,L184`) is threshold- and model-conditional: at 8B Fast_1, skill-free Ablation 5 exceeds the full system at Level 2 (51.6% vs 44.8%) and Level 3 (12.3% vs 10.1%), but trails at Level 1 (25.4% vs 26.1%). Thus skill-free wins two of the three Fast_1 level cells at 8B. At 14B the full system exceeds Ablation 5 in all 12 level-by-threshold cells. The paper reports no per-cell sample count or dispersion; remove the former n=1, zero-dispersion, and noise-signature assertions. Preserve the conditional-negative scope and existing `reopen_when`: a with/without-memory ablation appears with n>=5 repeats and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
-- [ ] **AK-PM-10 — Record that our §19.3 receipt rule is AHEAD of this literature, not behind it.** The
+- **[declined: ws58 2026-11-03 content-review: a record, not a task]** **AK-PM-10 — Record that our §19.3 receipt rule is AHEAD of this literature, not behind it.** The
       commissioned question was whether KLineage — the only paper in the family with VERIFIED in its title —
       formalises skill-level verification warrants comparable to ours. Measured against our three
       requirements it **fails all three**: (a) the source receipt is a bare speedup ratio (`ver` fields read
@@ -5448,7 +5448,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       contract.** The authors' own scoping is quoted at `intake-1249` claim_anchors: _"We use 'verified' in
       this empirical sense: admitted skills have passed compile/correctness/profile validation and held-out
       roundtrip materialization, not formal proof."_ Documentation task; no compute.
-- [ ] **AK-PM-11 — Run the ablation nobody in this literature has run.** Replicate daVinci's Ablation-1
+- **[declined: ws58 2026-11-03 content-review: merged into the cross-run-memory decision as its ablation]** **AK-PM-11 — Run the ablation nobody in this literature has run.** Replicate daVinci's Ablation-1
       shape on OUR hardware with **n>=5 seeds per cell and a paired significance test** — same served model,
       same task set, skill injection ON vs OFF, gfx90a. **Train-free**: the daVinci repo exposes
       `SKILL_ENABLE` / `SKILL_LIBRARY_FILE` as runtime flags independent of training and can drive an
@@ -5477,8 +5477,8 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
       work elision or a timing artifact, not a kernel optimization.
       - The earlier implementation supplied producer/validation helpers and journal validation, but no AK write path invoked the producer. The 108 passing fixture tests do not establish operational adoption: no cap was configured and no native AK receipt was captured. This is partial, with no scientific admission, performance claim, retrieval activation or planning canary. [belief: cc]
-- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.** The reviewed KForge v1 paper (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) reports isolated MoE-finalize speedups of 1.06x–1.43x across batch sizes and a separate +2.12% whole-workload throughput change against TensorRT-LLM, under a pinned 1500 MHz clock with the autotuner disabled. These use different operations, denominators, and baselines, so they do not establish a universal ~100x attenuation factor. Preserve the existing second-datum task and its zero-compute primary-PR reads: sglang#20778, lmdeploy#4345 and DLBlas#102. The historical notes for `intake-1250#record` recorded SGLang 4.78x isolated versus 0.28%–0.87% end-to-end and LMDeploy 1.36x versus 2.03%–3.00%; preserve these figures only as dated, unverified reported history, with no current scientific warrant and no re-verification by this KForge read. Record each operation, denominator and baseline separately; do not turn either source into a universal attenuation factor.
-- [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
+- **[declined: ws58 2026-11-03 content-review: banking a datum; a record]** **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.** The reviewed KForge v1 paper (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) reports isolated MoE-finalize speedups of 1.06x–1.43x across batch sizes and a separate +2.12% whole-workload throughput change against TensorRT-LLM, under a pinned 1500 MHz clock with the autotuner disabled. These use different operations, denominators, and baselines, so they do not establish a universal ~100x attenuation factor. Preserve the existing second-datum task and its zero-compute primary-PR reads: sglang#20778, lmdeploy#4345 and DLBlas#102. The historical notes for `intake-1250#record` recorded SGLang 4.78x isolated versus 0.28%–0.87% end-to-end and LMDeploy 1.36x versus 2.03%–3.00%; preserve these figures only as dated, unverified reported history, with no current scientific warrant and no re-verification by this KForge read. Record each operation, denominator and baseline separately; do not turn either source into a universal attenuation factor.
+- **[declined: ws58 2026-11-03 content-review: a record, not a task]** **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector
       WITHOUT the paper behind it. **That premise is FALSE.** `arXiv:2603.21331` (`intake-1246#record`,
       RightNow-AI) is an unrelated artifact that happens to share the name; "AutoKernel" in this tree is THIS
@@ -5486,7 +5486,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       norm+activation+elementwise share 1.837% / 1.490% against a predeclared 20% floor; receipt SHA-256
       `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`). **Do NOT retro-cite that paper into
       RVP-C4-2 or the AK-D37/G15 rows.**
-- [ ] **AK-PM-15 — Add AutoKernel's fabricated-roofline fail-open to the design warnings, with the
+- **[declined: ws58 2026-11-03 content-review: a design-warning doc entry; no behaviour change]** **AK-PM-15 — Add AutoKernel's fabricated-roofline fail-open to the design warnings, with the
       mechanism named.** A kernel agent carrying a STATIC hardware-spec database will **fail open on gfx90a
       rather than refuse.** `intake-1246#record`, repo @ `78435821`: the AMD arch table has exactly two keys
       (`gfx942`, `gfx950`); an MI210 matches neither, torch-on-ROCm exposes no `clock_rate`, and the fallback
@@ -5537,9 +5537,9 @@ experiment in it — and should stop being asserted._
 _Via /research-intake Stage 4 (operator-approved plan 2026-09-17; Stage-2/2b/2b2 dives). All sources dive-verified. Offline/observe-only unless a line says otherwise; no live policy rewriting (measurement trust boundary)._
 
 - [ ] **AK-WM-3 — offline exploration-policy replay over recorded proposal archives (observe-only).** Evaluate alternative candidate-ordering/branch/stop policies against the recorded AK-WM-2a archive using the implemented App. B.2 objective (`pareto.auc − λ·parallel_penalty`) and the prefix-only contract; report AUC-frontier as well as endpoint. No live flip, no rewriting of the live loop policy. Sources: intake-1435, intake-1452.
-- [ ] **AK-adaptive policy panel — offline shadow comparison of three adaptation designs vs the fixed search policy.** EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB + τ_S 0.02 / τ_M 0.12), BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) replayed over recorded histories only; separate the pool effect from the routing effect. No live A/B without the standard two-sample gates. Sources: intake-1437, intake-1448, intake-1456.
-- [ ] **AK-plateau pack — port PACEvolve's portable half.** Add bi-level search-memory caps (idea cap 5, summarize-per-idea every 20) and a scale-invariant momentum detector (β=0.85, ε_rel=0.001) alongside the window-based PLATEAU_STOP, with target lower bound r adapted for kernels (no known optimum); A/B the power-law ancestor revert (α=1.5, context reset) against cold restart on one nonpromotable lane. Constants ground-truthed at `google/pacevolve @ 22798d9f`. Sources: intake-1440, intake-1446.
-- [ ] **AK-cost-credit — divide proposal credit by realized action cost, conditioned on remaining budget.** Port CostAda's cost-calibrated frontier utility into the nonpromotable scoring plane as an offline re-score over recorded proposals; compare against the marginal-yield switch (AK-D32) before any wiring; no promotion-path change. Source: intake-1445.
+- **[declined: ws58 2026-11-03 content-review: port of third-party search policies with no measured deficiency; R24-7/R24-8 carry the keep-drought question]** **AK-adaptive policy panel — offline shadow comparison of three adaptation designs vs the fixed search policy.** EvoX (stagnation-triggered executable-policy switch), AdaEvolve (scalar intensity I_t∈[0.1,0.7] + decayed-reward UCB + τ_S 0.02 / τ_M 0.12), BaSE (bandit arm routing; arm pool K 5–20 best, K=50 dilutes) replayed over recorded histories only; separate the pool effect from the routing effect. No live A/B without the standard two-sample gates. Sources: intake-1437, intake-1448, intake-1456.
+- **[declined: ws58 2026-11-03 content-review: same]** **AK-plateau pack — port PACEvolve's portable half.** Add bi-level search-memory caps (idea cap 5, summarize-per-idea every 20) and a scale-invariant momentum detector (β=0.85, ε_rel=0.001) alongside the window-based PLATEAU_STOP, with target lower bound r adapted for kernels (no known optimum); A/B the power-law ancestor revert (α=1.5, context reset) against cold restart on one nonpromotable lane. Constants ground-truthed at `google/pacevolve @ 22798d9f`. Sources: intake-1440, intake-1446.
+- **[declined: ws58 2026-11-03 content-review: same]** **AK-cost-credit — divide proposal credit by realized action cost, conditioned on remaining budget.** Port CostAda's cost-calibrated frontier utility into the nonpromotable scoring plane as an offline re-score over recorded proposals; compare against the marginal-yield switch (AK-D32) before any wiring; no promotion-path change. Source: intake-1445.
 - [ ] **AK-lineage diagnostics — cycling detector + per-edit taxonomy over the proposal/champion lineage.** Adopt EvoReplay's deterministic line-level cycling detector and 9-label edit taxonomy via a ~40-line programs.jsonl adapter; optionally render proposals as parent→child semantic deltas (FROM/TO, OLD/NEW/HYPOTHESIS, qualitative outcome) to measure planner-context token delta. Wire the vidya source row + write-side measurement tuple BEFORE the first run (AGENTS.md belief-kernel rule); report cycling rate and per-edit-type yield vs frequency. Sources: intake-1451, intake-1458, intake-1442.
   - 2026-11-01 fixture checkpoint: ROOT `c243a213e065f15e73216b8ebd3c8e68c64e4c3f` aligns the offline cycling detector with pinned EvoReplay `1773db16`: numeric-only filtering, short-line denominator, per-program unique re-additions and stable tie handling. Eight focused tests passed; native pinned-upstream comparison changed from local (4 added, 2 recycled) versus upstream (4, 1) to agreement at (4, 1). [Source pins and raw control proof](../../artifacts/autokernel/lineage-parity-20261101/README.md). These are synthetic controls; no authoring-bound real cohort or edit-label yields are established. This task and VB-AK-LINEAGE remain open. [no-belief: synthetic engineering controls]
 - [ ] **AK-promotion controls — same-prompt replay control + BO tuning-ceiling probe at champion promotion.** (a) N=10 same-prompt replays of a promoted candidate to test gain reproducibility (metered, inference-gated); (b) post-hoc BO over one intermediate candidate's exposed constants to report tuning-ceiling headroom (invert for lower-is-better). Report-only; no promotion-path change without the standard confirm gates. Source: intake-1451.
@@ -5636,7 +5636,7 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
   AGPR rule: 256-thread arms get AGPR form with a 512 budget and copies; the rule changes on ROCm 7.14+. Record agpr,
   copies, spills and compiler with every cell.
   - PARKED 2026-09-27 (operator): not started. No sweep cell has been built; resume by building the 256- and 512-thread `mmq-config-cdna.cuh` arms at I=128 on an experimental branch from `ffc1bac82` and recording agpr, accvgpr copies, spills and the compiler for each cell with `gfx90a_isa_audit.py audit` plus `diff --families mmq`, before any timing.
-- [ ] **AK-MMQ-SK — GATED, low prior. Stream-K off for MUL_MAT_ID small-M on CDNA MMQ.** Transfer is weak: intake-1825
+- **[declined: ws58 2026-11-03 content-review: "GATED, low prior" by its own text]** **AK-MMQ-SK — GATED, low prior. Stream-K off for MUL_MAT_ID small-M on CDNA MMQ.** Transfer is weak: intake-1825
   reports that split-K hurts BS1 small-M MoE in CKTile, not in MMQ.
 - [x] **Recorded so it is not re-derived (dives 2026-09-26).** ✅ 2026-09-26
   - J=128 for Q8_0-layout types is KILLED at 512 threads: LDS fits (57,856 B) but VGPRs do not.
@@ -5810,7 +5810,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
 
 - [x] **JEV-4** ✅ 2026-11-02 epyc-inference-research `3ab4ffbf1` [belief: cc] [S] `resume.ineligible_reason` (`scripts/kernel_rnd/autokernel/loop/resume.py:991`) returns one exhaustive code enum plus text; audit that every critic/panel call records asked / answered / unavailable (intake-2604#record). removes: free-text ineligibility strings matched by callers.
-- [ ] **JEV-4-FU** [S] 13 pre-existing loop/resume test failures (same set on clean origin/main, e.g. 'candidate disposition has no recorder'); and critic pass 1 writes no durable 'asked' checkpoint when hypothesis.runtime_pair is set. removes: the standing red test set and the unrecorded critic-ask state.
+- **[declined: ws58 2026-11-03 content-review: merged into the red-suite triage]** **JEV-4-FU** [S] 13 pre-existing loop/resume test failures (same set on clean origin/main, e.g. 'candidate disposition has no recorder'); and critic pass 1 writes no durable 'asked' checkpoint when hypothesis.runtime_pair is set. removes: the standing red test set and the unrecorded critic-ask state.
 
 ## Track: agent-collab-rnd-harness
 <!-- gate: none -->
@@ -5862,13 +5862,13 @@ _Via /research-intake Stage-2 (intake-882#record + intake-883#record orx, intake
 - [x] Compare OpenHyra's all-outcomes Experience Bank + LLM Context-Agent cross-round memory (`eb.py`, `context_agent.py`) against StructuralLab / agent-collab archive design ✅ 2026-07-22
 - [x] Adopt a uniform per-task descriptor {seed/baseline solution, run script -> solution.json, fixed objective scorer, always-valid fallback} for the R&D harness (HyRA cross-domain contract) ✅ 2026-07-22
 - [x] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-kernel-authoring.md#track-rocm-verify-profile-backend)) ✅ 2026-07-22 (research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor)
-- [ ] (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (`--backend local`, custom OpenAI provider in `~/.config/opencode/opencode.json`) to validate the loop end-to-end. NOT a harness commitment — mining orx's patterns is unconditional and re-targeting to our eventual chosen harness is ~1 `impl Harness` file (`src/local/harness/mod.rs:1135`). Gate any long-term harness choice on [harness-selection-and-integration.md](harness-program.md#track-harness-selection-and-integration) **Constraint if ever authorized:** SINGLE-USER only on this shared host (orx's own README states the dashboard binds loopback with no application-level authentication, so other host users can reach it), and built from source (channel development) so telemetry is compile-time disabled. Strip overleaf_live / browser_cookies at import (intake-883#record).
-- [ ] (Optional spike) Add a 3rd OpenHyra llm_backend adapter (~30-60 LOC) targeting a local OpenAI-compatible coding agent -> llama.cpp; needs `OPENHYRA_ALLOW_UNSANDBOXED=1` + an external container (sandbox is macOS-only)
+- **[declined: ws58 2026-11-03 content-review: optional spike gated on operator interest]** (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (`--backend local`, custom OpenAI provider in `~/.config/opencode/opencode.json`) to validate the loop end-to-end. NOT a harness commitment — mining orx's patterns is unconditional and re-targeting to our eventual chosen harness is ~1 `impl Harness` file (`src/local/harness/mod.rs:1135`). Gate any long-term harness choice on [harness-selection-and-integration.md](harness-program.md#track-harness-selection-and-integration) **Constraint if ever authorized:** SINGLE-USER only on this shared host (orx's own README states the dashboard binds loopback with no application-level authentication, so other host users can reach it), and built from source (channel development) so telemetry is compile-time disabled. Strip overleaf_live / browser_cookies at import (intake-883#record).
+- **[declined: ws58 2026-11-03 content-review: optional spike]** (Optional spike) Add a 3rd OpenHyra llm_backend adapter (~30-60 LOC) targeting a local OpenAI-compatible coding agent -> llama.cpp; needs `OPENHYRA_ALLOW_UNSANDBOXED=1` + an external container (sandbox is macOS-only)
 - [x] **S3-ACH-01 — spike a PreToolUse read-only allowlist gate for planner/critic actors.** An actor may inspect evidence freely but cannot launch a build or benchmark until authorized. Classification is allowlist-only (unknown ⇒ gated), with a test asserting every allowlisted verb names a real command. Gates the ACTION, not the outcome: both our loops gate at promotion, so a misfiring planner can spend GPU-hours before a human sees a decision. Pattern: orx plan_gate, intake-883#record @3a8b0286. ROOT source `9414032c93e3a9ea0247bcab9f5158877ca6724a` (published main through `00ceac9c331a9b085f1b9169cbe24083e245b81f`); Git tests `scripts/hooks/tests/test_planner_readonly_gate.py` (6 passed), evidence `artifacts/codex3/s3ach01-20261031/`. ✅ 2026-10-31 [no-belief: source prototype and regression controls]
   - Default-off opt-in prototype with fixed trusted `planner` / `critic` CLI seats; strict Read/Glob/Grep schemas and Bash only for literal absolute `/usr/bin/cat`, with unknown requests asking for approval. Six focused tests passed against native JSON and controlled cat; host crash/missing/timeout/invalid-JSON behavior is simulated, not a live Claude session. Enablement still requires Claude Code ≥2.1.295, host-protected hook/settings/interpreter, and interactive approval. No live host enablement or blanket sandbox/security claim.
 
 #### Fan-out A/B design constraints — 2026-08-13 (research-intake Stage 3, source round intake-1105…intake-1127)
-- [ ] **Hard design constraints on any first-party fan-out A/B, fixed before one is built.** (a) Matched cost axis on the same plot; result shape is a Pareto frontier, not a bar — intake-1120 (arXiv:2407.01502v1, dive-verified), whose trivial warming baseline matched the best agent architecture at >50x less cost than the most expensive arm. (b) A simple-baseline CONTROL ARM (retry-to-N, warming) at equal spend, or the fan-out arm is unfalsified. (c) PAIRED within-task design with task as a random effect — intake-1122#01 (arXiv:2604.22750v2, dive-overturned) shows cross-problem token variance dwarfs cross-run variance, so an unpaired design measures task sampling rather than fan-out. (d) Our cost axis is not dollars: define GPU-seconds + total tokens + wall-clock and always record tokens so the axis stays re-derivable. Note on (c): that source's "up to 30x" is a TOKEN tail, typical ratio ~2x, and it prescribes no minimum n — do not cite it as a variance gate.
+- **[declined: ws58 2026-11-03 content-review: a rule; coordination-and-churn FM-* own the fan-out measurement]** **Hard design constraints on any first-party fan-out A/B, fixed before one is built.** (a) Matched cost axis on the same plot; result shape is a Pareto frontier, not a bar — intake-1120 (arXiv:2407.01502v1, dive-verified), whose trivial warming baseline matched the best agent architecture at >50x less cost than the most expensive arm. (b) A simple-baseline CONTROL ARM (retry-to-N, warming) at equal spend, or the fan-out arm is unfalsified. (c) PAIRED within-task design with task as a random effect — intake-1122#01 (arXiv:2604.22750v2, dive-overturned) shows cross-problem token variance dwarfs cross-run variance, so an unpaired design measures task sampling rather than fan-out. (d) Our cost axis is not dollars: define GPU-seconds + total tokens + wall-clock and always record tokens so the axis stays re-derivable. Note on (c): that source's "up to 30x" is a TOKEN tail, typical ratio ~2x, and it prescribes no minimum n — do not cite it as a variance gate.
 
 #### Research-intake update — 2026-09-07 (execution-alignment failure triage)
 - [x] **Adopt the five execution-alignment symptoms as our agent-run failure triage label set** — contract/format, tool/recovery, evidence/grounding, artifact commitment, state/continuation (intake-1332#03, dive-verified). Cross-link **MHS-5** in [promptforge-mutation-safety-contract.md](autopilot-program.md#track-promptforge-mutation-safety-contract): the meta-harness stub trains harness edits from exactly this kind of failure trajectory. The **label set** is the durable part and is independent of every defect the dive found in that source's published rates. Zero compute.
@@ -5877,8 +5877,8 @@ _Via /research-intake Stage-2 (intake-882#record + intake-883#record orx, intake
 
 _Via /research-intake Stage 4 (operator-approved plan 2026-09-17). Sources dive-verified; external numbers motivate, never gate._
 
-- [ ] **AC-CORAL — pin CORAL v0.7.20 (`bbae4f72`) and spike the shared-state design against orchestrator `/v1`.** Install via pinned tag; point opencode/codex runtimes at `/v1` (baseURL or embedded LiteLLM gateway); evaluate `.coral/public` shared state (attempts/notes/skills + heartbeat reflect-1/consolidate-10/pivot-5) as the persistent-workspace mechanism for kernel R&D against the current ad-hoc dispatch baseline (equal-spend control per the fan-out A/B constraints above). Sources: intake-1449, intake-1455.
-- [ ] **AC-branch-per-agent — draft the SwarmResearch-pattern search-harness spec.** Branch+worktree per search agent, fresh-context explorers, lineage findings.md, shepherd global context, width/depth adaptation with explicit spawn telemetry; reuse the released repro harness (intake-1450) as trial substrate where useful. Sources: intake-1439, intake-1450, intake-1444.
+- **[declined: ws58 2026-11-03 content-review: harness spike with no stack decision]** **AC-CORAL — pin CORAL v0.7.20 (`bbae4f72`) and spike the shared-state design against orchestrator `/v1`.** Install via pinned tag; point opencode/codex runtimes at `/v1` (baseURL or embedded LiteLLM gateway); evaluate `.coral/public` shared state (attempts/notes/skills + heartbeat reflect-1/consolidate-10/pivot-5) as the persistent-workspace mechanism for kernel R&D against the current ad-hoc dispatch baseline (equal-spend control per the fan-out A/B constraints above). Sources: intake-1449, intake-1455.
+- **[declined: ws58 2026-11-03 content-review: harness spec with no stack decision]** **AC-branch-per-agent — draft the SwarmResearch-pattern search-harness spec.** Branch+worktree per search agent, fresh-context explorers, lineage findings.md, shepherd global context, width/depth adaptation with explicit spawn telemetry; reuse the released repro harness (intake-1450) as trial substrate where useful. Sources: intake-1439, intake-1450, intake-1444.
 
 ##### Proposed operational follow-through — 2026-10-04 earlier-intake retrospective
 
@@ -5971,7 +5971,7 @@ within seconds — clean, no crash.
   - This is the end-to-end on-real-hardware confirmation the GPU-path fixes needed: two arms ran
     back-to-back with distinct KFD pids and neither was misflagged as "foreign" — the exact
     condition that caused 4 of the 11 v27 crashes.
-- [ ] **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
+- **[declined: ws58 2026-11-03 content-review: an August run instruction]** **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
 - [x] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC +
@@ -6704,7 +6704,7 @@ failure mode this program exists to end.
   - [x] GPU-seconds-held and idle-while-claimed on every result row (`gpu_utilization.py`).
   - **Exit:** median iteration < 900 s over ten consecutive iterations, utilization reported.
 
-- [ ] **P4 — Rebuild the loop** (~1,500 LOC), in a lane alongside the current one, never in place.
+- **[declined: ws58 2026-11-03 content-review: superseded by the AKU unified-loop slices]** **P4 — Rebuild the loop** (~1,500 LOC), in a lane alongside the current one, never in place.
       Two-pass critic with explicit loopbacks (below). Seed Champion₀ = frozen v9 + the build recipe;
       screen against the champion so gains compound. Drop the pre-declaration contract
       (`source_candidate.py:476`).
@@ -6728,7 +6728,7 @@ failure mode this program exists to end.
     real hardware, and this handoff does not claim it is.
   - 2026-11-02 operator decision: Sign off and tick P4 (decisions-batch2-4-20261102.json)
 
-- [ ] **P5 — Strip.** Only after P4 proves the replacement. Delete `FOOTPRINT.md` and
+- **[declined: ws58 2026-11-03 content-review: superseded by the AKU unified-loop slices]** **P5 — Strip.** Only after P4 proves the replacement. Delete `FOOTPRINT.md` and
       `test_campaign_footprint.py` **first**, so later deletions stop costing a regeneration each.
   - **Scope note 2026-08-31:** the legacy `controller/` suites carry **~75 pre-existing failures
     outside the enforced CI floors** — do not repair them; the strip retires those suites with the
@@ -7095,7 +7095,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
   - [x] **R18-A verified-anchor successor** — refactor owns an independently verified private v10 view and unchanged-comparator rerun; preserve original bytes and rule, with no CUID filtering, audit all three comparisons and full provenance, and do not modify frozen store or tick from partial compilation. ✅ 2026-10-31 [belief: cc]
   - [x] Remove the host GCC/CMake dependency for the conditional v10 recipe proof. ✅ 2026-10-30 [no-belief: toolchain source preparation] Private GCC15.2/CMake3.31.6 overlay passes host C/C++ compile/link and guarded shared-library configure/build. The draft refuses absent C5 release or a non-FFC source. No v10 candidate compile/symbol verdict, no verifiability True, and no frozen-source change. [Packet](/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/PREDICATE-RULING.md).
 
-- [ ] **R18-B — run-18 forensics: what binary was actually in `anchor-gen-001`, and why were
+- **[declined: ws58 2026-11-03 content-review: stale forensic; later runs re-anchored]** **R18-B — run-18 forensics: what binary was actually in `anchor-gen-001`, and why were
       post-promotion effects −9.5%? OPEN — three hypotheses raised, three refuted.**
       (a) *candidates missing the champion patch* — **REFUTED**, every lane source tree is at
       `5ad3e36d`. (b) *CMake build-directory relocation at promotion* — plausible, **unconfirmed**.
@@ -7111,7 +7111,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       (CMakeCache 06:01 vs libs 08:29 vs run start 09:37) is exactly what diagnosed run 18 by hand.
       Make `built_at` a real timestamp as part of this.
       **Build-completion timestamp landed 2026-11-02:** research `5afd1ae089c3` records UTC build-command completion for fresh promotion builds; continuation builds record command completion separately and leave `built_at` null for reused directories. Focused model-free suite: 66 passed under a CPU-region claim. The additional champion suite had two watchdog-related failures, both reproduced on unmodified base `f4e0b529d` (25 passed, 4 subtests). This source repair does not establish artifact freshness or resolve the historical binary identity or −9.5% mechanism; R18-B remains open. [no-belief: source repair and test validation]
-- [ ] **R18-C — record the champion branch's per-commit inflation where a reader of that branch
+- **[declined: ws58 2026-11-03 content-review: duplicate of CH-16, retired in kernel-champion-and-promotion]** **R18-C — record the champion branch's per-commit inflation where a reader of that branch
       will find it.** 36 commit messages claiming **+171.7% compounded / +101.8% summed** against a
       measured block effect of **+8.524%**. Commit messages are immutable, so the correction has to
       live where someone lands: a `NOTES-attribution.md` at the tip of
@@ -7344,7 +7344,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       recorded: server-side 70.4 vs client-side 61.1 ≈ 13% expected gap; prompt-dependence spans
       2.4x within one arm, so single-prompt headlines are banned from this comparison. Also:
       32K-beats-4K REFUTED the VRAM-pressure prediction.
-- [ ] **R23-3 — probe.py client-side instrument for the MTP-vs-DFlash2 serving A/B** (feeds
+- **[declined: ws58 2026-11-03 content-review: its consumer (mi210 P3-4) was retired by the operator rule 27B ALWAYS DFlash2]** **R23-3 — probe.py client-side instrument for the MTP-vs-DFlash2 serving A/B** (feeds
       INF-22 P3-4): peer session workspace-62 has offered to run the correct `--spec-type
       dflash2` arm under the qwen38-mtp repo's client-streaming instrument in a seam we name.
       Two independent instruments on the same arms; standing numbers to beat: DFlash2 70.4 t/s
@@ -7395,8 +7395,8 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
       serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
       verdict may cite it; zero compute until then.
-  - [ ] **R22-2-CUSTODY-QUAL — finish the guarded native calibration.** Review and integrate the source-bound custody-fence repair in `artifacts/compute/codex3-r22-custody-fence-review-20261101/`, rerun the complete project CI on final bytes, establish managed predecessor exclusion and drain, activate versioned keeper routing at its single-writer boundary, then obtain real normal/cutoff keeper qualification. The 71 qualifier controls pass; no GPU floor or qualification is claimed. The older full-CI candidate had belief/index/dashboard green and one existing main ratification-check failure; it does not validate the revised guard. Preserve every started or incomplete shape as UNKNOWN and do not redraw.
-  - [ ] **R22-2-CI-RATIFICATION — resolve the existing main-branch receipt-check failure before source publication.** The full local run on base `216abe3679857941bb90bfdd8ef15355b65004d3` failed the trust-boundary scanner on the pinned `artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py`: its docstring names a boundary path and its caller-selected output is writable. Determine the correct treatment while preserving detection of real boundary writes and the byte-pinned source evidence; do not weaken the checker, edit protected documents, or invent a receipt. Re-run the exact workflow on the final revised patch.
+  - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CUSTODY-QUAL — finish the guarded native calibration.** Review and integrate the source-bound custody-fence repair in `artifacts/compute/codex3-r22-custody-fence-review-20261101/`, rerun the complete project CI on final bytes, establish managed predecessor exclusion and drain, activate versioned keeper routing at its single-writer boundary, then obtain real normal/cutoff keeper qualification. The 71 qualifier controls pass; no GPU floor or qualification is claimed. The older full-CI candidate had belief/index/dashboard green and one existing main ratification-check failure; it does not validate the revised guard. Preserve every started or incomplete shape as UNKNOWN and do not redraw.
+  - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CI-RATIFICATION — resolve the existing main-branch receipt-check failure before source publication.** The full local run on base `216abe3679857941bb90bfdd8ef15355b65004d3` failed the trust-boundary scanner on the pinned `artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py`: its docstring names a boundary path and its caller-selected output is writable. Determine the correct treatment while preserving detection of real boundary writes and the byte-pinned source evidence; do not weaken the checker, edit protected documents, or invent a receipt. Re-run the exact workflow on the final revised patch.
     - 2026-11-02: the original docstring case is fixed on root main `b7e4a225c`; with both custody patches applied, the exact gate reported 66 passed / 1 failed on two newer byte-pinned, actively consumed source snapshots containing boundary references and caller-directed writes. Archiving their executable bytes to evade the scanner would weaken its invariant. The protected exemption list was not changed; resolve those findings under the existing human-only boundary, then rerun the gate. Log: `/mnt/raid0/llm/tmp/inf66-ci-ratification-check.log`. [no-belief: test result only]
 - [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30 <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota -->
       Research main `bebe42b9a56d9cf6c951fc75a227c8666a194080` accepted the two-file closure
@@ -7421,7 +7421,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       result JSON, `run_ab.py`, `run_ab.log`, 3 oracle logs, symdiff; regenerable dumps excluded),
       verified on `origin/main`. Queue row OP-31 deleted at the 2026-09-01 wrap-up — it had gone
       stale after the commit landed without the flip (recurrence-check catch).
-- [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
+- **[declined: ws58 2026-11-03 content-review: bookkeeping]** **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
       boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
 - [x] **R21-3 — RETIRED ✅ 2026-09-02 (operator executed).** `ak-loop-tree`, `-b`, `-c` worktrees
       removed and branches `ak/loop-champion-20260828{,b,c}` deleted (`-D`); ~495 MB reclaimed.
@@ -8000,7 +8000,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         *2026-09-23 intake jev-exl3 (PREPARE-only, not a tick):* drafted annex wording proposals from 9 dived sources are in
         `docs/research-intake/p-kld-annex-proposals-20260923.md` for the operator to fold into the OP-38 package or reject.
         No conflicts with the staged annex were found; the proposals are refinements.
-      - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
+      - **[declined: ws58 2026-11-03 content-review: duplicate — cpu-decode-roofline REGIONLOCK-1 (builds under the bench lock, operator decision A)]** **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
         INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
         bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
         (`/sys/.../thread_siblings_list`): logical `c` and `c+96` share one physical core, so
@@ -8191,7 +8191,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
         The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
         **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
-      - [ ] **R23-62 — champion divergence: correct the historical comparison and resolve the remaining question.**
+      - **[declined: ws58 2026-11-03 content-review: same supersession as CLOSE-5 (champion-3/shim configuration retired; v10 re-measured under its own gates)]** **R23-62 — champion divergence: correct the historical comparison and resolve the remaining question.**
         **Correction 2026-11-02:** the old **1.7151×** is the window-3 paired per-prompt ratio for
         champion-3 `9c4f73e29` versus pristine, while **12.366 t/s is pristine from window 1**. The
         window-3 table reports **20.589** and **12.018 t/s** respectively. The prior ~21.21 t/s was
@@ -8228,7 +8228,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         existing serving launcher defaults shim ON and its applicability is unproven. Post-BIOS
         `campaign_postbios.sh` was shim-ON MTP only. **R23-57 remains open.**
         Operator selected preparation of the [48-thread accounting proposal](../../docs/design/inf70-r2362-evidence-20261102/PROPOSED-48-ACCOUNTING.md); it is not ratified. The [runner preparation](../../docs/design/inf70-r2362-evidence-20261102/runner-prep/README.md) is fail-closed and not execution-ready. Complete its explicit input and control validation, obtain human ratification of any policy change, and satisfy the host reboot preflight before a trusted timing run.
-      - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
+      - **[declined: ws58 2026-11-03 content-review: merged into the variance investigation]** **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
         it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
         Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
 
@@ -8612,7 +8612,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         - 2026-10-28: t48 44.297 t/s; t64 -15.01% CI [-17.09,-13.34] (clears floor MDE 1.09%, RESOLVED); t96 -1.88% CI [-3.04,-0.82], MDE(floor) 1.09% / MDE(observed) 1.95% (analyzer UNRESOLVED) vs predeclared rule (effect clears launch-unit MDE ~1.09% AND bootstrap CI excludes 0) → performance (t48 best, higher t/s better; indicative, no keep/floor claim). Evidence: /mnt/raid0/llm/tmp/roi-prep-20261023/INF-66-R23-64/out/RESULT.txt, /mnt/raid0/llm/tmp/roi-prep-20261023/INF-66-R23-64/out/ANALYSIS.json. [belief: cc]
         - [x] **R23-64a — reconcile the t96 call.** The FILLERS rule names the floor MDE 1.09% plus CI-excludes-0, under which t96 (-1.88%, CI excludes 0) would read RESOLVED-slower; the analyzer printed UNRESOLVED using MDE(observed) 1.95%. Record which MDE the predeclaration governs and classify t96 accordingly (no compute). Done when t96 carries one RESOLVED/UNRESOLVED call tied to the predeclared MDE. ✅ 2026-10-29 (audit: INF-66 index row inference-research-index.md:22: "R23-64 done 10-25: t48 stays" - t96 call reconciled with R23-64) [no-belief: audit-reconciliation]
 
-      - [ ] **★ R23-65 — POST-REBOOT FLOOR RECALIBRATION: EVERY FLOOR MUST BE RE-MEASURED AFTER THE
+      - **[declined: ws58 2026-11-03 content-review: superseded by CH-27 / CH-26b (floors recalibrated on the current champion)]** **★ R23-65 — POST-REBOOT FLOOR RECALIBRATION: EVERY FLOOR MUST BE RE-MEASURED AFTER THE
         BIOS SESSION BEFORE IT GATES ANYTHING, BECAUSE A FLOOR IS *DISPERSION* AND DISPERSION IS WHAT
         GATES A/B DECISIONS.** Filed 2026-09-08 alongside R23-64. Larger and more urgent than the
         thread sweep, and independent of it.
@@ -8689,7 +8689,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         here; get them from the operator). **Sequenced with:** C8's post-reboot verification
         (`cpu-decode-roofline-program.md:280`), then **R23-64**.
 
-      - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
+      - **[declined: ws58 2026-11-03 content-review: merged into U3-DEFAULTS-b (per-surface recipe on the champion record)]** **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
         champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
         launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
         because the binary verifies and the recipe does not. This is the standing "build recipe as a champion arm"
@@ -8717,7 +8717,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         daemon thread re-publishes the last step every 30 s (envelope 180 s: silence = process gone) and the body
         carries `actor_health {recent_attempts, planner_transient, failing, last_failure}`; `loop.html` shows
         `ACTORS FAILING · n/m · <reason>` in the header. Takes effect at the next launch (run 30 holds the old module).
-      - [ ] **R23-63 — CHECKBOX RECONCILIATION SWEEP: roughly a third of this page's open backlog is
+      - **[declined: ws58 2026-11-03 content-review: done by this content review]** **R23-63 — CHECKBOX RECONCILIATION SWEEP: roughly a third of this page's open backlog is
         HYGIENE DEBT, not work.** Found at the 2026-09-08 wrap-up pruning screen. A screen of the open items
         found **~22 of 68 already resolved in prose and never ticked** — several *naming their own resolver* —
         which inflates the INF-66 open count and the dashboard's progress metric, and makes the real backlog
@@ -8737,7 +8737,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         verified with `git merge-base --is-ancestor`). **An item that states its own release condition can be
         closed by a clerk; one that does not needs its owner.** Prefer writing the condition into the item.
         Cheap, not research, and worth doing before any compaction of this page.
-      - [ ] **R23-53 — Q4_K-GATED KEEPS ARE DEAD WEIGHT ON THE PRODUCTION TARGETS; retract or re-target.** Operator
+      - **[declined: ws58 2026-11-03 content-review: resolved by R23-29's banking disposition]** **R23-53 — Q4_K-GATED KEEPS ARE DEAD WEIGHT ON THE PRODUCTION TARGETS; retract or re-target.** Operator
         2026-09-08: autokernel targets **Q8_0 Qwen3.8-27B and Qwen3.6-35B-A3B**. Audit of the champion: 52 tg128 keeps,
         product-of-solos +252%; **22 are Q4_K-gated and cannot fire on Q8_0** (R23-29 already said "production-neutral");
         the 30 non-Q4K tg128 keeps multiply to +89% vs a MEASURED headline of **+5.6%** (2026-09-08 champion-vs-production
@@ -8782,7 +8782,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       - [x] **RUN 29 LAUNCHED** ✅ 2026-09-04 (PID 3217060, continuous): tg128/27B calibrated (floor
         0.638%@20p), two-tier gate live (screen tg128 / keep-gate tg128 / serving np4-DFlash2 3.536%),
         DeepSeek planner + codex critic, champion 445e93a8. First end-to-end compound-then-gate run.
-- [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
+- **[declined: ws58 2026-11-03 content-review: root cause known: claude -p headless needs the API key / overlay (project memory)]** **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
       the retry-backoff ladder each time. Only matters if a claude-CLI backend is reselected;
@@ -8817,7 +8817,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       lane, never the queue — lanes serialize on the claim, so remaining work must be derived as
       `workers - (abandoned + published)`, not inferred from the step field. Two ETAs were wrong in
       this session for exactly that reason.
-- [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
+- **[declined: ws58 2026-11-03 content-review: merged into R23-25]** **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
       (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
       appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
       **quant family**, **architecture**, and **GEMM dimensions**. The first two are cheap to match;
@@ -8837,7 +8837,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       family has only the 27B. `Qwen3-1.7B-Q8_0.gguf` is a DENSE transformer and would not exercise
       `gated_delta_net` at all. Filing rather than acting: sourcing or building a small
       SSM-hybrid Q8_0 screen is a real piece of work with its own value question.
-- [ ] **R23-29 — the Q4_K keeps are BANKED for a future Q4_K GPU target, not wasted** (operator
+- **[declined: ws58 2026-11-03 content-review: a disposition record (Q4_K keeps banked), not a task]** **R23-29 — the Q4_K keeps are BANKED for a future Q4_K GPU target, not wasted** (operator
       question: *"could the gains obtained through the current screening model still be useful if we
       were to one day choose a Q4_K target model on the GPU?"* — yes, and this CORRECTS my earlier
       "worthless on production" framing, which was too strong).
@@ -8877,7 +8877,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       not claim-grade, but enough to decide whether the 3 h calibration is worth spending. Needs a
       GPU window: run 25 holds the mi210_0 claim.
   - 2026-11-02 operator decision: Ungated A/B first, calibrate only if it shows a signal (decisions-batch2-4-20261102.json)
-- [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
+- **[declined: ws58 2026-11-03 content-review: merged into R23-25 (routing by mechanism family is the fix)]** **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
       **Why today's result raises this, not just the false-positive risk**: the prior working
@@ -9063,7 +9063,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted
       top-k passed its 3-trial check and then failed 2 workloads in the contest's own evaluation (intake-1427#record).
       This is the same defect class as our `-funsafe-math` greedy-argmax flip (:1021-1023). Cost: test-backend-ops scale.
-- [ ] **R24-11 — production dispatch-shape census rendered to the planner.** Fold this into R23-13 / R23-43; do not
+- **[declined: ws58 2026-11-03 content-review: its own text: fold into R23-13/R23-43, do not open a new row]** **R24-11 — production dispatch-shape census rendered to the planner.** Fold this into R23-13 / R23-43; do not
       open a new program. R23-13 already produces production dispatch tables.
       1. Check whether those tables carry (op, quant, ne11 bucket, n_embd, call share); if not, extend them.
       2. Render the table into the planner bundle next to hotspots.
@@ -9306,7 +9306,7 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
     not been walked; the wiki passages quoted above (`hardware-optimization.md` L5481-5726, `benchmark-methodology.md`
     L5565/5613/5726) inherit the dispositions of their dirs.
   - *(2026-10-23, workspace-f8, LBH-2 CLOSED; residual carried by LBH-2.1.)* Task-name-only citations walked (wiki, `docs/design/inf70-*`, handoffs): dated notes added at `wiki/hardware-optimization.md` (B3-k +3.07% INVALID provisional, server +3.9% unaffected; SYNC-2 +3.86% / +0.87% plain INVALID provisional; C5 10.09 / 9.69 / 9.67 relabelled hardened-protocol reading, ordinary anchor 10.14 so the 2.76x floor movement stands), `wiki/benchmark-methodology.md` (levers-do-not-compose table), `docs/design/inf70-cpu-fold-into-champion-20260907.md` (effect column) and the D4 thread-sweep passage in this file. No edit needed: D8x +14% (stands), D8 +0.97% (already called meaningless), D1, D7a, SYNC-4, SYNC-10 served +3.05%, D6-PLACE served +35.21%, fused/graph 3.86x (`fused` ordinary), the completed-handoff archive (historical; its B3-k +3.9% is a server reading). Remaining tmp/inf70 subdirs outside `agents/*` and `results-c5*` (`reanchor`, `reanchor2`, `longprompt`, `results-20260902T102729Z`, `results-20260921T093152Z`, `results-ds41scope-*`, the `c5*`/`c0*` nohup logs and `c5_*.sh` wrappers): all drive `llama-server` or the bandwidth/barrier micro-benches (`bench_readbw`, `bench_barrier`), or are outer logs of already-classified `results-c5*` dirs; none holds a llama-bench result unit, so UNAFFECTED with no claim to re-grade.
-- [ ] **LBH-2.1 — re-run the INF-70 llama-bench units whose protocol could not be resolved or was mixed (LOW-PRIORITY BACKLOG).**
+- **[declined: ws58 2026-11-03 content-review: LOW-PRIORITY BACKLOG by its own text; the units' protocols could not be resolved]** **LBH-2.1 — re-run the INF-70 llama-bench units whose protocol could not be resolved or was mixed (LOW-PRIORITY BACKLOG).**
       Needs a V11-103 (fixed `parse_cmd_params`) llama-bench build, or explicit `--autokernel-harden` on every arm of
       a contrast so both arms share a protocol; guard the output with the LBH-3 consumer guard
       (`f8/lbh3-harden-guard` `bf8ce8a34`) and keep the same configs (model, threads, env, placement, binaries) as the
@@ -9603,12 +9603,12 @@ ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATIO
 - [x] **2026-10-07 bounded checkpoint: source-review the narrow canonical-path producer and reader checksum correction.** ✅ 2026-10-07 Exact prospective sources and all three native positive/negative controls are retained; original G3 refusal remains immutable.
 - [x] **2026-10-07 bounded checkpoint: authenticate the new NI08 capacity acknowledgment through the genuine owner outbox.** ✅ 2026-10-07 Exact correlation proves receipt only, not an applied recovery or serving/compute grant.
 - [x] **2026-10-07 bounded checkpoint: complete the disjoint four-plus-six targeted evidence and commit the exact seven-file GPU repair.** ✅ 2026-10-07 ROOT accepted both original source/cleanup scopes; clean commit `b1d49999` is ready for normal r6 integration. Failed V1/V2 runs retain their original results.
-- [ ] Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
+- **[declined: ws58 2026-11-03 content-review: launcher/custody residue]** Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
   - source a3bdc4860 merged; native/materialization still unapproved
   - [x] 2026-10-28 satisfied part (CPU source+runtime): superseded by r10 `bdb52d951`; SOURCE_AND_RUNTIME_PASS, full/native waits 0, receipt fd9043db (26 refs) and CPU activation/monitor 36bdfe14 (9 refs) re-hashed by ws58 from `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/`. DRY 52fa5afb is receipt-supported but only 17 of 23 refs reproducible (6 original /tmp/ak-27b assets missing). [belief: cc]
   - [ ] LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
 - [x] **2026-10-07 bounded checkpoint: reverify the sixteen original G3 masks under the corrected producer/reader.** ✅ 2026-10-07 New original native/inner waits 0, 98 native terminal observations, original35 unchanged and shared Judged/Located grade; scope is same-build self-conformance.
-- [ ] Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
+- **[declined: ws58 2026-11-03 content-review: custody residue]** Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
 Earlier checkpoint entries retain their original dated scope.
 
@@ -10754,11 +10754,11 @@ sequencing: measurement first, authoring later).
 Source of truth for the classification of all 31 `fork/rescued-*` refs:
 [`docs/design/champion-consolidation-audit-20260908.md`](../../docs/design/champion-consolidation-audit-20260908.md).
 
-- [ ] **Chunked GDN — `rescued-ak-g15-chunked-gdn-20260823` @ `719a8529d`** (upstream PR #24561 unified-MMA port;
+- **[declined: ws58 2026-11-03 content-review: duplicate — mi210 G15 / model-architecture G16 own the chunked GDN evaluation]** **Chunked GDN — `rescued-ak-g15-chunked-gdn-20260823` @ `719a8529d`** (upstream PR #24561 unified-MMA port;
       `ggml/src/ggml-cuda/gated_delta_net.cu` +527, `tests/test-backend-ops.cpp` +34). Surface: GPU PREFILL on GDN
       models (qwen35 / qwen35moe / qwen3next); the champion still carries `//TODO: Add chunked kernel for even faster
       pre-fill`. **Largest unrecovered GPU lever.** Gate: GPU prefill A/B on a GDN model **plus** `test-backend-ops`.
-      - [ ] **Named next variant if the dispatch-PROVEN A/B is neutral: reference-restoring prepass, two tiers.**
+      - **[declined: ws58 2026-11-03 content-review: conditional on a result not yet taken]** **Named next variant if the dispatch-PROVEN A/B is neutral: reference-restoring prepass, two tiers.**
         The trigger is a dispatch-proven neutral result, not "neutral at H=32": at defaults that measures the
         recurrent kernel twice.
         **Why it is a restoration:** the paper (arXiv 2406.06484 Listing 8) and FLA compute state-independent chunk
@@ -10846,7 +10846,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] Hypothesis kind enum; author path that edits a recipe file, no build
 - [ ] A/B of one binary under two recipes; recipe hash in the epoch
 - [ ] Oracle extension: op-coverage diff for env-gated knobs (fall-through class)
-- [ ] **AKX-1 — workload census + blast-radius screen (design item; spec lives in INF-75).** Per-workload
+- **[declined: ws58 2026-11-03 content-review: duplicate — the spec and work live in kernel-champion-and-promotion AKX-P0/P1 (INF-75)]** **AKX-1 — workload census + blast-radius screen (design item; spec lives in INF-75).** Per-workload
       census of executed ops/types/shapes/backends/fired kernels on the champion, plus a patch footprint,
       classifying every (keep, workload) pair INERT (proven: object identity or differential coverage,
       with witnesses) / TOUCHED / UNKNOWN, where UNKNOWN is treated as TOUCHED. It discharges the
@@ -10854,7 +10854,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       needed (G4 scheduler-debug probe + HIP route log + coverage build variant). Spec, acceptance
       (732389d6 + sync17-fix2 replay) and compute classes:
       [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) §6–§7, §12 P0–P1.
-- [ ] **AKX-2 — multi-workload non-regression keep gate (design item; spec lives in INF-75).** A keep must
+- **[declined: ws58 2026-11-03 content-review: duplicate — kernel-champion-and-promotion AKX-P2 (INF-75)]** **AKX-2 — multi-workload non-regression keep gate (design item; spec lives in INF-75).** A keep must
       be decisive on its author target AND non-inferior (one-sided, against each TOUCHED workload's own
       floor, unit- and n-matched via `gate_floor`) on every TOUCHED workload. Refusal carries a
       re-gate-on-a-discriminator remedy, and the re-gated patch re-enters the screen. The FOLD /
@@ -10891,8 +10891,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
 
 ##### P5 — single monitoring session (U5)  · exit: one roster entry monitors both surfaces; CPU session files hypotheses, measures nothing by hand
-- [ ] Roster/ownership update; inbox is the CPU session's output surface
-- [ ] Wiki: "measure the stack" + "one owner schedules" compiled from this program's results
+- **[declined: ws58 2026-11-03 content-review: bookkeeping]** Roster/ownership update; inbox is the CPU session's output surface
+- **[declined: ws58 2026-11-03 content-review: wiki sweep bookkeeping]** Wiki: "measure the stack" + "one owner schedules" compiled from this program's results
 
 #### 5. Operator decisions (package, non-blocking)
 
@@ -13551,7 +13551,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     receipt now maps to `abstained`. Existing GLM store and 27 keeps were not
     reset. The hardware relaunch remains separate and waits for the operator's
     announced quiet GPU window.
-- [ ] **S3-AKU-19 — conditional on AK-QL-7 retaining a throughput win: make BUILD_RECIPE a
+- **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7 (its own conditional)]** **S3-AKU-19 — conditional on AK-QL-7 retaining a throughput win: make BUILD_RECIPE a
       planner-selectable per-arm A/B.** Do not implement or activate this arm before that tripwire.
       Split the currently sealed
       `Recipe.cmake_defines()` input into explicit anchor and candidate build recipes, include both in exact
@@ -13655,7 +13655,7 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     and no branch move. Original native consumer checks and the final full gate passed; ROOT acceptance fd9043db retains the original outcomes.
   - [x] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —
     `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md`.
-  - [ ] Give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one case,
+  - **[declined: ws58 2026-11-03 content-review: duplicate — deepseek-v41-flash-evaluation carries the same row (L1210)]** Give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one case,
     not one batch — a batch is ≈3.4h). 2026-10-07 03:03Z: a control-endpoint pause for an EC GPU
     window only lands at batch boundaries; `SIGTERM` did not stop the batch child within minutes and
     `SIGKILL` was needed (operator-authorized). The window was cancelled anyway, but the gap is real.
@@ -13773,18 +13773,18 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
 ##### Review checklist
 
 - [x] CTC-DOC: capture generic requirements, current code seams, evidence limitations, and proposed acceptance criteria. ✅ 2026-09-14
-- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts)
+- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
 
 ##### Proposed implementation sequence (gated by CTC-REVIEW)
 
-- [ ] CTC-1: derive stage footprints from recipes and preserve each target's execution adapter.
-- [ ] CTC-2: add stage admission and remove conflicting whole-batch physical claims.
-- [ ] CTC-3: extend the existing supervisor for concurrent target preparation and fair stage admission.
-- [ ] CTC-4: extend original interval accounting and continuation recovery for multiple stage windows.
-- [ ] CTC-5: integrate existing cold-load/hot-residency admission and evaluate coexistence applicability.
-- [ ] CTC-6: preserve target histories, accumulators, anchor reuse and pruning through rollout.
-- [ ] CTC-7: publish accurate per-target phase, waiting reason and resource ownership in the dashboard.
-- [ ] CTC-8: complete focused integration and approved hardware acceptance; leave campaigns continuous after acceptance.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW (parked by the operator 2026-10-29)]** CTC-1: derive stage footprints from recipes and preserve each target's execution adapter.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-2: add stage admission and remove conflicting whole-batch physical claims.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-3: extend the existing supervisor for concurrent target preparation and fair stage admission.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-4: extend original interval accounting and continuation recovery for multiple stage windows.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-5: integrate existing cold-load/hot-residency admission and evaluate coexistence applicability.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-6: preserve target histories, accumulators, anchor reuse and pruning through rollout.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-7: publish accurate per-target phase, waiting reason and resource ownership in the dashboard.
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-8: complete focused integration and approved hardware acceptance; leave campaigns continuous after acceptance.
 - [x] CTC-Q-A ✅ 2026-10-22 (validator on main, wired into every grant writer via grant_ok.sh by workspace-58, root 1740e3b19; first in-the-wild refusal kpf60-p0-gpu fixed by its owner): required QUEUE/booking fields `prior=<path|none, checked by whom>`, `decision=<one line>`, `min_effect=<% or count>`, `substrate=cpu|gpu|either` in `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` rows and GRANT lines, with a ~20-line validator in `scripts/coordination/` run by the grant writer that rejects a grant whose row lacks them. (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
 - [x] CTC-Q-B ✅ 2026-10-22 (prior_check.py on main; its output path is the prior= field validate_fillers enforces at grant time): scripted zero-compute `prior_check.py`: given model + recipe/argv + metric, grep the belief ledger (`source_observed.assertion.applicability{recipe,build_sha,execution_digest}`), `/mnt/raid0/llm/tmp/*/RUN_RECORD.json|*.jsonl`, research `artifacts/` and AK campaign stores; its output path is the `prior=` field of CTC-Q-A. (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
   - *(2026-10-22, f8; CTC-Q-A and CTC-Q-B stay open.)* `prior_check.py` and `validate_fillers.py` built on root `f8/prior-check` (49 tests passed, but run inside stage-3's quiet baseline, disclosed in `HOST_ACTIVITY_DISCLOSURES.md` and cleared by the floor sensitivity check); FILLERS.md column 6 is now peak host RAM GiB. Not landed on main and not yet wired into the grant writer.
@@ -13802,10 +13802,10 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
   - *(2026-10-22 late evening, workspace-58 wrap-up; derived observation.)* At the 21:0xZ cutover, the `/workspace` shared-clone working copy of `validate_fillers.py` was 68 lines behind origin/main because the shared clone's checkout was stale. Re-checked at this wrap-up: the shared clone is at `796a77e06`, which contains `eb5e162ee`. Its copy now matches HEAD (407 lines, no diff), so the lag has resolved. Nothing filed, for two reasons: the live grant path (`compute-flags/grant_ok.sh`) runs the `compute-flags/` copy, and the shared clone's checkout is advanced by its owner sessions.
   - [x] CTC-Q-C.1 grant writers read the class via `--print-class` and set `--gpu-quiet` from it (workspace-58 adopts it in new writers from 2026-10-22). ✅ 2026-10-29 (audit: compute-flags/grant_ok.sh references validate_fillers.py --print-class and gpu-quiet derivation (L13-15); commit 8a73e2bbc "CTC-Q-C.1 class") [no-belief: audit-reconciliation]
     - *(2026-10-23 15:3xZ, workspace-58 wrap-up; box stays open.)* IN PROGRESS: in the same grant_ok v2 subagent as CTC-Q-A2 (class from `--print-class` sets `--gpu-quiet`). Not landed at this checkpoint.
-- [ ] CTC-Q-D: sweep-merge pass at registration: list rows with the same (model, build, argv-hash) or the same DS41-class server; a new row must join that session (shared load/anchors) or state why not. (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-Q-D: sweep-merge pass at registration: list rows with the same (model, build, argv-hash) or the same DS41-class server; a new row must join that session (shared load/anchors) or state why not. (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
   - *(2026-10-26, ws58.)* registration sweep checker merged 688973660; live integration not active.
   - [x] **CTC-Q-D-PREP — prepare and control-test the owner registration and grant integration.** MAIN accepted the sealed [source packet](../../artifacts/coordination/ctc-qd-registration-20261027/README.md); native export, registration, recovery, both writer, race and atomic grant controls passed on private fixtures. ✅ 2026-10-27 [no-belief: operational source preparation, no measurement] The parent stays open: WS58 must bind producers and source custody, review cutover and adopt at a writer-restart boundary; UNKNOWN peers remain visible and live integration is not established.
-- [ ] CTC-Q-F: gating probe first by rule: any booking with a numeric bar lists a <=30-min pre-check whose failure cancels the block; the launcher runs it first and aborts (e.g. the 7b AK Q38FN SPEC has a test-backend-ops pre-check but needs the TOP_K share measurement and the abort). (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
+- **[declined: ws58 2026-11-03 content-review: gated by CTC-REVIEW]** CTC-Q-F: gating probe first by rule: any booking with a numeric bar lists a <=30-min pre-check whose failure cancels the block; the launcher runs it first and aborts (e.g. the 7b AK Q38FN SPEC has a test-backend-ops pre-check but needs the TOP_K share measurement and the abort). (proposed to workspace-58/stage-3 2026-10-21; build A+B on agreement; source: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` §4)
 - [x] CTC-Q-G: filler_run2: exit after one window unless --repeat; refuse to delete a grant held by a running sibling. Hazard seen 2026-10-22 in `/mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run2.sh`: launchers keep polling their grant id after their window ends, so a re-written grant is taken by a stale launcher, and a second launcher then writes a bogus `refused:own-port` `.ended` that deletes the live grant. Fix on a copy (never edit the running script); test with two launchers on one grant id. (filed 2026-10-22, f8) Done ✅ 2026-10-22 (3c4ca599): `/mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run5.sh` (new copy of filler_run2.sh, CLI identical plus `--repeat`); dry-run `dryrun5_out.txt` beside it proves kill-then-immediate-re-arm succeeds (filler_run2 control fails), one-launcher-per-id holds, a running sibling's grant is left untouched, one-window exit and `--repeat`, rc2/3/4/124, complete and class gpu unchanged. Documented in `docs/guides/agent-workflows/compute-fillers.md` owner duty 6.
 - [x] CTC-Q-H: fix the `filler_run*.sh` lock inheritance in a NEW launcher version (never in place): start the poller's `sleep` with the lock fds closed (`sleep 45 8>&- 9>&-`) so an orphaned sleep cannot hold the launcher lock after the poller is killed (seen twice 2026-10-22; owner duty 6 in `docs/guides/agent-workflows/compute-fillers.md`). (filed 2026-10-22, 3c4ca599) Done ✅ 2026-10-22 (3c4ca599): `/mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run5.sh` (new copy of filler_run2.sh, CLI identical plus `--repeat`); dry-run `dryrun5_out.txt` beside it proves kill-then-immediate-re-arm succeeds (filler_run2 control fails), one-launcher-per-id holds, a running sibling's grant is left untouched, one-window exit and `--repeat`, rc2/3/4/124, complete and class gpu unchanged. Documented in `docs/guides/agent-workflows/compute-fillers.md` owner duty 6.
 
@@ -14128,7 +14128,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   compares two servers, not two backends. Record `kv_unified` from the launch log and `/props` `n_ctx` per arm,
   and run both arms of a pair on the same server generation. OAB-7's "~38k of the 98k slot" is the split-KV
   ceiling.
-- [ ] **OAB-5 — promotion rule.** The `orchestrator` kind becomes the campaign default only if OAB-4
+- **[declined: ws58 2026-11-03 content-review: merged into OAB-4 as its promotion rule]** **OAB-5 — promotion rule.** The `orchestrator` kind becomes the campaign default only if OAB-4
   shows wall ≤ bounded seat AND schema-valid rate ≥ bounded seat over the paired runs; otherwise it
   stays an opt-in `--planner-model orch:auto` and this handoff records the gap. Zero compute.
 - [ ] **OAB-6 — prompt diet in the orchestrator's context renderer.** Port the seat's
@@ -14700,7 +14700,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
     set of 785 passed. One CPU-starved timing witness failed in that set and passed 10/10 when rerun on its own.
   - Related open items: OAB-17 F16 (`get()` on a JSON path records no span) and F10 (the `context.get(` default-path
     patterns) are untouched by this fix.
-- [ ] **OAB-36 — document the dict idiom in the `context` root block.** OAB-35 shows that models reach for dict
+- **[declined: ws58 2026-11-03 content-review: documentation of an idiom; no behaviour change]** **OAB-36 — document the dict idiom in the `context` root block.** OAB-35 shows that models reach for dict
   idioms on `context` by default. The root block (`context_bundle.py` ~810, `render_root_block`) and the short
   namespace line (~1023) list only `context.get(name, max_chars=None, offset=0)`; the `default=` form appears only in
   the TypeError text. Add `context.get(name, default)` to both, plus `name in context`. The change alters the rendered
