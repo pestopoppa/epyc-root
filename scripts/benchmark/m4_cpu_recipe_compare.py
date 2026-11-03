@@ -41,8 +41,7 @@ def module(name: str,path: Path):
 
 
 def _strip_loader_args(args: list) -> tuple:
-    # The native runner owns the loader-knob definition; load it lazily (verify()
-    # calls this only after the runner's own source digest has been checked).
+    # The native runner owns the loader-knob definition; load it lazily.
     native=sys.modules.get('m4_compare_native') or module('m4_compare_native',PRODUCER/'native/k35_stack_context_matrix_runner.py')
     return native.strip_loader_args(args)
 
@@ -170,7 +169,9 @@ def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: 
              '--only',cfg['name'],'--context','8192','--max-tokens','128','--min-completion-tokens','128',
              '--reps','1','--binary',str(server),'--output-dir',str(case)]
         effective=dict(cfg)
-        if loader_args: effective['extra_args']=[*(cfg.get('extra_args') or []),*loader_args]
+        if loader_args:  # an explicit --load-threads replaces any planned or runner default
+            base=list(cfg.get('extra_args') or [])
+            effective['extra_args']=[*(_strip_loader_args(base) if base else ()),*loader_args]
         env=dict(os.environ,M4_SCENARIO_JSON=json.dumps(effective,sort_keys=True,separators=(',',':')),
                  M4_TREATMENT='default-off' if arm=='baseline' else 'srpf-cap512')
         env.pop('LLAMA_ARG_PREFILL_ORDER',None);env.pop('LLAMA_ARG_PREFILL_CONTEND_CAP',None)

@@ -110,11 +110,12 @@ def test_frame_ignores_loader_threads_but_not_real_recipe_differences(tmp_path, 
     with pytest.raises(ValueError,match='unintended recipe differences'):mod.verify(path,sha(path))
 
 
-def bare_compare_run(tmp_path, monkeypatch, **kwargs):
+def bare_compare_run(tmp_path, monkeypatch, mutate=None, **kwargs):
     """Drive compare.run end to end with fake native modules and no M4_OWNED_CGROUP."""
     import os,subprocess
     from datetime import datetime,timedelta,timezone
     path,plan=packet(tmp_path,monkeypatch)
+    if mutate: mutate(plan); path.write_text(json.dumps(plan))
     monkeypatch.delenv('M4_OWNED_CGROUP',raising=False)
     monkeypatch.setenv('M4_SERVER_PID_REGISTRY',str(tmp_path/'server-pids.txt'))
     now=datetime.now(timezone.utc)
@@ -171,3 +172,11 @@ def test_harness_never_hashes_its_own_source():
         text=path.read_text()
         assert 'SOURCE_SEALS' not in text and 'm4_cpu_recipe_enrollment' not in text, path.name
         assert "compute-flags/grants" not in text, path.name
+
+
+def test_explicit_load_threads_replaces_planned_one(tmp_path,monkeypatch):
+    mod.module('m4_compare_native',mod.PRODUCER/'native/k35_stack_context_matrix_runner.py')  # real strip helper
+    def planned(plan):
+        for cfg in plan['recipes'].values(): cfg['extra_args']=['-b','512','--load-threads','48']
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch,mutate=planned,load_threads=96)
+    assert rc==0 and all(cfg['extra_args']==['-b','512','--load-threads','96'] for cfg in seen)
