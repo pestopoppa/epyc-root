@@ -28,6 +28,10 @@
    "target": "model-evaluation-queue.md",
    "track": null
   },
+  "attention-matching-kv-compaction.md": {
+   "target": "long-context-program.md",
+   "track": "attention-matching-kv-compaction"
+  },
   "autokernel-all-devices-all-dimensions.md": {
    "target": "kernel-champion-and-promotion.md",
    "track": "autokernel-all-devices-all-dimensions"
@@ -378,7 +382,7 @@
    "track": "multimodal-pipeline"
   },
   "multiscreen-attention-evaluation.md": {
-   "target": "attention-matching-kv-compaction.md",
+   "target": "long-context-program.md",
    "track": "multiscreen-attention-evaluation"
   },
   "non-inference-backlog.md": {
@@ -534,7 +538,7 @@
    "track": "strand-rust-coder-rustevo2-verification"
   },
   "streaming-llm-baseline.md": {
-   "target": "attention-matching-kv-compaction.md",
+   "target": "long-context-program.md",
    "track": "streaming-llm-baseline"
   },
   "summary-token-attention-readiness.md": {
@@ -567,7 +571,7 @@
    "track": "tri-role-coordinator-architecture"
   },
   "triattention-kv-selection.md": {
-   "target": "attention-matching-kv-compaction.md",
+   "target": "long-context-program.md",
    "track": "triattention-kv-selection"
   },
   "typed-decision-plane.md": {
@@ -597,6 +601,10 @@
   "x-mas-text-routing.md": {
    "target": "routing-program.md",
    "track": "x-mas-text-routing"
+  },
+  "yarn-context-extension-research.md": {
+   "target": "long-context-program.md",
+   "track": "yarn-context-extension-research"
   }
  },
  "ids": {
@@ -732,6 +740,10 @@
    "target": "EVL-02",
    "track": "angelslim-techniques-evaluation"
   },
+  "INF-05": {
+   "target": "INF-59",
+   "track": "attention-matching-kv-compaction"
+  },
   "INF-07": {
    "target": "INF-45",
    "track": "batched-decode-measurement"
@@ -797,7 +809,7 @@
    "track": "multimodal-pipeline"
   },
   "INF-42": {
-   "target": "INF-05",
+   "target": "INF-59",
    "track": "multiscreen-attention-evaluation"
   },
   "INF-43": {
@@ -813,7 +825,7 @@
    "track": "qwen-mtp-llamacpp-port"
   },
   "INF-51": {
-   "target": "INF-05",
+   "target": "INF-59",
    "track": "streaming-llm-baseline"
   },
   "INF-52": {
@@ -829,7 +841,7 @@
    "track": "tq3-quantization-evaluation"
   },
   "INF-56": {
-   "target": "INF-05",
+   "target": "INF-59",
    "track": "triattention-kv-selection"
   },
   "INF-58": {

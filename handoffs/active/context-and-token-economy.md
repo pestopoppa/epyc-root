@@ -527,7 +527,7 @@ Investigate Memento-style block reasoning compression for EPYC stack — trainin
 ##### Composability — Quad-Stack KV Compression
 - **Block masking (Memento)**: 2-3x — removes entire reasoning blocks (WHICH semantic blocks survive)
 - **KV quantization (Hadamard+q4_0)**: 2-4x — compresses each surviving KV entry (deployed, `b51c905`) (HOW tokens stored)
-- **KV compaction (Attention Matching)**: 10x — constructs compact latent KV entries with fitted biases/values (planning, [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) (HOW MANY entries exist)
+- **KV compaction (Attention Matching)**: 10x — constructs compact latent KV entries with fitted biases/values (planning, [attention-matching-kv-compaction.md](long-context-program.md#track-attention-matching-kv-compaction)) (HOW MANY entries exist)
 - **KV selection (TriAttention/Expected Attention)**: 2-10x — keeps only important tokens (evaluating, triattention-kv-selection.md). Note: AM compaction subsumes selection at 20x+; redundant to stack both.
 - Theoretical combined (quant × compaction × masking): **up to 120x**. Conservative: **40x** (quant × compaction alone, no selection or masking needed). Quality cliff under multi-layer compression is the key unknown — each pair tested independently.
 

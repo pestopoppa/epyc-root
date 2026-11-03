@@ -2763,7 +2763,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
   - Runtime backend mutation API: `add_instance(url)`, `remove_instance(url)`, `register_quarter(role, url)`, `unregister_quarter(url)`.
   - `QuarterScheduler` state machine with `HEALTHY/SUSPECT/DEAD/DRAINING/LAUNCHING/AVAILABLE`.
   - Quarter-fixed ports, liveness checks, drain protocol, idle-time tracking, and retry-compatible degradation.
-- [ ] **DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) P2 validates coding-context compaction, prototype q4_0 offset estimation. Proceed only if shared-codebase task quality remains >95%; otherwise defer KVCOMM until f16 KV or a different sharing primitive is practical.
+- [ ] **DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction) P2 validates coding-context compaction, prototype q4_0 offset estimation. Proceed only if shared-codebase task quality remains >95%; otherwise defer KVCOMM until f16 KV or a different sharing primitive is practical.
 - [ ] **DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `ConcurrencyAwareBackend` cache-aware routing, and add `prefill_speedup_coder_pool` metrics.
 
 ##### Inherited from earlyoom-oom-protection closure (2026-06-12)
@@ -2872,7 +2872,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 - Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) for DS-E1/DS-6/DS-7 status changes.
 - Update [`inference-research-index.md`](inference-research-index.md) only for Phase F KVCOMM status.
 - If DS-E1 blocks on missing evidence, update the source handoff for the missing evidence rather than expanding this file.
-- If Phase F is abandoned or deferred, record the reason here and in [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md).
+- If Phase F is abandoned or deferred, record the reason here and in [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction).
 
 #### Research Intake Update — 2026-06-20
 

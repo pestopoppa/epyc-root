@@ -3051,7 +3051,7 @@ Vidya**. The first fully post-hook run is the first eligible belief source.
 ### Source References (2026-08-27)
 
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
 
 ## Compiled Update — 2026-08-30: the belief substrate is promoted — all four §4 requirements met, shadow status ends

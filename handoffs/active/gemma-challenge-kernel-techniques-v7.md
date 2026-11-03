@@ -637,8 +637,8 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 - [`inference-research-index.md`](inference-research-index.md) (kernel engineering)
 **Related**:
 - [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — GLM-5.2 active target; generic DSA landed and GLM cache/runtime wiring closed on experimental-v7 `3dee86a5a`; sparse final-attention and quality gates remain open
-- [`multiscreen-attention-evaluation.md`](attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
-- [`triattention-kv-selection.md`](attention-matching-kv-compaction.md#track-triattention-kv-selection) — retrofit selection (Expected Attention) for comparison vs DSA's integrated selection
+- [`multiscreen-attention-evaluation.md`](long-context-program.md#track-multiscreen-attention-evaluation) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
+- [`triattention-kv-selection.md`](long-context-program.md#track-triattention-kv-selection) — retrofit selection (Expected Attention) for comparison vs DSA's integrated selection
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) — Phase 5 candidate (CPU26) AVX-512BW Lightning Indexer kernel; **D3 sub-track lives here**
 - [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — archived 2026-06-12; superseded but format template
 - intake-506 (DeepSeek-V3.2 paper, arxiv:2512.02556)

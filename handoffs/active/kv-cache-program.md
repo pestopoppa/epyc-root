@@ -27,7 +27,7 @@ bus heartbeat since at least 2026-10-08, and the P1 code (KPF-11..16, `experimen
 prefill budget), RTG-27 [`prompt-construction-determinism.md`](eval-tower-program.md#track-prompt-construction-determinism) (byte-stable
 prompts, load-bearing for P2), INF-65 [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (the
 ONE champion and the v11 candidate gate)
-**Related**: INF-05 [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-1/2/3/6 (the
+**Related**: INF-05 [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction) KV-1/2/3/6 (the
 orchestrator prefix-cache rows), [`agentic-serving-harness-fixes.md`](harness-program.md#track-agentic-serving-harness-fixes) UFH14-B4
 (`id_slot` pinning made opt-in), [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) (VB-KVU-*)
 
@@ -1752,7 +1752,7 @@ number. Remaining work covers capacity truth, correct and efficient attention, a
 INF-41 (speech VRAM in the capacity gate, OP-48). Downstream, not a dependency: INF-77 DS41-C25 (run 9) waits
 on KVU-1.
 **Related**: [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) DS41-C25,
-[`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-3 (native LCP slot pick),
+[`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction) KV-3 (native LCP slot pick),
 [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) SW-9,
 [`autokernel-orchestrator-actor-backend.md`](autokernel-loop.md#track-autokernel-orchestrator-actor-backend) OAB-4a,
 [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) S-11a

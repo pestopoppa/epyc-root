@@ -580,7 +580,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 ### Quantization Interactions with Other Techniques
 
-- **KV quantization stacks with KV compaction (validated pairwise)**: Attention Matching compaction validated on Coder-32B-Q4KM at 5x compression with zero degradation. The compaction step operates on dequantized attention scores, fits compact representations, and the results can be re-quantized. Theoretical combined ceiling: 4x (quantization) times 5x (compaction) = 20x. Triple-stack with block masking: up to 120x. Quality under multi-layer compression is the key unknown -- each layer claims minimal individual loss but combined degradation may be multiplicative. [AM handoff](../handoffs/active/attention-matching-kv-compaction.md)
+- **KV quantization stacks with KV compaction (validated pairwise)**: Attention Matching compaction validated on Coder-32B-Q4KM at 5x compression with zero degradation. The compaction step operates on dequantized attention scores, fits compact representations, and the results can be re-quantized. Theoretical combined ceiling: 4x (quantization) times 5x (compaction) = 20x. Triple-stack with block masking: up to 120x. Quality under multi-layer compression is the key unknown -- each layer claims minimal individual loss but combined degradation may be multiplicative. [AM handoff](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction)
 
 - **Hadamard rotation preserves properties needed by KV selection**: TriAttention's trigonometric scoring uses pre-RoPE Q/K centers (offline calibrated) and current K norms (online). Hadamard rotation is an orthogonal transform that preserves norms, so the online K norm signal should survive Hadamard. However, q4_0 quantization introduces norm error after rotation. The net effect on selection scoring is untested -- this is the critical gate for the selection+quantization stacking hypothesis. Expected Attention's paper explicitly claims orthogonality with quantization methods. [TriAttention deep-dive](../research/deep-dives/triattention-kv-selection-cluster.md)
 
@@ -626,8 +626,8 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 - [KV Cache Quantization Handoff](../handoffs/completed/kv-cache-quantization.md) -- Hadamard Phase 1 deployed, hybrid buffer archived, TurboQuant/PolarQuant/QJL abandoned, split attention working but unnecessary, long-context degradation analysis, production validation results
 - [TQ3 Monitor Handoff](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) -- TQ3_1S on monitor-only status, PR #21038 Hadamard auto-rotation, PR #21089 CPU TurboQuant, ChunkKV tracking
-- [AM Handoff](../handoffs/active/attention-matching-kv-compaction.md) -- Compaction validated on Q4KM Coder-32B, stacking hypothesis
-- [TriAttention Handoff](../handoffs/active/attention-matching-kv-compaction.md#track-triattention-kv-selection) -- Selection + quantization stacking gates (S3)
+- [AM Handoff](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) -- Compaction validated on Q4KM Coder-32B, stacking hypothesis
+- [TriAttention Handoff](../handoffs/active/long-context-program.md#track-triattention-kv-selection) -- Selection + quantization stacking gates (S3)
 - [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- Double compression pipeline, bartowski GGUF availability
 - [DFlash Deep-Dive](../research/deep-dives/dflash-dart-diffusion-speculation.md) -- the Q4_K_M hidden-state degradation hypothesis (paper 6.49 tokens-per-round vs our 27% per-token — different units; the causal reading is not established, corrected 2026-09-23)
 - [REAP Deep-Dive](../research/deep-dives/0xsero-reap-ecosystem-deep-dive.md) -- bartowski 26 quant variants, double compression pipeline, GGUF conversion path

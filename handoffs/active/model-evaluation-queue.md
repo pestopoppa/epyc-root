@@ -1110,7 +1110,7 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
       None may start before G18 passes; each is listed with the handoff that would own it if it does.
       **(a) Throughput.** Decode and prefill t/s for SALA Q4_K_M on EPYC at 4K / 32K / 128K against the
       production frontdoor, and on MI210 HIP. Owner if opened:
-      [multiscreen-attention-evaluation.md](attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation).
+      [multiscreen-attention-evaluation.md](long-context-program.md#track-multiscreen-attention-evaluation).
       **(b) NoLiMa adjudication.** The paper's Table 3 reports 128K = 23.86; an unmerged NoLiMa
       leaderboard PR submitted by an account whose handle matches a SALA co-author reports **40.9** for
       the same model on the same benchmark, and lists an *effective length of 4K* for a model marketed

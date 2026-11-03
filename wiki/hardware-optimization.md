@@ -5105,7 +5105,7 @@ claim; the next performance-bearing run must prove achieved locality before admi
 
 ### Source References (2026-08-27)
 
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
 - [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-and-contention.md#track-numa-placement-defect-20260730) — T5 locality-gate contract and the live multi-node `--no-mmap` placement witness.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — PID identities, checkpoint provenance, 163-record validation and OpenCode ownership reconciliation.
 
@@ -6483,7 +6483,7 @@ The first low-bit profile measured a Q8_0-to-Q4_K roofline gap (70.2% vs 46.5% f
 
 The post-manifest YaRN CPU leg supplies the relevant measurement: Qwen3.6-35B-A3B decode fell from 20.4 tok/s at 34K to 3.7 tok/s at 253K, while 8K-turn append cost rose about 30× by 351K. YaRN's matched-depth decode cost was at most 4%, so the observed depth curve belongs to attention-at-depth; it does not establish the proposed thread-occupancy explanation. The new DCA one-window comparison remains suggestive against raw extrapolation and inconclusive against YaRN. The post-baseline champion ledger records separate CPU/GPU candidate folds: correctness gates passed, while serving A/B effects were within measured floors or explicitly unpaired and not credible as gains. The Yfa CPU FA fp16-VKQ fix matched the KVU-19 FA harness, but that is a candidate validation result rather than a production-performance claim.
 
-Sources: [AutoKernel all-devices/all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+Sources: [AutoKernel all-devices/all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 
 ### Supplemental source evidence — Oct 3–6 changed files
 
@@ -6816,7 +6816,7 @@ Sources: [agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-
 **Confidence: scoped to cited native records and source controls.**
 
 - G16 greedy native comparisons matched first IDs but failed full UTF-8 byte equality at 2K, 8K, 16K and 24K; this does not resolve the separate NMSE branch or establish causality/promotion. ([G16](../handoffs/active/log-linear-gated-deltanet-readiness.md))
-- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/attention-matching-kv-compaction.md#track-multiscreen-attention-evaluation))
+- C6 static checks cover finite known library aliases; dynamic dispatch remains unknown. Prior GLA and FP16 source audits and preservation checkpoints are source evidence, not new model parity or performance. ([C6](../handoffs/active/rocm-verify-profile-backend.md); [GLA](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port); [multiscreen](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

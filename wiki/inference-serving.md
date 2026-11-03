@@ -1769,7 +1769,7 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/stack-lifecyc
 - [NUMA Orchestrator Deployment](/workspace/handoffs/completed/numa-orchestrator-deployment.md) -- Deployed configuration, round-robin routing, mlock setup
 - [REAP MoE Expert Pruning](/workspace/handoffs/completed/reap-moe-expert-pruning.md) -- historical 246B REAP coding-architect experiment, superseded by live `architect_general` topology
 - [Chapter 08: Cost-Aware Rewards](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) -- Infrastructure error handling, cost normalization per serving role
-- [Attention Matching KV Compaction](/workspace/handoffs/active/attention-matching-kv-compaction.md) -- L1-L4 merged, passive KV compression
+- [Attention Matching KV Compaction](/workspace/handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) -- L1-L4 merged, passive KV compression
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Worker swap to 30B-A3B, registry updates
 - [Qwen3.6 Production Upgrade](/workspace/handoffs/completed/qwen36-production-upgrade.md) -- intake-387/391, drop-in architecture, throughput benchmarks (25.6-76.8 tps), preserve_thinking feature, quality benchmark in progress
 - [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign, per-model serving config discovery (Gemma4/Qwen3.6/M2.7/SG4), SG4-26b Q4KM deprecation, benchmark infrastructure upgrades
@@ -2514,7 +2514,7 @@ scope, not their results.
   consume (cited by the source at its line 257).
 - [earlyoom-oom-protection.md](../handoffs/completed/earlyoom-oom-protection.md) — the deployment
   closure whose optional `--ignore` residual the 2026-07-29 audit re-verified and corrected.
-- [attention-matching-kv-compaction.md](../handoffs/active/attention-matching-kv-compaction.md) —
+- [attention-matching-kv-compaction.md](../handoffs/active/long-context-program.md#track-attention-matching-kv-compaction) —
   Phase-F KVCOMM gate the source keeps as a separate fork from the restore-semantics work.
 - epyc-orchestrator `464aca54` — DS-7 default-template prior-drift guard commit (tests:
   `test_dynamic_stack.py`, `test_stack_templates_v2.py`).

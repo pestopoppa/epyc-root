@@ -13,7 +13,6 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file) | INF-48, EVL-47 |
-| INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | Add exact PrefixRouter-key fingerprints to serving records; rerun KV-1 rolling-window count | — |
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47 |
 | INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion | INF-06, INF-50 |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
@@ -29,7 +28,7 @@
 | INF-48 | rocm verify profile backend | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
 | INF-49 | sarathi serve cpu evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md) | Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2) | — |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
-| INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-58 |
+| INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-58 |
 | INF-61 | model evaluation queue (INF-60-gated) | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Run a same-window n-max 4 vs 8 ABA at np≥2 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna | INF-22 |
 | INF-76 | model evaluation queue (EVL-08-gated) | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain

@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 20,
+      "handoffs": 19,
       "oldest_advance": "2026-09-16",
       "open": 1019
     },
@@ -78,64 +78,6 @@
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 11
-        }
-      ]
-    },
-    "attention-matching-kv-compaction.md": {
-      "blocked": 0,
-      "closed": 18,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 22,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-05",
-      "state": "active",
-      "total": 40,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 7,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 9
-        },
-        {
-          "blocked": 0,
-          "closed": 6,
-          "gates": [],
-          "guarded": 0,
-          "line": 367,
-          "markers": 1,
-          "name": "multiscreen-attention-evaluation",
-          "open": 3
-        },
-        {
-          "blocked": 0,
-          "closed": 5,
-          "gates": [],
-          "guarded": 0,
-          "line": 983,
-          "markers": 1,
-          "name": "streaming-llm-baseline",
-          "open": 3
-        },
-        {
-          "blocked": 0,
-          "closed": 0,
-          "gates": [],
-          "guarded": 0,
-          "line": 1130,
-          "markers": 1,
-          "name": "triattention-kv-selection",
-          "open": 7
         }
       ]
     },
@@ -430,7 +372,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 50,
+      "closed": 51,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -442,7 +384,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 56
+      "total": 57
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1132,7 +1074,7 @@
       "blocked": 15,
       "closed": 221,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 111,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
@@ -1493,6 +1435,76 @@
       "row_id": "INF-33",
       "state": "active",
       "total": 18
+    },
+    "long-context-program.md": {
+      "blocked": 0,
+      "closed": 75,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 56,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-59",
+      "state": "active",
+      "total": 131,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 57,
+          "gates": [
+            "RTG-58"
+          ],
+          "guarded": 0,
+          "line": 17,
+          "markers": 1,
+          "name": "yarn-context-extension-research",
+          "open": 34
+        },
+        {
+          "blocked": 0,
+          "closed": 7,
+          "gates": [],
+          "guarded": 0,
+          "line": 574,
+          "markers": 1,
+          "name": "attention-matching-kv-compaction",
+          "open": 9
+        },
+        {
+          "blocked": 0,
+          "closed": 6,
+          "gates": [],
+          "guarded": 0,
+          "line": 945,
+          "markers": 1,
+          "name": "multiscreen-attention-evaluation",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 5,
+          "gates": [],
+          "guarded": 0,
+          "line": 1561,
+          "markers": 1,
+          "name": "streaming-llm-baseline",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1708,
+          "markers": 1,
+          "name": "triattention-kv-selection",
+          "open": 7
+        }
+      ]
     },
     "loop-owned-fleet-implementation.md": {
       "blocked": 0,
@@ -2647,22 +2659,6 @@
       "row_id": "EVL-47",
       "state": "active",
       "total": 754
-    },
-    "yarn-context-extension-research.md": {
-      "blocked": 0,
-      "closed": 57,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 34,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-59",
-      "state": "active",
-      "total": 91
     }
   },
   "row_id_collisions": {},
@@ -2768,15 +2764,6 @@
       "next_action": "the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file)",
       "track": "agentic rocm kernel authoring"
     },
-    "INF-05": {
-      "deps": [],
-      "handoff": "attention-matching-kv-compaction.md",
-      "id": "INF-05",
-      "index": "inference-research-index.md",
-      "line": 16,
-      "next_action": "Add exact PrefixRouter-key fingerprints to serving records; rerun KV-1 rolling-window count",
-      "track": "attention matching kv compaction"
-    },
     "INF-06": {
       "deps": [
         "INF-48",
@@ -2785,7 +2772,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "index": "inference-research-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
       "track": "autokernel research loop"
     },
@@ -2794,7 +2781,7 @@
       "handoff": "engram-conditional-memory.md",
       "id": "INF-13",
       "index": "inference-research-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "track": "engram conditional memory"
     },
@@ -2803,7 +2790,7 @@
       "handoff": "gemma-challenge-kernel-techniques-v7.md",
       "id": "INF-16",
       "index": "inference-research-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "K10 \u2014 on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop",
       "track": "gemma challenge kernel techniques v7"
     },
@@ -2812,7 +2799,7 @@
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
@@ -2823,7 +2810,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2832,7 +2819,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2843,7 +2830,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 29,
+      "line": 28,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2852,7 +2839,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 30,
+      "line": 29,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -2861,7 +2848,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 31,
+      "line": 30,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2869,10 +2856,10 @@
       "deps": [
         "RTG-58"
       ],
-      "handoff": "yarn-context-extension-research.md",
+      "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2883,7 +2870,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -2895,7 +2882,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "index": "inference-research-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
       "track": "autokernel aggregate candidate (champion)"
     },
@@ -2906,7 +2893,7 @@
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "index": "inference-research-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
@@ -2918,7 +2905,7 @@
       "handoff": "moe-routing-tap-and-locality-measurement.md",
       "id": "INF-72",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "RT-1 (Q38FN) + RT-9 (Q36) traced/analysed, RT-5 gate not met; RT-10 DS41 tap hook (C++), then RT-6/7 on DS41",
       "track": "moe routing locality tap"
     },
@@ -2929,7 +2916,7 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
@@ -2941,7 +2928,7 @@
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -2950,7 +2937,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -2959,7 +2946,7 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
     },
