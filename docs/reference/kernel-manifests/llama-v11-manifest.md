@@ -185,16 +185,18 @@ Stack changes that ride the v11 promotion as ONE change (kernel-promotion step 8
 | R4 `routing_graph` `DOUBLE[1024]` tables | REPL-EMB-R4 | tables at 256 (ALTER or drop/recreate, repopulated), dimension from `src.embedding_dims` | open |
 | R5 BGE-calibrated similarity thresholds | REPL-EMB-R5 | each threshold has a dated sweep on EG2@256 cosines, old BGE value recorded | open |
 
-### INF22-Q38-T48: architect_general serves the t48 recipe bundle (operator decision 2026-11-03)
+### INF22-Q38-T48: the Qwen3.8-Flash-Next UD-IQ4_XS CPU server runs the t48 recipe bundle (operator decision 2026-11-03)
 
 **Decision.** The Q38 recipe comparison (INF-22 M4-Q38-RECIPE-COMPARISON, 2026-11-03) found the `q38fn_canonical_t48` bundle better than the configured `q38fn_configured_t96` on both the C5 baseline and the M4 candidate image: decode +7.2 %, prefill +23-40 %, well outside noise. The operator ruled it is FOLDED INTO THE CHAMPION and ships with the v11 promotion; it is not a separate stack change.
 
 **Stack-change items applied together at the freeze (nothing is applied by this manifest edit).**
-1. `architect_general` (Qwen3.8-Flash-Next UD-IQ4_XS, physical CPU server): threads 96 → 48.
+**Indexed to the MODEL, not a role** (operator 2026-11-03: roles move between models, so a role-indexed recipe would follow the role onto a model it is wrong for). The bundle applies to the CPU physical server of Qwen3.8-Flash-Next UD-IQ4_XS (`/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf`, shard-1 sha256 `5ce89370…e758e71a4`), whichever role(s) it serves; it does not apply to any other model that is bound to architect_general or any other role.
+
+1. That model's CPU server: threads 96 → 48.
 2. Add `GGML_FUSED_DECODE_OFF=1` and `GGML_NOHUGEPAGE_PROCESS=1` to that server's env (the t48 bundle; keep `GGML_FA_SPLIT_KV=0`).
 3. Launch with `--load-threads <claimed cpus>` (V11-002).
 
-**Presence gate.** The candidate stack's compiled launch argv for architect_general shows `-t 48` and the two env keys, read from the compiled registry output, never from prose.
+**Presence gate.** The candidate stack's compiled launch argv for the server whose `-m` is that GGUF shows `-t 48` and the two env keys, read from the compiled registry output, never from prose.
 
 **Re-check at the candidate build.** The evidence is an indicative bare run (n=3 per cell, GPU co-tenant). Re-run the same 12 cells on the final candidate binary; the fold stands if t48 still beats t96 on decode by more than the same-window noise.
 
