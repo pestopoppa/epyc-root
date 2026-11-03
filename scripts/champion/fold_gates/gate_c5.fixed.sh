@@ -65,9 +65,13 @@ say "(a) test-backend-ops -b CPU -o ROPE rc=$rc: $(grep -E 'tests passed' "$HERE
 fi
 say "== (b) fold_gate.py vs $(basename "$BASE")"
 FG=$HERE/fold_gate_$KIND$SUFFIX.log
-/usr/bin/python3 -I "$HERE/fold_gate_src_v4/scripts/kernel_rnd/fold_gate/fold_gate.py" --base-image "$BASE/bin" --new-image "$NEW/bin" \
+FGPY="$HERE/fold_gate_src_v4/scripts/kernel_rnd/fold_gate/fold_gate.py"
+# Vidya source record: only a fold_gate.py that has --record-json (research >= the writer commit); the original pinned v4 copy lacks it.
+RUN=$HERE; REC=(); grep -q -e '--record-json' "$FGPY" && REC=(--record-json "$RUN/fold_gate_record_$KIND$SUFFIX.json")
+/usr/bin/python3 -I "$FGPY" --base-image "$BASE/bin" --new-image "$NEW/bin" \
    --src-repo /mnt/raid0/llm/llama.cpp --base-commit $BASEC --cand-commit $CAND \
-   --expected-changed libllama.so > "$FG" 2>&1; rc=$?
+   --expected-changed libllama.so "${REC[@]}" > "$FG" 2>&1; rc=$?
+# Follow-up (once per run dir, after BOTH kinds): python3 scripts/vidya/cli.py ingest champion-fold-gate --path "$RUN" --as-of <ts> --only-new
 cat "$FG" >> "$OUT"; [ $rc = 0 ] || { say "(b) fold_gate rc=$rc FAIL"; fail=1; }
 if grep -E '^ *EXPECTED +libllama\.so' "$FG" >/dev/null; then say "(b) libllama.so reported EXPECTED (code differs): PASS"; else say "(b) FAIL: libllama.so not reported as changed (is the C5 change compiled in?)"; fail=1; fi
 if grep -E '^ *EXPECTED +libggml' "$FG" >/dev/null; then say "(b) FAIL: a ggml lib changed (C5 touches no ggml code)"; fail=1; fi
