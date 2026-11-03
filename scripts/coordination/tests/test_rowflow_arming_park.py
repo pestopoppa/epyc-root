@@ -136,12 +136,12 @@ class IncidentReplay(Fixture):
         self.assertFalse([l for l in self.lines if l.startswith("DRAIN-HELD")])
 
     def test_replay_from_the_first_failure(self):
-        # tick 1: yarn is healthy as far as the allocator knows -> it is placed first, its arm fails, nothing granted
-        self.assertEqual(self.tick(), [])
-        self.assertEqual(self.armed_calls, [YARN])
-        self.assertTrue([l for l in self.lines if l.startswith("DRAIN-HELD")])
-        # tick 2: yarn is failing to arm -> it holds nobody; the quiet-host row is promoted and granted
+        # tick 1: yarn is healthy as far as the allocator knows -> it is placed first, its arm fails; 2026-11-03 item 7:
+        # the SAME tick re-plans without it and the quiet-host row is promoted and granted (no idle tick)
         out = self.tick()
+        self.assertEqual(self.armed_calls[0], YARN)
+        self.assertTrue([l for l in self.lines if l.startswith("DRAIN-HELD")])
+        self.assertTrue([l for l in self.lines if l.startswith("RE-PLAN same tick: " + YARN)])
         self.assertEqual([r for _, r, _ in out], ["sr6-qwen36-width-w1-retry-20261102"])
         self.assertEqual(rf.status(self.flags, YARN)["state"], "grantable")
         # the quiet row ends; yarn (rank 7) is tried again on the free host until it parks; others are granted meanwhile
@@ -195,9 +195,12 @@ class IdleViolation(Fixture):
         self.assertFalse(self.lines)
 
     def test_allocate_raises_it_on_the_pre_fix_deadlock(self):
-        # pre-fix behaviour (a failing row still holds the drain and is never parked) -> the alert fires on tick 2
+        # pre-fix behaviour (a failing row still holds the drain and is never parked) -> the alert fires on tick 2.
+        # 2026-11-03 item 7: the same-tick re-plan would grant the quiet row after yarn fails; pin it off here so the
+        # alert path itself is still exercised (every row refuses to arm).
         self.row(YARN, 7, GPU_OPT, "gpu", lane="gpu", regions="mi210_0,88-91")
         self.row("quiet", 30, QUIET_OPT, "quiet-host")
+        self.broken = {YARN, "quiet"}
         saved_place, saved_af = rf.placeable, rf.arm_fails_since_pass
         rf.placeable = lambda x, *a, **k: True
         rf.arm_fails_since_pass = lambda *a, **k: []
@@ -207,6 +210,61 @@ class IdleViolation(Fixture):
         finally:
             rf.placeable, rf.arm_fails_since_pass = saved_place, saved_af
         self.assertTrue([l for l in self.lines if l.startswith("IDLE-VIOLATION ALERT 2 ticks")])
+
+    def test_same_tick_replan_grants_the_next_row_when_the_first_fails_to_arm(self):
+        self.row(YARN, 7, GPU_OPT, "gpu", lane="gpu", regions="mi210_0,88-91")
+        self.row("quiet", 30, QUIET_OPT, "quiet-host")
+        out = self.tick()
+        self.assertEqual([r for _, r, _ in out], ["quiet"])
+        self.assertFalse([l for l in self.lines if l.startswith("IDLE-VIOLATION")])
+
+
+class ReviewItem7(Fixture):
+    """2026-11-03 session review item 7: arm-failed rows order last; a non-engine ARMED pid is re-armed; a STOP file
+    holds the row (state `held`, one-line fix) instead of burning the id; the engine parser tolerates unknown flags."""
+
+    def test_arm_failed_rows_sort_after_every_healthy_row(self):
+        healthy = {"id": "b", "kind": "grant", "rank": 50, "lane_count": 3, "arm_fails": 0}
+        failing = {"id": "a", "kind": "grant", "rank": 1, "lane_count": 0, "arm_fails": 1}
+        self.assertEqual([c["id"] for c in sorted([failing, healthy], key=rf.plan_order)], ["b", "a"])
+
+    def test_armed_pid_without_a_filler_engine_is_rearmed_not_trusted(self):
+        rid = "row-x"
+        d = self.row(rid, 10, QUIET_OPT, "quiet-host")
+        rf.atomic_json(rf.armed_path(self.flags, rid), {"id": rid, "pid": os.getpid(), "regions": d["regions"], "at": rf.now_iso()})
+        self.assertFalse(rf.armed_engine_ok(os.getpid(), rid))   # this test process runs no filler_run*.sh
+        st = rf.status(self.flags, rid)
+        self.assertEqual(st["state"], "grantable")
+        self.assertIn("re-armed", st["rearm"])
+        self.tick()
+        self.assertEqual(self.armed_calls, [rid])
+        self.assertTrue([l for l in self.lines if l.startswith(f"RE-ARM {rid}")])
+
+    def test_stop_file_holds_the_row_with_a_one_line_fix(self):
+        rid = "row-stop"
+        d = self.row(rid, 10, QUIET_OPT, "quiet-host")
+        sf = os.path.join(self.flags, rid + ".STOP")
+        d["stop_file"] = sf
+        rf.atomic_json(rf.ready_path(self.flags, rid), d)
+        open(sf, "w").close()
+        st = rf.status(self.flags, rid)
+        self.assertEqual(st["state"], "held")
+        self.assertEqual(st["fix"], f"rm {sf}")
+        self.assertEqual(self.tick(), [])
+        self.assertEqual(self.armed_calls, [])
+        os.remove(sf)
+        self.assertEqual(rf.status(self.flags, rid)["state"], "grantable")
+        self.assertEqual([r for _, r, _ in self.tick()], [rid])
+
+    def test_engine_parser_tolerates_an_unknown_flag(self):
+        gate = rf._gate()
+        argv = ["bash", "/x/filler_run15.sh", "--id", "r1", "--class", "cpu", "--cmd", "true", "--min-window", "600",
+                "--stop", "/x/STOP", "--complete-cmd", "true", "--new-flag-from-a-newer-engine", "--self-claim"]
+        o = gate.parse_engine(argv)
+        self.assertIsNotNone(o)
+        self.assertEqual(o["id"], "r1")
+        self.assertTrue(o["self_claim"])
+        self.assertEqual(o["unknown"], ["--new-flag-from-a-newer-engine"])
 
 
 if __name__ == "__main__":

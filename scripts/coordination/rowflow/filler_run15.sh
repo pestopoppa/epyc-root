@@ -255,7 +255,10 @@ run_one() {
   [ ! -e "$ENDED" ] || { log "REFUSED: .ended exists; use new id"; return 66; }
   if ! parse_regions "$regions"; then write_ended 2 "regions-unusable-for-$ID($CLASS):$regions"; return; fi
   if [ $(( e - now )) -lt "$MINWIN" ]; then write_ended 3 "window-$(( e - now ))s-below-min-$MINWIN"; return; fi
-  if [ -e "$STOPFILE" ]; then write_ended 0 "stop-file-before-start"; return; fi
+  # 2026-11-03 session review item 7: a STOP file at grant time is RETRYABLE - the grant is released and the id stays
+  # usable (the allocator shows the row as `held` and does not re-grant it while the STOP file exists); it used to write
+  # .ended, which burned the id and left the poller spinning on "REFUSED: .ended exists" (85k lines).
+  if [ -e "$STOPFILE" ]; then rm -f "$GRANT"; log "STOP present before start: grant released, id kept; fix: rm $STOPFILE"; GRANT_WAIT=$POLL; return 9; fi
   if [ -n "$PRECOND_CMD" ]; then
     local pout prc; pout=$( cd "$WORKDIR" && bash -c "$PRECOND_CMD" 2>&1 ); prc=$?
     if [ $prc -ne 0 ]; then write_ended 5 "build-missing:$(printf '%s' "$pout" | head -n1 | tr -c '[:print:]' ' ' | cut -c1-160)"; return; fi
@@ -382,6 +385,9 @@ while :; do
   lm_attempt_end "$rc"
   [ "$rc" = 70 ] && exit 70
   [ $rc = 20 ] && exit 0
+  # 2026-11-03: rc=66 means the id is terminal (.ended exists); the grant can never be consumed - release it and exit
+  # instead of re-reading it every poll (r3 poller: 85,235 REFUSED lines, ~10% of a core, grant shown as held).
+  [ "$rc" = 66 ] && { rm -f "$GRANT"; log "terminal id (.ended exists): grant released, poller exiting; fix: publish a new row id"; exit 66; }
   if [ "${STARTED_ONE:-0}" = 1 ] && [ $REPEAT = 0 ]; then log "one window done; exiting (no --repeat)"; exit 0; fi
   if [ $rc = 9 ]; then w=$GRANT_WAIT; [ "$w" -gt "$POLL" ] && w=$POLL; sleep_poll "$w"; fi
 done

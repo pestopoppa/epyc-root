@@ -159,7 +159,10 @@ def parse_engine(argv: list[str]) -> dict | None:
             o[{"--self-claim": "self_claim", "--no-fold-siblings": "nofold"}.get(a, a[2:])] = True
             i += 1
         else:
-            return None  # the engine exits 64 on an unknown arg: this argv is not a live engine
+            # 2026-11-03 session review item 7: an unknown flag is the PARSER lagging the engine, not proof that this is
+            # no engine (the live poller already logged 'launcher up pid='); recorded, skipped, never a rc=15 refusal.
+            o.setdefault("unknown", []).append(a)
+            i += 1
     return o
 
 
