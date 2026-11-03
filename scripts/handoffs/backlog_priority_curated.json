@@ -43,7 +43,6 @@
   "EVL-05": 0.3,
   "EVL-29": 0.3,
   "EVL-52": 0.3,
-  "REV-03": 0.3,
   "REV-06": 0.3,
   "UFH-01": 0.3,
   "PIP-04": 0.3,
@@ -151,7 +150,9 @@
   "INF-16#frontier-f6-upstream-publication": 0.3,
   "INF-16#llama-cpp-dsa-contribution": 0.35,
   "EVL-10#repl-session-memory-maturity": 0.25,
-  "EVL-10#unified-trace-memory-service": 0.3
+  "EVL-10#unified-trace-memory-service": 0.3,
+  "REV-06#reviewer-calibration-accounting": 0.3,
+  "REV-06#reviewer-typed-artifacts": 0.2
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -167,7 +168,6 @@
   "RTG-29": "operator decision or approval pending",
   "RTG-36": "operator decision or approval pending",
   "EVL-49": "operator decision or approval pending",
-  "REV-09": "operator decision or approval pending",
   "INF-45": "operator stack bring-up event (stack is DOWN)",
   "EVL-14#eval-benchmark-cost-reduction": "external: upstream PR / artifact / disk reclaim",
   "RTG-22#amd-ai-lab-website-publication": "operator decision or approval pending",
@@ -197,7 +197,8 @@
   "RTG-02#orchestration-robustness-audit-2026-07-11": "operator decision or approval pending",
   "RTG-02#scaffold-autopilot-cost-lever-deployment": "operator decision or approval pending",
   "EVL-04#promptforge-mutation-safety-contract": "operator decision or approval pending",
-  "INF-03#mi210-q8-dequant-gemv-roofline": "operator decision or approval pending"
+  "INF-03#mi210-q8-dequant-gemv-roofline": "operator decision or approval pending",
+  "REV-06#reviewer-typed-artifacts": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",

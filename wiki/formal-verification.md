@@ -492,7 +492,7 @@ verification-failure-catalogue.md`), which is what makes the two records one the
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
   SC61/SC69-73 closure text (placement decisions, carried-field design, mutation companions,
   live-ledger smoke at frontier 13,141), and the SC47/48/SC56-60 context rows.
-- [`reviewer-calibration-accounting.md`](../handoffs/active/reviewer-calibration-accounting.md) —
+- [`reviewer-calibration-accounting.md`](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-calibration-accounting) —
   RC-11/RC-12: the audit's origin in intake-1307's selection-on-the-certification-sample finding,
   the 16-threshold enumeration, the violation classes and the OK class.
 - [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the full 16-threshold
@@ -517,7 +517,7 @@ Three conclusions must remain separate. Build success shows that the artifact co
 - [Formal artifact reproducibility trigger record](../handoffs/archived/formal-artifact-reproducibility.md)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
 
 **Confidence:** verified for the repository workflow and prospective evidence contract; external theorem and benchmark claims remain unverified until FAR-1 and FAR-2 produce receipts.
 

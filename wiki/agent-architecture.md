@@ -4271,7 +4271,7 @@ collapsing into one self-justifying channel.
 
 - [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
 - [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
 - Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
 
@@ -4889,7 +4889,7 @@ Provider-owned inner loops remain provider-owned unless the protocol exposes a c
 - [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md)
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md)
 - [Decision-aware routing](../handoffs/active/decision-aware-routing.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
 
 **Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
@@ -4913,7 +4913,7 @@ never grants permission, and a valid model choice cannot execute a changed or un
 - [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 owner and consumer boundary.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
 - [Typed decision plane](../handoffs/active/typed-decision-plane.md) — selector and shadow consumers.
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md) — review-side prepared-action consumer.
+- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
 
 **Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
 

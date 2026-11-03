@@ -6,7 +6,7 @@ root repo, so this validator stages each fixture row as a normal file in a
 temporary git repository and compares the hook's block/pass behavior with the
 fixture's expected_match field.
 
-REPORTING CONTRACT (RC-11, handoffs/active/reviewer-calibration-accounting.md).
+REPORTING CONTRACT (RC-11, handoffs/active/reviewer-latency-and-sampling-budget.md).
 This validator used to print one aggregate, `passed/total`. That number merged
 two errors with opposite costs: a secret the hook let through, and clean text
 the hook refused. The 39/40 -> 42/42 repair of 2026-08-25 was a pure over-block

@@ -7,7 +7,7 @@ and nothing else. It emits a literal DESCRIPTION of what the artifact does and a
 compares that description against the original ask. The auditor never sees the ask, so it cannot
 accidentally agree with it.
 
-THREE PROPERTIES ARE LOAD-BEARING (handoffs/active/reviewer-typed-artifacts.md § RA-13). Remove any
+THREE PROPERTIES ARE LOAD-BEARING (handoffs/active/reviewer-latency-and-sampling-budget.md § RA-13). Remove any
 one and this degenerates into decomposition-by-ROLE, which project doctrine ratified *against*
 (`OPERATING_CONSTRAINTS.md` -> *Parallel Subagent Fan-Out*, *When NOT to fan out*):
 

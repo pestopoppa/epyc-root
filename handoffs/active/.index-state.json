@@ -20,7 +20,7 @@
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
-      "handoffs": 6,
+      "handoffs": 4,
       "oldest_advance": "2026-07-29",
       "open": 26
     },
@@ -501,9 +501,9 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 37,
+      "closed": 38,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 11,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 48
+      "total": 49
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -2123,22 +2123,6 @@
       "state": "active",
       "total": 7
     },
-    "reviewer-calibration-accounting.md": {
-      "blocked": 2,
-      "closed": 11,
-      "guarded": 0,
-      "last_advanced": "2026-10-06",
-      "open": 3,
-      "owner_index": "reviewer-control-plane-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "REV-03",
-      "state": "active",
-      "total": 16
-    },
     "reviewer-escalation-and-human-gate-policy.md": {
       "blocked": 5,
       "closed": 3,
@@ -2156,11 +2140,11 @@
       "total": 12
     },
     "reviewer-latency-and-sampling-budget.md": {
-      "blocked": 3,
-      "closed": 3,
+      "blocked": 5,
+      "closed": 31,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 4,
+      "open": 8,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2169,7 +2153,39 @@
       },
       "row_id": "REV-06",
       "state": "active",
-      "total": 10
+      "total": 44,
+      "tracks": [
+        {
+          "blocked": 3,
+          "closed": 3,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 4
+        },
+        {
+          "blocked": 2,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 107,
+          "markers": 1,
+          "name": "reviewer-calibration-accounting",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 17,
+          "gates": [],
+          "guarded": 0,
+          "line": 366,
+          "markers": 1,
+          "name": "reviewer-typed-artifacts",
+          "open": 1
+        }
+      ]
     },
     "reviewer-model-ablations.md": {
       "blocked": 2,
@@ -2186,22 +2202,6 @@
       "row_id": "REV-07",
       "state": "active",
       "total": 25
-    },
-    "reviewer-typed-artifacts.md": {
-      "blocked": 0,
-      "closed": 17,
-      "guarded": 0,
-      "last_advanced": "2026-09-16",
-      "open": 1,
-      "owner_index": "reviewer-control-plane-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "REV-09",
-      "state": "active",
-      "total": 18
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
@@ -2992,15 +2992,6 @@
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
       "track": "glm52 reviewer capability gates"
     },
-    "REV-03": {
-      "deps": [],
-      "handoff": "reviewer-calibration-accounting.md",
-      "id": "REV-03",
-      "index": "reviewer-control-plane-index.md",
-      "line": 14,
-      "next_action": "RC-10 \u2014 specify candidate-distribution adapter preserving EV-15b/c semantics; RC-8 live baseline remains corpus-gated",
-      "track": "reviewer calibration accounting"
-    },
     "REV-05": {
       "deps": [
         "UFH-01"
@@ -3008,7 +2999,7 @@
       "handoff": "reviewer-escalation-and-human-gate-policy.md",
       "id": "REV-05",
       "index": "reviewer-control-plane-index.md",
-      "line": 15,
+      "line": 14,
       "next_action": "Implement prospective HG5 request-event writer/reader; retain owner runtime and quality gates",
       "track": "reviewer escalation and human gate policy"
     },
@@ -3017,7 +3008,7 @@
       "handoff": "reviewer-latency-and-sampling-budget.md",
       "id": "REV-06",
       "index": "reviewer-control-plane-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "LB-1 \u2014 Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing",
       "track": "reviewer latency and sampling budget"
     },
@@ -3028,18 +3019,9 @@
       "handoff": "reviewer-model-ablations.md",
       "id": "REV-07",
       "index": "reviewer-control-plane-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "RM-2 \u2014 finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge",
       "track": "reviewer model ablations"
-    },
-    "REV-09": {
-      "deps": [],
-      "handoff": "reviewer-typed-artifacts.md",
-      "id": "REV-09",
-      "index": "reviewer-control-plane-index.md",
-      "line": 18,
-      "next_action": "RA-13a \u2014 run the N=20 blind read-back pilot after the existing operator gate",
-      "track": "reviewer typed artifacts"
     },
     "RTG-02": {
       "deps": [],

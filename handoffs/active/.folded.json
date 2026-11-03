@@ -377,6 +377,14 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "repo-readiness-scorer"
   },
+  "reviewer-calibration-accounting.md": {
+   "target": "reviewer-latency-and-sampling-budget.md",
+   "track": "reviewer-calibration-accounting"
+  },
+  "reviewer-typed-artifacts.md": {
+   "target": "reviewer-latency-and-sampling-budget.md",
+   "track": "reviewer-typed-artifacts"
+  },
   "rlm-contested-claims-self-evaluation.md": {
    "target": "benchmark-suites.md",
    "track": "rlm-contested-claims-self-evaluation"
@@ -719,6 +727,14 @@
   "PIP-05": {
    "target": "PIP-04",
    "track": "opendataloader-pipeline-integration"
+  },
+  "REV-03": {
+   "target": "REV-06",
+   "track": "reviewer-calibration-accounting"
+  },
+  "REV-09": {
+   "target": "REV-06",
+   "track": "reviewer-typed-artifacts"
   },
   "RTG-01": {
    "target": "EVL-08",

@@ -3500,7 +3500,7 @@ Vidya source registration records where future native artifacts enter the belief
 ### Source References
 
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 - [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
 

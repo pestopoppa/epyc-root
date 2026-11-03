@@ -537,7 +537,7 @@ correction first) is dispatchable now.
       scored** (filed 2026-08-19 via research intake, operator-approved Stage-3 plan
       `cuddly-sauteeing-cherny`). RM-11a/RM-11b in
       [`reviewer-model-ablations.md`](reviewer-model-ablations.md) and RC-10 in
-      [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md) will produce verifier
+      [`reviewer-calibration-accounting.md`](reviewer-latency-and-sampling-budget.md#track-reviewer-calibration-accounting) will produce verifier
       gain, recovery rate, within-prompt correlation, tie rate and reviewer solve-accuracy — a
       measurement class this substrate does not currently carry. The nearest existing row is the
       eval-tower per-suite resolution band (SC37), which measures *instrument resolution*, not verifier
