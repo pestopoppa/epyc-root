@@ -923,7 +923,7 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
 - [x] AW-1..AW-5 env_synth module, 5th-species wiring, gap diagnosis, safety gate, EvalTower projection (NIB2-44) ✅
 - [ ] AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental persistence
 - [ ] AW-7: pull obiwan96/endless-terminals dataset + PPL checkpoints; re-eval TB-2.0 transfer gap
-- [ ] AW-8: gemma4-26B-A4B-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr)
+- [ ] AW-8: Qwen3.6-35B-A3B-MTP-Q8_0-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr) (re-scoped 2026-11-03 from gemma4-26B-A4B: deleted 2026-09-23)
 - [ ] AW-8 Phase 1.5: corroboration probe on released Agent-World-8B/14B weights (SWE-Bench/GAIA)
 - [ ] AW-9 (GPU-gated): multi-env GRPO training, deferred on MI210 GRPO smoke
 
@@ -1430,7 +1430,7 @@ contaminated `results-readfix7` is itself a reminder to preflight backend health
 
 _Via `/research-intake` Stage-4 (intake-916/917). **Not** a reopening of the model-swap question — the diagnosis above stands and model choice remains MOOT for the BEP-2 protocol gap. This only pins the artifact to use if a coder-role quality A/B is authorized for other reasons._
 
-- [ ] **If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor.** This avoids a bf16 download plus conversion (~100 GB against ~180 GB free, with `/mnt/raid0/llm` at 95%). **Do NOT bundle the APEX-MTP variant into the quality A/B** — a base-trunk MTP head on a fine-tuned trunk is a separate, unmeasured question and would confound the quality axis with a spec-dec axis.
+- [x] **If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor.** This avoids a bf16 download plus conversion (~100 GB against ~180 GB free, with `/mnt/raid0/llm` at 95%). **Do NOT bundle the APEX-MTP variant into the quality A/B** — a base-trunk MTP head on a fine-tuned trunk is a separate, unmeasured question and would confound the quality axis with a spec-dec axis. [declined: operator 2026-11-03 model-audit: conditional rider never authorized; BEP-2 gap was protocol, coder-role model choice MOOT; bartowski Q8_0 not on disk]
 
 #### Progress checklist
 

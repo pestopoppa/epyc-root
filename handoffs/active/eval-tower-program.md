@@ -3274,16 +3274,16 @@ already has bare-letter handling).
       oracle patch-gen (SEARCH/REPLACE → diff conversion) + official docker eval for all three arms; results
       in 2b above. Harness caveat for paired stats: empty-patch instances are absent from the report's
       resolved/unresolved lists — score over the FULL slice (empty = fail) or the pairing silently shrinks.
-- [ ] **2b-confirm. SWE A3-vs-A4 expansion (SEQUENCED AFTER Laguna, operator 2026-07-24).** Expand the
+- [x] **2b-confirm. SWE A3-vs-A4 expansion (SEQUENCED AFTER Laguna, operator 2026-07-24).** Expand the
       gold-calibrated slice 40→150+ (docker gold-validation CPU-side), rerun A3+A4 only → decision-grade
-      confirmation of the +17.5pp p=0.039 (uncorrected, ~12 comparisons today — needs confirmation).
-- [ ] **2b-laguna. Fold Laguna-S-2.1 into the candidate process — ⛔ BLOCKED (operator 2026-07-24): needs a
+      confirmation of the +17.5pp p=0.039 (uncorrected, ~12 comparisons today — needs confirmation). [declined: operator 2026-11-03 model-audit: A3 (Qwen3.6-27B) deleted; powered A3-vs-A4 confirmation SHELVED in model-evaluation-queue; sequenced after the retired Laguna box]
+- [x] **2b-laguna. Fold Laguna-S-2.1 into the candidate process — ⛔ BLOCKED (operator 2026-07-24): needs a
       small llama.cpp kernel upgrade first (inference-research work, OPERATOR-OWNED — do NOT start bring-up
       until the operator green-lights; experimental-branch workflow applies per CLAUDE.md).** On disk:
       `models/Laguna-S-2.1-GGUF/` — UD-IQ2_M **34.7GB (fits MI210)**, Q4_K_M 70GB (CPU-side), and a 2.1GB
       **DFlash BF16 drafter** (own spec-dec path!). Steps: (1) runbook §3 config discovery — bring-up, MTP/
       DFlash spec-dec sweep, optimal serving block → registry; (2) **SWE-oracle 40-slice first** (the
-      architect-relevant rung); (3) LCB-hard, then decide BCB-hard; full runbook later if warranted.
+      architect-relevant rung); (3) LCB-hard, then decide BCB-hard; full runbook later if warranted. [declined: operator 2026-11-03 model-audit: Laguna-S-2.1 weights not on disk; Laguna evaluated and sealed in model-evaluation-queue L-IQ2; no Laguna role]
 - [x] **2b-agentic-build. Agentic SWE harness BUILT + mock-tested (subagent).** ✅ 2026-07-24 — research
       `d476b318`: `scripts/benchmark/agentic_swe_harness.py` + tests (16/16 green, verified independently).
       Multi-turn bash/edit(SR)/done loop in the instance container, NO-oracle prompting, turn/wall/cmd
@@ -3307,7 +3307,7 @@ already has bare-letter handling).
       (e.g. django__django-11099 container from the cached gold images) + one served arm via the provided
       CLI (`--dry-run` first); verify /testbed clean-at-base assumption; then a 10-instance pilot before any
       3-arm agentic comparison. Waits for GPU free post-Laguna-kernel work.
-      Orchestrator-REPL variant (audit Q3) remains the production-path option.
+      Orchestrator-REPL variant (audit Q3) remains the production-path option. (re-scoped 2026-11-03 from Laguna-kernel dependency: Laguna retired; served arm now Qwen3.8-27B)
 - [x] **2b-agentic-capture. Lossless trajectory evidence + live integrity gate.** ✅ 2026-07-26 — Full
       assistant replies and pre-context-truncation tool observations are now always persisted with UTF-8
       sizes and SHA-256 identities. Per-turn live status exposes anomalies; a companion `capture-status.json`

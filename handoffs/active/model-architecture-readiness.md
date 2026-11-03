@@ -203,12 +203,12 @@ with ~0.8 %. That is the shape of the branch, and no row of it is free.
 
 ##### Next actions now that the gates have fired
 
-- [ ] Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused_recurrent'`
+- [x] Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused_recurrent'`
       branch in a local clone, and confirm it reproduces the chunk path's logits on a short prompt. This is the
       numerical oracle every later ggml step is checked against; without it the port has no reference output.
-      **CPU-only, no GPU needed** (pure PyTorch, ≈796 M params f32 ≈ 3.2 GB).
-- [ ] Write the GGUF converter tensor map from the 423-name safetensors header; the only non-GDN names are
-      `attn.L`, `attn.l_proj.weight` and the level count, so it is standard-GDN mapping plus two entries.
+      **CPU-only, no GPU needed** (pure PyTorch, ≈796 M params f32 ≈ 3.2 GB). [declined: operator 2026-11-03 model-audit: operator 2026-11-02: wait for a production-scale log-linear GDN; 795M research checkpoint not deployable]
+- [x] Write the GGUF converter tensor map from the 423-name safetensors header; the only non-GDN names are
+      `attn.L`, `attn.l_proj.weight` and the level count, so it is standard-GDN mapping plus two entries. [declined: operator 2026-11-03 model-audit: operator 2026-11-02: wait for a production-scale log-linear GDN; port parked with the oracle]
 - [ ] Re-scope plan step 4 below: `ggml_log_linear_state_update()` is the `cascade_weak()` counter machine plus
       the existing delta-rule update; `ggml_log_linear_attention()` is `step_output()` = a λ-weighted contraction
       over the level axis. Neither needs the L×L level LUT.
@@ -970,9 +970,9 @@ _Via `/research-intake` Stage-4 (intake-888 CORE, intake-930 ReasoningBank, inta
 
 - [x] Track A LongCat CPU probe closed NEGATIVE (Phases 0-6 complete, deep-dive + intake-504 recorded) ✅
 - [x] Track B Phase 0a non-inference prep (vendored module, zero-init, identity test, splicing helper) ✅
-- [ ] Track B Phase 0b: rent/allocate GPU (or MI210 smoke) and run frozen-vs-cotrained proxy on SmolLM-1.7B (~$50-150)
+- [ ] Track B Phase 0b: rent/allocate GPU (or MI210 smoke) and run frozen-vs-cotrained proxy on SmolLM-1.7B (~$50-150) (re-scoped 2026-11-03 from downstream Qwen3.6 surgery target superseded by Qwen3.8-27B (Qwen3.6-27B deleted); SmolLM-1.7B proxy not on disk)
 - [ ] Track B Phase 0b: build canonicalizer, train both configs on 5-20B tokens, compute >=30% recovery-ratio gate
-- [ ] If gate B0 passes: file engram-retrofit-qwen36-spike.md and proceed to Phase 1-4 Qwen3.6 surgery
+- [ ] If gate B0 passes: file engram-retrofit-qwen36-spike.md and proceed to Phase 1-4 Qwen3.8-27B surgery (re-scoped 2026-11-03 from Qwen3.6-27B surgery target: deleted; now Qwen3.8-27B)
 
 #### 2026-08-03 — intake Stage-2/2b: the memory cluster, and where its value actually is
 

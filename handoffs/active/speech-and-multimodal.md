@@ -471,10 +471,10 @@ No boxes until the operator opens this. Recorded constraints for when it opens:
   - KVU-11c (qwentts thread flag) **stays in RTG-57**, because it matters only for a CPU speech path.
 
 - [ ] **CS-43 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as hygiene. Moved 2026-09-24 from `multimodal-pipeline.md` S-14. It is operator-sanctioned and does not depend on our kernel cycle.
-- [ ] **CS-44 — keep the Qwen-Audio-3.0 open-weights watch.** Moved 2026-09-24 from `multimodal-pipeline.md` (intake-826#record).
+- [x] **CS-44 — keep the Qwen-Audio-3.0 open-weights watch.** Moved 2026-09-24 from `multimodal-pipeline.md` (intake-826#record).
   - Re-intake if Alibaba publishes weights or technical details.
   - If it lands, add it to the CS-8 bake-off as a challenger.
-  - The same applies to a Qwen3.5-Omni open-weight "Light" release, which is unverified on the HF Qwen org as of 2026-09-24.
+  - The same applies to a Qwen3.5-Omni open-weight "Light" release, which is unverified on the HF Qwen org as of 2026-09-24. [declined: operator 2026-11-03 model-audit: operator: Qwen-Audio-3.0 open-weights watch declined]
 
 ## Dependency graph
 

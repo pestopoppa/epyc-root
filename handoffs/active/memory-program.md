@@ -397,13 +397,13 @@ failure caught in amber.
       - B1, B2, B3 closed on research `sub/m12-blockers-20260916` (`b69be5b2`, `3f16537d`, `ec7fb4ab`; review
         fixes `06ae638d`), merged to research `main` at `cfbfa448`; root SC67/SC68 updates merged with
         `sub/m12-blockers-root-20260916`.
-      - B4: judge = `gemma-4-26B-A4B-it-ORIG-Q8_0` (operator 2026-09-16), recipe
+      - B4: judge = `Qwen3.8-27B-Q8_0` (re-scoped 2026-11-03; was `gemma-4-26B-A4B-it-ORIG-Q8_0`, operator 2026-09-16), recipe
         `eval/gemma-4-26b-a4b-orig-q8-gpu-judge-np4`.
       - B5: recipe + smoke `a6491b9e`, `docs/m12-long-context-gpu-recipe.md`. **M-12 GPU window deferred by the
         operator 2026-09-16**; `smoke_prefix_reuse.sh` (`a6491b9e`) is ready for when it resumes.
       - B6: the merge list now also covers these two branches — both merged (research `cfbfa448`).
       - B7: add `pandas` to the research `.venv` (`uv sync --extra benchmark`, which also realigns pyarrow to
-        24.0.0) — see M-12j.
+        24.0.0) — see M-12j. (re-scoped 2026-11-03 from judge gemma-4-26B-A4B-it-ORIG-Q8_0: deleted; judge now Qwen3.8-27B-Q8_0 (GPU), recipe to be re-pinned and held fixed across arms)
   - [x] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
         chapters=200 (`tulving_episodic_adapter.py:_select_target_qa_files` at :463 already resolves
         this to the 196ch parquet on disk). Three prompt-matched arms: memory-OFF (question +

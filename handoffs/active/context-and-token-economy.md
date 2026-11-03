@@ -676,10 +676,10 @@ Sawtooth / duplicate-processing argument, banked for the summarize-family cluste
 
 - [x] S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅
 - *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-memento-block-reasoning-compression on 2026-11-03 (BRF-T1-MEQ, operator D2): "S2 Stage-1 format-learning smoke on Qwen3-0.6B …".*
-- [ ] S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)
+- [x] S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)
       ⚠️ **Feasibility unproven — see the corrected ladder above.** At the measured 4.74 s/sample the
       0.6B *smoke* model implies ~301 h/epoch at seq 1024; the 1.7B "validation target" is not a
-      validation target on CPU under those numbers. Re-derive before scheduling.
+      validation target on CPU under those numbers. Re-derive before scheduling. [declined: operator 2026-11-03 model-audit: CPU LoRA training infeasible per its own measurement (~301 h/epoch at the 0.6B smoke model)]
 - [x] Install peft/trl; run memento_sft.py real Stage-1 job ✅ 2026-08-12 — shared persistent venv at
       `/mnt/raid0/llm/venvs/ml-training` (torch 2.13.0+cpu, transformers 5.15.0, peft 0.20.0, trl 1.9.2).
       Deliberately **not** under `/tmp`: the earlier GRPO venv was lost to `/tmp` cleanup.

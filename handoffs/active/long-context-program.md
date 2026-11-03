@@ -850,7 +850,7 @@ Online compaction (repeated 50% compactions preserving reasoning state) opens a 
 #### Progress checklist
 
 - [x] P1 port HighestAttnKeys-fast + L1-L4/L4b native llama.cpp integration merged (81c9ad1ec, 7784b3d9c) ✅
-- [ ] P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated
+- [ ] P2 refresh validation against current-stack long-context/coding workload (Qwen3.8-27B + Qwen3.6-35B-A3B-MTP-Q8_0), inference-window-gated (re-scoped 2026-11-03 from Qwen3.6-era + Coder-32B: deleted)
 - [ ] P3 compare AM quality vs Expected Attention at 5x/10x/20x
 - [ ] P4 test AM + Hadamard q4_0 stacking quality under dual compression
 - [ ] Deferred L4c: true NNLS attention scoring (graph modification) - not yet needed
@@ -1700,7 +1700,7 @@ The hybrid/recurrent `can_shift` guard (V11-098, `experimental/hybrid-cache-reus
 - [x] CPU mechanical smoke completed for baseline and StreamingLLM lanes; both passed mechanics but failed prompt-quality, so no admission/performance claim ✅ 2026-07-18
 - [x] Pre-v7 floor/admission sweep completed on Qwen3-1.7B Q8 CPU-only: all arms exited cleanly, no sink/window cluster passed quality+speed floor, and no KV cluster is admitted before v7 promotion ✅ 2026-07-20
 - [ ] Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models — *(2026-08-25: 72-cell design + daemon built and launched by the INF-51 churn session — 3 workloads × 3 budgets × 3 K_win {1024,2048,4096} × 2 models + 6 full-KV baselines + 12 gemma4 F16 controls; harness extended from streamingllm_floor_sweep.py; SWA finding: gemma4 needs `--swa-full` on v9 or context-shift silently disables. Zero cells completed — lease/region held by inf42-g1; daemon reconciled 2026-08-27, relaunch gated on q0-q3 release.)*
-  - Sweep design REWRITTEN 2026-09-07 — before any cell runs, re-read § Spike Plan → *Binding design constraints* (generation ≥4×W, `-c = prefix + W + chunk`, W ∈ {2048,4096,8192} with W=2048 RETAINED, AIME-24+25 pooling, workload-split hypothesis + sink+window control arm, instrument-mismatch rule, paired-recovery reporting) and § Research Intake Update — 2026-09-07. Box unchanged; the design under it is not.
+  - Sweep design REWRITTEN 2026-09-07 — before any cell runs, re-read § Spike Plan → *Binding design constraints* (generation ≥4×W, `-c = prefix + W + chunk`, W ∈ {2048,4096,8192} with W=2048 RETAINED, AIME-24+25 pooling, workload-split hypothesis + sink+window control arm, instrument-mismatch rule, paired-recovery reporting) and § Research Intake Update — 2026-09-07. Box unchanged; the design under it is not. (re-scoped 2026-11-03 from 2 models + gemma4 F16 controls: gemma4 deleted; now Qwen3.8-27B + Qwen3.6-35B-A3B-MTP-Q8_0, gemma4 controls dropped)
 - [ ] Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
 - [ ] Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor
 - [x] Resolve user questions: K_sink/K_win sweep values, F16 KV scope, PBKV order-of-operations ✅ 2026-08-25 — **operator decisions**: (1) full K_win sweep {1024, 2048, 4096} — 54 streaming cells; (2) F16 KV control on gemma4 only (smallest model); (3) PBKV runs in parallel — no sequential gate (lease/region serialization prevents concurrency poisoning; no PBKV spike currently in flight, so the floor still lands first de facto)

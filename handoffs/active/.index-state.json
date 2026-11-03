@@ -1,22 +1,22 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 57,
+      "blocked": 56,
       "handoffs": 12,
       "oldest_advance": "2026-10-30",
-      "open": 1026
+      "open": 1013
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
       "oldest_advance": "2026-11-02",
-      "open": 72
+      "open": 64
     },
     "research-evaluation-index.md": {
-      "blocked": 16,
+      "blocked": 14,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 688
+      "open": 667
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 731
+      "open": 730
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -344,10 +344,10 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 61,
+      "closed": 62,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 69,
+      "open": 68,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -390,13 +390,13 @@
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 1141,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
-          "open": 7
+          "open": 6
         },
         {
           "blocked": 0,
@@ -422,10 +422,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 4,
-      "closed": 143,
+      "closed": 144,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 69,
+      "open": 68,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -458,13 +458,13 @@
         },
         {
           "blocked": 0,
-          "closed": 3,
+          "closed": 4,
           "gates": [],
           "guarded": 0,
           "line": 447,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
@@ -714,10 +714,10 @@
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
-      "closed": 104,
+      "closed": 107,
       "guarded": 0,
       "last_advanced": "2026-10-30",
-      "open": 138,
+      "open": 135,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -818,10 +818,10 @@
     },
     "eval-tower-program.md": {
       "blocked": 8,
-      "closed": 213,
+      "closed": 215,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 65,
+      "open": 63,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -924,13 +924,13 @@
         },
         {
           "blocked": 0,
-          "closed": 28,
+          "closed": 30,
           "gates": [],
           "guarded": 0,
           "line": 3079,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 14
+          "open": 12
         }
       ]
     },
@@ -1228,10 +1228,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 3,
-      "closed": 99,
+      "closed": 107,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 72,
+      "open": 64,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1244,43 +1244,43 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 44,
+          "closed": 45,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 20
+          "open": 19
         },
         {
           "blocked": 1,
-          "closed": 18,
+          "closed": 19,
           "gates": [],
           "guarded": 0,
           "line": 1103,
           "markers": 1,
           "name": "colbert-reranker-web-research",
-          "open": 8
+          "open": 7
         },
         {
           "blocked": 0,
-          "closed": 9,
+          "closed": 13,
           "gates": [],
           "guarded": 1,
           "line": 1850,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 17
+          "open": 13
         },
         {
           "blocked": 0,
-          "closed": 9,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
           "line": 2466,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 16
+          "open": 14
         },
         {
           "blocked": 1,
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 180,
+      "closed": 181,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 62,
+      "open": 61,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1509,13 +1509,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 92,
+          "closed": 93,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 34
+          "open": 33
         },
         {
           "blocked": 2,
@@ -1588,10 +1588,10 @@
     },
     "model-architecture-readiness.md": {
       "blocked": 2,
-      "closed": 25,
+      "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 22,
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1604,7 +1604,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 6,
+          "closed": 8,
           "gates": [
             "INF-48"
           ],
@@ -1612,7 +1612,7 @@
           "line": 12,
           "markers": 1,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 11
+          "open": 9
         },
         {
           "blocked": 1,
@@ -1627,11 +1627,11 @@
       ]
     },
     "model-evaluation-queue.md": {
-      "blocked": 4,
-      "closed": 121,
+      "blocked": 2,
+      "closed": 141,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 112,
+      "open": 94,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1644,23 +1644,23 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 78,
+          "closed": 82,
           "gates": [],
           "guarded": 0,
           "line": 15,
           "markers": 1,
           "name": "model-evaluation-queue",
-          "open": 26
+          "open": 22
         },
         {
-          "blocked": 1,
-          "closed": 2,
+          "blocked": 0,
+          "closed": 4,
           "gates": [],
           "guarded": 0,
           "line": 893,
           "markers": 1,
           "name": "angelslim-techniques-evaluation",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1674,33 +1674,33 @@
         },
         {
           "blocked": 0,
-          "closed": 5,
+          "closed": 6,
           "gates": [],
           "guarded": 0,
           "line": 944,
           "markers": 1,
           "name": "ernie-image-turbo-evaluation",
-          "open": 6
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 7,
+          "gates": [],
+          "guarded": 0,
+          "line": 1043,
+          "markers": 1,
+          "name": "gpu-cot-scaffold-sidecar",
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1043,
-          "markers": 1,
-          "name": "gpu-cot-scaffold-sidecar",
-          "open": 1
-        },
-        {
-          "blocked": 1,
-          "closed": 2,
-          "gates": [],
-          "guarded": 0,
           "line": 1069,
           "markers": 1,
           "name": "lightning-attention-port",
-          "open": 4
+          "open": 1
         },
         {
           "blocked": 2,
@@ -1754,13 +1754,13 @@
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 4,
           "gates": [],
           "guarded": 0,
           "line": 1269,
           "markers": 1,
           "name": "tidar-one-pass-variant-b",
-          "open": 3
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1804,13 +1804,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1316,
           "markers": 1,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1858,23 +1858,23 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1369,
           "markers": 1,
           "name": "meq-carve-frontier-f3-data-flywheel",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1377,
           "markers": 1,
           "name": "meq-carve-tq3-quantization-evaluation",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1950,7 +1950,7 @@
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 10,
           "gates": [
             "INF-22"
           ],
@@ -1958,7 +1958,7 @@
           "line": 1440,
           "markers": 1,
           "name": "gpu-candidates-surface-qwen38-update",
-          "open": 3
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1976,10 +1976,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 3,
-      "closed": 247,
+      "closed": 248,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 97,
+      "open": 96,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2022,13 +2022,13 @@
         },
         {
           "blocked": 1,
-          "closed": 36,
+          "closed": 37,
           "gates": [],
           "guarded": 0,
           "line": 3117,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
-          "open": 9
+          "open": 8
         },
         {
           "blocked": 0,
@@ -2092,11 +2092,11 @@
       ]
     },
     "quantization-and-low-bit.md": {
-      "blocked": 1,
-      "closed": 64,
+      "blocked": 0,
+      "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 43,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2119,23 +2119,23 @@
         },
         {
           "blocked": 0,
-          "closed": 25,
+          "closed": 26,
           "gates": [],
           "guarded": 0,
           "line": 205,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 6
+          "open": 5
         },
         {
-          "blocked": 1,
-          "closed": 18,
+          "blocked": 0,
+          "closed": 21,
           "gates": [],
           "guarded": 0,
           "line": 647,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
-          "open": 15
+          "open": 13
         }
       ]
     },
@@ -2225,10 +2225,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 1,
-      "closed": 334,
+      "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 99,
+      "open": 97,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2266,7 +2266,7 @@
         },
         {
           "blocked": 0,
-          "closed": 22,
+          "closed": 23,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2275,17 +2275,17 @@
           "line": 2998,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 0,
-          "closed": 111,
+          "closed": 112,
           "gates": [],
           "guarded": 0,
           "line": 3403,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 7
+          "open": 6
         },
         {
           "blocked": 0,
@@ -2462,10 +2462,10 @@
     },
     "speech-and-multimodal.md": {
       "blocked": 42,
-      "closed": 119,
+      "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 43,
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2478,13 +2478,13 @@
       "tracks": [
         {
           "blocked": 42,
-          "closed": 74,
+          "closed": 75,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 34
+          "open": 33
         },
         {
           "blocked": 0,

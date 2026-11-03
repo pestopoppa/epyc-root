@@ -1075,9 +1075,9 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   watchdog from falling to fallback args on a missing-dependency death. Robustness work in progress by another ak-ds41-main subagent; close when the relaunched loop runs on the new path.
   - [x] DS41-C113a — declare the two load-bearing worktrees. ✅ 2026-10-04 — `root-main-epyc-root-repo` is git-locked as "load-bearing: DS41 EPYC_ROOT_REPO (INC-20261004)" and `research-ds41-run10` as "load-bearing: DS41 live loop worktree". `scripts/system/worktree_gate.py` (root `837ebf6f`) refuses locked trees and trees named by a live process environment or launcher.
   - [ ] DS41-C113b — the launchers still hardcode the path (`ds41_watchdog{,2,3}.sh`, `swap_*.sh`, `pause_probe_restart.sh`), and none of them fails fast when it is missing. Do the fail-fast check and the watchdog no-fallback change at the next DS41 relaunch. Never edit a running script; copy it to a new name.
-- [ ] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
+- [x] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
   2026-10-04: gate (i), the MXFP4-vs-Q4_K microbench, is a step in CPU window 2 (armed, waiting).
-  2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`).
+  2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`). [declined: operator 2026-11-03 model-audit: superseded by DS41-W5 (vendor 1017 release ships native MXFP4 routed experts (artifact on disk, load validated in DS41-W5))]
   - [x] DS41-C114a — **gate (i) measured: no speed case, quality only.** ✅ 2026-10-04 — c2
     (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/runs/`, MUL_MAT_ID microbench at DS41 expert shapes, t48): MXFP4
     (CPU_REPACK) vs Q4_K (iqk) **×1.00 at N=1, ×1.04 at N=3**. The −2.0%/−3.5% byte saving does not show up as speed;
@@ -1490,7 +1490,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - *(2026-10-21.)* `models/deepseek-ai/DeepSeek-V4.1-Flash-1017-DSpark.gguf` (10,004,006,720 B, sha256
     d9ddd4be…4ebd), converted by research `c11c512f2`; B13 checks pass; loads and spec-decodes on 1017; alpha
     1017 0.582/0.476 vs Sept 0.609/0.486 (blocks 2/3, 16 prompts).
-  - [ ] **DS41-W6.2 — Confirm the 1017-vs-Sept drafter alpha gap with more pairs.** (Numbered W6.2 because
+  - [x] **DS41-W6.2 — Confirm the 1017-vs-Sept drafter alpha gap with more pairs.** (Numbered W6.2 because
     DS41-W6.1 already exists below.) Partial result: n=2 pairs block 2, A−B −1.9 pp, CI [−4.2, −0.0]; n=1 block 3,
     −0.9 pp; research `37cc352cc`. Needs ≥3 more pairs, run one server at a time, plus a greedy identity pass.
     The Sept DSpark drafter is kept until then.
@@ -1510,7 +1510,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       - Dry run PASS.
       - Post-run: `analyze_post.py --agent <id> --commit --push` (paired-t CI over all complete pairs, old plus
         new; it reproduces W6.1 exactly on the old rows; greedy identity p3A vs p3B; it also writes the producer
-        belief rows).
+        belief rows). [declined: operator 2026-11-03 model-audit: run cancelled 2026-10-22; Sept DSpark drafter arm no longer on disk]
 - [ ] DS41-W7 — **Cut over and retire the Sept artifacts.**
   - Update `epyc-inference-research/scripts/lib/deepseek_v41_flash_recipe.py`. The trunk is now a
     9-shard split, so `TRUNK_GGUF` becomes shard 1 plus a shard/sha256 list, following the
@@ -1586,8 +1586,8 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - [ ] **DS41-W8b — in-place / mmap-friendly MXFP4 CPU repack (non-AK engineering).** The repack copies all experts into ~276 GiB of anonymous RAM per server (INC-20261021-earlyoom-session-kills); `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so the repack only reorders bytes and could run in place. AK's `capacity` dimension is a pass/fail guard, so a memory-only win can never be kept by AK. First verify the RssFile figure with `smaps_rollup` (the target runs `--no-mmap`). Experimental branch only; a fold is a champion-owner decision. (filed 2026-10-21)
   - [x] **DS41-W8c — CPU_REPACK correctness gate; NO DS41 keep may land before it is live.** The served-shape layer (a) runs through test-backend-ops, which never runs the repacked `mxfp4_8x8_q8_0` expert kernel (its MXFP4 NMSE = 0.0 is vacuous), and seeds S1–S5 all change that path. Code: research branch `ak-ds41-repack-gate-20261021` @ `63d7b920e` (worktree `/mnt/raid0/llm/tmp/ak-repack-gate-20261021/research`, not yet on main): `autokernel/loop/cpu_repack_cases.py` + `cpu_repack_probe.cpp`, `gates.check_cpu_repack_case_set` (ppl_contract layer (a), the bundle, and every other DS41 CPU keep), new route `cpu_repack_gemv`. It fails closed without `<store>/cpu_repack/manifest.json`. Next: land the branch on research main, then run FILLERS row `ak-ds41-repack-gate` (block-correctness, one quarter): it compiles the probe, calibrates on anchor `06b169e27`, runs the broken-kernel fixture regression, and installs the manifest. Progress: `progress/2026-10/2026-10-21-ak-repack-gate.md`. (filed 2026-10-21, operator "act on this advice")
     ✅ 2026-10-22 — gate ran on q1 (09:57–10:01Z, research 42daa0ac9): calibrate 8 cases / 72 rows OK (max anchor NMSE 2.93e-5, max rel 0.052); anchor check PASS (repack engaged on every case); fixture regression PASS (both broken fixtures caught, engagement negative fired); 43 pytest pass. Manifest installed at `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-1017-cpu-decode-20261021/store/cpu_repack/manifest.json`. Run dir `/mnt/raid0/llm/tmp/ak-repack-gate-20261021/runner/results/`.
-- [ ] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
-  repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log.
+- [x] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
+  repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log. [declined: operator 2026-11-03 model-audit: superseded by DS41-W5 (box written for the deleted Sept Q4 file; 1017 MXFP4 load + coherence smoke already SMOKE_OK 2026-10-21)]
 - [ ] DS41-T2 — Sparse-attention disposition: dense-mask vs sparse gather, and a top-k /
   candidate-block cap semantics probe **before** any quality run (findings 1-2). Correctness
   findings also update INF-31.

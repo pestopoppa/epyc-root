@@ -635,21 +635,21 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T15:45:38Z",
+  "generated_at": "2026-11-03T15:56:03Z",
   "nodes": [
     {
       "age_days": 0,
-      "blocked": 4,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 121,
-      "dispatchable": 112,
+      "closed": 141,
+      "dispatchable": 94,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
       "last_advanced": "2026-11-03",
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
-      "open": 116,
+      "open": 96,
       "priority": 0.8208,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AMS-TCAP-1 \u2014 A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-",
@@ -669,20 +669,20 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 26,
+          "dispatchable": 22,
           "gates": [],
           "line": 15,
           "name": "model-evaluation-queue",
-          "open": 26,
+          "open": 22,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 893,
           "name": "angelslim-techniques-evaluation",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -696,29 +696,29 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
           "line": 944,
           "name": "ernie-image-turbo-evaluation",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 1043,
+          "name": "gpu-cot-scaffold-sidecar",
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1043,
-          "name": "gpu-cot-scaffold-sidecar",
-          "open": 1,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 4,
-          "gates": [],
           "line": 1069,
           "name": "lightning-attention-port",
-          "open": 5,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -768,12 +768,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 0,
           "gates": [],
           "line": 1269,
           "name": "tidar-one-pass-variant-b",
-          "open": 3,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -813,11 +813,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 1316,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -866,21 +866,21 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 1369,
           "name": "meq-carve-frontier-f3-data-flywheel",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 1377,
           "name": "meq-carve-tq3-quantization-evaluation",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -964,13 +964,13 @@
           "blocked_by": [
             "INF-22"
           ],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": [
             "INF-22"
           ],
           "line": 1440,
           "name": "gpu-candidates-surface-qwen38-update",
-          "open": 3,
+          "open": 1,
           "readiness": "blocked"
         },
         {
@@ -992,15 +992,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 61,
-      "dispatchable": 69,
+      "closed": 62,
+      "dispatchable": 68,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
       "last_advanced": "2026-11-02",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
-      "open": 69,
+      "open": 68,
       "priority": 0.7283,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample \u2014 reuse the existing hard-slice construction (n=53",
@@ -1049,11 +1049,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [],
           "line": 1141,
           "name": "multi-file-coding-completion-capability",
-          "open": 7,
+          "open": 6,
           "readiness": "ready"
         },
         {
@@ -1156,15 +1156,15 @@
       "age_days": 1,
       "blocked": 8,
       "blocked_by": [],
-      "closed": 213,
-      "dispatchable": 65,
+      "closed": 215,
+      "dispatchable": 63,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-02",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 74,
+      "open": 72,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -1265,11 +1265,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 12,
           "gates": [],
           "line": 3079,
           "name": "scoring-infra-standardization",
-          "open": 14,
+          "open": 12,
           "readiness": "ready"
         }
       ]
@@ -1565,15 +1565,15 @@
       "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 180,
-      "dispatchable": 62,
+      "closed": 181,
+      "dispatchable": 61,
       "domain": "inference-research",
       "guarded": 1,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-02",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 65,
+      "open": 64,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1593,11 +1593,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 34,
+          "dispatchable": 33,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 34,
+          "open": 33,
           "readiness": "ready"
         },
         {
@@ -1674,15 +1674,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 25,
-      "dispatchable": 22,
+      "closed": 27,
+      "dispatchable": 20,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-11-03",
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 24,
+      "open": 22,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1704,13 +1704,13 @@
           "blocked_by": [
             "INF-48"
           ],
-          "dispatchable": 11,
+          "dispatchable": 9,
           "gates": [
             "INF-48"
           ],
           "line": 12,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 12,
+          "open": 10,
           "readiness": "blocked"
         },
         {
@@ -1728,15 +1728,15 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 247,
-      "dispatchable": 97,
+      "closed": 248,
+      "dispatchable": 96,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-03",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
-      "open": 100,
+      "open": 99,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1783,11 +1783,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [],
           "line": 3117,
           "name": "numa-placement-defect-20260730",
-          "open": 10,
+          "open": 9,
           "readiness": "ready"
         },
         {
@@ -1870,15 +1870,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 334,
-      "dispatchable": 99,
+      "closed": 336,
+      "dispatchable": 97,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-03",
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
-      "open": 100,
+      "open": 98,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1942,23 +1942,23 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2998,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 11,
+          "open": 10,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [],
           "line": 3403,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 7,
+          "open": 6,
           "readiness": "ready"
         },
         {
@@ -2374,15 +2374,15 @@
         "INF-48",
         "RTG-58"
       ],
-      "closed": 104,
-      "dispatchable": 138,
+      "closed": 107,
+      "dispatchable": 135,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "last_advanced": "2026-10-30",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
-      "open": 139,
+      "open": 136,
       "priority": 0.6069,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): DS41-W5d \u2014 1017 baseline + MUL_MAT_ID premise microbench (operator choice \"1017-only + mic",
@@ -2412,15 +2412,15 @@
       "age_days": 1,
       "blocked": 42,
       "blocked_by": [],
-      "closed": 119,
-      "dispatchable": 43,
+      "closed": 120,
+      "dispatchable": 42,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "last_advanced": "2026-11-02",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 85,
+      "open": 84,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -2440,11 +2440,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 34,
+          "dispatchable": 33,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 76,
+          "open": 75,
           "readiness": "ready"
         },
         {
@@ -2460,17 +2460,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
-      "closed": 64,
-      "dispatchable": 43,
+      "closed": 68,
+      "dispatchable": 40,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-02",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 44,
+      "open": 40,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2499,20 +2499,20 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
           "line": 205,
           "name": "iqk-iquant-enablement",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 13,
           "gates": [],
           "line": 647,
           "name": "tq3-quantization-evaluation",
-          "open": 16,
+          "open": 13,
           "readiness": "ready"
         }
       ]
@@ -2521,15 +2521,15 @@
       "age_days": 1,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 99,
-      "dispatchable": 72,
+      "closed": 107,
+      "dispatchable": 64,
       "domain": "pipeline-integration",
       "guarded": 1,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-02",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 76,
+      "open": 68,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2549,38 +2549,38 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 20,
+          "dispatchable": 19,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 20,
+          "open": 19,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [],
           "line": 1103,
           "name": "colbert-reranker-web-research",
-          "open": 9,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 17,
+          "dispatchable": 13,
           "gates": [],
           "line": 1850,
           "name": "document-parser-table-bench",
-          "open": 18,
+          "open": 14,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 14,
           "gates": [],
           "line": 2466,
           "name": "opendataloader-pipeline-integration",
-          "open": 16,
+          "open": 14,
           "readiness": "ready"
         },
         {
@@ -2920,15 +2920,15 @@
       "age_days": 1,
       "blocked": 4,
       "blocked_by": [],
-      "closed": 143,
-      "dispatchable": 69,
+      "closed": 144,
+      "dispatchable": 68,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-02",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 73,
+      "open": 72,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2966,11 +2966,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 447,
           "name": "memento-block-reasoning-compression",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
