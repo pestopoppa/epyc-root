@@ -50,6 +50,7 @@ llama-server (`--embeddings --pooling cls`, production CPU kernel store). The au
 permits socket connects to exactly that loopback host:port and nothing else; the strategy-store copy
 embeds its planner queries through it and fails closed on any error or degenerate vector (no hash
 degrade). With the URL set, B asserts the known conclusion: trial 1472's keep with `2.025` and
-`ingest_triviality_guard` in the assembled prompt, and a non-zero T1 Pareto frontier. PASS exits 0,
+`ingest_triviality_guard` in the assembled prompt, and an assembled frontier section. The T1 count is
+recorded; an empty frontier is the intended post-rebase state and is not a failure. PASS exits 0,
 a missing conclusion exits 1, a dead embedder, assembly error or changed protected state is UNKNOWN
 (exit 2). Without the URL, B is unchanged (UNKNOWN, hash-only).

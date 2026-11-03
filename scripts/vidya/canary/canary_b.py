@@ -584,11 +584,12 @@ keep = any("1472" in "\n".join(lines[max(0,i-4):i+5]) and
            "ingest_triviality_guard" in "\n".join(lines[max(0,i-4):i+5])
            for i in range(len(lines)) if "1472" in lines[i])
 frontier = archive.frontier_size(ap.DEFAULT_FRONTIER_TIER)
+frontier_section = bool(str(sec.get("pareto_summary") or "").strip()) and sec.get("pareto_geometry") is not None and "pareto_summary" not in (summary.get("errors") or {})
 unchanged = {"baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
              "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
              "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
 result = {"loop": "B", "live_embedder": bool(EMBED_URL),
-          "observed_1472_keep_with_numbers": keep, "observed_frontier_count": frontier,
+          "observed_1472_keep_with_numbers": keep, "observed_frontier_count": frontier, "frontier_section_assembled": frontier_section,
           "assembly_errors": sorted((summary.get("errors") or {})),
           "embed_calls": getattr(_embedder, "calls", 0), "embed_errors": EMBED_ERRORS[:3],
           "belief_ready": belief_ready is not None,
@@ -599,11 +600,11 @@ if not EMBED_URL:
 elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors"):
     result.update(status="UNKNOWN", reason="live embedder failed/unused, assembly error, or protected state changed")
     code = 2
-elif keep and frontier > 0:
-    result.update(status="PASS", reason="1472 keep with 2.025 and ingest_triviality_guard present; Pareto count non-zero")
+elif keep and frontier_section:
+    result.update(status="PASS", reason="1472 keep with 2.025 and ingest_triviality_guard present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")
     code = 0
 else:
-    result.update(status="FAIL", reason="known conclusion missing: keep_with_numbers=%s frontier=%s" % (keep, frontier))
+    result.update(status="FAIL", reason="known conclusion missing: keep_with_numbers=%s frontier_section=%s" % (keep, frontier_section))
     code = 1
 print("CANARY_RESULT:", json.dumps(result))
 sys.exit(code)
