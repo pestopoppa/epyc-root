@@ -250,6 +250,8 @@ BUILDERS = {
     "reviewer-fa": _reviewer_fa,
     "typed-decisions-measurement": _typed_decisions,
     "ak-actor-seat": _ak_actor_seat,
+    "ak-actor-wire": lambda tmp: (lambda m: (m.build(tmp), tmp)[1])(
+        _helpers("test_autokernel_actor_wire_adapter")),
     "ufh13-thesis-measurement": _ufh13_thesis,
     "toc-ab": lambda tmp: _helpers("test_prospective_ab_carriers").toc_write(tmp),
     "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
