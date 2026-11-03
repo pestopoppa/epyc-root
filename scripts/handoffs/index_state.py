@@ -156,6 +156,10 @@ _SECTION_END = re.compile(r"^#{1,2}\s")
 _FENCE = re.compile(r"^\s*(```+|~~~+)")
 _GATE_MARK = re.compile(r"^\s*<!--\s*gate:\s*(.*?)\s*-->\s*$")
 _TASK_ID = re.compile(r"^\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*")
+# A `[roll-up]` box is a non-dispatchable parent whose children carry the work. Counting it too
+# double-counts every decomposition; the board's `count_tasks` has always skipped it, so the
+# graph does the same (dashboard counting fix, 2026-11-03) and the two totals agree exactly.
+_ROLLUP = re.compile(r"\[roll-up\]", re.I)
 UNTRACKED = "(untracked)"
 
 
@@ -433,6 +437,8 @@ def scan_handoff(path: Path) -> dict:
 
     open_n = closed_n = guarded_n = blocked_n = 0
     for lineno, state, body, head in brc._boxes(path):
+        if _ROLLUP.search(body):
+            continue                             # roll-up parent: its children are the tasks
         b = bucket(lineno) if sections else None
         if state == "x":
             closed_n += 1
@@ -996,6 +1002,9 @@ def build_graph(state: dict) -> dict:
                        "that 'done' would assert a completion the counts do not support",
         },
         "readiness_counts": readiness,
+        # `open`/`closed` skip `[roll-up]` parents (scan_handoff); consumers that used to
+        # subtract roll-ups themselves (dashboard/pipeline_status.py) key off this flag.
+        "rollups_excluded": True,
         "priority_basis": {
             "method": "override file > backlog-priority.json > derived heuristic (no authored priority "
                       "field exists in the index rows)",

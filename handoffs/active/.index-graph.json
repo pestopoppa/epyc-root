@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T13:03:59Z",
+  "generated_at": "2026-11-03T13:23:41Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1923,7 +1923,7 @@
           "gates": [
             "EVL-47"
           ],
-          "line": 35,
+          "line": 36,
           "name": "rocm-verify-profile-backend",
           "open": 49,
           "readiness": "blocked"
@@ -1938,7 +1938,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1730,
+          "line": 1731,
           "name": "agentic-rocm-kernel-authoring",
           "open": 25,
           "readiness": "blocked"
@@ -1953,7 +1953,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2997,
+          "line": 2998,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 11,
           "readiness": "blocked"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 3402,
+          "line": 3403,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 7,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 3917,
+          "line": 3918,
           "name": "frontier-f6-upstream-publication",
           "open": 6,
           "readiness": "ready"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4028,
+          "line": 4029,
           "name": "llama-cpp-dsa-contribution",
           "open": 2,
           "readiness": "ready"
@@ -3597,7 +3597,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 64,
+      "closed": 61,
       "dispatchable": 3,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3978,5 +3978,6 @@
     "no_open": "open == 0, so there is nothing to dispatch and nothing to gate. NOT 'closed': open == 0 also covers a handoff whose remaining boxes are all guarded (DO-NOT-DISPATCH) or refused by backlog_row_check, and naming that 'done' would assert a completion the counts do not support",
     "ready": "open work and no `dep` target that still has open work \u2014 dispatchable now"
   },
+  "rollups_excluded": true,
   "schema": "index_graph.v2"
 }

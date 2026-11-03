@@ -518,10 +518,12 @@ _HANDOFF_PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.
 _ACT_DIFF_PATH_RE = re.compile(r"^diff --git a/\S+ b/(handoffs/\S+\.md)$")
 
 
-_ACT_CHECKED_RE = re.compile(r"^\s*[-*] \[[xX]\]")
+# The Flow counters use the board's ONE box grammar (handoff_parser.BOX_MARKER: bullet or
+# numbered item), so a numbered ``1. [x]`` tick is a closure here exactly as on the board.
+_ACT_CHECKED_RE = re.compile(r"^\s*" + handoff_parser.BOX_MARKER.replace("[ xX]", "[xX]"))
 
 
-_ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
+_ACT_UNCHECKED_RE = re.compile(r"^\s*" + handoff_parser.BOX_MARKER.replace("[ xX]", " "))
 
 
 _ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0,
@@ -538,7 +540,7 @@ _ACT_ROLLUPS = (1, 7, 14)
 _ACT_COMMIT_RE = re.compile(r"^commit:([^|\s]+)(?:\|(\d{4}-\d{2}-\d{2}))?(?:\|(.*))?$")
 _ACT_FORMAT = ("--format=commit:%H|%cd|%(trailers:key=Repoint-Reason,valueonly=true,separator=%x3B)"
                "|%(trailers:key=D9-ack,valueonly=true,separator=%x3B)")
-_ACT_BOX_RE = re.compile(r"^\s*[-*] \[([ xX])\]\s*(.*)$")
+_ACT_BOX_RE = re.compile(r"^\s*" + handoff_parser.BOX_MARKER + r"\s*(.*)$")
 
 
 def _parse_semantic_timestamp(value: object) -> float | None:
@@ -612,7 +614,8 @@ def _act_commits(text: str):
                 cur["touched"].add(pm.group(1))
         elif line and line[0] in "+-" and not line.startswith(("+++", "---")):
             bm = _ACT_BOX_RE.match(line[1:])
-            if bm:
+            # A [roll-up] parent is never a task (board and graph skip it too).
+            if bm and not handoff_parser.ROLLUP_RE.search(bm.group(2)):
                 cur["boxes"].append((path, line[0], bm.group(1) in "xX", _box_key(bm.group(2))))
     if cur is not None:
         yield cur
@@ -727,12 +730,16 @@ def _parse_activity_log_by_day(text: str) -> list[dict]:
 
 
 def _refactor_markers(rows: list[dict]) -> list[dict]:
-    """One annotation per day that carries fold commits: the activity chart draws a
-    marker there so a headline jump is not read as progress or regression."""
+    """One annotation per day on which fold commits actually MOVED boxes: the activity
+    chart draws a marker there so a headline jump is not read as progress or regression.
+
+    A day whose only fold-class commits are ordinary ``Repoint-Reason`` re-points (10-25,
+    11-01) moved nothing; marking it "boxes moved" would be false, so it is not marked."""
     return [{"date": r["date"], "commits": list(r.get("_folds") or []),
              "moved": r.get("moved", 0),
              "label": "backlog refactor fold: boxes moved, not closed or filed"}
-            for r in sorted(rows, key=lambda r: r["date"]) if r.get("fold_commits")]
+            for r in sorted(rows, key=lambda r: r["date"])
+            if r.get("fold_commits") and r.get("moved", 0) > 0]
 
 
 def _activity_rollup(rows: list[dict], days: int, today: str) -> dict:

@@ -4,6 +4,7 @@
 
 **Status**: ACTIVE HARDENING — v27 C6 launch boundary remains open
 **Created**: 2026-06-03 · **Updated**: 2026-08-22 (wave-1 and v27 evaluator audit checkpoint)
+**Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 
 > **NEXT ACTION (2026-08-22): repair the rejected C6 evaluator carriers, then wire the verified
 > two-process oracle/Ghost boundary into the live AutoKernel producer before any launch.** Keep the

@@ -393,6 +393,10 @@ def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = Non
         else:
             h["classes"].add("non-inference")
     out, counts = [], {k: 0 for k in CLASSES}
+    # A graph built after the 2026-11-03 counting fix already skips roll-up boxes in `open`;
+    # subtracting them again would under-count, so only legacy graphs get the correction.
+    if isinstance(graph, dict) and graph.get("rollups_excluded"):
+        rollups = None
     for key, h in by.items():
         ru = (rollups or {}).get(key, 0)
         if ru:

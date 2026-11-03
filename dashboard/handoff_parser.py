@@ -31,12 +31,21 @@ from typing import Iterable, Iterator
 
 STATES: tuple[str, ...] = ("active", "blocked", "completed", "archived")
 
+# ONE box grammar for the board, the Flow counters, the timeline builders and the graph:
+# exactly what ``backlog_row_check._boxes`` (the graph's scanner, ``index_state.scan_handoff``)
+# accepts -- a ``-``/``*``/``+`` bullet OR a numbered item (``1. [x]``, ``2) [ ]``), one space,
+# then the box. The board used to accept bullets only, so the 18 numbered boxes in
+# model-architecture-readiness.md were on the graph and missing from the board.
+# Group 1 = the mark. ``scripts/handoffs/build_handoff_timeline.py`` carries a copy (it runs
+# without the dashboard package on its path); a test pins the copies equal.
+BOX_MARKER = r"(?:[-*+]|\d+[.)]) \[([ xX])\]"
 # A checkbox line, possibly indented / nested. Group 1 = the mark, group 2 = text.
-CHECKBOX_RE = re.compile(r"^\s*[-*]\s*\[([ xX])\]\s*(.*)$", re.M)
+CHECKBOX_RE = re.compile(rf"^[ \t]*{BOX_MARKER}[ \t]*(.*)$", re.M)
 # A ``**Key**: value`` metadata line (only meaningful above the first ``##``).
 # Allows an optional leading list marker so the bulleted ``- **Key**: value``
-# variant is matched too.
-META_RE = re.compile(r"^\s*(?:[-*]\s+)?\*\*([^*]+)\*\*:\s*(.*)$", re.M)
+# variant is matched too, and the colon-inside-bold ``**Key:** value`` form
+# (autokernel-loop.md writes ``**Priority:** HIGH``).
+META_RE = re.compile(r"^\s*(?:[-*]\s+)?\*\*([^*]+?)(?:\*\*:|:\*\*)\s*(.*)$", re.M)
 # A leading ``---`` … ``---`` YAML-ish frontmatter block (a handful of handoffs
 # use this instead of bold-markdown metadata).
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\s*?\n", re.S)
@@ -54,6 +63,21 @@ SENTINEL_RE = re.compile(
 )
 # Skip these filenames when walking a state directory.
 _SKIP_NAMES = {"README.md", "BLOCKED.md"}
+# Routers, not handoffs: the master index, the campaign posture file and the six domain
+# indices list handoffs rather than being one. They stay visible on the board but never
+# count as outstanding handoffs. SAME SET as ``scripts/handoffs/index_state.py``
+# ``REGISTERS`` minus README/BLOCKED (pinned by a test), so the backlog panel and the
+# graph count the same 30 handoffs.
+ROUTER_NAMES = frozenset({
+    "inference-research-index.md",
+    "routing-and-optimization-index.md",
+    "research-evaluation-index.md",
+    "user-facing-harness-index.md",
+    "pipeline-integration-index.md",
+    "reviewer-control-plane-index.md",
+    "master-handoff-index.md",
+    "CURRENT-CAMPAIGN.md",
+})
 # Backlog refactor 2026-11 (BRF-T2-2): a ``> **Folded into …`` blockquote banner marks a
 # source handoff whose open work moved into another file. Only the blockquote form is a
 # banner, so a "Folded into AR-3" remark on a task line never flips a file's lifecycle.
@@ -130,6 +154,7 @@ _PRIORITY_RULES: tuple[tuple[str, str], ...] = (
     ("CRITICAL", "P0"),
     ("BLOCKER", "P0"),
     ("ACTIVE-HIGH", "HIGH"),
+    ("HIGHEST", "HIGH"),
     ("HIGH", "HIGH"),
     ("P1", "HIGH"),
     ("MEDIUM", "MEDIUM"),
@@ -494,6 +519,7 @@ def parse_file(state: str, path: Path, *, detail: bool = False) -> dict:
         "lifecycle": ("folded" if folded_into is not None
                       else parse_lifecycle(meta, status_full)),
         "folded_into": folded_into or None,
+        "router": path.name in ROUTER_NAMES,
         "done": done,
         "total": total,
         "progress_source": source,
@@ -649,6 +675,7 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
 
     counts = {s: len(columns[s]) for s in STATES}
     counts["folded"] = len(columns["folded"])
+    counts["routers"] = sum(1 for s in ("active", "blocked") for c in columns[s] if c.get("router"))
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "columns": columns,
@@ -657,15 +684,32 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
     }
 
 
+def outstanding_cards(columns: dict[str, list[dict]]) -> list[dict]:
+    """The Active + Blocked cards that are real handoffs -- the graph's handoff set.
+
+    Mirrors ``index_state.handoff_paths``: file-backed cards in ``active/`` and
+    ``blocked/`` minus the routers (``ROUTER_NAMES``); synthetic ``BLOCKED.md`` table rows
+    are not files and do not count; a stem present in both directories counts once, as
+    the ``blocked/`` copy (the active one is a compatibility pointer).
+    """
+    cards = [c for s in ("active", "blocked") for c in columns.get(s, ())
+             if not c.get("router") and "blocked_on" not in c]
+    blocked_stems = {c["id"].split("/", 1)[1] for c in cards if c["id"].startswith("blocked/")}
+    return [c for c in cards
+            if not (c["id"].startswith("active/") and c["id"].split("/", 1)[1] in blocked_stems)]
+
+
 def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
     """Exact outstanding-work snapshot: how far from clearing the backlog.
 
-    Outstanding = the Active + Blocked columns. ``open_tasks`` counts unchecked
-    checkboxes there; ``pct_open_done`` is progress within outstanding handoffs
-    that have task checklists; ``pct_all_done`` is over every tracked task.
+    Outstanding = the real handoffs in the Active + Blocked columns
+    (:func:`outstanding_cards`, the same set the graph counts; routers excluded).
+    ``open_tasks`` counts unchecked checkboxes there; ``pct_open_done`` is progress
+    within outstanding handoffs that have task checklists; ``pct_all_done`` is over
+    every tracked task.
     """
-    OPEN = ("active", "blocked")
-    open_handoffs = sum(len(columns[s]) for s in OPEN)
+    outstanding = outstanding_cards(columns)
+    open_handoffs = len(outstanding)
     open_tasks = open_done = open_total = 0
     now = datetime.now(timezone.utc)
     bucket_map: dict[str, dict[str, int]] = {
@@ -681,52 +725,51 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
     dead_lane_30 = dead_lane_90 = dead_lane_unknown = 0
     dead_lane_candidates: list[dict] = []
 
-    for s in OPEN:
-        for c in columns[s]:
-            pri = c.get("priority", "NONE")
-            bucket = bucket_map.setdefault(
-                pri,
-                {
-                    "priority": pri,
-                    "open_handoffs": 0,
-                    "open_untracked_handoffs": 0,
-                    "open_tasks_total": 0,
-                    "open_tasks_done": 0,
-                },
-            )
-            bucket["open_handoffs"] += 1
+    for c in outstanding:
+        pri = c.get("priority", "NONE")
+        bucket = bucket_map.setdefault(
+            pri,
+            {
+                "priority": pri,
+                "open_handoffs": 0,
+                "open_untracked_handoffs": 0,
+                "open_tasks_total": 0,
+                "open_tasks_done": 0,
+            },
+        )
+        bucket["open_handoffs"] += 1
 
-            if c.get("progress_source") == "checkboxes":
-                open_total += c["total"]
-                open_done += c["done"]
-                open_tasks += c["total"] - c["done"]
-                bucket["open_tasks_total"] += c["total"]
-                bucket["open_tasks_done"] += c["done"]
-            else:
-                bucket["open_untracked_handoffs"] += 1
+        if c.get("progress_source") == "checkboxes":
+            open_total += c["total"]
+            open_done += c["done"]
+            open_tasks += c["total"] - c["done"]
+            bucket["open_tasks_total"] += c["total"]
+            bucket["open_tasks_done"] += c["done"]
+        else:
+            bucket["open_untracked_handoffs"] += 1
 
-            age = _age_days(c.get("activity"), now=now)
-            lane = None
-            if age is None:
-                dead_lane_unknown += 1
-                lane = "unknown_activity"
-            elif age > _DEAD_LANE_90_D:
-                dead_lane_90 += 1
-                dead_lane_30 += 1
-                lane = "over_90"
-            elif age > _DEAD_LANE_30_D:
-                dead_lane_30 += 1
-                lane = "over_30"
-            if lane:
-                dead_lane_candidates.append({
-                    "id": c.get("id"),
-                    "title": c.get("title"),
-                    "priority": pri,
-                    "activity": c.get("activity"),
-                    "activity_source": c.get("activity_source"),
-                    "age_days": age,
-                    "lane": lane,
-                })
+        age = _age_days(c.get("activity"), now=now)
+        lane = None
+        if age is None:
+            dead_lane_unknown += 1
+            lane = "unknown_activity"
+        elif age > _DEAD_LANE_90_D:
+            dead_lane_90 += 1
+            dead_lane_30 += 1
+            lane = "over_90"
+        elif age > _DEAD_LANE_30_D:
+            dead_lane_30 += 1
+            lane = "over_30"
+        if lane:
+            dead_lane_candidates.append({
+                "id": c.get("id"),
+                "title": c.get("title"),
+                "priority": pri,
+                "activity": c.get("activity"),
+                "activity_source": c.get("activity_source"),
+                "age_days": age,
+                "lane": lane,
+            })
 
     all_done = all_total = 0
     for cards in columns.values():
@@ -751,13 +794,14 @@ def _backlog_summary(columns: dict[str, list[dict]]) -> dict:
     )
 
     # Outstanding handoffs with no checklist can't be measured in tasks — surface
-    # the count so the number isn't silently read as "0 work left".
-    open_untracked = sum(
-        1 for s in OPEN for c in columns[s] if c.get("progress_source") != "checkboxes"
-    )
+    # the count so the number isn't silently read as "0 work left". Routers are not
+    # handoffs, so they no longer inflate this (it read 8 = the 8 router files).
+    open_untracked = sum(1 for c in outstanding if c.get("progress_source") != "checkboxes")
+    routers = sum(1 for s in ("active", "blocked") for c in columns.get(s, ()) if c.get("router"))
     return {
         "open_handoffs": open_handoffs,
         "open_untracked_handoffs": open_untracked,
+        "routers_excluded": routers,
         "open_tasks": open_tasks,
         "open_tasks_done": open_done,
         "open_tasks_total": open_total,

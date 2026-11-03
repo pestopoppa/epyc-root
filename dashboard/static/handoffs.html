@@ -388,15 +388,17 @@
         <span><i style="background:var(--high)"></i>new (rewordings netted out)</span>
         <span><i style="background:var(--completed)"></i>ticked</span>
         <span><i style="background:var(--active)"></i>closed by handoff completion</span>
+        <span><i style="background:transparent;border:1px dashed #8b949e"></i>backlog-refactor fold day (boxes moved, not filed/closed)</span>
       </div>
     </div>
     <div class="charts">
       <div>
-        <p class="chart-title">Legacy weekly task flow — newly filed vs completed per week <span id="tasks-total" class="muted"></span></p>
-        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="tasks newly filed vs completed per week"></svg>
+        <p class="chart-title">Weekly checkbox flow — boxes first seen vs completed per ISO week (completions dated by their ✅ date; fold moves excluded) <span id="tasks-total" class="muted"></span></p>
+        <svg id="chart-tasks" viewBox="0 0 600 200" role="img" aria-label="checkboxes first seen vs completed per week"></svg>
         <div class="legend">
           <span><i style="background:var(--completed)"></i>completed</span>
-          <span><i style="background:var(--high)"></i>newly filed</span>
+          <span><i style="background:var(--high)"></i>first seen (new boxes)</span>
+          <span><i style="background:#30363d;opacity:.6"></i>no data (no checkbox change in git that week)</span>
         </div>
       </div>
       <div>
@@ -612,14 +614,17 @@ function priGroupHead(pri, group){
   const head = el("div","pri-group pri-"+pri);
   head.appendChild(el("span","lab", pri));
   let open=0, done=0, tracked=0, parkedN=0, parkedOpen=0;
+  const routers = group.filter(c=>c.router).length;
   for(const c of group){
+    if(c.router) continue;
     const o = (c.progress_source==="checkboxes") ? (c.total-c.done) : 0;
     if(c.progress_source==="checkboxes"){ open+=o; done+=c.done; tracked++; }
     if(c.lifecycle){ parkedN++; parkedOpen+=o; }
   }
-  const n = group.length;
+  const n = group.length - routers;
   let cnt = `${n} handoff${n===1?"":"s"}`;
   if(tracked) cnt += ` · ${open} open / ${done} done`;
+  if(routers) cnt += ` · ${routers} router${routers===1?"":"s"} (index files, not counted)`;
   head.appendChild(el("span","cnt", cnt));
   // Surface the shelved slice right in the header so it doesn't read as live.
   if(parkedN){
@@ -635,7 +640,10 @@ function renderBoard(data){
     if(!colEl) continue;
     const list = colEl.querySelector(".cards");
     const cards = cols[state]||[];
-    colEl.querySelector(".count").textContent = cards.length;
+    const nRouters = cards.filter(c=>c.router).length;
+    const cEl = colEl.querySelector(".count");
+    cEl.textContent = cards.length - nRouters;
+    cEl.title = nRouters ? `${cards.length-nRouters} handoffs (+${nRouters} router/index files shown, not counted)` : "";
     list.innerHTML="";
     if(!cards.length){ list.appendChild(el("div","empty","—")); continue; }
     // Active/Blocked: group by priority with a counted section header (cards
@@ -653,7 +661,7 @@ function renderBoard(data){
   setBadge("#board-badge", (data._freshness&&data._freshness.staleness_class)||"fresh");
   const gen = data.generated_at ? " · scanned " + data.generated_at.replace("T"," ").replace("Z"," UTC") : "";
   $("#subline").textContent =
-    `${data.counts.active} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${data.counts.folded?` · ${data.counts.folded} folded`:""}${gen}`;
+    `${data.counts.active-(data.counts.routers||0)} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${data.counts.folded?` · ${data.counts.folded} folded`:""}${data.counts.routers?` · ${data.counts.routers} routers (not handoffs)`:""}${gen}`;
   renderBacklog(data.backlog||{}, data.activity_today);
   renderFlow(data.activity_window, data.activity_today);
 }
@@ -770,7 +778,9 @@ function renderBacklog(bk, act){
     {n: bk.open_tasks, l: "open tasks (active+blocked)", cls: "warn"},
     {n: bk.open_tasks_done, l: "tasks done in open handoffs", cls: "good"},
     {n: bk.all_tasks_done, l: "tasks completed (all tracked)", cls: "good"},
-    {n: bk.open_untracked_handoffs, l: "outstanding without a checklist", cls: ""},
+    // Routers (indices, CURRENT-CAMPAIGN) are not handoffs and are excluded server-side, so
+    // this now counts only real handoffs with no checklist -- and is hidden when there are none.
+    {n: bk.open_untracked_handoffs || null, l: "outstanding without a checklist", cls: ""},
   ];
   stats.innerHTML = "";
   for(const it of items){
@@ -1119,20 +1129,31 @@ function barChart(svg, weeks){
     svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
     const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=val; svg.appendChild(t);
   }
+  // no-data weeks (git shows no checkbox change at all) get a grey full-height band, not a zero bar
+  weeks.forEach((w,idx)=>{ if(!w.no_data) return;
+    const r=svgNS("rect",{x:pad.l+idx*bw+bw*0.15,y:pad.t,width:bw*0.7,height:ih,fill:"#30363d","fill-opacity":0.35,rx:1});
+    const tt=svgNS("title"); tt.textContent=`${w.week}: no data — ${w.commits||0} handoff commit(s), no checkbox change in git (not a measured zero)`; r.appendChild(tt);
+    svg.appendChild(r); });
   // completed bars
   weeks.forEach((w,idx)=>{
+    if(w.no_data) return;
     const bh=ih*comp(w)/max, x=pad.l+idx*bw+bw*0.15, y=pad.t+ih-bh;
     const rect=svgNS("rect",{x,y,width:bw*0.7,height:Math.max(0,bh),fill:"#3fb950",rx:1});
-    const tt=svgNS("title"); tt.textContent=`${w.week}: ${comp(w)} completed · ${filed(w)} newly filed`; rect.appendChild(tt);
+    const tt=svgNS("title"); tt.textContent=`${w.week}: ${comp(w)} completed · ${filed(w)} first seen`; rect.appendChild(tt);
     svg.appendChild(rect);
+  });
+  weeks.forEach((w,idx)=>{
     if(idx%Math.ceil(weeks.length/8||1)===0){
       const t=svgNS("text",{x:pad.l+idx*bw+bw/2,y:H-pad.b+14,fill:"#8b949e","font-size":8,"text-anchor":"middle"});
       t.textContent=w.week.replace(/^\d+-/,""); svg.appendChild(t);
     }
   });
-  // newly filed line overlay; old artifacts fall back to legacy opened.
-  const pts=weeks.map((w,idx)=>`${(pad.l+idx*bw+bw/2).toFixed(1)},${(pad.t+ih-ih*filed(w)/max).toFixed(1)}`).join(" ");
-  svg.appendChild(svgNS("polyline",{points:pts,fill:"none",stroke:"#f0883e","stroke-width":1.6,"stroke-linejoin":"round"}));
+  // first-seen line overlay (old artifacts fall back to legacy opened); broken at no-data weeks
+  let seg=[];
+  const flush=()=>{ if(seg.length>1) svg.appendChild(svgNS("polyline",{points:seg.join(" "),fill:"none",stroke:"#f0883e","stroke-width":1.6,"stroke-linejoin":"round"})); seg=[]; };
+  weeks.forEach((w,idx)=>{ if(w.no_data){ flush(); return; }
+    seg.push(`${(pad.l+idx*bw+bw/2).toFixed(1)},${(pad.t+ih-ih*filed(w)/max).toFixed(1)}`); });
+  flush();
 }
 function lineChart(svg, series){
   const W=600,H=200,pad={l:34,r:8,t:10,b:24};
@@ -1159,7 +1180,7 @@ function lineChart(svg, series){
 /* Primary trend: open-box STOCK per day (line, top band) + daily flow (bars, bottom
    band, diverging: new above the baseline; ticked + closed-by-completion below).
    Source: /api/handoff_timeline -> daily_flow (build_handoff_timeline.build_daily_flow). */
-function stockChart(svg, days, windowDays){
+function stockChart(svg, days, windowDays, markers){
   const W=600,H=270,pad={l:38,r:8,t:10,b:20};
   svg.innerHTML="";
   const msg=t=>svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent=t;
@@ -1172,6 +1193,11 @@ function stockChart(svg, days, windowDays){
   let lo=Math.min(...sv), hi=Math.max(...sv); if(hi===lo){ hi+=1; lo-=1; }
   const padv=(hi-lo)*0.08; lo=Math.max(0,lo-padv); hi+=padv;
   const Y=v=>pad.t+topH-topH*(v-lo)/(hi-lo);
+  if(lo>0){ // the stock axis does not start at zero: say so, so a small move is not read as a large one
+    const zz=pad.t+topH;
+    svg.appendChild(svgNS("polyline",{points:`${pad.l-4},${zz-2} ${pad.l},${zz-5} ${pad.l+4},${zz-2} ${pad.l+8},${zz-5}`,fill:"none",stroke:"#8b949e","stroke-width":1}));
+    const tl=svgNS("text",{x:pad.l+4,y:pad.t+9,fill:"#8b949e","font-size":9}); tl.textContent=`axis truncated: starts at ${Math.round(lo)}, not 0`; svg.appendChild(tl);
+  }
   for(let g=0;g<=2;g++){ const v=lo+(hi-lo)*g/2, y=Y(v);
     svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
     const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=Math.round(v); svg.appendChild(t);
@@ -1190,13 +1216,19 @@ function stockChart(svg, days, windowDays){
   rows.forEach((r,i)=>{
     const x=pad.l+i*bw+bw*0.12, w=Math.max(1,bw*0.76);
     const nw=r.new_open||0, tk=r.ticked||0, cc=r.closed_by_completion||0;
-    const tip=`${r.date}: ${r.open_stock} open · +${nw} new (${r.reworded||0} reworded, netted) · ${tk} ticked · ${cc} closed by completion (${r.handoffs_completed||0} handoffs) · ${r.removed_open||0} removed · ${r.born_ticked||0} born ticked`;
+    const tip=`${r.date}: ${r.open_stock} open · +${nw} new (${r.reworded||0} reworded, netted) · ${tk} ticked · ${cc} closed by completion (${r.handoffs_completed||0} handoffs) · ${r.removed_open||0} removed · ${r.born_ticked||0} born ticked`+(r.moved?` · ${r.moved} moved by fold (${r.handoffs_folded||0} handoffs folded)`:"");
     const bar=(y,h,fill)=>{ if(h<=0) return; const e=svgNS("rect",{x,y,width:w,height:h,fill,rx:1});
       const tt=svgNS("title"); tt.textContent=tip; e.appendChild(tt); svg.appendChild(e); };
     bar(base-nw*sc,nw*sc,"#f0883e");
     bar(base,tk*sc,"#3fb950");
     bar(base+tk*sc,cc*sc,"#58a6ff");
   });
+  // fold days (timeline refactor_markers: boxes MOVED between handoffs) -- dashed full-height marker
+  const md=new Map((Array.isArray(markers)?markers:[]).map(m=>[m.date,m]));
+  rows.forEach((r,i)=>{ const m=md.get(r.date); if(!m) return;
+    const ln=svgNS("line",{x1:cx(i),y1:pad.t,x2:cx(i),y2:H-pad.b,stroke:"#8b949e","stroke-width":1,"stroke-dasharray":"3 3"});
+    const tt=svgNS("title"); tt.textContent=`${r.date}: backlog refactor fold — ${m.moved||0} box(es) moved between handoffs, excluded from new/ticked`; ln.appendChild(tt);
+    svg.appendChild(ln); });
   const step=Math.max(1,Math.ceil(n/6));
   rows.forEach((r,i)=>{ if(i%step===0){
     const t=svgNS("text",{x:cx(i),y:H-6,fill:"#8b949e","font-size":8,"text-anchor":"middle"}); t.textContent=r.date.slice(5); svg.appendChild(t); }});
@@ -1206,7 +1238,7 @@ async function loadTimeline(){
   try{ d = await getJSON("/api/handoff_timeline"); }
   catch(e){ setBadge("#timeline-badge","stale"); return; }
   const flow=d.daily_flow||[];
-  stockChart($("#chart-stock"), flow, 90);
+  stockChart($("#chart-stock"), flow, 90, d.refactor_markers||[]);
   if(flow.length){ const a=flow.slice(-30), sum=k=>a.reduce((x,r)=>x+(r[k]||0),0), l=flow[flow.length-1];
     $("#stock-total").textContent=`(${l.open_stock} open now · last 30d: +${sum("new_open")} new · ${sum("ticked")} ticked · ${sum("closed_by_completion")} closed by completion · ${sum("handoffs_completed")} handoffs completed)`; }
   barChart($("#chart-tasks"), d.tasks_weekly||[]);
@@ -1218,14 +1250,14 @@ async function loadTimeline(){
   const filed=(d.totals&&((d.totals.tasks_newly_filed!=null)
     ?d.totals.tasks_newly_filed:d.totals.tasks_opened))||0;
   $("#tasks-total").textContent = (completed||filed)
-    ?`(${completed} completed · ${filed} newly filed)`:"";
+    ?`(${completed} completed · ${filed} first seen)`:"";
   // Intake belongs next to the flow headline too: a completion line without an
   // intake line is exactly the blindness this dashboard had.
   const foot = $("#flow-foot");
   if(foot){
     foot.textContent = (completed||filed)
-      ? `all tracked history: ${filed} tasks newly filed · ${completed} completed `
-        + `(net ${filed-completed>0?"+":""}${filed-completed}) — see the weekly task-flow chart below`
+      ? `all tracked history (first-seen boxes): ${filed} boxes first seen · ${completed} completed `
+        + `(net ${filed-completed>0?"+":""}${filed-completed}; fold-moved boxes counted once) — see the weekly checkbox-flow chart below`
       : "";
   }
   setBadge("#timeline-badge", (d._freshness&&d._freshness.staleness_class)||"fresh");

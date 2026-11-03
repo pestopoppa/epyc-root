@@ -72,18 +72,51 @@ from pathlib import Path
 STATES = ("active", "blocked", "completed", "archived")
 _TERMINAL = ("completed", "archived")
 
-_COMMIT_RE = re.compile(r"^\x00([0-9a-f]{7,40}) (.+)$")
+# ``\x00<sha> <author-iso>[\x1f<Repoint-Reason trailers>\x1f<D9-ack trailers>]`` (_LOG_FORMAT).
+# The trailer fields are optional so a bare ``\x00<sha> <ts>`` header still parses.
+_COMMIT_RE = re.compile(r"^\x00([0-9a-f]{7,40}) ([^\x1f]+?)(?:\x1f([^\x1f]*)\x1f(.*))?$")
+_LOG_FORMAT = ("--format=%x00%H %aI"
+               "%x1f%(trailers:key=Repoint-Reason,valueonly=true,separator=%x3B)"
+               "%x1f%(trailers:key=D9-ack,valueonly=true,separator=%x3B)")
 _DIFF_RE = re.compile(r"^diff --git a/(.+) b/(.+)$")
 _RENAME_FROM_RE = re.compile(r"^rename from (.+)$")
 _RENAME_TO_RE = re.compile(r"^rename to (.+)$")
 _ROLLUP_RE = re.compile(r"\[roll-up\]", re.I)
-_ADDED_CHECKBOX_RE = re.compile(r"^\+\s*[-*]\s*\[([ xX])\]\s*(.*)$")
+# ONE box grammar: identical to dashboard/handoff_parser.BOX_MARKER and to the graph's
+# backlog_row_check._boxes (bullet OR numbered item, one space, the box). Copied, not
+# imported, because this script runs without the dashboard package on its path; a test
+# pins the two strings equal.
+_BOX_MARKER = r"(?:[-*+]|\d+[.)]) \[([ xX])\]"
+_ADDED_CHECKBOX_RE = re.compile(rf"^\+[ \t]*{_BOX_MARKER}[ \t]*(.*)$")
+_REMOVED_CHECKBOX_RE = re.compile(rf"^-[ \t]*{_BOX_MARKER}[ \t]*(.*)$")
+# An added ``> **Folded into …`` banner: the block is a fold stub, not a completed handoff.
+_FOLDED_BANNER_ADD_RE = re.compile(r"^\+>\s*\*\*Folded into\b", re.I)
 _ADDED_META_RE = re.compile(r"^\+\s*\*\*(Created|Updated|Date)\*\*:\s*(.*)$", re.I)
 _PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
 _DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
 _CHECK_DATE_RE = re.compile(r"✅\s*(\d{4}-\d{2}-\d{2})")
 
 _NON_HANDOFF_STEMS = {"BLOCKED", "README"}
+# Routers (the master index, CURRENT-CAMPAIGN and every ``*-index`` file, current or retired)
+# list handoffs rather than being one. They keep their ``file_activity`` (the board dates their
+# cards) but are excluded from the handoff lifecycle, the task flow and the open-box stock, so
+# the charts count the same handoff set as the graph and the backlog panel.
+_ROUTER_STEMS = {"CURRENT-CAMPAIGN"}
+
+
+def _is_router(stem: str) -> bool:
+    return stem in _ROUTER_STEMS or stem.endswith("-index")
+
+
+def _commit_flags(repoint: str | None, ack: str | None) -> dict:
+    """``{"fold", "refactor"}`` from a commit's trailers, as ``server._is_fold_commit``.
+
+    ``fold``: a ``Repoint-Reason:`` trailer -- a readiness-neutral migration: boxes it moves
+    are moves, and beyond in-place ticks nothing it adds counts as filed. ``refactor``: a
+    ``D9-ack:`` trailer naming the backlog refactor -- only turns on moved-box pairing.
+    """
+    return {"fold": bool((repoint or "").strip()),
+            "refactor": "backlog refactor" in (ack or "").lower()}
 
 # Index-row lines in a diff: `-| INF-06 | … |` / `+| INF-06 | … |`. Same id shape and
 # unescaped-pipe split as index_state.py's thin-row parser.
@@ -155,7 +188,7 @@ def _run_git_log(repo: Path, first_parent: bool = False) -> str:
     cmd = [
         "git", "-C", str(repo), "log", "--reverse", "-M", "--no-color",
         *(["--first-parent"] if first_parent else []),
-        "--format=%x00%H %aI", "-p", "--", "handoffs/",
+        _LOG_FORMAT, "-p", "--", "handoffs/",
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True,
                           errors="replace", check=False)
@@ -222,8 +255,8 @@ class _Block:
     """One ``diff --git`` block within a commit."""
 
     __slots__ = ("old_path", "new_path", "is_new", "is_deleted", "rename_from",
-                 "rename_to", "checkboxes", "created_date", "updated_date",
-                 "rows_removed", "rows_added")
+                 "rename_to", "checkboxes", "removed_checkboxes", "folded_banner",
+                 "created_date", "updated_date", "rows_removed", "rows_added")
 
     def __init__(self, old_path: str, new_path: str) -> None:
         self.old_path = old_path
@@ -234,6 +267,9 @@ class _Block:
         self.rename_to: str | None = None
         # each added checkbox line: (mark ' '|'x', task text, inline date)
         self.checkboxes: list[tuple[str, str, str | None]] = []
+        # each removed checkbox line: (mark, task text) -- pairs fold moves across files
+        self.removed_checkboxes: list[tuple[str, str]] = []
+        self.folded_banner = False             # block adds a ``> **Folded into`` banner
         self.created_date: str | None = None   # from +**Created** (new-file adds)
         self.updated_date: str | None = None   # from +**Updated**
         # index rows (index files only): row id -> Next action cell
@@ -253,8 +289,11 @@ def _row_next_action(row: str) -> str | None:
     return cells[3] if len(cells) == 5 else None
 
 
-def _parse_commits(log_text: str):
-    """Return ``[(sha, iso_ts, [blocks]), ...]`` in chronological order."""
+def _parse_commits(log_text: str, flags: dict | None = None):
+    """Return ``[(sha, iso_ts, [blocks]), ...]`` in chronological order.
+
+    ``flags`` (optional) is filled with ``{sha: {"fold", "refactor"}}`` from the header's
+    trailer fields (see ``_commit_flags``)."""
     sha = ts = None
     blocks: list[_Block] = []
     current: _Block | None = None
@@ -264,7 +303,9 @@ def _parse_commits(log_text: str):
         if mcommit:
             if sha is not None:
                 results.append((sha, ts, blocks))
-            sha, ts = mcommit.group(1), mcommit.group(2)
+            sha, ts = mcommit.group(1), mcommit.group(2).strip()
+            if flags is not None:
+                flags[sha] = _commit_flags(mcommit.group(3), mcommit.group(4))
             blocks = []
             current = None
             continue
@@ -308,6 +349,13 @@ def _parse_commits(log_text: str):
         if mac:
             current.checkboxes.append(
                 (mac.group(1), mac.group(2), _inline_task_date(mac.group(2))))
+            continue
+        mrc = _REMOVED_CHECKBOX_RE.match(line)
+        if mrc:
+            current.removed_checkboxes.append((mrc.group(1), mrc.group(2)))
+            continue
+        if _FOLDED_BANNER_ADD_RE.match(line):
+            current.folded_banner = True
     if sha is not None:
         results.append((sha, ts, blocks))
     return results
@@ -337,9 +385,10 @@ def _parse_commits(log_text: str):
 _SIM = 0.75
 _PAIR_LIMIT = 40000          # skip O(n*m) similarity on bulk-rewrite commits
 _LIVE = ("active", "blocked")
-_ANY_CHECKBOX_RE = re.compile(r"^([+-])\s*[-*]\s*\[([ xX])\]\s*(.*)$")
+_ANY_CHECKBOX_RE = re.compile(rf"^([+-])[ \t]*{_BOX_MARKER}[ \t]*(.*)$")
 _FLOW_FIELDS = ("ticked", "new_open", "reworded", "born_ticked", "removed_open",
-                "closed_by_completion", "handoffs_completed", "handoffs_archived")
+                "closed_by_completion", "handoffs_completed", "handoffs_archived",
+                "moved", "handoffs_folded")
 
 
 def _norm_text(text: str) -> str:
@@ -383,24 +432,59 @@ def _pair_commit(removed: list, added: list, flow: Counter) -> None:
                                 if r_open and not r_used[ri])
 
 
+def _pair_moves(removed: list, added: list) -> tuple[list, list, int]:
+    """Fold/refactor commits: a box removed in one file and added in ANOTHER with the same
+    normalised text is MOVED -- neither filed nor closed (``server._count_commit`` rule).
+    Entries are ``[is_open, text, path]``; returns the unpaired rest and the move count."""
+    pool: dict[str, list[int]] = {}
+    for ri, (_o, txt, _p) in enumerate(removed):
+        pool.setdefault(txt, []).append(ri)
+    used: set[int] = set()
+    rest_added, moved = [], 0
+    for a_open, txt, path in added:
+        hit = next((ri for ri in pool.get(txt, ()) if ri not in used and removed[ri][2] != path),
+                   None)
+        if hit is None:
+            rest_added.append([a_open, txt, path])
+            continue
+        used.add(hit)
+        moved += 1
+    rest_removed = [r for ri, r in enumerate(removed) if ri not in used]
+    return rest_removed, rest_added, moved
+
+
 def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
-    """Daily open-box stock + flows from ``git log -M -p`` text (see block above)."""
+    """Daily open-box stock + flows from ``git log -M -p`` text (see block above).
+
+    FOLD-AWARE (2026-11-03): in a commit carrying a ``Repoint-Reason:`` trailer (fold) or a
+    ``D9-ack: backlog refactor`` trailer, a box removed from one file and added to another is
+    ``moved`` -- including boxes of a source handoff deleted in that commit. A fold commit is
+    readiness-neutral: beyond moves only an in-place open -> ``[x]`` flip counts (``ticked``);
+    nothing else it adds or drops is filed or removed. A source that leaves active/ as a
+    ``> **Folded into`` stub is ``handoffs_folded``, not completed. Routers are not handoffs.
+    """
     counts: dict[str, int] = {}      # state/stem -> open boxes (every state tracked,
     state_of: dict[str, str] = {}    # so a move back into active restores its stock)
     days: dict[str, Counter] = {}
     stock_eod: dict[str, int] = {}
-    st: dict = {"day": None, "blocks": [], "cur": None, "hunk": False, "seen": False}
+    st: dict = {"day": None, "blocks": [], "cur": None, "hunk": False, "seen": False,
+                "fold": False, "refactor": False}
+
+    def ss(path: str):
+        r = _path_state_stem(path)
+        return None if r is None or _is_router(r[1]) else r
 
     def flush() -> None:
         day = st["day"]
         if not st["seen"] or day is None:
             return
         flow = days.setdefault(day, Counter())
+        fold, pairing = st["fold"], st["fold"] or st["refactor"]
         removed: list = []
         added: list = []
         for b in st["blocks"]:
-            new_ss = _path_state_stem(b["new"])
-            old_ss = _path_state_stem(b["rename_from"] or b["old"])
+            new_ss = ss(b["new"])
+            old_ss = ss(b["rename_from"] or b["old"])
             if new_ss is None and old_ss is None:
                 continue
             okey = f"{old_ss[0]}/{old_ss[1]}" if old_ss else None
@@ -408,7 +492,11 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
             if b["deleted"]:
                 if okey is not None:
                     if old_ss[0] in _LIVE:
-                        flow["removed_open"] += counts.get(okey, 0)
+                        if pairing:     # its boxes may have moved into another file
+                            removed.extend([is_open, _norm_text(txt), okey]
+                                           for sign, is_open, txt in b["boxes"] if sign == "-")
+                        else:
+                            flow["removed_open"] += counts.get(okey, 0)
                     counts.pop(okey, None)
                     state_of.pop(okey, None)
                 continue
@@ -425,13 +513,30 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
                 if is_open:
                     d_open += 1 if sign == "+" else -1
                 if live_touch:
-                    (added if sign == "+" else removed).append([is_open, _norm_text(txt)])
+                    (added if sign == "+" else removed).append([is_open, _norm_text(txt), nkey])
             counts[nkey] = max(0, counts[nkey] + d_open)
             if old_ss and old_ss[0] in _LIVE and new_ss[0] in _TERMINAL:
-                flow["closed_by_completion"] += counts[nkey]
-                flow["handoffs_completed" if new_ss[0] == "completed"
-                     else "handoffs_archived"] += 1
-        _pair_commit(removed, added, flow)
+                if b["folded"]:
+                    flow["handoffs_folded"] += 1
+                else:
+                    flow["closed_by_completion"] += counts[nkey]
+                    flow["handoffs_completed" if new_ss[0] == "completed"
+                         else "handoffs_archived"] += 1
+        if pairing:
+            removed, added, moved = _pair_moves(removed, added)
+            flow["moved"] += moved
+        if fold:
+            # Readiness-neutral migration: only an in-place open -> [x] flip is a closure.
+            for a_open, txt, path in added:
+                if a_open:
+                    continue
+                hit = next((r for r in removed if r[0] and r[2] == path
+                            and (r[1] == txt or _similar(r[1], txt))), None)
+                if hit is not None:
+                    removed.remove(hit)
+                    flow["ticked"] += 1
+        else:
+            _pair_commit([r[:2] for r in removed], [a[:2] for a in added], flow)
         stock_eod[day] = sum(n for k, n in counts.items() if state_of.get(k) in _LIVE)
 
     for line in log_text.splitlines():
@@ -439,15 +544,16 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
         if mc:
             flush()
             try:
-                st["day"] = datetime.fromisoformat(mc.group(2)).date().isoformat()
+                st["day"] = datetime.fromisoformat(mc.group(2).strip()).date().isoformat()
             except ValueError:
                 st["day"] = None
-            st.update(blocks=[], cur=None, hunk=False, seen=True)
+            st.update(blocks=[], cur=None, hunk=False, seen=True,
+                      **_commit_flags(mc.group(3), mc.group(4)))
             continue
         md = _DIFF_RE.match(line)
         if md:
             st["cur"] = {"old": md.group(1), "new": md.group(2), "deleted": False,
-                         "rename_from": None, "boxes": []}
+                         "rename_from": None, "boxes": [], "folded": False}
             st["blocks"].append(st["cur"])
             st["hunk"] = False
             continue
@@ -467,7 +573,10 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
             continue
         mb = _ANY_CHECKBOX_RE.match(line)
         if mb:
-            cur["boxes"].append((mb.group(1), mb.group(2) == " ", mb.group(3)))
+            if not _ROLLUP_RE.search(mb.group(3)):   # roll-up parents are never tasks
+                cur["boxes"].append((mb.group(1), mb.group(2) == " ", mb.group(3)))
+        elif _FOLDED_BANNER_ADD_RE.match(line):
+            cur["folded"] = True
     flush()
 
     if not stock_eod:
@@ -485,6 +594,15 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
                     **{f: c.get(f, 0) for f in _FLOW_FIELDS}})
         d += timedelta(days=1)
     return out
+
+
+def refactor_markers(daily: list[dict]) -> list[dict]:
+    """One marker per day on which fold commits MOVED boxes (``moved > 0``), for the stock
+    chart -- the same rule as ``server._refactor_markers`` (a day of plain re-points that
+    moved nothing is not marked)."""
+    return [{"date": r["date"], "moved": r.get("moved", 0),
+             "label": "backlog refactor fold: boxes moved, not closed or filed"}
+            for r in daily if r.get("moved", 0) > 0]
 
 
 def _fill_weeks(rows: list[dict], zero: dict) -> list[dict]:
@@ -509,7 +627,8 @@ def _fill_weeks(rows: list[dict], zero: dict) -> list[dict]:
 
 
 def build_timeline(repo: Path) -> dict:
-    commits = _parse_commits(_run_git_log(repo))
+    commit_flags: dict[str, dict] = {}
+    commits = _parse_commits(_run_git_log(repo), commit_flags)
     messages: dict[str, str] | None = None   # fetched lazily, only if a re-point exists
     repoints: list[dict] = []
 
@@ -530,9 +649,12 @@ def build_timeline(repo: Path) -> dict:
     newly_filed_weekly: Counter = Counter()  # first observed checkbox additions
     created_weekly: Counter = Counter()
     completed_weekly: Counter = Counter()
+    commits_weekly: Counter = Counter()      # handoff commits per week (any change)
+    box_events_weekly: Counter = Counter()   # checkbox lines added/removed per week
     total_completions = 0
     total_opened = 0
     total_newly_filed = 0
+    total_moved = 0
 
     def _set_terminal(rec: dict, term_date: str, term_state: str) -> None:
         # A handoff cannot terminate before it was created.
@@ -548,6 +670,27 @@ def build_timeline(repo: Path) -> dict:
         except ValueError:
             continue
         commit_week = _iso_week(commit_day)
+        commits_weekly[commit_week] += 1
+        box_events_weekly[commit_week] += sum(len(b.checkboxes) + len(b.removed_checkboxes)
+                                              for b in blocks)
+        cflags = commit_flags.get(sha) or {}
+        fold_commit = bool(cflags.get("fold"))
+        # FOLD-AWARE first-seen (2026-11-03). In a fold (Repoint-Reason) or backlog-refactor
+        # (D9-ack) commit, a box removed from one handoff and added to another is a MOVE: the
+        # target inherits it as already seen, so it is neither "newly filed" nor completed a
+        # second time. Before this, the per-file first-seen bags counted every moved box
+        # again -- 2026-W45 read 6616 newly filed.
+        moved_pool: dict[str, list] = {}
+        if fold_commit or cflags.get("refactor"):
+            for blk in blocks:
+                rss = _path_state_stem(blk.rename_from or blk.old_path)
+                if rss is None or _is_router(rss[1]):
+                    continue
+                rkey = f"{rss[0]}/{rss[1]}"
+                for mark, text in blk.removed_checkboxes:
+                    tk = _task_key(text)
+                    if tk and not _ROLLUP_RE.search(text):
+                        moved_pool.setdefault(tk, []).append(rkey)
 
         if any(b.rows_removed for b in blocks) and any(b.rows_added for b in blocks):
             if messages is None:
@@ -558,8 +701,16 @@ def build_timeline(repo: Path) -> dict:
         for blk in blocks:
             new_ss = _path_state_stem(blk.new_path)
             old_ss = _path_state_stem(blk.rename_from or blk.old_path)
+            router = bool((new_ss and _is_router(new_ss[1])) or (old_ss and _is_router(old_ss[1])))
 
-            if blk.is_new and new_ss:
+            if router:
+                pass        # routers are not handoffs: no lifecycle record (activity below)
+            elif blk.is_new and new_ss and new_ss[0] in _TERMINAL and blk.folded_banner:
+                # A fold stub written straight into completed/ (git saw delete + add): the
+                # source's active record was terminated by the delete; the stub is neither a
+                # new handoff nor a completion.
+                pass
+            elif blk.is_new and new_ss:
                 state, stem = new_ss
                 key = f"{state}/{stem}"
                 created = blk.created_date or commit_day
@@ -613,7 +764,11 @@ def build_timeline(repo: Path) -> dict:
                     seen_opened[new_key] = seen_opened.pop(
                         old_key, seen_opened.get(new_key, set()))
                 rec.setdefault("created", commit_day)
-                if new_state in _TERMINAL:
+                if new_state in _TERMINAL and blk.folded_banner and old_state not in _TERMINAL:
+                    # Folded into another handoff (``> **Folded into`` stub): its work moved,
+                    # it did not finish. Like a delete, it leaves the series uncounted.
+                    _set_terminal(rec, commit_day, "folded")
+                elif new_state in _TERMINAL:
                     _set_terminal(rec, commit_day, new_state)
                     if new_state == "completed" and old_state != "completed":
                         completed_weekly[commit_week] += 1
@@ -641,13 +796,35 @@ def build_timeline(repo: Path) -> dict:
                         if old_key != ikey:
                             file_activity.pop(old_key, None)
                     file_activity[ikey] = max(file_activity.get(ikey, ""), commit_day)
+                if router:
+                    continue   # no task flow for routers
                 rec = records.get(ikey) or {}
                 obag = seen_opened.setdefault(ikey, set())
                 cbag = seen_checked.setdefault(ikey, set())
+                removed_here = {_task_key(t): m for m, t in blk.removed_checkboxes}
                 for mark, text, inline_date in blk.checkboxes:
                     tkey = _task_key(text)
                     if not tkey or _ROLLUP_RE.search(text):
                         continue   # roll-up parents never count (children carry the work)
+                    src = moved_pool.get(tkey)
+                    hit = next((k for k in src if k != ikey), None) if src else None
+                    if hit is not None:
+                        src.remove(hit)            # moved in from another handoff
+                        if tkey not in obag:
+                            total_moved += 1
+                        obag.add(tkey)
+                        if mark in ("x", "X"):
+                            cbag.add(tkey)
+                        continue
+                    if fold_commit:
+                        # Readiness-neutral migration: nothing it adds is a filing; only an
+                        # in-place open -> [x] flip is a completion (server._count_commit).
+                        flip = mark in ("x", "X") and removed_here.get(tkey) == " "
+                        if not flip:
+                            obag.add(tkey)
+                            if mark in ("x", "X"):
+                                cbag.add(tkey)
+                            continue
                     if tkey not in obag:
                         obag.add(tkey)
                         # a task enters the backlog roughly when its handoff was created
@@ -669,6 +846,19 @@ def build_timeline(repo: Path) -> dict:
 
     series = _build_series(records)
     final = series[-1] if series else {s: 0 for s in STATES}
+    daily_flow = build_daily_flow(_run_git_log(repo, first_parent=True))
+
+    def _week_row(w: str) -> dict:
+        ev = box_events_weekly.get(w, 0)
+        return {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
+                "opened": opened_weekly.get(w, 0),
+                "newly_filed": newly_filed_weekly.get(w, 0),
+                "completed": tasks_weekly.get(w, 0),
+                "commits": commits_weekly.get(w, 0), "box_events": ev,
+                # no_data: git shows NO checkbox change that week (no handoff commit at all,
+                # or only box-free edits) -- not the same thing as a week that measured zero.
+                # (A backdated completion landing in such a week still counts as data.)
+                "no_data": ev == 0 and not tasks_weekly.get(w) and not newly_filed_weekly.get(w)}
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "last_sha": _head_sha(repo),
@@ -676,14 +866,14 @@ def build_timeline(repo: Path) -> dict:
         "series": series,
         "file_activity": file_activity,
         "next_action_repoints": repoints,
-        "daily_flow": build_daily_flow(_run_git_log(repo, first_parent=True)),
+        "daily_flow": daily_flow,
+        "refactor_markers": refactor_markers(daily_flow),
         "tasks_weekly": _fill_weeks([
-            {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
-             "opened": opened_weekly.get(w, 0),
-             "newly_filed": newly_filed_weekly.get(w, 0),
-             "completed": tasks_weekly.get(w, 0)}
-            for w in sorted(set(tasks_weekly) | set(opened_weekly) | set(newly_filed_weekly))
-        ], {"tasks_completed": 0, "opened": 0, "newly_filed": 0, "completed": 0}),
+            _week_row(w)
+            for w in sorted(set(tasks_weekly) | set(opened_weekly) | set(newly_filed_weekly)
+                            | set(commits_weekly))
+        ], {"tasks_completed": 0, "opened": 0, "newly_filed": 0, "completed": 0,
+            "commits": 0, "box_events": 0, "no_data": True}),
         "handoffs_weekly": _fill_weeks([
             {"week": w, "created": created_weekly.get(w, 0),
              "completed": completed_weekly.get(w, 0)}
@@ -696,6 +886,8 @@ def build_timeline(repo: Path) -> dict:
             "tasks_completed": total_completions,
             "tasks_opened": total_opened,
             "tasks_newly_filed": total_newly_filed,
+            # Boxes first seen in a handoff via a fold/refactor MOVE (not counted as filed).
+            "tasks_moved": total_moved,
             "commits_scanned": len(commits),
             "next_action_repoints": len(repoints),
             "repoints_with_trailer_reason": sum(

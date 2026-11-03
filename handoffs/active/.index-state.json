@@ -344,7 +344,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 64,
+      "closed": 61,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 3,
@@ -356,7 +356,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 67
+      "total": 64
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -2262,7 +2262,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 35,
+          "line": 36,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
           "open": 49
@@ -2275,7 +2275,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1730,
+          "line": 1731,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 25
@@ -2288,7 +2288,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2997,
+          "line": 2998,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 11
@@ -2298,7 +2298,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3402,
+          "line": 3403,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 7
@@ -2308,7 +2308,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3917,
+          "line": 3918,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 6
@@ -2318,7 +2318,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 4028,
+          "line": 4029,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 1
