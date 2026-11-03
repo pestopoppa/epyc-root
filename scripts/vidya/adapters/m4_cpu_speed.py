@@ -139,7 +139,11 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
     sample = results[0]
     if _sha(plan_raw) != extra.get('plan_sha256'):
         raise ProjectionError('plan digest mismatch')
-    for key, path in (('producer_sha256',config.producer_root.parent/'m4_cpu_recipe_compare.py' if config.diagnostic_plan_sha256 else config.producer_root/'dispatch.py'),('capture_sha256',config.producer_root/'capture.py'),('native_runner_sha256',config.producer_root/'native/k35_stack_context_matrix_runner.py'),('native_comparator_sha256',config.producer_root/'native/compare_v9_promotion_arms.py')):
+    # Diagnostic captures are sealed by the plan digest + image manifests (_verify_diagnostic);
+    # the compare harness no longer self-hashes, so its recorded producer_sha256 is not re-checked.
+    sealed = [] if config.diagnostic_plan_sha256 else [('producer_sha256',config.producer_root/'dispatch.py')]
+    sealed += [('capture_sha256',config.producer_root/'capture.py'),('native_runner_sha256',config.producer_root/'native/k35_stack_context_matrix_runner.py'),('native_comparator_sha256',config.producer_root/'native/compare_v9_promotion_arms.py')]
+    for key, path in sealed:
         try:
             if _sha(path.read_bytes()) != extra.get(key): raise ProjectionError(f'{key} changed')
         except OSError as exc:
@@ -241,6 +245,7 @@ def _verify_diagnostic(native: dict, config: SourceConfig) -> None:
                 or extra['model_sha256'] != plan['model']['sha256']
                 or extra['context'] != 8192 or type(pair) is not int or pair not in range(3)):
             raise ProjectionError('diagnostic model or recipe binding mismatch')
+        _verify_image(plan, arm, extra)
         variant = matches[0]
         if (cell_dir.name != f'{pair:02d}-{arm}-{variant}'
                 or receipt.name != f'{arm}-pair-{pair:02d}.json'
@@ -249,6 +254,26 @@ def _verify_diagnostic(native: dict, config: SourceConfig) -> None:
             raise ProjectionError('diagnostic cell identity mismatch')
     except (OSError, ValueError, KeyError, TypeError) as exc:
         raise ProjectionError(f'invalid diagnostic binding: {exc}') from exc
+
+def _verify_image(plan: dict, arm: str, extra: dict) -> None:
+    """The plan seals each arm's image manifest; the captured binary must be that image's server."""
+    try:
+        info = plan['images'][arm]
+        manifest_raw = Path(info['path']).read_bytes()
+        if _sha(manifest_raw) != info['sha256']:
+            raise ProjectionError(f'{arm} image manifest changed: re-run the comparison or re-enroll the plan')
+        record = json.loads(manifest_raw)
+        commit = plan['champion' if arm == 'baseline' else 'candidate']
+        if record.get('source_commit') != commit:
+            raise ProjectionError(f'{arm} image manifest source commit differs from the plan: rebuild the manifest')
+        server = Path(record['root']).resolve(strict=True) / 'bin/llama-server'
+        if Path(extra['binary']).resolve(strict=True) != server.resolve(strict=True):
+            raise ProjectionError(f'{arm} captured binary is not the manifest image server: capture used another build')
+        if _sha(server.read_bytes()) != record['files']['bin/llama-server']:
+            raise ProjectionError(f'{arm} image server digest differs from its manifest: image was modified after capture')
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ProjectionError(f'{arm} image binding unreadable ({exc}): restore the sealed image manifest') from exc
+
 
 # Trusted deployment configuration is code-owned, never supplied by a native record.
 # This prospective campaign packet remains unarmed; change requires source review.
@@ -282,7 +307,6 @@ def _trusted_config():
 DIAGNOSTIC_CAPTURE_ROOT = None
 DIAGNOSTIC_PRODUCER_ROOT = None
 DIAGNOSTIC_SOURCE_SEALS = {}
-DIAGNOSTIC_COMPARE_SHA256 = ''
 DIAGNOSTIC_PLAN_SHA256 = ''
 
 def _trusted_diagnostic():
@@ -291,12 +315,8 @@ def _trusted_diagnostic():
     if not isinstance(root, Path) or not isinstance(captures, Path) or set(DIAGNOSTIC_SOURCE_SEALS) != required:
         raise ProjectionError('diagnostic enrollment absent')
     config = _verify_trusted(root, captures, DIAGNOSTIC_SOURCE_SEALS)
-    try:
-        if (len(DIAGNOSTIC_PLAN_SHA256) != 64 or len(DIAGNOSTIC_COMPARE_SHA256) != 64
-                or _sha((root.parent/'m4_cpu_recipe_compare.py').read_bytes()) != DIAGNOSTIC_COMPARE_SHA256):
-            raise ProjectionError('diagnostic source or plan enrollment invalid')
-    except OSError as exc:
-        raise ProjectionError(f'diagnostic source unavailable: {exc}') from exc
+    if len(DIAGNOSTIC_PLAN_SHA256) != 64:
+        raise ProjectionError('diagnostic plan digest not enrolled: set DIAGNOSTIC_PLAN_SHA256 to the reviewed plan sha256')
     return SourceConfig(config.capture_root, config.producer_root, DIAGNOSTIC_PLAN_SHA256)
 
 def _trusted_config_for(path):
