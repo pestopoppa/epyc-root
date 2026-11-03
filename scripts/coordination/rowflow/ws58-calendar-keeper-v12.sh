@@ -53,6 +53,12 @@ allocate_tick() {
 # Keep files stay IN PLACE (handoff citations stay valid); the vault is the durable copy. Guards (any one blocks deletion, never the vault):
 # live process names/maps/cwd's the root; another non-complete grant/ready/armed manifest names it; KEEP marker; active handoff names the
 # root itself (file-level citations are protected in place); a non-terminal FILLERS row names it. One log line per decision.
+# INPUT RULE (operator 2026-11-03, session review 3.1; 2026-11-02 the reaper deleted a packet's inputs/ and helper/*.json and the
+# job died 9 s after its grant): the reaper never deletes a file the job did not write. A file (or empty dir) whose mtime is
+# before the group's first recorded job start (`started=` in grants/<id>.ended, written when the granted job starts; the
+# manifest's published_at only when no start is recorded) is INPUT: kept in place, not vaulted, whatever the keep globs say.
+# keep globs (and the manifest's result_path) only ADD protection; an empty keep = inputs + result. No recorded start and no
+# published_at => every file is input and nothing is deleted (REAP-INPUT-ONLY names the fix).
 # REAP_LEGACY=1 also synthesises groups for old manifests (root=tmp/<first dir of launcher>, keep=small files <=4 MiB + evidence names).
 # IDLE RULE (operator 2026-10-28; REAP_IDLE_DAYS 7 -> 1 on 2026-11-02): a tmp dir no manifest names, idle >= REAP_IDLE_DAYS (newest mtime of anything inside), with no
 # guard hit, has its small files (<=10 MiB *.json/md/txt/tsv/csv/yaml/yml/log + receipts/verdicts) vaulted with a sha256 index, then the
@@ -104,8 +110,8 @@ def valid_root(sr):
     if not n.startswith(TMP) or n.count('/') < 5: return 'scratch_root not under tmp/'
     if n.split('/')[5] in PROTECT: return 'scratch_root protected'
     return None
-def valid_keep(k):
-    return isinstance(k, list) and k and all(isinstance(g, str) and g and not g.startswith('/') and '..' not in g for g in k)
+def valid_keep(k):   # an empty list is valid: keep = inputs + result (operator 2026-11-03)
+    return isinstance(k, list) and all(isinstance(g, str) and g and not g.startswith('/') and '..' not in g for g in k)
 # ---- manifests (ready/, armed/, refused/) ----
 mans = {}
 for d in (R, R + 'armed/', R + 'refused/'):
@@ -119,6 +125,10 @@ for rid, (m, p) in mans.items():
     if sr and not bad and valid_keep(kp):
         g = groups.setdefault(os.path.normpath(sr), dict(ids=set(), keep=[], src='declared'))
         g['ids'].add(rid); g['keep'] += [x for x in kp if x not in g['keep']]
+        rp = m.get('result_path')   # the result is always protected (keep only adds to it)
+        if isinstance(rp, str) and os.path.normpath(rp).startswith(os.path.normpath(sr) + '/'):
+            rel = os.path.relpath(os.path.normpath(rp), os.path.normpath(sr))
+            if '..' not in rel and rel not in g['keep']: g['keep'].append(rel)
     elif LEGACY:
         L = m.get('launcher'); lp = L.get('path') if isinstance(L, dict) else L
         if isinstance(lp, str) and lp.startswith(TMP):
@@ -126,6 +136,10 @@ for rid, (m, p) in mans.items():
             if root.split('/')[-1] in PROTECT: continue
             g = groups.setdefault(root, dict(ids=set(), keep=['__LEGACY_SMALL__'], src='legacy'))
             g['ids'].add(rid)
+            rp = m.get('result_path')
+            if isinstance(rp, str) and os.path.normpath(rp).startswith(root + '/'):
+                rel = os.path.relpath(os.path.normpath(rp), root)
+                if '..' not in rel and rel not in g['keep']: g['keep'].append(rel)
     else:
         out('LEGACY', rid, 'manifest has no valid scratch_root/keep (%s); no auto-reap (run --backfill-report)' % (bad or 'keep invalid'))
 # ---- /proc snapshot (one pass) ----
@@ -280,6 +294,35 @@ def delplan(root, ks, prot):
             elif p not in anc: dels.append(p)
     walk(root); return dels
 def _raise(e): raise e
+def iso_epoch(s):
+    for fmt in ('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%MZ'):
+        try: return dt.datetime.strptime(str(s).strip(), fmt).replace(tzinfo=dt.timezone.utc).timestamp()
+        except ValueError: pass
+    return None
+def first_start(ids):
+    '''INPUT RULE cutoff -> (epoch|None, source). The earliest recorded job start over the group's ids (`started=` in
+    grants/<id>.ended|.complete); when no id records one, the earliest manifest published_at; else (None, why).'''
+    st, pub = [], []
+    for rid in sorted(ids):
+        for term in ('.ended', '.complete'):
+            for l in read(G + rid + term).splitlines():
+                e = iso_epoch(l[8:]) if l.startswith('started=') else None
+                if e: st.append(e)
+        e = iso_epoch((mans.get(rid) or ({}, ''))[0].get('published_at') or '')
+        if e: pub.append(e)
+    if st: return min(st), 'first job start'
+    if pub: return min(pub), 'publish time'
+    return None, 'no started= in grants/<id>.ended and no published_at in the manifest'
+def input_set(root, cutoff):
+    '''every file / symlink / empty dir under root whose mtime is before cutoff (+1 s: recorded times are whole seconds):
+    written before the job started => INPUT, never deleted. Any walk error raises (the item is skipped).'''
+    lim = cutoff + 1; ins = set()
+    for dp, dn, fn in os.walk(root, onerror=_raise):
+        for x in fn + dn:
+            fp = os.path.join(dp, x); st = os.lstat(fp)
+            if x in dn and not os.path.islink(fp) and os.listdir(fp): continue   # a non-empty dir: its entries decide
+            if st.st_mtime < lim: ins.add(fp)
+    return ins
 def scan_tree(p):
     '''-> (newest mtime of the root and anything inside it, bytes, holds .git); any walk error raises'''
     newest = os.lstat(p).st_mtime; size = 0; git = False
@@ -332,13 +375,13 @@ def take_budget(tag, b):
     if budget['n'] + 1 > MAXDIRS or budget['b'] + b > MAXB:
         out('DEFER', tag, 'per-pass cap (%d dirs / %s) reached; %s waits for the next pass' % (MAXDIRS, gib(MAXB), gib(b))); return False
     budget['n'] += 1; budget['b'] += b; return True
-def really_delete(tag, root, dels, dbytes):
+def really_delete(tag, root, dels, dbytes, note=''):
     # re-check right before delete (a process may have started since the snapshot)
     chk = subprocess.run(['bash', '-c', 'for q in /proc/[0-9]*; do tr "\\0" " " < $q/cmdline 2>/dev/null | grep -qF "$0/" && exit 3; ls -l $q/fd 2>/dev/null | grep -qF "$0/" && exit 3; done; exit 0', root]).returncode
     if chk != 0: out('BLOCKED', tag, 'process appeared at delete time'); return
     r = subprocess.run(['bash', '/workspace/scripts/safety/guarded_rm.sh'] + dels, env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
     moved = re.findall(r'^trashed: .* -> (' + re.escape(TRASH) + r'/[^/\n]+) \(', r.stdout, re.M)
-    out('REAPED' if r.returncode == 0 else 'REAP-FAIL', tag, '%d entries %s moved=%d rc=%d %s' % (len(dels), gib(dbytes), len(moved), r.returncode, r.stdout.strip().splitlines()[-1][:120] if r.stdout.strip() else r.stderr.strip()[:120]))
+    out('REAPED' if r.returncode == 0 else 'REAP-FAIL', tag, '%d entries %s moved=%d rc=%d %s%s' % (len(dels), gib(dbytes), len(moved), r.returncode, r.stdout.strip().splitlines()[-1][:120] if r.stdout.strip() else r.stderr.strip()[:120], ('; ' + note) if note else ''))
     freed = 0; bad = 0
     for dest in sorted(set(moved)):   # ONLY entries guarded_rm just reported, each a direct child of the reap trash
         if os.path.dirname(os.path.realpath(dest)) != os.path.realpath(TRASH) or not os.path.lexists(dest): continue
@@ -367,15 +410,20 @@ for root in sorted(groups):
     filed_at = max(filed)
     fm = os.path.join(root, "FILED")
     if os.path.exists(fm): filed_at = max(filed_at, os.path.getmtime(fm))
+    cutoff, csrc = first_start(ids)
+    if cutoff is None:
+        out('INPUT-ONLY', tag, '%s, so every file counts as input and nothing is deleted; fix: bash /workspace/scripts/safety/guarded_rm.sh <the job-written paths under %s>' % (csrc, root)); continue
+    ins = input_set(root, cutoff)
+    inote = 'inputs kept=%d (mtime before %s %s)' % (len(ins), csrc, dt.datetime.fromtimestamp(cutoff, dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))
     ks = keepset(root, g['keep']); blockers = []
     bl, prot = cited(root, ids); ks |= prot
-    files = keepfiles(ks)
+    files = [f for f in keepfiles(ks) if f not in ins]   # inputs stay in place and are never deleted: nothing to vault
     vok, vmsg = vault(name, root, files, filed_at)
     out('VAULT' if vok else 'VAULT-REFUSED', tag, vmsg)
     age_d = (now - filed_at) / 86400
-    dels = delplan(root, ks, prot); dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
+    dels = delplan(root, ks, prot | ins); dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
     if not vok: out('BLOCKED', tag, 'vault not verified; nothing deleted (%d entries, %s waiting)' % (len(dels), gib(dbytes))); continue
-    if not dels: out('CLEAN', tag, 'nothing outside keep set'); continue
+    if not dels: out('CLEAN', tag, 'nothing outside keep set and inputs; ' + inote); continue
     if age_d < DAYS: out('HOLD', tag, 'filed %.1fd ago, reap in %.1fh (%d entries, %s)' % (age_d, (DAYS - age_d) * 24, len(dels), gib(dbytes))); continue
     blockers += keepmarkers(root) + bl + other_refs(root, ids)
     if proc_uses(root): blockers.append('process-uses-root')
@@ -383,8 +431,8 @@ for root in sorted(groups):
     if recent(root): out('BLOCKED', tag, 'write inside root within %ds' % RECENT_S); continue
     if GUARD_ERR: out('SKIP-ERR', tag, GUARD_ERR); continue
     if not take_budget(tag, dbytes): continue
-    if MODE == 'dry': out('WOULD-REAP', tag, '%d entries, %s, filed %.1fd ago, keep=%d files (unreadable procs=%d)' % (len(dels), gib(dbytes), age_d, len(files), unread)); continue
-    really_delete(tag, root, dels, dbytes)
+    if MODE == 'dry': out('WOULD-REAP', tag, '%d entries, %s, filed %.1fd ago, keep=%d files, %s (unreadable procs=%d)' % (len(dels), gib(dbytes), age_d, len(files), inote, unread)); continue
+    really_delete(tag, root, dels, dbytes, inote)
   except Exception as e:
     out('SKIP-ERR', tag, 'guard/plan error %r; item skipped' % (e,))
 # ---- 7-DAY RULE: unmanifested tmp dirs idle >= IDLE_DAYS (live when REAP_IDLE=1; always shown by --backfill-report) ----
