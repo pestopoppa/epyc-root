@@ -42,3 +42,14 @@ Observation (2026-11-03 run): the canary's live-built regime has `quant=None` (c
 so a live refusal is impossible from this regime regardless of row count. The synthetic
 controls therefore use a fully populated regime; `live_regime_quant_resolved` is reported
 informationally and does not gate.
+
+## Canary B with the live embedder (2026-11-03)
+
+Set `CANARY_EMBED_URL=http://127.0.0.1:<port>` (port >= 10000) to a canary-owned BGE-large-en-v1.5
+llama-server (`--embeddings --pooling cls`, production CPU kernel store). The audit guard then
+permits socket connects to exactly that loopback host:port and nothing else; the strategy-store copy
+embeds its planner queries through it and fails closed on any error or degenerate vector (no hash
+degrade). With the URL set, B asserts the known conclusion: trial 1472's keep with `2.025` and
+`ingest_triviality_guard` in the assembled prompt, and a non-zero T1 Pareto frontier. PASS exits 0,
+a missing conclusion exits 1, a dead embedder, assembly error or changed protected state is UNKNOWN
+(exit 2). Without the URL, B is unchanged (UNKNOWN, hash-only).

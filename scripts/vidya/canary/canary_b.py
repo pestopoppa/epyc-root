@@ -174,9 +174,54 @@ class HashOnlyEmbedder:
         pass
 
 
+EMBED_URL = os.environ.get("CANARY_EMBED_URL")  # canary-owned BGE llama-server, 127.0.0.1:>=10000
+EMBED_ERRORS: list[str] = []
+
+
+class LiveBgeEmbedder:
+    """Query embeddings from the canary-owned BGE-large llama-server (POST /embedding, cls pooling).
+    Same wire and L2 normalisation as TaskEmbedder._generate_embedding_http; raises (never degrades
+    to hash) on any failure, a wrong dimension, or a degenerate vector."""
+
+    def __init__(self, url, dim):
+        self.url, self.dim, self.calls = url.rstrip("/"), dim, 0
+
+    def embed_text(self, text, side=None):
+        import urllib.request
+        import numpy as np
+        req = urllib.request.Request(self.url + "/embedding", method="POST",
+                                     data=json.dumps({"content": str(text)}).encode(),
+                                     headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                data = json.loads(r.read())
+            if isinstance(data, list):
+                data = data[0]
+            emb = data["embedding"] if "embedding" in data else data["data"][0]["embedding"]
+            vec = np.asarray(emb[0] if emb and isinstance(emb[0], list) else emb, dtype=np.float32)
+            norm = float(np.linalg.norm(vec))
+            if vec.shape != (self.dim,) or not np.isfinite(norm) or norm == 0.0:
+                raise ValueError(f"degenerate embedding shape={vec.shape} norm={norm}")
+            self.calls += 1
+            return vec / norm
+        except Exception as exc:
+            EMBED_ERRORS.append(repr(exc)[:200])
+            raise
+
+    def close(self):
+        pass
+
+
+if EMBED_URL:
+    _embedder = LiveBgeEmbedder(EMBED_URL, _ss_mod.LEGACY_EMBEDDING_DIM)
+else:
+    _embedder = HashOnlyEmbedder(_ss_mod.LEGACY_EMBEDDING_DIM)
+
+
 strategy_store = guarded("strategy_store", lambda: ap.StrategyStore(
-    path=dst_ss, embedder=HashOnlyEmbedder(_ss_mod.LEGACY_EMBEDDING_DIM)))
+    path=dst_ss, embedder=_embedder))
 summary["notes"].append(
+    ("StrategyStore opened on a COPY with the LIVE BGE embedder " + str(EMBED_URL)) if EMBED_URL else
     "StrategyStore opened on a COPY (B-copies/strategies) with a hash-fallback embedder; the daemon "
     "would embed the 4 _PLANNER_STRATEGY_HINT_QUERIES via BGE (llama-server :8090 or "
     "llama-embedding) = inference, forbidden here, so semantic retrieval ranks are NOT reproduced.")
@@ -532,21 +577,33 @@ summary["finished"] = time.time()
 print("prompt_chars", len(prompt), "belief", summary["belief"].get("status"),
       summary["belief"].get("reason"), "blocked", len(canary_guard.BLOCKED))
 
-# Hash-only embedding cannot reproduce semantic ranking: observations are not a pass.
+# Verdict. Hash-only embedding cannot reproduce semantic ranking: observations are not a pass.
 lines = prompt.splitlines()
 keep = any("1472" in "\n".join(lines[max(0,i-4):i+5]) and
            "2.025" in "\n".join(lines[max(0,i-4):i+5]) and
            "ingest_triviality_guard" in "\n".join(lines[max(0,i-4):i+5])
            for i in range(len(lines)) if "1472" in lines[i])
-result = {"loop": "B", "status": "UNKNOWN",
-          "reason": "hash-only embedder cannot reproduce semantic ranking",
-          "observed_1472_keep_with_numbers": keep,
-          "observed_frontier_count": archive.frontier_size(ap.DEFAULT_FRONTIER_TIER),
+frontier = archive.frontier_size(ap.DEFAULT_FRONTIER_TIER)
+unchanged = {"baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
+             "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
+             "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
+result = {"loop": "B", "live_embedder": bool(EMBED_URL),
+          "observed_1472_keep_with_numbers": keep, "observed_frontier_count": frontier,
           "assembly_errors": sorted((summary.get("errors") or {})),
+          "embed_calls": getattr(_embedder, "calls", 0), "embed_errors": EMBED_ERRORS[:3],
           "belief_ready": belief_ready is not None,
-          "baseline_sha256": summary["pre"]["baseline_sha256"],
-          "baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
-          "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
-          "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
+          "baseline_sha256": summary["pre"]["baseline_sha256"], **unchanged}
+if not EMBED_URL:
+    result.update(status="UNKNOWN", reason="hash-only embedder cannot reproduce semantic ranking")
+    code = 2
+elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors"):
+    result.update(status="UNKNOWN", reason="live embedder failed/unused, assembly error, or protected state changed")
+    code = 2
+elif keep and frontier > 0:
+    result.update(status="PASS", reason="1472 keep with 2.025 and ingest_triviality_guard present; Pareto count non-zero")
+    code = 0
+else:
+    result.update(status="FAIL", reason="known conclusion missing: keep_with_numbers=%s frontier=%s" % (keep, frontier))
+    code = 1
 print("CANARY_RESULT:", json.dumps(result))
-sys.exit(2)
+sys.exit(code)
