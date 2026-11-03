@@ -1172,3 +1172,72 @@ def test_ac5_amended_fails_on_each_leg(kw, why):
     import p1_acceptance as acc
     result = acc.ac5(_StubReader(*_ac5_inputs(**kw)))
     assert not result["pass"] and why in result["detail"], result["detail"]
+
+
+def test_device_scope_group_renders_below_model_claims_and_is_not_target_evidence(tmp_path, alarm):
+    """VB-LOOP-TEXT (operator 2026-11-02): a target with both kinds of claim renders the
+    model-scoped claims first and the device-only claims in a separate, labelled device-scope
+    group below them; the device-only claims are not counted as target evidence."""
+    own = _loop("ds41-own", mech="akm-own")
+    hosts = [_host(f"inf70-both-{i}", value=f"{400 + i}.5") for i in range(2)]
+    path = _write(tmp_path, own, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    section = ev["section"]
+    group = "### Device-scope claims"
+    assert group in section and "scoped by device only, no model" in section
+    assert section.index("### Usable, target tier") < section.index(group)
+    assert ev["tiers"]["target"] == 1 and ev["tiers"]["host"] == 2
+    assert ev["claim_ids"] == [_cid(own)]                       # only the model claim is reliance-eligible
+    host_ids = {_cid(h) for h in hosts}
+    assert not host_ids & set(ev["claim_ids"])
+    assert all(_tier_of(ev, h) == "host" for h in host_ids)
+    tail = section[section.index(group):].split("### Tried mechanisms")[0]
+    assert "device-scope: host ceiling, not about this model" in tail
+    assert "akm-own" not in tail                                # no model claim leaks into the group
+
+
+def test_target_with_only_device_scope_claims_has_no_target_evidence(tmp_path, alarm):
+    """A target whose only claims are device-only: zero target-tier evidence, the empty-target
+    banner, and the device-scope group is still shown, labelled as not about this model."""
+    hosts = [_host(f"inf70-only-{i}", value=f"{410 + i}.5") for i in range(3)]
+    path = _write(tmp_path, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, QWEN35_T)
+    assert ev["tiers"]["target"] == 0 and ev["tiers"]["host"] == 3
+    assert ev["claim_ids"] == []
+    section = ev["section"]
+    assert "No beliefs are scoped to" in section
+    assert "### Device-scope claims" in section
+    assert "### Usable, target tier" not in section
+    assert "3 of 3 device-scope (host) claim(s)" in section
+
+
+def _q38_claims(model, n, tag):
+    return [_loop(f"{tag}-{i}", model=model, quant="", mech=f"akm-{tag}-{i}",
+                  value=f"{20 + i}.5") for i in range(n)]
+
+
+def test_ac2_derives_a_model_with_no_scoped_claims_from_the_ledger(tmp_path):
+    """AC2 intent: a lineage member with no model-scoped claims gets the banner first and its
+    siblings' lines as 'transfer unproven'. The target is derived, not pinned: DS41-1017 here has
+    real claims (as in production now) and must not be chosen."""
+    import p1_acceptance as acc
+    path = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(DS41_1017, 3, "d17"),
+                  *_q38_claims(DS41_Q4, 3, "q4"))
+    r = acc.Reader(path, AS_OF, {})
+    result = acc.ac2(r)
+    assert result["pass"], result["detail"]
+    assert "Q38FN-IQ4_XS-uniform" in result["detail"] and "target tier 0" in result["detail"]
+
+
+def test_ac2_is_not_loosened_fails_without_banner_siblings_or_candidate(tmp_path):
+    import p1_acceptance as acc
+    # every lineage member has its own claims -> nothing to derive -> fail (never a free pass)
+    both = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(Q38_UNI, 2, "uni"),
+                  *_q38_claims(DS41_Q4, 10, "q4"), *_q38_claims(DS41_1017, 2, "d17"),
+                  name="both.jsonl")
+    res = acc.ac2(acc.Reader(both, AS_OF, {}))
+    assert not res["pass"] and "cannot be proven" in res["detail"]
+    # an empty member whose siblings have fewer than 8 lines -> fails the sibling floor
+    few = _write(tmp_path, *_q38_claims(Q38_UD, 3, "ud"), name="few.jsonl")
+    res = acc.ac2(acc.Reader(few, AS_OF, {}))
+    assert not res["pass"] and "sibling lines 3 (need 8)" in res["detail"]
