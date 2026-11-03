@@ -7,7 +7,7 @@
 **Created**: 2026-04-14 (via research intake deep dive)
 **Updated**: 2026-08-12 (gates re-checked against the live sources; all three fired)
 **Categories**: ssm_hybrid, context_extension, inference_serving
-**Priority**: HIGH (strategic) — activates when gate criteria met
+**Priority**: MEDIUM — the log-linear GDN port waits for a production-scale model by operator decision (2026-11-02); what remains live is G16/G16b (feeds mi210 G15) and the unfunded Engram Track B bet
 
 ## Track: log-linear-gated-deltanet-readiness
 <!-- gate: INF-48 -->
@@ -91,13 +91,13 @@ the three gates above **cannot tell apart three cases the wave put side by side*
 retract the 2026-08-12 activation: gates 1–3 stand fired, and these two are the portability screen
 those three could not express.
 
-- [ ] **Gate 4 — a device-agnostic (non-Triton) numerical oracle exists.** Not "reference code exists"
+- **[declined: ws58 2026-11-03 content-review: readiness criterion, not a task — the operator decided 2026-11-02 to wait for a production-scale log-linear GDN; the criterion stays readable here and research intake is the watch]** **Gate 4 — a device-agnostic (non-Triton) numerical oracle exists.** Not "reference code exists"
       (gate 2) but "reference output can be produced on a CPU, to check a ggml port against".
       Log-linear GDN has the *code* — `hattention/recurrent.py`, pure PyTorch — but it is not wired
       into the model, so the gate is **open for log-linear too**; closing it is the first bullet under
       [Next actions](#next-actions-now-that-the-gates-have-fired). Gated DeltaNet-2 (intake-1281#record)
       is the inverse: a better decode path and **no** non-Triton path at all.
-- [ ] **Gate 5 — a ggml primitive exists for every mixer type in the architecture, or a
+- **[declined: ws58 2026-11-03 content-review: readiness criterion, not a task — same operator decision 2026-11-02; no port is scheduled]** **Gate 5 — a ggml primitive exists for every mixer type in the architecture, or a
       numerically-correct fallback is identified for those that lack one.** MiniCPM-SALA
       (intake-1287#record) fires all three original gates and is still not fully portable — its
       InfLLM-V2 block-sparse selection has no ggml op, and only the *fallback* clause rescues it (the
@@ -209,10 +209,10 @@ with ~0.8 %. That is the shape of the branch, and no row of it is free.
       **CPU-only, no GPU needed** (pure PyTorch, ≈796 M params f32 ≈ 3.2 GB). [declined: operator 2026-11-03 model-audit: operator 2026-11-02: wait for a production-scale log-linear GDN; 795M research checkpoint not deployable]
 - [x] Write the GGUF converter tensor map from the 423-name safetensors header; the only non-GDN names are
       `attn.L`, `attn.l_proj.weight` and the level count, so it is standard-GDN mapping plus two entries. [declined: operator 2026-11-03 model-audit: operator 2026-11-02: wait for a production-scale log-linear GDN; port parked with the oracle]
-- [ ] Re-scope plan step 4 below: `ggml_log_linear_state_update()` is the `cascade_weak()` counter machine plus
+- **[declined: ws58 2026-11-03 content-review: superseded by the 2026-11-02 operator decision to wait for a production-scale log-linear GDN; the design note stays readable here for when a port is scheduled]** Re-scope plan step 4 below: `ggml_log_linear_state_update()` is the `cascade_weak()` counter machine plus
       the existing delta-rule update; `ggml_log_linear_attention()` is `step_output()` = a λ-weighted contraction
       over the level axis. Neither needs the L×L level LUT.
-- [ ] Operator decision, once the oracle above exists: this checkpoint is a **795 M research model at f32 with a
+- **[declined: ws58 2026-11-03 content-review: resolved — operator decided 2026-11-02: wait for a production-scale log-linear GDN (decisions-batch2-4-20261102.json)]** Operator decision, once the oracle above exists: this checkpoint is a **795 M research model at f32 with a
       16K position limit** — it validates the port but is not itself deployable. Decide whether the port is
       justified by the checkpoint alone or should wait for a production-scale log-linear GDN.
   - 2026-11-02 operator decision: Wait for a production-scale log-linear GDN (decisions-batch2-4-20261102.json)
@@ -370,10 +370,8 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
       that their exonerating control cannot detect wrong output at all, and that **nobody has tested
       any backend but Metal**. Our shared hybrid/recurrent code is byte-identical to the reproducing
       build. Exposure is a live *unknown*, not a confirmed risk — and no greedy trial exists anywhere.
-- [ ] **B1 (B, blocked on G1) — repeat the sweep on MI210 HIP.** Our HIP GDN kernel is a distinct
-      implementation still carrying a TODO for a chunked prefill kernel, so a CPU result does not
-      transfer; and running HIP first leaves nothing to compare against.
-- [ ] **G5 (G, blocked on G6 in `rocm-verify-profile-backend.md`) — HOLA frozen-backbone retrofit.**
+- [ ] **B1 (G) — repeat the #27442 boundary sweep on the MI210 HIP path.** G1 (CPU) closed 2026-08-27 NOT REPRODUCIBLE, so the comparison baseline exists. Same design as G1: greedy temp 0 seed 27442, cache_prompt=false, np 1, no speculation, two prompt classes, 5 lengths 15.4k-24k, first-sampled-token id per trial, on the current :8083 GPU build and the 27B Q8 + DFlash2 off. Decision: 10/10 trials engage the instruction -> close (#27442 does not reproduce on our HIP path either); any degenerate-EOS trial -> file a kernel defect against the HIP GDN kernel. One GPU window, <= 1 h.
+- **[declined: ws58 2026-11-03 content-review: curiosity with no path to a stack decision — by its own argument the production hybrid's 10 full-attention layers already supply the recall HOLA's cache restores, so a pure-GDN retrofit gain is only an upper bound; it also requires training on third-party 340M/360M checkpoints]** **G5 (G, blocked on G6 in `rocm-verify-profile-backend.md`) — HOLA frozen-backbone retrofit.**
       Run it as a *within-checkpoint delta*: measure ppl with `use_gdn_swa` false, freeze, fit the
       12,480 trainable scalars, measure again. **Needs neither a corpus nor a layer-count match to
       HOLA**, so run it on **both** substrates (`m-a-p/340M-20B-GatedDeltaNet-pure-baseline` and
@@ -384,7 +382,7 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
       `attn.D` tensors and decide `tie_word_embeddings` (the checkpoint is untied, HOLA's config
       expects tied). `load_state_dict(strict=True)` fails until then. **Assert
       `ShortConvolution.backward` is never invoked before trusting any ROCm number** (see fla #1156).
-- [ ] **B4 (B, blocked on G5) — hybrid-transfer A/B.** Repeat the retrofit on
+- **[declined: ws58 2026-11-03 content-review: depends on G5 (retired above); same reasoning — a retrofit-training experiment on third-party checkpoints with no decision on our served models]** **B4 (B, blocked on G5) — hybrid-transfer A/B.** Repeat the retrofit on
       `m-a-p/340M-20B-GatedDeltaNet-hybrid-3-1`, matched to the pure arm by construction (same corpus,
       same budget, same library). This converts "does a pure-GDN result predict anything for our
       30-GDN + 10-attention production hybrid?" from argument into measurement. A pure-GDN gain is an
@@ -525,7 +523,7 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       No reference implementation sets a precedent for our gate: FLA validates at RMS-relative 0.005 (≈ NMSE 2.5e-5,
       about 250× looser). The recorded 2.97e-7/3.70e-7 T=2048 miss was PR #26001 plus a patch, not #24561, whose
       longest eval was 520 tokens. Source: intake-1434#record.
-- [ ] **B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper
+- **[declined: ws58 2026-11-03 content-review: tracked-not-scheduled training research (continued pretraining of a GDN-2 layer) with no inference-stack decision; GDN-2 has no non-Triton path, so no port follows]** **B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper
       omitted.** Filed as **tracked-not-scheduled**, in two halves with different upstreams.
       **(a) Retrofit initialization.** Broadcast each head's scalar β and α across channels to recover
       plain GDN exactly inside an `fla.layers.GatedDeltaNet2` layer and confirm logits match at step 0
@@ -962,8 +960,8 @@ After any phase of either track:
 
 _Via `/research-intake` Stage-4 (intake-888 CORE, intake-930 ReasoningBank, intake-936 EvoMemBench). **Scope note:** this rider is about **agent-experience memory retrieval**, not the n-gram lookup tables of Tracks A/B above — it was routed here by the approved Stage-3 plan. The store/schema half is co-owned by [`unified-trace-memory-service.md`](memory-program.md#track-unified-trace-memory-service) § "Research Intake Update — 2026-07-29"; keep the two in sync. All external figures are OBSERVATION-grade under MEASUREMENT.md._
 
-- [ ] **Do NOT port cosine-top-1 retrieval. Layer CORE's (intake-888) utility-aware retrieval over ReasoningBank's schema.** Convergent evidence: the k-ablation loses **half the benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B replication **failed specifically at the RETRIEVER** after an embedder swap — exactly the substitution we would make with local BGE. Treat **k as a measured parameter**, with **k=1** and **episodic-only** control arms.
-- [ ] **Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed.** intake-936 (independent, DeepSeek-V3.2 backbone) finds six of fifteen memory methods scoring **below** the no-memory baseline at a **128K** budget — mechanism is **context-budget competition**, not store growth (do **not** conflate with intake-899). So the retrieval sweep must vary k **as a fraction of remaining window budget**, and include a no-memory control arm, or it will select a k that is optimal only at short context.
+- **[declined: ws58 2026-11-03 content-review: duplicate — memory-program.md already carries the CORE/ReasoningBank retrieval design and k-as-measured-parameter (UTM-M5, intake-888/930)]** **Do NOT port cosine-top-1 retrieval. Layer CORE's (intake-888) utility-aware retrieval over ReasoningBank's schema.** Convergent evidence: the k-ablation loses **half the benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B replication **failed specifically at the RETRIEVER** after an embedder swap — exactly the substitution we would make with local BGE. Treat **k as a measured parameter**, with **k=1** and **episodic-only** control arms.
+- **[declined: ws58 2026-11-03 content-review: duplicate — memory-program.md UTM-M6 already files the intake-936 128K context-budget-competition finding and its no-memory control arm]** **Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed.** intake-936 (independent, DeepSeek-V3.2 backbone) finds six of fifteen memory methods scoring **below** the no-memory baseline at a **128K** budget — mechanism is **context-budget competition**, not store growth (do **not** conflate with intake-899). So the retrieval sweep must vary k **as a fraction of remaining window budget**, and include a no-memory control arm, or it will select a k that is optimal only at short context.
 - [x] **ReasoningBank ranking correction:** do not carry “best overall” into retrieval design. intake-936 places it last of 13 on Cross-Episode Knowledge (Easy); its schema/store shape, not ranking, is the transferable signal. Historical intake prose remains historical and is not used as retrieval-policy evidence. ✅ 2026-07-29
 
 #### Progress checklist
@@ -990,8 +988,8 @@ nothing published** — EvolveR never evaluates on ALFWorld or WebShop at all.
 
 ##### The three items worth acting on, all zero-training
 
-- [ ] **EvolveR's gradient-free arm — the highest-value lead in the cluster, and it is on our side of the training line.** Its Table 4 shows principle distillation + retrieval with **RL DISABLED scoring 0.357, beating RL-only at 0.325**, and reaching **93.5% of the full system's 0.382** (Qwen2.5-3B). The citing paper presents EvolveR as the exhibit for "memory + RL is harmful"; EvolveR's own ablation shows its memory machinery *without gradients* outperforming pure RL. Same shape as our adopted ReasoningBank baseline (intake-988)
-- [ ] **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** [too-big: eligible ordered reflection traces must first be captured by owner] Reflexion v2 (`intake-989#03`; `dive-989/paper.txt:L380-L446`) defines RRR as post-hoc SequenceMatcher >=0.85 redundancy among reflections after the first, divided by |M|-1; this can avoid inference only when those reflection traces are available. Keep RRR separate from feedback extraction. The source's 15-trial original versus 10-trial mitigation budgets and its §4.4 7/8 versus §5.3 “none within 10” tension mean the reported change is not a same-budget causal estimate.
+- **[declined: ws58 2026-11-03 content-review: a finding without a task — its action (gradient-free principle distillation + retrieval) is the memory-program's adopted ReasoningBank baseline (intake-988)]** **EvolveR's gradient-free arm — the highest-value lead in the cluster, and it is on our side of the training line.** Its Table 4 shows principle distillation + retrieval with **RL DISABLED scoring 0.357, beating RL-only at 0.325**, and reaching **93.5% of the full system's 0.382** (Qwen2.5-3B). The citing paper presents EvolveR as the exhibit for "memory + RL is harmful"; EvolveR's own ablation shows its memory machinery *without gradients* outperforming pure RL. Same shape as our adopted ReasoningBank baseline (intake-988)
+- **[declined: ws58 2026-11-03 content-review: curiosity — by its own text the figure cannot be a same-budget causal estimate and no stack decision depends on a reflection-redundancy ratio]** **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** [too-big: eligible ordered reflection traces must first be captured by owner] Reflexion v2 (`intake-989#03`; `dive-989/paper.txt:L380-L446`) defines RRR as post-hoc SequenceMatcher >=0.85 redundancy among reflections after the first, divided by |M|-1; this can avoid inference only when those reflection traces are available. Keep RRR separate from feedback extraction. The source's 15-trial original versus 10-trial mitigation budgets and its §4.4 7/8 versus §5.3 “none within 10” tension mean the reported change is not a same-budget causal estimate.
 - [x] **Programmatic feedback extraction** — parse tool output for concrete failure facts instead of asking the model to self-diagnose. Reflexion v2 (`intake-989#03`, `intake-989#02`; `dive-989/paper.txt:L681-L694,L1494-L1547`) describes a trajectory parser that extracts “Nothing happens” responses and repeated identical actions, after which an LLM still explains each failure and writes a new plan. This is parser-plus-LLM, not zero-inference diagnosis replacement. Keep this task distinct from RRR; the 0/121 to 134/156 object-mention result remains paper-specific to selected frozen environments and is not a transferable local rate. ✅ 2026-11-01 — APP `1b988feb006497425417d641a3ecf7816c2f58ae`; hosted source-bound CI run 41280199807, artifact 13072594430 (214 passed, 1 warning); [belief: cc]
 
 ##### One threat assessed and dismissed, with its mechanism, so it is not re-raised

@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 57,
+      "blocked": 55,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 997
+      "open": 988
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1587,11 +1587,11 @@
       ]
     },
     "model-architecture-readiness.md": {
-      "blocked": 2,
+      "blocked": 0,
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 20,
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1600,10 +1600,10 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 49,
+      "total": 38,
       "tracks": [
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 8,
           "gates": [
             "INF-48"
@@ -1612,17 +1612,17 @@
           "line": 12,
           "markers": 1,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 9
+          "open": 3
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 584,
+          "line": 582,
           "markers": 1,
           "name": "engram-conditional-memory",
-          "open": 11
+          "open": 8
         }
       ]
     },
