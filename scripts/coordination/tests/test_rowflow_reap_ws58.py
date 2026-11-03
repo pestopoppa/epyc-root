@@ -46,6 +46,19 @@ class ReapTest(unittest.TestCase):
                 self.assertFalse(_alive(pid), f"pid {pid} survived")
             self.assertEqual(rf.row_dir_procs(rid, [td]), {})
 
+    def test_bystander_launcher_naming_row_in_path_survives(self):
+        rid = "ws58-bystander-%d" % os.getpid()
+        other = "ws58-sibling-%d" % os.getpid()
+        # another row's launcher whose argv names this row's path (the inf22 custody/recipe shape) must not be an orphan
+        p = subprocess.Popen(["bash", "-c", "sleep 30", "x", "/tmp/%s/source/filler_run15.sh" % rid, "--id", other])
+        try:
+            time.sleep(0.3)
+            self.assertNotIn(p.pid, rf.row_dir_procs(rid, []))
+            self.assertTrue(_alive(p.pid))
+        finally:
+            p.terminate()
+            p.wait(timeout=10)
+
     def test_shared_workdir_never_matches_by_cwd(self):
         self.assertEqual(rf.row_dir_procs("q" + os.urandom(8).hex(), ["/workspace", "/"]), {})
 

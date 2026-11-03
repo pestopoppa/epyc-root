@@ -1279,6 +1279,25 @@ def reap_pids(tracked, grace=20):
     return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
 
 
+def _owned_by_other_row(pid, rid, cmdline):
+    """True when this process is demonstrably ANOTHER row's: its argv carries `--id <other>` or its environment FILLER_ID is
+    another id. A row's argv may name a sibling's path (inf22 custody launched filler_run15.sh out of the recipe row's source
+    dir, so the dry-run teardown of the recipe row killed the armed custody launcher, rc=143, 2026-11-03). Unattributed
+    processes that merely name rid still count as its orphans."""
+    argv = cmdline.split("\0")
+    for i, a in enumerate(argv):
+        other = a[5:] if a.startswith("--id=") else (argv[i + 1] if a == "--id" and i + 1 < len(argv) else None)
+        if other is not None and other != rid:
+            return True
+    try:
+        for kv in open(f"/proc/{pid}/environ", "rb").read().decode("utf8", "replace").split("\0"):
+            if kv.startswith("FILLER_ID="):
+                return kv[10:] != rid
+    except OSError:
+        pass
+    return False
+
+
 def row_dir_procs(rid, dirs):
     """pids (not ours) whose argv names rid or whose cwd lies under one of the row's own dirs, with start times."""
     out = {}
@@ -1287,7 +1306,8 @@ def row_dir_procs(rid, dirs):
         if not q.isdigit() or int(q) == os.getpid():
             continue
         try:
-            hit = rid in open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace")
+            raw = open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace")
+            hit = rid in raw and not _owned_by_other_row(q, rid, raw)
             if not hit and dirs:
                 cwd = os.path.realpath(os.readlink(f"/proc/{q}/cwd")) + os.sep
                 hit = any(cwd.startswith(x) for x in dirs)
