@@ -60,13 +60,14 @@ def is_marker(p):
 
 
 # Operator 2026-11-01 23:55Z "DO BETTER" (third occurrence: inf70, kvu-vkq3 tokenize, sr6 `sha256sum -c FULL-MODEL.sha256` on one
-# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is refused at publish.
+# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is flagged at publish.
+# Operator 2026-11-03 (session review §5 item 8): a WARNING (printed + publish_warnings), never a refusal.
 PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum|hashlib\.sha256)\b[^\n]*(?:\.gguf|FULL-MODEL|\bMODEL[^\s]*\.sha256|/models?/|weights?)"
                      r"|\b(?:tokeni[sz]e|tokenizer\.encode|pretokeni[sz]e)\b"
                      r"|\b(?:wget|curl|aria2c|rsync|huggingface-cli download|hf_hub_download|snapshot_download)\b"
                      r"|\bcp\b[^\n]*\.gguf", re.I)
 # small source/packet checksum lists (SOURCE-SHA256SUMS, PACKET-SHA256SUMS, INPUT.sha256 over scripts) are cheap integrity
-# checks and stay allowed; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are refused.
+# checks and are not flagged; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are warned about.
 PREP_MSG = "verify/prepare inputs once before publishing, not inside the grant"
 
 
@@ -111,7 +112,12 @@ def lint(spec):
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
         hit = prep_in_grant(launcher)
-        rf.need(hit is None, f"{PREP_MSG}: {hit[0]} runs `{hit[1]}`" if hit else "")
+        if hit:  # operator 2026-11-03 (session review §5 item 8): WARN, never refuse; recorded in the row's publish_warnings
+            w = f"prep-in-grant: {hit[0]} runs `{hit[1]}`; {PREP_MSG} (it spends grant time; publish continues)"
+            print(f"WARN {w}")
+            pw = list(spec.get("publish_warnings") or [])
+            if w not in pw:
+                spec["publish_warnings"] = pw + [w]
         if not spec.get("lane"):
             try:
                 cls = rf.parse_launcher(launcher)["class"]

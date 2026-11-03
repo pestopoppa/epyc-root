@@ -138,7 +138,8 @@ if __name__ == "__main__":
 
 
 class PrepInGrantTests(unittest.TestCase):
-    """Operator 23:55Z: weight hashing / single-core prep inside the grant is refused at publish."""
+    """Operator 23:55Z: weight hashing / single-core prep inside the grant is flagged at publish; operator 2026-11-03:
+    a WARNING recorded in publish_warnings, never a refusal."""
 
     @classmethod
     def setUpClass(cls):
@@ -161,9 +162,16 @@ class PrepInGrantTests(unittest.TestCase):
         self.assertIn("sha256sum", open(bad).read())
         hit = pr.prep_in_grant(bad)
         self.assertIsNotNone(hit)
-        with self.assertRaises(rf.Refused) as cm:
-            pr.lint(fx.spec(rid, d, launcher=bad))
-        self.assertIn("verify/prepare inputs once before publishing, not inside the grant", str(cm.exception))
+        spec = fx.spec(rid, d, launcher=bad)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            pr.lint(spec)  # warns, does not refuse
+            pr.lint(spec)  # idempotent: one warning recorded, not two
+        self.assertEqual(len(spec["publish_warnings"]), 1, spec)
+        self.assertIn("verify/prepare inputs once before publishing, not inside the grant", spec["publish_warnings"][0])
+        self.assertIn("sha256sum", spec["publish_warnings"][0])
+        self.assertEqual(len(out.getvalue().strip().splitlines()), 2)
+        self.assertTrue(all(l.startswith("WARN prep-in-grant: ") for l in out.getvalue().strip().splitlines()))
         # 2. single-core prep in a script the launcher executes ($D/prep.py referenced from the launcher)
         open(os.path.join(d, "prep.py"), "w").write("ids = tokenizer.encode(text)\n")
         bad2 = os.path.join(d, "launch-tok.sh")
@@ -171,8 +179,10 @@ class PrepInGrantTests(unittest.TestCase):
         hit = pr.prep_in_grant(bad2)
         self.assertIsNotNone(hit)
         self.assertTrue(hit[0].endswith("prep.py"), hit)
-        with self.assertRaises(rf.Refused):
-            pr.lint(fx.spec(rid, d, launcher=bad2))
+        spec2 = fx.spec(rid, d, launcher=bad2)
+        with contextlib.redirect_stdout(io.StringIO()):
+            pr.lint(spec2)
+        self.assertIn("prep.py", spec2["publish_warnings"][0])
         # a comment is not an offence
         ok = os.path.join(d, "launch-comment.sh")
         open(ok, "w").write("# sha256sum -c FULL-MODEL.sha256 was done at prep time\n" + src)
