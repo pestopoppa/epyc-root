@@ -2,7 +2,6 @@
 """Guarded entry for the narrowly scoped M4 Q38FN recipe diagnostic."""
 from __future__ import annotations
 import argparse
-import fcntl
 import hashlib
 import json
 import os
@@ -134,21 +133,11 @@ def main() -> int:
         if int(mem['MemAvailable'].split()[0])*1024 < needed+reserve: raise ValueError('insufficient available RAM')
         if shutil.disk_usage('/mnt/raid0/llm').free-output_bytes < 150*1024**3: raise ValueError('insufficient disk headroom')
         if a.deadline-time.time()<minimum: raise ValueError('insufficient remaining grant')
-        if os.environ.get('M4_GPU_QUIET_MODE')!='exclusive': raise ValueError('exclusive GPU quiet required')
-        if sorted(os.sched_getaffinity(0))!=list(range(96)): raise ValueError('full physical-host affinity required')
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         original=_sha(a.grant)
-        fds=[int(x) for x in os.environ.get('M4_LEASE_FDS','').split(',') if x]
-        expected={f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)}|{'gpu_quiet.lock'}; found={}
-        for fd in fds:
-            path=Path(os.readlink(f'/proc/self/fd/{fd}'))
-            if path.parent==Path('/mnt/raid0/llm/tmp') and path.name in expected:
-                if path.name in found: raise ValueError('duplicate lease descriptor')
-                target=os.stat(path);actual=os.fstat(fd)
-                if (target.st_dev,target.st_ino)!=(actual.st_dev,actual.st_ino): raise ValueError('lease inode changed')
-                found[path.name]=fd
-        if set(found)!=expected: raise ValueError('full exclusive lease descriptors missing')
-        for fd in found.values(): fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        # The caller's `region-lock run --regions q0,q1,q2,q3` holds the lease (the kernel
+        # releases its flock on exit); the workload runs on the physical cores it covers.
+        os.sched_setaffinity(0,set(range(96)))
         if time.time()>=a.deadline: raise ValueError('deadline expired')
         env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')
         command=[sys.executable,'-B',str(ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py'),

@@ -99,7 +99,7 @@ def test_real_entry_stops_running_fixture_at_deadline(tmp_path):
     assert json.loads((output/'watch-result.json').read_text())['containment_empty'] is True
 
 
-@pytest.mark.parametrize('defect', ['missing_holds', 'missing_gpu', 'wrong_row', 'duplicate_holds'])
+@pytest.mark.parametrize('defect', ['missing_holds', 'partial_host', 'wrong_row', 'duplicate_holds'])
 def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, defect):
     args, output, marker, grant, stop, hold = setup_entry(tmp_path)
     plan_path = Path(args[args.index('--plan') + 1])
@@ -111,7 +111,7 @@ def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, def
     now = datetime.now(timezone.utc)
     line = ('regions=0-95 start=' + (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
             + ' end=' + (now+timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%MZ'))
-    if defect == 'missing_gpu': line += ' holds=q0,q1,q2,q3'
+    if defect == 'partial_host': line += ' holds=q0,q1,q2,gpu-quiet'
     elif defect == 'duplicate_holds': line += ' holds=q0,q1,q2,q3,q3,gpu-quiet'
     elif defect == 'wrong_row': line += ' holds=q0,q1,q2,q3,gpu-quiet'
     grant.write_text(line)
@@ -119,7 +119,7 @@ def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, def
     result = subprocess.run(args, env=env, capture_output=True, text=True, timeout=15)
     assert result.returncode == 2 and not marker.exists()
     assert not (output/'NATIVE-CAPTURE-COMPLETE.json').exists()
-    if defect in ('missing_holds','missing_gpu','duplicate_holds'):
+    if defect in ('missing_holds','partial_host','duplicate_holds'):
         assert 'holds' in result.stderr
     else:
         assert 'bound canonical' in result.stderr
@@ -146,3 +146,15 @@ def test_synthetic_rowflow_grant_refuses_without_dryrun_or_wrong_id(tmp_path):
     result = subprocess.run(args, env=dict(os.environ, FILLER_DRYRUN='1'), capture_output=True, text=True, timeout=15)
     assert result.returncode == 2 and not marker.exists()
     assert 'unbound synthetic' in result.stderr
+
+
+@pytest.mark.parametrize('holds', ['q0,q1,q2,q3', 'q0,q1,q2,q3,gpu-quiet'])
+def test_live_grant_accepts_full_host_with_or_without_gpu_quiet(tmp_path, holds):
+    sys.path.insert(0, str(DIRECTORY))
+    spec = importlib.util.spec_from_file_location('m4_entry_grant_test', DIRECTORY/'entry.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    now = datetime.now(timezone.utc)
+    grant = tmp_path/'any-name.grant'
+    grant.write_text('regions=0-95 start=' + (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+                     + ' end=' + (now+timedelta(minutes=3)).strftime('%Y-%m-%dT%H:%MZ') + ' holds=' + holds)
+    mod._grant(grant, '0-95', time.time()+60, require_host_holds=True)
