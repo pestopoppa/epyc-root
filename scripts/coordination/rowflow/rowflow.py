@@ -8,7 +8,8 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                result_path (what the filer reads), decision_rule, estimate_s, handoff_task
                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
-                               ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs),
+                               ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
+                               ADD reaper protection; empty = inputs (older than the first job start) + result_path),
                                dryrun_timeout_s (900 cpu / 1500 gpu), dryrun_native_result (count a unique per-attempt native JSON unit
                                without touching result_path), lineage, lineage_reset, supersedes, snapshot (true forces the snapshot below)
 
@@ -70,7 +71,6 @@ ENGINE_RE = re.compile(r"filler_run(\d+)\.sh$")
 CANONICAL_ENGINE = "filler_run15.sh"
 MAX_FAILS = 3
 STOP_GRACE_S = 600  # a job may finish its current item before honouring the stop file
-DEFAULT_KEEP = ["**/*.json", "**/*.jsonl", "**/*.md", "**/*.txt", "**/*.csv", "**/*.tsv", "**/*.sh", "**/*.py"]
 _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
 SNAPSHOT_MAX_BYTES = 256 << 20  # a snapshot copies a directory; a launcher that lives next to models is a spec defect
 
@@ -469,7 +469,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
          f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
     need(launcher.startswith(scratch + "/"), f"launcher {launcher} is not inside scratch_root {scratch}")
-    keep = list(spec.get("keep") or DEFAULT_KEEP)
+    keep = list(spec.get("keep") or [])   # operator 2026-11-03: empty = inputs + result (the reaper protects every input)
     if result_path.startswith(scratch + "/"):
         rel = os.path.relpath(result_path, scratch)
         if rel not in keep:

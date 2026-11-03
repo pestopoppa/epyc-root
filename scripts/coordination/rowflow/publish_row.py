@@ -5,8 +5,9 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
           run plus an agent turn (CAF-4): a result_path that is a completion marker (.complete/.ended/.done/.FILED,
           grants/, COMPLETE*/TERMINAL*) becomes the declared results file in the same run dir (result_format json ->
           RESULT.json, jsonl -> results.jsonl; no declared format -> refused in one line), and the derivable fields
-          lane (launcher --class), scratch_root (the launcher's job dir), keep (result_path relative to scratch_root) and
-          kind=compute are filled when missing. Every rewrite is printed as one LINT line.
+          lane (launcher --class), scratch_root (the launcher's job dir) and kind=compute are filled when missing. keep is
+          left as the owner wrote it: empty = inputs + result (the reaper never deletes a file older than the row's first
+          job start and always keeps result_path; keep globs only add). Every rewrite is printed as one LINT line.
 --repair  after a dry-run FAIL of a known class: rebuild the spec from ready/<id>.json, apply the fix, lint, republish
           under the SAME id (a spec change makes the keeper re-dry-run it; the keeper starts that run, not this tool).
           Known: (1) "no unit in <p>" / "before writing a unit to <p>" where <p> is a completion marker or a results file
@@ -47,7 +48,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
-DERIVABLE = ("lane", "scratch_root", "keep", "kind")
+DERIVABLE = ("lane", "scratch_root", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
 
 
@@ -127,10 +128,8 @@ def lint(spec):
         rf.need(rundir, f"result_path {rp} is a grants/ marker and the spec has no scratch_root to place {fn} in")
         spec["result_path"] = rp = os.path.join(rundir, fn)
         notes.append(f"result_path={rp} (was a completion marker)")
-    sr = str(spec.get("scratch_root") or "").rstrip("/")
-    if not spec.get("keep") and sr and rp.startswith(sr + "/"):
-        spec["keep"] = [os.path.relpath(rp, sr)]
-        notes.append(f"keep={spec['keep']}")
+    # keep is not linted (operator 2026-11-03, session review 3.1): an empty keep = every input (older than the first job
+    # start) + the result; the keeper's reaper protects both and keep globs only add to them.
     if not spec.get("kind"):
         spec["kind"] = "compute"
         notes.append("kind=compute")

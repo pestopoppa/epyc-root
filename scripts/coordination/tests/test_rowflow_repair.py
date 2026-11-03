@@ -50,7 +50,8 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(spec["result_path"], os.path.join(d, "out", "results.jsonl"))
         self.assertEqual(spec["lane"], "cpu")
         self.assertEqual(spec["scratch_root"], d)
-        self.assertEqual(spec["keep"], ["out/results.jsonl"])
+        self.assertNotIn("keep", spec)   # operator 2026-11-03: the lint no longer narrows an empty keep to the result file
+        self.assertFalse(any(n.startswith("keep=") for n in notes), notes)
         self.assertEqual(spec["kind"], "compute")
         self.assertTrue(any(n.startswith("result_path=") for n in notes), notes)
         # no declared format -> one-line refusal, nothing published

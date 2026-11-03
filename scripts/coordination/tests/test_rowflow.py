@@ -104,7 +104,7 @@ class RowflowTests(unittest.TestCase):
         self.assertGreaterEqual(row["window_s"], 300 + 300)
         self.assertEqual(row["window_s"] % 60, 0)
         self.assertTrue(row["scratch_root"].startswith(fx.root))
-        self.assertIn("out/results.jsonl", row["keep"])
+        self.assertEqual(row["keep"], ["out/results.jsonl"])   # 2026-11-03: empty keep = inputs (reaper rule) + result only
         self.assertEqual(row["launcher"]["sha256"], rf.sha256(os.path.join(d, "launch.sh")))
         self.assertEqual(rf.status(fx.flags, "t-pub-20261101")["state"], "needs-dryrun")
         # spec errors are one refusal each
