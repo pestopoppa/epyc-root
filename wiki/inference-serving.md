@@ -6,6 +6,20 @@
 **Sources**: (+ sweep 2 sources, see its Source References) 157 native document references (source review 2026-10-07)
 
 
+## Compiled Update — 2026-11-03 (evening): INF-22 results, t48 recipe bundle, v11 bench tooling
+
+**Confidence: verified** (run artifacts cited in the handoff; the t48 bundle is an operator decision, not a measurement).
+
+- **MI210 beats CPU prefill at 2k and 8k** (PF1-EXP04 r6, 24/24 valid units, busy fraction 0.865): prefill median tok/s at L=2048/8192 was A0 CPU 228/210, A1-disabled control 221/207, A1 op-offload 479/465 (2.1-2.2x), A2 `-ngl 99 -ncmoe 48` 513/492 (2.3x). The control matching CPU shows the gain is the offload, not the binary; the crossover is below 2048 tokens, so PF1-EXPAND sweeps 128-2048.
+- **The t96 image lead did not replicate**: 4 alternating pairs, baseline C5 faster in every pair (prefill medians 174.6 vs 155.9, decode 48.0 vs 46.2); the earlier +15 % (n=3) is killed and the t48-over-t96 conclusion stands.
+- **t48 recipe bundle is indexed to the MODEL, not a role**: the Qwen3.8-Flash-Next UD-IQ4_XS CPU server runs threads 96 -> 48 plus the recipe env keys, wherever it is bound (operator 2026-11-03); presence gate reads the compiled launch argv, never prose.
+- **Batched decode saturates near 83 tok/s** (indicative E5 stage B, qwen36_q8_0, full-machine interleave, np1..np16: 85.6/91.6/83.0/79.0/83.2); the C1b two-instance halves result (30.7 -> 66.7) is confounded by placement. Era registration (binary_version 10420) is required before any E5 cell is decision-grade.
+- **YaRN E1 KFD memory is flat**: own-PID KFD is identical between E1 and W images (W-E1 = 0.0) and flat across prefill stages (A0 37.13 GiB, A1 47.63 GiB at 500k), so the +15 GiB overshoot is not prefill growth; the box was reopened pending one unbroken 128k -> 500k chain (YARN-E1-MEM-CHAIN).
+- **A/A np4 control**: aggregate 136.73 vs 131.22 tok/s, A2/A1 = 0.960 (descriptive).
+- **Load-time tooling**: llama-bench now takes `--load-threads` (V11-120, champion branch `experimental/llama-bench-load-threads-20261103` @ `181483cfc`, pending fold into the v11 candidate) so bench loads match llama-server; champion kernels only, load threads set to the claimed cores.
+
+Sources: [mi210-serving-program](../handoffs/active/mi210-serving-program.md) · [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) · [INF-22 unblock progress](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
 ## Compiled Update — 2026-11-03: the EG2 embedder swap is folded into the v11 promotion
 
 Operator decision 2026-11-02: UFH-12-PROD-ADOPT (EmbeddingGemma 2 at 256 dims, BF16 weights) ships with the v11 kernel promotion, with no exception and no separate swap. The promotion carries a presence gate (`strings libllama.so | grep -c gemma-embedding2` >= 1 on both CPU and GPU candidate builds; production v10 does not define the architecture, so a kernel rollback forces the pool and store rollback in the same step), five stack-change items applied together (embedders 8090-8095 recipe, pool policy, truncate dim, registry block, live store migration with its own rollback script), and a consumer-migration gate: the freeze is refused until each BGE-1024 consumer R1-R5 is MIGRATED or RETIRED. R1 (IRT scorer) already FAILED its held-out check on EG2-256 (difficulty Spearman 0.145 vs 0.175). Nothing has been applied. Sources: [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md).
