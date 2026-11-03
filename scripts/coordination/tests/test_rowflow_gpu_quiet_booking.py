@@ -68,7 +68,7 @@ class CoRunWithGpuRow(unittest.TestCase):
         # GPU row: gpu-quiet exclusive + host threads t184..t191 (--no-fold-siblings), no quarter
         busy = {rf.GPU} | {f"t{k}" for k in range(184, 192)}
         with tempfile.TemporaryDirectory() as td:
-            assigned, _i, _p = rf.plan(self._free(busy), [_cand(td, "")], 900)
+            assigned, _i, _p = rf.plan(self._free(busy), [_cand(td, "")], 900, gpu_grant_open=True)
         self.assertEqual(len(assigned), 1)
         self.assertEqual({r for r in assigned[0][1] if r in rf.QUARTERS}, set(rf.QUARTERS))
         self.assertNotIn(rf.GPU, assigned[0][1])
