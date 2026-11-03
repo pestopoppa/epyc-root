@@ -1327,7 +1327,7 @@ Role selection has no latency or load term today. Its only cost input is histori
 ### Source References
 - [Decision-aware routing](../handoffs/active/routing-program.md) — DAR-LAT-1/2/3, the pre-registration and the gate, including the :8074 thread drift.
 - [Learned routing controller](../handoffs/active/routing-program.md#track-learned-routing-controller) — the C1-A4 declines, the fast-path precondition, the evaluation caution.
-- [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md) — the RouterWise decline.
+- [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — the RouterWise decline.
 - [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P2 and P4-1, and R2 (one estimator owner).
 
 

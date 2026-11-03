@@ -3416,7 +3416,7 @@ Not operator decisions, handled in-spec:
 The armed packet uses separate scratch files. Its source manifest remains SHA-256 `ddb15b7d8fa741baf54cf9563710df2ab9dade4ef3471eaed0a62aec2fe90d78`; no scratch source, seal, or launcher was changed. The branch retains original preparation commit `5d5d5f98906bf1ba0b0bee2ad27959a0e017d989`. This appendix records only the source hygiene repair; the owner retains the census and index row.
 
 ## Track: autokernel-all-devices-all-dimensions
-<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-62, RTG-57, RTG-58 -->
+<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-62, RTG-58#kv-unified-stack-rollout, RTG-58#kv-prefix-fork-and-paged-attention -->
 
 > Folded from `handoffs/active/autokernel-all-devices-all-dimensions.md` @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5; retired row INF-81 → INF-65). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -3443,11 +3443,11 @@ audit `/mnt/raid0/llm/tmp/ak-longctx-audit-20261004/` · research worktrees
 every merge into research main.
 **Depends on**: INF-73 [`autokernel-unified-surface-program.md`](autokernel-unified-surface-program.md) (the
 loop, serial router and target model), INF-75 [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
-(the keep gate G5 extends), RTG-57 [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) (`:8083` argv and
+(the keep gate G5 extends), RTG-57 [`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout) (`:8083` argv and
 its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md)
 (DF2-9, the rocWMMA FA pin and its NaN reproducer)
 **Related**: INF-77 [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) (DS41 lane; finding 1,
-DS41-C9, DS41-T2, DS41-B14), RTG-58 [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md)
+DS41-C9, DS41-T2, DS41-B14), RTG-58 [`kv-prefix-fork-and-paged-attention.md`](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 (np=4 × ~80k is its regime too; KPF gates share G4's slot restore), INF-74
 [`autokernel-concurrent-target-coordination.md`](autokernel-concurrent-target-coordination.md) (stage claims),
 INF-31 [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) (dense-mask vs sparse gather), INF-70

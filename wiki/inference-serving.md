@@ -111,7 +111,7 @@ Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harn
 - **Four scheduler defects of 10-23/24 (all fixed).** An event watcher that re-touched its stamp at each re-arm lost a failure and idled the host 3.7 h; a launcher read the main thread's `Cpus_allowed_list` instead of the union of thread masks (false rc=68 under `OMP_PROC_BIND=spread`); region-lock prints a shared quiet as `SHRD`, which a runner matched only as `SHARED`; two finished rows stayed ARMED. Revoke an unfixed job's grant before its launcher polls.
 - **Open, each with a named blocker:** CH-27 awaits its registered row, ufh14 probes await the VRAM-drain fix, and every remaining CPU row needs the whole host quiet.
 
-Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [Prefill budget :8083 stack-change package](../docs/design/prefill-budget-8083-stack-change-package.md), [Workspace-58 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Prefill budget :8083 stack-change package](../docs/design/prefill-budget-8083-stack-change-package.md), [Workspace-58 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): the production :8083 argv does not leak, and how eval harnesses fence the scratch-shape leak
 
@@ -133,7 +133,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
 
 - [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (GPU-LEAK-1b/1d/1e, GPU-ZOS-1a)
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-13.1, KPF-17.4, KPF-18-S1, KPF-LB1.1 mitigations; KPF-GL1)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1, KPF-17.4, KPF-18-S1, KPF-LB1.1 mitigations; KPF-GL1)
 - [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB7 guard)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) (GPU-LEAK-1d result)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
@@ -187,9 +187,9 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — HSF-LB1 correction of the 60-820x line and the dispatch.v1 fields
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — HSF-LB1 correction of the 60-820x line and the dispatch.v1 fields
 - [handoffs/active/numa-placement-and-contention.md](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) — DS-LB1 prefix-property tests and ordering log
-- [handoffs/active/kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-prefix-fork-and-paged-attention.md) — KPF-LB2 amendment, fan-out stats, KPF-64 decision and adapter repointing
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-LB2 amendment, fan-out stats, KPF-64 decision and adapter repointing
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — locals-a/locals-c task outcomes
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): host RAM is a booked resource, QUEUED means runnable, and the D4 timeout was a wrong estimator
@@ -208,7 +208,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md)
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md)
-- [handoffs/active/kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md)
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): slot-fabric, placement and GPU-lane work picks up DeepInfer-derived measurement tasks
 
@@ -226,7 +226,7 @@ Open questions: whether HSF-3 returns enough eligible pairs to fit any curve (a 
 ### Source References (2026-10-20 sweep 2)
 
 - [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md) — ratified D1-D11, GPU-ZOS-1, PB-QCOST-1.
-- [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md) — HSF-1..5, declines.
+- [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — HSF-1..5, declines.
 - [Within-role placement state machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) — WP-15, session-handover constraint.
 - [Speech v2 release manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md) — must-carry patches, threadpool risk.
 
@@ -281,7 +281,7 @@ Two source proposals remain separate from this accepted behavior. The temporary-
 
 ### Source References (2026-09-24, wrap-up #4)
 
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-2, KVU-3, KVU-4a, KVU-11b (decision D).
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-2, KVU-3, KVU-4a, KVU-11b (decision D).
 - [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the accepted-hazard line.
 - [`model-stack-single-source-update-pipeline.md`](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F14.
 - [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *GPU residency applied*.
@@ -327,7 +327,7 @@ Ranked (audit §5): **1** T2 admit against real `/slots` occupancy · **2** T3 a
 
 ### Source References (2026-09-24, shared-pool serving)
 
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) — RTG-57: KVU-0e branch contents, KVU-2/3/3a/4/4a/5/6/7, OP-54/55/56.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — RTG-57: KVU-0e branch contents, KVU-2/3/3a/4/4a/5/6/7, OP-54/55/56.
 - [serving-engine-technique-audit-20260924.md](../artifacts/operator/serving-engine-technique-audit-20260924.md) — engine comparison, llama-server v10 gaps with `file:line`, technique matrix T1–T14, ranked steal list and the not-stolen set.
 - [stack-change-kvu-20260924/PACKAGE.md](../artifacts/operator/stack-change-kvu-20260924/PACKAGE.md) — §4.4 shared-pool failure mode and idle-slot clear; §10 follow-ups the branch closes.
 - [kvu-stack-inventory-20260924.md](../artifacts/operator/kvu-stack-inventory-20260924.md) — §3: no orchestrator consumer read `/props` or handled the context-size 400 before the branch.
@@ -1456,7 +1456,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   blueprint spanning the orchestrator CPU placement layer and the session bus, with the
   axiom-1 consequence stated sharply: **observing holders is not exclusion (TOCTOU); only
   acquiring is.**
-  [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md)
+  [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency)
 
 - **Activation sequencing is decided (D11, hybrid "sign-off last") but not executed.**
   Order: P2-2 tenant landing → Steps 0-7 choreography → the P3-1/P3-2 bake-off starting on
@@ -1492,7 +1492,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
 - [p2-2-tenant-landing-readiness-20260729.md](../docs/reference/p2-2-tenant-landing-readiness-20260729.md)
   — independent re-hash of all three tenants, runbook P1-P7 verdicts (P7 FAIL, no fleet port
   listening), and the whisper capability blocker with its fail-safe blast-radius analysis.
-- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md)
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency)
   — the target architecture and axiom source; the 2026-07-29 GPU-host-threads gap; the
   resource-admission-blueprint generalization.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the D11 decision, the W3
@@ -1601,7 +1601,7 @@ The serving layer gained a **live within-role placement state machine**, decisio
 - **Within-role full↔quarter placement state machine is LIVE** (WP-0..WP-5 merged behind flags). `max_safe_concurrency` per role from cpuset-disjointness: frontdoor/ingest/vision = 3, worker_general/architect = 1. It queues-instead-of-overlaps, and migrates sessions transactionally on handover (forward WP-3 + reverse WP-4) with anti-thrash (cooldown + recency window + per-session cap). J1 gate (verified): 3-way frontdoor **1.68×**, 4-way **1.91×** aggregate, no overlap collapse. Per-role policy ratified: frontdoor/worker_general/vision = `burst_prefer_quarters` (worker_general -t48 re-bench 0.77–0.95 after a launcher over-threading fix `da1aed6`; vision quarter-pairs super-linear 1.14–1.27×, full+quarter blocks → full-disabled-under-burst). ([within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine))
 - **Single-instance batched decode (E1/E2, P-BENCH-3, decision-grade CPU window):** the A3B eval primitive **saturates early** — aggregate `-np 2 ≈ -np 8 ≈ -np 16` (~29 t/s) while tail p95 rises sharply after `-np 2`; the dense control scales more strongly through `-np 8`. E2: a single `-np 8` batch server is **4.86× faster by wall-minutes/eval** than the current 3-concurrent EvalTower fan-out → keep-candidate for a dedicated eval-batch serving class (default-off `eval_batch_frontdoor` on :18070 + feature flag landed; activation smoke passed then rolled back cleanly). Caveat: MoE batching is weaker than dense (distinct tokens hit distinct experts → expert-weight traffic grows with batch). E3 8x8 GEMM batch>1 body = NO-GO (decode BW-killed). ([batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement))
 - **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs LAST in `inference-batch-loop → architect-bench → E5`): directly tests whether one big high-`-np` server beats quarter-batched servers, and whether workload-class lanes (low-K latency vs high-K throughput) are real. It sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement))
-- **Heterogeneous CPU×GPU slot fabric is a DESIGN, not greenfield** (gated post-v7-promotion + post-E5 + operator). It models the whole machine as one slot fabric — CPU = `N×K` (NUMA instances × `-np`), GPU = `1×K_gpu` — so teleport, residency-swap, and spillover are all slot operations. It **reuses** the live `ConcurrencyAwareBackend`/`ContentionGate`/`NUMA_CONFIG`/KV-migration/anti-thrash machinery and its **no-mid-decode-preemption / session-handover** constraint; new work is only the GPU-as-placement-target, a Layer-2 residency actuator (the ONLY VRAM-touching op, allowlist + hysteresis + kill-switch), and an N-dwell swap hysteresis `N ≥ C·(1−X)/X` (~6.3 min at C=20s/X=5%). Governing principle: **the GPU accelerates; the CPU guarantees** (every GPU model has a designated CPU fallback). ([heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md))
+- **Heterogeneous CPU×GPU slot fabric is a DESIGN, not greenfield** (gated post-v7-promotion + post-E5 + operator). It models the whole machine as one slot fabric — CPU = `N×K` (NUMA instances × `-np`), GPU = `1×K_gpu` — so teleport, residency-swap, and spillover are all slot operations. It **reuses** the live `ConcurrencyAwareBackend`/`ContentionGate`/`NUMA_CONFIG`/KV-migration/anti-thrash machinery and its **no-mid-decode-preemption / session-handover** constraint; new work is only the GPU-as-placement-target, a Layer-2 residency actuator (the ONLY VRAM-touching op, allowlist + hysteresis + kill-switch), and an N-dwell swap hysteresis `N ≥ C·(1−X)/X` (~6.3 min at C=20s/X=5%). Governing principle: **the GPU accelerates; the CPU guarantees** (every GPU model has a designated CPU fallback). ([heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency))
 - **Inference-batch loop** is the single-writer `/loop` execution vehicle over a 52-entry manifest; the current lead island is eval-tower EV-4, while OP-2/GLM-reviewer entries were superseded by the 2026-07-19 readiness work. Quiet-window-gated; never competes with the parallel inference session. ([inference-batch-loop](../handoffs/active/eval-tower-program.md#track-inference-batch-loop))
 
 ### Open Questions (2026-07-20)
@@ -1613,7 +1613,7 @@ The serving layer gained a **live within-role placement state machine**, decisio
 
 - [within-role-placement-state-machine.md](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) — live placement SM, per-role policy ratification, no-mid-decode-preemption constraint.
 - [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E1/E2 batched-decode economics, eval-batch serving class, E5 spec.
-- [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — CPU×GPU slot-fabric design extending the live fabric.
+- [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — CPU×GPU slot-fabric design extending the live fabric.
 - [inference-batch-loop.md](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — single-writer campaign loop + quiet-window discipline.
 - [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 fleet-placement sequencing (residency → eval-engine → embedder → prefill offload → drafter farm).
 ## Summary
@@ -2708,9 +2708,9 @@ This supersedes the example above that keeps the stub "active only for the Phase
 The plan approval authorizes only HSF-1 and HSF-3, which are passive instrumentation and a log read. Everything else stays gated.
 
 ### Source References
-- [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md) — slot-record schema, HSF-1/2/3, the swap-protocol amendment, the recovery term, and the declines.
+- [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — slot-record schema, HSF-1/2/3, the swap-protocol amendment, the recovery term, and the declines.
 - [Contention model rider](../handoffs/active/contention-model-device-and-load-axes-rider.md) — the llama-server capacity-signal map (C1-A5).
-- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-14.
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-14.
 - [Dynamic stack concurrency](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) — G5 replay design; the GAIE EPP and ThunderAgent declines.
 - [Within-role placement state machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) — Dynamo's worker cost, the reference for any future replica load term.
 
@@ -2740,7 +2740,7 @@ The plan approval authorizes only HSF-1 and HSF-3, which are passive instrumenta
 - [Speculative decoding MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) — SW-9's GPU status.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — ARCHSWAP applied; the second-MI210 direction.
 - [CPU speech contention](../docs/reference/speech/cpu-speech-contention-20260924.md) — voice-turn routing to the 27B under `architect_critic`.
-- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — SSU-F3 done, SSU-F10 and KVU-1d open.
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — SSU-F3 done, SSU-F10 and KVU-1d open.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C74/C75: the 27B concurrency figures and the unified-pool constraint.
 
 
@@ -2824,7 +2824,7 @@ and that traffic was mostly the DS41 planner seat and the C95 harness experiment
 - [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — SCG-DRYRUN, SCG-INERT-FLAGS, SCG-CAPACITY-FRESH, SCG-LEAN-BOOTSTRAP, SCG-TEST-LOGDIR.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-start-dry-run-launched-stack, INC-20261003-runtime-flag-survived-reboot.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the 09-24 → 10-01 log analysis and its verdict.
-- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-17 serving telemetry.
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-17 serving telemetry.
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the VL placement and S-20.
 - [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — ARCHSWAP-4 done.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
@@ -2842,7 +2842,7 @@ and that traffic was mostly the DS41 planner seat and the C95 harness experiment
 
 ### Source References
 
-- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-16 residency gate and KVU-18/19 measurements.
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-16 residency gate and KVU-18/19 measurements.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold gates and P3 v2 serving-level A/B.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — operator pool decision and coordinated GPU posture.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — live pool bring-up and failed concurrency criterion.
@@ -2856,7 +2856,7 @@ The next GPU serving work is still prospective: KVU-16g proposes first-prompt TT
 
 These updates identify what can be observed or measured; they do not show a fleet-wide latency improvement.
 
-Sources: [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+Sources: [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 
 ### Supplemental serving findings — Oct 3–6 changed files
 
@@ -2864,7 +2864,7 @@ Q38-T7 now has a bounded production-shape result: on the parked-role, 24-prompt 
 
 The residency audit adds a negative data-availability result: a 19-record serving-call journal census had no eligible keyed session pairs, so it yields no inter-call gap distribution. Synthetic source-boundary checks passed (21 fixtures in the NI10/NI32 sequence), but they validate schema/refusal behavior rather than live call joins. The region-lock follow-up found SMT siblings 160–183 were dropped from claims and could overlap a held 0–95 CPU window; a fix on an orchestrator branch passed 816 tests including 22 new tests and an end-to-end refusal, but had not merged or deployed. GPU tie-in updates add TTFT and YaRN memory-attribution tasks only; they contain no completed new serving measurement.
 
-Sources: [Qwen3.8-27B replacement](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [shape-keyed contention gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Oct 3 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
+Sources: [Qwen3.8-27B replacement](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [shape-keyed contention gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Oct 3 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
 
 ## Incremental synthesis — 2026-10-06: :8083 batch-size and idle-slot stack change
 
@@ -2889,9 +2889,9 @@ Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [
 
 ## Incremental synthesis — 2026-10-20: slotdraft fold and np x ctx study reopening
 
-**Confidence: session-reported.** The champion fold "slotdraft" (`e33229348` to `dd3d9721c`) ports upstream slot-save checkpoint persistence (#26004) and draft-state persistence (#30574); MTP acceptance after a slot restore measured 0.98-1.02x of live versus 0.53-0.71x before (ledger in [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)). The upstream mechanisms are discussed in `intake-2096#record` and upstream llama.cpp PR #30574. KVU-12 (CPU np x ctx study) was reopened with a driver and context bank on a research branch and a Tier-0 overnight window armed; unified-pool rollout context is in [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md). Details: [kv-cache](kv-cache.md).
+**Confidence: session-reported.** The champion fold "slotdraft" (`e33229348` to `dd3d9721c`) ports upstream slot-save checkpoint persistence (#26004) and draft-state persistence (#30574); MTP acceptance after a slot restore measured 0.98-1.02x of live versus 0.53-0.71x before (ledger in [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)). The upstream mechanisms are discussed in `intake-2096#record` and upstream llama.cpp PR #30574. KVU-12 (CPU np x ctx study) was reopened with a driver and context bank on a research branch and a Tier-0 overnight window armed; unified-pool rollout context is in [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout). Details: [kv-cache](kv-cache.md).
 
-Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ## Incremental synthesis — 2026-10-21: window discipline for GPU claims, slot-fabric analytics, and two speech-kernel serving facts
 
@@ -2904,7 +2904,7 @@ Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV unified s
 - **HSF-5 analytic half:** KV mirror 34,840 B/token (0.013% of the link), recurrent state 149.6 MiB must be checkpointed every >= 19 tokens per slot (per-token at 57.7% fails a 3% budget), host mirror 14.3 GB (q8); D2H, disk and gather rates unmeasured, so the box stays open (HSF-5 REPORT).
 - **Speech serving.** The speech threadpool/barrier fix is in the speech champions only (not production); whisper's 2.4-2.5x missed its predeclared 5x total-latency target while qwentts passed (see the multimodal page, 2026-10-21). Any speech launcher still sets its own `LD_LIBRARY_PATH` and proves it with `verify_ggml_linkage.sh`. The Q38-T10.1 control arm passed and the serving-gate rule is predeclared, with no gate result yet (see the speculative-decoding page).
 
-Sources: [benchmark-analyst guide](../docs/guides/agent-workflows/benchmark-analyst.md), [heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md), [qwentts-threadpool progress](../progress/2026-10/2026-10-21-qwentts-threadpool.md).
+Sources: [benchmark-analyst guide](../docs/guides/agent-workflows/benchmark-analyst.md), [heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md), [qwentts-threadpool progress](../progress/2026-10/2026-10-21-qwentts-threadpool.md).
 
 ## Compiled Update — 2026-10-21 (sweep 4): the Q38-T10.1 GPU phase, the champion GPU A/B, and the order of the champion bundle
 
@@ -2980,13 +2980,13 @@ Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/inci
 - **FD-DIV-1a: the GSQ IQ3_XXS fused-decode double free is fixed by `14c57cbe9`.** Fused ON is byte-identical to the graph path on 4 prompts (GSQ) and on UD-IQ4_XS; unpatched v10 still aborts (rc 134). On UD-IQ4_XS v10 fused-ON decode is about 1500-2000 ms/token versus 70-87 on the graph path (single runs); production keeps `GGML_FUSED_DECODE_OFF=1`. The ASAN repro port is FD-DIV-1b.
 - **Operational:** actors keep fan-out orchestrator-owned (OAB-33 closed, no seat-prompt change); `ram_admit` is now enforced before all four AutoKernel server launches (DS41 class needs 739 GiB).
 
-Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/heterogeneous-slot-fabric-residency.md), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): what the :8083 sampler settings rule out, and the host KV mirror cost
 
 - **GPU-ZOS-2's greedy fast path cannot engage on production :8083 traffic.** The orchestrator always sends temperature 0.1/0.2 with top_k 40, top_p 0.95 and repeat_penalty 1.1, and the penalty alone disqualifies greedy-fast. Only `lazy-save` and `overlap-process` of `LLAMA_ZOS2` can move production. The design ceiling is 3.71% of step time (INDICATIVE). (Sources: `docs/design/gpu-zos-2-one-step-lag-design-20261024.md`; the GPU-ZOS-2.1 note in `handoffs/active/mi210-serving-program.md`; the 10-24 progress shard.)
-- **The host KV mirror (HSF-5) costing fired its prototype trigger.** The analytic KV tail is 0.44%/1.01% of a step in the worst case, so HSF-5.P was built behind `--kv-host-mirror` (default OFF). Its acceptance gates are predeclared: decode at most 3% slower, graph reuse at least 0.97, token-identical restores, replay at most 6 steps. (Sources: `docs/design/hsf-5-host-kv-mirror-costing-20261024.md`; HSF-5 / HSF-5.P in `handoffs/active/heterogeneous-slot-fabric-residency.md`; `/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p/PREDECLARATION.md`.)
+- **The host KV mirror (HSF-5) costing fired its prototype trigger.** The analytic KV tail is 0.44%/1.01% of a step in the worst case, so HSF-5.P was built behind `--kv-host-mirror` (default OFF). Its acceptance gates are predeclared: decode at most 3% slower, graph reuse at least 0.97, token-identical restores, replay at most 6 steps. (Sources: `docs/design/hsf-5-host-kv-mirror-costing-20261024.md`; HSF-5 / HSF-5.P in `handoffs/active/kv-cache-program.md`; `/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p/PREDECLARATION.md`.)
 - **HSF-4/5 source rates are quoted from the graphs-ON step-7 run.** For example, tmpfs restore is 8.58 / 8.50 / 7.29 GB/s. The difference from graphs-off is attributed jointly to graphs ON, the HSA knob and the fresh-load history, not to graphs alone. (Sources: `docs/design/hsf-4-results-20261023.md`; HSF-4.G in the HSF handoff; `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/PREDECLARATION.md`.)
 - **Lineup artifact pins are now strict at `start`.** All 16 lineup roles carry an HF revision and sha256, and a missing pin is fatal at `orchestrator_stack.py start` (not at `reload`). `start` reads the master registry from the shared research clone, so a stale clone refuses. The opt-out is `REGISTRY_ARTIFACT_PINS_STRICT=0`. (Sources: SEC-ART-1/1.1 in `handoffs/active/stack-lifecycle-program.md`; the 10-24 progress shard; orch main `1eff8145`.)
 
@@ -2995,7 +2995,7 @@ Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [het
 
 **Confidence: verified** for the accepted build and GPU-OPS record. The C5 repair restores the live-position save path and passed CPU/HIP build checks plus model-free restore/GPU-OPS validation: 429 cases and 1,391,627,616 D2H-poison/H2D bytes. The CSV artifact SHA-256 is `442f99d366d79206d6cdfa7e0c0e082e2475e8f0f59972eb60de9ba50cd454a6`; 690/686/734 are counts of positive DURING KFD/VRAM samples. The source and its private fork remain outside main/champion/production at this cut. This establishes a bounded backend-operations check; it says nothing about model inference, decode performance, or promotion. HSF-5.P remains open for remaining profile/graph follow-up.
 
-Sources: [HSF-5.P handoff](../handoffs/active/heterogeneous-slot-fabric-residency.md); [C5 repair findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md); [wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md).
+Sources: [HSF-5.P handoff](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency); [C5 repair findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md); [wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -3038,11 +3038,11 @@ Packet evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-serving-calls-ready
 
 - **GPU-ZOS-2.3 serial fallback passes correctness; ship stays unauthorized.** The np4 gate R3 was INCONCLUSIVE_SERIAL_REQUIRED (A1/A2 token mismatch 24/24, m_AA=24; B2 20/24, F3 4/8). The serial tier (SA1/SA2/SB/SO, eight prompts, max_tokens 256, np4/ctx 393216) then agreed token-for-token including draft and accepted-draft counts: correctness PASS with `ship_authorized=false`; speed and remaining gates are required, and the np4 result is unchanged. The release/debug images needed a root-cause fix (archive with no .git gave GGML_COMMIT=unknown; ROCm cuid derives from source/output) before qualification. ([source](../handoffs/active/mi210-serving-program.md))
 - **GPU-LEAK-1e: no single factor removes the per-request VRAM growth.** Varying -ub 512, -np 4 or --cache-ram 65536 from the pinned E1 shape (15 requests each) all left own-PID KFD growth at ~290.27 MiB/request over requests 5-15 versus 290.26 for E1. This is a descriptive factor table: no interaction mechanism, mitigation or production decision. ([source](../handoffs/active/mi210-serving-program.md))
-- **Streamed-chat truncation and capacity gate repaired in source.** KVU-3a: streamed usage now drives the same context-limit classification as non-stream (209 tests across seven modules, orchestrator 61bf8518). KVU-13c: the capacity gate no longer runs at `stack_manifest` import; it runs explicitly in the pipeline check and start/reload handlers (152 controls). Separately, model-path validation now checks only files the stack launches (186 tests) and backend declarations require literal `verify_ggml_linkage: true`. No API reload or live config change. ([source](../handoffs/active/kv-unified-stack-rollout.md))
-- **Serving-shape qualification states (W5s, HSF-13, DS41 W5d1) are preparation only.** W5s r7 qualified native width 1 (decode 208.093 s; cutoff rc75 drained) and the W1 four-cold-request multi-sequence prefill is UNREACHABLE under the frozen protocol; W3 half-A witnessed prefill split 2044+4 at ubatch 2048 and verify draft width 4. HSF PROFILE-6 R13 exceeded its 16 GiB native-output cap (17.31 GB peak) with no attribution verdict. DS41 W5d1 (1 warmup + 6 fresh 1017 CPU processes) is READY, unrun. ([source](../handoffs/active/heterogeneous-slot-fabric-residency.md))
+- **Streamed-chat truncation and capacity gate repaired in source.** KVU-3a: streamed usage now drives the same context-limit classification as non-stream (209 tests across seven modules, orchestrator 61bf8518). KVU-13c: the capacity gate no longer runs at `stack_manifest` import; it runs explicitly in the pipeline check and start/reload handlers (152 controls). Separately, model-path validation now checks only files the stack launches (186 tests) and backend declarations require literal `verify_ggml_linkage: true`. No API reload or live config change. ([source](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
+- **Serving-shape qualification states (W5s, HSF-13, DS41 W5d1) are preparation only.** W5s r7 qualified native width 1 (decode 208.093 s; cutoff rc75 drained) and the W1 four-cold-request multi-sequence prefill is UNREACHABLE under the frozen protocol; W3 half-A witnessed prefill split 2044+4 at ubatch 2048 and verify draft width 4. HSF PROFILE-6 R13 exceeded its 16 GiB native-output cap (17.31 GB peak) with no attribution verdict. DS41 W5d1 (1 warmup + 6 fresh 1017 CPU processes) is READY, unrun. ([source](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency))
 - **Harness lesson: outer completion contracts, not native failures, caused most FAILED-RUNs.** Missing `--complete-cmd`, an absent host region-lock interpreter and launchers outside their declared scratch root withdrew or failed many packets (C6, KPF-18.1, FU-03, GNX R4) while native jobs returned rc0; GNX R4's required 37/37 native proof was still accepted. Disk-floor admission (150 GiB + reserve) also refused several FA4/HIL/KPF windows before native work. ([source](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md))
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) · [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) · [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [GPU diagnostics](../progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md) · [numa-topology-cutover-resume](../handoffs/active/numa-placement-and-contention.md)
+Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) · [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [GPU diagnostics](../progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md) · [numa-topology-cutover-resume](../handoffs/active/numa-placement-and-contention.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
@@ -3059,13 +3059,13 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.m
 - KVU-15d snapshots whether a request held the long-prefill lease at admission. Read that ownership field together with its admission verdict; do not treat it as a causal estimate or equate it with all pre-dispatch waiting.
 - Two preparation terminals are negative qualification evidence only: RUS-3-TRUNC's smoke failed rc1 before native events and lacked `latest-collection.json`; the F2 smoke timed out without an eligible GPU/q3 window. They produced no cohort or decode-stall result.
 
-Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [KV unified-stack rollout](../handoffs/active/kv-unified-stack-rollout.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [KV unified-stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited records and source controls.**
 
-- Stack launch validation now checks the resolved active template before capacity or launch effects; the older nine-error template inventory is historical. Same-ticket lease telemetry is a source-control result, not a reload. ([stack cutover](../handoffs/active/numa-placement-and-contention.md); [KVU](../handoffs/active/kv-unified-stack-rollout.md); [model integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity))
+- Stack launch validation now checks the resolved active template before capacity or launch effects; the older nine-error template inventory is historical. Same-ticket lease telemetry is a source-control result, not a reload. ([stack cutover](../handoffs/active/numa-placement-and-contention.md); [KVU](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout); [model integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity))
 - Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/engineering-hygiene-backlog.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [speculative harness](../handoffs/active/speculative-decoding-mtp-refresh.md))
 
 

@@ -60,14 +60,14 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **UFH14-LB11: `extract_code_from_response` now strips Qwen3 `<think>...</think>`.** Before the fix, reasoning prose containing `=` was swept into the code candidate and `ast.parse` failed. The extractor returned `''`, the "all comments" nudge fired, and after 3 nudges the graph raised "Max nudges (3) reached".
   - Fixed on orchestrator main `96c30079` (160 prompt_builders tests pass). Complete and empty blocks are removed, an unclosed `<think>` drops everything after it, and a stray `</think>` drops everything before it.
   - Exposed roles: those with thinking on and the raw `/completion` lane, i.e. `architect_critic`, `coder_escalation` and `ingest_long_context` while `thinking_roles_chat_lane` is off.
-  - It was found when KPF-LB1.1's capture came back INCOMPLETE ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)).
+  - It was found when KPF-LB1.1's capture came back INCOMPLETE ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
   - Open follow-up UFH14-LB11.1: the `"\n```\n"` stop sequence can still cut a turn inside an unclosed `<think>`.
 - **Both defects fail into a plausible outcome, not an error.** One produced "no grammar", the other an empty code block plus nudges. Neither is live yet: both go live at the operator's next API-only reload, together with `exec_write_flags`.
 
 ### Source References (2026-10-23 wrap-up sweep 17)
 
 - [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB3.2, LB3.3, LB11, LB11.1, LB10 reload box)
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-LB1.1 run 1 INCOMPLETE)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-LB1.1 run 1 INCOMPLETE)
 - [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 

@@ -158,7 +158,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 > 122B-Q4 / 35B — for drains/GPU-failure) and is effectively **pinned**, monopolizing the single GPU
 > slot. So a **dual-resident 122B is cheaper to operate at equal quality.** If branch 3 fires (A3 wins
 > on reasoning), weigh this cost before deploying — **assess after the bench**, not before. See the
-> "GPU accelerates, CPU guarantees" fallback design in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md).
+> "GPU accelerates, CPU guarantees" fallback design in [heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency).
 
 ## Gating (sequenced — do NOT start inference until ALL clear)
 1. **[x] v7 promoted to production** (`production-consolidated-v7`) → GPU arms are now `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](../completed/v7-promotion.md). ✅ 2026-07-20

@@ -482,7 +482,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
 
   This is the failure the `-kvu` package removes. The KV-side diagnosis lives in [kv-cache](kv-cache.md) and RTG-57.
   ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10 run-8 STOPPED note;
-  [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md))
+  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 - **The actor-seat call record captured the lost reply faithfully, which closes VB-AK-SEAT-b1v.** Run 8 wrote exactly
   one line, at `state-run8/targets/71f54ec4…/workers/actor-replies/actor-calls.jsonl`. It is a planner call, schema
   `epyc.autokernel.actor_call.v1`, rc 0, `wall_s` 1235.7, stdout 0 bytes. Running
@@ -543,7 +543,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
   - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
 
   ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10a;
-  [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) KVU-11a)
+  [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) KVU-11a)
 - **Every OAB-4 arm must pin and record `:8083`'s KV mode (OAB-4a).** Unified and split KV give different outputs at
   the same seed, because float summation order changes. Once `-kvu` lands, the per-request ceiling also moves from
   98,304 to 196,608 tokens.
@@ -561,7 +561,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
 
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10 (run 8 STOPPED
   note), DS41-C10a (blocker note), DS41-C25, DS41-C26.
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): KVU-1, KVU-11a.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-1, KVU-11a.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-SEAT-b1v
   (proven), VB-AK-SEAT-b1w.
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): OAB-4a.
@@ -2946,7 +2946,7 @@ matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
 
 - **The most valuable finding was a near-miss that source-checking caught.** `crossover` was initially assumed absent; it **exists** (`scripts/autopilot/species/mutation_graph.py::informed_crossover_candidates`, consumed by `prompt_forge.py`) but ranks donor sections by *frequency* across archive-passing mutations, which is popularity, not complementarity. The gap is therefore narrow and precise. **And the signal to close it already exists**: the differential-testing work computes a semantic *conflict severity* over shared subsystem, files, prompt sections, flags and behavior-signature delta — which is a complementarity score with its sign flipped. Crossover pairing and conflict scoring should share one function rather than be built twice with drifting definitions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), intake-1024.
 
-- **One mechanism is a documented NEGATIVE transfer, recorded so it is not rediscovered as a win.** The source's asynchronous rollout separates generation from execution into independent queues and reports a ~1.9× step-time speedup. That win exists *because generation runs on a GPU while execution runs elsewhere*. On a CPU-bound host the two contend for the same cores and the mechanism **inverts into contention** — which is what the co-residency and region-claim discipline exists to prevent. The only condition under which it transfers is a genuine heterogeneous split (generation resident on the accelerator, candidate execution on CPU), which is a hypothesis for the slot-fabric work, not a portable result. Sources: [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md), intake-1024, intake-940#record.
+- **One mechanism is a documented NEGATIVE transfer, recorded so it is not rediscovered as a win.** The source's asynchronous rollout separates generation from execution into independent queues and reports a ~1.9× step-time speedup. That win exists *because generation runs on a GPU while execution runs elsewhere*. On a CPU-bound host the two contend for the same cores and the mechanism **inverts into contention** — which is what the co-residency and region-claim discipline exists to prevent. The only condition under which it transfers is a genuine heterogeneous split (generation resident on the accelerator, candidate execution on CPU), which is a hypothesis for the slot-fabric work, not a portable result. Sources: [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), intake-1024, intake-940#record.
 
 - **Paper-vs-code disagreement on a load-bearing constant is the reusable caution.** The published parent-selection weights (`1.0/0.6/0.3`, appearing only in case-study prose) **ship nowhere**; the released configuration uses `1.0/0.4/0.25`, present in two places, and the island machinery the paper describes is inert in every shipped profile. Any port must take the shipped values, and the general rule is to read the config before porting a number from a paper's narrative. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), intake-1024, intake-940#02.
 
@@ -4504,7 +4504,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 **Confidence: scoped to cited records and source controls.**
 
 - Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [retrieval](../handoffs/active/repl-embedding-retrieval.md))
-- Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane); [tool-use contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
+- Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane); [tool-use contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

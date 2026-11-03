@@ -683,7 +683,7 @@ Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE
 - Slot save (280.8 MB, 70 ms) and restore (36 ms) into a fresh server: extension prompt_n equals the delta (2203), output byte-identical, DFlash2 acceptance 33/41 in both runs.
 - Follow-on: HYBRID-PREFIX-REUSE (correctness on the serving port) in kv-unified-stack-rollout.md.
 
-Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ## Compiled Update — 2026-10-20: recurrent-state prefix caching in vLLM and llama.cpp, checkpoint-position lessons
 
@@ -694,13 +694,13 @@ Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [
 - Align-mode checkpoints materialised only at chunk ends give zero reuse for siblings that share less than the deepest chunk end; one fix stops chunks at every retained boundary (`intake-2108#record`, PR text says its branch is superseded).
 - llama.cpp's slot file now persists context checkpoints and the draft state (`intake-2096#record`, upstream llama.cpp PR #30574), the upstream counterpart of the local prefill-only-boundary result recorded above.
 
-Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [research intake index](../research/intake_index.yaml).
+Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [research intake index](../research/intake_index.yaml).
 
 ## Compiled Update — 2026-10-21: where the recurrent and hybrid `seq_cp` actually stand in our trees
 
 **Confidence: verified (code read at four tagged revisions on 2026-10-20); no new measurement.** `llama_memory_recurrent::seq_cp` (`src/llama-memory-recurrent.cpp` 246-281, identical in v10 `ffc1bac82`, champion `dd3d9721c` and both KPF branches) ignores p0/p1 and makes the destination share the source's current tail cell, so a recurrent fork can only start at the source's current tail, not at an earlier junction. `llama_memory_hybrid::seq_cp` (152-155) calls both halves; the KPF branches add an attention-only share as a separate entry point and leave this one unchanged. `--cache-reuse` is force-disabled for recurrent memory. Checkpoints (pinned ones added only on the KPF branches) are therefore the only way to resume a hybrid model at an earlier boundary, consistent with the 2026-10-06 and 2026-10-07 findings above. The hybrid ubatch split is `split_equal(n_ubatch, !unified, n_rs_seq + 1)`. Always cite these lines with a tree tag (see the kv-cache page, 2026-10-21).
 
-Sources: [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) ("What already exists in our tree", KPF-DOC-1), [KV cache page](kv-cache.md), [Progress 2026-10-20](../progress/2026-10/2026-10-20.md).
+Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) ("What already exists in our tree", KPF-DOC-1), [KV cache page](kv-cache.md), [Progress 2026-10-20](../progress/2026-10/2026-10-20.md).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 

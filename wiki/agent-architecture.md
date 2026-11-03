@@ -343,7 +343,7 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 
 - [`typed-decision-plane.md`](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21, TD-21.33, TD-21.33c.
 - [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (3)*.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-0i.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-0i.
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile): TD-21 landed — and the repair turn needed evidence, not just a schema
 
@@ -5496,7 +5496,7 @@ Sources: [actor-backend handoff](../handoffs/active/autokernel-orchestrator-acto
 
 A focused process-limit proof distinguishes the process address-space ceiling from the row RAM reservation: the same-entry fixture passed with a 176 GiB process limit against a 192 GiB reservation, refused an 8 GiB ceiling for the declared 176 GiB process limit, and refused 193 GiB above the 192 GiB reservation. These are separate checks; a focused preflight pass establishes readiness only for its scoped entry and does not book or replay a workload. The KPF R14 attempt also exposed ordering: the grant must exist before creating the writer/arm, otherwise the writer can wait on a grant that the same transaction has not yet created; at the 08:32Z cutoff the first armed attempt was unplaceable and recovery was still required. The later scoped C5 checks establish row validation and grant admission only; no graph query or full CPU replay is claimed.
 
-Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [C5 graph handoff](../handoffs/active/speculative-decoding-mtp-refresh.md).
+Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [C5 graph handoff](../handoffs/active/speculative-decoding-mtp-refresh.md).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -5722,7 +5722,7 @@ Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-correct
 
 ## Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
 
-The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-unified-stack-rollout.md))
+The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 
 ## Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
 

@@ -9,7 +9,7 @@
   "decision_rule": "Build-only PASS when rc=0 and source/options/knobs/linkage pass, every ggml core, base, CPU, HIP and llama library is hashed in the build-completion receipt, and CUSTODY.json seals those receipt hashes; no inference or historical image equivalence.",
   "estimate_s": 2400,
   "ram_gib": 32,
-  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17.4d",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
   "priority_rank": 45,
   "dryrun_timeout_s": 2700,
   "dryrun_native_result": true,

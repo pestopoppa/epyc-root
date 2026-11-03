@@ -2734,7 +2734,7 @@ The 2026-10-31 Research `0e4321f24bae29355333fcf2cb712a41ce080e2f` E1 runner cop
   - KPF-17a prospective FA exactness: project the per-case CPU/GPU native JSONL with source, binary/library, arm, mask and residency warrant; retain incomplete and unsupported cases, validate the producer and planning-context canary before calling it wired. Use the shared grade; no retrospective warrant or new ladder.
 
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
-  [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-18 (fork-vs-fresh equivalence + TTFT),
+  [`kv-prefix-fork-and-paged-attention.md`](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) KPF-18 (fork-vs-fresh equivalence + TTFT),
   KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
   Record shape: per-run JSON with binary sha, argv, arm, prompt-set hash, equivalence verdict, TTFT, prefill tokens,
   unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let

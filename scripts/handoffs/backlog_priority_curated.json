@@ -5,7 +5,6 @@
   "INF-70": 0.85,
   "RTG-58": 0.85,
   "INF-66": 0.8,
-  "RTG-57": 0.8,
   "INF-22": 0.7,
   "INF-73": 0.7,
   "INF-06": 0.62,
@@ -19,7 +18,6 @@
   "EVL-47": 0.5,
   "UFH-12": 0.5,
   "RTG-22": 0.5,
-  "INF-23": 0.45,
   "INF-62": 0.45,
   "INF-72": 0.4,
   "INF-79": 0.4,
@@ -170,7 +168,9 @@
   "INF-65#moe-spec-cpu-spec-dec-integration": 0.3,
   "INF-65#v9-kernel-per-request-speculative-params": 0.3,
   "INF-65#autokernel-cross-workload-keep-gate": 0.55,
-  "INF-65#autokernel-all-devices-all-dimensions": 0.6
+  "INF-65#autokernel-all-devices-all-dimensions": 0.6,
+  "RTG-58#heterogeneous-slot-fabric-residency": 0.45,
+  "RTG-58#kv-unified-stack-rollout": 0.8
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -352,7 +352,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-LB1.d",
    "kind": "N",
    "cls": "N",
@@ -704,7 +704,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "HYBRID-PREFIX-REUSE (b)",
    "kind": "I",
    "cls": "live",
@@ -718,7 +718,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-16g-1",
    "kind": "I",
    "cls": "ready",
@@ -732,7 +732,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-16g-2",
    "kind": "N",
    "cls": "NB",
@@ -743,10 +743,10 @@
    "why": "stack-change package line; waits on the A/B",
    "owner": "3c4ca599",
    "filler": "",
-   "before": "RTG-57:KVU-16g-1"
+   "before": "RTG-58:KVU-16g-1"
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "V11-FA-8",
    "kind": "I",
    "cls": "ready",
@@ -760,7 +760,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-12.5 re-run",
    "kind": "I",
    "cls": "ready",
@@ -774,7 +774,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-12.4 re-run decision",
    "kind": "N",
    "cls": "N",
@@ -788,7 +788,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "CPU-FA-VKQ-2",
    "kind": "I",
    "cls": "ready",
@@ -802,7 +802,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-19b-fold-c1-p3",
    "kind": "I",
    "cls": "ready",
@@ -816,7 +816,7 @@
    "before": ""
   },
   {
-   "row": "RTG-57",
+   "row": "RTG-58",
    "tok": "KVU-16b-1",
    "kind": "N",
    "cls": "N",
@@ -914,7 +914,7 @@
    "before": ""
   },
   {
-   "row": "INF-23",
+   "row": "RTG-58",
    "tok": "HSF-4.G",
    "kind": "N",
    "cls": "N",
@@ -1446,7 +1446,7 @@
    "why": "adapter and hook landed; first real record pending",
    "owner": "fresh agent",
    "filler": "",
-   "before": "RTG-57:KVU-LB1.d"
+   "before": "RTG-58:KVU-LB1.d"
   },
   {
    "row": "EVL-47",
@@ -1992,7 +1992,7 @@
  "inference_prep": [
   {
    "filler": "HSF-5P-NEXT-PROFILE-2",
-   "row": "INF-23",
+   "row": "RTG-58",
    "map": "filler-id alias /^HSF-/",
    "owner": "codex-ni-01a16d6b",
    "blocker": "missing launcher: stopped 23:29:54Z rc1 by the ws58 night whole-host HOLD (owner scheduling error, not a job fault)",
@@ -2001,7 +2001,7 @@
   },
   {
    "filler": "HSF-5P-NEXT-PROFILE-3",
-   "row": "INF-23",
+   "row": "RTG-58",
    "map": "filler-id alias /^HSF-/",
    "owner": "codex-ni-01a16d6b",
    "blocker": "harness fix: rc1 03:51:05Z, A2 stop_profiled owns_port raised PermissionError reading /proc/<pid>/fd during export, masked by cleanup",
@@ -2010,7 +2010,7 @@
   },
   {
    "filler": "HSF-5P-NEXT-PROFILE-4",
-   "row": "INF-23",
+   "row": "RTG-58",
    "map": "filler-id alias /^HSF-/",
    "owner": "codex-ni-01a16d6b",
    "blocker": "harness fix: rc1 04:21:04Z, REAL control failure: the warmup stream-0 request diverges at token 45, A1 (4619) vs B/A2 (20572)",
@@ -2019,7 +2019,7 @@
   },
   {
    "filler": "HSF-5P-NEXT-PROFILE-5",
-   "row": "INF-23",
+   "row": "RTG-58",
    "map": "filler-id alias /^HSF-/",
    "owner": "codex-ni-01a16d6b",
    "blocker": "harness fix: rc1 06:53:23Z, INVALID for attribution: B restore state invalid, draft count parity false, capture INCOMPLETE. All outputs matc",
@@ -2208,7 +2208,7 @@
   },
   {
    "filler": "fa4-c5-matched-bands",
-   "row": "RTG-57",
+   "row": "RTG-58",
    "map": "handoff kv-unified-stack-rollout.md",
    "owner": "codex-ni MAIN; calendar WS58",
    "blocker": "harness fix: attempt3 rc1 06:16:50Z at the driver.py:441 gate: OFF nonfinite case set (6) differs from ON (4), all bias1024/diffuse tail. A ",
@@ -2217,7 +2217,7 @@
   },
   {
    "filler": "fa4-c5-rwoff-build",
-   "row": "RTG-57",
+   "row": "RTG-58",
    "map": "handoff kv-unified-stack-rollout.md",
    "owner": "codex-ni MAIN; calendar WS58",
    "blocker": "missing launcher: refused rc70 at 23:30:13Z by the night HOLD before clone/build (owner scheduling error)",
@@ -2562,34 +2562,18 @@
   "(^|-)kpf(18|64)-": "RTG-58",
   "(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-": "UFH-08",
   "(^|-)m4-": "INF-22",
-  "^HSF-": "INF-23",
+  "^HSF-": "RTG-58",
   "(^|-)cme": "EVL-50",
-  "^hpr-": "RTG-57",
+  "^hpr-": "RTG-58",
   "(^|-)gnx-": "INF-50",
   "(^|-)df2-": "INF-62",
   "(^|-)parakeet-": "INF-79"
  },
  "dep_tracks": {
-  "RTG-57>INF-79": [
-   {
-    "track": "multimodal-pipeline",
-    "next_action": "Run S-18 paired 60-item CPU cohort; project/canary via VB-SERVING-DF2"
-   }
-  ],
   "RTG-58>EVL-14": [
    {
     "track": "prompt-construction-determinism",
     "next_action": "D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3"
-   }
-  ],
-  "RTG-57>RTG-36": [
-   {
-    "track": null,
-    "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER"
-   },
-   {
-    "track": "model-stack-single-source-update-pipeline",
-    "next_action": "SSU-F8 owner confirmation; enumerate remaining W4 migrations from per-consumer source evidence"
    }
   ],
   "UFH-12>RTG-08": [
@@ -2674,6 +2658,34 @@
    {
     "track": "cpu-fused-decoder-blocks",
     "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106"
+   }
+  ],
+  "RTG-58>INF-79": [
+   {
+    "track": "multimodal-pipeline",
+    "next_action": "Run S-18 paired 60-item CPU cohort; project/canary via VB-SERVING-DF2"
+   }
+  ],
+  "RTG-58>RTG-36": [
+   {
+    "track": null,
+    "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER"
+   },
+   {
+    "track": "model-stack-single-source-update-pipeline",
+    "next_action": "SSU-F8 owner confirmation; enumerate remaining W4 migrations from per-consumer source evidence"
+   }
+  ],
+  "INF-77>RTG-58": [
+   {
+    "track": "kv-unified-stack-rollout",
+    "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure"
+   }
+  ],
+  "INF-59>RTG-58": [
+   {
+    "track": "kv-unified-stack-rollout",
+    "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure"
    }
   ]
  }

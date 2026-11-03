@@ -2653,4 +2653,4 @@ On implementation (post-measurement-chain, per operator sequencing):
 2. Update `progress/2026-07/2026-07-DD.md`.
 3. Cross-reference op-bundle ESC-8 (shared restart surface) and the WP-9/WP-10 lineup event.
 
-> **2026-07-23**: the fleet layer's heterogeneous extension is governed by the OPERATOR-RATIFIED fabric contract (core guiding principle banner in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md)): policy-data-never-code, the four robustness axioms, the bounded/reversible/measurable/gated conversion rule.
+> **2026-07-23**: the fleet layer's heterogeneous extension is governed by the OPERATOR-RATIFIED fabric contract (core guiding principle banner in [heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency)): policy-data-never-code, the four robustness axioms, the bounded/reversible/measurable/gated conversion rule.

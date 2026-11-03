@@ -172,7 +172,7 @@ Sources: [Speculative decoding and MTP refresh](../handoffs/active/speculative-d
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) — CPU-FA-VKQ-3 priority change
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — CPU-FA-VKQ-3 priority change
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — SLQ intake decision and the served 27B + DFlash2 figure
 - [handoffs/active/speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md) — specgram2 window armed
 - [handoffs/active/dflash2-block-drafter-experimental-build.md](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-LB1 ubatch census armed
@@ -282,7 +282,7 @@ Future adaptive-width work must **measure Q38P-1's verify-window expert union be
 
 ### Source References (2026-09-24, wrap-up #4)
 
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-1b, M-3b.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-1b, M-3b.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — C25.4.
 - [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Measurements*.
 
@@ -351,7 +351,7 @@ at this compile (superseded: folded and validated — see the late section above
   `--spec-draft-n-max` changes, KVU-1b compares `mean len` and t/s on real planner traffic at equal prompt length,
   against the package's §6 rollback thresholds. Qwen3.6-35B showed the same direction, a smaller draft budget with
   higher acceptance, at n=3 (SR-6 below). Neither result is decisive on its own.
-  ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) Measured block, KVU-1, KVU-1b;
+  ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) Measured block, KVU-1, KVU-1b;
   [2026-09-24 main-ak-seat progress](../progress/2026-09/2026-09-24-main-ak-seat.md) §"GPU sweeps")
 - **When the unified pool is full, the MTP path throws instead of refusing cleanly (KVU-7).** The repro is v10
   `ffc1bac82` with `-np 2 -c 4096 --kv-unified` and two 2048-token generations.
@@ -368,7 +368,7 @@ at this compile (superseded: folded and validated — see the late section above
   - Meanwhile the orchestrator overflow branch (`feat/context-overflow-handling-20260924` @ `8bbe2a3c`, pushed, not
     merged) already classifies the error as `pool_exhausted` (KVU-0e).
 
-  ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) KVU-7, Measured block)
+  ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) KVU-7, Measured block)
 - **SW-9 (the spec-accept `result.probs` defect, compiled in the section below): the patch is ready, the ADMIT is
   given, and the fold order is agreed.**
   - **The patch:** `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`, pushed to `fork`. It is the champion tip
@@ -398,7 +398,7 @@ at this compile (superseded: folded and validated — see the late section above
 
 ### Source References (2026-09-24 evening)
 
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): Measured block (MTP depth,
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): Measured block (MTP depth,
   pool-full exception), KVU-1, KVU-1b, KVU-7.
 - [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md): SW-9 (patch ready,
   ADMIT, sequence), SR-6.
@@ -2858,7 +2858,7 @@ production-shape measurement (Q38-T7) is still owed.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the fast path, the bring-up and the VRAM sampler.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-17 and V6R-4d.2.
 - [Speculative decoding MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) — SW-9 on GPU; SR-5 is next.
-- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-1b / M-3b superseded; the n-max 7 saving rides KVU-16.
+- [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-1b / M-3b superseded; the n-max 7 saving rides KVU-16.
 
 ## Incremental synthesis — 2026-10-06 root wrap
 
@@ -2866,7 +2866,7 @@ production-shape measurement (Q38-T7) is still owed.
 
 The adjacent post-manifest serving and kernel updates do not add Copy-Spec outcome data. They record separate harness cleanup and the v11 requirement to carry #27870 for the DFlash2 FA path. That kernel correctness gate does not establish the efficacy of ngram composition.
 
-Sources: [Speculative-decoding / MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [DFlash2 block drafter experimental build](../handoffs/active/dflash2-block-drafter-experimental-build.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+Sources: [Speculative-decoding / MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [DFlash2 block drafter experimental build](../handoffs/active/dflash2-block-drafter-experimental-build.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ### Supplemental measured and proposed speculation evidence — Oct 3–6
 
@@ -2977,7 +2977,7 @@ Sources: [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-
 - **SPEC-RNG-1.2 runner built and GPU build gate passed 9/9.** Six arms (stateful vs poskey RNG at depth 0/3/7 via per-request `rng_poskey` and `speculative.n_max`) on one :8083-shaped np4 DFlash2 server, 3 prompts x up to 600 disjoint seeds x 12 tokens, chi-square homogeneity of per-position token marginals (index 0 as null control) plus an acceptance Welch test and a 48-seed alone-vs-batch reproducibility probe. A Python mirror of the rejection path shows poskey preserves the target at depth 0/3/7 and detects a reused-uniform defect. The rule was predeclared before any run; `spec-rng-1-2-gpu-build` passed at 16:55Z and the measurement row is booked for the early hours of 10-24. No result yet.
 - **KPF-13.1 restore result bears on drafters.** DFlash2 (SWA drafter) restore fails the v3 rule only on 4 deterministic near-tie token divergences with acceptance inside the interval; plain-MTP CPU passes 12/12 on every arm. Skipping `load_dft` for plain drafters is not shown output-equivalent (keep it). See [kv-cache.md](kv-cache.md).
 
-Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)
+Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -2985,10 +2985,10 @@ Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decod
 
 - **DF2-QWOPUS (train a DFlash2 head for Qwopus) is scoped, not decided.** Planning estimates: a pilot of 0.5-1 MI210 card-day, a 20-50M warm-start of about 3-8 card-days, and 8-15 engineer-days (+/-50%, conditional on K1). The INF-62 audit adds the data/checkpoint contract: target Q8_0 GGUF plus tokenizer/template, per-position taps at layers [6,20,34,48,62], width 5120, bf16 = 51,200 B/token, hard next-token labels, and a resumable training state of about 30 GB (estimate). ([dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md) DF2-QWOPUS; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/codex-ni-20261027-inf62-scope-audit/INF-62-REPORT.md`)
 - **K1 (<= 4 GPU-h) gates any training card-days.** It needs the Qwopus GGUF located or re-acquired first, because `/mnt/raid0/llm/models/Qwopus3.8-27B-Flash.Q8_0.gguf` is currently absent, and it also needs the feature dumper and ROCm/NeMo environment. The protocol is unchanged: the DF2-4 12-prompt set, none / MTP n-max {2,4,6,8} / base DFlash2 n8, plus a no-think role A/B against Qwen3.8-27B. ([dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md) DF2-QWOPUS-K1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **The rocWMMA ON/OFF FA path does not move DFlash2 acceptance** in the FA4 model-level check (0.681 vs 0.689, one run per arm). See [hardware-optimization](hardware-optimization.md). ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) V11-FA-4; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
+- **The rocWMMA ON/OFF FA path does not move DFlash2 acceptance** in the FA4 model-level check (0.681 vs 0.689, one run per arm). See [hardware-optimization](hardware-optimization.md). ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) V11-FA-4; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **HSF-5.P mirror restore changes drafting state.** A lag-truncated save skips the live draft-state save and restore clears `ctx_dft`, so B rebuilds drafting state differently (continuation draft counts 90/50 vs 55/55). See [inference-serving](inference-serving.md). ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md))
 
-Sources: [dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
+Sources: [dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 

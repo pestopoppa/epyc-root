@@ -20,8 +20,7 @@
 | RTG-36 | stack change governance pipeline | [stack-lifecycle-program.md](stack-lifecycle-program.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | R-7 — Assign a successor to retired namespace owner mainD; then reconcile the C49 references | RTG-34 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure | RTG-36, INF-79 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort | RTG-57, EVL-14, INF-65 |
+| RTG-58 | kv prefix fork and paged attention | [kv-cache-program.md](kv-cache-program.md) | Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort | EVL-14, INF-65 |
 | RTG-63 | backlog refactor 2026-11 | [backlog-refactor-2026-11.md](backlog-refactor-2026-11.md) | BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list | — |
 
 ## Cross-domain

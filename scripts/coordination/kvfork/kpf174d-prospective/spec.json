@@ -9,7 +9,7 @@
   "decision_rule": "SMOKE_ONLY if the one predeclared g0-S2 arm-B fork/control pair completes with proved source, residency and physical layout match; otherwise INVALID. Prospective diagnostic only; no historical image equivalence or KPF-17.4d re-judgment.",
   "estimate_s": 3600,
   "ram_gib": 100,
-  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17.4d",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
   "priority_rank": 45,
   "kind": "compute",
   "smoke_timeout_s": 1800,

@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 59,
-      "handoffs": 28,
+      "blocked": 57,
+      "handoffs": 27,
       "oldest_advance": "2026-07-29",
-      "open": 1038
+      "open": 1019
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 14,
-      "handoffs": 13,
+      "blocked": 16,
+      "handoffs": 12,
       "oldest_advance": "2026-08-03",
-      "open": 655
+      "open": 674
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -453,7 +453,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 45,
+      "closed": 46,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -465,7 +465,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 51
+      "total": 52
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1223,27 +1223,11 @@
       "state": "active",
       "total": 54
     },
-    "heterogeneous-slot-fabric-residency.md": {
-      "blocked": 2,
-      "closed": 10,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 19,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-23",
-      "state": "active",
-      "total": 31
-    },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
       "closed": 235,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 128,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1341,8 +1325,8 @@
             "INF-65#autokernel-cross-workload-keep-gate",
             "INF-77",
             "INF-62",
-            "RTG-57",
-            "RTG-58"
+            "RTG-58#kv-unified-stack-rollout",
+            "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
           "line": 3418,
@@ -1430,12 +1414,12 @@
         }
       ]
     },
-    "kv-prefix-fork-and-paged-attention.md": {
-      "blocked": 1,
-      "closed": 123,
+    "kv-cache-program.md": {
+      "blocked": 3,
+      "closed": 237,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 57,
+      "last_advanced": null,
+      "open": 128,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1444,23 +1428,46 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 181
-    },
-    "kv-unified-stack-rollout.md": {
-      "blocked": 0,
-      "closed": 104,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 52,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-57",
-      "state": "active",
-      "total": 156
+      "total": 368,
+      "tracks": [
+        {
+          "blocked": 1,
+          "closed": 123,
+          "gates": [
+            "RTG-58#kv-unified-stack-rollout",
+            "EVL-14",
+            "INF-65"
+          ],
+          "guarded": 0,
+          "line": 34,
+          "markers": 1,
+          "name": "kv-prefix-fork-and-paged-attention",
+          "open": 57
+        },
+        {
+          "blocked": 2,
+          "closed": 10,
+          "gates": [],
+          "guarded": 0,
+          "line": 1341,
+          "markers": 1,
+          "name": "heterogeneous-slot-fabric-residency",
+          "open": 19
+        },
+        {
+          "blocked": 0,
+          "closed": 104,
+          "gates": [
+            "RTG-36",
+            "INF-79"
+          ],
+          "guarded": 0,
+          "line": 1723,
+          "markers": 1,
+          "name": "kv-unified-stack-rollout",
+          "open": 52
+        }
+      ]
     },
     "log-linear-gated-deltanet-readiness.md": {
       "blocked": 1,
@@ -2847,15 +2854,6 @@
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
-    "INF-23": {
-      "deps": [],
-      "handoff": "heterogeneous-slot-fabric-residency.md",
-      "id": "INF-23",
-      "index": "inference-research-index.md",
-      "line": 31,
-      "next_action": "HSF-5.P: re-run microbench (-lv 4, G4 amendment) on GPU after v11-086-cpu ~10-25 00:00Z",
-      "track": "heterogeneous slot fabric residency"
-    },
     "INF-33": {
       "deps": [
         "INF-48"
@@ -2863,7 +2861,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 32,
+      "line": 31,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2874,7 +2872,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "index": "inference-research-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
       "track": "numa prefill decode disaggregation"
     },
@@ -2883,7 +2881,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2894,7 +2892,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2903,7 +2901,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -2912,18 +2910,18 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 37,
+      "line": 36,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {
       "deps": [
-        "RTG-57"
+        "RTG-58"
       ],
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2934,7 +2932,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -3008,7 +3006,7 @@
       "handoff": "autokernel-unified-surface-program.md",
       "id": "INF-73",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "LIVE GPU leg (serving-owner grant, ws58)",
       "track": "autokernel unified surface"
     },
@@ -3019,7 +3017,7 @@
       "handoff": "autokernel-concurrent-target-coordination.md",
       "id": "INF-74",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
@@ -3030,14 +3028,14 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
     "INF-77": {
       "deps": [
         "INF-16",
-        "RTG-57"
+        "RTG-58"
       ],
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
@@ -3229,28 +3227,15 @@
       "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
       "track": "loop owned fleet implementation"
     },
-    "RTG-57": {
-      "deps": [
-        "RTG-36",
-        "INF-79"
-      ],
-      "handoff": "kv-unified-stack-rollout.md",
-      "id": "RTG-57",
-      "index": "routing-and-optimization-index.md",
-      "line": 23,
-      "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure",
-      "track": "kv unified stack rollout"
-    },
     "RTG-58": {
       "deps": [
-        "RTG-57",
         "EVL-14",
         "INF-65"
       ],
-      "handoff": "kv-prefix-fork-and-paged-attention.md",
+      "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3259,7 +3244,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

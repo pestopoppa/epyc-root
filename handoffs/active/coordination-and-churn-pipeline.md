@@ -9,7 +9,7 @@
 **Effort**: M1–M2 ~half day · M3–M4 ~1–2 days (incl. the 48h M4 soak) · M5 optional, flag-gated
 **Categories**: coordination, governance, automation
 **Parent index**: [master-handoff-index.md](master-handoff-index.md) (★ post-closure pivot block)
-**Related**: [`../../coordination/inference-batch/LOOP_PROTOCOL.md`](../../coordination/inference-batch/LOOP_PROTOCOL.md) (contracts this extends) · [`../../coordination/inference-batch/op-bundle.md`](../../coordination/inference-batch/op-bundle.md) (token-queue pattern) · [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) + the ratified fabric contract (convergence target) · CLAUDE.md §Long-horizon throughput contract + `agents/shared/MEASUREMENT_POLICY.md` §Consolidated apply-time ratification (the policies this mechanizes)
+**Related**: [`../../coordination/inference-batch/LOOP_PROTOCOL.md`](../../coordination/inference-batch/LOOP_PROTOCOL.md) (contracts this extends) · [`../../coordination/inference-batch/op-bundle.md`](../../coordination/inference-batch/op-bundle.md) (token-queue pattern) · [heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency) + the ratified fabric contract (convergence target) · CLAUDE.md §Long-horizon throughput contract + `agents/shared/MEASUREMENT_POLICY.md` §Consolidated apply-time ratification (the policies this mechanizes)
 
 ---
 
@@ -355,7 +355,7 @@ freezes/cutovers, host reboots).
   refill needs a signature. Must land *after* R1, never before.
 - [x] **R3 — declare both subsystems instances of the ratified fabric contract.** ✅ 2026-07-27
   Both declared as instances in
-  [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) with the
+  [heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency) with the
   five-part table and the axiom-1/axiom-4 consequences. `config.yaml`'s `co_residency` block
   carries the matrix's shape and an `expected_topology_hash` with `on_topology_mismatch: refuse`;
   `/api/bus` surfaces `co-residency-topology-drift` as an alarm.

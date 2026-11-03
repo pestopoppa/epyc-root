@@ -12,7 +12,7 @@
 **Parent index**: [master-handoff-index.md](master-handoff-index.md)
 **Related**: [batched-decode-measurement.md](numa-placement-and-contention.md#track-batched-decode-measurement) (E5) ·
 [autopilot-continuous-optimization.md](autopilot-program.md) (resume) ·
-[heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) (fabric) ·
+[heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (fabric) ·
 [architect-model-selection-bench.md](model-evaluation-queue.md) (Phase-2 tool-use) ·
 [frontier-f1-real-task-corpus.md](../completed/frontier-f1-real-task-corpus.md) (routing grounding) ·
 [reviewer-control-plane-index.md](reviewer-control-plane-index.md) (co-critic plumbing) ·
@@ -213,7 +213,7 @@ config change with a rehearsed rollback, never a rebuild.
   - [ ] **P2-5j decision-bearing successor protocol.** Human trust-boundary action required:
     ratify a P2-5j-specific amendment or pre-register an execution that satisfies the existing
     P-BENCH-PLACEMENT-1 A0–A4, np=1-anchor, cache-pairing, and measured-locality gates in full.
-- [x] **P2-5k — GPU host-thread fabric gap recorded ✅ 2026-07-29**: epyc-root `724130a2` added the required gap paragraph at [`heterogeneous-slot-fabric-residency.md`](heterogeneous-slot-fabric-residency.md#gap-filed-2026-07-29-fable-auditor-via-claude-gpu-lane--gpu-host-threads-are-an-implicit-consumer-with-no-slot) (lines 114–135). The separate gated `gpu-host` implementation remains open there.
+- [x] **P2-5k — GPU host-thread fabric gap recorded ✅ 2026-07-29**: epyc-root `724130a2` added the required gap paragraph at [`heterogeneous-slot-fabric-residency.md`](kv-cache-program.md#gap-filed-2026-07-29-fable-auditor-via-claude-gpu-lane--gpu-host-threads-are-an-implicit-consumer-with-no-slot) (lines 114–135). The separate gated `gpu-host` implementation remains open there.
 - [x] **P2-5l (NEW 2026-07-29; doc-debt, file owner) — `stack_numa.py` carries two stale comments that misstate the machine.** Line 26 claims **2 NUMA nodes**; `numactl -H` shows **4** (NPS4, one node per quarter). The `12.19 t/s` comment is likewise stale. Neither changes behaviour, but a misdocumented topology invariant is how the next placement defect gets built — the same failure this program has hit repeatedly. Owner is the orchestrator file owner, not this lane; filed rather than edited to avoid mixing a comment fix into an unmerged crash-window branch.
   **✅ 2026-07-29 — topology half DONE (`auditor`), orchestrator `ae40ee8b`; t/s half DECLINED, see below.**
   Header corrected to 4 nodes (NPS4) / ~290 GB each / node 0 = cpus 0-23 + 96-119, re-derived from

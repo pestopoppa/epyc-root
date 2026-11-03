@@ -272,7 +272,7 @@ paralinguistic perception the interlocutor was chosen for.
   (intake-826#record). The Qwen3-Omni quarterly watch is superseded (it is now a candidate), and the stale Path-C
   boxes are closed as superseded by qwentts.cpp.
 - KVU-11b's contention measurements and acceptance (STT RTF < 0.5, TTS first packet < 1 s) become CS-11/CS-12
-  ([`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md)). The near-term item is CS-12,
+  ([`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)). The near-term item is CS-12,
   which moves the cascade onto the second MI210 and clears the CPU collapse without partitioning the CPU LLMs.
 
 ### Source References (speech-native interlocutor program)
@@ -280,7 +280,7 @@ paralinguistic perception the interlocutor was chosen for.
 - [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) — vision, D1–D12, *Facts*, draft corrections, CS-1…CS-44.
 - [Operator draft](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md) — the input document.
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — speech-moved banner, S-14/monitor hook moved, Path-C and Qwen3-Omni watch superseded.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11b cross-reference; [session record](../progress/2026-09/2026-09-24-speech-vision.md).
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b cross-reference; [session record](../progress/2026-09/2026-09-24-speech-vision.md).
 - [Annex S](../measurement/protocols/speech.md) — receipt-defect note and Appendix S-A (the WER correction in the 2026-07-31 session-3 section).
 - External, not yet ingested (CS-1, intake pending): Step-Audio 2 (arXiv 2507.16632,
   <https://huggingface.co/stepfun-ai/Step-Audio-2-mini>), Qwen3-Omni (arXiv 2509.17765,
@@ -305,7 +305,7 @@ paralinguistic perception the interlocutor was chosen for.
 ### Source References (2026-09-24 late)
 
 - [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — header decision line, §5.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11b (decision record), *Reporting*.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b (decision record), *Reporting*.
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a cross-reference.
 - [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the accepted-hazard line.
 
@@ -335,7 +335,7 @@ paralinguistic perception the interlocutor was chosen for.
 ### Source References (2026-09-24, wrap-up #4)
 
 - [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a superseded, cross-reference.
 - [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) and [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (2)*.
 
@@ -440,7 +440,7 @@ frontdoor.
 
 - Research `artifacts/speech_cpu_realtime_20260924/README.md` (research main `21cf444c`, the 17:14Z snapshot), with
   `raw/summary_tables.md` and `raw/whisper_bench_encoder_matrix.txt`.
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): KVU-11 (options A/B/C,
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-11 (options A/B/C,
   OP-56), KVU-11a (follow-up commit).
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-SPEECH-CPU-1.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10a (the untracked
@@ -1530,7 +1530,7 @@ Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.m
 - **OD-A** is filed: the operator confirms the speech host card at the CS-9 readout.
 - **CS-8.L** is filed: the Italian listen check of the cascade G1 outputs needs a human ear, because agent QA of speech is circular.
 
-Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md)
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): the Italian TTS re-listen kit is ready; the normalizer stays eval-only
 

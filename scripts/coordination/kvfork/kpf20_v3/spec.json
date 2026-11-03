@@ -9,7 +9,7 @@
   "decision_rule": "Capture upstream GitNexus impact and context for KPF-20 symbols at pinned 488b31c, plus native member-call search. HIGH/CRITICAL requires operator warning and stops edits. A partial scan or unresolved symbol is not a completed impact pass.",
   "estimate_s": 2400,
   "ram_gib": 48,
-  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-20",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-20",
   "priority_rank": 45,
   "dryrun_timeout_s": 2700,
   "dryrun_whole_host": true,

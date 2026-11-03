@@ -12,9 +12,9 @@
 **Depends on**: none by row. The physical installation of the second MI210 is an external event, expected within about a month of 2026-09-24.
 **Related**:
 - [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) (INF-41). Vision stays there. Speech moved here on 2026-09-24.
-- [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) (RTG-57), KVU-11 / KVU-11b / KVU-11c.
+- [`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57), KVU-11 / KVU-11b / KVU-11c.
 - [`gpu-serving-tie-in-program.md`](mi210-serving-program.md) (INF-22), P2-5j (host-thread placement) and P2-9 (stale "whisper as a GPU tenant").
-- [`heterogeneous-slot-fabric-residency.md`](heterogeneous-slot-fabric-residency.md) (the GPU host-thread slot gap).
+- [`heterogeneous-slot-fabric-residency.md`](kv-cache-program.md#track-heterogeneous-slot-fabric-residency) (the GPU host-thread slot gap).
 - [`fable5-window2-findings-02-heterogeneous-gpu.md`](mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) (35B-A3B solo on an MI210; no PCIe H2D measurement).
 - [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md), VB-SPEECH-CONV-1.
 
@@ -1307,7 +1307,7 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
   2026-08-23) — refreshing it is a live bench sweep (`scripts/server/contention_matrix.py`), i.e. inference.
   - *Cross-reference 2026-09-24 ~19:50Z:* speech on CPU is **not real time while a `-t 96` CPU LLM role
     generates** (STT RTF ≥ 58, TTS first packet ~13 s, and the LLM collapses too). The operator chose D
-    (no change) on 2026-09-24 pending their own STT/TTS integration plan ([`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)
+    (no change) on 2026-09-24 pending their own STT/TTS integration plan ([`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout)
     KVU-11b; numbers in `docs/reference/speech/cpu-speech-contention-20260924.md`).
 - [x] **S-14 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as wrap-up hygiene. Operator-sanctioned; no dependency on our own kernel cycle. ✅ 2026-09-24 CLOSED HERE, MOVED (not completed): carried to [`conversation-stack.md`](speech-and-multimodal.md) CS-43.
 - [x] **S-15 — set `max_tokens ≥ 1024` on the vision role.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation (3 parse failures for the incumbent vs **41 and 50** for the Qwen3-VL arms — truncated mid-reasoning and scored wrong). Even at 2048 the Qwen3-VL models emit no letter on ~9 % of hard questions, so 1024 is a floor, not a target. This is a **production config change**, not an evaluation-harness change.

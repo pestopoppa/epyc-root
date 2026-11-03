@@ -188,7 +188,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **A correctness-class job with a cross-arm timing check needs a GPU-idle host.** AKX-LB3.2 scored -5.79% overhead (bar 5%) when co-tenant with GPU host threads, and was marked INVALID rather than adjusted; its records were moved aside, not deleted. A quiet-window gate that fails NOISY is re-run, not regraded (c4-gate-e: 62% and 40.8% pp floors, then a clean 2.12%).
 - **Incident INC-20261024-codex-worker-ungranted-tests-in-quiet-block.** A Codex source worker ran about 90 mock tests plus py_compile with no grant or region claim; the pyc timestamps (18:14:30Z, 18:14:42Z) fall inside the c4-gate-e A/B (18:04-18:33Z). Cross-check: the overlapping arm 10C measured pp 792.0 (normal), and the NOISY floor came from arm 9P, whose overlap with the earlier failed attempts is undetermined. The gate was re-run, not regraded, and passed. Remedy: binding RULES-FROM-WS58.md for Codex (no interpreter or toolchain execution outside a grant; nothing while any HOLD_* exists), passed verbatim into every worker brief.
 
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) · [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) · [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) · [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): two INC-20261024 incidents: verify every fast "complete", and subagents never claim compute
 
@@ -209,7 +209,7 @@ Sources: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026
 - **Read the rule's own gate before the headline.** LB7.1 read `NOT_REPRODUCED` because the ON median gap fell outside 0.5x-2x of the original (`PROBE_PERTURBATION`); an ORACLE_CULPRIT (G10 case 25: FP16 CPU reference 127/128 FAIL, FP32 oracle with the same GPU kernel 22/22 OK) means a long-kv F16-V FA FAIL on v10 needs the FP32-oracle arm before it is read as a backend defect. SPEC-RNG.1.2: DO-NOT-CARRY rests on the N-independent probe (net_gain 0/48); the N=300 cut bounds only the primary test.
 - **Processes: `kill -0` is blind in this sandbox**; use `ps` for liveness.
 
-Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
+Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, workspace-f8): five measurement-design lessons from the 10-24 read-outs
 
@@ -244,7 +244,7 @@ general rules drawn from them are design guidance and are **inferred**.
   and a strict repo test now holds `scripts/` at zero findings (7 reviewed exceptions).
 
 Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (M4.2 / M4.2a, PB-QCOST-1
-confirm and confirm-R), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)
+confirm and confirm-R), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 (KPF-18-S1.7g, KPF-19.1a side finding), [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)
 (SPEC-RNG.1.2 scope note), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (LINT-SIGPIPE-STRINGS-GREP-Q,
 LINT-PIPEFAIL-EARLY-EXIT), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md).
@@ -271,7 +271,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 - **CORRECTION to sweep 17's "a grant is not a claim".** `kpf18-item3-v2-sameshape`'s rc 75 at 00:40Z was a **self-conflict**, not a grant writer that ignored a held lock.
   - The filler engine takes the mi210_0 flock on behalf of the grant. The job's gate then tried to claim the same flock and refused itself.
   - The fix, operator-approved, passes `--no-device-claim` to the gate and names the holder in the argument.
-  - The rule: when an engine holds the device on a job's behalf, the inner tool must be told rather than left to re-claim. Before blaming a writer, check which pid holds the lock ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)).
+  - The rule: when an engine holds the device on a job's behalf, the inner tool must be told rather than left to re-claim. Before blaming a writer, check which pid holds the lock ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
 - **A mitigation that changes the measured condition must stay in the label.** Several f8 GPU jobs now run with HIP graphs disabled to avoid GPU-LEAK-1 (see inference-serving), and their records stamp `hip_graphs: DISABLED`. That makes no difference to a correctness verdict. It does make a timing reading a different condition. GPU-LEAK-1d showed that the production :8083 argv does not leak, so the KPF-18-S1 step-7 rates are now a graphs-off reading on a near-production argv. They must not be quoted as production rates (KPF-18-S1.7g).
 
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
@@ -279,7 +279,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 - [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (LBH-1, LBH-2, LBH-2.1, LBH-3, LBH-3.1)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (INF-70 claim dispositions)
 - [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-28, CH-28b)
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-18.0d item 3 correction, KPF-18-S1.7g)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-18.0d item 3 correction, KPF-18-S1.7g)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 ---
@@ -288,7 +288,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 **Confidence: verified** for the defect (source read, fix branch, per-row evidence) and the dispositions recorded so far; the fleet audit (LBH-1) is not finished.
 
 - **The defect.** `parse_cmd_params()` in `tools/llama-bench` declared `cmd_params params;` and never copied `autokernel_harden`, `autokernel_seed` or `autokernel_ready_timeout_ms` from the defaults. The bool was indeterminate, so a run WITHOUT `--autokernel-harden` sometimes ran the hardened protocol: a separate depth fill per context and per rep, no per-rep progress lines, and rows tagged `"autokernel_hardened": true`. It reached the champion line through `f744cc220` (2026-08-13) and is in v10, `dd3d9721c` and `49550eda5`. Fix: `experimental/llama-bench-harden-init-20261023` @ `141e4bcf5` (value-initialise plus an explicit defaults copy, with a test), folding as CH-28 / manifest V11-103 ([autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) LBH section).
-- **How it surfaced.** KVU-LB1.b run 1 hit its time limit (rc 124). The F32 arm looked catastrophically slow; it was really doing 40 x 8k depth fills per benchmark under the hardened protocol, against one cached fill for the F16 arm ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md)).
+- **How it surfaced.** KVU-LB1.b run 1 hit its time limit (rc 124). The F32 arm looked catastrophically slow; it was really doing 40 x 8k depth fills per benchmark under the hardened protocol, against one cached fill for the F16 arm ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)).
 - **Exposure, first count.** Recent tmp result files carrying the field: 22 of 53 had hardened rows, none requested (about 42%, consistent with an uninitialised bool). All 320 hardened rows in AK campaign stores were requested. Serving floors and serving A/Bs go through llama-server and are outside the defect.
 - **Dispositions so far (LBH-2).** DS41-W5 llama-bench "1017 vs Sept Q4" (tg128 -5.1%, pp512 -29.9%) crossed protocols: INVALID, and the AK seed that rested on the -29.9% is blocked. The DS41-C112 bisect, re-analysed on like-protocol pairs only, keeps its verdict at low strength (first bad `9b148baab`). The Q38FN thread-at-depth d0 anchor ran hardened on both arms, so it is relabelled a hardened-protocol reading. LBH-2 stays open for the September INF-70 markdown outputs, whose protocol cannot be recovered (REQUEST-UNKNOWN) ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md)).
 - **Rules that follow.** Until V11-103 is in the binary, a consumer must reject a row with `autokernel_hardened: true` unless it asked for one (LBH-3 guard proposed; belief adapters carry the field per VB-LLAMA-BENCH-HARDEN-PROTOCOL). A harness can guard itself: KVU-LB1.b run 2 killed and relaunched its own session whenever the warmup line was missing, relaunched 9 times, and used only clean rows.
@@ -297,7 +297,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
 - [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (llama-bench harden-init UB, LBH-1..3)
-- [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) (KVU-LB1.b run 1 post-mortem, run 2 guard)
+- [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (KVU-LB1.b run 1 post-mortem, run 2 guard)
 - [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) (DS41-W5 INVALID, C112 re-analysis)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (thread-at-depth d0 re-grade)
 - [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-28, C2 waiver)
@@ -308,14 +308,14 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 **Confidence: verified** (grant `.ended` files, launch logs, PREDECLARATION amendments).
 
-- **A grant is not a claim.** *(Corrected in sweep 19: the rc 75 was a self-conflict, the engine already held the flock and the gate re-claimed it; the grant-writer attribution below is superseded.)* `kpf18-item3-v2-sameshape` ended rc 75 (claim held) at 00:40Z, before any load. The grant writer had granted it while the mi210_0 flock was still held, so the job's own gate refused. The writer was fixed to respect the device lock, and the job is re-granted after W2. The verdict file correctly says INCOMPLETE with valid_loads 0, so nothing was read into an empty run ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)).
+- **A grant is not a claim.** *(Corrected in sweep 19: the rc 75 was a self-conflict, the engine already held the flock and the gate re-claimed it; the grant-writer attribution below is superseded.)* `kpf18-item3-v2-sameshape` ended rc 75 (claim held) at 00:40Z, before any load. The grant writer had granted it while the mi210_0 flock was still held, so the job's own gate refused. The writer was fixed to respect the device lock, and the job is re-granted after W2. The verdict file correctly says INCOMPLETE with valid_loads 0, so nothing was read into an empty run ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
 - **A predeclared minimum stopped a verdict from a truncated capture.** The rule for KPF-LB1.1 was that fewer than 12 leading turns means INCOMPLETE. All 3 attempts stopped at 4 turns (the `<think>` extractor defect, see tool-implementation), so the rule fired and no comparison was made.
-  - The repair went into a dated PREDECLARATION amendment before any further compute: a think shim, 16 stages, 24 max turns and 4 attempts. The decision rule is unchanged ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md)).
+  - The repair went into a dated PREDECLARATION amendment before any further compute: a think shim, 16 stages, 24 max turns and 4 attempts. The decision rule is unchanged ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)).
 - **Keep the raw log, and a parser crash costs nothing.** The DF2-LB1 census parser crashed on the first pass, because `seq_id` is printed as a fixed-width positional field (`[.1..]`), not a list. The captured server log was kept, so the fixed parser re-ran offline under the same rule with no second GPU window ([dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md)).
 
 ### Source References (2026-10-23 wrap-up sweep 17)
 
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-18.0d item 3 v2, KPF-LB1.1)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-18.0d item 3 v2, KPF-LB1.1)
 - [dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-block-drafter-experimental-build.md) (DF2-LB1 census parser)
 - [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -332,7 +332,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 ### Source References (2026-10-22 wrap-up sweep 13)
 
 - [progress/2026-10/2026-10-22-kpf261-diagnosis.md](../progress/2026-10/2026-10-22-kpf261-diagnosis.md) — window-1 INVALID diagnosis and runner v2
-- [handoffs/active/kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-prefix-fork-and-paged-attention.md) — KPF-26.1c2/c3 and the v2 KPF-26.1d/e
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-26.1c2/c3 and the v2 KPF-26.1d/e
 - epyc-orchestrator `docs/design/kpf25-byte-stable-trunks-audit.md` — the outcome-clause design the runner implements
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): a zero-discordant-safe degradation diagnostic, three jobs voided by thinking-on, and two harness defects that ran anyway
@@ -7290,7 +7290,7 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
-- **Identity checks must hold the batch shape and cache state fixed.** On CPU a different batch shape gives slightly different logits (a 1-token ubatch vs n>=2, `np`, speculative verify width, a prompt-cache hit vs a cold prefill), and near-ties flip even under greedy. Compare against a same-shape, same-cache-state control; a cross-shape divergence is evidence only if the probabilities are identical up to the divergent token (check `n_probs` at and before it). Instances: KPF-13 fork ≡ prompt-cache hit, and SPEC-RNG.1.1 (np4 serial == np1 8/8). ([benchmark-analyst.md](../docs/guides/agent-workflows/benchmark-analyst.md), [kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md))
+- **Identity checks must hold the batch shape and cache state fixed.** On CPU a different batch shape gives slightly different logits (a 1-token ubatch vs n>=2, `np`, speculative verify width, a prompt-cache hit vs a cold prefill), and near-ties flip even under greedy. Compare against a same-shape, same-cache-state control; a cross-shape divergence is evidence only if the probabilities are identical up to the divergent token (check `n_probs` at and before it). Instances: KPF-13 fork ≡ prompt-cache hit, and SPEC-RNG.1.1 (np4 serial == np1 8/8). ([benchmark-analyst.md](../docs/guides/agent-workflows/benchmark-analyst.md), [kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [speculative-decoding-mtp-refresh.md](../handoffs/active/speculative-decoding-mtp-refresh.md))
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): a pinned GPU job costs CPU timing ~1% decode and ~5% prefill, without inflating the noise
 
@@ -7327,7 +7327,7 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 
 - [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md) — CTC-Q-C, CTC-Q-C.1
 - [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — U4-NOISE-W2
-- [handoffs/active/kv-prefix-fork-and-paged-attention.md](../handoffs/active/kv-prefix-fork-and-paged-attention.md) — KPF-26.1g0 / KPF-26.1g
+- [handoffs/active/kv-cache-program.md](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) — KPF-26.1g0 / KPF-26.1g
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 18.3-18.4
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-58): three ways a correct job looks like a refused grant
@@ -7384,13 +7384,13 @@ Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to
 - **A process-CV cap voids a baseline even when the ratio stands.** DS41-W5d's MMID ratio is tight (1.783x, CI 1.778-1.789, CV 0.15-0.18%), but its absolute tg128 baseline is INVALID_NOISY: CV 11.87% against a 4.0% cap, drifting 11.75 -> 16.65 t/s across processes with the first process lowest. Check warm-up and page-cache residency before re-running. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-W5d.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **An all-`no_answer` tally is vacuous, not a null.** s5-dripreview1 scored 0/90 with `bad_final` in every cell, every reply 33 tokens, and no replies retained. The fix: retain raw replies, and void a cell when `no_answer` exceeds a predeclared share (suggest 20%). ([repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) D-RI-PREVIEW-1.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Re-check a FAIL's detector before reading it as a regression.** The G2-CONC A4 FAIL was a degeneracy-detector false positive; it is kept on record, and the corrected re-run passed. ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **Exact-set controls can fail on synthetic stress.** FA4's nan-stage case membership differs systematically between ON and OFF (4/228 vs 6/228, intersection 2), so the band comparison has no verdict until the control is redefined (V11-FA-4a). ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
+- **Exact-set controls can fail on synthetic stress.** FA4's nan-stage case membership differs systematically between ON and OFF (4/228 vs 6/228, intersection 2), so the band comparison has no verdict until the control is redefined (V11-FA-4a). ([kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Capture launch evidence from the ancestor wrapper.** Under Yama `ptrace_scope=1`, `/proc` environ/fd reads of non-ancestor processes return EACCES; that killed HSF PROFILE-3 and FA4 attempt 2. Record EACCES as unavailable evidence, and never change the host setting. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-V11FA rebinds)
 - **Predeclare what a first-request (warmup) token mismatch means** before an A/B; HSF P4 diverged at token 45 with no rule for it. Never exclude or regrade unequal output. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md))
 - **Launch DRY_RUN gate and scheduling lessons.** New rows must pass `dryrun_check.py` (root `1159847b9`). Check every guard script, not only `admission_guard.sh`, before moving a row between quarters (a pinned `guard.sh` gave rc70 and about 40 idle minutes). Phases under about 240 s belong in the standing CPU 24,25 preflight. Use `date -u` for timestamps, never a guess. ([2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Label artifacts by what they hold.** The arm-P2 VERDICT.md is titled "q38fn-armP-ppl" but carries the P2 content, and the ufh14-lb7 verdict reads UNATTRIBUTED in one place and NOT_REPRODUCED in another; both are flagged, not reconciled. ([arm-P2 VERDICT](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/VERDICT.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 
-Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md)
+Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md)
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
@@ -7398,7 +7398,7 @@ Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [
 
 Across the 2026-10-27 cut, correctness and preparation evidence must remain distinct from performance verdicts. INF-75’s ABI canary completed 22 graphs / 21,080 nodes, but verbosity suppressed full-shape counters, so full-shape coverage is unknown. C5 r10 was withdrawn after caller-edge omissions; r11 is still pending. KPF R15 returned rc 0 but its verdict is invalid because the seed gate did not prove port ownership. No performance or geometry conclusion follows.
 
-Sources: [INF-75](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [INF-75](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 ## Compiled Update — 2026-10-27 (refactor campaign checkpoint)
 
 **Confidence: verified** for the recorded events and the explicit limits of the observations.

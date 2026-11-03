@@ -9,7 +9,7 @@
   "decision_rule": "PASS only when independent pre-skip 90c12df4247e417053ffc59e2188294826d04ca2 and champion c72ec82f5417bb2937310326120f149b665e8400 CPU outputs are bit-identical for original 86 cases and all 111 extended cases; original outputs preserved, all supported/finite, shared mask controls nonvacuous. No numerical tolerance. out/COMPLETE requires all receipts and custody verified.",
   "estimate_s": 3600,
   "ram_gib": 16,
-  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17a",
   "priority_rank": 45,
   "dryrun_timeout_s": 1500,
   "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17a-cpu-paired",

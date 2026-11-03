@@ -9,7 +9,7 @@
   "decision_rule": "Diagnostic only: OBSERVED_PASS requires rc=0 on the identified hybrid model and explicit Test 6 PASS, with no SKIP. Fixed 1e-3 tolerance and missing mutation control cannot establish a fork defect or close KPF-17; other outcomes INVALID.",
   "estimate_s": 2400,
   "ram_gib": 16,
-  "handoff_task": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
   "priority_rank": 45,
   "dryrun_timeout_s": 1500,
   "kind": "compute",
