@@ -44,7 +44,7 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -130,6 +130,7 @@ def lint(spec):
         notes.append(f"result_path={rp} (was a completion marker)")
     # keep is not linted (operator 2026-11-03, session review 3.1): an empty keep = every input (older than the first job
     # start) + the result; the keeper's reaper protects both and keep globs only add to them.
+    rf.check_busy_fraction(spec)   # before the smoke: a bad value costs no compute
     if not spec.get("kind"):
         spec["kind"] = "compute"
         notes.append("kind=compute")

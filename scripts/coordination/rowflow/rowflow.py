@@ -8,6 +8,8 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                result_path (what the filer reads), decision_rule, estimate_s, handoff_task
                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
+                               busy_fraction (0..1: share of its claimed cpus the job keeps busy; unset = 1.0; below
+                               0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
                                ADD reaper protection; empty = inputs (older than the first job start) + result_path),
                                dryrun_timeout_s (900 cpu / 1500 gpu), dryrun_native_result (count a unique per-attempt native JSON unit
@@ -427,6 +429,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              "admission_class must be one of " + ", ".join(sorted(ADMISSION_CLASSES)))
     if spec.get("dryrun_native_result") is not None:
         need(isinstance(spec["dryrun_native_result"], bool), "dryrun_native_result must be boolean")
+    check_busy_fraction(spec)
     launcher = os.path.abspath(str(spec["launcher"]))
     need(os.path.isfile(launcher), f"launcher {launcher} missing")
     for term in (".ended", ".complete"):
@@ -502,6 +505,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["total_units"] = int(spec["total_units"])
     if spec.get("admission_class") is not None:
         row["admission_class"] = spec["admission_class"]
+    if spec.get("busy_fraction") is not None:
+        row["busy_fraction"] = float(spec["busy_fraction"])
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
@@ -884,6 +889,28 @@ URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank 
                           # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
 
 
+DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whose spec says it keeps < half its claim busy
+                          # (a ~4%-busy row) is never promoted to a host/quiet-host drain; it still takes free regions
+
+
+def check_busy_fraction(spec):
+    """Publish gate (operator 2026-11-03): optional spec busy_fraction must be a number in 0..1."""
+    bf = spec.get("busy_fraction")
+    need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
+         f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
+         f"omit it when unknown (= 1.0)")
+
+
+def row_busy(d):
+    """A row's / candidate's busy_fraction as a float in 0..1; absent or invalid = unknown = 1.0 (never demoted)."""
+    b = (d or {}).get("busy_fraction")
+    try:
+        b = float(b)
+    except (TypeError, ValueError):
+        return 1.0
+    return b if 0.0 <= b <= 1.0 and not isinstance((d or {}).get("busy_fraction"), bool) else 1.0
+
+
 def row_rank(d):
     """A row's priority_rank as a float; absent/blank -> 100. (`or 100` turned an explicit rank 0 into 100.)"""
     r = (d or {}).get("priority_rank")
@@ -948,6 +975,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
     A row is neither promoted nor drained for while a better-ranked pending row that is placeable this tick and not
     failing to arm wants any of its regions (drain_blocker); plan.drain_held = [(row, blocker)] names those rows for the log.
+    BUSY (operator 2026-11-03): a row with busy_fraction < DRAIN_MIN_BUSY (unset = 1.0) is never promoted or drained
+    for; it is placed only when its regions are free anyway. plan.drain_lowbusy names those rows for the log.
     PORTS (ws58 2026-11-02): a candidate whose cand["ports"] meet held_ports (running grants) or a port placed this tick
     waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
@@ -967,9 +996,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     ports = {int(x) for x in held_ports}
     drain, T = None, None
     plan.drain_held = []
+    plan.drain_lowbusy = []
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
+            if row_busy(c) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
+                plan.drain_lowbusy.append(c)
+                continue
             blocker = drain_blocker(c, pending, free, ram, gpu_grant_open, ports)
             if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
                 plan.drain_held.append((c, blocker))
@@ -1038,6 +1071,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
 
 plan.last_drain = None
 plan.drain_held = []
+plan.drain_lowbusy = []
 
 
 def quiet_ok_now(flags, now=None):
@@ -1983,7 +2017,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
-                      "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0)})
+                      "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
+                      "busy_fraction": d.get("busy_fraction")})
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
@@ -2002,6 +2037,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
         for hc, bc in plan.drain_held:
             log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
+        for lc in plan.drain_lowbusy:
+            log(f"NO-DRAIN {lc['id']} ({lc.get('shape')}): busy_fraction {row_busy(lc):g} < {DRAIN_MIN_BUSY:g}, so it never books a "
+                f"quiet/whole host and runs only when its regions are free; fix (if it really keeps its claim busy): set "
+                f"busy_fraction >= {DRAIN_MIN_BUSY:g} in its spec and republish with publish_row.py")
         if plan.last_drain:
             dc, T = plan.last_drain
             log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
