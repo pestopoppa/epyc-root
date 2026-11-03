@@ -2043,7 +2043,7 @@ Read read-only from the frozen tree at `0db32c06e3e5` on 2026-08-23:
 
 **This documents an existing capability. It is not a proposal, and it must not be read as one.**
 Porting GDN-2 is a standing **decline on evidence** — see `B9` in
-[log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md). The value of the row
+[log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness). The value of the row
 is that the next person to ask "how big is the ggml delta for a channel-wise gate?" gets the answer
 without re-deriving it, and gets the *right* answer: one assert, not a new op family. **Do not open a
 port branch on the strength of it** (intake-1281#record).
@@ -2094,7 +2094,7 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       sits at the top of the predicted range deliberately; a 5 % result is a *pass for the physics and
       a fail for the decision*, and should close the row rather than start a tuning campaign.
       **Blocked-adjacent:** do not report a speedup from a kernel that `G16`
-      ([log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) has not
+      ([log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness)) has not
       cleared numerically. Both compute planes were held by other sessions through this wave —
       **filed, not run**.
 - [ ] **G15a — short-prompt no-regression arm, conditional.** If G15 passes only with the occupancy floor rebuilt
@@ -2104,7 +2104,7 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       G15 today benches only pp2048/8192/32768, so a short-prompt regression would not show. Sources:
       intake-1428#record, intake-1434#record. GPU, same binary as G15.
 - [ ] **B5 (B, blocked on `G16` in
-      [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) — do not stack
+      [log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness)) — do not stack
       a chunked GDN kernel on `GGML_CUDA_GDN_STATE_BF16`.** The two levers compound *two independent
       precision reductions on one op*: the chunked form reassociates the recurrence into
       f16/bf16-input f32-accumulate GEMMs whose residual error grows with chunk count, and the BF16

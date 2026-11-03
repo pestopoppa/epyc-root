@@ -271,12 +271,6 @@
     {
       "from": "INF-22",
       "kind": "ref",
-      "to": "INF-33",
-      "weight": 7
-    },
-    {
-      "from": "INF-22",
-      "kind": "ref",
       "to": "INF-50",
       "weight": 3
     },
@@ -373,12 +367,6 @@
     {
       "from": "INF-59",
       "kind": "ref",
-      "to": "INF-33",
-      "weight": 12
-    },
-    {
-      "from": "INF-59",
-      "kind": "ref",
       "to": "PIP-04",
       "weight": 1
     },
@@ -425,12 +413,6 @@
       "weight": 5
     },
     {
-      "from": "INF-77",
-      "kind": "ref",
-      "to": "INF-13",
-      "weight": 2
-    },
-    {
       "from": "INF-79",
       "kind": "ref",
       "to": "EVL-02",
@@ -465,12 +447,6 @@
       "kind": "ref",
       "to": "EVL-47",
       "weight": 5
-    },
-    {
-      "from": "INF-80",
-      "kind": "ref",
-      "to": "INF-33",
-      "weight": 2
     },
     {
       "from": "INF-80",
@@ -665,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:59:54Z",
+  "generated_at": "2026-11-03T09:02:12Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1207,7 +1183,7 @@
         "unblocks": 4,
         "unblocks_rows": []
       },
-      "priority_rank": 24,
+      "priority_rank": 23,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1592,36 +1568,6 @@
       ]
     },
     {
-      "age_days": 2,
-      "blocked": 1,
-      "blocked_by": [],
-      "closed": 19,
-      "dispatchable": 11,
-      "domain": "inference-research",
-      "guarded": 0,
-      "handoff": "engram-conditional-memory.md",
-      "id": "INF-13",
-      "last_advanced": "2026-11-01",
-      "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
-      "open": 12,
-      "priority": 0.5954,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed. intake-936 (indep",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 71,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 22,
-      "readiness": "ready",
-      "state": "active",
-      "track": "engram conditional memory"
-    },
-    {
       "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
@@ -1731,20 +1677,18 @@
       ]
     },
     {
-      "age_days": 3,
-      "blocked": 1,
-      "blocked_by": [
-        "INF-48"
-      ],
-      "closed": 6,
-      "dispatchable": 11,
+      "age_days": null,
+      "blocked": 2,
+      "blocked_by": [],
+      "closed": 25,
+      "dispatchable": 22,
       "domain": "inference-research",
       "guarded": 0,
-      "handoff": "log-linear-gated-deltanet-readiness.md",
+      "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
-      "last_advanced": "2026-10-31",
+      "last_advanced": null,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 12,
+      "open": 24,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1757,10 +1701,34 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 23,
-      "readiness": "blocked",
+      "priority_rank": 22,
+      "readiness": "ready",
       "state": "active",
-      "track": "log linear gated deltanet readiness"
+      "track": "log linear gated deltanet readiness",
+      "tracks": [
+        {
+          "blocked_by": [
+            "INF-48"
+          ],
+          "dispatchable": 11,
+          "gates": [
+            "INF-48"
+          ],
+          "line": 12,
+          "name": "log-linear-gated-deltanet-readiness",
+          "open": 12,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 11,
+          "gates": [],
+          "line": 584,
+          "name": "engram-conditional-memory",
+          "open": 12,
+          "readiness": "ready"
+        }
+      ]
     },
     {
       "age_days": 0,
@@ -1787,7 +1755,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2668,7 +2636,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 30,
+      "priority_rank": 29,
       "readiness": "ready",
       "state": "active",
       "track": "glm52 reviewer capability gates",
@@ -2979,7 +2947,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3092,7 +3060,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3471,7 +3439,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3629,7 +3597,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 61,
+      "closed": 62,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3638,13 +3606,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0159,
+      "priority": 0.0142,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 31,
+      "priority_rank": 30,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -3821,7 +3789,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -3873,6 +3841,7 @@
       "INF-07",
       "INF-09",
       "INF-12",
+      "INF-13",
       "INF-16",
       "INF-18",
       "INF-19",
@@ -3984,7 +3953,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 30,
+      "file": 29,
       "heuristic": 1,
       "override": 0
     },
@@ -4000,7 +3969,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 2,
+    "blocked": 1,
     "no_open": 0,
     "ready": 29
   },

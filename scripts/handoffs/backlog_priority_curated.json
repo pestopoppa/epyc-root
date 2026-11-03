@@ -24,7 +24,6 @@
   "EVL-29": 0.3,
   "UFH-01": 0.3,
   "PIP-04": 0.3,
-  "INF-13": 0.25,
   "INF-33": 0.25,
   "EVL-14": 0.2,
   "RTG-08": 0.15,
@@ -172,7 +171,8 @@
   "REV-02#reviewer-latency-and-sampling-budget": 0.3,
   "REV-02#reviewer-calibration-accounting": 0.3,
   "REV-02#reviewer-typed-artifacts": 0.2,
-  "REV-02#reviewer-model-ablations": 0.25
+  "REV-02#reviewer-model-ablations": 0.25,
+  "INF-33#engram-conditional-memory": 0.25
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",

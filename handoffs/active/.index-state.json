@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 13,
+      "handoffs": 12,
       "oldest_advance": "2026-10-30",
       "open": 1024
     },
@@ -344,7 +344,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 61,
+      "closed": 62,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -356,7 +356,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 66
+      "total": 67
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -831,22 +831,6 @@
           "open": 1
         }
       ]
-    },
-    "engram-conditional-memory.md": {
-      "blocked": 1,
-      "closed": 19,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 11,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-13",
-      "state": "active",
-      "total": 31
     },
     "eval-tower-program.md": {
       "blocked": 8,
@@ -1391,22 +1375,6 @@
         }
       ]
     },
-    "log-linear-gated-deltanet-readiness.md": {
-      "blocked": 1,
-      "closed": 6,
-      "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 11,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-33",
-      "state": "active",
-      "total": 18
-    },
     "long-context-program.md": {
       "blocked": 0,
       "closed": 75,
@@ -1631,6 +1599,46 @@
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
+        }
+      ]
+    },
+    "model-architecture-readiness.md": {
+      "blocked": 2,
+      "closed": 25,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 22,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-33",
+      "state": "active",
+      "total": 49,
+      "tracks": [
+        {
+          "blocked": 1,
+          "closed": 6,
+          "gates": [
+            "INF-48"
+          ],
+          "guarded": 0,
+          "line": 12,
+          "markers": 1,
+          "name": "log-linear-gated-deltanet-readiness",
+          "open": 11
+        },
+        {
+          "blocked": 1,
+          "closed": 19,
+          "gates": [],
+          "guarded": 0,
+          "line": 584,
+          "markers": 1,
+          "name": "engram-conditional-memory",
+          "open": 11
         }
       ]
     },
@@ -2705,21 +2713,12 @@
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
       "track": "autokernel research loop"
     },
-    "INF-13": {
-      "deps": [],
-      "handoff": "engram-conditional-memory.md",
-      "id": "INF-13",
-      "index": "inference-research-index.md",
-      "line": 17,
-      "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
-      "track": "engram conditional memory"
-    },
     "INF-22": {
       "deps": [],
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
@@ -2727,10 +2726,10 @@
       "deps": [
         "INF-48"
       ],
-      "handoff": "log-linear-gated-deltanet-readiness.md",
+      "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2739,7 +2738,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2750,7 +2749,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2759,7 +2758,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2770,7 +2769,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2793,7 +2792,7 @@
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "index": "inference-research-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
@@ -2805,7 +2804,7 @@
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -2814,7 +2813,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -2823,7 +2822,7 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
     },

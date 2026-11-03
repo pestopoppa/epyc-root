@@ -176,6 +176,10 @@
    "target": "numa-placement-and-contention.md",
    "track": "dynamic-stack-concurrency"
   },
+  "engram-conditional-memory.md": {
+   "target": "model-architecture-readiness.md",
+   "track": "engram-conditional-memory"
+  },
   "episodic-memory-integrity.md": {
    "target": "memory-program.md",
    "track": null
@@ -343,6 +347,10 @@
   "llama-cpp-dsa-contribution.md": {
    "target": "rocm-kernel-authoring.md",
    "track": "llama-cpp-dsa-contribution"
+  },
+  "log-linear-gated-deltanet-readiness.md": {
+   "target": "model-architecture-readiness.md",
+   "track": "log-linear-gated-deltanet-readiness"
   },
   "loop-owned-fleet-implementation.md": {
    "target": "coordination-and-churn-pipeline.md",
@@ -843,6 +851,10 @@
   "INF-12": {
    "target": "EVL-02",
    "track": "delta-mem-reproduction"
+  },
+  "INF-13": {
+   "target": "INF-33",
+   "track": "engram-conditional-memory"
   },
   "INF-16": {
    "target": "INF-48",
