@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T20:13:02Z",
+  "generated_at": "2026-11-03T21:51:03Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1562,14 +1562,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 181,
-      "dispatchable": 45,
+      "dispatchable": 50,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-03",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 48,
+      "open": 53,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,18 +1589,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 26,
+          "dispatchable": 31,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 27,
+          "open": 32,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 624,
+          "line": 632,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 983,
+          "line": 991,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1260,
+          "line": 1268,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1895,
+          "line": 1903,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2190,
+          "line": 2198,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2799,
+          "line": 2807,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2,
           "readiness": "blocked"
