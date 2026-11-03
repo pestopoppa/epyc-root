@@ -766,3 +766,58 @@ def test_belief_scope_wins_over_the_fingerprint_fallback(tmp_path):
     r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
     src, _, _ = _split(_frames(tmp_path, r))
     assert src["applicability"]["config_key"] == SCOPE["config_key"]
+
+
+# --- VB-AP-JOURNAL-CARRY ---------------------------------------------------------------------
+
+_WARRANT = {"schema": "accepted_warrant_telemetry.v1", "acceptance_effect": "none",
+            "cited_trial_ids": [7], "verified_failure_trial_ids": [7], "status": "verified"}
+_CARRY_KEYS = ("accepted_warrant_telemetry_json", "request_source_json", "reward_provenance_json")
+
+
+def _carry_frames(tmp_path, r, events=None):
+    root = write_journal(tmp_path, [r])
+    return list(apj.emit(root, as_of="2026-11-03T00:00:00Z", progress_events=events))
+
+
+def test_accepted_warrant_telemetry_positive_and_absent(tmp_path):
+    pos = _carry_frames(tmp_path, row(eval_details={"details": {"accepted_warrant_telemetry": _WARRANT}}))
+    neg = _carry_frames(tmp_path / "b", row(eval_details={"details": {}}))
+    legacy = _carry_frames(tmp_path / "c", row())
+    assert json.loads(pos[2]["assertion"]["accepted_warrant_telemetry_json"]) == _WARRANT
+    for f in (neg, legacy):
+        assert "accepted_warrant_telemetry_json" not in f[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"] == legacy[2]["assertion"]["grade"]
+
+
+def test_request_source_positive_and_absent(tmp_path):
+    ev = [{"event_type": "task_started", "task_id": "t1", "data": {"request_source": "smoke"}},
+          {"event_type": "task_started", "task_id": "t2", "data": {"request_source": "user"}}]
+    pos = _carry_frames(tmp_path, row(), ev)
+    neg = _carry_frames(tmp_path / "b", row(),
+                        [{"event_type": "task_started", "task_id": "t3", "data": {"task_type": "x"}}])
+    assert json.loads(pos[2]["assertion"]["request_source_json"]) == [
+        {"task_id": "t1", "request_source": "smoke"}]
+    assert "request_source_json" not in neg[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"]
+
+
+@pytest.mark.parametrize("kind", ["memory_stored", "q_value_updated"])
+def test_reward_metadata_positive_and_absent(tmp_path, kind):
+    prov = {"disposition": "ok", "http_status": 200, "action": "route"}
+    pos = _carry_frames(tmp_path, row(), [
+        {"event_type": kind, "task_id": "external", "memory_id": "m1",
+         "data": {"reward_provenance": prov}}])
+    neg = _carry_frames(tmp_path / "b", row(), [
+        {"event_type": kind, "task_id": "external", "memory_id": "m1", "data": {"old_q": 0.1}}])
+    assert json.loads(pos[2]["assertion"]["reward_provenance_json"]) == [
+        {"event_type": kind, "memory_id": "m1", "reward_provenance": prov}]
+    assert "reward_provenance_json" not in neg[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"]
+
+
+def test_carry_off_is_byte_identical(tmp_path):
+    plain = _carry_frames(tmp_path, row())
+    off = _carry_frames(tmp_path / "b", row(), [])
+    assert [f["frame_id"] for f in plain] == [f["frame_id"] for f in off]
+    assert not any(k in plain[2]["assertion"] for k in _CARRY_KEYS)

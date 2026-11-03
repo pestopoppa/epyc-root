@@ -236,6 +236,62 @@ def _w6_generalization(eval_details) -> dict | None:
     return dict(report) if isinstance(report, dict) else None
 
 
+#: VB-AP-JOURNAL-CARRY: optional producer-authored fields, informational only. A missing, legacy
+#: or malformed field stays ABSENT (read as UNKNOWN); nothing here reaches ``grade()``.
+NON_LEARNING_REQUEST_SOURCES = frozenset({"smoke", "probe", "health"})
+REWARD_EVENT_TYPES = frozenset({"memory_stored", "q_value_updated"})
+
+
+def _json_text(value) -> str | None:
+    """Deterministic JSON text (certified frames forbid floats); None when not serializable."""
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError):
+        return None
+
+
+def _accepted_warrant_telemetry(eval_details) -> dict | None:
+    """``eval_details.details.accepted_warrant_telemetry`` (SG-W2), copied verbatim or absent."""
+    if not isinstance(eval_details, dict):
+        return None
+    details = eval_details.get("details")
+    if not isinstance(details, dict):
+        return None
+    block = details.get("accepted_warrant_telemetry")
+    return dict(block) if isinstance(block, dict) and block else None
+
+
+def progress_carry(progress_events: Iterable[dict] | None) -> dict:
+    """Optional progress-log fields: TASK_STARTED ``request_source`` and the ``reward_provenance``
+    block of MEMORY_STORED / Q_VALUE_UPDATED events (orchestrator ``ProgressEntry`` JSON shape).
+
+    ``request_source`` is carried only for the producer's own non-learning vocabulary
+    (smoke/probe/health); any other value is not copied. Returns only the keys that are present.
+    """
+    sources: list[dict] = []
+    rewards: list[dict] = []
+    for ev in progress_events or ():
+        if not isinstance(ev, dict) or not isinstance(ev.get("data"), dict):
+            continue
+        kind, data = ev.get("event_type"), ev["data"]
+        if kind == "task_started":
+            rs = data.get("request_source")
+            if isinstance(rs, str) and rs in NON_LEARNING_REQUEST_SOURCES:
+                sources.append({"task_id": str(ev.get("task_id") or ""), "request_source": rs})
+        elif kind in REWARD_EVENT_TYPES:
+            prov = data.get("reward_provenance")
+            if isinstance(prov, dict) and prov and _json_text(prov) is not None:
+                rewards.append({"event_type": kind, "memory_id": str(ev.get("memory_id") or ""),
+                                "reward_provenance": prov})
+    out: dict = {}
+    if sources:
+        out["request_source_json"] = _json_text(sources)
+    if rewards:
+        out["reward_provenance_json"] = _json_text(rewards)
+    return out
+
+
 def _native_fingerprint_scope(row: dict) -> tuple[dict, str]:
     """P1-PHASE2: scope for a row that carries an AP-55 fingerprint but NO ``belief_scope``.
 
@@ -369,6 +425,9 @@ def as_record(shard: Path, row: dict) -> dict:
             "verified": True if _attestation_verified(row) else None,
         },
     }
+    warrant = _accepted_warrant_telemetry(row.get("eval_details"))
+    if warrant is not None and _json_text(warrant) is not None:
+        record["accepted_warrant_telemetry_json"] = _json_text(warrant)
     w6_generalization = _w6_generalization(row.get("eval_details"))
     if w6_generalization is not None:
         # Authored informational support only.  Do not derive a missing block from historical
@@ -377,7 +436,8 @@ def as_record(shard: Path, row: dict) -> dict:
     return record
 
 
-def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
+def frames_for_row(shard: Path, row: dict, *, as_of: str,
+                   progress_events: Iterable[dict] | None = None) -> list[dict]:
     rec = as_record(shard, row)
     q, t, reasons = grade(rec)
     ident = rec["measurement_id"]
@@ -443,6 +503,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                            rec["w6_generalization"], sort_keys=True, separators=(",", ":"),
                            ensure_ascii=False, allow_nan=False)}
                           if "w6_generalization" in rec else {}),
+                       # VB-AP-JOURNAL-CARRY: optional, informational, absent when not authored.
+                       **({"accepted_warrant_telemetry_json": rec["accepted_warrant_telemetry_json"]}
+                          if "accepted_warrant_telemetry_json" in rec else {}),
+                       **progress_carry(progress_events),
                        # VB-AP-PROMO-RULE: carried verbatim, never graded; absent keys stay absent.
                        **decision},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
@@ -469,14 +533,16 @@ def summarize(root: Path | None = None) -> dict:
             "reps_basis": dict(basis.most_common())}
 
 
-def emit(root: Path | None = None, *, as_of: str, limit: int | None = None) -> Iterable[dict]:
+def emit(root: Path | None = None, *, as_of: str, limit: int | None = None,
+         progress_events: Iterable[dict] | None = None) -> Iterable[dict]:
     """Frames for every measured row. `root` is an epyc-root checkout, or one shard file."""
+    progress_events = list(progress_events) if progress_events is not None else None
     rows = (iter_shard_rows(root) if root is not None and Path(root).is_file()
             else iter_measured_rows(root))
     for i, (shard, row) in enumerate(rows):
         if limit is not None and i >= limit:
             return
-        yield from frames_for_row(shard, row, as_of=as_of)
+        yield from frames_for_row(shard, row, as_of=as_of, progress_events=progress_events)
 
 
 if __name__ == "__main__":
