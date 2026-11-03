@@ -35,6 +35,13 @@ def _external_fixture_available():
             if not all((root / rel).is_file() for rel in (
                 "BUILD-IDENTITY.json", "build-result.json", "SHA256SUMS", "bin/test-backend-ops")):
                 return False
+        # The live scheduler tree is partly reclaimed over time: every file named by a component
+        # seal must still exist, else the strict reader (rightly) refuses and the capture is gone.
+        for seal in RUN.glob("*/SHA256SUMS.txt"):
+            for line in seal.read_text().splitlines():
+                parts = line.split(None, 1)
+                if len(parts) == 2 and not (seal.parent / parts[1].strip()).is_file():
+                    return False
         return True
     except (OSError, KeyError, TypeError, ValueError):
         return False

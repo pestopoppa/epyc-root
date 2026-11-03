@@ -20,6 +20,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -207,6 +208,10 @@ def _distillation_pool(tmp: Path) -> Path:
 
 
 def _s4_omega_ab(tmp: Path) -> Path:
+    # The fixture runs the actual producer from the pinned orchestrator checkout; absent that
+    # checkout (env-gated like the other cross-repo tests) there is nothing to run.
+    if not os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT"):
+        pytest.skip("s4-omega-ab fixture requires EPYC_ORCHESTRATOR_SOURCE_ROOT")
     return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
 
 
@@ -223,6 +228,7 @@ BUILDERS = {
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
     "s4-omega-ab": _s4_omega_ab,
+    "ak-r18-symbols": lambda tmp: _helpers("test_r18_symbol_integration").fixture(tmp)[0] / "terminal.json",
     "usage-provenance": _usage_provenance,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -333,6 +339,11 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "repl-trace-facts",  # explicit sealed event observations: test_repl_trace_facts_ingest.py
         # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
         "hg5-request-event",
+        # Native custody needs the pinned producer/provider/lock/receipt SHA-256s and a hash-chained
+        # journal; no fixture can satisfy those without fabricating the pins. Registry/CLI ingest with
+        # the native reader stubbed, fixture refusal and journal-chain refusals:
+        # test_dtap_crm_pair_refusal.py.
+        "dtap-crm-pair",
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
         # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
         "ak-width-dimension", "ak-width-cells-cpu",
