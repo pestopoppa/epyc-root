@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T17:43:12Z",
+  "generated_at": "2026-11-03T17:44:59Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3247,7 +3247,7 @@
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-03",
-      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
+      "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
       "open": 48,
       "priority": 0.711,
       "priority_basis": {

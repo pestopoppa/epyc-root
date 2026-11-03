@@ -2872,7 +2872,7 @@
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
       "line": 17,
-      "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
+      "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
       "track": "session bus thin dispatcher"
     },
     "RTG-36": {
