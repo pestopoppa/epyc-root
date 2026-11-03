@@ -377078,7 +377078,7 @@
   - Qwen10M evaluation changes context handling with YaRN factor40 (42 for PaperTrail). Such results combine sparse
     attention and context extension; native context is not10M.
   - The paper describes CuTe DSL kernels specifically for H200/B300 and a Triton implementation not tied to these
-    GPUs. This does not establish tested MI50/gfx906 correctness or speed. Such a backend is a build/validation
+    GPUs. This does not establish tested MI210/gfx90a correctness or speed. Such a backend is a build/validation
     task, not a technical reason to decline the approach.
   credibility_score: 1
   contradicting_evidence:
@@ -377093,7 +377093,11 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
+  - handoffs/active/model-architecture-readiness.md
+  - handoffs/active/rocm-kernel-authoring.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'All verified-source-report statuses mean the source makes the statement with inspectable anchors; no local
@@ -377291,6 +377295,11 @@
   - claim_index: 18
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
+  final_reader_note: See research/deep-dives/lsa-20261103/FINDINGS.md for the scoped wording and locator clarifications.
 - id: intake-2623
   arxiv_id: null
   url: https://github.com/Prefrontal-AI/latent-sparse-attention
@@ -377324,7 +377333,11 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
+  - handoffs/active/model-architecture-readiness.md
+  - handoffs/active/rocm-kernel-authoring.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'PARTIAL source-tree read; source and release inspection, no runtime reproduction.
@@ -377506,6 +377519,10 @@
   - claim_index: 1
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
 - id: intake-2624
   arxiv_id: '2410.13276'
   url: https://arxiv.org/abs/2410.13276
@@ -377541,7 +377558,8 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
@@ -377585,6 +377603,10 @@
   - claim_index: 2
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
 - id: intake-2625
   arxiv_id: '2412.14468'
   url: https://arxiv.org/abs/2412.14468
@@ -377604,7 +377626,7 @@
   - Independent learned Q and KV mappings produce32-bit Hamming signatures; bitwise scores still scan cached token
     signatures before sparse token attention.
   - Training labels use high isolated-token contribution accounting for attention weight and value magnitude, rather
-    than D-LSA averaged-attention KL. Uses classification/BCE and top64 labels.
+    than D-LSA averaged-attention KL. Uses classification/BCE and top-k labels (for example 64).
   - Quality evaluation distinguishes generic training (up to16x token reduction) from task-specific tuning (up to32x).
     CPU-resident cache/ultra-long offloading not evaluated.
   credibility_score: 1
@@ -377620,7 +377642,8 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
@@ -377651,6 +377674,12 @@
     source_revision: 2412.14468v2; 2025-06-03
     verified_by: research-intake/stage2
     file_sha256: 837ca31efab5c49d9b79796a857cbcd23a78296860f7d53a1b30c4819e5b5234
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2412.14468v2#S6
+    source_revision: 2412.14468v2; 2025-06-03
+    verified_by: research-intake/stage2
+    file_sha256: 837ca31efab5c49d9b79796a857cbcd23a78296860f7d53a1b30c4819e5b5234
   dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
     reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
     evidence recorded in notes.'
@@ -377664,6 +377693,11 @@
   - claim_index: 2
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
+  final_reader_note: See research/deep-dives/lsa-20261103/FINDINGS.md for the scoped wording and locator clarifications.
 - id: intake-2626
   arxiv_id: '2509.24663'
   url: https://arxiv.org/abs/2509.24663
@@ -377699,7 +377733,8 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
@@ -377720,7 +377755,7 @@
     file_sha256: 479381f960be60b2984099f6a3f994d681de137dcddc06e1c9d8eebfc700482f
   - claim_index: 1
     kind: file-hash
-    locator: https://arxiv.org/html/2509.24663v1#S3.SS3
+    locator: https://arxiv.org/html/2509.24663v1#S4.SS1
     source_revision: 2509.24663v1; 2025-09-29
     verified_by: research-intake/stage2
     file_sha256: 479381f960be60b2984099f6a3f994d681de137dcddc06e1c9d8eebfc700482f
@@ -377743,6 +377778,11 @@
   - claim_index: 2
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
+  final_reader_note: See research/deep-dives/lsa-20261103/FINDINGS.md for the scoped wording and locator clarifications.
 - id: intake-2627
   arxiv_id: '2502.13189'
   url: https://arxiv.org/abs/2502.13189
@@ -377778,7 +377818,8 @@
     - long-context-program.md
     - model-architecture-readiness.md
     - rocm-kernel-authoring.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/long-context-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
@@ -377799,13 +377840,13 @@
     file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
   - claim_index: 1
     kind: file-hash
-    locator: https://arxiv.org/html/2502.13189v1#S3.SS2
+    locator: https://arxiv.org/html/2502.13189v1#S3.SS3
     source_revision: 2502.13189v1; 2025-02-18
     verified_by: research-intake/stage2
     file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
   - claim_index: 2
     kind: file-hash
-    locator: https://arxiv.org/html/2502.13189v1#S3.SS3
+    locator: https://arxiv.org/html/2502.13189v1#S3.SS4
     source_revision: 2502.13189v1; 2025-02-18
     verified_by: research-intake/stage2
     file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
@@ -377822,3 +377863,8 @@
   - claim_index: 2
     effect: unaffected
     note: Confirmed as a scoped primary-source report, not independently reproduced.
+  integration_disposition: integrated
+  disposition_evidence:
+  - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
+    implied.
+  final_reader_note: See research/deep-dives/lsa-20261103/FINDINGS.md for the scoped wording and locator clarifications.

@@ -1799,3 +1799,9 @@ Reliability notes:
 #### Reporting Instructions
 
 After S8 runs, update this handoff with the artifact fields above and the decision on S9. If S9 opens, update [inference-research-index.md](inference-research-index.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) if autopilot behavior changes, and [master-handoff-index.md](master-handoff-index.md).
+
+### D-LSA research intake — approved 2026-11-03
+
+- [ ] **LSA-SCREEN-1 — Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**
+
+Execution controls and acceptance: [approved plan](../../research/deep-dives/lsa-20261103/PLAN.md), especially the six-control screen and the additional oracle/window/PCA-holdout controls. P1/P2 screens require P4 capture plus reference parity; lower TTFT/TPOT and unchanged useful quality are the intended benefit. No inference or production activation is authorized by filing. Sources: intake-2622#record through intake-2627#record. Tree hierarchy is monitor-only until flat indexing dominates measured useful-context latency; native training is monitor-only until an explicit training objective or demonstrated recovery need. Neither has an active checkbox.

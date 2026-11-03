@@ -4282,3 +4282,7 @@ Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/kn
 - [ ] **VB-KPF26-SCOUT-WIRE — exercise KPF-26 serving write-side and planning-context canary on an actual qualified window.** The prospective scout executor writes `epyc.kpf.run.v1` rows with native scout records and projects completed-scout counts through the existing KV prefix-fork ladder. Ingest the original runner-authored sidecar, verify task-row attestation and actual grant/endpoint identity, and pass the recipient planning-context canary; synthetic fixtures are not a live gate.
 
 - [ ] **VB-KPF26-API-WIRE — exercise the native :8000 API-scout observation and planning-context canary.** The prospective API smoke emits `epyc.kpf26.api-observation.v1` at capture time, attesting the original API response and projecting reported scout completions through the existing KV prefix-fork ladder. Ingest an actual owner-granted original sidecar and run a real planning-context canary; flag and fork status remain unverified and no gate is implied.
+
+### D-LSA research intake — approved 2026-11-03
+
+- [ ] **LSA-EVIDENCE-1 — Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**

@@ -4,7 +4,7 @@
       "blocked": 55,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 988
+      "open": 991
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 14,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 667
+      "open": 668
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -1228,7 +1228,7 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 3,
-      "closed": 107,
+      "closed": 108,
       "guarded": 1,
       "last_advanced": "2026-11-03",
       "open": 64,
@@ -1240,7 +1240,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 175,
+      "total": 176,
       "tracks": [
         {
           "blocked": 0,
@@ -1294,7 +1294,7 @@
         },
         {
           "blocked": 1,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 2943,
@@ -1364,7 +1364,7 @@
       "closed": 75,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 56,
+      "open": 57,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 131,
+      "total": 132,
       "tracks": [
         {
           "blocked": 0,
@@ -1425,7 +1425,7 @@
           "line": 1708,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 7
+          "open": 8
         }
       ]
     },
@@ -1591,7 +1591,7 @@
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 11,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1600,7 +1600,7 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 38,
+      "total": 39,
       "tracks": [
         {
           "blocked": 0,
@@ -1622,7 +1622,7 @@
           "line": 582,
           "markers": 1,
           "name": "engram-conditional-memory",
-          "open": 8
+          "open": 9
         }
       ]
     },
@@ -2228,7 +2228,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 97,
+      "open": 98,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2237,7 +2237,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 434,
+      "total": 435,
       "tracks": [
         {
           "blocked": 0,
@@ -2305,7 +2305,7 @@
           "line": 4029,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 1
+          "open": 2
         }
       ]
     },
@@ -2617,7 +2617,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 414,
+      "open": 415,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 754
+      "total": 755
     }
   },
   "row_id_collisions": {},

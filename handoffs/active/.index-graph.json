@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:15:52Z",
+  "generated_at": "2026-11-03T16:22:09Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1356,14 +1356,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 414,
+      "dispatchable": 415,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 418,
+      "open": 419,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1675,14 +1675,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
-      "dispatchable": 11,
+      "dispatchable": 12,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-11-03",
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 11,
+      "open": 12,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1715,11 +1715,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [],
           "line": 582,
           "name": "engram-conditional-memory",
-          "open": 8,
+          "open": 9,
           "readiness": "ready"
         }
       ]
@@ -1871,14 +1871,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 97,
+      "dispatchable": 98,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-03",
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
-      "open": 98,
+      "open": 99,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1972,11 +1972,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 4029,
           "name": "llama-cpp-dsa-contribution",
-          "open": 2,
+          "open": 3,
           "readiness": "ready"
         }
       ]
@@ -2053,14 +2053,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
-      "dispatchable": 56,
+      "dispatchable": 57,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-03",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 56,
+      "open": 57,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2120,11 +2120,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [],
           "line": 1708,
           "name": "triattention-kv-selection",
-          "open": 7,
+          "open": 8,
           "readiness": "ready"
         }
       ]
@@ -2521,7 +2521,7 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 107,
+      "closed": 108,
       "dispatchable": 64,
       "domain": "pipeline-integration",
       "guarded": 1,
