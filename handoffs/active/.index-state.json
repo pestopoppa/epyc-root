@@ -13,10 +13,10 @@
       "open": 64
     },
     "research-evaluation-index.md": {
-      "blocked": 14,
+      "blocked": 8,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 668
+      "open": 645
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -817,11 +817,11 @@
       ]
     },
     "eval-tower-program.md": {
-      "blocked": 8,
+      "blocked": 2,
       "closed": 215,
       "guarded": 1,
       "last_advanced": "2026-11-03",
-      "open": 63,
+      "open": 40,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -830,20 +830,20 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 287,
+      "total": 258,
       "tracks": [
         {
-          "blocked": 6,
+          "blocked": 2,
           "closed": 74,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 25
+          "open": 19
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
@@ -860,7 +860,7 @@
           "line": 1762,
           "markers": 1,
           "name": "eval-benchmark-cost-reduction",
-          "open": 3
+          "open": 0
         },
         {
           "blocked": 0,
@@ -893,14 +893,14 @@
           "open": 1
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 17,
           "gates": [],
           "guarded": 1,
           "line": 2521,
           "markers": 1,
           "name": "inference-batch-loop",
-          "open": 9
+          "open": 4
         },
         {
           "blocked": 0,
@@ -910,7 +910,7 @@
           "line": 2790,
           "markers": 1,
           "name": "prompt-construction-determinism",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
@@ -920,7 +920,7 @@
           "line": 2914,
           "markers": 1,
           "name": "re4-protocol-redesign",
-          "open": 4
+          "open": 2
         },
         {
           "blocked": 0,
@@ -930,7 +930,7 @@
           "line": 3079,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 12
+          "open": 7
         }
       ]
     },

@@ -152,7 +152,7 @@
       "from": "EVL-14",
       "kind": "ref",
       "to": "RTG-08",
-      "weight": 6
+      "weight": 7
     },
     {
       "from": "EVL-14",
@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:23:45Z",
+  "generated_at": "2026-11-03T16:26:37Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1154,17 +1154,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 8,
+      "blocked": 2,
       "blocked_by": [],
       "closed": 215,
-      "dispatchable": 63,
+      "dispatchable": 40,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-03",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 72,
+      "open": 43,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -1184,11 +1184,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 25,
+          "dispatchable": 19,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 31,
+          "open": 21,
           "readiness": "ready"
         },
         {
@@ -1197,17 +1197,17 @@
           "gates": [],
           "line": 1106,
           "name": "bulk-inference-campaign",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 0,
           "gates": [],
           "line": 1762,
           "name": "eval-benchmark-cost-reduction",
-          "open": 3,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -1238,38 +1238,38 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 4,
           "gates": [],
           "line": 2521,
           "name": "inference-batch-loop",
-          "open": 11,
+          "open": 5,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 2790,
+          "name": "prompt-construction-determinism",
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2790,
-          "name": "prompt-construction-determinism",
+          "line": 2914,
+          "name": "re4-protocol-redesign",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
-          "gates": [],
-          "line": 2914,
-          "name": "re4-protocol-redesign",
-          "open": 4,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 7,
           "gates": [],
           "line": 3079,
           "name": "scoring-infra-standardization",
-          "open": 12,
+          "open": 7,
           "readiness": "ready"
         }
       ]
