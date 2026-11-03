@@ -88,7 +88,8 @@ class RepairTests(unittest.TestCase):
         rf.atomic_json(sp, fx.spec(bad, d2))
         rc, out = run([sp, "--flags", fx.flags])
         self.assertEqual(rc, 2, out)
-        self.assertIn("launcher_out_tail", out)
+        self.assertIn("(log: " + os.path.join(rf.dry_dir(fx.flags, bad), "launcher.out"), out)  # one line; the log stays on disk
+        self.assertNotIn("launcher_out_tail", out)
         self.assertNotIn(bad, rf.rows(fx.flags))  # ws58: a failed smoke leaves no ready/ manifest
         self.assertTrue(rf.fail_paths(fx.flags, bad))
 
@@ -100,7 +101,7 @@ class RepairTests(unittest.TestCase):
         rf.publish(fx.spec(rid, d, result_path=marker, dryrun_timeout_s=60, admission_class="diagnostic"), fx.flags)  # pre-lint row, as legacy rows were
         v, msg = rf.dryrun_run(fx.flags, rid, "0-23")
         self.assertEqual(v, "FAIL", msg)
-        self.assertIn("before writing a unit to " + marker, msg)
+        self.assertIn("no unit in " + marker + " (", msg)  # the phrase repair's _UNIT_RE parses
         old_sha = rf.row_sha(fx.flags, rid)
         rc, out = run(["--repair", rid, "--flags", fx.flags])
         self.assertEqual(rc, 0, out)

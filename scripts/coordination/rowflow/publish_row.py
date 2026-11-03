@@ -25,9 +25,11 @@ fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the 
 runs before the smoke, so a refused row costs no compute.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
 (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
-dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
-smoke_timeout_s (300). PASS (a first unit in result_path, clean stop) writes dryrun/<id>/PASS.json: ready at once. FAIL
-writes the FAIL memo and prints launcher_out_tail; the allocator grants only PASSed rows."""
+dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap, or by `rowflow.py gpu-batch` from any
+session; never refused). PASS (operator 2026-11-03) = the job's FIRST REAL PROGRESS within first_progress_s (300; the spec
+may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appears in result_path (rowflow.FirstProgress),
+then a clean stop -> dryrun/<id>/PASS.json: ready at once. FAIL writes the FAIL memo and prints ONE line (cause + fix +
+the log path); the allocator grants only PASSed rows."""
 import argparse
 import datetime as dt
 import glob
@@ -44,7 +46,8 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
+             "first_progress_s", "smoke_predicate", "unit_key")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -340,7 +343,7 @@ def publish_smoked(spec, flags, source):
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
-    smoke_s = int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
+    smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
     if spec.get("lane") == "gpu" and gpu_busy(flags):
         unpublish(flags, rid)
         rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": regions, "smoke_s": smoke_s, "spec": spec,
@@ -353,9 +356,9 @@ def publish_smoked(spec, flags, source):
         if file_if_complete(flags, rid, row):
             return None
         return row
-    t = "\n".join(rf.tail(os.path.join(rf.dry_dir(flags, rid), "launcher.out"), 30))
-    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg}\nlauncher_out_tail:\n{t}\nFIX: fix the launcher/spec now, in "
-                     f"this turn, then re-run publish_row.py on the same spec (the row is not granted until a smoke PASSes)")
+    # operator 2026-11-03 design goal: cause + fix in ONE line; the long log stays on disk behind a path
+    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')}; "
+                     f"the row is not granted until a smoke PASSes)")
 
 
 def results_written_during(fail, rundir):

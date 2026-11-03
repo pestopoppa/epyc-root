@@ -12,8 +12,10 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
                                ADD reaper protection; empty = inputs (older than the first job start) + result_path),
-                               dryrun_timeout_s (900 cpu / 1500 gpu), dryrun_native_result (count a unique per-attempt native JSON unit
-                               without touching result_path), lineage, lineage_reset, supersedes, snapshot (true forces the snapshot below)
+                               first_progress_s (300; aliases smoke_timeout_s, dryrun_timeout_s), smoke_predicate (shell; exit 0 =
+                               the job's first real progress), unit_key (the field a real record must carry), dryrun_native_result
+                               (count a unique per-attempt native JSON unit without touching result_path), lineage, lineage_reset,
+                               supersedes, snapshot (true forces the snapshot below)
 
     SNAPSHOT RULE   a launcher, engine or job file under worktrees/ or /workspace (or a /workspace/repos/<x> target) is
                     copied at publish time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the
@@ -31,7 +33,8 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               poller, admits through grant_ok_launcher (the one parser), WRITES the grant. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
                               IDLE-WHY <region>: <reason>, UNDERUSED (<5 % of a held quarter for 10 min -> owner fix task,
                               never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
-    (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant)
+    (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant. PASS = the job's
+     FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
                               (parked: MAX_FAILS failed dry runs in the lineage, OR MAX_FAILS consecutive arming/launch
                               failures since the row's PASS - a PASS alone no longer keeps an unarmable row grantable)
@@ -479,6 +482,19 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
             keep.append(rel)
     fmt = str(spec.get("result_format") or guess_format(result_path))
     need(fmt in ("jsonl", "json", "csv", "tsv", "text-lines", "markdown-table") or fmt.startswith("custom:"), f"unknown result_format {fmt}")
+    # operator 2026-11-03: the smoke's PASS is the job's FIRST REAL PROGRESS within first_progress_s (FirstProgress)
+    try:
+        fps = int(spec.get("first_progress_s") or spec.get("smoke_timeout_s") or spec.get("dryrun_timeout_s") or FIRST_PROGRESS_S)
+    except (TypeError, ValueError):
+        raise Refused("first_progress_s must be whole seconds (e.g. \"first_progress_s\": 900)")
+    need(fps > 0, "first_progress_s must be positive seconds")
+    for k in ("smoke_predicate", "unit_key"):
+        need(spec.get(k) is None or (isinstance(spec[k], str) and spec[k].strip()), f"{k} must be a non-empty string")
+    if spec.get("unit_key") and fmt == "text-lines":
+        try:
+            re.compile(spec["unit_key"])
+        except re.error as e:
+            raise Refused(f"unit_key is a regex for text-lines results and does not compile: {e}")
     regions = str(spec.get("regions") or ("mi210_0,184-191" if lane == "gpu" else ("0-95" if o["claim_cpus"] == "0-95" else "any-cpu-quarter")))
     if lane == "gpu":
         need("mi210_0" in regions, "gpu regions must name mi210_0")
@@ -498,7 +514,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "gib": int(spec.get("ram_gib") or 48), "ports": sorted(set(o["ports"]) | {int(x) for x in (spec.get("ports") or [])}),
         "priority_rank": rank,
         "scratch_root": scratch, "keep": keep, "stop_file": o["stop"], "workdir": o["workdir"],
-        "dryrun_timeout_s": int(spec.get("dryrun_timeout_s") or (1500 if lane == "gpu" else 900)),
+        "first_progress_s": fps,
         "published_at": now_iso(), "published_from": source or "spec",
     }
     if spec.get("total_units") is not None:
@@ -511,7 +527,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
-    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings"):
+    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
+              "smoke_predicate", "unit_key"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     if spec.get("shape") is not None:
@@ -614,6 +631,211 @@ def count_units(result_path, fmt, workdir=None):
         else:
             n += len([l for l in text.splitlines() if l.strip()])
     return n
+
+
+# ---------------------------------------------------------------- first real progress (operator 2026-11-03, session review §3.1)
+# A smoke PASSes only when the ACTUAL job makes its first REAL step within first_progress_s (default 300; spec may set it).
+# "A JSON appeared" is not progress: 2026-11-03 three rows passed on qualification-only records and their real runs died
+# in 9 s, 12 s and 3 s. The contract, in order (no judgment left to the reader):
+#   1. spec.smoke_predicate (shell, run in --workdir with the smoke's FILLER_* env + FILLER_SMOKE_T0=<epoch at launch>):
+#      exit 0 = progress. It must exit non-0 BEFORE the launch (else it cannot see this run) -> FAIL at once.
+#   2. result_format custom:<cmd>: the same rule with <cmd> as the predicate.
+#   3. otherwise a NEW real record in result_path (one not present, byte-identical, before the launch) that parses under
+#      result_format and is not a placeholder:
+#        - a PLACEHOLDER_MARKERS key/value (qualification_only:true, measurement:false, placeholder:true, smoke_only:true)
+#          makes a record a placeholder, always;
+#        - spec.unit_key given: the record has a non-null, non-empty value at that dotted key (csv/tsv/markdown: that
+#          column; text-lines: the line matches unit_key as a regex);
+#        - else json/jsonl: a finite number (not a bool) at depth <= 2 under a key outside BOOKKEEPING_KEYS;
+#          csv/tsv/markdown-table: a numeric cell in a column outside BOOKKEEPING_KEYS; text-lines: any non-empty line;
+#          a result directory: each new file, parsed by its extension (other files: non-empty = real).
+FIRST_PROGRESS_S = 300
+PLACEHOLDER_MARKERS = (("qualification_only", True), ("measurement", False), ("placeholder", True), ("smoke_only", True))
+BOOKKEEPING_KEYS = re.compile(r"(?i)^(?:id|\w*_id|uuid|schema\w*|version|ts|t0?|time|timestamp|epoch|at|\w+_at|started\w*|ended\w*|"
+                              r"pid|pgid|ppid|rc|exit\w*|returncode|seq|idx|index|attempt\w*|mtime|size|bytes|port|status|state|phase|"
+                              r"ok|\w+_ok|elapsed\w*|wall\w*|duration\w*)$")
+
+
+def _is_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and v not in (float("inf"), float("-inf"))
+
+
+def _num(s):
+    try:
+        return float(s)
+    except (TypeError, ValueError):
+        return None
+
+
+def _has_measurement(v, depth=0):
+    if _is_num(v):
+        return True
+    if isinstance(v, dict) and depth < 2:
+        return any(_has_measurement(x, depth + 1) for k, x in v.items() if not BOOKKEEPING_KEYS.match(str(k)))
+    if isinstance(v, list) and depth < 2:
+        return any(_has_measurement(x, depth + 1) for x in v[:1000])
+    return False
+
+
+def _dotted(rec, key):
+    for part in str(key).split("."):
+        if not isinstance(rec, dict) or part not in rec:
+            return None
+        rec = rec[part]
+    return rec
+
+
+def record_verdict(rec, unit_key=None):
+    """(real, why) for one parsed json/jsonl record (contract above)."""
+    if isinstance(rec, dict):
+        for k, v in PLACEHOLDER_MARKERS:
+            if k in rec and rec[k] is v:
+                return False, f"placeholder ({k}: {json.dumps(v)})"
+        if unit_key:
+            ok = _dotted(rec, unit_key) not in (None, "", [], {})
+            return ok, f"unit_key {unit_key} " + ("set" if ok else "missing/empty")
+        ok = _has_measurement(rec)
+        return ok, "measurement field" if ok else "no numeric field outside the bookkeeping keys"
+    if unit_key:
+        return False, f"not an object, so no unit_key {unit_key}"
+    ok = _is_num(rec) or (isinstance(rec, list) and _has_measurement(rec))
+    return ok, "bare number" if ok else "bare non-numeric value"
+
+
+def _table_records(lines, sep, unit_key):
+    """[(text, real, why)] per data row of a csv/tsv/markdown table (first row = header)."""
+    if not lines:
+        return []
+    hdr = [h.strip() for h in lines[0].split(sep)]
+    out = []
+    for l in lines[1:]:
+        row = dict(zip(hdr, [c.strip() for c in l.split(sep)]))
+        if unit_key:
+            real = bool(row.get(unit_key))
+            why = f"column {unit_key} " + ("set" if real else "missing/empty")
+        else:
+            real = any(not BOOKKEEPING_KEYS.match(h) and _is_num(_num(c)) for h, c in row.items())
+            why = "numeric cell" if real else "no numeric cell outside the bookkeeping columns"
+        out.append((l, real, why))
+    return out
+
+
+def _file_records(p, fmt, unit_key):
+    try:
+        text = open(p, errors="replace").read()
+    except OSError:
+        return []
+    recs = []
+    if fmt in ("jsonl", "json"):
+        vals = []
+        if fmt == "jsonl":
+            for l in text.splitlines():
+                if l.strip():
+                    try:
+                        vals.append(json.loads(l))
+                    except ValueError:
+                        pass
+        else:
+            try:
+                v = json.loads(text)
+            except ValueError:
+                return []
+            lst = v if isinstance(v, list) else None
+            if isinstance(v, dict):
+                lst = next((v[k] for k in ("results", "items", "records", "rows", "samples") if isinstance(v.get(k), list)), None)
+            vals = lst if lst is not None else [v]
+        for v in vals:
+            real, why = record_verdict(v, unit_key)
+            recs.append((json.dumps(v, sort_keys=True), real, why))
+    elif fmt in ("csv", "tsv"):
+        recs = _table_records([l for l in text.splitlines() if l.strip()], "," if fmt == "csv" else "\t", unit_key)
+    elif fmt == "markdown-table":
+        rows_ = [l.strip().strip("|") for l in text.splitlines() if l.startswith("|") and not re.match(r"^\|[\s:|-]+\|$", l)]
+        recs = _table_records(rows_, "|", unit_key)
+    else:
+        rx = re.compile(unit_key) if unit_key else None
+        for l in text.splitlines():
+            if l.strip():
+                hit = bool(rx.search(l)) if rx else True
+                recs.append((l, hit, "non-empty line" if not rx else f"{'matches' if hit else 'does not match'} unit_key /{unit_key}/"))
+    return [(p + "\0" + fp, real, why) for fp, real, why in recs]
+
+
+def result_records(result_path, fmt, unit_key=None):
+    """Every record now in result_path: [(fingerprint, real, why)]. A directory result: each regular file under it is
+    parsed by its extension (guess_format); any other file is one record, real when non-empty."""
+    paths = glob.glob(result_path) if any(c in result_path for c in "*?[") else ([result_path] if os.path.exists(result_path) else [])
+    out = []
+    for p in paths:
+        if not os.path.isdir(p):
+            out += _file_records(p, fmt, unit_key)
+            continue
+        for root, _, fns in os.walk(p):
+            for fn in sorted(fns):
+                fp = os.path.join(root, fn)
+                f2 = guess_format(fp)
+                if f2 in ("json", "jsonl", "csv", "tsv", "markdown-table"):
+                    out += _file_records(fp, f2, unit_key)
+                    continue
+                try:
+                    sz = os.path.getsize(fp)
+                    out.append((fp + "\0" + sha256(fp), sz > 0, "non-empty file" if sz else "empty file"))
+                except OSError:
+                    continue
+    return out
+
+
+class FirstProgress:
+    """The smoke's progress probe. Construct it BEFORE the launch (baseline), then .check() -> (progress, detail)."""
+
+    def __init__(self, d, result_path, fmt, env, workdir=None):
+        self.result_path, self.fmt, self.env = result_path, fmt, env
+        self.workdir = workdir if workdir and os.path.isdir(workdir) else None
+        self.unit_key = d.get("unit_key")
+        self.pred = d.get("smoke_predicate") or (fmt[len("custom:"):] if fmt.startswith("custom:") else None)
+        self.kind = "smoke_predicate" if d.get("smoke_predicate") else ("result_format custom:" if self.pred else "record")
+        self.base, self.placeholders, self.stale = {}, [], False
+        if self.pred:
+            self.stale = self._pred()
+        else:
+            for fp, _, _ in result_records(result_path, fmt, self.unit_key):
+                self.base[fp] = self.base.get(fp, 0) + 1
+
+    def _pred(self):
+        try:
+            return subprocess.run(["bash", "-c", self.pred], cwd=self.workdir, env=self.env, stdout=subprocess.DEVNULL,
+                                  stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=60).returncode == 0
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+
+    def check(self):
+        if self.pred:
+            return (True, f"{self.kind} exited 0") if self._pred() else (False, f"{self.kind} still exits non-0")
+        seen = dict(self.base)
+        self.placeholders = []
+        for fp, real, why in result_records(self.result_path, self.fmt, self.unit_key):
+            if seen.get(fp, 0) > 0:
+                seen[fp] -= 1
+            elif real:
+                return True, f"new record in {self.result_path} ({why})"
+            else:
+                self.placeholders.append(why)
+        return False, "no new real record"
+
+    def what(self):
+        """What never happened, for the one-line FAIL."""
+        if self.pred:
+            return f"{self.kind} `{self.pred[:80]}` never exited 0"
+        ph = f"; {len(self.placeholders)} new record(s) ignored: {self.placeholders[0]}" if self.placeholders else ""
+        return f"no unit in {self.result_path} ({self.fmt}): no new real record{ph}"
+
+    def fix(self, n):
+        if self.pred:
+            return (f"fix: make the job reach the step {self.kind} tests within first_progress_s={n} (or raise first_progress_s "
+                    "in the spec), then re-run publish_row.py <spec.json>")
+        return (f"fix: make the job write its first measured record to {self.result_path} within first_progress_s={n} (a numeric "
+                "field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or "
+                "unit_key in the spec, then re-run publish_row.py <spec.json>")
 
 
 # ---------------------------------------------------------------- lane state (one snapshot per tick)
@@ -1543,9 +1765,12 @@ def smoke_completion_check(d):
 
 def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
-    Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (timeout smoke_s,
-    FILLER_SMOKE=1 / FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count). Its admission token lives in
-    the row's private dryrun dir, never in grants/: nothing is scheduled around a dry run."""
+    Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (FILLER_SMOKE=1 /
+    FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count). Its admission token lives in the row's private
+    dryrun dir, never in grants/: nothing is scheduled around a dry run.
+    Operator 2026-11-03 (session review §3.1): PASS = FIRST REAL PROGRESS of the job (FirstProgress: smoke_predicate, or
+    a new non-placeholder record) within first_progress_s (smoke_s, else the row's first_progress_s, else 300 s), then a
+    clean stop (rc 0/75). rc 0/75 with no progress is a FAIL."""
     allrows = rows(flags)
     d = allrows.get(rid)
     need(d, "no v3 row")
@@ -1560,7 +1785,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     holds = quarters_of(regions) | ({GPU} if "mi210" in regions else set())
     lp = d["launcher"]["path"]
     lsha = sha256(lp)
-    timeout = int(smoke_s or d.get("dryrun_timeout_s") or 900)
+    timeout = int(smoke_s or d.get("first_progress_s") or d.get("dryrun_timeout_s") or FIRST_PROGRESS_S)
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
@@ -1579,6 +1804,16 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1", "FILLER_DISK_FLOOR_GIB": "20"} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
+    env["FILLER_SMOKE_T0"] = str(int(time.time()))
+    probe = FirstProgress(d, result_path, result_format, env, d.get("workdir"))
+    if probe.stale:
+        reason = (f"no first progress possible: {probe.kind} `{probe.pred[:80]}` already exits 0 BEFORE the launch, so it cannot "
+                  "see this run; fix: make it test this run's own output (e.g. a record newer than $FILLER_SMOKE_T0), then re-run "
+                  "publish_row.py <spec.json>")
+        record_fail(flags, rid, d, reason, {"regions": regions, "result_path": result_path, "result_format": result_format,
+                                            "first_unit_at": None, "elapsed_s": 0})
+        write_escalation(flags, rid, allrows)
+        return "FAIL", reason
     with open(grant, "w") as f:
         f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
     out = open(os.path.join(dd, "launcher.out"), "a")
@@ -1590,6 +1825,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     vram_max = None
     gpu = "mi210_0" in regions
     first_unit_at = None
+    progress = None
     stop_requested = None
     warning = None
     ended = os.path.join(dd, "ended")
@@ -1613,30 +1849,38 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                                            f"{','.join(sorted(holds))}: a smoke never waits on a held region; the job's own "
                                            "region-lock claim must honour WS58_REGIONS under FILLER_SMOKE)")
                 break
-            units = count_units(result_path, result_format, d.get("workdir"))
-            new_units = units - units0
-            if new_units > 0 and first_unit_at is None:
-                first_unit_at = now_iso()
-                out.write(f"==== first unit at {first_unit_at}: {new_units} new unit(s) in {result_path}\n"); out.flush()
-                if not os.path.exists(ended):
-                    open(os.path.join(dd, "stop"), "w").close()
-                    stop_requested = time.time()
+            if first_unit_at is None:
+                hit, why = probe.check()
+                if hit:
+                    first_unit_at, progress = now_iso(), why
+                    out.write(f"==== first progress at {first_unit_at} (+{int(time.time() - t0)}s): {why}\n"); out.flush()
+                    if not os.path.exists(ended):
+                        open(os.path.join(dd, "stop"), "w").close()
+                        stop_requested = time.time()
             if os.path.exists(ended) or p.poll() is not None:
                 rc_line = (head1(ended) or "rc=? (no ended record)")
                 m = re.match(r"rc=(\d+)", rc_line)
                 rc = int(m.group(1)) if m else -1
-                units = count_units(result_path, result_format, d.get("workdir")) - units0
-                if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and units <= 0 and time.time() - t0 < 60:
+                if first_unit_at is None:
+                    hit, why = probe.check()
+                    if hit:
+                        first_unit_at, progress = now_iso(), why
+                if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and not first_unit_at and time.time() - t0 < 60:
                     verdict, reason = "WAIT", f"host condition, not the row: {rc_line[:100]} (free disk under the 150 GiB floor); retried later, no FAIL recorded"
                     break
-                if units <= 0:
-                    verdict, reason = "FAIL", f"job ended ({rc_line[:120]}) before writing a unit to {result_path} ({d['result_format']})"
+                if not first_unit_at and rc not in (0, 75):
+                    verdict, reason = "FAIL", (f"job ended {rc_line[:80]} after {int(time.time() - t0)}s, before its first "
+                                               f"progress ({probe.what()}); fix: the job's own error is in {lout}; fix it, "
+                                               "then re-run publish_row.py <spec.json>")
+                elif not first_unit_at:
+                    verdict, reason = "FAIL", (f"no first progress within {timeout} s: job ended {rc_line[:80]} after "
+                                               f"{int(time.time() - t0)}s; {probe.what()}; {probe.fix(timeout)}")
                 elif rc not in (0, 75):
                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
                 elif gpu and (vram_max is None or vram_max < 64 << 20):
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
-                    verdict, reason = "PASS", f"{units} unit(s), {rc_line[:80]}"
+                    verdict, reason = "PASS", f"first progress: {progress}; {rc_line[:80]}"
                 break
             if stop_requested and time.time() - stop_requested > STOP_GRACE_S:
                 # the engine's hard-end kill is production's truncation path too: PASS with a warning, then stop the group
@@ -1644,13 +1888,14 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                 if gpu and (vram_max is None or vram_max < 64 << 20):
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
-                    verdict, reason = "PASS", f"{count_units(result_path, result_format, d.get('workdir')) - units0} unit(s); {warning}"
+                    verdict, reason = "PASS", f"first progress: {progress}; {warning}"
                 break
-            if time.time() - t0 > timeout:
+            if first_unit_at is None and time.time() - t0 > timeout:
                 started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400))
-                verdict, reason = "FAIL", f"no unit in {result_path} ({d['result_format']}) within dryrun_timeout_s={timeout}" + \
-                                 (" (the job ran: if result_path is only a completion marker, point the spec at the job's per-item output, or raise dryrun_timeout_s)" if started
-                                  else " and the engine never reached START (admission/precond/port refusal; see launcher.out)")
+                verdict, reason = "FAIL", (f"no first progress within {timeout} s; {probe.what()}; " +
+                                           (probe.fix(timeout) if started else
+                                            "the engine never reached START (admission/precond/port refusal): fix what "
+                                            f"{os.path.join(dd, 'launcher.out')} names, then re-run publish_row.py <spec.json>"))
                 break
     finally:
         if p.poll() is None:  # poll(), not ps: an exited-but-unreaped launcher is a zombie that ps still lists
@@ -1694,7 +1939,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             os.remove(running_path(flags, rid))
         except OSError:
             pass
-        if verdict == "FAIL" and one_quarter:
+        if verdict == "FAIL" and one_quarter and (not reason.startswith("no first progress") or "never reached START" in reason):
             reason += (f" [dry run held ONE quarter, WS58_REGIONS={ws58_cpus(regions)}; a launcher whose own taskset/claim "
                        "hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]")
         out.write(f"==== dry run {verdict}: {reason} ({now_iso()})\n"); out.close()
@@ -1702,7 +1947,8 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     if verdict == "PASS" and cur_sha != lsha:
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
     rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
-           "result_format": result_format, "first_unit_at": first_unit_at, "vram_used_max_bytes": vram_max,
+           "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
+           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     if verdict == "WAIT":
