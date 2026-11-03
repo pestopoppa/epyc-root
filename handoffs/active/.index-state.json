@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 7,
+      "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 501
+      "open": 475
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -729,11 +729,11 @@
       "total": 243
     },
     "engineering-hygiene-backlog.md": {
-      "blocked": 1,
+      "blocked": 0,
       "closed": 239,
-      "guarded": 5,
+      "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 119,
+      "open": 93,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -742,17 +742,17 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 364,
+      "total": 332,
       "tracks": [
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 135,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 62
+          "open": 49
         },
         {
           "blocked": 0,
@@ -772,17 +772,17 @@
           "line": 1177,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
-          "guarded": 5,
+          "guarded": 0,
           "line": 1284,
           "markers": 1,
           "name": "integration-test-coverage",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -802,7 +802,7 @@
           "line": 1430,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
-          "open": 45
+          "open": 36
         },
         {
           "blocked": 0,
@@ -812,7 +812,7 @@
           "line": 2003,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 1
+          "open": 0
         }
       ]
     },

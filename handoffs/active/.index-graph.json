@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:44:07Z",
+  "generated_at": "2026-11-03T16:45:13Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3143,17 +3143,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 119,
+      "dispatchable": 93,
       "domain": "routing-and-optimization",
-      "guarded": 5,
+      "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-02",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 125,
+      "open": 93,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3173,11 +3173,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 62,
+          "dispatchable": 49,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 63,
+          "open": 49,
           "readiness": "ready"
         },
         {
@@ -3191,21 +3191,21 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
           "line": 1177,
           "name": "frontier-f4-continuity-backup",
-          "open": 2,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 1284,
           "name": "integration-test-coverage",
-          "open": 6,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -3218,21 +3218,21 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 45,
+          "dispatchable": 36,
           "gates": [],
           "line": 1430,
           "name": "refactoring-multirepo-2026-10",
-          "open": 45,
+          "open": 36,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 2003,
           "name": "repo-readiness-scorer",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
