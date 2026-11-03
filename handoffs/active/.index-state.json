@@ -10,7 +10,7 @@
       "blocked": 3,
       "handoffs": 1,
       "oldest_advance": "2026-11-03",
-      "open": 64
+      "open": 19
     },
     "research-evaluation-index.md": {
       "blocked": 8,
@@ -1228,10 +1228,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 3,
-      "closed": 108,
-      "guarded": 1,
+      "closed": 100,
+      "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 64,
+      "open": 19,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1240,47 +1240,47 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 176,
+      "total": 122,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 45,
+          "closed": 44,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 19
+          "open": 5
         },
         {
           "blocked": 1,
-          "closed": 19,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
           "line": 1103,
           "markers": 1,
           "name": "colbert-reranker-web-research",
-          "open": 7
+          "open": 2
         },
         {
           "blocked": 0,
-          "closed": 13,
+          "closed": 9,
           "gates": [],
-          "guarded": 1,
+          "guarded": 0,
           "line": 1850,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 13
+          "open": 3
         },
         {
           "blocked": 0,
-          "closed": 11,
+          "closed": 9,
           "gates": [],
           "guarded": 0,
           "line": 2466,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 14
+          "open": 8
         },
         {
           "blocked": 1,
@@ -1290,7 +1290,7 @@
           "line": 2574,
           "markers": 1,
           "name": "searxng-search-backend",
-          "open": 3
+          "open": 0
         },
         {
           "blocked": 1,
@@ -1300,7 +1300,7 @@
           "line": 2943,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 8
+          "open": 1
         }
       ]
     },

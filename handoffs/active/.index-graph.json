@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:37:19Z",
+  "generated_at": "2026-11-03T16:38:44Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2516,15 +2516,15 @@
       "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 108,
-      "dispatchable": 64,
+      "closed": 100,
+      "dispatchable": 19,
       "domain": "pipeline-integration",
-      "guarded": 1,
+      "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-03",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 68,
+      "open": 22,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2544,56 +2544,56 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 5,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 19,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 2,
           "gates": [],
           "line": 1103,
           "name": "colbert-reranker-web-research",
-          "open": 8,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 13,
-          "gates": [],
-          "line": 1850,
-          "name": "document-parser-table-bench",
-          "open": 14,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 14,
-          "gates": [],
-          "line": 2466,
-          "name": "opendataloader-pipeline-integration",
-          "open": 14,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2574,
-          "name": "searxng-search-backend",
-          "open": 4,
+          "line": 1850,
+          "name": "document-parser-table-bench",
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
+          "line": 2466,
+          "name": "opendataloader-pipeline-integration",
+          "open": 8,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 2574,
+          "name": "searxng-search-backend",
+          "open": 1,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
           "line": 2943,
           "name": "sliders-local-validation",
-          "open": 9,
+          "open": 2,
           "readiness": "ready"
         }
       ]
