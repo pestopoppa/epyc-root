@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:15:52Z",
+  "generated_at": "2026-11-03T16:17:42Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1986,14 +1986,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 101,
-      "dispatchable": 49,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-03",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 50,
+      "open": 35,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -2024,11 +2024,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 30,
+          "dispatchable": 20,
           "gates": [],
           "line": 13,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 31,
+          "open": 21,
           "readiness": "ready"
         },
         {
@@ -2036,14 +2036,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 19,
+          "dispatchable": 14,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 659,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 14,
           "readiness": "blocked"
         }
       ]
