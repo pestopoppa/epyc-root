@@ -67,7 +67,9 @@ say "== (b) fold_gate.py vs $(basename "$BASE")"
 FG=$HERE/fold_gate_$KIND$SUFFIX.log
 FGPY="$HERE/fold_gate_src_v4/scripts/kernel_rnd/fold_gate/fold_gate.py"
 # Vidya source record: only a fold_gate.py that has --record-json (research >= the writer commit); the original pinned v4 copy lacks it.
-RUN=$HERE; REC=(); grep -q -e '--record-json' "$FGPY" && REC=(--record-json "$RUN/fold_gate_record_$KIND$SUFFIX.json")
+RUN=$HERE; REC=()
+if grep -q -e '--record-json' "$FGPY"; then REC=(--record-json "$RUN/fold_gate_record_$KIND$SUFFIX.json")
+else say "(b) WARNING: pinned fold_gate.py lacks --record-json; NO vidya record will be written (re-pin research >= the writer commit, VB-FOLDGATE-WRITE)"; fi
 /usr/bin/python3 -I "$FGPY" --base-image "$BASE/bin" --new-image "$NEW/bin" \
    --src-repo /mnt/raid0/llm/llama.cpp --base-commit $BASEC --cand-commit $CAND \
    --expected-changed libllama.so "${REC[@]}" > "$FG" 2>&1; rc=$?
