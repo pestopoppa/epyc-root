@@ -37,7 +37,7 @@ def _producer():
     elif source_root:
         path = Path(source_root) / "scripts/benchmark/s4_omega_ab.py"
     else:
-        raise RuntimeError("set EPYC_ORCHESTRATOR_SOURCE_ROOT to the pinned producer checkout")
+        pytest.skip("S4 Omega producer needs EPYC_ORCHESTRATOR_SOURCE_ROOT (or S4_OMEGA_RUNNER_PATH)")
     if not path.is_file():
         raise FileNotFoundError(f"pinned S4 Omega producer is missing: {path}")
     benchmark_dir = str(path.parent)
