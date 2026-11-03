@@ -16,7 +16,8 @@ What it does, deterministically and idempotently:
      output to dryrun/<id>/direct.out, and writes grants/<id>.ended (rc=N reason=direct-run) when it exits;
   4. holds the row from the keeper: dryrun/<id>/DIRECT.json (live supervisor pid) makes rowflow status() report `running`,
      so the allocator never grants it while the direct run lives, and region-lock's filler-<id> tag attributes the busy
-     regions to the row;
+     regions to the row; the record carries CLAUDE_SESSION_ID when set, so the question-discipline hook knows which
+     session owns a live launch;
   5. waits for the lock + 30 s, then prints the MEASURED utilisation of the claimed cpus and the GPU in a fixed 6-line
      summary (a claim below hostutil.IDLE_PCT is flagged). Long output stays on disk behind the printed logs path.
 
@@ -204,7 +205,7 @@ def launch(flags, rid, d, a, sleep=time.sleep, measure=None, spawn=None):
             os.remove(stale)
         except OSError:
             pass
-    rec.update(flags=flags, started_at=rf.now_iso(), pid=None)
+    rec.update(flags=flags, started_at=rf.now_iso(), pid=None, session_id=os.environ.get("CLAUDE_SESSION_ID") or None)
     rf.atomic_json(direct_path(flags, rid), rec)
     spawn = spawn or (lambda spec: subprocess.Popen([sys.executable, "-I", os.path.abspath(__file__), "_supervise", spec],
                                                     start_new_session=True, stdin=subprocess.DEVNULL,

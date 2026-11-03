@@ -112,6 +112,7 @@ class Launch(Fixture):
         st = rf.status(self.flags, rid, util=UTIL)
         self.assertEqual(st["state"], "running")
         self.assertTrue(st["direct"])
+        self.assertIn("session_id", rf.load_json(rd.direct_path(self.flags, rid)))   # the question-discipline hook reads it
         self.assertEqual(st["held"], ["q1"])
         self.assertEqual(st["util"], {"q1": 95.0})
         # idempotent: a second launch does not start a second job
