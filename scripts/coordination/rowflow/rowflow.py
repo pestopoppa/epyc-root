@@ -17,10 +17,12 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                (count a unique per-attempt native JSON unit without touching result_path), lineage, lineage_reset,
                                supersedes, snapshot (true forces the snapshot below)
 
-    SNAPSHOT RULE   a launcher, engine or job file under worktrees/ or /workspace (or a /workspace/repos/<x> target) is
-                    copied at publish time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the
-                    worktree is clean, else a working-tree copy with dirty=true), paths rewritten, files chmod a-w; the
-                    row's launcher/engine/result paths point INTO the snapshot. Row field `snapshot` records it.
+    SNAPSHOT RULE   OPT-IN (operator 2026-11-03): only with `"snapshot": true` is the launcher's directory, and every
+                    engine/job file under worktrees/ or /workspace (or a /workspace/repos/<x> target), copied at publish
+                    time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the worktree is clean, else
+                    a working-tree copy with dirty=true), paths rewritten, files chmod a-w; the row's launcher/engine/
+                    result paths point INTO the snapshot. Row field `snapshot` records it. Default: nothing is copied; a
+                    launcher outside the job-dir root is refused in one line naming both fixes.
 
     published row    compute-flags/ready/<id>.json  schema epyc.row.v3 (derived: engine, min_window_s, window_s,
                      ports, gib, launcher sha256, scratch_root/keep for the reaper)
@@ -450,11 +452,16 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     result_path = str(spec["result_path"])
     need(os.path.isabs(result_path), "result_path must be absolute")
     # rows are independent of lanes: a launcher / engine / job file under a worktree or /workspace changes under the keeper's
-    # feet (lane merges before every resume, removal at session end), so it is snapshotted into the row's own scratch_root
-    # and the row points INTO the snapshot - the dry run and the real run execute the same bytes by construction
-    volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
+    # feet (lane merges before every resume, removal at session end). Operator 2026-11-03 (session review §5 item 8): the
+    # snapshot into the row's own scratch_root is OPT-IN (`"snapshot": true`); by default nothing is copied.
     snap = None
-    if volatile or spec.get("snapshot") is True:
+    vr = volatile_root(launcher)
+    if spec.get("snapshot") is not True and (vr or not launcher.startswith(TMP)):
+        where = f"under the lane/worktree path {vr}" if vr else f"outside the job-dir root {TMP}"
+        raise Refused(f"launcher {launcher} is {where}: copy its job dir to {TMP}{rid}/ and publish that launcher, or set "
+                      f"\"snapshot\": true in the spec")
+    if spec.get("snapshot") is True:
+        volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
         scratch = os.path.normpath(spec.get("scratch_root") or TMP + rid)
         need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
              f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")

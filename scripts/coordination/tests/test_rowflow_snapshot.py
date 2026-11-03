@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""Rows are independent of lanes: a spec whose launcher (or engine / job file) lives under a lane worktree or /workspace
-is SNAPSHOTTED into the row's scratch_root at publish time, the row points into the snapshot, and editing the worktree
-afterwards changes nothing the keeper sees. Everything runs in a temp dir with a temp git repo standing in for a lane."""
+"""Rows are independent of lanes. Operator 2026-11-03 (session review §5 item 8): the snapshot is OPT-IN - a spec with
+`"snapshot": true` whose launcher (or engine / job file) lives under a lane worktree or /workspace is SNAPSHOTTED into the
+row's scratch_root at publish time, the row points into the snapshot, and editing the worktree afterwards changes nothing
+the keeper sees. Without it nothing is copied, and a launcher outside the job-dir root is one refusal naming the fix.
+Everything runs in a temp dir with a temp git repo standing in for a lane."""
+import contextlib
+import io
 import json
 import os
 import shutil
@@ -14,6 +18,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(_HERE), "rowflow"))
 import rowflow as rf  # noqa: E402
+import publish_row as pr  # noqa: E402
 from test_rowflow import Fixture, write, _RF  # noqa: E402
 
 
@@ -72,7 +77,7 @@ class SnapshotTests(unittest.TestCase):
         rid = "t-snap-20261101"
         d = fx.lane_job(rid)
         head = git(fx.wt, "rev-parse", "HEAD")
-        row = rf.publish(fx.spec(rid, d), fx.flags)
+        row = rf.publish(fx.spec(rid, d, snapshot=True), fx.flags)
         snap = row["snapshot"]
         scratch = os.path.join(fx.root, rid)
         self.assertEqual(row["scratch_root"], scratch)
@@ -124,7 +129,7 @@ class SnapshotTests(unittest.TestCase):
         d = fx.lane_job(rid)
         with open(os.path.join(d, "job.sh"), "a") as f:
             f.write("# uncommitted\n")
-        row = rf.publish(fx.spec(rid, d), fx.flags)
+        row = rf.publish(fx.spec(rid, d, snapshot=True), fx.flags)
         snap = row["snapshot"]
         self.assertTrue(snap["dirty"])
         self.assertIsNone(snap["source_commit"])
@@ -134,7 +139,7 @@ class SnapshotTests(unittest.TestCase):
         self.assertFalse(os.stat(os.path.join(snap["snapshot_dir"], "launcher", "job.sh")).st_mode & 0o222)
         git(fx.wt, "checkout", "-q", "--", ".")
         # re-publishing replaces the previous (read-only) snapshot
-        row2 = rf.publish(fx.spec(rid, d), fx.flags)
+        row2 = rf.publish(fx.spec(rid, d, snapshot=True), fx.flags)
         self.assertEqual(row2["snapshot"]["method"], "git-archive")
         self.assertNotIn("# uncommitted", open(os.path.join(row2["snapshot"]["snapshot_dir"], "launcher", "job.sh")).read())
 
@@ -163,7 +168,7 @@ class SnapshotTests(unittest.TestCase):
         fx = self.fx
         rid = "t-snap-run-20261101"
         d = fx.lane_job(rid, engine=os.path.join(fx.lane_engine_dir, "filler_run15.sh"))
-        row = rf.publish(fx.spec(rid, d, dryrun_timeout_s=60), fx.flags)
+        row = rf.publish(fx.spec(rid, d, dryrun_timeout_s=60, snapshot=True), fx.flags)
         snap = row["snapshot"]
         self.assertTrue(row["engine"]["path"].startswith(os.path.join(snap["snapshot_dir"], "ext") + "/"), row["engine"]["path"])
         self.assertTrue(os.path.isfile(os.path.join(os.path.dirname(row["engine"]["path"]), "filler_lib.sh")))
@@ -179,6 +184,36 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(v, "PASS", msg + "\n" + "\n".join(rf.tail(os.path.join(rf.dry_dir(fx.flags, rid), "launcher.out"), 40)))
         self.assertIn('"src": "snapshot"', open(row["result_path"]).read())
         self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable")
+
+    def test_05_default_is_no_snapshot(self):
+        """No `snapshot: true`: a lane launcher is refused in one line that names both fixes; a job-dir launcher whose
+        engine lives in a lane is published as is (nothing copied, the engine path is the lane's)."""
+        fx = self.fx
+        rid = "t-snap-default-20261103"
+        d = fx.lane_job(rid)
+        with self.assertRaises(rf.Refused) as cm:
+            rf.publish(fx.spec(rid, d), fx.flags)
+        msg = str(cm.exception)
+        self.assertNotIn("\n", msg)
+        self.assertIn('"snapshot": true', msg)
+        self.assertIn(os.path.join(fx.root, rid), msg, "names the job dir to copy it to")
+        self.assertFalse(os.path.exists(os.path.join(fx.root, rid, "snapshot")))
+        rid2 = "t-snap-default-engine-20261103"
+        d2 = fx.job(rid2)
+        lane_engine = os.path.join(fx.lane_engine_dir, "filler_run15.sh")
+        src = open(os.path.join(d2, "launch.sh")).read().replace("ENGINE=" + fx.engine, "ENGINE=" + lane_engine)
+        write(os.path.join(d2, "launch.sh"), src, 0o755)
+        spec = fx.spec(rid2, d2)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            pr.lint(spec)  # the unfrozen lane engine is named in one WARN line, recorded in publish_warnings
+        self.assertIn("WARN volatile-paths: the job runs " + lane_engine, out.getvalue())
+        self.assertIn('"snapshot": true', spec["publish_warnings"][0])
+        row = rf.publish(spec, fx.flags)
+        self.assertNotIn("snapshot", row)
+        self.assertEqual(row["publish_warnings"], spec["publish_warnings"])
+        self.assertEqual(row["engine"]["path"], lane_engine)
+        self.assertFalse(os.path.exists(os.path.join(d2, "snapshot")))
 
 
 if __name__ == "__main__":

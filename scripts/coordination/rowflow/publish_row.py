@@ -118,6 +118,18 @@ def lint(spec):
             pw = list(spec.get("publish_warnings") or [])
             if w not in pw:
                 spec["publish_warnings"] = pw + [w]
+        if spec.get("snapshot") is not True:  # operator 2026-11-03: snapshot is opt-in; say what is NOT frozen
+            try:
+                vol = [p for p in rf.referenced_paths(rf.parse_launcher(launcher)) if rf.volatile_root(p)]
+            except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+                vol = []
+            if vol:
+                w = (f"volatile-paths: the job runs {', '.join(vol[:3])} from a lane/worktree path that can change or vanish "
+                     "before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)")
+                print(f"WARN {w}")
+                pw = list(spec.get("publish_warnings") or [])
+                if w not in pw:
+                    spec["publish_warnings"] = pw + [w]
         if not spec.get("lane"):
             try:
                 cls = rf.parse_launcher(launcher)["class"]
