@@ -16,7 +16,7 @@
       "blocked": 7,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 489
+      "open": 455
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2617,7 +2617,7 @@
       "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 380,
+      "open": 346,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 720
+      "total": 686
     }
   },
   "row_id_collisions": {},

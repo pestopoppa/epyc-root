@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T17:44:59Z",
+  "generated_at": "2026-11-03T17:51:41Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1355,14 +1355,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 336,
-      "dispatchable": 380,
+      "dispatchable": 346,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-02",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 384,
+      "open": 350,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
