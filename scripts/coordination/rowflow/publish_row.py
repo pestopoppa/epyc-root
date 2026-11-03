@@ -25,9 +25,11 @@ fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the 
 runs before the smoke, so a refused row costs no compute.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
 (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
-dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
-smoke_timeout_s (300). PASS (a first unit in result_path, clean stop) writes dryrun/<id>/PASS.json: ready at once. FAIL
-writes the FAIL memo and prints launcher_out_tail; the allocator grants only PASSed rows."""
+dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap, or by `rowflow.py gpu-batch` from any
+session; never refused). PASS (operator 2026-11-03) = the job's FIRST REAL PROGRESS within first_progress_s (300; the spec
+may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appears in result_path (rowflow.FirstProgress),
+then a clean stop -> dryrun/<id>/PASS.json: ready at once. FAIL writes the FAIL memo and prints ONE line (cause + fix +
+the log path); the allocator grants only PASSed rows."""
 import argparse
 import datetime as dt
 import glob
@@ -44,7 +46,8 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
+             "first_progress_s", "smoke_predicate", "unit_key")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -57,13 +60,14 @@ def is_marker(p):
 
 
 # Operator 2026-11-01 23:55Z "DO BETTER" (third occurrence: inf70, kvu-vkq3 tokenize, sr6 `sha256sum -c FULL-MODEL.sha256` on one
-# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is refused at publish.
+# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is flagged at publish.
+# Operator 2026-11-03 (session review §5 item 8): a WARNING (printed + publish_warnings), never a refusal.
 PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum|hashlib\.sha256)\b[^\n]*(?:\.gguf|FULL-MODEL|\bMODEL[^\s]*\.sha256|/models?/|weights?)"
                      r"|\b(?:tokeni[sz]e|tokenizer\.encode|pretokeni[sz]e)\b"
                      r"|\b(?:wget|curl|aria2c|rsync|huggingface-cli download|hf_hub_download|snapshot_download)\b"
                      r"|\bcp\b[^\n]*\.gguf", re.I)
 # small source/packet checksum lists (SOURCE-SHA256SUMS, PACKET-SHA256SUMS, INPUT.sha256 over scripts) are cheap integrity
-# checks and stay allowed; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are refused.
+# checks and are not flagged; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are warned about.
 PREP_MSG = "verify/prepare inputs once before publishing, not inside the grant"
 
 
@@ -108,7 +112,24 @@ def lint(spec):
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
         hit = prep_in_grant(launcher)
-        rf.need(hit is None, f"{PREP_MSG}: {hit[0]} runs `{hit[1]}`" if hit else "")
+        if hit:  # operator 2026-11-03 (session review §5 item 8): WARN, never refuse; recorded in the row's publish_warnings
+            w = f"prep-in-grant: {hit[0]} runs `{hit[1]}`; {PREP_MSG} (it spends grant time; publish continues)"
+            print(f"WARN {w}")
+            pw = list(spec.get("publish_warnings") or [])
+            if w not in pw:
+                spec["publish_warnings"] = pw + [w]
+        if spec.get("snapshot") is not True:  # operator 2026-11-03: snapshot is opt-in; say what is NOT frozen
+            try:
+                vol = [p for p in rf.referenced_paths(rf.parse_launcher(launcher)) if rf.volatile_root(p)]
+            except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+                vol = []
+            if vol:
+                w = (f"volatile-paths: the job runs {', '.join(vol[:3])} from a lane/worktree path that can change or vanish "
+                     "before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)")
+                print(f"WARN {w}")
+                pw = list(spec.get("publish_warnings") or [])
+                if w not in pw:
+                    spec["publish_warnings"] = pw + [w]
         if not spec.get("lane"):
             try:
                 cls = rf.parse_launcher(launcher)["class"]
@@ -340,7 +361,7 @@ def publish_smoked(spec, flags, source):
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
-    smoke_s = int(spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
+    smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
     if spec.get("lane") == "gpu" and gpu_busy(flags):
         unpublish(flags, rid)
         rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": regions, "smoke_s": smoke_s, "spec": spec,
@@ -353,9 +374,9 @@ def publish_smoked(spec, flags, source):
         if file_if_complete(flags, rid, row):
             return None
         return row
-    t = "\n".join(rf.tail(os.path.join(rf.dry_dir(flags, rid), "launcher.out"), 30))
-    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg}\nlauncher_out_tail:\n{t}\nFIX: fix the launcher/spec now, in "
-                     f"this turn, then re-run publish_row.py on the same spec (the row is not granted until a smoke PASSes)")
+    # operator 2026-11-03 design goal: cause + fix in ONE line; the long log stays on disk behind a path
+    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')}; "
+                     f"the row is not granted until a smoke PASSes)")
 
 
 def results_written_during(fail, rundir):
