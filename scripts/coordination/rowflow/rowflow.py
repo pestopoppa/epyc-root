@@ -35,6 +35,8 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               poller, admits through grant_ok_launcher (the one parser), WRITES the grant. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
                               IDLE-WHY <region>: <reason>, UNDERUSED (<5 % of a held quarter for 10 min -> owner fix task,
                               never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
+    gpu-batch                 run the queued GPU smokes (publish_row's GPU-busy queue) NOW if the GPU is free; any session
+                              may call it, and allocate does the same on every GPU-free tick
     (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant. PASS = the job's
      FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
@@ -2479,6 +2481,34 @@ def start_gpu_batch(flags, log):
     return True
 
 
+def gpu_batch(flags, log=print):
+    """`rowflow.py gpu-batch` (session review 2026-11-03 §5 item 8): ANY session runs the queued GPU smokes on a GPU-free
+    tick - the same start_gpu_batch the allocator calls on every allocate tick (that path is unchanged). One line out.
+    Returns 0 (started / already running / nothing queued) or 3 (HOLD present or GPU busy: re-run later)."""
+    me = f"python3 {os.path.abspath(__file__)} gpu-batch"
+    queued = glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))
+    holds = glob.glob(os.path.join(flags, "HOLD_*"))
+    if holds:
+        log(f"HOLD present ({os.path.basename(holds[0])}): {len(queued)} queued GPU smoke(s) not started; re-run `{me}` after the HOLD is removed")
+        return 3
+    if gpu_batch_running(flags):
+        log(f"GPU-SMOKE-BATCH already running pid={(load_json(gpu_batch_lock(flags)) or {}).get('pid')}; "
+            f"log {os.path.join(flags, 'dryrun', 'GPU-SMOKE-BATCH.out')}")
+        return 0
+    if not queued:
+        log("no queued GPU smokes; nothing to do")
+        return 0
+    rl = rl_status().get(GPU, ("free", ""))
+    holder = f"region-lock {GPU} {rl[0]} {rl[1]}".strip() if rl[0] != "free" else \
+        next((f"grant {g['id']}" for g in open_grants(flags) if GPU in g["holds"]), None)
+    if holder:
+        log(f"GPU busy ({holder}): {len(queued)} queued GPU smoke(s) wait for the next GPU gap; re-run `{me}` then "
+            "(the allocator also runs them on its next GPU-free tick)")
+        return 3
+    start_gpu_batch(flags, lambda m: log(f"{m}; log {os.path.join(flags, 'dryrun', 'GPU-SMOKE-BATCH.out')}"))
+    return 0
+
+
 # ---------------------------------------------------------------- cli
 def status_text(st):
     """The fixed <= 8-line form (2026-11-03 operator design goal): state, measured util, blocker, next, logs."""
@@ -2502,6 +2532,7 @@ def main(argv=None):
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
+    sub.add_parser("gpu-batch", help="run the queued GPU smokes now if the GPU is free (any session; the allocator does the same every tick)")
     a = ap.parse_args(argv)
     try:
         if a.cmd == "publish":
@@ -2528,6 +2559,8 @@ def main(argv=None):
         if a.cmd == "allocate":
             allocate(a.flags, a.log, dry=a.plan)
             return 0
+        if a.cmd == "gpu-batch":
+            return gpu_batch(a.flags)
     except Refused as e:
         print(f"REFUSED: {e}")
         return 2
