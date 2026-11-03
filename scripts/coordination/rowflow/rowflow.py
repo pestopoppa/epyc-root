@@ -30,6 +30,8 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
     (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
+                              (parked: MAX_FAILS failed dry runs in the lineage, OR MAX_FAILS consecutive arming/launch
+                              failures since the row's PASS - a PASS alone no longer keeps an unarmable row grantable)
 
 Nothing here writes FILLERS.md, nonces, receipts or breakers. Removed with this flow: epyc.ready.v2 manifests,
 ready/<id>.row.md, the 18-cell FILLERS.md row, keeper_qual_gate/qualify_launcher (nonce, receipt, fixture, cutoff proof),
@@ -147,6 +149,30 @@ def pass_path(flags, rid): return os.path.join(dry_dir(flags, rid), "PASS.json")
 def armed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "ARMED.json")
 def running_path(flags, rid): return os.path.join(dry_dir(flags, rid), "RUNNING.json")
 def fail_paths(flags, rid): return sorted(glob.glob(os.path.join(dry_dir(flags, rid), "FAIL-*.json")))
+def granted_path(flags, rid): return os.path.join(dry_dir(flags, rid), "GRANTED.json")
+
+
+ARM_FAIL_KINDS = ("arm", "launch")
+_LEGACY_ARM_FAIL = "poller did not log 'launcher up pid='"
+
+
+def is_arm_fail(f):
+    """A FAIL record written by the allocator (arming: no 'launcher up pid=' in 30 s; launch: admission refused the
+    armed poller), not by a dry run. Records before 2026-11-03 carry no kind: matched by the arm_one reason."""
+    return (f or {}).get("kind") in ARM_FAIL_KINDS or str((f or {}).get("reason", "")).startswith(_LEGACY_ARM_FAIL)
+
+
+def arm_fails_since_pass(flags, rid, p=None):
+    """[FAIL records] of the consecutive arming/launch failures since the row's PASS and its last successful grant
+    (ws58 2026-11-03: yarn-e1-a2-gpu failed to arm 172 times after its PASS and stayed grantable all night)."""
+    p = load_json(pass_path(flags, rid)) if p is None else p
+    t0 = max(iso_epoch((p or {}).get("passed_at")) or 0.0, iso_epoch((load_json(granted_path(flags, rid)) or {}).get("at")) or 0.0)
+    out = []
+    for fp in fail_paths(flags, rid):
+        f = load_json(fp) or {}
+        if is_arm_fail(f) and (iso_epoch(f.get("at")) or 0.0) >= t0:
+            out.append(dict(f, fail_file=fp))
+    return sorted(out, key=lambda f: iso_epoch(f.get("at")) or 0.0)
 
 
 def row_sha(flags, rid):
@@ -869,11 +895,25 @@ def plan_order(c):
     return (min(r, URGENT_RANK), c["lane_count"], r, 0 if c["kind"] == "grant" else 1, c["id"])
 
 
-def drain_blocker(c, pending):
+def placeable(x, free, ram, gpu_grant_open=False, held_ports=()):
+    """x could be placed on this snapshot: an option fits the free regions and RAM, its ports are not held, and it is
+    not failing to arm (cand["arm_fails"] > 0: its last arming/launch attempts since the PASS failed)."""
+    if int(x.get("arm_fails") or 0) > 0:
+        return False
+    if {int(p) for p in held_ports} & {int(p) for p in (x.get("ports") or [])}:
+        return False
+    return bool(_fits(x, free, ram, gpu_grant_open))
+
+
+def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_ports=()):
     """The best-ranked pending row (strictly better rank than c) that wants any region c's drain would hold, or None.
-    A drain is never set for c while such a row is runnable: rank decides who gets the regions when they free."""
+    A drain is never set for c while such a row is runnable: rank decides who gets the regions when they free.
+    ws58 2026-11-03: with a snapshot (free, ram) only a blocker that is placeable THIS tick and not failing to arm
+    holds c (yarn-e1-a2-gpu, rank 7, failed to arm 172 times and held every quiet-host row for 7 h on an idle host)."""
     need = set().union(*c["options"]) if c["options"] else set()
     better = [x for x in pending if x is not c and float(x["rank"]) < float(c["rank"]) and any(o & need for o in x["options"])]
+    if free is not None:
+        better = [x for x in better if placeable(x, free, ram, gpu_grant_open, held_ports)]
     return min(better, key=plan_order) if better else None
 
 
@@ -897,8 +937,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     DRAIN (never preempt): the top quiet-host row, or the top multi-quarter/host row that has waited DRAIN_AFTER_S, that
     cannot be placed now sets T = the latest end among the running grants; only rows that END before T are backfilled, so
     nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
-    A row is neither promoted nor drained for while a better-ranked pending row wants any of its regions (drain_blocker);
-    plan.drain_held = [(row, blocker)] names those rows for the log.
+    A row is neither promoted nor drained for while a better-ranked pending row that is placeable this tick and not
+    failing to arm wants any of its regions (drain_blocker); plan.drain_held = [(row, blocker)] names those rows for the log.
     PORTS (ws58 2026-11-02): a candidate whose cand["ports"] meet held_ports (running grants) or a port placed this tick
     waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
@@ -921,7 +961,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
-            blocker = drain_blocker(c, pending)
+            blocker = drain_blocker(c, pending, free, ram, gpu_grant_open, ports)
             if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
                 plan.drain_held.append((c, blocker))
                 continue
@@ -1077,6 +1117,12 @@ def status(flags, rid, allrows=None):
         a = load_json(armed_path(flags, rid))
         if a and alive(a.get("pid")):
             out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+        af = arm_fails_since_pass(flags, rid, p)
+        out["arm_fails"] = len(af)
+        if len(af) >= MAX_FAILS:   # ws58 2026-11-03: a PASS no longer keeps a row that cannot be armed grantable
+            out.update(state="parked", reason=f"{len(af)} consecutive arming/launch failures since the PASS of {p.get('passed_at')} "
+                                              f"(last: {str(af[-1].get('reason'))[:160]}); operator-escalations/{rid}.arming.md",
+                       fail_file=af[-1]["fail_file"], fix_task=af[-1].get("fix_task")); return out
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS:
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md"); return out
@@ -1261,6 +1307,31 @@ def record_fail(flags, rid, d, reason, extra):
            **extra}
     atomic_json(os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json"), rec)
     return rec
+
+
+def record_arm_fail(flags, rid, d, kind, reason, log=print):
+    """An arming (kind=arm) or launch (kind=launch: admission refused the armed poller) failure of a PASSed row. The
+    MAX_FAILS-th consecutive one since the PASS parks the row (status) and writes operator-escalations/<id>.arming.md."""
+    pol = os.path.join(dry_dir(flags, rid), "poller.out")
+    record_fail(flags, rid, d, reason, {"kind": kind, "launcher_out_tail": tail(pol), "tail_of": pol,
+                                        "fix_task": f"fix the {kind} failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/poller.out); "
+                                                    f"after {MAX_FAILS} in a row the row is parked until it is republished"})
+    af = arm_fails_since_pass(flags, rid)
+    if len(af) < MAX_FAILS:
+        return len(af)
+    out = os.path.join(flags, "operator-escalations", rid + ".arming.md")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    L = [f"# PARKED NEEDS-OPERATOR - row `{rid}` ({len(af)} consecutive arming/launch failures since its PASS; written {now_iso()} by rowflow)", "",
+         "The row passed its dry run but its poller cannot be armed or launched, so the allocator no longer grants it "
+         "(a PASS alone used to keep it grantable forever). Last failures:", ""]
+    L += [f"- {f.get('at')} [{f.get('kind') or 'arm'}] {str(f.get('reason'))[:300]}" for f in af[-5:]]
+    L += ["", "Poller output tail:", "", "```"] + [str(x) for x in (af[-1].get("launcher_out_tail") or [])[-15:]] + ["```", "",
+          "Options: 1. fix the launcher and republish (a new PASS clears the count); 2. drop (remove ready/<id>.json).", ""]
+    with open(out, "w") as f:
+        f.write("\n".join(L))
+    if len(af) == MAX_FAILS:
+        log(f"PARK {rid}: {len(af)} consecutive {kind} failures since its PASS; operator-escalations/{rid}.arming.md")
+    return len(af)
 
 
 def write_escalation(flags, rid, allrows):
@@ -1563,7 +1634,7 @@ def lane_counts(flags, allrows):
 
 
 # ---------------------------------------------------------------- arm + grant (the allocator writes grants itself)
-def arm_one(flags, rid, d, regions=None):
+def arm_one(flags, rid, d, regions=None, log=print):
     """Start the row's poller (the exact launcher through its engine, polling grants/<id>.grant). Regions are NOT
     resolved here: the grant the allocator writes later carries them."""
     dd = dry_dir(flags, rid)
@@ -1586,8 +1657,8 @@ def arm_one(flags, rid, d, regions=None):
         if len(pids) > before:
             pid = pids[-1]; break
     if not pid:
-        record_fail(flags, rid, d, "poller did not log 'launcher up pid=' within 30 s of arming", {})
-        return None, "fail: no launcher pid within 30 s"
+        n = record_arm_fail(flags, rid, d, "arm", "poller did not log 'launcher up pid=' within 30 s of arming", log)
+        return None, f"fail: no launcher pid within 30 s ({n} consecutive since the PASS; parked at {MAX_FAILS})"
     with open(os.path.join(flags, "ws58-armed.queue"), "a") as f:   # id|pid|window_s|gib|regions: backlog_gen's pid lookup
         f.write(f"{rid}|{pid}|{d['window_s']}|{d['gib']}|{d['regions']}\n")
     atomic_json(armed_path(flags, rid), {"id": rid, "pid": pid, "regions": d["regions"], "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"])})
@@ -1783,7 +1854,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     counts = lane_counts(flags, allrows)
     cands = []
     for rid, d in allrows.items():
-        st = status(flags, rid, allrows)["state"]
+        sd = status(flags, rid, allrows)
+        st = sd["state"]
         if st not in ("grantable", "armed"):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
         kind = "grant"
@@ -1798,7 +1870,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
-                      "since": iso_epoch(since), "ports": list(d.get("ports") or [])})
+                      "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0)})
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
@@ -1823,7 +1895,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
             a = load_json(armed_path(flags, rid))
             if not (a and alive(a.get("pid"))):
-                pid, msg = arm_one(flags, rid, d, regions)
+                pid, msg = arm_one(flags, rid, d, regions, log=log)
                 log(f"ROW-ARM {msg}")
                 if not pid:
                     continue
@@ -1831,8 +1903,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 pid = a["pid"]
             ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
             if not ok:
-                log(f"SKIP {rid}: {line[:200]}"); continue
+                n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
+                log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})"); continue
             gl = write_grant(flags, rid, regions, opt, d["window_s"])
+            atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
             log(f"GRANT {rid} {gl} ({line[:160]})")
             out.append(("grant", rid, regions))
         except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
@@ -1845,9 +1919,46 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
             seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
     if not dry:
+        idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
+
+
+IDLE_VIOLATION_TICKS = 2
+
+
+def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_ports=(), log=print):
+    """ws58 2026-11-03 (the yarn-e1-a2 deadlock: 7 h with every region free and nothing granted). Free regions + a
+    grantable row that fits them + no grant written this tick, IDLE_VIOLATION_TICKS ticks in a row -> IDLE-VIOLATION
+    alert (log every such tick, one ws58-keeper-alerts.jsonl record per episode). Returns the consecutive tick count."""
+    p = os.path.join(state_dir(flags), "idle_violation.json")
+    old = load_json(p) or {}
+    fr = {r for r in free if r in REGIONS}
+    if fr and not granted:
+        tok = set(free) if any(t in CORES or t in THREADS for t in free) else \
+            expand(fr) | ({f"t{k}" for k in range(184, 192)} if GPU in fr else set())
+        fit = [c for c in cands if _fits(dict(c, options=[frozenset(expand(o)) for o in c["options"]]), tok, float(ram_gib), gpu_open)
+               and not ({int(x) for x in held_ports} & {int(x) for x in (c.get("ports") or [])})]
+    else:
+        fit = []
+    if not fit:
+        if old:
+            atomic_json(p, {})
+        return 0
+    n = int(old.get("ticks") or 0) + 1
+    since = old.get("since") or now_iso()
+    atomic_json(p, {"ticks": n, "since": since, "alerted": bool(old.get("alerted")) or n >= IDLE_VIOLATION_TICKS})
+    if n >= IDLE_VIOLATION_TICKS:
+        ids = ",".join(c["id"] for c in fit[:6]) + (f",+{len(fit) - 6}" if len(fit) > 6 else "")
+        msg = (f"IDLE-VIOLATION ALERT {n} ticks since {since}: free {','.join(compress(fr))}, {len(fit)} grantable row(s) fit "
+               f"({ids}), nothing granted")
+        log(msg)
+        if not old.get("alerted"):
+            with open(os.path.join(flags, "ws58-keeper-alerts.jsonl"), "a") as f:
+                f.write(json.dumps({"ts": now_iso(), "from": "rowflow-allocator", "kind": "idle-violation", "ticks": n, "since": since,
+                                    "free": sorted(fr), "grantable_fit": [c["id"] for c in fit]}) + "\n")
+    return n
 
 
 # ---------------------------------------------------------------- queued GPU smokes (operator 2026-11-02)

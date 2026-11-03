@@ -74,16 +74,46 @@ class DrainYieldsToRank(unittest.TestCase):
                          [("handoff-kvu-vkq3-mtp-bound", "brf-exp01-trellis-build")])
 
     def test_no_drain_while_better_ranked_overlapping_row_is_grantable(self):
-        # host busy (nothing free): a drain would reserve q0-q3 for the rank-30 host row at T; a rank-20 quarter row wants them
+        # q1-q3 busy, q0 free: a drain would reserve q0-q3 for the rank-30 host row at T; a rank-20 quarter row that
+        # fits q0 now wants them
         host = cand("host", HOST_OPT, 30, shape="host", since=NOW - 7200)
         better = cand("better", QUARTER_OPTS, 20)
-        rf.plan(set(), [host, better], 1000, now=NOW, grant_ends=[NOW + 1800])
+        rf.plan({"q0"}, [host, better], 1000, now=NOW, grant_ends=[NOW + 1800])
         self.assertIsNone(rf.plan.last_drain)
         self.assertEqual([h["id"] for h, _ in rf.plan.drain_held], ["host"])
         # quiet-host rows obey the same rule
         quiet = cand("quiet", [frozenset(rf.REGIONS)], 30, shape="quiet-host")
-        rf.plan(set(), [quiet, better], 1000, now=NOW, grant_ends=[NOW + 1800])
+        rf.plan({"q0"}, [quiet, better], 1000, now=NOW, grant_ends=[NOW + 1800])
         self.assertIsNone(rf.plan.last_drain)
+
+    def test_unplaceable_better_row_does_not_hold_the_drain(self):
+        # ws58 2026-11-03: nothing free -> the better-ranked row cannot be placed this tick, so it holds nothing; at T
+        # (everything free) it is placeable again and wins by rank before the drain row is promoted
+        host = cand("host", HOST_OPT, 30, shape="host", since=NOW - 7200)
+        better = cand("better", QUARTER_OPTS, 20)
+        rf.plan(set(), [host, better], 1000, now=NOW, grant_ends=[NOW + 1800])
+        self.assertEqual(rf.plan.last_drain[0]["id"], "host")
+        self.assertEqual(rf.plan.drain_held, [])
+        out, _, _ = rf.plan(set(rf.QUARTERS), [host, better], 1000, now=NOW + 1800)
+        self.assertEqual(ids(out), ["better"])
+
+    def test_arm_failing_better_row_does_not_hold_the_drain(self):
+        # the yarn-e1-a2 deadlock: a rank-7 GPU row that keeps failing to arm held every quiet-host row on an idle host
+        quiet = cand("quiet", [frozenset(rf.REGIONS)], 30, shape="quiet-host")
+        yarn = cand("yarn", [frozenset({rf.GPU})], 7, lane="gpu", arm_fails=1)
+        out, _, _ = rf.plan(set(rf.REGIONS), [quiet, yarn], 1000, now=NOW)
+        self.assertEqual(rf.plan.drain_held, [])
+        self.assertEqual(ids(out), ["quiet"])
+        yarn["arm_fails"] = 0   # control: a healthy better-ranked GPU row still holds it
+        out, _, _ = rf.plan(set(rf.REGIONS), [quiet, yarn], 1000, now=NOW)
+        self.assertEqual([(h["id"], b["id"]) for h, b in rf.plan.drain_held], [("quiet", "yarn")])
+        self.assertEqual(ids(out), ["yarn"])
+
+    def test_port_blocked_better_row_does_not_hold_the_drain(self):
+        quiet = cand("quiet", [frozenset(rf.REGIONS)], 30, shape="quiet-host")
+        gpu = cand("gpu", [frozenset({rf.GPU})], 7, lane="gpu", ports=[18083])
+        rf.plan(set(rf.REGIONS), [quiet, gpu], 1000, now=NOW, held_ports=[18083])
+        self.assertEqual(rf.plan.drain_held, [])
 
     def test_drain_still_set_when_better_row_wants_other_regions(self):
         host = cand("host", HOST_OPT, 30, shape="host", since=NOW - 7200)

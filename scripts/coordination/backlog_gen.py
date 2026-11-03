@@ -25,7 +25,8 @@ Row states (epyc.row.v3, scripts/coordination/rowflow/rowflow.py is the one sour
     needs-qualification  row published, no dry run yet for the current launcher (keeper runs it when the lane is free)
     blocked              the dry run FAILED (dryrun/<id>/FAIL-n.json = the owner's one fix task), the dry run is running,
                          a legacy manifest needs `rowflow.py publish --migrate`, or a `blocked_by` entry is open
-    parked               >= MAX_FAILS failed dry runs in the lineage (operator-escalations/<lineage>.md); nobody retries
+    parked               >= MAX_FAILS failed dry runs in the lineage (operator-escalations/<lineage>.md), or >= MAX_FAILS
+                         consecutive arming/launch failures since its PASS (operator-escalations/<id>.arming.md); nobody retries
     qualified-armed      dry run PASSED and the launcher is unchanged (grantable / poller armed); writers grant it
     running              grants/<id>.grant open, NO grants/<id>.ended|.complete, and the recorded launcher/poller pid (armed
                          record or queue line) is alive; a grant whose pid is dead or whose .ended exists is never "running"
