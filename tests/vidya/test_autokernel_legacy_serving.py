@@ -394,3 +394,44 @@ def test_target_steps_block_without_estimator_string_is_refused(tmp_path):
 
 def test_capture_without_a_block_projects_no_steps_rows(tmp_path):
     assert _steps(_resealed(tmp_path, None)) == []
+
+
+def _ingest(store, tmp_path):
+    from scoped_ingest import ingest_scoped_store
+
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest_scoped_store(ledger, store, as_of=datetime.now(timezone.utc).isoformat())
+    return ledger, report
+
+
+def _source_ids(ledger):
+    return sorted(r.frame["assertion"]["source_id"] for r in ledger.read_all()
+                  if r.frame["frame_type"].endswith("source_observed/v1"))
+
+
+def test_scoped_ingest_adds_steps_rows_beside_the_existing_rows(tmp_path):
+    _resealed(tmp_path / "with", _steps_block())
+    _resealed(tmp_path / "without", None)
+    with_ledger, with_report = _ingest(tmp_path / "with", tmp_path / "w")
+    base_ledger, base_report = _ingest(tmp_path / "without", tmp_path / "b")
+    assert with_report["steps_projected"] == 2 and with_report["refusals"] == []
+    assert with_report["v2_projected"] == 1 and with_report["rows_projected"] == 2
+    steps = [s for s in _source_ids(with_ledger) if s.startswith("src_legacy-serving-steps:")]
+    assert len(steps) == 2 and with_ledger.verify() == []
+    # A capture without the block ingests exactly as before: no steps rows, same row counts.
+    assert base_report["steps_projected"] == 0 and base_report["refusals"] == []
+    assert not [s for s in _source_ids(base_ledger) if "serving-steps" in s]
+    assert len(base_ledger) == len(with_ledger) - 2 * 3
+    assert base_report["rows_projected"] == with_report["rows_projected"]
+    assert base_report["v2_projected"] == with_report["v2_projected"]
+
+
+def test_scoped_ingest_refuses_unlabelled_steps_but_keeps_the_other_rows(tmp_path):
+    block = _steps_block()
+    block["anchor"]["estimators"] = []
+    _resealed(tmp_path / "s", block)
+    ledger, report = _ingest(tmp_path / "s", tmp_path / "l")
+    assert report["steps_projected"] == 0
+    assert any("estimator string missing" in r["reason"] for r in report["refusals"])
+    assert report["rows_projected"] == 2 and report["v2_projected"] == 1
+    assert not [s for s in _source_ids(ledger) if "serving-steps" in s]
