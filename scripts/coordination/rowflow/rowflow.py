@@ -1114,6 +1114,23 @@ def next_action(st, flags, rid):
     return f"publish the row: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
 
 
+def direct_path(flags, rid):
+    return os.path.join(dry_dir(flags, rid), "DIRECT.json")
+
+
+def direct_run(flags, rid):
+    """The run_direct.sh record while its supervisor is alive and the id is not terminal, else None."""
+    rec = load_json(direct_path(flags, rid))
+    if rec and alive(rec.get("pid")) and not rec.get("ended"):
+        return rec
+    return None
+
+
+def regions_held(regions):
+    """Region tokens a regions string books: quarters it covers (whole) plus gpu-quiet for mi210 rows."""
+    return sorted(quarters_of(regions) | ({GPU} if "mi210" in str(regions) else set()))
+
+
 def status(flags, rid, allrows=None, util=None):
     """Row state + the fixed companions every surface prints: `next` (one deterministic action), `logs` (the row's
     dry-run dir: poller.out / launcher.out), `held` (regions its open grant books) and, when the caller passes a
@@ -1122,7 +1139,15 @@ def status(flags, rid, allrows=None, util=None):
     st["next"] = next_action(st, flags, rid)
     st["logs"] = dry_dir(flags, rid)
     if st["state"] == "running":
-        g = next((g for g in open_grants(flags) if g["id"] == rid), None)
+        held, g = None, None
+        if st.get("direct"):
+            rec = direct_run(flags, rid) or {}
+            held = regions_held(rec.get("regions", ""))
+            st["held"] = held
+            st["logs"] = rec.get("out") or st["logs"]
+            st["grant_age_s"] = int(time.time() - (iso_epoch(rec.get("started_at")) or time.time()))
+        else:
+            g = next((g for g in open_grants(flags) if g["id"] == rid), None)
         if g:
             held = sorted(r for r in compress(g["holds"]) if r in REGIONS)
             st["held"] = held
@@ -1130,6 +1155,7 @@ def status(flags, rid, allrows=None, util=None):
                 st["grant_age_s"] = int(time.time() - os.path.getmtime(g["path"]))
             except OSError:
                 pass
+        if held is not None:
             if util is not None:
                 st["util"] = hostutil.regions_pct(util, held)
                 idle = hostutil.idle_regions(util, held)
@@ -1158,6 +1184,9 @@ def _status_raw(flags, rid, allrows=None):
         out.update(state="failed", reason="spec incomplete: the legacy manifest had no result_path; publish a spec with result_path (+ result_format, decision_rule)",
                    fix_task=f"publish a complete spec for {rid}: result_path/result_format/decision_rule were missing in the migrated manifest "
                             f"(python3 scripts/coordination/rowflow/publish_row.py <spec.json>)"); return out
+    drec = direct_run(flags, rid)
+    if drec:   # 2026-11-03 item 1: a live run_direct.sh supervisor holds the row (never granted while it lives)
+        out.update(state="running", reason=f"direct run pid {drec.get('pid')} since {drec.get('started_at')}", direct=True); return out
     if os.path.exists(os.path.join(G, rid + ".grant")) and not os.path.exists(running_path(flags, rid)):
         out.update(state="running", reason="grants/<id>.grant open"); return out
     run = load_json(running_path(flags, rid))

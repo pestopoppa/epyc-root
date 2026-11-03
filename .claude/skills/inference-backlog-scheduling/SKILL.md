@@ -112,6 +112,8 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 
 When the operator asks to churn / work / clear the backlog, this and nothing else is meant. Canonical page: `docs/guides/agent-workflows/backlog-churn-flow.md`.
 
+**Direct path is the default when a lane is measured free or the operator is present (2026-11-03):** `scripts/coordination/rowflow/run_direct.sh <ready.json|row-id>` is the ONE command - it claims exactly the row's regions under a finite region-lock timeout, runs the job with the engine's `FILLER_*` contract, holds the row from the keeper, writes `.ended` on exit and prints measured CPU%/GPU% 30 s after start (`run_direct.sh stop <id>` / `status <id>`); the keeper's five-step flow below is the scheduler for UNATTENDED work, not a gate in front of a free lane.
+
 1. The backlog is prioritized tasks of two types: inference and non-inference.
 2. Non-inference tasks that block inference tasks are built regardless of compute usage.
 3. Once an inference task is unblocked, its launcher is prepared and dry-run in a realistic environment (= the keeper's dry run on the real lane, `DRYRUN-RESULT PASS` -> `dryrun/<id>/PASS.json`).
