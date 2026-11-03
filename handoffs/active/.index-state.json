@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 118
+      "open": 86
     }
   },
   "duplicates": {},
@@ -1007,7 +1007,7 @@
       "closed": 221,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 111,
+      "open": 79,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 347,
+      "total": 315,
       "tracks": [
         {
           "blocked": 12,
@@ -1035,7 +1035,7 @@
           "line": 16,
           "markers": 1,
           "name": "harness-selection-and-integration",
-          "open": 16
+          "open": 12
         },
         {
           "blocked": 0,
@@ -1045,7 +1045,7 @@
           "line": 390,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 18
+          "open": 8
         },
         {
           "blocked": 0,
@@ -1055,7 +1055,7 @@
           "line": 759,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
-          "open": 10
+          "open": 7
         },
         {
           "blocked": 1,
@@ -1067,7 +1067,7 @@
           "line": 1523,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 15
+          "open": 10
         },
         {
           "blocked": 0,
@@ -1095,7 +1095,7 @@
           "line": 2260,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 21
+          "open": 16
         },
         {
           "blocked": 0,
@@ -1108,7 +1108,7 @@
           "line": 2681,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
-          "open": 30
+          "open": 25
         }
       ]
     },

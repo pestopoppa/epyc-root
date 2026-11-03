@@ -596,7 +596,7 @@
       "from": "UFH-01",
       "kind": "ref",
       "to": "EVL-10",
-      "weight": 4
+      "weight": 7
     },
     {
       "from": "UFH-01",
@@ -626,7 +626,7 @@
       "from": "UFH-01",
       "kind": "ref",
       "to": "RTG-08",
-      "weight": 5
+      "weight": 6
     },
     {
       "from": "UFH-01",
@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:28:38Z",
+  "generated_at": "2026-11-03T16:30:49Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3586,14 +3586,14 @@
       "blocked": 15,
       "blocked_by": [],
       "closed": 221,
-      "dispatchable": 111,
+      "dispatchable": 79,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-03",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 126,
+      "open": 94,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3630,7 +3630,7 @@
             "RTG-09#typed-decision-plane",
             "RTG-09#x-mas-text-routing"
           ],
-          "dispatchable": 16,
+          "dispatchable": 12,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -3643,38 +3643,38 @@
           ],
           "line": 16,
           "name": "harness-selection-and-integration",
-          "open": 28,
+          "open": 24,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 18,
+          "dispatchable": 8,
           "gates": [],
           "line": 390,
           "name": "repl-turn-efficiency",
-          "open": 18,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 7,
           "gates": [],
           "line": 759,
           "name": "qwen-chat-template-evaluation",
-          "open": 10,
+          "open": 7,
           "readiness": "ready"
         },
         {
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 15,
+          "dispatchable": 10,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 1523,
           "name": "harness-improvement-loop",
-          "open": 16,
+          "open": 11,
           "readiness": "blocked"
         },
         {
@@ -3698,7 +3698,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 21,
+          "dispatchable": 16,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -3708,7 +3708,7 @@
           ],
           "line": 2260,
           "name": "repl-embedding-retrieval",
-          "open": 23,
+          "open": 18,
           "readiness": "blocked"
         },
         {
@@ -3716,14 +3716,14 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 30,
+          "dispatchable": 25,
           "gates": [
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 2681,
           "name": "agentic-serving-harness-fixes",
-          "open": 30,
+          "open": 25,
           "readiness": "blocked"
         }
       ]
