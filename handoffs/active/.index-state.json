@@ -19,10 +19,10 @@
       "open": 511
     },
     "reviewer-control-plane-index.md": {
-      "blocked": 12,
+      "blocked": 8,
       "handoffs": 1,
       "oldest_advance": "2026-11-03",
-      "open": 25
+      "open": 18
     },
     "routing-and-optimization-index.md": {
       "blocked": 6,
@@ -2140,11 +2140,11 @@
       ]
     },
     "reviewer-control-plane.md": {
-      "blocked": 12,
+      "blocked": 8,
       "closed": 100,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 25,
+      "open": 18,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2153,7 +2153,7 @@
       },
       "row_id": "REV-02",
       "state": "active",
-      "total": 137,
+      "total": 126,
       "tracks": [
         {
           "blocked": 0,
@@ -2168,7 +2168,7 @@
           "open": 4
         },
         {
-          "blocked": 5,
+          "blocked": 4,
           "closed": 3,
           "gates": [
             "UFH-01"
@@ -2177,7 +2177,7 @@
           "line": 309,
           "markers": 1,
           "name": "reviewer-escalation-and-human-gate-policy",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 3,
@@ -2187,17 +2187,17 @@
           "line": 403,
           "markers": 1,
           "name": "reviewer-latency-and-sampling-budget",
-          "open": 4
+          "open": 2
         },
         {
-          "blocked": 2,
+          "blocked": 0,
           "closed": 11,
           "gates": [],
           "guarded": 0,
           "line": 514,
           "markers": 1,
           "name": "reviewer-calibration-accounting",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
@@ -2210,7 +2210,7 @@
           "open": 1
         },
         {
-          "blocked": 2,
+          "blocked": 1,
           "closed": 14,
           "gates": [
             "REV-02#glm52-reviewer-capability-gates"
@@ -2219,7 +2219,7 @@
           "line": 916,
           "markers": 1,
           "name": "reviewer-model-ablations",
-          "open": 9
+          "open": 6
         }
       ]
     },

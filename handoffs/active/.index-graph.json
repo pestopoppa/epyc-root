@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:47:24Z",
+  "generated_at": "2026-11-03T16:48:03Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2600,17 +2600,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 12,
+      "blocked": 8,
       "blocked_by": [],
       "closed": 100,
-      "dispatchable": 25,
+      "dispatchable": 18,
       "domain": "reviewer-control-plane",
       "guarded": 0,
       "handoff": "reviewer-control-plane.md",
       "id": "REV-02",
       "last_advanced": "2026-11-03",
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
-      "open": 37,
+      "open": 26,
       "priority": 0.0636,
       "priority_basis": {
         "basis": "T7 non-inference best open item (I): GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim",
@@ -2647,31 +2647,31 @@
           "blocked_by": [
             "UFH-01"
           ],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [
             "UFH-01"
           ],
           "line": 309,
           "name": "reviewer-escalation-and-human-gate-policy",
-          "open": 9,
+          "open": 7,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 2,
           "gates": [],
           "line": 403,
           "name": "reviewer-latency-and-sampling-budget",
-          "open": 7,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [],
           "line": 514,
           "name": "reviewer-calibration-accounting",
-          "open": 5,
+          "open": 2,
           "readiness": "ready"
         },
         {
@@ -2687,13 +2687,13 @@
           "blocked_by": [
             "REV-02#glm52-reviewer-capability-gates"
           ],
-          "dispatchable": 9,
+          "dispatchable": 6,
           "gates": [
             "REV-02#glm52-reviewer-capability-gates"
           ],
           "line": 916,
           "name": "reviewer-model-ablations",
-          "open": 11,
+          "open": 7,
           "readiness": "blocked"
         }
       ]
