@@ -1286,3 +1286,52 @@ def test_invalid_direction_is_rejected_by_shared_carrier():
     source["belief_measurements"][0]["metric_direction"] = "neutral"
     with pytest.raises(ct.ProjectionError, match="metric_direction"):
         aux.project(aux.native_rows(source)[0])
+
+
+def _hip_decision_with_speedups(flips):
+    """Decision receipt whose blocks at indices in `flips` lose (speedup < 1)."""
+    import statistics
+    source = hip_decision_receipt()
+    speedups = []
+    for index, block in enumerate(source["timing"]["blocks"]):
+        if index in flips:
+            block["candidate_ns"], block["anchor_ns"] = 9_936.0, 9_200.0
+        speedups.append(block["anchor_ns"] / block["candidate_ns"])
+    median = statistics.median(speedups)
+    source["timing"]["median_speedup"] = median
+    for row in source["belief_measurements"]:
+        if row["measurement_id"] == "hip_exact_provider_speedup":
+            row["value"] = median
+    signs, crossing = aux._hip_sign_e_process(speedups, 20.0)
+    source["timing"]["e_process"]["signs"] = signs
+    source["timing"]["e_process"]["first_crossing_block"] = crossing
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    return source, crossing
+
+
+def test_hip_decision_accepts_rederived_crossing_at_other_blocks():
+    # Under threshold 20 / lambda cap 0.5 the earliest reachable crossing is
+    # block 9 (all wins); any losses push it later. Block 8 is unreachable.
+    for flips, expected in (((), 9), ((0,), 10), ((19,), 9)):
+        source, crossing = _hip_decision_with_speedups(set(flips))
+        assert crossing == expected
+        assert aux.native_rows(source)
+    _, c8 = aux._hip_sign_e_process([2.0] * 20, 12.0)
+    assert c8 == 7  # derivation is data-driven, not pinned
+
+
+def test_hip_decision_never_crossing_or_pinned_crossing_is_refused():
+    # 8 wins then losses is fine, but a transcript with mostly losses never crosses
+    flips = set(range(0, 20, 2)) | {1, 3, 5, 7, 9, 11}
+    source, crossing = _hip_decision_with_speedups(flips)
+    assert crossing is None
+    with pytest.raises(ct.ProjectionError):
+        aux.native_rows(source)
+    # claimed crossing that does not rederive is refused
+    source, _ = _hip_decision_with_speedups(set())
+    source["timing"]["e_process"]["first_crossing_block"] = 8
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    with pytest.raises(ct.ProjectionError, match="rederive"):
+        aux.native_rows(source)
