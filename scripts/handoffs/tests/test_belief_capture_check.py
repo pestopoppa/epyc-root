@@ -54,7 +54,7 @@ class BeliefCaptureGateTest(unittest.TestCase):
         hook = self.repo / ".git" / "hooks" / "pre-commit"
         hook.write_text(
             "#!/bin/bash\nstatus=0\n"
-            f'python3 "{CHECKER}" --no-receipts || status=1\n'
+            f'python3 "{CHECKER}" --no-receipts --strict || status=1\n'
             'exit "$status"\n', encoding="utf-8")
         hook.chmod(0o755)
 
@@ -226,8 +226,60 @@ class BeliefCaptureGateTest(unittest.TestCase):
         git(self.repo, "commit", "-q", "--no-verify", "-am", "bad")
         r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts", "--commit", "HEAD"],
                            cwd=self.repo, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, "advisory by default: replay exits 0")
+        self.assertIn(f"{H}:4:", r.stderr)
+        self.assertIn("ADVISORY", r.stderr)
+        r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts", "--strict", "--commit", "HEAD"],
+                           cwd=self.repo, capture_output=True, text=True)
         self.assertEqual(r.returncode, 1)
         self.assertIn(f"{H}:4:", r.stderr)
+
+    # ---- advisory (operator 2026-11-03): same guidance, never refuses -------
+
+    def _advisory_hook(self):
+        hook = self.repo / ".git" / "hooks" / "pre-commit"
+        hook.write_text(
+            "#!/bin/bash\nstatus=0\n"
+            f'python3 "{CHECKER}" --no-receipts || true\n'
+            'exit "$status"\n', encoding="utf-8")
+        hook.chmod(0o755)
+
+    def test_advisory_hook_warns_with_same_guidance_but_commit_lands(self):
+        self._advisory_hook()
+        self.edit(H, "- [ ] **DEMO-1 — build the parity fixture.** 200 chunks, both roles.",
+                  "- [x] **DEMO-1 — build the parity fixture.** 200 chunks, both roles. ✅ 2026-11-02")
+        r = self.commit(H)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn(f"{H}:3:", r.stderr)
+        self.assertIn("[belief: clm_<id>]", r.stderr)
+        self.assertIn("ADVISORY", r.stderr)
+        self.assertNotIn("BLOCKED", r.stderr)
+
+    def test_advisory_checker_exits_zero_even_for_dropped_box_and_cannot_verify(self):
+        self.edit(H, "- [ ] **DEMO-2 — measure decode t/s on the champion.**\n", "")
+        git(self.repo, "add", H)
+        r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts"],
+                           cwd=self.repo, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0)
+        self.assertIn(f"{H}", r.stderr)
+        r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts", "--strict"],
+                           cwd=self.repo, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1)
+        r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts", "--commit", "deadbeef"],
+                           cwd=self.repo, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("cannot verify", r.stderr)
+        r = subprocess.run([sys.executable, str(CHECKER), "--no-receipts", "--strict", "--commit", "deadbeef"],
+                           cwd=self.repo, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 2)
+
+    def test_pre_commit_extras_line_is_advisory(self):
+        extras = (CHECKER.parents[2] / "scripts" / "hooks" / "pre-commit.extras").read_text(encoding="utf-8")
+        line = [l for l in extras.splitlines() if 'python3 "$_belief_checker"' in l]
+        self.assertEqual(len(line), 1)
+        self.assertIn("|| true", line[0])
+        self.assertNotIn("status=1", line[0])
+        self.assertNotIn("--strict", line[0])
 
 
 if __name__ == "__main__":

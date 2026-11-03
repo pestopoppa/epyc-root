@@ -382,10 +382,12 @@ in a prose block below:
   `native-pending:<VB-task>`.
 
 Design and the result-tick definition: `docs/design/committed-conclusions-belief-capture-2026-10-25.md` §7.
-The checker `scripts/handoffs/belief_capture_check.py` is BLOCKING in `scripts/hooks/pre-commit.extras`
-(LOOP-50, operator sign-off 2026-11-02). Every new tick needs one of the three tags on its item, and every
-dropped open box needs a re-add, `[moved: <path>]` or `[declined: <who> <YYYY-MM-DD> <reason>]`. A fold
-that moves boxes verbatim passes. The refusal names each line and the tag it needs. To preview the
+The checker `scripts/handoffs/belief_capture_check.py` is ADVISORY in `scripts/hooks/pre-commit.extras`
+(LOOP-50; blocking 2026-11-02, back to advisory by operator decision 2026-11-03): it warns and never
+refuses a commit (`--strict` refuses, manual use only). Every new tick should carry one of the three
+tags on its item, and every dropped open box a re-add, `[moved: <path>]` or
+`[declined: <who> <YYYY-MM-DD> <reason>]`. A fold that moves boxes verbatim passes. The warning names
+each line and the tag it needs; fix them before you commit. To preview the
 lane's committed half before you commit:
 
 ```bash

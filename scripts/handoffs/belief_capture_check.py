@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""LOOP-50: the tick/deletion science gate, BLOCKING in scripts/hooks/pre-commit.extras.
+"""LOOP-50: the tick/deletion science gate, ADVISORY in scripts/hooks/pre-commit.extras.
 
-Operator sign-off 2026-11-02 (decision tool, BRF-T5-2 fold-3 revision, LOOP-50 "A sign off
-(blocking)"). Spec and backtest: docs/reports/tick-science-audit-20261031.md. Tick contract:
+History: made blocking by operator sign-off 2026-11-02 (BRF-T5-2 fold-3 revision), put back to
+ADVISORY by operator decision 2026-11-03 (decision tool, relax LOOP-50 / T6-1): it prints the
+same file:line guidance but exits 0, so a commit is never refused. `--strict` restores the
+refusal (exit 1 on a violation, exit 2 when it cannot verify) for manual use. Spec and backtest: docs/reports/tick-science-audit-20261031.md. Tick contract:
 agents/shared/SESSION_LIFECYCLE.md -> "Two axioms" ("A result tick names its belief").
 
 What it reads: exactly the commit being made. In pre-commit, git has already set
@@ -10,7 +12,7 @@ GIT_INDEX_FILE to the index being recorded (a pathspec commit's temporary index,
 index, or a lane worktree's own index), so `git diff --cached HEAD -- handoffs/` is this
 commit's own handoff change and never another session's uncommitted work.
 
-What it refuses, each with the file, the line and the tag that line needs:
+What it flags (refuses only under --strict), each with the file, the line and the tag that line needs:
 
   T1  a NEW tick without a belief tag. A new tick is an added `[x]` line whose task is not
       already `[x]` in a removed line of the same commit: a `[ ]` -> `[x]` flip, or a task
@@ -29,7 +31,7 @@ What it refuses, each with the file, the line and the tag that line needs:
       folds and moves) nor replaces with a line naming it and carrying `[moved: <path>]` or
       `[declined: <who> <YYYY-MM-DD> <reason>]`.
 
-What it never refuses: a fold or move. Folds move boxes verbatim, so an added `[x]` whose
+What it never flags: a fold or move. Folds move boxes verbatim, so an added `[x]` whose
 task was `[x]` in a removed line is a move, not a tick, whatever tags it carries; and a
 removed `[ ]` re-added anywhere in the commit is restored. Editing an existing `[x]` line
 (adding evidence, adding the tag itself) is not a new tick either.
@@ -38,7 +40,8 @@ Merges: a line already present in ANY merge parent was judged when it was commit
 so only violations that are new against every parent are reported.
 
 Modes:
-  (default)          the staged commit (pre-commit).
+  (default)          the staged commit (pre-commit). Advisory: always exit 0.
+  --strict           exit 1 on a violation (2 if it cannot verify); manual use only.
   --range A..B       replay one committed range (audits).
   --commit SHA       replay one commit exactly as the hook would have judged it.
 """
@@ -420,6 +423,8 @@ def main() -> int:
     ap.add_argument("--commit", help="replay one commit exactly as the hook judged it")
     ap.add_argument("--receipts", type=Path, default=DEFAULT_RECEIPTS)
     ap.add_argument("--no-receipts", action="store_true", help="skip the host-local receipt rule (T6)")
+    ap.add_argument("--strict", action="store_true",
+                    help="refuse (exit 1 on a violation, 2 on cannot-verify); default is advisory, always exit 0")
     ap.add_argument("--report", action="store_true", help="print a one-line summary")
     args = ap.parse_args()
     try:
@@ -434,15 +439,17 @@ def main() -> int:
             errors = judge(repo, staged_parents(repo), None, receipts)
     except (OSError, RuntimeError) as exc:
         print(f"belief-capture: cannot verify: {exc}", file=sys.stderr)
-        return 2
+        return 2 if args.strict else 0
     for e in errors:
         print(f"belief-capture: {e}", file=sys.stderr)
     if errors:
-        print("belief-capture: BLOCKED (LOOP-50, operator 2026-11-02). Folds that move boxes verbatim pass; "
-              "see scripts/handoffs/belief_capture_check.py for the rules.", file=sys.stderr)
+        verdict = "BLOCKED (--strict)" if args.strict else "ADVISORY, commit not refused"
+        print(f"belief-capture: {verdict} (LOOP-50, advisory per operator 2026-11-03). Folds that move boxes "
+              "verbatim pass; see scripts/handoffs/belief_capture_check.py for the rules.", file=sys.stderr)
     if args.report:
-        print(f"belief-capture: {'blocked' if errors else 'clear'}; violations={len(errors)}")
-    return 1 if errors else 0
+        state = ("blocked" if args.strict else "advisory") if errors else "clear"
+        print(f"belief-capture: {state}; violations={len(errors)}")
+    return 1 if (errors and args.strict) else 0
 
 
 if __name__ == "__main__":
