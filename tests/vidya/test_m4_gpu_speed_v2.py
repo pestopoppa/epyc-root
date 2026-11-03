@@ -486,3 +486,11 @@ def test_prehashed_custody_binds_content_receipt_and_file_identity(tmp_path):
     out.write_text('{}')
     with pytest.raises(ProjectionError, match='receipt changed'):
         verify_plan_file(item)
+
+
+def test_residency_sampler_cadence_fits_subsecond_batches():
+    src_path = Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed/server_np_sweep.py'
+    src = src_path.read_text()
+    assert 'sample_stop.wait(RESIDENCY_SAMPLE_INTERVAL_S)' in src and 'sample_stop.wait(1.0)' not in src
+    import re
+    assert float(re.search(r'RESIDENCY_SAMPLE_INTERVAL_S = ([0-9.]+)', src).group(1)) <= 0.25

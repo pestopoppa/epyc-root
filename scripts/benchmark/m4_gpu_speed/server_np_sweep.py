@@ -795,6 +795,13 @@ def write_jsonl(path: Path, row: dict[str, Any]) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+# Own-PID residency cadence. A 1 s cadence let a sub-second request batch (a warm
+# 1-prompt/16-token qualification, 0.9 s) fall between two samples and fail the
+# in-batch requirement (inf22-m4-aa-np4-r7 publish smoke, 2026-11-03). Every sample
+# must still be valid and at least one must land inside the batch; only the density rises.
+RESIDENCY_SAMPLE_INTERVAL_S = 0.1
+
+
 def residency_paths(trust, plan_cell):
     """Qualification may use sealed synthetic fixtures or actual GPU sysfs.
 
@@ -933,7 +940,7 @@ def run_cell(
                 except (OSError, ValueError):
                     samples.append({'timestamp': utc_now(), 'pid': proc.pid, 'error': 'unreadable residency'})
                 sample_ready.set()
-                sample_stop.wait(1.0)
+                sample_stop.wait(RESIDENCY_SAMPLE_INTERVAL_S)
         sampler = threading.Thread(target=sample_residency, daemon=True)
         sampler.start()
         if not sample_ready.wait(5) or not samples or samples[0].get('own_vram_bytes',0) <= 0 or samples[0].get('device_vram_bytes',0) <= 0 or samples[0].get('kfd_process_count',0) < 1 or samples[0].get('own_vram_bytes',0) > vram_limit:
