@@ -597,6 +597,7 @@ _FILE_SOURCES = (
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
     "ufh13-thesis-measurement",
     "ak-actor-seat",
+    "ak-actor-wire",
     "ds41-1017-validation",
     "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
     "injection-fixture", "chunk-kv",

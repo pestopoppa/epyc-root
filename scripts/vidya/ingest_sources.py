@@ -622,6 +622,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "(timeout/signal) sessions decline; every tuple is an OBSERVATION (n=1, no "
                 "codified protocol)",
            task="VB-AK-SEAT"),
+    Source("ak-actor-wire", "autokernel_actor_wire",
+           _files("actor-wire-final.json", "**/actor-wire-final.json", "*.actor-wire-final.json"),
+           note="AutoKernel native actor-wire matrix finalization (epyc.autokernel.actor_wire_final.v1); "
+                "verifier findings: PASS/FAIL/aborted/unvisited verbatim, native-provider checks and mocked "
+                "controls separate; legacy actor-wire-pass.json / matrix-results.json decline",
+           task="VB-AK-NATIVE-WIRE-WRITE"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),
