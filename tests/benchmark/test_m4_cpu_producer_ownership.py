@@ -37,3 +37,30 @@ def test_actual_runner_pidfd_cleanup_in_real_cgroup(tmp_path):
     proof=json.loads(receipt.read_text())
     assert proof['completed'] and proof['dead'] and proof['birth'] > 0
     assert json.loads((out/'watch-result.json').read_text())['containment_empty']
+
+
+spec_owned=importlib.util.spec_from_file_location('m4_owned_test',OWNERSHIP/'owned.py')
+owned=importlib.util.module_from_spec(spec_owned);spec_owned.loader.exec_module(owned)
+
+
+def test_spawn_accepts_env_prefixed_argv_without_owned_cgroup(tmp_path):
+    # The sealed plan emits `env NAME=VALUE ... <cmd>`; a bare run has no M4_OWNED_CGROUP.
+    env={k:v for k,v in os.environ.items() if k!='M4_OWNED_CGROUP'}
+    registry=tmp_path/'server-pids.txt'
+    argv=['env','-u','M4_UNSET_ME','M4_ENV_PROBE=1','GGML_FA_SPLIT_KV=0',sys.executable,'-c',
+          'import os,sys; sys.exit(0 if os.environ.get("M4_ENV_PROBE")=="1" and "M4_UNSET_ME" not in os.environ else 3)']
+    child,fd,stamp=owned.spawn(argv,env=dict(env,M4_UNSET_ME='x'),registry=registry)
+    try:
+        assert child.wait(timeout=20)==0
+        assert registry.read_text().split()==[str(child.pid),str(stamp)]
+    finally:
+        owned.stop(child,fd,stamp); os.close(fd)
+
+
+def test_spawn_stop_by_pidfd(tmp_path):
+    child,fd,stamp=owned.spawn([sys.executable,'-c','import time;time.sleep(60)'],env=dict(os.environ))
+    try:
+        owned.stop(child,fd,stamp)
+        assert owned.exited(fd) and child.returncode is not None
+    finally:
+        os.close(fd)
