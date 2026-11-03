@@ -377008,3 +377008,817 @@
   integration_disposition: integrated
   disposition_evidence:
   - 'Stage 4 2026-11-02: task lines filed in handoffs/active/internal-kb-rag.md (tasks filed 2026-11-02 Stage 4 (operator approved)).'
+
+- id: intake-2622
+  arxiv_id: '2610.42147'
+  url: https://arxiv.org/abs/2610.42147
+  source_type: paper
+  title: 'Latent Sparse Attention: Towards Subquadratic Ultra-Long Context Attention'
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - D-LSA learns separate low-dimensional query/key index projections, with the base model frozen. The attention
+    itself still uses original Q/K/V over selected indices. It directly converts Qwen3.8-27B in this paper; Qwen3.6-35B-A3B
+    is not an evaluated model.
+  - 'Equation (1): k_idx=k_attn W_K; q_idx=sum_h q_attn,h W_Q; index vectors L2-normalized. All query heads share
+    one index list. Qwen3.8 indexing reads only the RoPE-free 75% of each head. PCA leading key directions initialize
+    both projections and also supply the training-free variant.'
+  - Equation (2) minimizes forward KL(A_teacher || A_indexer) over long-range eligible keys. Teacher softmax is
+    normalized per head then averaged. Actual training retains/renormalizes teacher top-2048 keys, while indexer
+    softmax spans all eligible keys. Per-layer temperature is calibrated before training and used only in distillation.
+  - Distillation uses 352M document tokens, documents 16k–1M, 48k steps with 128 sampled queries per document-step,
+    LR3e-4. Only projections and temperature train. No subsequent whole-model sparse fine-tuning was performed.
+    This is not evidence of full-model retraining being necessary.
+  - LongDocs covers seven domains. 13.1% of distillation tokens are in-house agent traces; public sources include
+    Common Pile releases, The Stack Python/Java repositories, and Open-SWE-Traces. Each sequence stays within one
+    document; 2% held out. The 1M length gets quadruple ordinary-length token allocation and ~one-third total mix.
+  - 'D-LSA Qwen settings: index dimension64; pool4; cluster block512; average bucket8/max16; long-range budget4096
+    plus4 sinks and512-token window; top1024 buckets. Ward merging stops at64 buckets per block. Selected buckets
+    expand into token indices without deleting the stored KV cache.'
+  - Only tree search gives the indexer O(T log T) prefill / O(log T) centroid scoring per query at constant beam.
+    Flat search remains asymptotically quadratic in prefill. Once constructed each cluster block is immutable. Tree
+    uses bottom-up bucket hierarchy and beam search.
+  - At 10M Qwen tokens D-LSA flat scores RULER63.9 vs full-attention59.9, PaperTrail29.1 vs19.8. This is authors’
+    task evidence beyond advertised model context, not proof of uniformly preserved reasoning or scientific-work
+    quality at10M.
+  - 'On GLM tree loses more accuracy beyond1M: RULER55.8 vs flat66.8 at10M. Training-free PCA remains close to distilled
+    flat on Qwen, but trails distilled flat on GLM.'
+  - The headline Qwen72.4x prefill/42.5x decode and GLM22.7x/4.6x compare a single global attention module on H200
+    at10M. Prefill times only the last32768-query chunk, decode one request-step with CUDA graph and amortized clustering.
+    They are not whole-model speedups.
+  - 'Qwen end-to-end H200 TP8+DCP8 at10M: flat TTFT9.21x and TPOT2.87x against full attention. Baseline4582.2s TTFT/32.1ms
+    TPOT. At512k flat TTFT1.03x/TPOT0.87x; at1M1.51x/1.00x. On B300 flat at512k0.68x/0.63x,1M0.96x/0.73x,10M5.73x/1.46x.
+    Ratios below1 are regressions.'
+  - Reported whole-model latencies are medians of3 requests, one request at a time,256 output tokens. Tree runs
+    flat search during single-request decode. Scaling beyond10M to100M is an extrapolation; tree prefill is predicted
+    to overtake flat only beyond10M.
+  - 'N-LSA is a separate native-training design: no index projections, one KV head, per-bucket score=max_h(normalized
+    q_h dot centroid), stop gradient through selection, NTP-only learning. It adds no parameters and uses no positional
+    encoding in evaluated models. It is not the conversion path for existing Qwen models.'
+  - N-LSA evidence is ~0.5B hybrid24 layers (6 attention,18 Gated DeltaNet),100B tokens at4k plus12B at128k. Flat
+    search only. At128k validation loss1.085 equals full attention, attention forward/backward1.6x, whole decay
+    phase1.24x, layer peak memory6.8GiB vs5.8GiB. Larger-model/tree training remains untested.
+  - LSA preserves the full KV cache, so storage still grows linearly with context. At10M GLM each CP8 rank holds1.25GiB
+    of the10GiB per-layer KV cache plus the complete246MiB bucket cache. Replicating the bucket cache trades memory
+    for communication.
+  - 'Evaluation uses subsets: MMLU-Pro2000, MATH500100, LongBench-v2 60, RULER100 prompts/task through1M then20/task
+    beyond. PaperTrail has3 domains,90 scored questions repeated3x, and fabricated trails embedded in recent scientific
+    papers. It is a controlled retrieval/linking benchmark, not observed autonomous scientific research.'
+  - PaperTrail10M contains some papers posted up to6 weeks before model release, while through5M papers postdate
+    both releases. Thus the main-text almost-all-unseen framing is defensible but absolute no-training-exposure
+    at10M is not established.
+  - Qwen10M evaluation changes context handling with YaRN factor40 (42 for PaperTrail). Such results combine sparse
+    attention and context extension; native context is not10M.
+  - The paper describes CuTe DSL kernels specifically for H200/B300 and a Triton implementation not tied to these
+    GPUs. This does not establish tested MI50/gfx906 correctness or speed. Such a backend is a build/validation
+    task, not a technical reason to decline the approach.
+  credibility_score: 1
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'All verified-source-report statuses mean the source makes the statement with inspectable anchors; no local
+    performance or correctness reproduction occurred.
+
+    Whole-model bottlenecks matter because Qwen is hybrid and only global-attention layers change; at ordinary context
+    the selector can cost more than it saves.
+
+    No paper GPU-hour estimate for D-LSA was located;352M tokens/48k sampled-query steps are not enough to infer
+    cost without extraction and teacher-forward details.
+
+    95% confidence intervals encompassing a difference are not a formal equivalence/noninferiority proof. Small
+    beyond1M RULER and custom PaperTrail sample sizes limit strong generalization claims.
+
+    There is a wording/detail risk in Ward description: normalized-sum-centroid merge cost in Algorithm1 is ||sum_b||+||sum_bprime||-||sum_union||.
+    Implement that algorithm rather than substituting a conventional unnormalized Euclidean Ward library blindly.
+
+    Do not conflate this Prefrontal Latent Sparse Attention with LongCat LSA (separate method in related work).'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S3.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 1
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S3.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 3
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 4
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#A3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 5
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 6
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S3.SS2
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 7
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS2
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 8
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS2
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 9
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 10
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 11
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 12
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S3.SS4
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 13
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS4
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 14
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S3.SS3
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 15
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#A5.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 16
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#A4
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 17
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#S4.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  - claim_index: 18
+    kind: file-hash
+    locator: https://arxiv.org/html/2610.42147v1#A6.SS1
+    source_revision: arXiv:2610.42147v1; 2026-10-30; CC BY 4.0
+    verified_by: research-intake/stage2
+    file_sha256: f0a2a628276df21c123d8564772cd40a1535e2e62853d1f49c012dff50d76a6b
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 5
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 6
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 7
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 8
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 9
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 10
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 11
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 12
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 13
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 14
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 15
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 16
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 17
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 18
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+- id: intake-2623
+  arxiv_id: null
+  url: https://github.com/Prefrontal-AI/latent-sparse-attention
+  source_type: repo
+  title: Latent Sparse Attention reference implementation
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - The released Qwen path preserves recurrent layers and changes global attention selection; its current integration
+    requires BF16 KV and refuses speculative decoding.
+  - Published Qwen3.8-27B PCA/distilled projection artifacts cover 16 full-attention layers; Qwen3.6 requires separate
+    model-specific projections.
+  credibility_score: null
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'PARTIAL source-tree read; source and release inspection, no runtime reproduction.
+
+    {"title": "Latent Sparse Attention repository: source dive and EPYC transplant feasibility", "url": "https://github.com/Prefrontal-AI/latent-sparse-attention",
+    "revision": "97b82d695b74ca341965a16bbc2a951c8b0c567a", "claims": [{"text": "D-LSA converts a frozen pretrained
+    model by learning only the selector maps; N-LSA is separate native pretraining, unnecessary to convert the two
+    EPYC target models.", "quote": "D-LSA learns its index space from a frozen model", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/README.md#L210",
+    "status": "CONFIRMED"}, {"text": "Actual Qwen38 map is 768 to 64, not 2048 latent dimensions; d2048 in filename
+    denotes strongest teacher target keys. Recipe is 48000 steps batch128 lr0.0003, 16k to1M docs.", "quote": "index_dim:
+    64", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/configs/training/distillation/qwen38_27b/long_16k_1m_heavy_key_and_query_d2048.yaml#L26",
+    "status": "CONFIRMED"}, {"text": "Indexer uses 192 unrotated dims of each256dim KV head, concatenates4 KV heads,
+    sums6 query heads per group; normalized learned projections produce one selection shared by all heads.", "quote":
+    "each group\u2019s query heads summed", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/models/qwen3_5/index_space.py#L3",
+    "status": "CONFIRMED"}, {"text": "Flat algorithm pools4 consecutive keys, Ward clusters512-token blocks into
+    average8-key buckets cap16, scans normalized centroids, selects1024 buckets then4096 long-range keys plus512window
+    and4sinks by defaults. Flat prefill remains quadratic, lower constant; tree supplies subquadratic indexing.",
+    "quote": "top_k: int = 4096", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/settings/design.py#L172",
+    "status": "CONFIRMED"}, {"text": "Ward is deterministic mutual-cheapest spherical alignment-loss merging with
+    hard bucket capacity, rather than generic kmeans, and open partial block stays covered by window.", "quote":
+    "There is no seed and no assignment pass", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/core/ward.py#L3",
+    "status": "CONFIRMED"}, {"text": "Exact deterministic flat oracle in torch is CPU-correct, suitable as correctness
+    reference; it is not an optimized EPYC serving implementation.", "quote": "correct on a CPU", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/core/reference.py#L1",
+    "status": "CONFIRMED"}, {"text": "LSA selects arbitrary original KV slots and still stores full original KV.
+    Its sparse attention read does not compress or evict the KV cache.", "quote": "page_table=lists.clamp(min=0)",
+    "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/models/qwen3_5/backend.py#L445",
+    "status": "CONFIRMED"}, {"text": "Qwen serving path explicitly refuses speculative decoding, KV dtype other
+    than bf16, attention data parallel, prefill context parallel, page_size other than1, translated slots; DCP must
+    be1 or full TP. These are implementation gaps to port, not theoretical inapplicability.", "quote": "Qwen under
+    LSA serves without speculative decoding", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/models/qwen3_5/backend.py#L298",
+    "status": "CONFIRMED"}, {"text": "Non-bf16 KV rejection is real code, not only doc prose. Quantized-weight and
+    KV transfer need quantization-aware conformance; upstream accuracy is bf16.", "quote": "if buffer.dtype != torch.bfloat16:",
+    "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/models/qwen3_5/backend.py#L130",
+    "status": "CONFIRMED"}, {"text": "Prefill selects on host and must disable prefill CUDA graph; decode captured
+    path remains present.", "quote": "LSA selects a prefill on the host", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/sglang/models/qwen3_5/backend.py#L809",
+    "status": "CONFIRMED"}, {"text": "NVIDIA-first pins do not prove ROCm runnable: Python3.12 torch2.13 cu129 and
+    mandatory nvidia-cutlass-dsl4.6.2; training extras include CUDA FA3/FA2 wheels and causal-conv1d.", "quote":
+    "nvidia-cutlass-dsl==4.6.2", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/pyproject.toml#L17",
+    "status": "CONFIRMED"}, {"text": "CuTe backend checked only H200/B300. Triton fallback exists for each read
+    step, but claims of any GPU are not MI210/gfx90a validation. Need AMD math/reduction/selection equivalence and
+    perf tests.", "quote": "HOPPER = (9, 0)", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/core/kernels/dispatch.py#L39",
+    "status": "CONFIRMED"}, {"text": "Qwen36 teacher adapter is not ready: automatic model_type lookup registers
+    qwen3_5 only; adapter loader hardcodes dense Qwen3_5ForConditionalGeneration. Add/register Moe-aware equivalent
+    preserving query-gate split and qk norm. Serving geometry itself is config-driven and can represent Qwen36.",
+    "quote": "register(\"qwen3_5\", Qwen35Adapter())", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/src/lsa/evaluation/adapter/__init__.py#L225",
+    "status": "CONFIRMED"}, {"text": "Qwen38 README speedups72.4prefill42.5decode are single-layer H200 at10M, not
+    EPYC serving or total-model gains. Paper single-layer prefill last32768query chunk; decode1request CUDAgraph
+    amortized clustering. End-to-end9.2TTFT2.9TPOT at10M onTP8/DCP8 H200.", "quote": "one attention layer", "locator":
+    "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/README.md#L20",
+    "status": "CONFIRMED"}, {"text": "Code Apache2.0; bundled NSA kernels carry MIT notice; datasets retain own
+    licenses. PaperTrail kit CC BY4.0. Do not assume code license relicenses model or corpus.", "quote": "Copyright
+    2026 Prefrontal AI", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/LICENSE#L189",
+    "status": "CONFIRMED"}, {"text": "CPU dense equivalence, causality, decode/prefill identity and Qwen geometry/sharding
+    plus GPU sparse-read tests exist; no tests were executed in this inspection because local Python has no torch.
+    Tests existence is not target validation.", "quote": "test_full_budget_reproduces_dense_attention", "locator":
+    "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/tests/unit/core/test_attention.py#L39",
+    "status": "CONFIRMED"}, {"text": "Training-free PCA map still fits statistics on8documents and is not zero-calibration.
+    Use released PCA as practical cheap screen/control.", "quote": "fitted on the eight documents", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/configs/evaluation/accuracy/qwen38_27b/lsa_flat_pca_tp1.yaml#L5",
+    "status": "CONFIRMED"}, {"text": "Some models guide prose is stale: says serving GLM only whereas Qwen backend
+    and released tests implement Qwen38. Prefer actual code/test/config over that prose.", "quote": "Serving is
+    sglang with the plugin", "locator": "https://github.com/Prefrontal-AI/latent-sparse-attention/blob/97b82d695b74ca341965a16bbc2a951c8b0c567a/docs/guide/models.md#L10",
+    "status": "OVERTURNED"}], "read_depth": {"scope": "Read README/model/training/adapter/development guides and
+    relevant full core reference,Ward,index geometry, projection/training objective, settings, weight loader, Qwen
+    serving hooks; inspected selector kernels/training CUDA architecture assumptions, Qwen/base configs and correctness
+    tests. Read pinned production llama.cpp graphattention/Qwen implementation read-only. Supplemented paper second-read
+    mechanism/timing methods. Did not read every1,135 repository file or all vendor kernel lines.", "tests": "Static
+    inspection only. Python3 torch absent; no code/kernel/test execution or EPYC/MI210 performance measurement.
+    Verified live release downloads and SHA256s, safely inspected torchZIPpickle opcodes (no unpickle).", "source_files_local":
+    "/tmp/latent-sparse-attention-inspect", "current_consumer_evidence": {"llama_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "qwen_attention": "src/models/qwen35.cpp:265-329 qkgate,norm,RoPE,build_attn; outputgate afterattention", "attention_api":
+    "ggml/include/ggml.h:2443-2451 q,k,v,mask only; no explicit selected-index input", "dsa_prior": "src/llama-graph.cpp:2972-3002
+    existingDSA builds fullKVmask and passes existingattention; must measure skip behavior, cannot assume sparse
+    read based on mask", "runtime_registry": "orchestration/model_registry.yaml:3205-3212 current27BDFlash2 recipe;
+    Qwen36MTP at3237+"}}, "release_artifacts": {"tag": "d-lsa-weights-v1", "published_at": "2026-11-02T13:13:01Z",
+    "api": "https://api.github.com/repos/Prefrontal-AI/latent-sparse-attention/releases/tags/d-lsa-weights-v1",
+    "distilled": {"name": "qwen38_27b__long-16k-1M-heavy-key-and-query-d2048.pt", "bytes": 6302911, "sha256": "24cee934f969756db228a8df7f2bc7613979b63ac3b1d5ac3d9aa42e4339bb9b",
+    "downloaded_sha_match": true}, "pca": {"name": "qwen38_27b__long-16k-1M-heavy-key-and-query-pca-step0.pt", "bytes":
+    6303063, "sha256": "baaa28cb00b4378b3d33e02dc971e2781482d5c4d45e29e9140143bdf7832e65", "downloaded_sha_match":
+    true}, "shape": "32projection tensor records, layers3,7,...63,W_Q_idx/W_K_idx each768x64; ZIPrawstorage consistentFP32",
+    "qwen36_map": "No asset in release; custommaps necessary", "licensing": "RepoApache2.0. Releasebody only names
+    maps, no distinctlicense displayed; retain modellicense and data obligations."}, "actionables": [{"id": "repo-A1",
+    "title": "Freeze artifact and selector conformance screen for Qwen38", "disposition": "immediate_candidate",
+    "outcome": "Decide whether released distilled/PCA maps retain useful attention and task quality at production
+    rotation, Q8weights/Q8KV, before a long port.", "implementation": "Import checksum-pinned768x64 maps; dump actual
+    full-attention normalized q/k and dense distributions from isolated experimental kernel; run scalar/torch reference
+    Ward+flat selection offline. Preserve Qnorm, group sums, rotary prefix and original output gate.", "controls":
+    "Frozen prompt/token/model/map/rotation/quant manifest; same current dense baseline; budget-matched oracle topk
+    and positional/window controls plus PCA; per-item outputs and attention mass/top16recall; held-out documents
+    not PCA fit set; invalid/failure/abstention denominator and predeclared stop/promotion. Smallest lengths8k32k128k
+    plus actual production long-context window; no10M requirement.", "estimate": "Engineering estimate1-3persondays
+    for dump/conformance after reusable capture access; not measured."}, {"id": "repo-A2", "title": "EPYC C++ flat
+    selector plus actual sparse gathered read", "disposition": "immediate_candidate_after_A1", "outcome": "Reduce
+    full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against
+    current MTP baseline.", "implementation": "In fresh experimental production-derived llama.cpp add immutable
+    map sidecar/metadata loader; per-layer per-sequence closed-block Ward/index state; SIMD64d centroid scan/topP;
+    selected-index GQA read dequantizes only chosen KV rows; dense fallback for short context/unsupported mode.
+    Existing ggml_flash_attn_ext exposesmask, not indexlist; current DSA mask construction alone is not proof of
+    sparse memory behavior.", "estimate": "Engineering estimate5-10persondays correctness prototype, additional1-2weeks
+    CPU optimization/runtime hardening. Depends on graph/state lifecycle complexity; no throughput prediction."},
+    {"id": "repo-A3", "title": "MI210 Triton baseline or native HIP indexed-attention path", "disposition": "immediate_candidate_after_A1",
+    "outcome": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture
+    optimizations.", "implementation": "Use kernels:triton with ROCm torch environment decoupled from CUDA wheels/CuTe
+    deps, bf16 centroids and IEEE Ward precision; validate scan/ties/overflow/fallbacks; provide SGLang Triton or
+    ggml HIP arbitrary-index sparse read. For native service use wave64/MFMA kernels preserving full-KV layout and
+    selected-only dequantization. Do not hipify HopperWGMMA/TMA instructions literally.", "estimate": "Engineering
+    estimate3-7persondays isolated ROCm functional kernel baseline if toolchain compiles; native HIP end-to-end1-3weeks
+    plus optimization. Estimates carry high uncertainty; MI210 not executed."}, {"id": "repo-A4", "title": "Qwen36
+    own calibration/maps and MoE-aware teacher adapter", "disposition": "immediate_candidate", "outcome": "Determine
+    same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.", "implementation":
+    "Pin official config995ad96eacd98c81ed38be0c5b274b04031597b0; register/load Qwen3_5Moe conditional generator;
+    preservepacked query-gate andQKnorm, bottom-right chunk causality; index10full layers3..39 using2*192=384input
+    dims. Fit64PCA first; distill layer-specific384x64Wq/Wk only if heldout/PCA probe warrants. Qwen38maps are shape-incompatible
+    and must not be reused.", "estimate": "Engineering estimate1-3persondays adapter/PCA plumbing; distilled teacher
+    generation runtime unknown and must be measured at bounded16k-128k first. Full published recipe is not a prerequisite."},
+    {"id": "repo-A5", "title": "Preserve speculative verification and KV lifecycle", "disposition": "immediate_candidate_before_activation",
+    "outcome": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache
+    corruption or draft rejection regressions.", "implementation": "Implement causal selection for multi-token verify,
+    staged index additions and rollback/truncation, shared-prefix branching, slot reuse/context shift, concurrentnp1/np4
+    and rejected drafts. Verify densefull-budget equivalence and replay correct accepted-prefix states. Compare
+    against current full baseline with speculation ON and include draft acceptancerate, not nonspec baseline only.",
+    "estimate": "Engineering estimate3-8persondays beyond base prototype, tightly coupled with existing runtime
+    APIs. No authorization to disable production DFlash2 inferred."}, {"id": "repo-A6", "title": "Tree hierarchy
+    and100M extrapolation", "disposition": "monitor", "outcome": "Only build hierarchy if measured flat selector
+    dominates at actual context/concurrency or context objective expands.", "trigger": "Flat scan becomes material
+    bottleneck after sparse read is effective, or user chooses ultra-long multi-million context; paper tree decode
+    wins only at verylong1request and can lose taskquality. Usebf16nodes ongfx90a initially; paperFP8node optimization
+    needs separate numerical andhardware support proof.", "estimate": "Engineering estimateadditional1-2weeks optimized
+    tree lifecycle; no immediate benefit established."}, {"id": "repo-A7", "title": "Native N-LSA from-scratch training",
+    "disposition": "monitor", "outcome": "Keep distinct from retrofit; only relevant if EPYC chooses to train an
+    attention architecture.", "trigger": "An explicit native-model training objective or failure of frozen-map retrofit
+    that warrants model training; paper100Bpretrain+12Bdecay not required for D-LSA."}, {"id": "repo-A8", "title":
+    "Claim provenance and belief wiring", "disposition": "immediate_candidate_with_measurement_producer", "outcome":
+    "Any port screen emits native run artifacts and source adapter registration so observed results can enter current
+    decision loop.", "implementation": "Reuse existing experimental probe/evaluator and measurement contracts; add
+    source table row and belief-substrate task at producer creation, not after. Parent owning session applies handoff/index
+    changes after required approved plan."}], "expansions": [{"url": "https://github.com/Prefrontal-AI/sglang/tree/042d955ba31b962911f63b114c2fb245effa86f2",
+    "status": "dive-verified-scope-limited", "recommendation": "required serving dependency or architectural reference
+    for transplant", "evidence": "Exacttaglsa-v0.1.0 resolved via ls-remote; read docker/enrootbuild.sh, fetched
+    pinnedrocmDockerfile, Qwenmodel andTrdecode source. Qwenfile supportsdense+MoE andHIP/CPU paths; no LSA-onMI210test
+    evidence. Docker/enroot documentedCUDA13.0.3 image. FrameworkAMDhooks do not proveLSA port works."}, {"url":
+    "https://github.com/Prefrontal-AI/latent-sparse-attention/releases/tag/d-lsa-weights-v1", "status": "dive-verified",
+    "recommendation": "usepinnedmaps in smallestQwen38probe", "evidence": "APIinventory plus twoactualdownloads
+    checksumvalidated"}, {"url": "https://huggingface.co/Qwen/Qwen3.8-27b/tree/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "status": "dive-verified-config-only", "recommendation": "exactupstreammodel identity; primarypaperagent handlesmodelcard",
+    "evidence": "Officialconfig64layers16full,24Q4KV256dim,25%RoPE; revisionmatchesrepoassetcard"}, {"url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B/tree/995ad96eacd98c81ed38be0c5b274b04031597b0",
+    "status": "dive-verified-config-only", "recommendation": "customteacher/PCApath for384diminput10full layers",
+    "evidence": "Officialconfigqwen3_5_moe,40layers,16Q2KV256dim,25%RoPE; ownmapsrequired"}], "gaps": ["No EPYCoptimizedimplementation
+    or gfx90a tests/benchmarks in inspected release.", "Upstreammaps distilled under YaRN40 even at shortcontext;
+    localrotationandGGUFquantization transfer accuracy unmeasured.", "NoQwen36map orMoe-aware teacherloader registration.",
+    "Speculation,quantizedKV andruntimecachelifecycle require engineering.", "10M timing does not establish ROI
+    at deployed context; fullKV remainsresidency limit.", "Native checkpoints trained by originalpapertrainer not
+    shipped; currenttrainer reloads mappedtensors; do not claim exacttrainingreproduction."], "summary": "D-LSA
+    retrofit is architecturally feasible for both targets with frozenweights, strongerreadyartifact case forQwen38.
+    Missingports are concretebuildcosts. Recommendflat/PCA/distilledconformance andindexedread prototype, preserveDFlash2/MTP,
+    optimizeonlyafterheldoutquality+endtoend gain. No productionmodifications made."}'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: src/lsa/sglang/models/qwen3_5/backend.py:125-134,265-305
+    source_revision: 97b82d695b74ca341965a16bbc2a951c8b0c567a
+    verified_by: research-intake/stage2
+    file_sha256: 227874534395d818f2c3beae58e821746bbd6da8d0bb4bf1909d76b3e4ef31d1
+  - claim_index: 1
+    kind: file-hash
+    locator: README.md:210-230; release d-lsa-weights-v1; safe artifact ZIP/pickletools inspection
+    source_revision: 97b82d695b74ca341965a16bbc2a951c8b0c567a
+    verified_by: research-intake/stage2
+    file_sha256: 227874534395d818f2c3beae58e821746bbd6da8d0bb4bf1909d76b3e4ef31d1
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+- id: intake-2624
+  arxiv_id: '2410.13276'
+  url: https://arxiv.org/abs/2410.13276
+  source_type: paper
+  title: 'SeerAttention: Learning Intrinsic Sparse Attention in Your LLMs'
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - Learns pooled block attention gates through frozen-model self-distillation. Gate ground truth uses customized
+    FlashAttention max-pooling rather than materializing dense attention maps.
+  - 'Reported gate recipe: RedPajama64k chunks,500 steps, batch16, LR1e-3 cosine,40 A100 hours. This is a separate
+    method/model recipe, not a cost estimate for D-LSA.'
+  - Appendix A.2 initializes gates through self-distillation before whole-model YaRN fine-tuning with cross-entropy
+    plus gate loss.
+  credibility_score: 1
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
+    reproduced
+
+    Concrete cheaper gate-only conversion precedent and optional continued-training fallback; blocks differ from
+    LSA semantic clusters.'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  expanded_from: intake-2622
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: https://arxiv.org/html/2410.13276v4#S3.SS2
+    source_revision: 2410.13276v4
+    verified_by: research-intake/stage2
+    file_sha256: 8d8a4f381d77fe3fd6e89db2f9e35c021e8d9e892e96d71abd8854880fce3aba
+  - claim_index: 1
+    kind: file-hash
+    locator: https://arxiv.org/html/2410.13276v4#S4.SS0.SSS0.Px2
+    source_revision: 2410.13276v4
+    verified_by: research-intake/stage2
+    file_sha256: 8d8a4f381d77fe3fd6e89db2f9e35c021e8d9e892e96d71abd8854880fce3aba
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2410.13276v4#A1.SS2
+    source_revision: 2410.13276v4
+    verified_by: research-intake/stage2
+    file_sha256: 8d8a4f381d77fe3fd6e89db2f9e35c021e8d9e892e96d71abd8854880fce3aba
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+- id: intake-2625
+  arxiv_id: '2412.14468'
+  url: https://arxiv.org/abs/2412.14468
+  source_type: paper
+  title: 'HashAttention: Semantic Sparsity for Faster Inference'
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - Independent learned Q and KV mappings produce32-bit Hamming signatures; bitwise scores still scan cached token
+    signatures before sparse token attention.
+  - Training labels use high isolated-token contribution accounting for attention weight and value magnitude, rather
+    than D-LSA averaged-attention KL. Uses classification/BCE and top64 labels.
+  - Quality evaluation distinguishes generic training (up to16x token reduction) from task-specific tuning (up to32x).
+    CPU-resident cache/ultra-long offloading not evaluated.
+  credibility_score: 1
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
+    reproduced
+
+    Alternative low-memory semantic index baseline; useful when full learned float-centroid scanning dominates,
+    but not established subquadratic or offload solution.'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  expanded_from: intake-2622
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: https://arxiv.org/html/2412.14468v2#S4.SS1
+    source_revision: 2412.14468v2; 2025-06-03
+    verified_by: research-intake/stage2
+    file_sha256: 837ca31efab5c49d9b79796a857cbcd23a78296860f7d53a1b30c4819e5b5234
+  - claim_index: 1
+    kind: file-hash
+    locator: https://arxiv.org/html/2412.14468v2#S4.SS2
+    source_revision: 2412.14468v2; 2025-06-03
+    verified_by: research-intake/stage2
+    file_sha256: 837ca31efab5c49d9b79796a857cbcd23a78296860f7d53a1b30c4819e5b5234
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2412.14468v2#S5.SS1
+    source_revision: 2412.14468v2; 2025-06-03
+    verified_by: research-intake/stage2
+    file_sha256: 837ca31efab5c49d9b79796a857cbcd23a78296860f7d53a1b30c4819e5b5234
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+- id: intake-2626
+  arxiv_id: '2509.24663'
+  url: https://arxiv.org/abs/2509.24663
+  source_type: paper
+  title: 'InfLLM-V2: Dense-Sparse Switchable Attention for Seamless Short-to-Long Adaptation'
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - Reuses dense QKV with no new trainable parameters; unions selected and local blocks into single attention output
+    and drops compressed-attention output. Parameter-free multistage pooling selects blocks.
+  - Trains8B standard GQA model with32 query heads/2 KV heads, head dimension128; long-sequence fine-tuning5B tokens
+    across0–32k with four balanced length bands.
+  - Dense/sparse mode can switch by length to avoid selector overhead. Official recipe has GQA group16; Qwen38/36
+    groups6/8 differ and require adaptation.
+  credibility_score: 1
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
+    reproduced
+
+    Decision-relevant comparator for dense fallback and no-new-parameter conversion. Still needs continued training,
+    unlike released D-LSA frozen-base adapters.'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  expanded_from: intake-2622
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: https://arxiv.org/html/2509.24663v1#S3.SS2
+    source_revision: 2509.24663v1; 2025-09-29
+    verified_by: research-intake/stage2
+    file_sha256: 479381f960be60b2984099f6a3f994d681de137dcddc06e1c9d8eebfc700482f
+  - claim_index: 1
+    kind: file-hash
+    locator: https://arxiv.org/html/2509.24663v1#S3.SS3
+    source_revision: 2509.24663v1; 2025-09-29
+    verified_by: research-intake/stage2
+    file_sha256: 479381f960be60b2984099f6a3f994d681de137dcddc06e1c9d8eebfc700482f
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2509.24663v1#S3.SS4
+    source_revision: 2509.24663v1; 2025-09-29
+    verified_by: research-intake/stage2
+    file_sha256: 479381f960be60b2984099f6a3f994d681de137dcddc06e1c9d8eebfc700482f
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+- id: intake-2627
+  arxiv_id: '2502.13189'
+  url: https://arxiv.org/abs/2502.13189
+  source_type: paper
+  title: 'MoBA: Mixture of Block Attention for Long-Context LLMs'
+  categories:
+  - kv_cache
+  - context_extension
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-03'
+  key_claims:
+  - Parameter-free mean-key block gate chooses top blocks and attends within them; dense/sparse layer modes can
+    change during training.
+  - Reported Llama3.1-8B continuation grows128k→256k→512k→1M; after1M continuation MoBA active100B tokens, block4096/top12.
+    No evidence this cost is needed for D-LSA.
+  - MoBA/full training and layer hybrids control sparse-training fidelity;10M is performance scaling evidence with
+    block-size changes, not10M task accuracy proof.
+  credibility_score: 1
+  contradicting_evidence:
+  - Bounded current search found relays of the same author results, not independent replication. Paper Table 3 itself
+    shows shorter-context latency regressions; NVIDIA measurements do not establish CPU or MI210 benefit.
+  cross_references:
+    intake_entries:
+    - intake-1841
+    - intake-506
+    - intake-2129
+    handoffs:
+    - long-context-program.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Targeted deep read of method, conversion/training recipe and experiments at listed anchors; not independently
+    reproduced
+
+    Bounds engineering/training tradeoff: a structurally simple block baseline may be easy to port but can hide
+    isolated keys and require expensive recovery training.'
+  recommended_actions:
+  - See research/deep-dives/lsa-20261103/PLAN.md; no implementation or deployment approved.
+  expanded_from: intake-2622
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: https://arxiv.org/html/2502.13189v1#S2.SS2
+    source_revision: 2502.13189v1; 2025-02-18
+    verified_by: research-intake/stage2
+    file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
+  - claim_index: 1
+    kind: file-hash
+    locator: https://arxiv.org/html/2502.13189v1#S3.SS2
+    source_revision: 2502.13189v1; 2025-02-18
+    verified_by: research-intake/stage2
+    file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
+  - claim_index: 2
+    kind: file-hash
+    locator: https://arxiv.org/html/2502.13189v1#S3.SS3
+    source_revision: 2502.13189v1; 2025-02-18
+    verified_by: research-intake/stage2
+    file_sha256: a81e30ebfbac52d1ea197f07efad6d2b342a09e0f103e251297c88f36d15942e
+  dive_corrections: '2026-11-03: Primary-source read confirms these scoped source reports; no local quality or speed
+    reproduction. Headline attention-layer gains must not be presented as end-to-end gains. Read scope and omitted
+    evidence recorded in notes.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as a scoped primary-source report, not independently reproduced.
