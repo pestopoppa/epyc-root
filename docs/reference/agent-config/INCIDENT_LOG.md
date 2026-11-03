@@ -425,7 +425,7 @@ enable was recorded as "runtime-only" (REPL-EMB-4.4), but `POST /config` persist
 `orchestration/runtime_flags.json`, and every API start reads that file back. After the host reboot and the
 2026-10-03 stack restart, the flag came back ON, against the REPL-EMB-2.1 kill rule's OFF default. workspace-ec caught
 it and reset it (record stamped 03:51:31Z). Rule fed: an experiment-arm flag enable carries an expiry or an explicit
-restore step (`handoffs/active/repl-embedding-retrieval.md` REPL-EMB-4.5).
+restore step (`handoffs/active/harness-program.md` REPL-EMB-4.5).
 
 ## INC-20261003-dflash2-ruling-never-compiled
 On 2026-10-01 the operator found production :8083 (Qwen3.8-27B) serving `--spec-type draft-mtp`, five weeks after

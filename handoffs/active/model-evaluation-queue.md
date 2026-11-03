@@ -1335,7 +1335,7 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 - [ ] **TD-23.D1 — Prepare d1-2B as TD-23's local compact decision backend, behind parity and batch-invariance gates (intake-2582#record, intake-2581#record, intake-2593#record, intake-2595#record, intake-2602#record).** Build a scratch upstream llama-server on llama.cpp-experimental from a fresh production tip that contains the /v1/systemone endpoint (PR 29818, merge a4cb4c61) as a measurement instrument, not a port onto v10; include the non-causal ubatch fix (PR 30408) only if the screened model is non-causal; read the LFM Open License v1.0 first. Before any quality number: (1) parity gate, the same d1-2B GGUF at BF16 and Q8_0 on CPU and on HIP, stop on any argmax flip or a worst probability difference above 2.2e-2; (2) batch-invariance gate, request alone at np 1 versus the same request co-batched at np 3 with shorter, longer and identical companions and across two batch cuts, threshold 1e-3. Run the screen at np 1 per decision server until an upstream hybrid-prefix fix lands, and pin np, n_batch and n_ubatch in the receipt. Only choice, score and noul answers are served. When CJ-15 and HS-TD-4 exist, d1-2B Q8_0 is the TD-23 local backend arm against the constrained incumbent on the sealed row-pinned workload.
 
 ## Track: meq-carve-routing-intelligence
-<!-- gate: UFH-14 -->
+<!-- gate: UFH-01#agentic-serving-harness-fixes -->
 
 > Carved from `handoffs/active/routing-intelligence.md` (in `routing-intelligence.md`, row RTG-30) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
@@ -1425,6 +1425,6 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 ## Track: meq-carve-repl-turn-efficiency
 <!-- gate: none -->
 
-> Carved from `handoffs/active/repl-turn-efficiency.md` (in `repl-turn-efficiency.md`, row EVL-37) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+> Carved from `handoffs/active/harness-program.md` (in `repl-turn-efficiency.md`, row EVL-37) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
 - [ ] Add the intake-537 **open-source-hardened RLM system prompt** (tuned on Minimax-M2.7 / GLM-5.1 — the only RLM prompt in the corpus tuned for open-weight drivers) as a third A/B arm beside the promoted SkyRL child prompt. Its distinctive lever is a **verbatim-slice return** instruction that suppresses sub-agent decode.

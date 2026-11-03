@@ -152,13 +152,13 @@ Sources: [Speculative decoding and MTP refresh](../handoffs/active/speculative-d
   - The backend-sampling A/B half stays open ([dflash2-block-drafter-experimental-build](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build)).
 - **Correction to sweep 15's "the frontdoor runs an eager turn-1 grammar".** That is the intended path. On orchestrator code from `517e24d4` to `a498ffba`, no turn-1 grammar applied at all: a function-local `import os` made the `os.environ.get` raise, and a blanket `except` swallowed it (UFH14-LB3.2).
   - The live API ran neither build, so production is unaffected.
-  - The 4-arm run (`off`, `legacy`, `call`, `lazy-legacy`) on fixed code is armed for 2026-10-23 and answers GRAM-LAZY-1 step (2) and UFH14-LB3.1b together ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh), [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md)).
+  - The 4-arm run (`off`, `legacy`, `call`, `lazy-legacy`) on fixed code is armed for 2026-10-23 and answers GRAM-LAZY-1 step (2) and UFH14-LB3.1b together ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh), [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
 
 ### Source References (2026-10-23 wrap-up sweep 17)
 
 - [dflash2-block-drafter-experimental-build](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) (DF2-LB1 census)
 - [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (GRAM-LAZY-1 caveat)
-- [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB3.2, UFH14-LB3.1b)
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.2, UFH14-LB3.1b)
 - [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 

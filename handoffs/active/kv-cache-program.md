@@ -28,7 +28,7 @@ prefill budget), RTG-27 [`prompt-construction-determinism.md`](eval-tower-progra
 prompts, load-bearing for P2), INF-65 [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (the
 ONE champion and the v11 candidate gate)
 **Related**: INF-05 [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-1/2/3/6 (the
-orchestrator prefix-cache rows), [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md) UFH14-B4
+orchestrator prefix-cache rows), [`agentic-serving-harness-fixes.md`](harness-program.md#track-agentic-serving-harness-fixes) UFH14-B4
 (`id_slot` pinning made opt-in), [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) (VB-KVU-*)
 
 ## Track: kv-prefix-fork-and-paged-attention
@@ -3171,7 +3171,7 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   "a 15.6k conversation with three others parked generates at the speed of a 62k one" on V100
   (`intake-1849#02`). Those are other GPUs and are not MI210 expectations. The loss, if any, is independent of
   drafter acceptance, so it must be measured before 25–30 tok/s agentic decode is blamed on DFlash2 (UFH14-A2
-  in [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md)). A loss of 5% or more triggers
+  in [`agentic-serving-harness-fixes.md`](harness-program.md#track-agentic-serving-harness-fixes)). A loss of 5% or more triggers
   KVU-19. Carry the belief-kernel write-side hook from the first cell.
   - ✅ 2026-10-03 — **both triggers MET.** Report `/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`; native records `a1.json`, `a0.json`, `b.json`,
     `p3_result.json`. MI210, v10 `ffc1bac82` kernel store, Qwen3.8-27B Q8_0 + DFlash2, :8083 production argv (pool 393216).

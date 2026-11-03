@@ -1235,7 +1235,7 @@ The frozen 510-pair JEV-as-a-Judge replay reached 92.5% versus 93.1% for GPT-6 A
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - [Decision-aware routing](../handoffs/active/routing-program.md)
 - [Canonical judge-suite revamp](../handoffs/active/benchmark-suites.md)
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md)
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 
 **Confidence:** verified for the offline replay record and host-side repository contracts; inferred for vendor architecture and performance claims that lack independent live reproduction.

@@ -12,6 +12,10 @@
    "target": "benchmark-suites.md",
    "track": "agent-world-env-synthesis"
   },
+  "agentic-serving-harness-fixes.md": {
+   "target": "harness-program.md",
+   "track": "agentic-serving-harness-fixes"
+  },
   "amd-ai-lab-website-publication.md": {
    "target": "engineering-hygiene-backlog.md",
    "track": "amd-ai-lab-website-publication"
@@ -240,6 +244,14 @@
    "target": "coordination-and-churn-pipeline.md",
    "track": "handoff-index-and-backlog-graph"
   },
+  "harness-improvement-loop.md": {
+   "target": "harness-program.md",
+   "track": "harness-improvement-loop"
+  },
+  "harness-selection-and-integration.md": {
+   "target": "harness-program.md",
+   "track": "harness-selection-and-integration"
+  },
   "heterogeneous-slot-fabric-residency.md": {
    "target": "kv-cache-program.md",
    "track": "heterogeneous-slot-fabric-residency"
@@ -390,7 +402,7 @@
    "track": "objective-task-rate-goodput"
   },
   "opencode-shell-integration.md": {
-   "target": "harness-improvement-loop.md",
+   "target": "harness-program.md",
    "track": "opencode-shell-integration"
   },
   "opendataloader-pipeline-integration.md": {
@@ -414,7 +426,7 @@
    "track": "promptforge-mutation-safety-contract"
   },
   "qwen-chat-template-evaluation.md": {
-   "target": "repl-turn-efficiency.md",
+   "target": "harness-program.md",
    "track": "qwen-chat-template-evaluation"
   },
   "qwen-mtp-llamacpp-port.md": {
@@ -445,9 +457,17 @@
    "target": "engineering-hygiene-backlog.md",
    "track": "refactoring-multirepo-2026-10"
   },
+  "repl-embedding-retrieval.md": {
+   "target": "harness-program.md",
+   "track": "repl-embedding-retrieval"
+  },
   "repl-session-memory-maturity.md": {
    "target": "memory-program.md",
    "track": "repl-session-memory-maturity"
+  },
+  "repl-turn-efficiency.md": {
+   "target": "harness-program.md",
+   "track": "repl-turn-efficiency"
   },
   "repo-readiness-scorer.md": {
    "target": "engineering-hygiene-backlog.md",
@@ -667,6 +687,10 @@
   "EVL-36": {
    "target": "EVL-10",
    "track": "repl-session-memory-maturity"
+  },
+  "EVL-37": {
+   "target": "UFH-01",
+   "track": "repl-turn-efficiency"
   },
   "EVL-38": {
    "target": "RTG-22",
@@ -1020,7 +1044,7 @@
    "track": "wrap-up-division-of-labor-policy"
   },
   "RTG-54": {
-   "target": "EVL-37",
+   "target": "UFH-01",
    "track": "qwen-chat-template-evaluation"
   },
   "RTG-55": {
@@ -1067,12 +1091,24 @@
    "target": "RTG-08",
    "track": "tool-output-compression"
   },
+  "UFH-08": {
+   "target": "UFH-01",
+   "track": "harness-improvement-loop"
+  },
   "UFH-11": {
    "target": "RTG-22",
    "track": "amd-ai-lab-website-publication"
   },
+  "UFH-12": {
+   "target": "UFH-01",
+   "track": "repl-embedding-retrieval"
+  },
+  "UFH-14": {
+   "target": "UFH-01",
+   "track": "agentic-serving-harness-fixes"
+  },
   "UFH-15": {
-   "target": "UFH-08",
+   "target": "UFH-01",
    "track": "opencode-shell-integration"
   },
   "UFH-16": {

@@ -103,7 +103,7 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.m
 - **GPU-ZOS-2: true one-step lag does not fit the np4 DFlash2 shape.** Every row of step k+1 starts with the token sampled when step k's drafts are verified, and the drafter needs it too; deferring response work is worth about 0.01% of a step (spec-OFF post_decode is 99.5% sampling). Ceiling: post_decode 5.17 ms of a 139.6 ms step = 3.71% (<= +3.85% tok/s), INDICATIVE. The design instead ships one default-off knob `LLAMA_ZOS2` with three gated tokens (`lazy-save`, `greedy-fast`, `overlap-process`); the .1 branch `experimental/gpu-zos-2-one-step-lag-20261024` @ `6af3192c7` passes `test-sampling-greedy-fast` 1296/1296. Production traffic never sends temperature 0 (registry 0.1-0.2, always top_k 40 / top_p 0.95 / repeat_penalty 1.1), so `greedy-fast` never engages there. Builds (.2) and the gate run (.3, >= 75 min exclusive MI210) are pending. Per intake-2116#record and intake-2126#record.
 - **M4.2a (SRPF + PB-HOL) returned FAIL on C2.** Under the amended validity predicate (a rep is valid if the long is still in flight when the short is sent) C1 and C3 PASS, but the off-path B/A median is 25.227x against the 19.845-24.255 band from PB-HOL-1's 22.05x; the off path is code-equivalent and the C-solo control drifted (282 to 885 ms) during the phase. M4.2b replaces the cross-day band with a same-window champion control. PB-QCOST-1 confirm (armed) stays INDICATIVE.
 
-Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [gpu-zos-2 design](../docs/design/gpu-zos-2-one-step-lag-design-20261024.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md), [within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
+Sources: [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [gpu-zos-2 design](../docs/design/gpu-zos-2-one-step-lag-design-20261024.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md), [within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): the prefill-budget enable is a draft package; compute-calendar defects
 
@@ -134,7 +134,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 - [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (GPU-LEAK-1b/1d/1e, GPU-ZOS-1a)
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1, KPF-17.4, KPF-18-S1, KPF-LB1.1 mitigations; KPF-GL1)
-- [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB7 guard)
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB7 guard)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) (GPU-LEAK-1d result)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -171,7 +171,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): chat-parser failure modes and the interim prefix-cache baseline
 
-- UFH14-LB4 (five crafted strings through four tool-call formats): a call cut mid-arguments returns non-JSON arguments with HTTP 200; a malformed closed call throws (non-stream 500, stream 200 then an SSE error without [DONE]); a cut right after the tool-call open tag is silently dropped as an empty message (the predicted content leak was refuted); double-encoded JSON arguments parse to `{}`. Rule: 500 only when the final parse throws; truncation returns 200. Follow-up UFH14-LB4.2 detects the two silent-loss paths orchestrator-side ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md)).
+- UFH14-LB4 (five crafted strings through four tool-call formats): a call cut mid-arguments returns non-JSON arguments with HTTP 200; a malformed closed call throws (non-stream 500, stream 200 then an SSE error without [DONE]); a cut right after the tool-call open tag is silently dropped as an empty message (the predicted content leak was refuted); double-encoded JSON arguments parse to `{}`. Rule: 500 only when the final parse throws; truncation returns 200. Follow-up UFH14-LB4.2 detects the two silent-loss paths orchestrator-side ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
 - UFH14-LB8 interim prefix-cache baseline (202 opencode sessions, 4,093 steps): token-weighted hit 0.915, per-step p50 0.988 but p10 0.124 (a cold tail). Tool gaps p50 3.8 s / p99 66 s versus human gaps p50 48 s / p99 about 1 h, so a retention policy matters only for the human-gap tail ([results](../docs/design/dev-harness-mining-results-20261022.md)).
 - Fillers rule 23: subagent briefs that create worktrees must say remove with `git worktree remove`, never `git worktree prune`, sub-repos included ([compute-fillers](../docs/guides/agent-workflows/compute-fillers.md)).
 
@@ -930,7 +930,7 @@ Sources: `handoffs/active/numa-placement-and-contention.md`,
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
 Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
-`handoffs/active/repl-turn-efficiency.md` (CT-DEPLOY),
+`handoffs/active/harness-program.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
 Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
@@ -961,7 +961,7 @@ landed 2026-08-22 after the fixes.
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
 Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
-`handoffs/active/repl-turn-efficiency.md` (CT-DEPLOY),
+`handoffs/active/harness-program.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
 Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
@@ -1336,7 +1336,7 @@ Filed alongside and still **OPEN**: drift in the production-kernel attestation r
 ### Source References (2026-08-11)
 
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — mainB's HS-OD-2 fix narrative and the A4/P0-1 region-lock root-cause derivation
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-OD-2 closure
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-2 closure
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — P0-0, the derived-priors `NUMA_FULL` drop
 - [`gpu-serving-tie-in-program.md`](../handoffs/active/mi210-serving-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
@@ -2425,7 +2425,7 @@ hook filed before the first result (SC46). Remaining on operator sequence: Q38-T
 ### Source References
 
 - [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T4 ✅ closure with the mode-artifact diagnosis
-- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-1 A/B launch + SC46 wiring
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-1 A/B launch + SC46 wiring
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md), [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
 ## Compiled Update — 2026-08-22: the KV-migration path is live, but its "VERIFIED" state proves transport, not reuse — and on the hybrid frontdoor only strict continuations reuse a restored cache
 
@@ -2626,8 +2626,8 @@ Decision basis = production behavior over ~18 h (2026-08-22 13:55Z → 2026-08-2
 
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T6 closure (`96498c3d`): fallback chain, help/docstring corrections, liveness-veto fix, recovery path
 - [`dynamic-stack-concurrency.md`](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) — K4 (`-ub 8192` inert), the G4 scope correction + H20/H21 live reads (with timestamps), the `98061c6b` migration-state fix, the #25592 v10-candidate row, the strict-extension trace
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
-- [`qwen-chat-template-evaluation.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
 - [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle and the tier-1 backlog-pass context
 
 ---
@@ -2828,7 +2828,7 @@ and that traffic was mostly the DS41 planner seat and the C95 harness experiment
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the VL placement and S-20.
 - [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — ARCHSWAP-4 done.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-4.5.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-4.5.
 
 ## Incremental update — 2026-10-06: unified-KV neighbour cost and masked-block skip
 
@@ -2856,7 +2856,7 @@ The next GPU serving work is still prospective: KVU-16g proposes first-prompt TT
 
 These updates identify what can be observed or measured; they do not show a fleet-wide latency improvement.
 
-Sources: [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+Sources: [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 
 ### Supplemental serving findings — Oct 3–6 changed files
 
@@ -2870,7 +2870,7 @@ Sources: [Qwen3.8-27B replacement](../handoffs/active/mi210-serving-program.md#t
 
 **Confidence: verified by a serving proof on the relaunched server (single run).** STACKCHG-8083BATCH-20261004 (operator-signed) relaunched :8083 at 08:02Z on 2026-10-05 with `-b 512 -ub 512 --no-cache-idle-slots` (KVU-16f, UFH14-B4j). Proof items all passed: attestation and promotion gate, load VRAM 48.54 GiB, turn-2 `cache_n` 2407, decode-during-prefill gap within fit (solo decode 28.5/28.2 tok/s), coherence 20/24 byte-identical with the other 4 judged equivalent on review, and q38_t7 with DFlash2 at 35.74 versus 15.7 tok/s no-draft. Operational lessons: the GPU-window restore must run after releasing the gpu-quiet exclusive (the executor refuses while the device is held; :8083 stayed parked about 15 minutes), and `prompt_save` log lines are TRACE level (4) in v10, so a B4g re-run needs `-lv 4`. The harness cleanup deployed with the API reload deleted `escalation_prewarmer` and the hot-prefix slot-save warming path while keeping `--slot-save-path`.
 
-Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [8083 bring-up evidence](../artifacts/stackchg-8083batch-20261004/bringup_summary.txt), [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md).
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [8083 bring-up evidence](../artifacts/stackchg-8083batch-20261004/bringup_summary.txt), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md).
 
 
 ## 2026-10-06 per-call reader source acceptance
@@ -2952,7 +2952,7 @@ Sources: [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.
 - **Corpus retrieval flag-off ratified** (RATIFY-CORPUS-RETRIEVAL-OFF-20261021; research `ab702eca6`, orchestrator `792955fc`). It takes effect at the next stack start and ends the failed per-request lookup against the 651 GB index deleted on 2026-07-04.
 - **Do not run operator commands or readers from the shared `/workspace` clone.** It is about 500 commits behind origin/main and carries dirty tracked files that conflict with upstream (NIB2-99). On 2026-10-21 a new ratify script was simply absent there. Operator bundles run from a fresh origin/main worktree.
 
-Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
+Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
@@ -3001,13 +3001,13 @@ Sources: [HSF-5.P handoff](../handoffs/active/kv-cache-program.md#track-heteroge
 
 **Confidence: verified** unless marked.
 
-- **UFH14-LB3-4: turning legacy parsing off is CONFIRMED against its predeclared rule.** 31 tasks x 3 reps x 2 arms (93 cells, 0 errors): pass 66.67% off vs 45.16% legacy, +21.51 pp, task-cluster bootstrap 95% CI [+11.83, +32.26]; turns -1.376 [-1.742, -1.011]. The turn-1 ms/token ratio of 0.6655 is INDICATIVE only, because host load was a median 93. The live `parse_events` watch half of the box is still owed. ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/f8-launchers-20261024/ufh14-lb3-4-confirm/VERDICT.json`)
+- **UFH14-LB3-4: turning legacy parsing off is CONFIRMED against its predeclared rule.** 31 tasks x 3 reps x 2 arms (93 cells, 0 errors): pass 66.67% off vs 45.16% legacy, +21.51 pp, task-cluster bootstrap 95% CI [+11.83, +32.26]; turns -1.376 [-1.742, -1.011]. The turn-1 ms/token ratio of 0.6655 is INDICATIVE only, because host load was a median 93. The live `parse_events` watch half of the box is still owed. ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/f8-launchers-20261024/ufh14-lb3-4-confirm/VERDICT.json`)
 - **HSF-5.P host KV mirror: decode cost FAILs its gate and no profile has attributed it.** Mirror ON costs +4.17% predicted ms/token against a <= 3% gate (B-Abar 1.82 ms/token; at least 0.51 ms/token must go). All five rocprof attempts failed or were invalid: P1 had its exports SIGKILLed, P2 hit a HOLD, P3 was blocked by Yama `ptrace_scope=1`, P4 diverged on the first request at token 45, and P5 failed its restore-state control. A 4-process determinism job did not reproduce P4. The restore difference is source-proven: lag mode saves only up to the latest valid recurrent checkpoint (4079 saved vs 4116 erased, 37 replay tokens), and C5 itself saves full live state. The repair (save drains to the live position, opt-in, default off) is built on C5 with model-free validation only; GPU attribution waits for an operator go, and the revival checklist is in the findings doc. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-HSF rows; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Nemotron Bolt base build `59c1b915f` (indicative, no gate, host load ~98).** On MI210 it is coherent with reasoning on and off (8/8), uses 21.5 GiB VRAM with KFD residency proven, and reaches pp512 899.2 / tg128 53.4 t/s, with server tg 51.2. On CPU with 24 threads: pp512 56.1 / tg128 12.7. It is not citable as a champion speed claim. ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) NEMO-LILI-1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `progress/2026-10/2026-10-21-nemotron-bolt.md`)
 - **Kernel-store paths: `scripts/lib/executor.py` is a known v9 offender.** The freeze runbook now records that the orchestrator executor resolved `llama-completion` from the frozen tree's build dir, which is how the v10 cutover kept launching v9; the fix is pending on `refactor/scripts-cleanup-reviewed-01a16fc3@6efa5626`. ([kernel-freeze runbook](../docs/reference/kernel-freeze-runbook.md); [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [O6 checkpoint](../progress/2026-10/2026-10-25-cleanup-validation-01a16fc3.md))
 - **Test suites must not load real models (2026-10-26 incident).** `orchestration/repl_memory/embedder.py` falls back to a `llama-embedding` subprocess when the embedding server is unreachable (`allow_subprocess` defaults to True) and can resolve the frozen tree's v9 `build/bin`. Tests that seed REPL memory therefore loaded bge-large on the host. The remedy is an autouse fake-embedder guard plus an exec tripwire on llama-*/.gguf; the embedder production fix merged as orchestrator `e1e3e59d7`. ([2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10))
 
-Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [kernel-freeze runbook](../docs/reference/kernel-freeze-runbook.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
+Sources: [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [kernel-freeze runbook](../docs/reference/kernel-freeze-runbook.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
 
 
 ## Compiled Update — 2026-10-28 (launcher qualification, fixture evidence and native outcomes stay separate)
@@ -3059,7 +3059,7 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.m
 - KVU-15d snapshots whether a request held the long-prefill lease at admission. Read that ownership field together with its admission verdict; do not treat it as a causal estimate or equate it with all pre-dispatch waiting.
 - Two preparation terminals are negative qualification evidence only: RUS-3-TRUNC's smoke failed rc1 before native events and lacked `latest-collection.json`; the F2 smoke timed out without an eligible GPU/q3 window. They produced no cohort or decode-stall result.
 
-Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [KV unified-stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+Sources: [serving-harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [KV unified-stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [REPL turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
@@ -3073,7 +3073,7 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- The 27B post-compaction paired treatment timed out without exact restoration, so no paired cache/prompt measurements or keep verdict exists. Refusal records and parked-role escalation have source fixes with tests; live adoption is not implied. [Source](../handoffs/active/agentic-serving-harness-fixes.md)
+- The 27B post-compaction paired treatment timed out without exact restoration, so no paired cache/prompt measurements or keep verdict exists. Refusal records and parked-role escalation have source fixes with tests; live adoption is not implied. [Source](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
 - A deterministic lock-fairness negative control passed 24 tests and deliberately fails the three FIFO-off assertions; source verification does not imply default-on deployment. Other additions repair historical evidence metadata. [Source](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - Opt-in machine frame drops only an equal duplicated alias; 143 API and 15 page controls passed. Fixture bytes reduced 47,524 to 24,580 and 91,652 to 46,835; no live bandwidth, producer-work or deployment outcome is claimed (APP ec6f8176; ROOT 8318ce32). [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
 - Registry master ubatch default is corrected to 2048; both script executors do read it, contrary to the original premise. Lean compilation preserves 23 active roles; the separate shared full-registry target was still 8192 at observation, with no deployment claim. [Source](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency)

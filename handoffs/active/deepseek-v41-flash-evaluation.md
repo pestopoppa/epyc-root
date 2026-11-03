@@ -927,7 +927,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     3880 s; cxf1 (F1 only) 0.50 (2 partial), 4/4 answered, 1 call contaminated (C2/cxf1/r2 browsed the live store anchor-gen-007);
     unfixed cx 0.50 with 2/4 answered; DeepSeek as-ran 0.75 (3 exact, 0 errors). The fixes recover the no-reply calls but not
     exactness: the 27B still finds no exact keep and makes 2-2.25 factual errors per answer against DeepSeek's 0. Detail and the
-    sandbox fix: [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md) UFH14-A1/A6.
+    sandbox fix: [`agentic-serving-harness-fixes.md`](harness-program.md#track-agentic-serving-harness-fixes) UFH14-A1/A6.
 - [x] DS41-C96 — graph-sync gate fault: `GLU`/`UNARY` passed to `test-backend-ops -o` match no `op_desc()`, so the suite was always 0/0; `backend_ops_selector` expands them to sub-ops (e29dca63). ✅ 2026-10-01
   - Route now 29 ops (incl. TOPK_MOE chain; EXP/EXPM1 excluded, fail on anchor); empty suite still fails
     closed. Caused the run 10w abstention storm (rows 203-224). Shared-walk-defect caveat → DS41-C99.

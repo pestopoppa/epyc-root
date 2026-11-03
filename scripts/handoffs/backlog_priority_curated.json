@@ -8,18 +8,14 @@
   "INF-06": 0.62,
   "INF-48": 0.55,
   "INF-50": 0.55,
-  "UFH-14": 0.55,
   "INF-59": 0.5,
-  "EVL-37": 0.5,
   "EVL-47": 0.5,
-  "UFH-12": 0.5,
   "RTG-22": 0.5,
   "INF-72": 0.4,
   "INF-79": 0.4,
   "INF-80": 0.4,
   "EVL-08": 0.4,
   "RTG-34": 0.4,
-  "UFH-08": 0.4,
   "INF-61": 0.35,
   "EVL-02": 0.35,
   "EVL-10": 0.35,
@@ -98,8 +94,6 @@
   "INF-22#gpu-acceleration-path": 0.3,
   "INF-22#mi210-big-model-and-acceleration-roadmap": 0.45,
   "INF-22#qwen38-27b-replace-qwen36": 0.75,
-  "UFH-08#opencode-shell-integration": 0.15,
-  "EVL-37#qwen-chat-template-evaluation": 0.65,
   "INF-05#multiscreen-attention-evaluation": 0.15,
   "INF-05#streaming-llm-baseline": 0.1,
   "INF-05#triattention-kv-selection": 0.25,
@@ -170,7 +164,13 @@
   "INF-06#autokernel-rebuild-program": 0.8,
   "INF-06#autokernel-unified-surface-program": 0.7,
   "INF-06#autokernel-concurrent-target-coordination": 0.5,
-  "INF-06#autokernel-orchestrator-actor-backend": 0.5
+  "INF-06#autokernel-orchestrator-actor-backend": 0.5,
+  "UFH-01#repl-turn-efficiency": 0.5,
+  "UFH-01#qwen-chat-template-evaluation": 0.65,
+  "UFH-01#harness-improvement-loop": 0.4,
+  "UFH-01#opencode-shell-integration": 0.15,
+  "UFH-01#repl-embedding-retrieval": 0.5,
+  "UFH-01#agentic-serving-harness-fixes": 0.55
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -316,7 +316,7 @@
    "before": "INF-65:CH-30 -"
   },
   {
-   "row": "EVL-37",
+   "row": "UFH-01",
    "tok": "CT-12.5",
    "kind": "N",
    "cls": "N",
@@ -330,7 +330,7 @@
    "before": "INF-65:CH-30 -"
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB1.1",
    "kind": "N",
    "cls": "N",
@@ -1188,7 +1188,7 @@
    "before": ""
   },
   {
-   "row": "UFH-12",
+   "row": "UFH-01",
    "tok": "REPL-EMB-2.11",
    "kind": "I",
    "cls": "live",
@@ -1202,7 +1202,7 @@
    "before": ""
   },
   {
-   "row": "UFH-12",
+   "row": "UFH-01",
    "tok": "REPL-EMB-2.9",
    "kind": "N",
    "cls": "N",
@@ -1213,10 +1213,10 @@
    "why": "land the EG2 adoption seam in epyc-orchestrator",
    "owner": "fresh agent",
    "filler": "",
-   "before": "UFH-12:REPL-EMB-2.12"
+   "before": "UFH-01:REPL-EMB-2.12"
   },
   {
-   "row": "UFH-12",
+   "row": "UFH-01",
    "tok": "REPL-EMB-2.10c",
    "kind": "N",
    "cls": "N",
@@ -1227,11 +1227,11 @@
    "why": "calibration CALIBRATION_COMPLETE + full private apply R3 done 2026-10-27 (repl-embedding-retrieval.md:246-249); prod swap is the separate operator item UFH-12-PROD-ADOPT",
    "owner": "fresh agent",
    "filler": "",
-   "before": "UFH-12:REPL-EMB-2.12",
+   "before": "UFH-01:REPL-EMB-2.12",
    "done": "calibration + COPY apply/parity done 2026-10-27 (repl-embedding-retrieval.md:246-249); box awaiting tick"
   },
   {
-   "row": "UFH-12",
+   "row": "UFH-01",
    "tok": "REPL-EMB-2.12",
    "kind": "I",
    "cls": "ready",
@@ -1245,7 +1245,7 @@
    "before": ""
   },
   {
-   "row": "UFH-12",
+   "row": "UFH-01",
    "tok": "REPL-EMB-2.8a",
    "kind": "N",
    "cls": "N",
@@ -1259,7 +1259,7 @@
    "before": ""
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB7.1",
    "kind": "N",
    "cls": "N",
@@ -1273,7 +1273,7 @@
    "before": ""
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB6 ",
    "kind": "N",
    "cls": "N",
@@ -1287,7 +1287,7 @@
    "before": ""
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB2 ",
    "kind": "N",
    "cls": "N",
@@ -1301,7 +1301,7 @@
    "before": ""
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB3.4",
    "kind": "I",
    "cls": "ready",
@@ -1315,7 +1315,7 @@
    "before": ""
   },
   {
-   "row": "UFH-14",
+   "row": "UFH-01",
    "tok": "UFH14-LB4.2",
    "kind": "N",
    "cls": "N",
@@ -1329,7 +1329,7 @@
    "before": ""
   },
   {
-   "row": "UFH-08",
+   "row": "UFH-01",
    "tok": "HIL-15b",
    "kind": "N",
    "cls": "N",
@@ -1343,7 +1343,7 @@
    "before": ""
   },
   {
-   "row": "UFH-08",
+   "row": "UFH-01",
    "tok": "HIL-16b",
    "kind": "N",
    "cls": "N",
@@ -1357,7 +1357,7 @@
    "before": ""
   },
   {
-   "row": "UFH-08",
+   "row": "UFH-01",
    "tok": "HIL-6j",
    "kind": "I",
    "cls": "hold",
@@ -1371,7 +1371,7 @@
    "before": ""
   },
   {
-   "row": "EVL-37",
+   "row": "UFH-01",
    "tok": "RTE-LOG-1",
    "kind": "N",
    "cls": "N",
@@ -1385,7 +1385,7 @@
    "before": ""
   },
   {
-   "row": "EVL-37",
+   "row": "UFH-01",
    "tok": "CT-21",
    "kind": "N",
    "cls": "N",
@@ -1399,7 +1399,7 @@
    "before": ""
   },
   {
-   "row": "EVL-37",
+   "row": "UFH-01",
    "tok": "CT-12.6",
    "kind": "N",
    "cls": "N",
@@ -1413,7 +1413,7 @@
    "before": ""
   },
   {
-   "row": "EVL-37",
+   "row": "UFH-01",
    "tok": "CT-14",
    "kind": "N",
    "cls": "N",
@@ -2034,7 +2034,7 @@
   },
   {
    "filler": "UFH12-REQUESTB-FULL-PRIVATE-APPLY-1",
-   "row": "UFH-12",
+   "row": "UFH-01",
    "map": "handoff repl-embedding-retrieval.md",
    "owner": "Codex NI UFH12",
    "blocker": "harness fix (ws58)",
@@ -2187,7 +2187,7 @@
   },
   {
    "filler": "codex-ni-ufh08-hil15b-v2-publish-20261025",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "filler-id alias /(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-/",
    "owner": "codex-ni-01a16d6b",
    "blocker": "missing launcher: no accepted source-publication receipt or completion marker for the exact UFH08 HIL15b task",
@@ -2196,7 +2196,7 @@
   },
   {
    "filler": "codex-ni-ufh12-gp1-20261027",
-   "row": "UFH-12",
+   "row": "UFH-01",
    "map": "handoff repl-embedding-retrieval.md",
    "owner": "Codex NI / MAIN",
    "blocker": "harness fix",
@@ -2484,7 +2484,7 @@
   },
   {
    "filler": "refactor-hil15b-checkpoint-canary-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2493,7 +2493,7 @@
   },
   {
    "filler": "refactor-hil15b-heavy-pilot-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2502,7 +2502,7 @@
   },
   {
    "filler": "refactor-hil15b-q2-v2-pilot-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2511,7 +2511,7 @@
   },
   {
    "filler": "refactor-hil15b-short-window-pilot-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2520,7 +2520,7 @@
   },
   {
    "filler": "refactor-hil16b-replay-q2-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2529,7 +2529,7 @@
   },
   {
    "filler": "refactor-hil16b-replay-v2-20261027",
-   "row": "UFH-08",
+   "row": "UFH-01",
    "map": "handoff harness-improvement-loop.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2566,7 +2566,7 @@
   "(^|-)inf50-": "INF-50",
   "(^|-)(inf34|pf1)-|-inf34-pf1-": "INF-22",
   "(^|-)kpf(18|64)-": "RTG-58",
-  "(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-": "UFH-08",
+  "(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-": "UFH-01",
   "(^|-)m4-": "INF-22",
   "^HSF-": "RTG-58",
   "(^|-)cme": "EVL-50",
@@ -2580,12 +2580,6 @@
    {
     "track": "prompt-construction-determinism",
     "next_action": "D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3"
-   }
-  ],
-  "UFH-12>RTG-08": [
-   {
-    "track": "tool-output-compression",
-    "next_action": "TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text"
    }
   ],
   "INF-72>INF-22": [
@@ -2704,10 +2698,22 @@
     "next_action": "Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates"
    }
   ],
-  "UFH-12>INF-06": [
+  "UFH-01>RTG-08": [
+   {
+    "track": "tool-output-compression",
+    "next_action": "TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text"
+   }
+  ],
+  "UFH-01>INF-06": [
    {
     "track": "autokernel-orchestrator-actor-backend",
     "next_action": "OAB-30 stub e2e (incl. keep→continuation); OAB-34 16384 output-cap hit rate per role"
+   }
+  ],
+  "RTG-30>UFH-01": [
+   {
+    "track": "agentic-serving-harness-fixes",
+    "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun"
    }
   ]
  }

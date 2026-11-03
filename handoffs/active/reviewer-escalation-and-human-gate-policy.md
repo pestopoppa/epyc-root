@@ -8,7 +8,7 @@ Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retir
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, safety
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Gates**: H4 calibration curves + H5 tournament + H-LB LB-6 budget gate; harness-side surfacing additionally gated on HS-4 ([`harness-selection-and-integration.md`](harness-selection-and-integration.md))
+**Gates**: H4 calibration curves + H5 tournament + H-LB LB-6 budget gate; harness-side surfacing additionally gated on HS-4 ([`harness-selection-and-integration.md`](harness-program.md#track-harness-selection-and-integration))
 **Repo**: `epyc-orchestrator`
 
 ## Objective

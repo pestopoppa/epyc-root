@@ -886,7 +886,7 @@ D-e1 (caps default, folded into D-c1), D-d (curation layer; acceptance extended 
 **Priority**: MEDIUM
 **Categories**: agent_architecture, context_management, memory_augmented
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
-**Related**: [repl-turn-efficiency.md](repl-turn-efficiency.md),
+**Related**: [repl-turn-efficiency.md](harness-program.md#track-repl-turn-efficiency),
 [internal-interaction-lifecycle.md](routing-program.md#track-internal-interaction-lifecycle),
 [rlm-contested-claims-self-evaluation.md](benchmark-suites.md#track-rlm-contested-claims-self-evaluation) (E2 rescoped
 2026-07-27 — the code-log measurement lives here as D-c1, on real traffic, not as a synthetic arm

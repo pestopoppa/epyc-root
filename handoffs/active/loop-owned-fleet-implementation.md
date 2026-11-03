@@ -692,7 +692,7 @@ This stub owns the measurement side: turn the assertion into a number, using dat
 Related existing work (do NOT duplicate):
 - [`session-bus-thin-dispatcher.md`](coordination-and-churn-pipeline.md) — owns the C36 substrate this collector builds on: per-backend transcript mechanics (Codex `thread_source`, Claude subagents in-process via `claude agents --json`), and the standing rule that **CPU delta is an invalid proxy** for subagent activity.
 - [`coordinator-role-failure-modes-and-refactor.md`](coordinator-role-failure-modes-and-refactor.md) — F-15 (fan-out doctrine), R-17/R-23 (thread-attribution premise), the F-series failure ledger this stub's grading output would cross-walk against.
-- [`repl-turn-efficiency.md`](repl-turn-efficiency.md) — S4 Omega A/B, the metric this collector's data would feed.
+- [`repl-turn-efficiency.md`](harness-program.md#track-repl-turn-efficiency) — S4 Omega A/B, the metric this collector's data would feed.
 
 #### Corpus, verified on disk 2026-08-13
 

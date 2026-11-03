@@ -37,14 +37,14 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **Result.** On a private frontdoor-shaped server (Qwen3.6-35B-A3B MTP Q8_0), 30 cells per arm: `off` passed 66.7% at 17.8 ms/token on turn 1, `legacy` 40.0% at 23.6, `call` 36.7%, and `lazy-legacy` 3.3% at 54.8. Off vs legacy: +26.7 pp (95% CI +10 to +46.7).
 - **Why lazy lost.** `lazy-legacy` forced an immediate FINAL on every task (1.0 turns) and PATTERN-trigger grammar evaluation was about 2x slower per token on this server. The measured result supersedes the 2.1% lazy-cost figure from the synthetic window. GRAM-LAZY-1 is closed and the lazy branch was not landed ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh)).
-- **Decision.** The operator set the turn-1 grammar default to off (orchestrator main `93055064`; opt back in with `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call`). It goes live at the next API reload, together with `a498ffba`, `96c30079` and `a73af3cc` ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) UFH14-LB3.1/1b/1c).
+- **Decision.** The operator set the turn-1 grammar default to off (orchestrator main `93055064`; opt back in with `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call`). It goes live at the next API reload, together with `a498ffba`, `96c30079` and `a73af3cc` ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) UFH14-LB3.1/1b/1c).
 - **The silent-failure path is closed (UFH14-LB3.3, orchestrator main `f3ab78b2`).** The turn-1 grammar block's blanket `except` now warns once per exception type, bumps `diag_counters["turn1_grammar_error"]` and writes a `turn1_grammar` parse_event, so the sweep-17 defect (a grammar that never applied, with no trace) cannot recur unseen.
-- **Fence-cut thinking turns are now counted (UFH14-LB11.1, same commit, flag-off).** A `turn_ended_in_unclosed_think` counter and a `think_fence_cut` parse_event are always on; one bounded continuation of a fence-cut turn sits behind `REPL_THINK_FENCE_CONTINUE` (default off, byte-identical). Dropping the fence stop was rejected because it brings back repetition loops. Next: read the counter on live traffic after the reload ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md)).
+- **Fence-cut thinking turns are now counted (UFH14-LB11.1, same commit, flag-off).** A `turn_ended_in_unclosed_think` counter and a `think_fence_cut` parse_event are always on; one bounded continuation of a fence-cut turn sits behind `REPL_THINK_FENCE_CONTINUE` (default off, byte-identical). Dropping the fence stop was rejected because it brings back repetition loops. Next: read the counter on live traffic after the reload ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
 - **What still needs the grammar work.** XGRAMMAR-A2 remains relevant for opted-in grammars and for json_schema structured output, which is eager by construction, but no longer for the frontdoor default.
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB3.1b/1c, LB3.3, LB3.4, LB11.1)
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.1b/1c, LB3.3, LB3.4, LB11.1)
 - [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (GRAM-LAZY-1 closed, XGRAMMAR-A2 reconciled)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -56,7 +56,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **UFH14-LB3.2: the turn-1 grammar was dead code for a day.** A conditional function-local `import os` in `_execute_turn` made `os` a local name. The `os.environ.get` added by UFH14-LB3 then raised `UnboundLocalError` on every first turn, and `except Exception: pass` hid it.
   - Fixed on orchestrator main `a498ffba`, with an AST regression test that refuses a local `import os` there.
   - It was found by the mock proof of the 4-arm grammar run, not by any test or log.
-  - UFH14-LB3.3 makes that `except` log and count ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md)).
+  - UFH14-LB3.3 makes that `except` log and count ([agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)).
 - **UFH14-LB11: `extract_code_from_response` now strips Qwen3 `<think>...</think>`.** Before the fix, reasoning prose containing `=` was swept into the code candidate and `ast.parse` failed. The extractor returned `''`, the "all comments" nudge fired, and after 3 nudges the graph raised "Max nudges (3) reached".
   - Fixed on orchestrator main `96c30079` (160 prompt_builders tests pass). Complete and empty blocks are removed, an unclosed `<think>` drops everything after it, and a stray `</think>` drops everything before it.
   - Exposed roles: those with thinking on and the raw `/completion` lane, i.e. `architect_critic`, `coder_escalation` and `ingest_long_context` while `thinking_roles_chat_lane` is off.
@@ -66,7 +66,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-23 wrap-up sweep 17)
 
-- [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB3.2, LB3.3, LB11, LB11.1, LB10 reload box)
+- [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB3.2, LB3.3, LB11, LB11.1, LB10 reload box)
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-LB1.1 run 1 INCOMPLETE)
 - [workspace-f8 progress, 2026-10-23 morning](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -86,11 +86,11 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — HIL-LB1 scoring and decision, HIL-LB1a
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-LB1 scoring and decision, HIL-LB1a
 - [progress/2026-10/2026-10-22-hil17-lb1-writes.md](../progress/2026-10/2026-10-22-hil17-lb1-writes.md) — LB1a labelling result
 - [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-WRITER producers, TOC-SP-LB1
 - [progress/2026-10/2026-10-22-a1-orch-code.md](../progress/2026-10/2026-10-22-a1-orch-code.md) — compaction-is-not-invalidation finding
-- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md) — parse events, serving_calls, grammar, LB1/LB4.1/LB9
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — parse events, serving_calls, grammar, LB1/LB4.1/LB9
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — Locals packet D and locals-a results
 
 ## Latest source review — 2026-10-07
@@ -110,7 +110,7 @@ The shared exploration source closes a duplication seam before exposing a larger
 - [Static rendering map](../docs/reference/tool-rendering-source-map.md) and [native advertisement](../docs/reference/dtap-native-tool-contract.md) — dated route state and opt-in schema changes.
 - [Native failure ledger](../docs/reference/dtap-native-failure-ledger-contract.md) — outcomes, pairing and partial cost.
 - [Repair log content](../docs/reference/tool-repair-log-content-contract.md) — bounded helper disclosure.
-- [Shared exploration contract](../docs/design/hs4-p6-shared-exploration-source-contract-20261006.md) and [current source acceptance](../handoffs/active/harness-selection-and-integration.md) — explicit-root core versus active catalog.
+- [Shared exploration contract](../docs/design/hs4-p6-shared-exploration-source-contract-20261006.md) and [current source acceptance](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — explicit-root core versus active catalog.
 
 ### The unresolved request-budget contract
 
@@ -123,7 +123,7 @@ The [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-pre
 - [Native failure ledger](../docs/reference/dtap-native-failure-ledger-contract.md)
 - [Repair log content](../docs/reference/tool-repair-log-content-contract.md)
 - [Shared exploration contract](../docs/design/hs4-p6-shared-exploration-source-contract-20261006.md)
-- [current source acceptance](../handoffs/active/harness-selection-and-integration.md)
+- [current source acceptance](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-prep-20261006.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): structured-output and trajectory artifact
@@ -137,10 +137,10 @@ The [max_tokens decision package](../docs/design/hs-od-4-max-tokens-decision-pre
 
 ### Source References (2026-10-22 sweep 7)
 
-- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
 - [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
-- [handoffs/active/repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
 
 ## Compiled Update — 2026-09-25: control retrieval, validate live state, and preserve interrupted calls
 
@@ -259,7 +259,7 @@ the premise check.
 ### Source References (2026-09-18)
 
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NI-OC-a, NI-OC-a.1, NIB2-81.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-OD-3..7.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7.
 - [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
 
 ## Compiled Update — 2026-09-17 (wrap-up sweep): the native arm gets its cue, closed-set tool arguments win exactness, and the cooperation contract drops field names
@@ -271,7 +271,7 @@ the premise check.
 - **TD-1d accepted: the id-only cue recovers 11.98x at parity.** Cue sweep on the worker (Qwen3.6-35B-A3B, MI210, same 24-question fixture, one run each): JSON 19.3 s / 1,354 tok; native full 7.3 s (2.66x) / 523 tok; short 3.2 s (6.0x) / 239 tok; **id_only 1.6 s (11.98x) / 112 tok** — all three native styles 15/16 agreement and 15/16 accuracy on the overlap. Adopting `id_only` as the native default after review (keeping `full`/`short` selectable) is TD-6, still open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **TD-4 closed-set tool arguments: 18/18 exact vs 6/18 free-form.** 18 deterministic cases across 3 tool schemas: closed-set 18/18 exact-match (0 failures) vs free-form 6/18 (12 failures — parse/schema failures, not merely wrong values), per-argument exact 66 vs 24, at 116.6 s vs 11.4 s (10.2x wall for the free-form arm). Exact tool use is the closed-set arm's to win; coordinate with `tool-use-eval-contract` TU-TD-1. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Native parity was a prompt-cueing bug, not a decoding one.** TD-1b fixed token identity (candidates resolved through the server `/tokenize` seam, exact-token grammar terminals `<[id]>`, probability rows matched by token id), but agreement was 11/16. TD-1c root-caused the 5/16 disagreement: only the first answer was grounded on the prompt; later positions were conditioned on prior answer tokens, collapsing `noul` answers to false. Replaying each question's cue as tokenized grammar terminals restored 15/16. **The fail-closed shape is the one to keep**: the original native failure surfaced as typed `native_unknown_candidate` errors, never as wrong answers. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- **HS-15: the cooperation contract is a capability, not a field name.** Restated as *config-declarable arbitrary top-level body keys on the openai-completions path, on the call verb the harness actually uses*, with all three qualifiers load-bearing, and the five names it ships under listed (`extra_body`, `compat.extraBody`, `Model.samplingParams`, `chat.params` → `options`, `provider.<id>.models.<m>.options`). Two forks of one repository grew the same primitive under different names on different objects, so a name-keyed contract mis-scored candidates twice in one batch. Step 1 of the [client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) now tells the auditor to grep for the capability rather than a known name. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
+- **HS-15: the cooperation contract is a capability, not a field name.** Restated as *config-declarable arbitrary top-level body keys on the openai-completions path, on the call verb the harness actually uses*, with all three qualifiers load-bearing, and the five names it ships under listed (`extra_body`, `compat.extraBody`, `Model.samplingParams`, `chat.params` → `options`, `provider.<id>.models.<m>.options`). Two forks of one repository grew the same primitive under different names on different objects, so a name-keyed contract mis-scored candidates twice in one batch. Step 1 of the [client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) now tells the auditor to grep for the capability rather than a known name. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
 - **Scoring-infra 1c-fix (b)/(d) closed** (orchestrator `9a7181f2`): reviewer truncation replaced by `ArchitectReviewService.condense_output()` — head 60% + tail 40% with an explicit elision marker naming the elided character count (budget config `review_output_max_chars`, default 4000; `quick_mode`'s silent `[:200]` routed through the same helper). The old 500-char prefix cut fed `all_approved` → memrl reward, so it was a latent scoring bias as much as a readability defect. And dead `ChatRequest.tools`/`tool_choice` are **deprecated, deliberately not removed** — they are part of a published `/chat` schema whose model sets `extra="ignore"`, so removal would swallow them silently; `/chat` now logs when a caller sets them. ([scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization), [backlog churn](../progress/2026-09/2026-09-17-backlog-churn.md))
 - **The trace pairing keys now have producers** (unified-trace UTM-P1a / P1a.2, orchestrator `9a7181f2`/`7887e7ae`): the review plane stamps `harness`/`task_key`/`turn_ordinal` (and rejects `subtask_id` as a key — "S1" recurs across unrelated tasks, so a fabricated key pairs unrelated runs), and replay + delegator add the second harness. Unset keys stay NULL = "never captured". Real-data reachability (separate stores, no shared ids, turn alignment) is UTM-P1a.3, compute-gated. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
 - **Dashboard data plane: measured and estimated prompt tokens are no longer indistinguishable.** The inference tap stamps `prompt_tokens_source="server_terminal"` and cards render `↑ N tok` only for that source, while the chars fallback renders as `prompt Nc` — an estimate and a measurement can no longer wear the same label. Declared (not observed) node substrate now carries `substrate_source` = `process | role-kind | manifest`; an unknown role declares nothing rather than guessing. ([dashboard-architecture-restructure](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure))
@@ -288,7 +288,7 @@ the premise check.
 ### Source References (2026-09-17 wrap-up sweep)
 
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1b/1c/1d, TD-4, TD-5, TD-6.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) and [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — HS-15 capability contract and the call-verb check.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) and [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — HS-15 capability contract and the call-verb check.
 - [scoring-infra-standardization.md](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — 1c-fix (b)/(d) and the reviewer-truncation bias.
 - [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
 - [dashboard-architecture-restructure.md](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure) — prompt-token provenance and declared substrate.
@@ -312,12 +312,12 @@ Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-type
 
 ### Key findings
 
-- **FastMCP 3 refuses, it does not drop — and the 2026-09-16 P0.3 finding is reversed.** The orchestrator pins `fastmcp>=3,<4`; a stamped call carrying an undeclared `session_id` is rejected, proven by `tests/unit/test_mcp_undeclared_args_refused.py`. The earlier shard had read `mcp` 1.27.0's `ArgModelBase` (no `extra="forbid"`) and concluded "silently drops". The tool-side requirement is the same under either behaviour — every session-aware tool declares `session_id: str = ""` and forwards it (`ChatRequest.session_id` already exists) — and every `@mcp.tool()` in `src/mcp_server.py` now does (orch `54b6439d`). If the P2 memory tools ship as a separate MCP server, that server needs the same declares-and-refuses tests (`HS-4 P2 carry`). Rule: a dependency's behaviour is read from the pinned version, never from whichever copy is on the path ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+- **FastMCP 3 refuses, it does not drop — and the 2026-09-16 P0.3 finding is reversed.** The orchestrator pins `fastmcp>=3,<4`; a stamped call carrying an undeclared `session_id` is rejected, proven by `tests/unit/test_mcp_undeclared_args_refused.py`. The earlier shard had read `mcp` 1.27.0's `ArgModelBase` (no `extra="forbid"`) and concluded "silently drops". The tool-side requirement is the same under either behaviour — every session-aware tool declares `session_id: str = ""` and forwards it (`ChatRequest.session_id` already exists) — and every `@mcp.tool()` in `src/mcp_server.py` now does (orch `54b6439d`). If the P2 memory tools ship as a separate MCP server, that server needs the same declares-and-refuses tests (`HS-4 P2 carry`). Rule: a dependency's behaviour is read from the pinned version, never from whichever copy is on the path ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - **The structured-output capability record is now a standing reference, four layers read together** ([`v1-structured-output-capability.md`](../docs/reference/v1-structured-output-capability.md)). Kernel (frozen v9 `0db32c06e`): `response_format` `json_object[+schema]` / `json_schema` → grammar; any other non-`text` type → `invalid_argument`. Orchestrator internal: `LLMPrimitives.llm_call(json_schema=…)` threads `json_schema`/`grammar` into the backend body — grammar-constrained; live consumers are native `/chat` direct mode and consultations. Native `/chat` REPL mode: **not** constrained — schema in the prompt, `FINAL()` parse-and-retry, and only when `final_schema_validation` (default off) is on. `/v1` seam (`:8000`): any `response_format` other than `text` → **422 naming the field, by decision** (HS-OD-1); `max_completion_tokens` honoured as alias. Quoted alone, either half misleads: a harness using OpenAI JSON mode gets a 422 today although the kernel could serve it; wiring is a small direct-path mapping, but REPL-mode consumers stay parse-and-retry. **Kernel-doc defect, no action on the frozen tree:** `README.md:1239` puts `schema` at the top level while the code reads `response_format.json_schema.schema` (`server-common.cpp:947-949`), so the README's form yields an empty schema and *silently unconstrained* JSON — the silent-no-op class applies to servers, not only clients.
 - **Two Harness Cards have a consumer outside the handoff that wrote them**, which is why they moved to [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md): `agents/shared/HARNESS_RUN_POLICY.md` requires a run report to name "the applicable Harness Card". The editable-vs-code-owned card answers *what can be changed without code*; the conformant ETCSOVG card answers *what configuration produced a score* and is conformant *because* it names its 13 undisclosed/unfixed fields (no REPL/scorer isolation, no eval-wide network-off, auto-approve, …). Re-publishing rule: a model or freeze change refreshes the conformant card before a result is called re-targetable.
 - **Three `/v1` seam residuals recorded, none fixed here.** `src/api/models/openai.py` describes `x_max_escalation` as capping escalation while `/v1` only records it (one-line description fix filed as `HS-4 P4-pre`; enforcement is P4). Unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`). `/v1` B2 compression still fails open to the unfolded history.
 - **The typed-decision runner: the JSON arm works, the native arm fails closed for a reason that is a tooling fact.** `src/typed_decisions/` (epyc-orchestrator, flag `typed_decisions` default off, no route wired, 87 tests) ran the 24-question fixture 24/24 clean in 36.7 s on the 27B via `response_format json_schema` with corrective retry. The TD-1a native candidate-scoring arm (enum-constrained single-token readout with `n_probs`) resolved 1/24 and raised 23 typed `native_unknown_candidate` failures: the emitted tokens were `'fal'`/`'set'`, because the candidate strings had been presumed single-token without tokenizer access. Fix (TD-1b): obtain each candidate's token id(s) from the server's `/tokenize` before building the grammar, and make multi-token candidates fall back to JSON mode *explicitly*. The failure surfaced as a typed error rather than a wrong answer — the fail-closed shape is the one to keep. TD-4's closed-set tool-argument mapping (`src/typed_decisions/tool_args.py`, 19 tests) landed; its live pilot against the free-form path is the remaining step. Measurement receipts ride through `scripts/vidya/adapters/typed_decisions_measurement.py` (CLI ingest; a bench report is refused as a non-measurement; the producer's `metric_direction` gap was fixed on the write side) ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [intake session](../progress/2026-09/2026-09-17-intake-jev-sageattn.md)).
-- **Installed-tool pins live in two places, and only one survives a rebuild.** `opencode-ai@1.18.31` was installed under `/usr/local/share/npm-global` to match the audited pin `350c726a`, but `.devcontainer/Dockerfile` installs no OpenCode, so a container rebuild silently reverts to whatever the host has (`1.18.18`). The P0.4 runner's `plan` preflight checks the pinned version, so the drift is caught at run time; the Dockerfile pin is the standing fix ([harness-selection](../handoffs/active/harness-selection-and-integration.md)). The same shape holds for the orchestrator MCP server: root `.mcp.json` now launches it on the project venv, and that path resolves only inside the container.
+- **Installed-tool pins live in two places, and only one survives a rebuild.** `opencode-ai@1.18.31` was installed under `/usr/local/share/npm-global` to match the audited pin `350c726a`, but `.devcontainer/Dockerfile` installs no OpenCode, so a container rebuild silently reverts to whatever the host has (`1.18.18`). The P0.4 runner's `plan` preflight checks the pinned version, so the drift is caught at run time; the Dockerfile pin is the standing fix ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)). The same shape holds for the orchestrator MCP server: root `.mcp.json` now launches it on the project venv, and that path resolves only inside the container.
 - **FW-2 is no longer a build-posture question.** The fuzzy-workflow GUI's data contract (workflow document schema, executor, `/dashboard/api/workflows/*`) lives in `epyc-orchestrator`; the authoring page, registry row, `health_path` probe and freshness envelope live on the hub `:8100`; nothing lives in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze (HS-5b) ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
 
 ### Open questions
@@ -329,7 +329,7 @@ Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-type
 
 - [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md) — the four-layer record and the kernel-README defect.
 - [harness-card.md](../docs/reference/harness-candidates/harness-card.md) — both cards and the re-publishing rule.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — P0-MCP-b, P2 carry, P4-pre, the Dockerfile pin follow-up.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0-MCP-b, P2 carry, P4-pre, the Dockerfile pin follow-up.
 - [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md) — the appended FastMCP correction.
 - [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the residuals list.
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the runner, the native-arm failure, TD-1b.
@@ -390,13 +390,13 @@ was modified.
   - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 - **The HS-4 MCP launcher is fixed on both sides.** The operator applied the root `.mcp.json` edit, which
   points the `orchestrator` server at the project venv (root `ed1dfd57`). The venv interpreter resolves only
-  inside the container. [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+  inside the container. [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 
 ### Source References (2026-09-17 evening)
 
 - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): NIB2-79 evidence, NIB2-78a changes and tests.
 - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): NIB2-78a/79 ticks.
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md): P0-MCP-a.
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the evening landing table.
 
 ## Compiled Update — 2026-09-17 (afternoon): the watchdog's watchdog runs a pinned copy, and the hub lifecycle is written down once
@@ -491,9 +491,9 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 ### New Findings (2026-07-16 — harness cooperation is now part of the tool-surface contract)
 
-- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **The MCP wrapper makes compression a reusable tool surface, not just a hook-side experiment.** Phase 4 now has a direct MCP-tool wrapper path for compression, which means the implementation can be consumed by tool-aware harnesses as a first-class tool rather than only as a shell hook. That keeps the compression path compatible with an open harness that defers to the Orch's policy layer. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
+- **The MCP wrapper makes compression a reusable tool surface, not just a hook-side experiment.** Phase 4 now has a direct MCP-tool wrapper path for compression, which means the implementation can be consumed by tool-aware harnesses as a first-class tool rather than only as a shell hook. That keeps the compression path compatible with an open harness that defers to the Orch's policy layer. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration).
 
 ## Key Findings
 
@@ -779,7 +779,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 - [GitNexus orchestrator integration](../research/deep-dives/gitnexus-orchestrator-integration.md) -- 5 integration options ranked by ROI, context injection > tool calling insight, re-indexing strategy, KuzuDB direct query path
 - [corpus-augmented-prompt-lookup-revalidation.md](../handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md) -- 2026-07-03 A10 registry-loading repair, role-level corpus gate, structured evidence logging, and offline health-probe result for the local code corpus
 - [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) -- 7-handler output compression (60-90% savings), feature-flagged, layered before spill mechanism
-- [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- frecency file discovery, combined operations, contextual suggestions for REPL efficiency
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency) -- frecency file discovery, combined operations, contextual suggestions for REPL efficiency
 - [intake-269](https://github.com/nvk/llm-wiki) nvk/llm-wiki -- Claude Code plugin for LLM-compiled knowledge bases (adopt_patterns, high relevance)
 - [intake-277](https://github.com/NousResearch/hermes-agent/pull/5100) Hermes Agent PR#5100 LLM Wiki Skill -- Karpathy pattern for structured knowledge compilation (already_integrated)
 - [intake-321](https://github.com/forrestchang/andrej-karpathy-skills) Karpathy-Inspired Claude Code Guidelines -- CLAUDE.md plugin pattern (already_integrated)
@@ -1389,7 +1389,7 @@ Reading OpenCode's retry, session and MCP code against the orchestrator found fo
 **MCP catalog growth needs acceptance.** Before the MCP tool catalog OpenCode sees grows, a frozen set of previously passing tasks is re-run before and after the change, with per-task tokens reported. In EvoHarnessBench, exposing the full tool catalog raised ReAct's pass rate from 26.0 to 30.2 but its tokens from 27.2M to 75.8M (intake-1821#2).
 
 ### Source References
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-OD-8/9, HS-16/17/18, the standing rule, the catalog-growth acceptance, the dormant triggers.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-8/9, HS-16/17/18, the standing rule, the catalog-growth acceptance, the dormant triggers.
 - [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 2026-09-26 addendum (E2 correction, session headers, MCP timeout).
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — the two request headers the API reads; `x_force_role`, with `x_force_model` as its deprecated alias.
 
@@ -1410,7 +1410,7 @@ validated against the supported dependency major. All evidence here is bounded m
 execution, not model inference or deployed-process acceptance. The earlier 2026-09-26 seam audit
 above is historical; HS-OD-9 queue-derived delays remain separate peer-dependent work.
 
-Source: [harness acceptance](../handoffs/active/harness-selection-and-integration.md),
+Source: [harness acceptance](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
 [NI06 MCP evidence](../progress/2026-10/2026-10-05-ni06-hs17-mcp-progress.md), and
 [sixth source boundary](../progress/2026-10/2026-10-05-codex-noninf.md).
 Orchestrator source main `41ab07fc`; run `37284177689`: MCP 45, API 376, config/topology 101,
@@ -1924,9 +1924,9 @@ Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-t
 - **The six invalid pairs were partly a harness bug.** Free-form `assignee=null` violated a string schema, and the benchmark then discarded the parsed invalid objects and dispatched `{}`, producing synthetic missing-required errors rather than a selector omission. APP main `367df713` now preserves the original parsed object (future runs only). An earlier 67 s smoke peaked at 39.4 GB, over the standing 8 GiB R11 cap, and is recorded as over-cap, not qualification. ([source](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Q4 shadow-only tool-argument observation is source-published with the flag OFF.** TD-4 schema preflight passed 18/18 and 134 focused tests pass. Separately, TD-15a lifts the chat-completions logprob cap to 128 (a real native smoke returned 64/128 alternatives for 64/128 requested), which establishes protocol capacity, not task accuracy or TD-15 necessity. ([source](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Request-source propagation and ThinkPRM T2 are source-closed; production acceptance is open.** Request-source propagation (merged at orchestrator `517a7eb3`, 310 merged-source tests) and the direct-producer repair (`b0f8613d`, forwards only trusted prompt-layout fields and native token counts) await an API reload at the owning session's boundary before RTE-LOG-1 can pass. ThinkPRM-1.5B (Q4_K_M, 1.12 GB) now loads natively, and the opt-in T2 verifier (default OFF, fail-closed cross-family guard rejecting Qwen/unknown generators) passed 392 tests; its control runs are `control_only`, so no quality or calibration claim. ([source](../handoffs/active/eval-tower-program.md))
-- **The per-turn thinking budget is wired behind its own flag, default off.** `repl_thinking_budget` (orchestrator `6ed745fa`) carries a request-local budget through graph threads and streaming REPL routes; positive budgets separate completed-response cache keys while off/unset/zero keep byte-identical legacy keys (140 tests). Source closure only: no enablement, reload or measured gain. ([source](../handoffs/active/agentic-serving-harness-fixes.md))
+- **The per-turn thinking budget is wired behind its own flag, default off.** `repl_thinking_budget` (orchestrator `6ed745fa`) carries a request-local budget through graph threads and streaming REPL routes; positive budgets separate completed-response cache keys while off/unset/zero keep byte-identical legacy keys (140 tests). Source closure only: no enablement, reload or measured gain. ([source](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes))
 
-Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) · [eval-tower-verification](../handoffs/active/eval-tower-program.md) · [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md) · [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [RTE/T2 source checkpoint](../progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md)
+Sources: [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) · [eval-tower-verification](../handoffs/active/eval-tower-program.md) · [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [RTE/T2 source checkpoint](../progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 

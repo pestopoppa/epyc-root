@@ -1483,7 +1483,7 @@ D-c1 on real traffic.
   first-party evidence exists.
 - [master-handoff-index.md](master-handoff-index.md) § N17 — the conditional-depth surface this
   handoff supplies evidence for.
-- [repl-turn-efficiency.md](repl-turn-efficiency.md)
+- [repl-turn-efficiency.md](harness-program.md#track-repl-turn-efficiency)
 - [repl-session-memory-maturity.md](memory-program.md#track-repl-session-memory-maturity) — E2 rescoped there as D-c1
   (real-traffic measurement, not a synthetic arm here).
 

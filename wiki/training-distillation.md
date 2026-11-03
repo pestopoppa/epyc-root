@@ -285,7 +285,7 @@ could therefore only ever act as a **frozen off-policy sampler**, which defeats
 the async-GRPO premise outright — on top of separate-GPU, FSDP2-only and no
 PEFT/LoRA path. The adapter's *existence* stays as a decision-matrix column;
 the training capability is declined.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-5 caveat
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-5 caveat
 
 ### A merged LoRA fine-tune is inspectable at byte level — and its zero-delta set is free instrumentation
 
@@ -334,7 +334,7 @@ relative to a baseline you can independently locate.
 
 - [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
 - [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
 - [`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the vendor-baseline reconstruction that killed a published uplift claim
 

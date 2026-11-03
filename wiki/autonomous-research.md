@@ -168,7 +168,7 @@ Sources: [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champ
 - **New dimensions and ranking.** A `threads_batch` runtime arm (`-tb` decoupled from `-t`, normalised so existing recipe hashes and floors are unchanged); a `GGML_FA_SPLIT_KV=0` width-invariance plan; GPU serving profiles now carry tokens and per-kernel `launches_per_token` / `ns_per_token`, ordering the planner's hotspot table and the candidate timing queue (ranking only, no verdict path touched). `-tb 96` needs the whole host, so the draft run is BACKLOG until the CH-27 floors are calibrated on the current champion. AKX-AUTO-6 (auto re-anchor on champion advance) is ticked: a dry-run `plan` names the C3 advance and is actionable; the live exercise waits on workspace-7b's Q38FN relaunch and should take the `dcc853b55` image. AKX-ALL-LB3.2a wrote the attribution instrument (40 tests; critical path = a measurement build).
 - **Harness lessons (this session).** (1) A non-executable re-exec returned rc 126 and `c5-cpu-correctness` recorded it as a verdict; wrappers now treat 3 / 64 / 124-127 / >= 128 as harness errors, never verdicts. (2) A stale-build check grepped the thin `llama-server` launcher, but the option table lives in `libllama-common`; check the library that holds the symbol. (3) The C4 A/B gate now guards on its own noise floor (> 10% / 4% = NOISY, retry). (4) The registry rebuild reads the master registry from research origin/main; a regen on a stale shared clone dropped 10 `ctx_checkpoints: 32` lines and repointed the master, so guard `3c4d6881` refuses a registry blob that differs from origin/main (override `--allow-stale-research-registry` offline only) and the clean regen `e0ba98fe` keeps every `ctx_checkpoints: 32`; never sync the shared clone to make a rebuild work.
 
-Sources: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+Sources: [autokernel-research-loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [kernel-freeze-runbook](../docs/reference/kernel-freeze-runbook.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 11): a launcher's class must match the grant shape; C2 b-rerun has no verdict yet
 
@@ -312,7 +312,7 @@ The admission comparison also separates decisions that can otherwise be conflate
 
 ### Source References
 
-- [HIL reviewed design](../docs/design/harness-improvement-loop-design-20261006.md) and [current handoff](../handoffs/active/harness-improvement-loop.md) — completed preparation and pending architecture.
+- [HIL reviewed design](../docs/design/harness-improvement-loop-design-20261006.md) and [current handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — completed preparation and pending architecture.
 - [Admission and skill granularity](../docs/reference/ni08-admission-and-skill-granularity.md) — distinct selection stages and absent task-level input.
 - [AutoPilot handoff](../handoffs/active/autopilot-program.md) — compact failure signatures and default-off context diagnostics, without donor-selection or budget adoption.
 
@@ -324,7 +324,7 @@ The admission comparison also separates decisions that can otherwise be conflate
 - [Master decision queue](../handoffs/active/master-handoff-index.md)
 - [Unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program)
 - [HIL reviewed design](../docs/design/harness-improvement-loop-design-20261006.md)
-- [current handoff](../handoffs/active/harness-improvement-loop.md)
+- [current handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 - [Admission and skill granularity](../docs/reference/ni08-admission-and-skill-granularity.md)
 - [AutoPilot handoff](../handoffs/active/autopilot-program.md)
 
@@ -436,7 +436,7 @@ reproduction and the cache timing; **inferred** for the OAB-9 predictions. Three
 - [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) — *Reduced-scope planner build
   (evening)*.
 - [`agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md) — *Context as files, per-call
-  metrics, tool-output caching* (the how-to form); [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md)
+  metrics, tool-output caching* (the how-to form); [`repl-turn-efficiency.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
   S4-T1 (comparability target).
 
 ## Compiled Update — 2026-09-24 (wrap-up #4): DS41 run 9 is ready on anchor `5a60152ae`; both floors recalibrate off-hours
@@ -645,7 +645,7 @@ prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
 
   Each of these looks like a model failure (empty, truncated or abstaining reply) and is not one.
   ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20;
-  [harness-selection](../handoffs/active/harness-selection-and-integration.md) HS-4 P7)
+  [harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration) HS-4 P7)
 - **Capping tool output did not stop the context overflow. The model's deliberation did the overflowing.** The
   plain-seat reference for one proposal: 71 steps, 70 tool calls, 63.8k decoded tokens, 40.3 min, 2 compactions,
   275k chars of tool output. The first bounded arm (output-capped MCP tools, 12 KB `tool_output` cap, step cap,
@@ -681,7 +681,7 @@ prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
   The bounded seat is the reference that backend must beat on the same driver. The operator dropped the idea of
   splitting heavy planning from fast authoring; it is not filed.
   ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend);
-  [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md) S4-T1 — `RoleResult.turns` was never
+  [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) S4-T1 — `RoleResult.turns` was never
   copied, so every seeding record carries `turns=0`)
 - **Belief-kernel wiring filed on the write side** (VB-AK-SEAT): per-call `actor-calls.jsonl` and the A/B's
   `result-<arm>.json` are measurements. Today they are n = 1 per arm, and the arms differ by prompt as well as by
@@ -4503,7 +4503,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 
 **Confidence: scoped to cited records and source controls.**
 
-- Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [retrieval](../handoffs/active/repl-embedding-retrieval.md))
+- Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
 - Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane); [tool-use contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 
 

@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 18,
-      "handoffs": 10,
+      "handoffs": 9,
       "oldest_advance": "2026-10-24",
-      "open": 783
+      "open": 755
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -32,9 +32,9 @@
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
-      "handoffs": 5,
+      "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 92
+      "open": 120
     }
   },
   "duplicates": {},
@@ -80,22 +80,6 @@
           "open": 11
         }
       ]
-    },
-    "agentic-serving-harness-fixes.md": {
-      "blocked": 0,
-      "closed": 61,
-      "guarded": 0,
-      "last_advanced": "2026-11-01",
-      "open": 30,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-14",
-      "state": "active",
-      "total": 91
     },
     "attention-matching-kv-compaction.md": {
       "blocked": 0,
@@ -159,7 +143,7 @@
       "blocked": 2,
       "closed": 747,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 220,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -253,9 +237,10 @@
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
-            "EVL-37",
+            "UFH-01#repl-turn-efficiency",
+            "UFH-01#qwen-chat-template-evaluation",
             "RTG-09",
-            "UFH-01"
+            "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
           "line": 13968,
@@ -445,7 +430,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 49,
+      "closed": 50,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -457,7 +442,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 55
+      "total": 56
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1143,52 +1128,12 @@
       "state": "active",
       "total": 11
     },
-    "harness-improvement-loop.md": {
-      "blocked": 1,
-      "closed": 42,
+    "harness-program.md": {
+      "blocked": 15,
+      "closed": 221,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 16,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-08",
-      "state": "active",
-      "total": 59,
-      "tracks": [
-        {
-          "blocked": 1,
-          "closed": 37,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 15
-        },
-        {
-          "blocked": 0,
-          "closed": 5,
-          "gates": [
-            "UFH-01"
-          ],
-          "guarded": 0,
-          "line": 654,
-          "markers": 1,
-          "name": "opencode-shell-integration",
-          "open": 1
-        }
-      ]
-    },
-    "harness-selection-and-integration.md": {
-      "blocked": 12,
-      "closed": 26,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 16,
+      "last_advanced": null,
+      "open": 111,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1197,7 +1142,94 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 54
+      "total": 347,
+      "tracks": [
+        {
+          "blocked": 12,
+          "closed": 26,
+          "gates": [
+            "RTG-09"
+          ],
+          "guarded": 0,
+          "line": 14,
+          "markers": 1,
+          "name": "harness-selection-and-integration",
+          "open": 16
+        },
+        {
+          "blocked": 0,
+          "closed": 29,
+          "gates": [],
+          "guarded": 0,
+          "line": 388,
+          "markers": 1,
+          "name": "repl-turn-efficiency",
+          "open": 18
+        },
+        {
+          "blocked": 0,
+          "closed": 34,
+          "gates": [],
+          "guarded": 0,
+          "line": 757,
+          "markers": 1,
+          "name": "qwen-chat-template-evaluation",
+          "open": 10
+        },
+        {
+          "blocked": 1,
+          "closed": 37,
+          "gates": [
+            "UFH-01#harness-selection-and-integration"
+          ],
+          "guarded": 0,
+          "line": 1521,
+          "markers": 1,
+          "name": "harness-improvement-loop",
+          "open": 15
+        },
+        {
+          "blocked": 0,
+          "closed": 5,
+          "gates": [
+            "UFH-01#harness-selection-and-integration"
+          ],
+          "guarded": 0,
+          "line": 2179,
+          "markers": 1,
+          "name": "opencode-shell-integration",
+          "open": 1
+        },
+        {
+          "blocked": 2,
+          "closed": 29,
+          "gates": [
+            "RTG-08",
+            "INF-06",
+            "UFH-01#repl-turn-efficiency",
+            "UFH-01#qwen-chat-template-evaluation",
+            "UFH-01#harness-selection-and-integration"
+          ],
+          "guarded": 0,
+          "line": 2258,
+          "markers": 1,
+          "name": "repl-embedding-retrieval",
+          "open": 21
+        },
+        {
+          "blocked": 0,
+          "closed": 61,
+          "gates": [
+            "INF-77",
+            "UFH-01#harness-selection-and-integration"
+          ],
+          "guarded": 0,
+          "line": 2679,
+          "markers": 1,
+          "name": "agentic-serving-harness-fixes",
+          "open": 30
+        }
+      ]
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
@@ -1871,7 +1903,7 @@
           "blocked": 0,
           "closed": 0,
           "gates": [
-            "UFH-14"
+            "UFH-01#agentic-serving-harness-fixes"
           ],
           "guarded": 0,
           "line": 1337,
@@ -2148,60 +2180,6 @@
       "row_id": "EVL-49",
       "state": "active",
       "total": 19
-    },
-    "repl-embedding-retrieval.md": {
-      "blocked": 2,
-      "closed": 29,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 21,
-      "owner_index": "user-facing-harness-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "UFH-12",
-      "state": "active",
-      "total": 52
-    },
-    "repl-turn-efficiency.md": {
-      "blocked": 0,
-      "closed": 63,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 28,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-37",
-      "state": "active",
-      "total": 91,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 29,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 18
-        },
-        {
-          "blocked": 0,
-          "closed": 34,
-          "gates": [],
-          "guarded": 0,
-          "line": 365,
-          "markers": 1,
-          "name": "qwen-chat-template-evaluation",
-          "open": 10
-        }
-      ]
     },
     "reviewer-escalation-and-human-gate-policy.md": {
       "blocked": 5,
@@ -2745,21 +2723,12 @@
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
-    "EVL-37": {
-      "deps": [],
-      "handoff": "repl-turn-efficiency.md",
-      "id": "EVL-37",
-      "index": "research-evaluation-index.md",
-      "line": 19,
-      "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
-      "track": "repl turn efficiency"
-    },
     "EVL-47": {
       "deps": [],
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2772,7 +2741,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2783,7 +2752,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -3094,7 +3063,7 @@
     },
     "RTG-30": {
       "deps": [
-        "UFH-14"
+        "UFH-01"
       ],
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
@@ -3169,37 +3138,12 @@
       "deps": [
         "RTG-09"
       ],
-      "handoff": "harness-selection-and-integration.md",
+      "handoff": "harness-program.md",
       "id": "UFH-01",
       "index": "user-facing-harness-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
       "track": "harness selection and integration"
-    },
-    "UFH-08": {
-      "deps": [
-        "UFH-01"
-      ],
-      "handoff": "harness-improvement-loop.md",
-      "id": "UFH-08",
-      "index": "user-facing-harness-index.md",
-      "line": 20,
-      "next_action": "Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts",
-      "track": "harness improvement loop"
-    },
-    "UFH-12": {
-      "deps": [
-        "RTG-08",
-        "INF-06",
-        "EVL-37",
-        "UFH-01"
-      ],
-      "handoff": "repl-embedding-retrieval.md",
-      "id": "UFH-12",
-      "index": "user-facing-harness-index.md",
-      "line": 21,
-      "next_action": "REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision",
-      "track": "repl embedding retrieval"
     },
     "UFH-13": {
       "deps": [],
@@ -3209,18 +3153,6 @@
       "line": 17,
       "next_action": "ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
-    },
-    "UFH-14": {
-      "deps": [
-        "INF-77",
-        "UFH-01"
-      ],
-      "handoff": "agentic-serving-harness-fixes.md",
-      "id": "UFH-14",
-      "index": "user-facing-harness-index.md",
-      "line": 18,
-      "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun",
-      "track": "agentic serving harness fixes"
     }
   },
   "schema": "index_state.v1"

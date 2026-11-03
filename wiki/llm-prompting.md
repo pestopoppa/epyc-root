@@ -159,7 +159,7 @@ LM calls** (independently cross-checked at 1,839–7,051 rollouts). On this host
 that is **hours to days per compile**, so a compile is budgeted as a
 **region-locked campaign** and **never** as a background task. Any proposal that
 treats prompt optimization as free is priced against this line.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-11
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-11
 
 ### Prompt text is where the effect lives — a measured 19× over the training objective
 
@@ -188,7 +188,7 @@ so drift is measurable on **saved traces** and is deterministic-replay eligible 
 a probe that costs no new inference. Their own red flag travels with it:
 **Information Handoff Recall drops to 0.32/0.55 under parent-child execution even
 on a frontier model.**
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
 
 ### A judge prompt's accuracy has a plateau — budget it accordingly
 
@@ -204,7 +204,7 @@ plateau finding is scoped to the gate it was measured on.
 ### Source References
 
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
 - [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — session record of the dive that produced the prompting-over-objective correction
 
@@ -218,7 +218,7 @@ The determinism audit split the question cleanly: **prompt *construction* was de
 
 ### A chat template is executable code in the prompt-construction position (PCD-T1, 2026-08-21)
 
-The 2026-08-21 chat-template intake round established a constraint any prompt-side change must now respect: the frozen production kernel (`production-consolidated-v9`, `0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the tree are a stale TODO comment at `common/chat.cpp:749`, a test, and a doc. That engine implements **input marking**: `jinja::string` carries an `is_input` flag through one-to-one, one-to-many and many-to-one transformations specifically so user content cannot forge special tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision to run a third-party or vendor-refreshed template must be checked against that input-marking path before it routes through the cc-set gate — neither community template repository mentions it. (Engine detail and the `/completion` vs `/v1/chat/completions` routing surface are compiled in [Chat Templates](chat-templates.md); the operative task gate is CT-3 in [`qwen-chat-template-evaluation.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation).) [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism) §PCD-T1
+The 2026-08-21 chat-template intake round established a constraint any prompt-side change must now respect: the frozen production kernel (`production-consolidated-v9`, `0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the tree are a stale TODO comment at `common/chat.cpp:749`, a test, and a doc. That engine implements **input marking**: `jinja::string` carries an `is_input` flag through one-to-one, one-to-many and many-to-one transformations specifically so user content cannot forge special tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision to run a third-party or vendor-refreshed template must be checked against that input-marking path before it routes through the cc-set gate — neither community template repository mentions it. (Engine detail and the `/completion` vs `/v1/chat/completions` routing surface are compiled in [Chat Templates](chat-templates.md); the operative task gate is CT-3 in [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation).) [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism) §PCD-T1
 
 ### The body→template route is exactly one field wide: `chat_template_kwargs` (PRB-T3, 2026-08-21)
 
@@ -233,7 +233,7 @@ The same round extended the reasoning-effort certification contract: the chat te
 - [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism) — the D1–D4 determinism arc (sampling fixes, J12 probe, open certification), the `fe390e5a` OpenAI-compatible propagation, and the PCD-T1 chat-template-executable-code constraint
 - [`per-request-reasoning-budget.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget) — PRB-T3: top-level `reasoning_effort` dropped, `chat_template_kwargs` the only body→template route, live `/apply-template` confirmation
 - [`reasoning-effort-levels.md`](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — E-7: the chat template as a calibration-voiding axis and the `template_sha` stamp (first applied CT-E7, 2026-08-22)
-- [`qwen-chat-template-evaluation.md`](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation) — CT-3 (the input-marking gate for any template substitution) and CT-E7 (the template-stamped recalibration)
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-3 (the input-marking gate for any template substitution) and CT-E7 (the template-stamped recalibration)
 - [Chat Templates](chat-templates.md) — the compiled engine finding (`common/jinja/` with input marking, NOT minja) and the endpoint routing surface
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the chat-template intake round (commit `612fbd99`, 12 closed tasks via 5-agent fan-out) that produced PCD-T1, PRB-T3 and the E-7 amendment
 - [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — the CT-E7 terse-pilot recalibration

@@ -46,7 +46,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-28 workspace-58 wrap)
 
-- [handoffs/active/repl-embedding-retrieval.md](../handoffs/active/repl-embedding-retrieval.md) — G-S facets, 2.10 acceptance, R1-R5
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — G-S facets, 2.10 acceptance, R1-R5
 - [progress/2026-10/2026-10-27-ufh12-acceptance.md](../progress/2026-10/2026-10-27-ufh12-acceptance.md) — UFH-12 acceptance
 - [progress/2026-10/2026-10-27-codex-ufh12-gs-wiring.md](../progress/2026-10/2026-10-27-codex-ufh12-gs-wiring.md) — G-S wiring preparation
 
@@ -59,7 +59,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **Migration tool B-1..B-5 code is in; acceptance is owed.** Source-less 1024-d session vectors stay archived in `.pre-eg2` (hashed, restored by rollback), the strategy store is its own unit, and side-aware embedding raises `SideRequiredError` instead of silently embedding unprefixed. Still owed before ticking 2.10: `plan` on live dirs and `run --apply` on a copy (needs an EG2 server). REPL-EMB-2.13 migrates every `embed_*` call site to pass `side=`; R1-R5 own the BGE-trained consumers (`irt_scorer`, the soft-label router dataset and retrain, `lightweight_gat`, `routing_graph` DOUBLE[1024] tables, every similarity threshold tuned on BGE cosines); until retrained the dimension guard must refuse 256-d input. REPL-EMB-2.14 switches the TaskEmbedder fallback from the in-tree v9 `llama-embedding` (serves nothing) to the v10 store binary after a 200-text cosine >= 0.9999 parity check.
 - **Real-trace capture (2.8a).** `trace_capture.py` plus a tap in `context_bundle.py` records hash-and-span retrieval traces (OFF unless `EPYC_REPL_TRACE_CAPTURE=1`, PII-gated); 2.8b routes them through the VB-UFH12-RETR write side as a `real_trace` stratum.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
+Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md)
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): search-retrieval — the REPL-EMB-2.2 offline eval has run, the registered arms failed, EmbeddingGemma 2 was adopted as an extension-only decision
 
@@ -82,7 +82,7 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
 
 ### Source References (2026-10-20 sweep 2, search-retrieval)
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — 2.1 rule, 2.2 run result, operator decision, 2.5/2.6 evidence, pilot timing, 2.8.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — 2.1 rule, 2.2 run result, operator decision, 2.5/2.6 evidence, pilot timing, 2.8.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR and VB-UFH12-EMBSPEED write sides (first run written, box open).
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — vision-side embedder screen trigger (collections empty).
 
@@ -108,7 +108,7 @@ The older K2 paragraph about hard-coded web caps is historical. Current source r
 
 ## Source References
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — sweep 2 (2026-10-20)
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — sweep 2 (2026-10-20)
 - [Forced identity](../docs/reference/kb-force-build-identity-contract.md)
@@ -646,7 +646,7 @@ Per [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.
 
 ### ColGREP CLI replaces NextPLAID code container for `code_search()` (intake-355, S7)
 
-Per [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) S7. ColGREP is the same NextPLAID engine family (LateOn-Code-edge ColBERT) packaged as a single Rust binary with hybrid FTS5+ColBERT scoring fused via Reciprocal Rank Fusion and tree-sitter AST chunking. v1.0.6 panicked on ONNX/GPU init on the CUDA-less EPYC host; v1.2.0 (released 2026-04-10) replaced the panic with a CPU-fallback message and added `NEXT_PLAID_FORCE_CPU` / `--force-cpu`.
+Per [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) S7. ColGREP is the same NextPLAID engine family (LateOn-Code-edge ColBERT) packaged as a single Rust binary with hybrid FTS5+ColBERT scoring fused via Reciprocal Rank Fusion and tree-sitter AST chunking. v1.0.6 panicked on ONNX/GPU init on the CUDA-less EPYC host; v1.2.0 (released 2026-04-10) replaced the panic with a CPU-fallback message and added `NEXT_PLAID_FORCE_CPU` / `--force-cpu`.
 
 **Live A/B (paired, n=14 ground-truth queries, 2026-04-29)** — `_code_search()` routed through colgrep CLI vs NextPLAID HTTP, identical input:
 
@@ -669,7 +669,7 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 
 ### Sources
 
-- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) S7 — ColGREP integration, live A/B verdict, default flip, cold-start daemon options
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) S7 — ColGREP integration, live A/B verdict, default flip, cold-start daemon options
 - [`progress/2026-04/2026-04-29.md`](../progress/2026-04/2026-04-29.md) — session log
 - intake-355 NextPlaid/ColGREP — v1.2.0 unblock notes
 - v1.2.0 release notes (`github.com/lightonai/next-plaid` 2026-04-10) — panic→fallback, hybrid search, pipelined indexing
@@ -1392,9 +1392,9 @@ Two measured facts motivate it:
 
 ### Source References
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — UFH-12 plan, D1/D2, phases 0-5.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — UFH-12 plan, D1/D2, phases 0-5.
 - [Tool output compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-SP-3 and the `spill_pointer_follows` trajectory field.
-- [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md) — the S4 tool gate and its D2 waiver for retrieval.
+- [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — the S4 tool gate and its D2 waiver for retrieval.
 - [KV cache](kv-cache.md) — the embedder 256-token slot defect.
 
 **Confidence:** verified for the placement and code facts; retrieval quality and cost are unmeasured
@@ -1419,7 +1419,7 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 - **The operator chose KEEP plus a cap, overriding the rollback band on `:8180`.** Rolling back would restore 0.53, which is worse than the 0.86 kept. REPL-EMB-1.4 caps in-flight embeddings on instances that share a NUMA node with a frontdoor half that is decoding, using the D1 rule: idle instance anywhere, else the requesting model's own hardware, else lexical now and index later. It then re-measures G1 against ≥ 0.95. The gate driver's belief-kernel write side (VB-UFH12-PLACEMENT) must be wired before that re-measure.
 
 ### Source References
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-0.1/0.2 results table, D3, REPL-EMB-1.4.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-0.1/0.2 results table, D3, REPL-EMB-1.4.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the application and gate narrative.
 
 ## Compiled Update — 2026-09-26 (late): the GPU half of the embedder placement is a separate package
@@ -1438,7 +1438,7 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 
 ### Source References
 
-- [repl-embedding-retrieval.md](../handoffs/active/repl-embedding-retrieval.md) — D1, REPL-EMB-0.3, REPL-EMB-1.1.
+- [repl-embedding-retrieval.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — D1, REPL-EMB-0.3, REPL-EMB-1.1.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final, derived-actionables row 7.
 - epyc-orchestrator commit `120b55b7` (`fix(repl_memory): define ParallelEmbedderClient async context manager natively`).
 
@@ -1461,7 +1461,7 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 
 ### Source References
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — § Narrowed plan, REPL-EMB-2.1 as registered, the 0.3/1.4 freeze markers, B.1.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — § Narrowed plan, REPL-EMB-2.1 as registered, the 0.3/1.4 freeze markers, B.1.
 - [2026-09-27 orch-design progress](../progress/2026-09/2026-09-27-orch-design.md) — § UFH-12 embedder policy arms A0 and A3, § OP-66.
 - [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the kill-rule draft and the freeze list.
 
@@ -1496,7 +1496,7 @@ No retrieval-quality result exists yet. REPL-EMB-2.2, the offline eval, still de
 
 ### Source References
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-1.1/1.2/1.3 (landed), 4.4 (deployed), 4.5 (filed), the kill rule.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-1.1/1.2/1.3 (landed), 4.4 (deployed), 4.5 (filed), the kill rule.
 - [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — the context.search landing and the deploy for `orsv`.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-runtime-flag-survived-reboot.
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35, the dict-idiom crash that blocked the arm.
@@ -1554,19 +1554,19 @@ Operationally the intake bound three tasks to the owner handoff: REPL-EMB-2.5 (i
 
 ### Source References (2026-10-20 retrieval intake)
 
-- [REPL embedding retrieval handoff](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-2.5/2.6/2.7 and the frozen-at-launch rule.
+- [REPL embedding retrieval handoff](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-2.5/2.6/2.7 and the frozen-at-launch rule.
 - [Intake index](../research/intake_index.yaml) — `intake-1964` dive_corrections (2026-10-20) and `intake-2009` claim anchors.
 - [Internal KB handoff](../handoffs/active/knowledge-pipelines.md) — current equivalents for the agent-memory pattern.
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — scope, dispositions and operator steering for the batch.
 
 ## Compiled Update — 2026-10-21 (sweep 3): the EG2 adopted configuration is BM25 + EG2 @256, RRF (operator ruling)
 
-- REPL-EMB-2.2 run result (frozen at launch, 2026-10-20): primary deciding set n = 346, lexical baseline grep recall@5 0.538 (bm25 0.451); the registered kill rule FAILED on the registered arms (e.g. hybrid-BGE-large 0.480, diff -0.058). The box was ticked at close-out after the rule was applied and the operator decision recorded. ([repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), 2026-10-20)
+- REPL-EMB-2.2 run result (frozen at launch, 2026-10-20): primary deciding set n = 346, lexical baseline grep recall@5 0.538 (bm25 0.451); the registered kill rule FAILED on the registered arms (e.g. hybrid-BGE-large 0.480, diff -0.058). The box was ticked at close-out after the rule was applied and the operator decision recorded. ([repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), 2026-10-20)
 - Operator ruling 2026-10-20 (verbatim in the handoff): keep the BM25 hybrid; the adopted configuration is BM25 + EG2 @256 fused with `rrf_fuse`, the measured arm (recall@5 0.676); grep stays the baseline, not a fusion leg. FP16 is the stored-vector format only; EG2 inference stays BF16. Package open item N-4 (extra grep-fused arm) is NOT NEEDED. It ships with v11 together with the stack change and store migration, never piecemeal. ([stack-change package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md))
 - A post-freeze, non-deciding supplementary grep+EG2 arm, rebuilt approximately from cached top-10 rankings (under-reads the real BM25 hybrid by 0.017 pooled), read pooled recall@5 0.682, +0.145 vs grep, CI [0.101, 0.191]; it does not change the registered verdict. ([progress 2026-10-20](../progress/2026-10/2026-10-20.md))
 - TOC-SP-3 (not run): a verified-quote receipt for the spill worker summary, sharing one failing-log set with REPL-EMB-3.1/3.2. ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [eg2 package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression).
+Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [eg2 package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression).
 
 ## Compiled Update — 2026-10-21 (sweep 5): the dead corpus-retrieval path is switched off
 
@@ -1579,14 +1579,14 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
   - **When it applies, and what is left.** The change takes effect at the next stack start. Removing the callers stays an optional step 2.
 - **Retrieval stays pointer-based.** REPL-EMB-6.1's inlining layout contract is a contract for any future inlining path. Its order-invariance test passes (`TestDocChunkLayoutContract`). The hygiene pass corrected the handoff's citation of the orchestrator lane from `e11ea596` to `5d2140f8`.
 
-Sources: [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress hygiene-3c4ca599](../progress/2026-10/2026-10-21-hygiene-3c4ca599.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
+Sources: [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress hygiene-3c4ca599](../progress/2026-10/2026-10-21-hygiene-3c4ca599.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
 
 
 ## Compiled Update — 2026-10-27: UFH-12 Request B copy and calibration boundary
 
 **Confidence: verified** for the scoped owner-accepted result. The online snapshot COPY covered 10 hashes, 4 databases, 65,942 documents and 0.762 GiB. The accepted calibration used a 768-dimensional candidate; repeated probe cosine was 1.0 across 32 sampled documents / 8 strata from the 65,942-document population. Estimated embedding time is 2,317.6613732670085 seconds and the 3,897-second conservative window is a sizing estimate only. `full_apply=false` and `query_drift=false`; the server was reaped and absent. This does not establish a full migration, 16-production-consumer parity, source quiescence, or global atomicity.
 
-Sources: [REPL-EMB-2.10 Request B](../handoffs/active/repl-embedding-retrieval.md); [2026-10-27 progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md); native result `/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-snapshot-gate/calibration-controller-r2/calibration-result/result.json`; owner receipt `/mnt/raid0/llm/tmp/codex-ni-20261025-coordination/WS58-ACCEPT-UFH-CAL-0847.receipt.json`.
+Sources: [REPL-EMB-2.10 Request B](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [2026-10-27 progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md); native result `/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-snapshot-gate/calibration-controller-r2/calibration-result/result.json`; owner receipt `/mnt/raid0/llm/tmp/codex-ni-20261025-coordination/WS58-ACCEPT-UFH-CAL-0847.receipt.json`.
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
@@ -1594,13 +1594,13 @@ Sources: [REPL-EMB-2.10 Request B](../handoffs/active/repl-embedding-retrieval.m
 
 UFH-12 R3 validated a private migration copy: 65,942 vectors, 32 TaskEmbedder queries, minimum cosine 1.0 against the strict 0.99999 threshold. This is a successful snapshot-gate result, not production adoption; the production decision remains open and the parent 2.10c store was left untouched.
 
-Sources: [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [UFH-12](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
 ## Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (native `result.json`).
 
-- **UFH-12 REPL-EMB-R1 did not pass.** The full paired collection finished rc0, but `passed: false`. The criterion was that both EG2 held-out Spearman correlations reach the paired BGE refit. Difficulty: EG2 0.145 vs BGE 0.175 (fails). Discrimination: EG2 0.091 vs BGE -0.194. There were 102 held out and 408 train; higher is better. ([refactor inference checkpoint](../progress/2026-10/2026-10-28-codex-refactor-inference-checkpoint.md); [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md))
+- **UFH-12 REPL-EMB-R1 did not pass.** The full paired collection finished rc0, but `passed: false`. The criterion was that both EG2 held-out Spearman correlations reach the paired BGE refit. Difficulty: EG2 0.145 vs BGE 0.175 (fails). Discrimination: EG2 0.091 vs BGE -0.194. There were 102 held out and 408 train; higher is better. ([refactor inference checkpoint](../progress/2026-10/2026-10-28-codex-refactor-inference-checkpoint.md); [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
 
 ## Compiled Update — 2026-10-29 (wrap-up sweep)
 
@@ -1610,7 +1610,7 @@ Sources: [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full
 - **Real run:** plan on live dirs rc0 and apply on a COPY rc0 with rows-in = rows-out and cosine >= 0.99999; R3 postcheck covers 64,514 episodic + 1,428 strategy rows with minimum consumer-path cosine 1.0. Plan-observed-stable on 65,942 rows (quiescence not proven). Production adoption remains separate.
 - **Reranker A/B:** LateOn vs GTE on web_research sentinel queries stays gated on AR-3 Package D data; a duplicate box was closed.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research); [episodic-memory-integrity](../handoffs/active/memory-program.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research); [episodic-memory-integrity](../handoffs/active/memory-program.md).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
@@ -1619,10 +1619,10 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
 - **G11: INT8 ColBERT graph fails a 100% top-1 gate.** On 70 K7 queries over 200 frozen real KB chunks, FP32 vs INT8 agrees on top-1 for 59/70 in both the mirror and upstream roots; same-precision mirror vs upstream is 70/70. Max abs delta is 0.141 (query) and 0.184 (document) versus the 0.0066 accepted value, though the separate 200-chunk self-ranking agrees 200/200. This is graph fidelity, not retrieval quality; the upstream literal-prefix tokenizer guard is a separate serving refusal and 11 rank disagreements remain to be investigated. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md))
 - **G12: narrative queries do not open B7.** Evidence-file recall@10 (higher is better) on 20 paired certification questions is 37.50% short vs 38.33% verbose, short minus verbose -0.83 pp, so the predeclared >2 pp drop is not met and `query_maxlen` raising stays blocked. Verbose queries were 77-91 tokens (20/20 over the 48 cap) versus 16-33 short; 90-short recall 37.69%. Caveats: catalog-missing truth paths (cert 53/201), fixed cohort not live traffic, truncation not isolated as cause. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md); [G12 filing](../artifacts/compute/results-filing-c3-g12-20261030.json))
 - **G13: no truncation or punctuation arm clears the +0.02 trigger.** Recall@10 on 70 cases, newly re-embedded matched baseline (4000-char chunks, doc cap 256) 0.3679; punctuation skiplist +0.0071; doc cap 300 -0.0274 (plain) and -0.0405 (punctuation); rechunk 1100 -0.0036 and -0.0143; canonical stored index 0.3679. The historical 0.5690 used a different 577-file corpus and the original gate is unassessable, so no adoption claim follows. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md); [G13 evidence](../artifacts/compute/codex3-g13-truncskip-20261031/SHA256SUMS))
-- **REPL-EMB-2.13 closed, 2.14 parity passes.** Every `embed_*` lookup now passes `side="query"` and every write `side="document"` (orchestrator `5c1dfea7`, flag-on/prefix selection 35/35); the v11 flag flip is separate. The fixed 200-text v9 vs v10 BGE F16 comparison gave cosine >=0.9999 on 200/200 texts (min and max 1.0, 400 hash bindings verified), which is the parity prerequisite only, not a default switch. ([repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [EMB-2.13 audit](../docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md); [EMB-2.14 audit](../artifacts/compute/codex3-emb214-native-0821-20261031/AUDIT.json))
+- **REPL-EMB-2.13 closed, 2.14 parity passes.** Every `embed_*` lookup now passes `side="query"` and every write `side="document"` (orchestrator `5c1dfea7`, flag-on/prefix selection 35/35); the v11 flag flip is separate. The fixed 200-text v9 vs v10 BGE F16 comparison gave cosine >=0.9999 on 200/200 texts (min and max 1.0, 400 hash bindings verified), which is the parity prerequisite only, not a default switch. ([repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [EMB-2.13 audit](../docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md); [EMB-2.14 audit](../artifacts/compute/codex3-emb214-native-0821-20261031/AUDIT.json))
 - **ColBERT encoder PREFIX-3 is a negative/unknown pipeline finding.** The unchanged APP `colbert_encoder.encode(role=ROLE_DOCUMENT)` vs native PyLate 1.4 gave 44 rows with Reason `OUTPUT_CONTRACT_MISMATCH` (22) and LateOn `TOKEN_OR_POSITION_MISMATCH` (22): 18x128 vs 17x128 (punctuation pruning, raw text without `[D]`/lowercasing), so cosine was never computed. The older 8.24e-3 / 2.72e-3 figures must not be cited as current parity; the G14 110-row diagnostic repeats this with a corrected-contract graph, but is not a parity or adoption verdict. ([colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research))
 
-Sources: [internal-kb-rag](../handoffs/active/knowledge-pipelines.md) · [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md) · [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) · [native filings](../progress/2026-10/2026-10-30-codex3-ni-native-filings.md) · [G13 truncation filing](../progress/2026-10/2026-10-31-codex3-g13-truncskip.md)
+Sources: [internal-kb-rag](../handoffs/active/knowledge-pipelines.md) · [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) · [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) · [native filings](../progress/2026-10/2026-10-30-codex3-ni-native-filings.md) · [G13 truncation filing](../progress/2026-10/2026-10-31-codex3-g13-truncskip.md)
 
 ## Compiled Update — 2026-11-01 (PREFIX-3 remains nonterminal)
 
@@ -1645,4 +1645,4 @@ Sources: [ColBERT reranker web research](../handoffs/active/knowledge-pipelines.
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - ColBERT G14 is a FAILED-RUN: a path-custody error modified ten prior experimental candidate paths whose original graph bytes were not recovered. All 32 canonical source-model files matched their SHA-256 manifest (including the 92,079,820-byte INT8 baseline). Native process identities and the drain receipt were not captured, so cleanup cannot be proven; measurement validity is not accepted. [colbert](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research)
-- REPL-EMB-5.1 lexical BM25 SEARCH primitive published (see memory-augmented). [repl](../handoffs/active/repl-embedding-retrieval.md)
+- REPL-EMB-5.1 lexical BM25 SEARCH primitive published (see memory-augmented). [repl](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)

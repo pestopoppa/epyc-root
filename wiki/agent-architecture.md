@@ -23,7 +23,7 @@ Sources: [churn-pipeline handoff](../handoffs/active/coordination-and-churn-pipe
 
 ## Compiled Update — 2026-11-01 (qualification output boundaries)
 
-Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/agentic-serving-harness-fixes.md), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
+Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -107,8 +107,8 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-28 workspace-58 wrap)
 
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — HIL-15b/16b results and preparation
-- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md) — live-template run notice
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-15b/16b results and preparation
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — live-template run notice
 - [progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md](../progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md) — HIL venv incident record
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix, the embedder ties TF-IDF, and no_final_step is conformance-only
@@ -120,13 +120,13 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
 - **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
 
-Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
 
 - Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
 - OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
-- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): the HIL-6 pilot is deferred past the second GPU; a coder-child redesign (D1) is costed; the L2 detectors are calibrated on TRAIL
 
@@ -144,7 +144,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 ### Source References (2026-10-22 wrap-up sweep 10)
 
 - [docs/design/hil6i-pilot-redesign-20261022.md](../docs/design/hil6i-pilot-redesign-20261022.md) — options A-D, costed, with the power table and the D1 recommendation
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
 - [handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md](../handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md) — the TRAIL table, HIL-6a..6i landings
 - [docs/design/hil6-sibling-loop-implementation.md](../docs/design/hil6-sibling-loop-implementation.md) — seam parity evidence and the HIL-2 items map
 - [docs/design/hil6i-pilot-design-first-feature-20261022.md](../docs/design/hil6i-pilot-design-first-feature-20261022.md) — home choice and the prompt-truncation defect
@@ -166,7 +166,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 - [progress/2026-10/2026-10-22-hil6-b-seams.md](../progress/2026-10/2026-10-22-hil6-b-seams.md)
 - [progress/2026-10/2026-10-22-hil6j-pilot-wiring.md](../progress/2026-10/2026-10-22-hil6j-pilot-wiring.md)
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): HIL-16/HIL-18 build
 
@@ -182,7 +182,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 ### Source References (2026-10-22 sweep 7)
 
 - [docs/design/harness-improvement-loop-design-20261006.md](../docs/design/harness-improvement-loop-design-20261006.md)
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 - [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
 - [progress/2026-10/2026-10-21-hil16-18.md](../progress/2026-10/2026-10-21-hil16-18.md)
 - [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
@@ -211,7 +211,7 @@ The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedde
 
 ### Source References (2026-10-20 sweep 2, architecture)
 
-- [Harness improvement loop handoff](../handoffs/active/harness-improvement-loop.md) — HIL-1 to HIL-8 state and classification table.
+- [Harness improvement loop handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-1 to HIL-8 state and classification table.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — objective axes, substrate extraction plan, option package.
 - [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — seam, migration, gates, unknowns.
@@ -322,7 +322,7 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): rows 8–10.
-- [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md): S4-T1 *Comparability target*.
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency): S4-T1 *Comparability target*.
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §2.
 
 ## Compiled Update — 2026-09-24 (wrap-up #4): TD-21 is complete — the last residual was the writer itself
@@ -686,9 +686,9 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Key findings
 
-- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
+- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **TD-1d's "11.98x at parity" in the section below is contested.** A 4-round alternated re-measurement puts id-only at 9.60x (bar ≥10x not cleared); the disagreement is the single-sample JSON baseline, and per decision the lead is 6.40x. TD-8's constants cite the 11.98x figure. The tick stands with the evidence beside it (TD-1d.0, owner's call). Detail: [benchmark-methodology](benchmark-methodology.md), [local-inference](local-inference.md).
 - **Pairing keys can now span two harnesses (UTM-P1a.2), but not yet on real data.** Replay stamps `harness="review_replay"` + `task_key=rr50-NNN`; the delegator stamps only the per-step ordinal it genuinely owns (one-shot RD-10b aggregate and the parallel executor stay NULL rather than carry an invented 0). UTM-P1a.3 names what is still missing: replay unlinks a pre-existing store under the TM-8 fresh-run rule, live tasks carry no corpus id, ordinal alignment differs. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
 
@@ -699,7 +699,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-18)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-OD-3..7, HS-TD-1..3.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7, HS-TD-1..3.
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-8 wiring policy, TD-1d.0–1d.4.
 - [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a.2/P1a.3.
 - [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
@@ -716,7 +716,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 - **FW-1's worked example is worker-failure routing, and the loop block made a real defect visible.** The orchestrator classifies failed-worker errors at six duplicated call sites with a keyword matcher that falls through to `UNKNOWN`; the fuzzy node sits on that residue only — one `choice` over the named `ErrorCategory` set plus one `noul`. The sketch derived the GUI vocabulary (6 node types, 6 edge types, 11 lint rules) and checks its four requirements: every actor's reads, every gate's rejection grounds, every rejection's destination on-canvas, and the one expensive step gated by every gate (or an explicit reason). **NIB2-80 filed: `nodes.py:235-241` escalates on `EARLY_ABORT` without calling `_should_escalate`**, so an early-aborting run can exceed `cfg.max_escalations` and skip the approval check — not fixed; it changes graph control flow on an eval path and wants its own before/after test. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
 - **The shadow pattern is now first-class GUI vocabulary (FW-1 §D-2).** A classifier over *every* failure is a separate `shadow`-flagged fuzzy node (emits to the record, no `value` edges); the fuzzy node on the UNKNOWN residue carries no confidence branching. Budget independence is lint rule L5: two gates sharing a budget name is an error, and a fuzzy node whose retry mutates a gate's counter is an error (the `critic_revise` defect is the precedent). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
 - **The trace service's pairing keys now have producers.** UTM-P1a (review plane, orchestrator `9a7181f2`) and P1a.2 (replay + delegator, `7887e7ae`) stamp `harness`/`task_key`/`turn_ordinal`; unset keys stay NULL = "never captured"; `task_key` is never derived from `subtask_id`. UTM-P1a.3 (real-data reachability) and UTM-P1b (Hermes ingest, dropped — Hermes not selected) frame the remainder. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
-- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
+- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
 - **FW-4 filed the belief-kernel write side before any run** (VB-FW-1): one self-hashed ClaimTuple per workflow run carrying the document hash, executed node types, each fuzzy node's model pin **and** question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **The fuzzy/deterministic authoring GUI has a decided build posture (FW-2).** Workflow document schema + executor + `/dashboard/api/workflows/*` in `epyc-orchestrator`; authoring page, registry row, `health_path` probe and freshness envelope on the hub `:8100`; nothing in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
 
@@ -732,7 +732,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 - [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1 sketch, node/edge vocabulary, lint rules, NIB2-80.
 - [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 and VB-FW-1 write-side rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — the OpenCode pick and Phase-0 gates.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the OpenCode pick and Phase-0 gates.
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-80, NIB2-78/79.
 - [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the five closures and the FW-1 L2 amendment.
 
@@ -744,14 +744,14 @@ The operator asked "is there anything that could be refined?" over the HS-4 docu
 
 ### Key findings
 
-- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - **Attribution precision: the operator chose the posture; the design pass settled the shell; the operator confirmed it a day later.** The 2026-09-16 record attributed the OpenCode pick to the operator, who had in fact chosen "thin shell, features in the orchestrator" and named "OpenCode or oh-my-pi". On 2026-09-17 the operator confirmed OpenCode ("flexible enough to mold into what we want"); the gap is closed in root `927d44cb`. pi remains the fallback, invoked only if OpenCode fails P0.4.
 - **CORRECTION to the 2026-09-17 HS-4 section below (finding 5) — FastMCP does not silently drop an undeclared `session_id`; at our pin it REFUSES the call.** The orchestrator pins `fastmcp>=3,<4`; FastMCP 3.x rejects a call carrying an undeclared argument (`tests/unit/test_mcp_undeclared_args_refused.py`). The 2026-09-16 shard reasoned from `mcp` 1.27.0's `ArgModelBase` without `extra="forbid"` — a different package version than the one the server runs. The requirement is unchanged and now met: every `@mcp.tool()` in `src/mcp_server.py` declares `session_id: str = ""` and forwards it (orch `54b6439d`). The lesson is the build-artifact rule applied to a dependency: verify the behaviour against the *pinned* tree, not the version you happen to have read ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
 - **Pin drift and two ghosts.** Both HS-4 design docs quoted OpenCode `4bffbb655`; the audited pin is `350c726a` (v1.18.31, 700 commits later) — outcome banners and superseded-pin notes were added rather than rewriting the matrix. Two defects fixed on 2026-09-16 were still described as live: the `/v1` `recall()` failure (orch `83c7ed2f`) and the inert `mempalace:` block (root `91d56181`). Corrections were **appended** to the three dated shards, never rewritten ([sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md), [sub-hs4-p0](../progress/2026-09/2026-09-16-sub-hs4-p0.md) — whose two pre-rebase hashes exist on no ref; the work is `ed554da2`/`b44ab3a8`).
 - **Phase-0 state of record (2026-09-17).** P0.1 client-executed tool mode and P0.2 typed `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` (422 on bad values, `request_keys` echo, `v1_client_session_guard` tripwire) are on orchestrator main (`ed554da2`, `b44ab3a8`) but **not deployed until the API reloads**; P0.3 is done at the pin with the plugin/template/lint under `harness/opencode-plugin/` (45/45 wire-contract tests after the P0.3b `User-Agent` stamp, root `71569c2c`); P0-MCP-a/b landed (`54b6439d`, root `.mcp.json` on the venv — a container-only path); the P0.4 runner `scripts/harness/hs4_p04_acceptance.py` (root `76917360`, 25 offline tests) carries the SC86 belief-kernel hook as P0.5; OpenCode 1.18.31 is installed but the devcontainer Dockerfile does not install it, so a rebuild drops the pin (follow-up filed). **Boxes are ticked only at the P0.4 live gate — code landed but not reloaded is text evidence, not a tick.** Residuals recorded, not fixed: `x_max_escalation` is described as capping escalation while `/v1` only records it (P4-pre); unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`); `/v1` B2 compression still fails open to the unfolded history.
 - **The Phase-0 split is approved and deliberately gated.** Moving Phase 0 into its own `opencode-shell-integration.md` with a `UFH-NN` row waits for the P0.4 live run to land, because that run is owned by another session and work must not be moved under a new handoff mid-flight (`HS-4 P0-split`).
 - **The fuzzy-workflow handoff named the deterministic/fuzzy boundary without defining it; it now has a contract.** FW-1 opens with the pseudocode loop block `docs/guides/agent-workflows/agent-loop-design.md` requires (every actor and what it reads; every gate and its rejection grounds; where every rejection GOES; the one step that costs real resources; one independent budget per gate), and a **dangling rejection edge is a lint error for the GUI, not a warning**. The fuzzy-node contract: typed output (`choice`/`score`/`null`) plus a probability; **a fuzzy node may not branch on model confidence until TD-2 lands**; schema-invalid output after the declared retry budget routes to a *declared* node (abstain / escalate / deterministic fallback), never off the canvas; every model call goes through `LLMPrimitives`. FW-2's placement question is **closed, not an operator choice**: HS-4 §2 admits shell plugins only for configuration, and the dashboard plane rule puts the page on the hub `:8100` with a registry row, probe and freshness envelope while the data contract (workflow schema, executor, `/dashboard/api/workflows/*`) lives in the orchestrator — nothing in the shell. FW-4 files the write-side belief-kernel row prospectively; the FW-1 harness refuses to run without the hook ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
-- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 - **Standing material promoted out of the handoff.** HS-7 re-targetability and HS-10 evaluation-side randomization are now [`harness-doctrine.md`](../docs/reference/harness-candidates/harness-doctrine.md); the two Harness Cards are [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md) (`HARNESS_RUN_POLICY.md` requires a run report to name the applicable card; the two cards answer *what can be changed without code* and *what configuration produced a score*; a model or freeze change refreshes the conformant card before a result is called re-targetable); the HS-1g call-verb matrix joined its instrument in [`client-surface-audit.md`](../docs/reference/harness-candidates/client-surface-audit.md). The restructure pattern itself is compiled in [Knowledge Management](knowledge-management.md).
 - **The typed-decision plane went from filed to measured in one session — and this supersedes "none measured on this host" in the research-intake section below.** TD-1/TD-2/TD-3/TD-4 are implemented in `epyc-orchestrator` (`src/typed_decisions/`: types, Draft 2020-12 schema, JSON runner with typed failures and corrective retry, adapter-verified confidence formulas, native candidate-scoring path, bench harness, closed-set tool-arg mapping; flag `typed_decisions` default off, wired to no route; 87 unit tests). Live on the MI210 against the frozen-v9 HIP server, 24-question decision set: **contamination flip rate 6.25%** (Qwen3.8-27B-Q8_0, 3/48 pairs) vs **37.5%** (LFM2.5-2.6B, 18/48); **calibration 91.7% acc / ECE 0.0625 / Brier 0.078** (27B) vs 50.0% / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty; **fan-out 1.54x** (3 batched vs 12 singleton calls, 100% agreement, LFM) — the saving is per-call overhead at this state size. **The TD-1a native arm failed closed**: 23/24 `native_unknown_candidate` because candidate strings were presumed single-token without tokenizer access (emitted `'fal'`/`'set'`); the JSON arm ran 24/24 in 36.7 s. No speedup number may be claimed until TD-1b (tokenizer-aware candidates via `/tokenize`, explicit JSON fallback for multi-token candidates). The TD-2 gate is SATISFIED for a *first shadow* (TD-5): choose one live surface (routing classifier or judge) with its owning handoff; no enforcement without operator approval. Write side first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` projected 5 receipts → 11 claims / 33 frames, and the bench report was refused as a non-measurement. Caveats: a small window between autokernel CPU runs, one 24-question set, a first measurement rather than a protocol run — the vendor multipliers stay banned, and intake-1486's 24.7% order sensitivity is now bracketed locally at 6.25% (27B) / 37.5% (2.6B), i.e. model-size-dependent ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)).
 
@@ -763,12 +763,12 @@ The operator asked "is there anything that could be refined?" over the HS-4 docu
 
 ### Source References (2026-09-17 doc audit + restructure)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
 - [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the four audit findings, what was applied, the operator decisions and the restructure.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the typed-decision implementation round and MI210 measurements.
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1..TD-5 state, TD-1b, the TD-2 gate verdict.
 - [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — fuzzy-node contract, FW-2 placement, FW-4.
-- [harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — bounded mutation object, HIL-4 draft.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — bounded mutation object, HIL-4 draft.
 - [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted standing material.
 - [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners and superseded-pin notes.
 - [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — the appended 2026-09-17 corrections.
@@ -810,7 +810,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 - **P0-MCP-a is done.** The operator applied the root `.mcp.json` edit (root `ed1dfd57`). It takes effect
   for Claude Code sessions started after the edit. This supersedes the afternoon line "prepared but not
-  applied". [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+  applied". [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - **The audited OpenCode pin is installed.** The operator ran
   `sudo npm install -g --prefix /usr/local/share/npm-global opencode-ai@1.18.31`, and `opencode --version`
   prints 1.18.31 (root `de71a69a`).
@@ -822,7 +822,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 ### Source References (2026-09-17 evening)
 
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md): P0-MCP-a, P0.4 preflight and its follow-up.
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a, P0.4 preflight and its follow-up.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): landing table and state at close.
 - [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md): the preflight that found 1.18.18.
 
@@ -842,7 +842,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 - **Launchers must name the venv.** The script-registry launcher used a bare `python3`, and it now uses the
   venv (P0-MCP-a). The root `.mcp.json` still names `/home/daniele/miniforge3/bin/python3`, which does not
   exist in the container. That edit is harness configuration, so it is prepared but not applied.
-  [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+  [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - **P0.4's acceptance verdict is offline, and its token count has to undo two OpenCode conventions.**
   `scripts/harness/hs4_p04_acceptance.py` works in four stages (25 tests):
   - `plan` gates the run.
@@ -862,7 +862,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 ### Source References (2026-09-17 afternoon)
 
 - [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC86 tick condition.
 
 ## Compiled Update — 2026-09-17 (later): the HS-4 seam closes on main, and two swarm-research mechanisms get rows
@@ -873,12 +873,12 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 
 ### Key findings
 
-- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
+- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
 - **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
-- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
+- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
 
 ### Open questions
 
@@ -888,7 +888,7 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 
 ### Source References (2026-09-17 later pass)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
 - [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
 - [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the intake batch behind the HS-E1 rows.
 - [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md): the P0 lane record the filed items reference.
@@ -1005,7 +1005,7 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
 ### Key findings
 
 - Operator decision: OpenCode shell (pi fallback), Hermes-style features inside the orchestrator, one memory
-  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
   [hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
 - The package recommends A OpenCode, with pi as the minimal-import alternative and a native-MCP tie-break. The
   live requests are acceptance checks for the chosen harness, not discriminators between candidates
@@ -1015,7 +1015,7 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
   P0.1 for every shell ([hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
 - HS-1g call-verb matrix: Hermes main loop only (six bypass paths once the memory audit is counted), which
   corrects HS-1b's "≈0 patch"; the dsh pi-ai pin bump is already upstream, which corrects HS-1e
-  ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
   [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md),
   [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md)).
 - OpenCode at `350c726aa`: 15 paths audited, with two silent no-ops (E11 `agent create`, E12 v2 runner) that are
@@ -1033,9 +1033,9 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
   [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md)).
 - HS-13 two-layer structured-output record and the kernel-README silent no-op; HS-6c conformant card with 13
   named gaps; HS-6b one-row correction
-  ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - Harness-improvement loop: option B (sibling loop on the shared AutoPilot substrate) is preferred; HIL-1..5
-  are not started ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+  are not started ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 
 ### Open questions
 
@@ -1049,14 +1049,14 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
 
 ### Sources
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
 - [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md) — options, evidence matrix, sandboxing, recommendation and tie-break.
 - [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — shell choice, the `tool_calls` blocker, feature map, phased plan.
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 15-path re-audit, P0 findings, plugin tests, P0.3b User-Agent marker.
 - [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the reusable instrument and design rules.
 - [hermes-evaluation-20260916.md](../docs/reference/harness-candidates/hermes-evaluation-20260916.md) — Hermes bypass paths, plugin behaviour, config lessons.
 - [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) — closure note and box dispositions.
-- [harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — improvement-loop options.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — improvement-loop options.
 - [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md), [sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md), [sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md) — session records for the above.
 
 ## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
@@ -1136,7 +1136,7 @@ summary carries only species/action type.
 
 ### Source References (2026-09-14 harness selection and hand-off fidelity)
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
 - [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 code facts, fixes and residuals.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-53 measurement note.
 - [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — stage record and the rank-tracks-model-class finding.
@@ -2886,9 +2886,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-07-16 — open-source harness selection became a first-class architecture gate)
 
-- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
+- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
 
 ## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
 
@@ -3196,7 +3196,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [intake-272#00](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md (current arXiv v3): developer-written files show an author-reported +2.4% average resolution-rate difference (p=.21, not significant; authored percent, not a percentage-point conversion). [intake-272#01](https://arxiv.org/abs/2602.11988) separately reports cost increases of 20% and 23% for LLM-generated files and about 19% for developer-written files. The earlier v2 reading remains dated entry history.
 - [intake-312](https://alexzhang13.github.io/blog/2026/mgh/) Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
 - [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) -- execution trace feedback (+15pts), code mutation search space, GEPA integration
-- [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
 - [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) -- 7-handler output compression, 60-90% token reduction per tool output
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) -- 4-species architecture, safety gates, evolution manager, GEPA optimizer
 - [claude-code-local-constellation-routing.md](../handoffs/archived/claude-code-local-constellation-routing.md) -- MCP tool delegation, deterministic routing overrides
@@ -3413,7 +3413,7 @@ Three new agent-file-specific risks: (a) directive polarity (`must`/`must not`/`
 - intake-450 — veniceai/skills sibling cross-runtime SKILL.md authoring rubric
 - intake-301 — AXI: Agent eXperience Interface (TOON encoding — orthogonal layer)
 - [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
-- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) Research Intake Update 2026-04-30 — persistence-clause caveat
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) Research Intake Update 2026-04-30 — persistence-clause caveat
 - [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
 - [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
 
@@ -3741,7 +3741,7 @@ dimension, which parts of our Layer-B surface are **editable** versus
 > so "both propose a Harness Card" is a misattribution, and a misattribution in
 > the compiled KB is what a future reader will cite. `intake-1344#record`
 
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-6
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-6
 
 ### Re-targetability outranks per-model tuning (operator, 2026-07-29)
 
@@ -3751,7 +3751,7 @@ expresses run-level policy as an **editable natural-language document** with
 mechanisms in code ranks **above** a model-specific experience bank, even when
 the latter has the stronger headline numbers. Anything proposing to bake
 per-model behaviour into the harness is measured against this criterion first.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-7
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-7
 
 The measured reductions attached to the policy-as-document pattern —
 60.10k→2.90k tokens / 68→3 files; 47.50k→1.40k / 5→1; 10.50k→0.80k / 3→1 — are
@@ -3764,7 +3764,7 @@ score, so drift is measurable on saved traces and is deterministic-replay
 eligible. Their own red flag: **Information Handoff Recall drops to 0.32/0.55
 under parent-child execution even on a frontier model** — the exact topology our
 sub-agent delegation uses.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
 
 ### Capability versus harness — both halves or neither
 
@@ -3777,7 +3777,7 @@ support for the re-targetability position above. The previously relayed "~6×
 more bought by capability than architecture" reading was **wrong** — the figure
 behind it was the verification-minus-simplification margin, **one rung of the
 ladder**, not the architecture axis.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-12;
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-12;
 [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Records corrected
 
 ### "Present-but-uninstructed": a mechanism in a repo carries no measured result
@@ -3839,7 +3839,7 @@ confounds two axes.
 
 ### Source References
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
 - [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
 - [`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
@@ -4343,7 +4343,7 @@ sight-unseen — the round's own overturn rate is the argument for filing them a
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
 - [Fleet Fan-Out Measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
 - [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
-- [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
+- [REPL Turn Efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
 
@@ -4455,7 +4455,7 @@ The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer
 
 ### Source References (2026-08-23 evening)
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
 
 ## Compiled Update — 2026-08-25: the fan-out doctrine gets its first measured number
 
@@ -4886,7 +4886,7 @@ Provider-owned inner loops remain provider-owned unless the protocol exposes a c
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md)
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - [Decision-aware routing](../handoffs/active/routing-program.md)
 - [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
@@ -4910,7 +4910,7 @@ never grants permission, and a valid model choice cannot execute a changed or un
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 owner and consumer boundary.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 owner and consumer boundary.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — selector and shadow consumers.
 - [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
@@ -4959,7 +4959,7 @@ contract therefore remains useful even if every learned selector eventually lose
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 implementation and consumer map.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 implementation and consumer map.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and evidence-consumer boundary.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective receipt projection without authority.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — landed orchestrator commit and 40-test validation.
@@ -5043,7 +5043,7 @@ Two failed attempts earlier the same day each left a lesson:
 The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (the pin freeze), then the Phase-0 split into its own handoff, whose trigger is now met.
 
 ### Source References
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — P0.1–P0.5 closure, P0.4b/c, P0-split.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0.1–P0.5 closure, P0.4b/c, P0-split.
 - [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the §1 tag/pin correction.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the r1/r2/r3 narrative.
 
@@ -5082,7 +5082,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final: lessons and the derived-actionables sweep.
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 (region-lock wording).
 - [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
 - [master-handoff-index.md](../handoffs/active/master-handoff-index.md) — OP-63, OP-64, OP-65.
 
 
@@ -5105,7 +5105,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 ### Source References
 
 - [HS-19a linked subagents spec](../docs/design/hs19a-linked-subagents-20260927.md) — operator decisions, identity resolution, refusals, profile rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19a.1–.6, the live PASS and the S6 flush fix.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19a.1–.6, the live PASS and the S6 flush fix.
 - [2026-09-27 HS-19a progress](../progress/2026-09/2026-09-27-hs19a.md) — the stage-1 build record and test counts.
 - [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33.
 - [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d, SSU-F9e.
@@ -5136,7 +5136,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 ### Source References
 
 - [HS-19 stage-2 dispatch design](../docs/design/hs19-stage2-dispatch-20260927.md) — §1 pipeline, §2 reuse table, §3 evidence, §4 OpenCode audit, §5–§10 the steps, §15 prior art.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19b/c/d boxes and their freeze markers.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19b/c/d boxes and their freeze markers.
 - [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the frozen list and the A0/A1/A2 arms.
 - [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the freeze decision.
 
@@ -5156,7 +5156,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 
 ### Source References
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
 - [Harness selection completed sibling](../handoffs/completed/harness-selection-completed-through-2026-09-27.md) — where HS-1/2/3, Phase 0, HS-TD-4, HS-18 and HS-19a stage 1 now live.
 - [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — A-5 folded into SSU-F17, the RI-23a reconciliation note, SSU-F18, surface-manifest counts.
 - [Model-stack completed sibling](../handoffs/completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md) — closed SSU-F2/F3/F5/F9a/b/d/e/F12/F14/F15.
@@ -5229,7 +5229,7 @@ OAB-35 is verified: a regression test reproduces the crash on the old code.
 
 ### Source References
 
-- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — UFH-14: evidence, D1–D8, phases A-C.
+- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — UFH-14: evidence, D1–D8, phases A-C.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C83, C95, C102, C103.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the C95 arm table, reasoning carry-over, the proxy defect.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
@@ -5292,11 +5292,11 @@ The orchestrator added a FIFO ticket queue across role and global region locks p
 
 ### Source References
 
-- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — F12 results, contamination, offline A3/A4 status.
+- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — F12 results, contamination, offline A3/A4 status.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — observed arm counts and limits.
 - [Agent-collaboration R&D harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — proposed checkpoint-pruned allocation and support constraints.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — shared-window interference and cleanup incidents; operational rules remain distinct from measured model results.
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — pinned OpenCode lifecycle signal behavior.
 - [AutoKernel unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — FIFO region-lock implementation status and gates.
 - [AutoKernel disk hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md) — harness transcript/state retention boundary.
@@ -5429,19 +5429,19 @@ Four further harness-evolution papers sit in a primary-read queue with only Stag
 
 ### Source References (2026-10-20 agent-architecture delta)
 
-- [Harness improvement loop](../handoffs/active/harness-improvement-loop.md) — HIL-7, HIL-8 and the primary-read queue.
+- [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-7, HIL-8 and the primary-read queue.
 - [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — the DCP-6 matched on/off design HIL-7 mirrors, and its default-off status.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
 - [Wrap-up intake progress note](../progress/2026-10/2026-10-20-wrapup-intake-20261020.md) — verification that the filed IDs resolve and that HIL-8 is the only flip.
 
 ## Compiled Update — 2026-10-21 (sweep 3): the harness-cluster intake adds an isolation and reporting contract to the improvement loop
 
-- The 2026-10-20 harness-cluster intake (operator-approved; plan sha256 `1dc83054...3f3967`, applied 2026-10-21) extended the HIL-2 pre-first-suite-run checklist from six to twenty-two items. Item 7 requires executor and proposer isolation from answer keys and labels: egress blocked to answer-key and benchmark-data hosts (or a no-egress sandbox), the AP-54 eval fence armed on both arms, a marker/path tripwire on every context handed to the proposer and every persisted lesson, a seeded decoy-rubric canary that must never reach proposer context, and a proposer trajectory view that carries no success, score or judge claim. Item 12 requires that every model-invoked feature record a mechanical invocation rate per consuming model (a null is evidence about content only when the feature was invoked) and that arms containing deterministic code report the share answered with no model call and be labelled solver/router arms, not model-capability claims. Item 10 holds the "peak and rollback" harness-growth criterion as a hypothesis until a powered run exists. ([design doc](../docs/design/harness-improvement-loop-design-20261006.md), [HIL handoff](../handoffs/active/harness-improvement-loop.md), HIL-9, 2026-10-20)
-- HIL-11 records the HIL-6 pilot requirements as design text only (the 2026-09-16 deferment on running a loop stands): at least two cycles with an arriving split between them, a stalled round 2 counted as a KEEP_BASE outcome rather than a failure, and a one-cycle gain explicitly not evidence that the loop compounds. HIL-10 adds an evidence note to the HIL-4 decision package without selecting an option; the primary-read queue was closed for intake-1995, 1999 and 2008, while intake-1992 stays Stage-1-only by operator ruling. ([HIL handoff](../handoffs/active/harness-improvement-loop.md), HIL-10/11, M14)
+- The 2026-10-20 harness-cluster intake (operator-approved; plan sha256 `1dc83054...3f3967`, applied 2026-10-21) extended the HIL-2 pre-first-suite-run checklist from six to twenty-two items. Item 7 requires executor and proposer isolation from answer keys and labels: egress blocked to answer-key and benchmark-data hosts (or a no-egress sandbox), the AP-54 eval fence armed on both arms, a marker/path tripwire on every context handed to the proposer and every persisted lesson, a seeded decoy-rubric canary that must never reach proposer context, and a proposer trajectory view that carries no success, score or judge claim. Item 12 requires that every model-invoked feature record a mechanical invocation rate per consuming model (a null is evidence about content only when the feature was invoked) and that arms containing deterministic code report the share answered with no model call and be labelled solver/router arms, not model-capability claims. Item 10 holds the "peak and rollback" harness-growth criterion as a hypothesis until a powered run exists. ([design doc](../docs/design/harness-improvement-loop-design-20261006.md), [HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-9, 2026-10-20)
+- HIL-11 records the HIL-6 pilot requirements as design text only (the 2026-09-16 deferment on running a loop stands): at least two cycles with an arriving split between them, a stalled round 2 counted as a KEEP_BASE outcome rather than a failure, and a one-cycle gain explicitly not evidence that the loop compounds. HIL-10 adds an evidence note to the HIL-4 decision package without selecting an option; the primary-read queue was closed for intake-1995, 1999 and 2008, while intake-1992 stays Stage-1-only by operator ruling. ([HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-10/11, M14)
 - Delegation: DCP-14 is a zero-inference propagation audit joining parent and child prompts on `parent_request_id` in the inference-tap events, reporting per role the share of parent format constraints, option lists, ids and output schema that reach the worker input with a rule-based detector fixed before the run; delegation-arm tuning (M12) waits for it. ([DCP handoff](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), 2026-10-20)
 - PromptForge: MHS-13/14 specify (spec only, no run) a scoped-propose-plus-KEEP_BASE composer and optional falsifiability fields on the `PromptMutation` record (trigger condition, predicted fixed/at-risk tasks, attribution signature, no-trigger control slice, activation beacon). ([MHS contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract), 2026-10-20)
 
-Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md); [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md); [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly); [promptforge-mutation-safety-contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract); [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md).
+Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md); [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop); [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly); [promptforge-mutation-safety-contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract); [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md).
 
 ## Compiled Update — 2026-10-21 (sweep 5): the L2 failure scan meets real traces, and the traces turn out to lack steps
 
@@ -5470,7 +5470,7 @@ Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md
   The AHE evidence row (`intake-1132#record`) was corrected in two places. Its regression prediction is about 2x random (precision 11.8% and recall 11.1%, against random 5.6% and 5.4%), not "near random". The k=2 pass rule was added to its caveats.
 - **Smaller closures.** DCP-17 adds report-only sub-ask enumeration columns to the DCP-14 detector; the fixture reads 3 / 2 / 2. CME-7's CL-Bench local-endpoint adapter is built (research `b4c0c6b48`). The same-shape shims for SkillGenBench, AutoSkill, AgentBreeder and the safety-under-scaffolding repository are recorded as M27 build-cost items. A missing local-endpoint path is a build cost, not a reason to decline.
 
-Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.md), [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md), [Progress dpf-hil](../progress/2026-10/2026-10-21-dpf-hil.md), [Progress hil13a](../progress/2026-10/2026-10-21-hil13a.md), [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
+Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md), [Progress dpf-hil](../progress/2026-10/2026-10-21-dpf-hil.md), [Progress hil13a](../progress/2026-10/2026-10-21-hil13a.md), [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -5482,7 +5482,7 @@ Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.
 - **Turn-1 grammar default `off` is live** since the 14:59:25Z API reload; the 14-day classification clock earliest ends 2026-11-06T15:00Z.
 - **Dev-harness mining DHM-4: operator chose a 30-item pilot first**, then the remaining 70 only if categories separate (`REVISE_CATEGORIES` if `other` > 25% or any label used < 2 times).
 
-Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.md), [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [Dev-harness trace mining](../handoffs/active/dev-harness-trace-mining.md)
+Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [Dev-harness trace mining](../handoffs/active/dev-harness-trace-mining.md)
 
 
 ## Compiled Update — 2026-10-27: separate merged actor guards from registration-only recovery
@@ -5516,7 +5516,7 @@ Sources: [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-
 
 HIL-15b’s native pilot had started by 14:07Z and remained partial at the cutoff, with no aggregate verdict. UFH-12 R3 validated a private copy with 65,942 vectors and 32 TaskEmbedder queries (minimum cosine 1.0 against strict 0.99999), but no production adoption occurred.
 
-Sources: [HIL-15](../handoffs/active/harness-improvement-loop.md) · [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [HIL-15](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [UFH-12](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
 ## Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): owner-watcher handoffs and IPC priority
 
@@ -5555,9 +5555,9 @@ Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), 
 - **R11 cannot be called single-source.** The shared orchestrator checkout fast-forwarded mid-pilot (22:32:07Z during a 21:54-22:36 run) and per-cell imported code versions were not captured, so EM and event counts are located observations, not a reproducible comparison. The v7 successor (DeepDive 39-48) binds an independent lane and rechecks the readset before each exposure; budget is 128 root plus 256 child calls with 4096 reserved output tokens per call, READY only. ([source](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike))
 - **PAW compiled specialists: standard arm scores higher than compact on matched A, descriptively.** On the same 64 task/case inputs, exact decoded-output match was 57/64 standard vs 48/64 compact (both right 45, standard only 12, compact only 3, neither 4); standard B alone scored 61/72 and the superlative control binary 8/8, semantic 7/8. All SDK finish reasons are UNKNOWN (truncation not excluded) and the standard-A run's final source check failed (rc1) before offline finalization, so provenance is limited; no PAW-3 or significance verdict. ([source](../handoffs/active/paw-compiled-specialists.md))
 - **Most PAW launches failed as harness/admission, not capability.** Compact A/B and the superlative control hit rc127 (host could not exec the region-lock path); standard A lost admission after 7 of 8 program checkpoints; compact B lost admission with task 18's generation outcome unknown. The failed predicate is unrecorded in every admission case, and host-qualified successors followed. ([source](../progress/2026-10/2026-10-31-paw-host-qualified.md))
-- **HIL-15b collections end with unknowns preserved.** HIL-15b heavy units 05-20 exhausted as 44 known / 4 unknown / 0 unexposed of 48 (25 observed passes, descriptive bounds 25-29/48); S0 ended 41 known / 4 unknown of 45 and S2 sits at 18/2/25. The R9 rc1 was a validator bug (it demanded dependency-bearing AUC tables from cases that correctly report n_runs=0), repaired offline. Dependency efficacy, difficulty band and HIL-16a/18a gates remain open. ([source](../handoffs/active/harness-improvement-loop.md))
+- **HIL-15b collections end with unknowns preserved.** HIL-15b heavy units 05-20 exhausted as 44 known / 4 unknown / 0 unexposed of 48 (25 observed passes, descriptive bounds 25-29/48); S0 ended 41 known / 4 unknown of 45 and S2 sits at 18/2/25. The R9 rc1 was a validator bug (it demanded dependency-bearing AUC tables from cases that correctly report n_runs=0), repaired offline. Dependency efficacy, difficulty band and HIL-16a/18a gates remain open. ([source](../handoffs/active/harness-program.md#track-harness-improvement-loop))
 
-Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) · [paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) · [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
+Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) · [paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) · [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
@@ -5574,13 +5574,13 @@ Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-econom
 - Agent-run qualification remains staged: a small endpoint smoke may establish a transport path while leaving the actual model request and the historical multi-leg result open. Likewise, RUS-3 and F2 watcher failures remain preparation failures, with their terminal metadata retained and no experiment verdict invented.
 - These controls keep the checklist state aligned with what the owning task's acceptance rule actually requires; they do not themselves qualify an agent loop.
 
-Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [REPL turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
-- PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [REPL replay](../handoffs/active/repl-turn-efficiency.md))
+- PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [REPL replay](../handoffs/active/harness-program.md#track-repl-turn-efficiency))
 - The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
 
 
@@ -5590,7 +5590,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 - Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
 - Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement)
-- HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-improvement-loop.md)
+- HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 

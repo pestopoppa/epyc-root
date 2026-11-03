@@ -45,12 +45,12 @@ Sources: [episodic-memory-integrity](../handoffs/active/memory-program.md), [m26
 
 **Confidence: verified** for the run (80 items per arm, 0 errors, cloud judge); **inferred** for any memory-quality reading, since no threshold was predeclared.
 
-- **HS-PROF-1 result.** Admission schema vs the current `PREF [category]` format: instruction_following +0.0125 (3 wins / 2 losses / 35 ties, sign p=1.00), preference_following -0.0104 (4/7/29, sign p=0.55). With no predeclared threshold, the reading is "no measurable difference" and nothing stronger ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)).
+- **HS-PROF-1 result.** Admission schema vs the current `PREF [category]` format: instruction_following +0.0125 (3 wins / 2 losses / 35 ties, sign p=1.00), preference_following -0.0104 (4/7/29, sign p=0.55). With no predeclared threshold, the reading is "no measurable difference" and nothing stronger ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - **What comes next.** HS-PROF-1-RULE records an explicit adoption rule (a minimum paired delta and sign bound, or "keep opt-in") before HS-4 P2 wires profile injection. The rule decides whether a larger or longer-context BEAM arm is worth a window. The harness scope bug (all 64 registry roles read instead of one) is fixed, and preflight now requires exactly 1 role x 1 suite. The research branch is merged and the table's claims are in the belief ledger.
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md) (HS-PROF-1, -MERGE, -RULE, -SCOPE, -BELIEF)
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) (HS-PROF-1, -MERGE, -RULE, -SCOPE, -BELIEF)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -102,7 +102,7 @@ Open: Phase 0b authorization (operator/budget); real-trace re-check of the retri
 ### Source References (2026-10-20 sweep 2, memory-augmented)
 
 - [Engram conditional memory](../handoffs/active/engram-conditional-memory.md) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — store-migration follow-ons and the one-model-per-index invariant.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — store-migration follow-ons and the one-model-per-index invariant.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — session-keyed store and summary frontier source acceptance.
 
 ## Latest source review — 2026-10-07
@@ -127,7 +127,7 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 ## Source References
 
 - [Engram conditional memory](../handoffs/active/engram-conditional-memory.md) — sweep 2 (2026-10-20)
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — sweep 2 (2026-10-20)
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md)
 - [REPL maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity)
@@ -1411,7 +1411,7 @@ Sources: [unified-trace-memory-service](../handoffs/active/memory-program.md#tra
 - **Why chunk-level KV reuse is infrastructure rather than a bet.** The REPL retrieval path re-retrieves the same 256-token chunks across turns after different text each time, and episodic memory and SkillBank put a small heavily reused library into many requests, while coding-agent traffic is append-ordered and already about 99 percent prefix-cacheable (see kv-cache.md, sweep 4).
 - **Dead path.** The corpus retriever fails per request against an index deleted on 2026-07-04; RTE-CORPUS-1 cleans it up after the operator runs the registry flag-off ratifier.
 
-Sources: [Episodic memory integrity](../handoffs/active/memory-program.md), [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [Progress cachefriendly-inject](../progress/2026-10/2026-10-21-cachefriendly-inject.md), [Progress noninf-memeval](../progress/2026-10/2026-10-21-noninf-memeval.md)
+Sources: [Episodic memory integrity](../handoffs/active/memory-program.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [Progress cachefriendly-inject](../progress/2026-10/2026-10-21-cachefriendly-inject.md), [Progress noninf-memeval](../progress/2026-10/2026-10-21-noninf-memeval.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -1420,7 +1420,7 @@ Sources: [Episodic memory integrity](../handoffs/active/memory-program.md), [REP
 - **HS-4-PB-TRUNC:** `build_architect_investigate_prompt` truncated the question to 2,000 chars and evidence to 3,000, hitting 99.5% of `hotpotqa` and all `longbench` pool prompts on the delegated path; the fix is ticked, with the DCP-6 long-prompt latency check waiting on an architect window.
 - **CME-TRV-DOC:** the Tulving retriever docstring was stale; `order="relevance"` (bm25 before LIMIT) has been the default since 2026-09-16.
 
-Sources: [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
+Sources: [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -1478,7 +1478,7 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - Programmatic feedback extraction is done: a parser pulls concrete failure facts from tool output instead of model self-diagnosis (APP `1b988feb`, CI 41280199807, 214 passed). Reflexion v2 (intake-989#03) is itself parser-plus-LLM, and its object-mention gain is paper-specific, not a local rate. [engram](../handoffs/active/engram-conditional-memory.md), [progress](../progress/2026-11/2026-11-01-ni-programmatic-feedback.md)
-- REPL-EMB-5.1: a SEARCH primitive for OAB-8 scouts delegates to the existing `ContextSearchIndex`, preserves pointer provenance and builds no index (48 tests). INF-78 owns wiring; no retrieval-quality claim. [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md)
+- REPL-EMB-5.1: a SEARCH primitive for OAB-8 scouts delegates to the existing `ContextSearchIndex`, preserves pointer provenance and builds no index (48 tests). INF-78 owns wiring; no retrieval-quality claim. [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)
 - `query_memory` maps ACM-style recall onto existing spill pointers: default off, session-scoped, exact-quote only, refuses artifacts over 12,000 characters (APP `233338749`, 79 passed). No efficacy claim. [progress](../progress/2026-11/2026-11-01-query-memory.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
