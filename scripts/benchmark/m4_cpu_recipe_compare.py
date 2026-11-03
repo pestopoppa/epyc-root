@@ -39,6 +39,13 @@ def module(name: str,path: Path):
     return mod
 
 
+def _strip_loader_args(args: list) -> tuple:
+    # The native runner owns the loader-knob definition; load it lazily (verify()
+    # calls this only after the runner's own source digest has been checked).
+    native=sys.modules.get('m4_compare_native') or module('m4_compare_native',PRODUCER/'native/k35_stack_context_matrix_runner.py')
+    return native.strip_loader_args(args)
+
+
 def _checked(path: Path, digest: str) -> Path:
     if not path.is_absolute() or '..' in path.parts or not path.is_file(): raise ValueError('unbound input path')
     if not isinstance(digest,str) or len(digest)!=64 or sha(path)!=digest: raise ValueError(f'input digest mismatch: {path}')
@@ -131,6 +138,9 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
             raise ValueError('draft is unsealed or unexpected image supplied')
         fixed=dict(cfg)
         for key in ('name','threads','recipe_env'): fixed.pop(key,None)
+        # Loader knobs (--load-threads) cannot change a result: not a recipe difference.
+        if isinstance(fixed.get('extra_args'),list):
+            fixed['extra_args']=list(_strip_loader_args(fixed['extra_args']))
         stripped.append(fixed)
     if stripped[0] != stripped[1]: raise ValueError('comparison has unintended recipe differences')
     return {'plan':plan,'images':images}

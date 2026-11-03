@@ -103,3 +103,14 @@ def test_qualification_worker_refuses_real_environment(monkeypatch):
     q=importlib.util.module_from_spec(spec);sys.modules[spec.name]=q;spec.loader.exec_module(q)
     monkeypatch.delenv('FILLER_DRYRUN',raising=False)
     with pytest.raises(ValueError,match='guarded smoke'):q.qualification_worker()
+
+
+def test_frame_ignores_loader_threads_but_not_real_recipe_differences(tmp_path, monkeypatch):
+    path,plan=packet(tmp_path,monkeypatch)
+    plan['recipes']['canonical_t48']['extra_args']=['-b','512','--load-threads','48']
+    plan['recipes']['configured_t96']['extra_args']=['-b','512','--load-threads=96']
+    path.write_text(json.dumps(plan))
+    mod.verify(path,sha(path))
+    plan['recipes']['configured_t96']['extra_args']=['-b','1024','--load-threads','96']
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError,match='unintended recipe differences'):mod.verify(path,sha(path))
