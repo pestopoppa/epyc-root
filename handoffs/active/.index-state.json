@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 197
+      "open": 192
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -1522,7 +1522,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 615,
+          "line": 622,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 974,
+          "line": 981,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1251,
+          "line": 1258,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1886,
+          "line": 1893,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2181,
+          "line": 2188,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2790,
+          "line": 2797,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2
@@ -2614,10 +2614,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 336,
+      "closed": 342,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 88,
+      "open": 83,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 426
+      "total": 427
     }
   },
   "row_id_collisions": {},
