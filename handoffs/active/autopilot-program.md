@@ -38,7 +38,7 @@ AutoPilot proposes and evaluates numeric, prompt, routing, and code candidates t
 
 ##### Remaining Work — Prioritized
 
-- [ ] AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
+- **[declined: ws58 2026-11-03 content-review: curiosity; no autopilot task names it]** AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
 
 - [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **2026-07-11 partial scaffold**: `epyc-orchestrator` commit `7ee919d8` adds `src/autopilot_core/rlvr_tiers.py`, a pure observe-only reward contract with T0 binary, T1 calibrated continuous, and T2/T3 process-attributed reward views plus explicit blockers for missing calibration/process evidence. **2026-07-11 export slice**: `scripts/autopilot/export_rlvr_environment.py` exports prompt-free `ap27_rlvr_environment_row.v1` JSONL from EvalResult/journal artifacts for future RL training. **2026-07-11 report slice**: `EvalResult.to_grep_lines()` emits report-only `METRIC rlvr_*` lines without changing objectives, SafetyGate, Pareto, or journal schema. **2026-07-11 journal slice**: `epyc-orchestrator` commit `69445d43` adds observe-only `eval_details["rlvr_reward"]` journal payloads from the same deterministic contract via the lower-risk main-loop journal assembly point, avoiding the HIGH-risk `EvalTower._aggregate` path. This closes the code-only tier/reward design, offline export, report-only, and journal-payload pieces; AP-27 remains open for inference-dependent Ouro integration. **Implementation plan**: See [eval-tower-verification.md](eval-tower-program.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
 
@@ -104,19 +104,19 @@ This packet is for rollout evidence only. It does not enable `AUTOPILOT_BSV2_ACC
 
 ##### Research Intake Update — 2026-07-14
 
-- [ ] **When AP-29 KnowledgeDistiller is wired** [too-big: conditional on owner-controlled AP-29 comparison and wiring] (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
+- **[declined: ws58 2026-11-03 content-review: merged into the AP-29 gate as its post-wiring step]** **When AP-29 KnowledgeDistiller is wired** [too-big: conditional on owner-controlled AP-29 comparison and wiring] (currently deferred — see AP-29), apply an explicit **predictability + staleness gate** to it: what to precompute, for how many consumers, invalidate on stack/config change (framing from intake-819 + the 2026-05-20 predictability-co-objective note; adopt_patterns only, no importable artifact). This is a rider on AP-29, **not** new standalone scaffolding.
 
 
 ##### Research-intake integration — 2026-07-22 (measurement-discipline hardening + orx/OpenHyra patterns)
 
-- [ ] Harden keep/revert into an explicit self-scoring candidate contract: always retain a proven baseline (valid rollback before any experiment); accept only on a re-verified strict improvement measured under pinned determinism (fixed threads/seed, N-run mean); atomic config swap; require an inline validity note stating what the number does/doesn't prove — including "no gating on a locally-unmeasurable proxy without held-out re-verify"
+- **[declined: ws58 2026-11-03 content-review: duplicate — eval-tower EV-14b / EV-14b' own the baseline-asymmetry and re-measurement contract]** Harden keep/revert into an explicit self-scoring candidate contract: always retain a proven baseline (valid rollback before any experiment); accept only on a re-verified strict improvement measured under pinned determinism (fixed threads/seed, N-run mean); atomic config swap; require an inline validity note stating what the number does/doesn't prove — including "no gating on a locally-unmeasurable proxy without held-out re-verify"
 
 
 ##### 2026-07-25 — intake Stage-2a dive: GEPA is a guaranteed no-op (P0), plus three overturned premises
 
-- [ ] **AP-19b — supervised first live `gepa_optimize` run (operator-watched), at next stack bring-up.** Operator decision 2026-07-25: blacklist stays lifted; the FIRST live exercise of the repaired path happens in a watched window before any unattended dispatch is relied on. One-shot run; watch the new ERROR path and the journal row. Risk posture verified: adapter evaluates in a SCRATCH prompt root (live frontdoor.md untouched during eval, `gepa_optimizer.py:92-113`), `_prompt_integrity_reason` guards at mutation creation AND apply, applies are git-snapshotted + auto-committed. Cold bring-up recipe: [`esc8-stack-restart-landmine-audit-2026-07-22.md`](../completed/esc8-stack-restart-landmine-audit-2026-07-22.md) § 2026-07-25.
+- [ ] **AP-19b — supervised first live `gepa_optimize` run (operator-watched), at next stack bring-up.** Operator decision 2026-07-25: blacklist stays lifted; the FIRST live exercise of the repaired path happens in a watched window before any unattended dispatch is relied on. One-shot run; watch the new ERROR path and the journal row. Risk posture verified: adapter evaluates in a SCRATCH prompt root (live frontdoor.md untouched during eval, `gepa_optimizer.py:92-113`), `_prompt_integrity_reason` guards at mutation creation AND apply, applies are git-snapshotted + auto-committed. Cold bring-up recipe: [`esc8-stack-restart-landmine-audit-2026-07-22.md`](../completed/esc8-stack-restart-landmine-audit-2026-07-22.md) § 2026-07-25. Corrected facts (absorbs AP-21): journals show only 8 gepa_optimize trials ever; the supervised run is the first real evidence, so judge GEPA on it, not on the historical no-op record.
 
-- [ ] **AP-21 re-open, on corrected facts.** Journals (all shards) show **only 8 `gepa_optimize` trials ever** (181, 182, 521, 536, 785, 882, 1137, 1144), exactly **one** ever `keep`. `gepa_ratio` is **absent from live `orchestration/autopilot_state.json`** — the 0.30 is a hardcoded fallback at `autopilot.py:8798` on the *autonomous-fallback* path, not stored state and not the primary dispatch. External evidence stands: arXiv 2607.14004 (Terminal-Bench 2.0, matched budgets) reports the GEPA-optimized agent transferring **below** the unoptimized baseline; 2602.01011 reports GEPA returning the seed prompt unchanged; 2606.19605 reproduces GEPA at −3.78 to +7.97 pp. **Gate on AP-19a.**
+- **[declined: ws58 2026-11-03 content-review: merged into AP-19b (the same supervised gepa question on corrected facts: 8 trials ever)]** **AP-21 re-open, on corrected facts.** Journals (all shards) show **only 8 `gepa_optimize` trials ever** (181, 182, 521, 536, 785, 882, 1137, 1144), exactly **one** ever `keep`. `gepa_ratio` is **absent from live `orchestration/autopilot_state.json`** — the 0.30 is a hardcoded fallback at `autopilot.py:8798` on the *autonomous-fallback* path, not stored state and not the primary dispatch. External evidence stands: arXiv 2607.14004 (Terminal-Bench 2.0, matched budgets) reports the GEPA-optimized agent transferring **below** the unoptimized baseline; 2602.01011 reports GEPA returning the seed prompt unchanged; 2606.19605 reproduces GEPA at −3.78 to +7.97 pp. **Gate on AP-19a.**
 
 - [ ] **AP-29 gate before wiring — narrowed.** `KnowledgeDistiller` has **zero non-test callers** (uninstantiated, not flag-off), so this is a free design change now. **The genuine ask is an episodic-only control arm** (retain + delete, abstraction disabled) that the distiller must beat. Justification: arXiv 2605.12978 feeds **ground-truth solutions** through a streaming consolidator and drops a 19-problem ARC-AGI slice from **100% → 52.6%** at R10 — the fault is provably in the rewriting step. Carry the authors' caveat (*"two repeats per question"*, *"point estimates … rather than formal error bars"*).
   - 2026-11-01 source checkpoint: APP `0162aa16098a3cc8c98247f238ac7f2c6f80e63a`, proof `a1f4942edff28dd99c108a1299395a3ec00be8f6`, adds a matched episodic-only control and abstracting candidate using separately created temporary StrategyStores. Original raw IDs, explicit deletions, embedder and retrieval options are shared; only the candidate is passed to abstraction, and caller-selected live stores are not accepted. Seventeen native model-free tests passed, including real KnowledgeDistiller candidate and matched native retrieval. The non-test caller tripwire remains. This establishes the experiment primitive, not a quality winner or production wiring; AP-29 stays open pending the actual authorized comparison. [Source and raw evidence](https://github.com/pestopoppa/epyc-orchestrator/tree/a1f4942edff28dd99c108a1299395a3ec00be8f6/docs/evidence/ap29-episodic-control-20261101). No new quota tick. [no-belief: implementation and fixture controls]
@@ -141,7 +141,7 @@ This packet is for rollout evidence only. It does not enable `AUTOPILOT_BSV2_ACC
 
 - [ ] **AP-29b — Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-aware reward in chapter 08 by DETERMINISTIC REPLAY over already-persisted autopilot trials.** No new inference: rescore saved outcomes and rebaseline only the objective axis that changed — exactly what `agents/shared/MEASUREMENT_POLICY.md` → *Deterministic replay before regeneration* prescribes. Journal shards (`autopilot_journal.jsonl` + `autopilot_journal_1.jsonl`) already carry the per-trial outcomes this needs.
 
-- [ ] **AP-29c — Name the prompt-optimizer of record as GEPA-class, and adopt compile-on-small-model / deploy-to-large as the CPU-first strategy.** GEPA's cross-model transfer: prompts optimized on **Qwen3-8B** scored **+9.00 aggregate on GPT-4.1-Mini**, beating every optimizer tuned directly on it — which is what makes compiling on a cheap local model economically viable here. Mark **BootstrapFewShot\*** superseded for 2026-era instruct models (**MIPROv2** buys only **+2.6** on Qwen3-8B and **REGRESSES** on AIME/LiveBench). Cost line for any compile is tracked in [`harness-selection-and-integration.md`](harness-program.md#track-harness-selection-and-integration) HS-11 (5k-25k LM calls ⇒ region-locked campaign). Sequencing: this is downstream of **AP-19a/AP-19b** — do not re-argue the GEPA pin (AP-42) before the repaired path has run live once.
+- **[declined: ws58 2026-11-03 content-review: naming/documentation, no behaviour change]** **AP-29c — Name the prompt-optimizer of record as GEPA-class, and adopt compile-on-small-model / deploy-to-large as the CPU-first strategy.** GEPA's cross-model transfer: prompts optimized on **Qwen3-8B** scored **+9.00 aggregate on GPT-4.1-Mini**, beating every optimizer tuned directly on it — which is what makes compiling on a cheap local model economically viable here. Mark **BootstrapFewShot\*** superseded for 2026-era instruct models (**MIPROv2** buys only **+2.6** on Qwen3-8B and **REGRESSES** on AIME/LiveBench). Cost line for any compile is tracked in [`harness-selection-and-integration.md`](harness-program.md#track-harness-selection-and-integration) HS-11 (5k-25k LM calls ⇒ region-locked campaign). Sequencing: this is downstream of **AP-19a/AP-19b** — do not re-argue the GEPA pin (AP-42) before the repaired path has run live once.
 
 
 ##### AutoPilot end-to-end smoke test — 2026-08-03
@@ -355,9 +355,9 @@ First full smoke run of the trial loop. Four defects, three silent.
   degrade explicitly — lower priority, listed in the subagent report. **UNOWNED**, reported not fixed.
   - Completion limits: six runtime imports checked; five focused tests passed; actual UI constructor passed on Gradio 6.5.1; model-free CPU imports passed against exact Torch 2.9.0 / TV 0.24.0 / Transformers 5.22.1. Locked Gradio 6.15.1 was not tested at its exact version. No GPU, model-runtime, or deployment validation.
 
-- [ ] The ~77-test retired-topology failure bucket.
+- **[declined: ws58 2026-11-03 content-review: duplicate — engineering-hygiene LOOP-57 / NIB2-TESTDEBT-1 own the red-test triage]** The ~77-test retired-topology failure bucket.
 
-- [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
+- **[declined: ws58 2026-11-03 content-review: a human-only-file correction with no behaviour change; route through a ratify script if the operator wants it]** `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
       outside the repository" — now false after the retarget. Human-amendment-only; no owner assigned.
 
 ##### Operational hazards found this session
@@ -375,7 +375,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ##### Context accounting, `-np`, and the E8 blocker (2026-08-03, evening)
 
-- [ ] **Restart the stack so the `-np` change goes live.** The guard reports 12 live-process drift
+- **[declined: ws58 2026-11-03 content-review: resolved by the stack restarts since 2026-08-08 (P1-3)]** **Restart the stack so the `-np` change goes live.** The guard reports 12 live-process drift
       errors (`frontdoor expected 4, live 16`, etc.) — that is config != running, working correctly.
       Blocked only on the in-flight E8 calibration.
 
@@ -462,7 +462,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   by 40 commits, while the edited function is unchanged between indexed checkout and private base.
   No live journal recount or service reload was performed. [no-belief: code-only classifier correction; no measurement]
 
-- [ ] **8,855 failure records (pre-2026-07-27) have NO `work` payload at all** — nothing durable
+- **[declined: ws58 2026-11-03 content-review: historical records; the ETR-1 era scoring supersedes them]** **8,855 failure records (pre-2026-07-27) have NO `work` payload at all** — nothing durable
   distinguishes infra from genuine, same mechanism as the seeding path. Unclassifiable, and stated as
   such rather than estimated.
 
@@ -477,12 +477,12 @@ First full smoke run of the trial loop. Four defects, three silent.
   419 `(memory_id, old_q, new_q, ts)` as a read-only artifact and let the operator decide. **Do NOT
   purge** — a purge needs a predicate and there is none; any proxy destroys real negative signal.
 
-- [ ] **Queue-hygiene correction, routed to the coordinator:** the B-bucket cited
+- **[declined: ws58 2026-11-03 content-review: bookkeeping of a stale citation]** **Queue-hygiene correction, routed to the coordinator:** the B-bucket cited
   `numa-topology-cutover-resume-20260730.md:327` for this defect. That row is **P1-7
   `vision_escalation` has a PHANTOM 5-port fleet** — a different item, still open and untouched. The
   code defect was real; the row pointer was not. Screening caught it before dispatch.
 
-- [ ] **A HAZARD THAT CORRECTS OUR OWN STANDING ADVICE: `git commit -- <path>` BYPASSES THE INDEX.**
+- **[declined: ws58 2026-11-03 content-review: a lesson already in project memory, not a task]** **A HAZARD THAT CORRECTS OUR OWN STANDING ADVICE: `git commit -- <path>` BYPASSES THE INDEX.**
   It commits the WORKING-TREE state of that path, so it sweeps any other agent's uncommitted hunks in
   the SAME FILE. Pathspec commits protect against CROSS-FILE contamination only. This fleet has been
   telling itself "explicit pathspec commits" all session as though it were sufficient; it is not.
@@ -502,7 +502,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ##### Scorer repair and an unprovable outage (2026-08-04)
 
-- [ ] **UNEXPLAINED: every llama-server exited at ~07:00 on 2026-08-04 while whisper and tts —
+- **[declined: ws58 2026-11-03 content-review: a 2026-08-04 incident with no reproduction path; nothing recurred]** **UNEXPLAINED: every llama-server exited at ~07:00 on 2026-08-04 while whisper and tts —
       same stack start, two seconds apart, same parentage — survived.** That selectivity rules out
       container/host restart (uptime 5d17h), OOM (no kernel oom-kill, no earlyoom entry, 1,079 GB
       available), tool-shell reaping (own sid+pgid, parented to containerd-shim), nightshift
@@ -526,7 +526,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   the prompt ships the author's unresolved self-correction (says 3, then 6; correct answer is 6).
   ✅ 2026-10-31 — RESEARCH `a0a3df0ff43a9a66fe1f1f05a9e24e9214511b70`: corrected example and three executable input/output cases; native scorer accepts a correct bounded-path program and rejects wrong constants. [Test](../../artifacts/compute/codex3-ma-hard-code-001-20261031/TEST.log). The separate live-pool rebuild below remains open; no historical scores were re-derived. [belief: cc]
 
-- [ ] **The live pool still carries the OLD oracle** [too-big: pool-owner rebuild and instrument evidence remain unverified] — the rebuild takes effect on the next pool
+- **[declined: ws58 2026-11-03 content-review: stale — the pool has been rebuilt and restarted many times since 2026-08-04]** **The live pool still carries the OLD oracle** [too-big: pool-owner rebuild and instrument evidence remain unverified] — the rebuild takes effect on the next pool
   rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
   needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
   vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
@@ -535,12 +535,12 @@ First full smoke run of the trial loop. Four defects, three silent.
   row whose oracle is input-satisfiable would not be flagged. Debugbench is covered by its own build
   gate; nothing generic covers that class.
 
-- [ ] **Stated limit, not hidden:** whether an ALTERNATIVE correct repair passes is bounded by argument
+- **[declined: ws58 2026-11-03 content-review: a note, not a task]** **Stated limit, not hidden:** whether an ALTERNATIVE correct repair passes is bounded by argument
   (4-added-line cap + the prompt's "fix ONLY the bug"), not by measurement — no second reference exists
   in the data and upstream ships no executable tests, so no oracle over this dataset can do better.
   Test-pinned rather than left implicit.
 
-- [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
+- **[declined: ws58 2026-11-03 content-review: a dispatched August workflow with no consumer; its lens (essential vs incident-scarred) is the refactor program's job]** **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
       incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
       scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying
       design is wrong and was patched where symptoms surfaced. Apply that lens at synthesis. Three
@@ -593,7 +593,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       mixed-pipeline, and randomly paced arrivals separately. Any live adoption opens a new execution/speed
       era so E13 questions/hour is never mixed with the adaptive denominator.
 
-- [ ] **AP-49 — Explore true live-decode checkpoint/resume only on a versioned experimental kernel.** The
+- **[declined: ws58 2026-11-03 content-review: duplicate — kv-cache-program KVU-5 (preemption with slot save) owns it]** **AP-49 — Explore true live-decode checkpoint/resume only on a versioned experimental kernel.** The
       production llama-server defers slot save/restore while `slot->is_processing()`, so current migration is
       an idle-session KV handoff and cannot relocate an active decode. Prototype a token-boundary pause →
       checkpoint → restore → resume protocol that preserves KV plus sampler/RNG, grammar/tool-parser,
@@ -631,7 +631,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ##### 2026-08-07 — reset-free trajectory refinement, proposal-only (intake-1016/1020)
 
-- [ ] **AP-CH-1 — Add a default-off adapter that turns a bounded recent trajectory window into typed
+- **[declined: ws58 2026-11-03 content-review: merged into AP-CH-2 (the adapter is the reset-free arm of that comparison)]** **AP-CH-1 — Add a default-off adapter that turns a bounded recent trajectory window into typed
   prompt/subagent/skill/memory candidates.** The adapter may diagnose and propose only. Validate every
   payload against a local schema, cap repeated equivalent proposals, and emit ordinary candidate
   envelopes with source trajectory ids, proposer identity, component kind, before/after content, and
@@ -722,7 +722,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 - [x] **AP-51 — Diff THREE JIT admission rules against `ParetoArchive`.** ✅ 2026-10-06 MAIN accepted [the equation-by-equation comparison](../../docs/reference/ni08-admission-and-skill-granularity.md#ap-51-three-rules-act-at-different-stages), with current tier-local task-rate axes verified. Training-pair construction, bank retention and reward channels remain distinct; no code/gate or efficacy claim. `intake-1320#02`.
 
-- [ ] **AP-52 — STANDING CAUTION against the frozen-frontier-proposer contract.** Two prompted
+- **[declined: ws58 2026-11-03 content-review: a standing caution, not a task]** **AP-52 — STANDING CAUTION against the frozen-frontier-proposer contract.** Two prompted
       frontier editors reading real failure traces produced **net negative** deltas over 1,270
       held-out tasks (−4.3 ± 2.5 and −0.4 ± 3.6), with 1/9 and 3/9 failing validation outright.
       **PromptForge is that loop.** SafetyGate scores the same suite the mutation was proposed from;
@@ -773,12 +773,12 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
             config_diff, PEAF, BSV and Pareto are unchanged. Root `scripts/vidya` carries the digest on
             autopilot-journal frames, ungraded. Tests: `test_ap63_run_manifest_lineage.py` (17). Takes
             effect at the next AutoPilot restart.
-      - [ ] **AP-63(b)** — lane-arbiter precondition: blocked on the OP-41 sequence above (champion
+      - **[declined: ws58 2026-11-03 content-review: merged into AP-63 as its precondition]** **AP-63(b)** — lane-arbiter precondition: blocked on the OP-41 sequence above (champion
             finalised → production promotion → host reboot, operator-owned design).
-      - [ ] **AP-63c** — after the first post-restart trial, check (read-only) that its journal row
+      - **[declined: ws58 2026-11-03 content-review: merged into AP-63 as its post-restart check]** **AP-63c** — after the first post-restart trial, check (read-only) that its journal row
             carries a non-empty `run_manifest` whose `manifest_sha256` matches the in-flight marker it
             was dispatched under, plus a `lineage` block. A pre-dispatch skip must carry `{}`.
-      - [ ] **AP-63d** — decide whether `parent_trial`'s consumers (config_diff, PEAF surprise r²,
+      - **[declined: ws58 2026-11-03 content-review: merged into AP-63 as its follow-on decision]** **AP-63d** — decide whether `parent_trial`'s consumers (config_diff, PEAF surprise r²,
             BSV-3 dependency rows) should switch from the same-species heuristic to
             `lineage.parent_trial_id`. This is a design choice for the orx refill shape, not a defect:
             it changes what a config diff is measured against.
@@ -1396,9 +1396,9 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   per-generation `cache_warm_state == warm` predicate from saved sidecars, binds it into both
   transition and completion receipt, and quarantines any cold/missing evidence. The pinned v1
   historical verifier remains available only with its original terminalizer hash.
-- [ ] **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
-- [ ] **[H2] REL-1 eval error-rate surface** — deferred (stretch).
-- [ ] **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set
+- **[declined: ws58 2026-11-03 content-review: stretch; dashboard panels are owned by the hub (RTG-03), where the duplicate rows were retired]** **[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).
+- **[declined: ws58 2026-11-03 content-review: stretch; same]** **[H2] REL-1 eval error-rate surface** — deferred (stretch).
+- **[declined: ws58 2026-11-03 content-review: stretch bundle with no consumer]** **[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set
   SoT reuse**, **[M3] eval-batch lane attribution**, **[M4] calibration provenance**,
   **[L1] era-sliced KPI window** — untouched.
 
@@ -1847,7 +1847,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   Focused validation: `6 passed`; Ruff, ShellCheck warning level, `bash -n`, and
   `git diff --check` clean. A fail-closed live probe with the bootstrap receipt absent created
   no run directory and left no AutoPilot process.
-- [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2
+- **[declined: ws58 2026-11-03 content-review: a pointer to other owners' files]** Non-owned audit findings untouched (other owners / other agents' flux files): H2
   rewind/restore atomicity (`structural_lab.py`), H3 preflight JRN-7 reader, M1 validity table,
   M2 phase_status reader, M3 action-local gate fallback (`actions.py`), M4/M5/M6, and the
   SafetyGate/RLVR audit's F2 (`export_rlvr_environment.py`, mid-edit by another agent).
@@ -2142,13 +2142,13 @@ Two coupled, CPU-relevant levers borrowed from Repo Prompt's edit pipeline:
 
 - [x] **BEP-1 — Batch-edit mode (think-then-act).** ✅ 2026-05-26 (flipped 2026-07-14; wired `ea5f010` behind `features().batch_edit_mode`, pure pieces done+tested). Add a coder/architect mode that produces a complete structured patch set (per-file hunks) in one shot after a bounded evidence-gathering phase, with no edit/apply tool calls interleaved through the reasoning chain. Define the patch schema as deterministic data, not free-form XML-only prose: `base_repo_sha`, per-file `path`, `base_content_sha256`, `operation`, hunks with line anchors or unified-diff body, expected postconditions, and declared cross-file dependencies. Reuse TOON for compact transport if useful, but validate into a typed Python object before touching disk. Default-off feature flag.
 - [ ] **BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path.** Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a coding/edit workload — measure round-trip count, total prefill tokens, end-to-end latency, bundle/context size if DCP is enabled, patch-parse failure rate, apply failure rate, verification pass rate, and quality. This no longer gates practical multi-file coding remediation because the separate `force_mode="edit"` transaction has already solved that blocker. Run BEP-2/J8 only if its answer would change whether the legacy `batch_edit_mode` patchset path is kept, retired, or exposed as a narrow task-class knob. First run an offline replay with already-known patches to estimate deterministic apply overhead; then run inference. *(Inference-gated — prepare commands, user runs; standalone llama-bench only for raw speed per `feedback_speed_verify_via_llama_bench`.)*
-- [ ] **BEP-3 — Autopilot search-space knob.** If BEP-2 is positive, expose batch-vs-interleaved as a StructuralLab boolean (or per-role/per-task-class knob) so autopilot can find where each wins. Wires into autopilot-continuous-optimization search space. The knob must be task-class aware because run-test-iterate tasks may require interleaving while mechanical multi-file edits may benefit from batching.
+- **[declined: ws58 2026-11-03 content-review: merged into BEP-2 as its conditional]** **BEP-3 — Autopilot search-space knob.** If BEP-2 is positive, expose batch-vs-interleaved as a StructuralLab boolean (or per-role/per-task-class knob) so autopilot can find where each wins. Wires into autopilot-continuous-optimization search space. The knob must be task-class aware because run-test-iterate tasks may require interleaving while mechanical multi-file edits may benefit from batching.
 - [x] **BEP-4 — Parallel apply fan-out.** ✅ 2026-06-28 (flipped 2026-07-14; deterministic stage-local fan-out live; LM-repair lane tracked below). Given a BEP-1 patch set, first try deterministic patch application in parallel by file/process with no additional LM calls. Only if deterministic apply fails should an optional cheap-worker repair lane run, and that lane must be explicitly inference-gated. Collect per-file results; surface a combined reviewable diff plus a machine-readable failure manifest. Reuse the 32×6t concurrent-split harness for CPU parallelism, but preserve a dependency graph: files with declared cross-file ordering constraints or generated-code dependencies must serialize within their group.
 - [ ] **BEP-5 — Sandbox-before-disk + granular accept/reject (general).** Generalize Meta-Harness Tier-2's git-commit-before / ast-validate discipline beyond the 4-file allowlist into a general "stage in sandbox/worktree → reviewable diff → independent verify → accept/reject per file or hunk → commit" apply path. Safety-gated — design most carefully (autonomous general code edits). Use base-hash preconditions to reject stale patches, forbid edits outside the declared scope, and always run a whole-repo verification pass after per-file verification because cross-file errors are invisible to isolated checks.
 - [x] **BEP-4 telemetry hardening — typed verifier failures.** `apply_patchset_sandboxed()` now records `FailureType.VERIFY_FAILED` when an explicit verifier returns false without raising, preserving the machine-readable failure manifest expected by BEP-4/BEP-2 reports. Focused runner/hook tests passed (`34 passed`) and ruff was clean. ✅ 2026-07-06
-- [ ] **BEP-4 residual — optional LM-repair lane.** When deterministic apply fails, run an optional cheap-worker repair lane (explicitly inference-gated, opt-in per `feedback_no_concurrent_inference`). Only remaining BEP-4 piece after the 2026-06-28 deterministic fan-out landed.
+- **[declined: ws58 2026-11-03 content-review: optional lane by its own text]** **BEP-4 residual — optional LM-repair lane.** When deterministic apply fails, run an optional cheap-worker repair lane (explicitly inference-gated, opt-in per `feedback_no_concurrent_inference`). Only remaining BEP-4 piece after the 2026-06-28 deterministic fan-out landed.
 - [x] **BEP-6 — hashline vs `current_shas`: the granularity gap does not exist** (intake-1148#record, intake-1150#record, intake-1153, intake-1154) ✅ 2026-08-18. The Stage-1 premise — that hashline is line-granularity optimistic concurrency where ours is file-granularity — is **OVERTURNED**. Current hashline validates ONE 4-hex xxHash32 of the whole normalized file (`packages/hashline/src/format.ts:112-121`) and addresses lines by plain number; per-line hashes were removed in `30793c165`/`7c6457652` (May 2026). That is the same property `current_shas` already gives us. Two leniency details worth knowing if we ever revisit: the hash normalizes away trailing whitespace (a stale file differing only in trailing whitespace is ACCEPTED), and a 16-bit tag misses a stale edit ~1 in 65,536. **No change to our apply path is proposed.**
-- [ ] **BEP-7 — if an edit-format change is ever proposed, apply two external rules first.** (a) **PAIRING RULE** (intake-1154, aider): a format change without a matching *tolerant applier* is a different intervention — disabling flexible patching produced a **9x increase in editing errors** on aider's own benchmark. (b) **LINE-NUMBER TENSION** (intake-1153, Cursor): line-number emission is named as a tokenizer-level failure mode — a digit run tokenized as one token forces a single-forward-pass commit — and Cursor adopted aider search/replace blocks specifically to remove it. Both predate hashline; omp's shipped format moved *toward* line numbers with no published benchmark of it. Resolve by measurement, not authority. **Decision-relevant magnitude:** against `str_replace`, hashline's measured mean is **+2.97 pp** (14/19 models, sign p=0.064) — inside the benchmark's own 3.75 pp median test-retest spread. The +19.4 pp headline is against `apply_patch`, a baseline that source itself calls broken.
+- **[declined: ws58 2026-11-03 content-review: a conditional rule ("if ever proposed")]** **BEP-7 — if an edit-format change is ever proposed, apply two external rules first.** (a) **PAIRING RULE** (intake-1154, aider): a format change without a matching *tolerant applier* is a different intervention — disabling flexible patching produced a **9x increase in editing errors** on aider's own benchmark. (b) **LINE-NUMBER TENSION** (intake-1153, Cursor): line-number emission is named as a tokenizer-level failure mode — a digit run tokenized as one token forces a single-forward-pass commit — and Cursor adopted aider search/replace blocks specifically to remove it. Both predate hashline; omp's shipped format moved *toward* line numbers with no published benchmark of it. Resolve by measurement, not authority. **Decision-relevant magnitude:** against `str_replace`, hashline's measured mean is **+2.97 pp** (14/19 models, sign p=0.064) — inside the benchmark's own 3.75 pp median test-retest spread. The +19.4 pp headline is against `apply_patch`, a baseline that source itself calls broken.
 
 #### Open questions
 
@@ -2260,7 +2260,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 - [x] **DCP-6b J7 runner safety prep**: ✅ 2026-07-06. Orchestrator `7c84f102` corrects `scripts/benchmark/dcp_j7_ab.py` so default mode is no-inference stub/schema validation; live inference now requires explicit `--real --host-quiet-confirmed` and still refuses while AutoPilot is running. Stub artifact `benchmarks/results/runs/dcp_j7/stub-20260706T033205Z/` validates the result schema and records the expected insufficient decision (`missing_latency_delta`, `quality_not_scored`).
 - [ ] **DCP-6 deploy attestation + inference gate**: launch-code provenance is satisfied (`server_launch_git_sha=eeb8cce`, ancestor of `2e2e0d3` and `756c96b`; current API `git_sha=27e09a1`). Orchestrator `670aab4` records the 2026-06-19 `dcp6a-deploy-boundary-check` attestation with GitNexus drift clean and all 6 API workers sampled, but it is not a clean deploy gate because **feature-flag intent diffs remain** and the run still needs an **operationally clean host-quiet window**. Clear that remaining attestation warning at the next host-quiet boundary, then run inference and record top-up rate, token overhead, and success deltas.
   - **Two of the three original caveats are FALSIFIED — do not re-raise them** (falsified by `mainC` 2026-08-13; annotated here 2026-08-16). Original wording: *"...because ~~llama-server executable paths are deleted~~, feature-flag intent diffs remain, and ~~`AUTOPILOT_TOOL_SENTINELS` is absent from the API parent env~~."* Evidence: (a) `/mnt/raid0/llm/llama.cpp/build/bin/llama-server` **exists**, rebuilt 2026-08-10 22:40; (b) `AUTOPILOT_TOOL_SENTINELS` **is set at launch** — `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py:2198` `env["AUTOPILOT_TOOL_SENTINELS"] = "1"`. The 2026-06-19 attestation text is retained above as the historical record; the blocker list is what changed.
-- [ ] **J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.
+- **[declined: ws58 2026-11-03 content-review: optional by its own text]** **J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.
 - [x] **Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability), not here. ✅ 2026-07-29 — this handoff records DCP/BEP evidence and gates only; the multi-file capability handoff owns any rollout decision.
 
 #### Dependency Forks
@@ -4145,23 +4145,23 @@ Each task = concrete file(s) + acceptance check. Flip `- [ ]` → `- [x] … ✅
 
 ##### Phase 1 — Composite route (the mechanism)
 - [ ] **T1.1 — Build the scaffold-then-nothink composite executor.** New path (verify attach point in `src/api/routes/chat_pipeline/`): call `scaffold_reasoner` → inject its output (assistant-prefix `continue_final_message` **or** system/context advisory — the study's mode answer is distribution-conditional, so make it a parameter) → call the beneficiary with `enable_thinking=false` (via the backend path in `src/backends/llama_server.py`). Issue as **one timed request** so `elapsed_s` (`eval_tower.py:1063`) captures both stages. *Accept:* one composite request returns the beneficiary's answer with the scaffold visible in the trace; beneficiary decode-token count is in the ~100–175 band the study observed.
-- [ ] **T1.2 — Attach it to the reasoning-effort ladder.** Wire the composite as one rung in `src/graph/think_harder.py` (`_build_think_harder_config`, :130) rather than a parallel mechanism, so per-role ROI tracking (`_expected_think_harder_roi`, :29) already covers it. *Accept:* `think_harder` can select `scaffold_then_nothink` as an effort level for an eligible role.
+- **[declined: ws58 2026-11-03 content-review: merged into T1.1]** **T1.2 — Attach it to the reasoning-effort ladder.** Wire the composite as one rung in `src/graph/think_harder.py` (`_build_think_harder_config`, :130) rather than a parallel mechanism, so per-role ROI tracking (`_expected_think_harder_roi`, :29) already covers it. *Accept:* `think_harder` can select `scaffold_then_nothink` as an effort level for an eligible role.
 
 ##### Phase 2 — Blended cost accounting (the objective)
 - [ ] **T2.1 — Decide + implement the blended-cost representation.** Resolve the §3.1/§3.2 split: (i) ensure the composite request's total wall-clock (GPU gen + CPU prefill + CPU decode) lands in the `speed` axis via the single-timed-request design (T1.1); AND (ii) extend the episodic `cost_metrics` contract in `orchestration/repl_memory/q_reward.py` to carry a **second-device term** (GPU `generation_ms`) so `compute_reward`'s `cost_ratio` reflects blended cost, not just the beneficiary's single-role wall-clock. Options: a composite pseudo-role with a blended `baseline_tps`, or an additive GPU-cost term. *Accept:* a scaffold trial and an ownthink trial on the same task produce `cost_ratio`/`speed` values whose ordering matches the study's blended-cost inequality (scaffold cheaper in the over-reason regime).
-- [ ] **T2.2 — Verify the Pareto `cost` axis is not misused.** Confirm the scaffold does **not** get mis-scored on the memory `cost_tier` axis (`eval_tower.py:1383-1385`) as if it were free — the GPU residency is a real capacity cost. Decide whether the reasoner's residency should raise the composite route's `cost_tier`. *Accept:* documented decision + `cost_tier` assignment for the composite route.
+- **[declined: ws58 2026-11-03 content-review: merged into T2.1]** **T2.2 — Verify the Pareto `cost` axis is not misused.** Confirm the scaffold does **not** get mis-scored on the memory `cost_tier` axis (`eval_tower.py:1383-1385`) as if it were free — the GPU residency is a real capacity cost. Decide whether the reasoner's residency should raise the composite route's `cost_tier`. *Accept:* documented decision + `cost_tier` assignment for the composite route.
 
 ##### Phase 3 — Episodic gating (learn when)
 - [ ] **T3.1 — Add the scaffold-eligibility signal to episodic memory.** Introduce a `sub_decision`/`action_type` value (e.g. `scaffold_eligible`) in `src/classifiers/subdecision_taxonomy.py` + `orchestration/repl_memory/episodic_store.py` and a `retrieve_for_scaffold_eligibility` (or reuse `retrieve_for_routing`, `retriever.py:160`) keyed on task embedding × `difficulty_band` (`src/classifiers/difficulty_signal.py`). *Accept:* store/retrieve round-trips a scaffold Q-value for a (task-class, difficulty) cell; unit test alongside `tests/unit/test_episodic_store.py`.
-- [ ] **T3.2 — Reward wiring so Q-values learn the gate.** Ensure the composite route's outcome feeds `q_reward.compute_reward` (T2.1) so `update_q_value` (`episodic_store.py:618`) reinforces "apply scaffold" only where it wins (correct **and** blended-cost-cheaper). *Accept:* replay of a synthetic weak-and-overthinking trace drives the scaffold Q-value up; a saturated-task trace drives it down (matches the headroom-conditional finding).
+- **[declined: ws58 2026-11-03 content-review: merged into T3.1]** **T3.2 — Reward wiring so Q-values learn the gate.** Ensure the composite route's outcome feeds `q_reward.compute_reward` (T2.1) so `update_q_value` (`episodic_store.py:618`) reinforces "apply scaffold" only where it wins (correct **and** blended-cost-cheaper). *Accept:* replay of a synthetic weak-and-overthinking trace drives the scaffold Q-value up; a saturated-task trace drives it down (matches the headroom-conditional finding).
 
 ##### Phase 4 — Offline replay + registry
 - [ ] **T4.1 — Offline replay to learn the gating policy from existing traces.** Use the read-only journal replay path (`scripts/autopilot/journal_snapshot_replay.py` → `src/autopilot_core/journal_snapshot_replay.py`, `build_snapshot_replay_diagnostic`) and/or `scripts/autopilot/core_v2_select.py` to replay historical task traces and estimate, per task-class, where nothink fails + the beneficiary over-reasons (the eligible regime) — **without** live daemon perturbation. *Accept:* a per-task-class eligibility table with support counts, written to a report under `orchestration/reports/`.
-- [ ] **T4.2 — Register the lever (operator-gated).** After T0.1 approval, add a `scaffold_then_nothink` row to `orchestration/capability_registry.yaml` (kind per the §3.4 fork decision; `promotion_state: placeholder`; `kill_condition` written; roles = the eligible beneficiaries). Validate with `scripts/registry/compile_capability_registry.py` + `tests/unit/test_capability_registry.py`. *Accept:* loader accepts the row; row stays `placeholder`/gated until the measurement gate (§8) passes.
+- **[declined: ws58 2026-11-03 content-review: merged into T4.1]** **T4.2 — Register the lever (operator-gated).** After T0.1 approval, add a `scaffold_then_nothink` row to `orchestration/capability_registry.yaml` (kind per the §3.4 fork decision; `promotion_state: placeholder`; `kill_condition` written; roles = the eligible beneficiaries). Validate with `scripts/registry/compile_capability_registry.py` + `tests/unit/test_capability_registry.py`. *Accept:* loader accepts the row; row stays `placeholder`/gated until the measurement gate (§8) passes.
 
 ##### Phase 5 — Measurement gate + rollout
 - [ ] **T5.1 — Codified measurement protocol for the deploy gate** (see §8). *Accept:* protocol-id assigned; quality-parity + blended-cost recipe written, operator-approved.
-- [ ] **T5.2 — Canary / shadow rollout.** Shadowed trials on the eligible task-classes only; verify no regression on the saturated/nothink-works classes; then promote the registry row past `placeholder` per W4 preconditions. *Accept:* canary meets the §8 gate; W4 (1) applicator wired, (2) range validated, (3) kill_condition, (4) shadowed trial attested — all satisfied.
+- **[declined: ws58 2026-11-03 content-review: merged into T5.1]** **T5.2 — Canary / shadow rollout.** Shadowed trials on the eligible task-classes only; verify no regression on the saturated/nothink-works classes; then promote the registry row past `placeholder` per W4 preconditions. *Accept:* canary meets the §8 gate; W4 (1) applicator wired, (2) range validated, (3) kill_condition, (4) shadowed trial attested — all satisfied.
 
 ---
 
@@ -4433,7 +4433,7 @@ outcome.
         stay stopped — but the current state is neither: the label is sticky while allocation is
         not, so candidates keep burning trials whose evidence is then discarded. This changes which
         candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.~~
-- [ ] **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**
+- **[declined: ws58 2026-11-03 content-review: a corrected explanatory note; the decision is SEQ-B1]** **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**
       **CORRECTED 2026-07-28** — I first wrote that "the rate e-process is frozen". **It is not.**
       Measured: `E_rate_noninf` takes **82 distinct values** (min 0.5213, median 0.9100, max 1.1100)
       and `z_rate` takes 179 distinct values with median **−0.8979** and only **7.9% positive**. The
@@ -4476,7 +4476,7 @@ outcome.
         so, then ~9-10 further trials (≈2.6 eval-hours at the historical ~935 s/trial) settle it.
         **This is a measurement-trust-boundary decision and is human-amendment-only** per
         MEASUREMENT.md — an agent must not make it.
-  - [ ] SEQ-3b — **Re-run clean under E8 (expensive, no ruling needed).** Restart the candidate at
+  - **[declined: ws58 2026-11-03 content-review: era-stale (E8; the reward carries the wall-clock axis since E18)]** SEQ-3b — **Re-run clean under E8 (expensive, no ruling needed).** Restart the candidate at
         k=0 under the E8 instrument. At the observed growth of 1.0631×/trial it needs **~49 trials**
         to reach `confirm_e=20.0` — roughly **12.7 eval-hours**, not 2.6. Also gated on the E8
         quality-baseline reseed completing and being operator-ratified, since the hold is
@@ -4520,7 +4520,7 @@ outcome.
       constraint is the QUALITY axis (max `E_quality` 11.55 vs bar 20). Coupled switch:
       `AUTOPILOT_SEQ_P0_2_BRIDGE` `1 -> 0` makes the rate axis binding again (advisory today).
 
-- [ ] **The real reason `E_quality` never cleared 20 is trial starvation, not calibration.**
+- **[declined: ws58 2026-11-03 content-review: merged into SEQ-4 (the allocation replay answers it)]** **The real reason `E_quality` never cleared 20 is trial starvation, not calibration.**
       Measured over the journal: **89 of 141 candidates got exactly ONE trial** (median k = 1). An
       e-process accumulates multiplicatively; at k=1 it cannot clear any bar. The two leading
       candidates were close — `70902e4b665474e7` at k=40 reached E=11.55, **~9 trials short** at its
@@ -4893,7 +4893,7 @@ so this is a **new active stub, not a reopen**.
       `sub/autopilot-safety-20260916` (pending merge), corpus sha256 `09ae7365…efbc71`. The MHS-4 row now
       cites `intake-1323#record` with the qualified wording. `tests/unit/test_heldout_effect_corpus.py` (15 tests) pins
       both the ordering and the refutation. MH-7 wiring was not done (out of scope for this row).
-- [ ] **MHS-6 (record, no work) — Optimizer budget shape.** Record it as **"constant in training-set
+- **[declined: ws58 2026-11-03 content-review: a record with no work, by its own text]** **MHS-6 (record, no work) — Optimizer budget shape.** Record it as **"constant in training-set
       size, LARGE constant"**: 1 + T_ReAct calls/iteration, T_ReAct 10–20 at B = N_train ⇒ 11–21
       metered calls, vs EvoSkill 2N/B and SkillOpt K_opt·N/B (K_opt 6–8). At our split sizes this is
       **more** absolute calls. The completed file's pointer to

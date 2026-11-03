@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:43:26Z",
+  "generated_at": "2026-11-03T16:44:07Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2700,17 +2700,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 286,
-      "dispatchable": 110,
+      "dispatchable": 73,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-03",
       "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
-      "open": 112,
+      "open": 74,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2733,47 +2733,47 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 57,
+          "dispatchable": 37,
           "gates": [],
           "line": 19,
           "name": "autopilot-program",
-          "open": 59,
+          "open": 38,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 2,
           "gates": [],
           "line": 997,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
-          "open": 5,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 1405,
           "name": "autopilot-decision-plane-audit-2026-07-22",
-          "open": 2,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 5,
-          "gates": [],
-          "line": 2102,
-          "name": "batched-edit-parallel-apply",
-          "open": 5,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
+          "line": 2102,
+          "name": "batched-edit-parallel-apply",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
           "line": 2238,
           "name": "bep-dcp-falsification-harness",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -2832,11 +2832,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 7,
           "gates": [],
           "line": 4031,
           "name": "scaffold-autopilot-cost-lever-deployment",
-          "open": 12,
+          "open": 7,
           "readiness": "ready"
         },
         {
@@ -2854,7 +2854,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "dispatchable": 8,
+          "dispatchable": 5,
           "gates": [
             "RTG-02#autopilot-program",
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
@@ -2871,7 +2871,7 @@
           ],
           "line": 4261,
           "name": "autopilot-sequential-allocation",
-          "open": 8,
+          "open": 5,
           "readiness": "blocked"
         },
         {
@@ -2889,7 +2889,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [
             "RTG-02#autopilot-program",
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
@@ -2906,7 +2906,7 @@
           ],
           "line": 4711,
           "name": "promptforge-mutation-safety-contract",
-          "open": 2,
+          "open": 1,
           "readiness": "blocked"
         }
       ]

@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 8,
+      "blocked": 7,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 538
+      "open": 501
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -159,11 +159,11 @@
       ]
     },
     "autopilot-program.md": {
-      "blocked": 2,
+      "blocked": 1,
       "closed": 286,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 110,
+      "open": 73,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -172,17 +172,17 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 398,
+      "total": 360,
       "tracks": [
         {
-          "blocked": 2,
+          "blocked": 1,
           "closed": 42,
           "gates": [],
           "guarded": 0,
           "line": 19,
           "markers": 1,
           "name": "autopilot-program",
-          "open": 57
+          "open": 37
         },
         {
           "blocked": 0,
@@ -192,7 +192,7 @@
           "line": 997,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
-          "open": 5
+          "open": 2
         },
         {
           "blocked": 0,
@@ -202,7 +202,7 @@
           "line": 1405,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -212,7 +212,7 @@
           "line": 2102,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
-          "open": 5
+          "open": 2
         },
         {
           "blocked": 0,
@@ -222,7 +222,7 @@
           "line": 2238,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -292,7 +292,7 @@
           "line": 4031,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
-          "open": 12
+          "open": 7
         },
         {
           "blocked": 0,
@@ -315,7 +315,7 @@
           "line": 4261,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
-          "open": 8
+          "open": 5
         },
         {
           "blocked": 0,
@@ -338,7 +338,7 @@
           "line": 4711,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
-          "open": 2
+          "open": 1
         }
       ]
     },
