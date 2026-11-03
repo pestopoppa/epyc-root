@@ -2159,7 +2159,7 @@
       "blocked": 4,
       "closed": 171,
       "guarded": 1,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 97,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {

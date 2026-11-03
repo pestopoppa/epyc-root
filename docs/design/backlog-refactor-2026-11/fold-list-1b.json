@@ -1,0 +1,4773 @@
+{
+ "schema": "brf-fold-list-1b.v1",
+ "generated": "2026-11-02",
+ "origin_main": "8b0d3d571c289f5d799ce06714d007545bbf4cf1",
+ "tooling_on_top_of_origin_main": [
+  "index_state: <ROW>#<track> gate refs (BRF-T7-1 prerequisite)",
+  "BRF-T1-F25: fold 2 handoff(s) into reviewer-latency-and-sampling-budget.md (route 1a, batch 4)",
+  "BRF-T1-F26: fold 7 handoff(s) into routing-program.md (route 1a, batch 4)"
+ ],
+ "base": "route-1a END state: the 26 folds of fold-list-1a.json applied virtually on origin_main (BRF-T1-1 fold.py semantics)",
+ "route_1a_folds_already_on_origin_main": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26
+ ],
+ "rule": "route 1b (D1): one group per plan target (backlog-refactor-plan targets; the 3 model-evaluation-queue files are one target, BRF-T7-MEQ). Readiness may differ inside a group because every former handoff becomes a marked track: its body takes the member row Deps as its gate marker and the tracks it already had keep theirs. A ref to a handoff of the same group becomes `<ROW>#<track>` refs (index_state BRF-T7-1 prerequisite); a Deps cell ref to a member becomes the kept row. Proof: the real index_state derive_readiness (per-track gates, track refs, task states) over the virtual graph, cumulatively in list order: every unit with dispatchable work (a former handoff, or a track it already had) keeps readiness and blockers (mapped through the redirects).",
+ "counts": {
+  "origin_nodes": 64,
+  "origin_readiness": {
+   "ready": 29,
+   "blocked": 35,
+   "no_open": 0
+  },
+  "after_1a_nodes": 64,
+  "after_1a_readiness": {
+   "ready": 29,
+   "blocked": 35,
+   "no_open": 0
+  },
+  "folds": 17,
+  "batches": 3,
+  "sources_folded": 34,
+  "after_1b_nodes": 30,
+  "after_1b_readiness": {
+   "ready": 29,
+   "blocked": 1,
+   "no_open": 0
+  },
+  "after_1b_excluding_backlog_refactor": 29,
+  "singleton_targets": [
+   "backlog-refactor-2026-11.md",
+   "benchmark-suites.md",
+   "context-and-token-economy.md",
+   "deepseek-v41-flash-evaluation.md",
+   "engineering-hygiene-backlog.md",
+   "eval-tower-program.md",
+   "frontier-lab-automation.md",
+   "knowledge-pipelines.md",
+   "quantization-and-low-bit.md",
+   "speech-and-multimodal.md",
+   "stack-lifecycle-program.md",
+   "thesis-experiment-orchestrator-vs-strongest-model.md",
+   "vidya-belief-substrate-program.md"
+  ],
+  "groups": 30,
+  "track_refs_written": 49,
+  "deps_cells_coarsened": 8,
+  "inert_refs_dropped": 0,
+  "unproven_folds": 0
+ },
+ "unproven": [],
+ "after_1b_handoffs": {
+  "EVL-02": "model-evaluation-queue.md",
+  "EVL-08": "benchmark-suites.md",
+  "EVL-10": "memory-program.md",
+  "EVL-14": "eval-tower-program.md",
+  "EVL-29": "frontier-lab-automation.md",
+  "EVL-47": "vidya-belief-substrate-program.md",
+  "INF-06": "autokernel-loop.md",
+  "INF-22": "mi210-serving-program.md",
+  "INF-33": "model-architecture-readiness.md",
+  "INF-45": "numa-placement-and-contention.md",
+  "INF-48": "rocm-kernel-authoring.md",
+  "INF-50": "speculative-decoding.md",
+  "INF-59": "long-context-program.md",
+  "INF-65": "kernel-champion-and-promotion.md",
+  "INF-70": "cpu-decode-roofline-program.md",
+  "INF-77": "deepseek-v41-flash-evaluation.md",
+  "INF-79": "speech-and-multimodal.md",
+  "INF-80": "quantization-and-low-bit.md",
+  "PIP-04": "knowledge-pipelines.md",
+  "REV-02": "reviewer-control-plane.md",
+  "RTG-02": "autopilot-program.md",
+  "RTG-08": "context-and-token-economy.md",
+  "RTG-09": "routing-program.md",
+  "RTG-22": "engineering-hygiene-backlog.md",
+  "RTG-34": "coordination-and-churn-pipeline.md",
+  "RTG-36": "stack-lifecycle-program.md",
+  "RTG-58": "kv-cache-program.md",
+  "RTG-63": "backlog-refactor-2026-11.md",
+  "UFH-01": "harness-program.md",
+  "UFH-13": "thesis-experiment-orchestrator-vs-strongest-model.md"
+ },
+ "batches": [
+  {
+   "batch": 1,
+   "orders": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "batch": 2,
+   "orders": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ]
+  },
+  {
+   "batch": 3,
+   "orders": [
+    17
+   ]
+  }
+ ],
+ "folds": [
+  {
+   "order": 1,
+   "box": "BRF-T7-F1",
+   "plan_target": "kernel-champion-and-promotion.md",
+   "destination": "handoffs/active/kernel-champion-and-promotion.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/autokernel-champion-aggregate.md",
+   "anchor_row_kept": "INF-65",
+   "members": [
+    {
+     "row": "INF-65",
+     "file_after_1a": "autokernel-champion-aggregate.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 35,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "EVL-21",
+     "file_after_1a": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 20,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "INF-75",
+     "file_after_1a": "autokernel-cross-workload-keep-gate.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 13,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "INF-81",
+     "file_after_1a": "autokernel-all-devices-all-dimensions.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 60,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+    "handoffs/active/autokernel-cross-workload-keep-gate.md",
+    "handoffs/active/autokernel-all-devices-all-dimensions.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md handoffs/completed/fable5-window2-findings-03-portfolio-and-master-queue.md",
+    "git mv handoffs/active/autokernel-cross-workload-keep-gate.md handoffs/completed/autokernel-cross-workload-keep-gate.md",
+    "git mv handoffs/active/autokernel-all-devices-all-dimensions.md handoffs/completed/autokernel-all-devices-all-dimensions.md",
+    "git mv handoffs/active/autokernel-champion-aggregate.md handoffs/active/kernel-champion-and-promotion.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "autokernel-champion-aggregate",
+     "from_file": "autokernel-champion-aggregate.md",
+     "from_row": "INF-65",
+     "kind": "anchor body -> track",
+     "origin_file": "autokernel-champion-aggregate.md",
+     "gate_marker": "<!-- gate: INF-06, INF-62, INF-02 -->",
+     "dispatchable": 35,
+     "open": 36,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "fable5-window2-findings-03-portfolio-and-master-queue",
+     "from_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "from_row": "EVL-21",
+     "kind": "member body -> track",
+     "origin_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 10,
+     "open": 10,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "cpu-fused-decoder-blocks",
+     "from_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "from_row": "EVL-21",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "laguna-s21-cpu-port",
+     "from_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "from_row": "EVL-21",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "moe-spec-cpu-spec-dec-integration",
+     "from_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "from_row": "EVL-21",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "v9-kernel-per-request-speculative-params",
+     "from_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "from_row": "EVL-21",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autokernel-cross-workload-keep-gate",
+     "from_file": "autokernel-cross-workload-keep-gate.md",
+     "from_row": "INF-75",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-cross-workload-keep-gate.md",
+     "gate_marker": "<!-- gate: INF-73, INF-66, INF-65#autokernel-champion-aggregate -->",
+     "dispatchable": 13,
+     "open": 13,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "autokernel-all-devices-all-dimensions",
+     "from_file": "autokernel-all-devices-all-dimensions.md",
+     "from_row": "INF-81",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-all-devices-all-dimensions.md",
+     "gate_marker": "<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-62, RTG-57, RTG-58 -->",
+     "dispatchable": 60,
+     "open": 60,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-cross-workload-keep-gate",
+      "ref": "INF-65",
+      "to": [
+       "INF-65#autokernel-champion-aggregate"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-all-devices-all-dimensions",
+      "ref": "INF-75",
+      "to": [
+       "INF-65#autokernel-cross-workload-keep-gate"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "INF-70",
+      "ref": "EVL-21",
+      "to": "INF-65"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "EVL-21",
+      "index": "research-evaluation-index.md"
+     },
+     {
+      "row": "INF-75",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-81",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-65",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "kernel-champion-and-promotion.md",
+     "deps_after": [
+      "INF-06",
+      "INF-62",
+      "INF-02"
+     ]
+    },
+    "repoint_deps_in_rows": [
+     "INF-70"
+    ],
+    "curated_priority_rekey_candidates": [
+     "EVL-21",
+     "INF-75",
+     "INF-81"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: EVL-21: folded into INF-65 (kernel-champion-and-promotion.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-75: folded into INF-65 (kernel-champion-and-promotion.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-81: folded into INF-65 (kernel-champion-and-promotion.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "EVL-21": "INF-65",
+     "INF-75": "INF-65",
+     "INF-81": "INF-65"
+    },
+    "files": {
+     "fable5-window2-findings-03-portfolio-and-master-queue.md": "kernel-champion-and-promotion.md#track:fable5-window2-findings-03-portfolio-and-master-queue",
+     "autokernel-champion-aggregate.md": "kernel-champion-and-promotion.md#track:autokernel-champion-aggregate",
+     "autokernel-cross-workload-keep-gate.md": "kernel-champion-and-promotion.md#track:autokernel-cross-workload-keep-gate",
+     "autokernel-all-devices-all-dimensions.md": "kernel-champion-and-promotion.md#track:autokernel-all-devices-all-dimensions"
+    }
+   },
+   "link_repoint_files": {
+    "fable5-window2-findings-03-portfolio-and-master-queue.md": 17,
+    "autokernel-cross-workload-keep-gate.md": 11,
+    "autokernel-all-devices-all-dimensions.md": 23,
+    "autokernel-champion-aggregate.md": 42
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "akagg",
+     "handoff_from": "handoffs/active/autokernel-champion-aggregate.md",
+     "handoff_to": "handoffs/active/kernel-champion-and-promotion.md"
+    },
+    {
+     "slug": "autokernel-all-devices-all-dimensions",
+     "handoff_from": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+     "handoff_to": "handoffs/active/kernel-champion-and-promotion.md"
+    },
+    {
+     "slug": "autokernel-cross-workload-keep-gate",
+     "handoff_from": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+     "handoff_to": "handoffs/active/kernel-champion-and-promotion.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "akagg-c3-native-bolt-r9-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md: C3 r4 rowflow inherited-lock source repair",
+     "to": "handoffs/active/kernel-champion-and-promotion.md: C3 r4 rowflow inherited-lock source repair"
+    },
+    {
+     "spec": "akagg-ch26b-1017-c2-r2-20261101.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-26b",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-26b"
+    },
+    {
+     "spec": "akagg-ch26b-mmap-abi-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md: CH-26b - re-measure the DS41-1017 noise floor on 49550eda5",
+     "to": "handoffs/active/kernel-champion-and-promotion.md: CH-26b - re-measure the DS41-1017 noise floor on 49550eda5"
+    },
+    {
+     "spec": "akagg-ch26b-mmap-abi-r2-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md",
+     "to": "handoffs/active/kernel-champion-and-promotion.md"
+    },
+    {
+     "spec": "akagg-ch27-c5-private-codex-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-27a",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-27a"
+    },
+    {
+     "spec": "akagg-ch31-rowexact-c5-20261101.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-31-DEF1",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-31-DEF1"
+    },
+    {
+     "spec": "akagg-ch31-rowexact-pair-c5-20261101.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-31-DEF1",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-31-DEF1"
+    },
+    {
+     "spec": "akagg-meta-c6-arch-f1-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md: META-ASSERT-1a-F1",
+     "to": "handoffs/active/kernel-champion-and-promotion.md: META-ASSERT-1a-F1"
+    },
+    {
+     "spec": "akx-all-10-1-route2-sinks-cpu-20261102.json",
+     "from": "autokernel-all-devices-all-dimensions.md:AKX-ALL-10.1",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-10.1"
+    },
+    {
+     "spec": "akx-auto10-q4k-mmid-v3-20261102.json",
+     "from": "autokernel-all-devices-all-dimensions.md:AKX-AUTO-10",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-AUTO-10"
+    },
+    {
+     "spec": "akx-lb3-2-cv4-pair-20261102.json",
+     "from": "autokernel-all-devices-all-dimensions.md:AKX-ALL-LB3.2b",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-LB3.2b"
+    },
+    {
+     "spec": "akxall8-c5-declared-floor-v3-20261102.json",
+     "from": "handoffs/active/autokernel-all-devices-all-dimensions.md:AKX-ALL-8",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-8"
+    },
+    {
+     "spec": "akxall8-c5-declared-floor-v4-hostshim-20261102.json",
+     "from": "handoffs/active/autokernel-all-devices-all-dimensions.md:AKX-ALL-8",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-8"
+    },
+    {
+     "spec": "akxall8-c5-declared-floor-v6-rootcg-20261102.json",
+     "from": "autokernel-all-devices-all-dimensions.md:AKX-ALL-8-FLOOR",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-8-FLOOR"
+    },
+    {
+     "spec": "ch24-c6-cpu-smoke-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-24",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-24"
+    },
+    {
+     "spec": "ch33-c5-nonc-hip-r5-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-33",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-33"
+    },
+    {
+     "spec": "ch33-eg2-cobatch-cpu-v10-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-33",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-33"
+    },
+    {
+     "spec": "codex-c6-combined-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-combined-build-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-fp64-capture-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-gpu-route-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-mmqfix-build-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-mmvq-fix-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-q4k-fix-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-q4k-hardened-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-c6-remain-q4k-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:C6",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:C6"
+    },
+    {
+     "spec": "codex-ch-lb1-c5-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-LB1.1",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-LB1.1"
+    },
+    {
+     "spec": "codex-ch18b-build-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-18.b-IMPLEMENT",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-18.b-IMPLEMENT"
+    },
+    {
+     "spec": "codex-ch18b-controls-20261102.json",
+     "from": "handoffs/active/autokernel-champion-aggregate.md:CH-18.b-IMPLEMENT",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:CH-18.b-IMPLEMENT"
+    },
+    {
+     "spec": "codex-ni-akxall31-gdn-hip-build-prereq-20261102.json",
+     "from": "handoffs/active/autokernel-all-devices-all-dimensions.md:AKX-ALL-31.GDN",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-ALL-31.GDN"
+    },
+    {
+     "spec": "codex-ni-ch27-c5-raw-recalibration-v2-20261101.json",
+     "from": "autokernel-champion-aggregate.md",
+     "to": "handoffs/active/kernel-champion-and-promotion.md"
+    },
+    {
+     "spec": "inf75-cmake-compiler-fd-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-cmake-source-fd-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-gitnexus-snapshot-6dbd6d39-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-historical-iq4xs-reconstruct-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-p1c-candidate-configure-2516c980-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-quantizer-7cdd7c97-20261102.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P1c",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P1c"
+    },
+    {
+     "spec": "inf75-w5s-current-census-r7-20261031.json",
+     "from": "autokernel-cross-workload-keep-gate.md:AKX-P0d-W5s",
+     "to": "handoffs/active/kernel-champion-and-promotion.md:AKX-P0d-W5s"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 6
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 61,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 32,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 128,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 2,
+   "box": "BRF-T7-F2",
+   "plan_target": "kv-cache-program.md",
+   "destination": "handoffs/active/kv-cache-program.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+   "anchor_row_kept": "RTG-58",
+   "members": [
+    {
+     "row": "RTG-58",
+     "file_after_1a": "kv-prefix-fork-and-paged-attention.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 57,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "INF-23",
+     "file_after_1a": "heterogeneous-slot-fabric-residency.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 19,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "RTG-57",
+     "file_after_1a": "kv-unified-stack-rollout.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 52,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/heterogeneous-slot-fabric-residency.md",
+    "handoffs/active/kv-unified-stack-rollout.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/heterogeneous-slot-fabric-residency.md handoffs/completed/heterogeneous-slot-fabric-residency.md",
+    "git mv handoffs/active/kv-unified-stack-rollout.md handoffs/completed/kv-unified-stack-rollout.md",
+    "git mv handoffs/active/kv-prefix-fork-and-paged-attention.md handoffs/active/kv-cache-program.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "kv-prefix-fork-and-paged-attention",
+     "from_file": "kv-prefix-fork-and-paged-attention.md",
+     "from_row": "RTG-58",
+     "kind": "anchor body -> track",
+     "origin_file": "kv-prefix-fork-and-paged-attention.md",
+     "gate_marker": "<!-- gate: RTG-58#kv-unified-stack-rollout, EVL-14, INF-65 -->",
+     "dispatchable": 57,
+     "open": 58,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "heterogeneous-slot-fabric-residency",
+     "from_file": "heterogeneous-slot-fabric-residency.md",
+     "from_row": "INF-23",
+     "kind": "member body -> track",
+     "origin_file": "heterogeneous-slot-fabric-residency.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 19,
+     "open": 21,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "kv-unified-stack-rollout",
+     "from_file": "kv-unified-stack-rollout.md",
+     "from_row": "RTG-57",
+     "kind": "member body -> track",
+     "origin_file": "kv-unified-stack-rollout.md",
+     "gate_marker": "<!-- gate: RTG-36, INF-79 -->",
+     "dispatchable": 52,
+     "open": 52,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "kv-cache-program.md#kv-prefix-fork-and-paged-attention",
+      "ref": "RTG-57",
+      "to": [
+       "RTG-58#kv-unified-stack-rollout"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-all-devices-all-dimensions",
+      "ref": "RTG-57",
+      "to": [
+       "RTG-58#kv-unified-stack-rollout"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-all-devices-all-dimensions",
+      "ref": "RTG-58",
+      "to": [
+       "RTG-58#kv-prefix-fork-and-paged-attention"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "INF-59",
+      "ref": "RTG-57",
+      "to": "RTG-58"
+     },
+     {
+      "row": "INF-77",
+      "ref": "RTG-57",
+      "to": "RTG-58"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-23",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "RTG-57",
+      "index": "routing-and-optimization-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "RTG-58",
+     "index": "routing-and-optimization-index.md",
+     "plan_owner_index": "routing-and-optimization-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "kv-cache-program.md",
+     "deps_after": [
+      "EVL-14",
+      "INF-65"
+     ]
+    },
+    "repoint_deps_in_rows": [
+     "INF-59",
+     "INF-77"
+    ],
+    "curated_priority_rekey_candidates": [
+     "INF-23",
+     "RTG-57"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-23: folded into RTG-58 (kv-cache-program.md) — route 1b, D1/D5",
+     "Repoint-Reason: RTG-57: folded into RTG-58 (kv-cache-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-23": "RTG-58",
+     "RTG-57": "RTG-58"
+    },
+    "files": {
+     "heterogeneous-slot-fabric-residency.md": "kv-cache-program.md#track:heterogeneous-slot-fabric-residency",
+     "kv-unified-stack-rollout.md": "kv-cache-program.md#track:kv-unified-stack-rollout",
+     "kv-prefix-fork-and-paged-attention.md": "kv-cache-program.md#track:kv-prefix-fork-and-paged-attention"
+    }
+   },
+   "link_repoint_files": {
+    "heterogeneous-slot-fabric-residency.md": 23,
+    "kv-unified-stack-rollout.md": 34,
+    "kv-prefix-fork-and-paged-attention.md": 35
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "heterogeneous-slot-fabric-residency",
+     "handoff_from": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+     "handoff_to": "handoffs/active/kv-cache-program.md"
+    },
+    {
+     "slug": "kvfork",
+     "handoff_from": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+     "handoff_to": "handoffs/active/kv-cache-program.md"
+    },
+    {
+     "slug": "kvu",
+     "handoff_from": "handoffs/active/kv-unified-stack-rollout.md",
+     "handoff_to": "handoffs/active/kv-cache-program.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "handoff-kvu-16a-load-20261102.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-16a",
+     "to": "handoffs/active/kv-cache-program.md:KVU-16a"
+    },
+    {
+     "spec": "handoff-kvu-16i-c5-replay-20261101.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md: KVU-16i-v11",
+     "to": "handoffs/active/kv-cache-program.md: KVU-16i-v11"
+    },
+    {
+     "spec": "handoff-kvu-cpu-fa-vkq2-exact-20261102.json",
+     "from": "kv-unified-stack-rollout.md:CPU-FA-VKQ-2",
+     "to": "handoffs/active/kv-cache-program.md:CPU-FA-VKQ-2"
+    },
+    {
+     "spec": "handoff-kvu-kvu19a2-build-20261102.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-19a-2",
+     "to": "handoffs/active/kv-cache-program.md:KVU-19a-2"
+    },
+    {
+     "spec": "handoff-kvu-vkq3-independent-calibration-20261101.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:CPU-FA-VKQ-3",
+     "to": "handoffs/active/kv-cache-program.md:CPU-FA-VKQ-3"
+    },
+    {
+     "spec": "handoff-kvu-vkq3-mtp-bound-20261102.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:CPU-FA-VKQ-3",
+     "to": "handoffs/active/kv-cache-program.md:CPU-FA-VKQ-3"
+    },
+    {
+     "spec": "handoff-kvu12-5-quarter-20261101.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-12.5",
+     "to": "handoffs/active/kv-cache-program.md:KVU-12.5"
+    },
+    {
+     "spec": "handoff-kvu12-5-quarter-r2-20261102.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-12.5",
+     "to": "handoffs/active/kv-cache-program.md:KVU-12.5"
+    },
+    {
+     "spec": "handoff-kvu16h-k35-native-20261102.json",
+     "from": "kv-unified-stack-rollout.md:KVU-16h-runner",
+     "to": "handoffs/active/kv-cache-program.md:KVU-16h-runner"
+    },
+    {
+     "spec": "handoff-kvu16h-p3-lifecycle-20261102.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-16h",
+     "to": "handoffs/active/kv-cache-program.md:KVU-16h"
+    },
+    {
+     "spec": "kvfork17-partial-v2-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17"
+    },
+    {
+     "spec": "kvfork174d-build-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17.4d",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17.4d"
+    },
+    {
+     "spec": "kvfork17a-cpu-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "kvfork17a-cpu-paired.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "kvfork17a-cpu-successor.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "kvfork17a-gpu-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "kvfork17a-gpu-preserve-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "kvfork20-p2-impact-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-20",
+     "to": "handoffs/active/kv-cache-program.md:KPF-20"
+    },
+    {
+     "spec": "kvfork31-p3-impact-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-31",
+     "to": "handoffs/active/kv-cache-program.md:KPF-31"
+    },
+    {
+     "spec": "rtg57-kvu16a-shape-load-20261102-v2.json",
+     "from": "handoffs/active/kv-unified-stack-rollout.md:KVU-16a",
+     "to": "handoffs/active/kv-cache-program.md:KVU-16a"
+    },
+    {
+     "spec": "rtg58-kpf17a-pair-fresh-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "rtg58-kpf17a-preserve-fresh-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-17a",
+     "to": "handoffs/active/kv-cache-program.md:KPF-17a"
+    },
+    {
+     "spec": "rtg58-kpf26-api-off-diag-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-26",
+     "to": "handoffs/active/kv-cache-program.md:KPF-26"
+    },
+    {
+     "spec": "rtg58-kpf26-api-on-diag-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-26",
+     "to": "handoffs/active/kv-cache-program.md:KPF-26"
+    },
+    {
+     "spec": "rtg58-kpf26-code-off-diag-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-26",
+     "to": "handoffs/active/kv-cache-program.md:KPF-26"
+    },
+    {
+     "spec": "rtg58-kpf26-code-on-diag-20261102.json",
+     "from": "handoffs/active/kv-prefix-fork-and-paged-attention.md:KPF-26",
+     "to": "handoffs/active/kv-cache-program.md:KPF-26"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 7
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 59,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 30,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 128,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 3,
+   "box": "BRF-T7-F3",
+   "plan_target": "mi210-serving-program.md",
+   "destination": "handoffs/active/mi210-serving-program.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/mi210-serving-program.md",
+   "anchor_row_kept": "INF-22",
+   "members": [
+    {
+     "row": "INF-22",
+     "file_after_1a": "mi210-serving-program.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 76,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "INF-44",
+     "file_after_1a": "numa-prefill-decode-disaggregation.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 1,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/numa-prefill-decode-disaggregation.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/numa-prefill-decode-disaggregation.md handoffs/completed/numa-prefill-decode-disaggregation.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "mi210-serving-program",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "anchor body -> track",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 37,
+     "open": 37,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "fable5-window2-findings-02-heterogeneous-gpu",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "fable5-window2-findings-05c-mi210-lever-category-matrix",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 14,
+     "open": 14,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "gpu-acceleration-path",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 9,
+     "open": 9,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "mi210-big-model-and-acceleration-roadmap",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 11,
+     "open": 12,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "qwen38-27b-replace-qwen36",
+     "from_file": "mi210-serving-program.md",
+     "from_row": "INF-22",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "mi210-serving-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "numa-prefill-decode-disaggregation",
+     "from_file": "numa-prefill-decode-disaggregation.md",
+     "from_row": "INF-44",
+     "kind": "member body -> track",
+     "origin_file": "numa-prefill-decode-disaggregation.md",
+     "gate_marker": "<!-- gate: INF-22#mi210-serving-program, INF-22#fable5-window2-findings-02-heterogeneous-gpu, INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix, INF-22#gpu-acceleration-path, INF-22#mi210-big-model-and-acceleration-roadmap, INF-22#qwen38-27b-replace-qwen36 -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "mi210-serving-program.md#numa-prefill-decode-disaggregation",
+      "ref": "INF-22",
+      "to": [
+       "INF-22#mi210-serving-program",
+       "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
+       "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
+       "INF-22#gpu-acceleration-path",
+       "INF-22#mi210-big-model-and-acceleration-roadmap",
+       "INF-22#qwen38-27b-replace-qwen36"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-44",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-22",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "mi210-serving-program.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "INF-44"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-44: folded into INF-22 (mi210-serving-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-44": "INF-22"
+    },
+    "files": {
+     "numa-prefill-decode-disaggregation.md": "mi210-serving-program.md#track:numa-prefill-decode-disaggregation"
+    }
+   },
+   "link_repoint_files": {
+    "numa-prefill-decode-disaggregation.md": 9
+   },
+   "session_slug_rewrites": [],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 0
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 58,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 29,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 77,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 4,
+   "box": "BRF-T7-F4",
+   "plan_target": "speculative-decoding.md",
+   "destination": "handoffs/active/speculative-decoding.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/speculative-decoding-mtp-refresh.md",
+   "anchor_row_kept": "INF-50",
+   "members": [
+    {
+     "row": "INF-50",
+     "file_after_1a": "speculative-decoding-mtp-refresh.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 32,
+     "grouped_by": "plan action rename-to-target+split"
+    },
+    {
+     "row": "INF-62",
+     "file_after_1a": "dflash2-block-drafter-experimental-build.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 19,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/dflash2-block-drafter-experimental-build.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/dflash2-block-drafter-experimental-build.md handoffs/completed/dflash2-block-drafter-experimental-build.md",
+    "git mv handoffs/active/speculative-decoding-mtp-refresh.md handoffs/active/speculative-decoding.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "speculative-decoding-mtp-refresh",
+     "from_file": "speculative-decoding-mtp-refresh.md",
+     "from_row": "INF-50",
+     "kind": "anchor body -> track",
+     "origin_file": "speculative-decoding-mtp-refresh.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 32,
+     "open": 33,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "dflash2-block-drafter-experimental-build",
+     "from_file": "dflash2-block-drafter-experimental-build.md",
+     "from_row": "INF-62",
+     "kind": "member body -> track",
+     "origin_file": "dflash2-block-drafter-experimental-build.md",
+     "gate_marker": "<!-- gate: INF-06, INF-50#speculative-decoding-mtp-refresh -->",
+     "dispatchable": 19,
+     "open": 19,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "speculative-decoding.md#dflash2-block-drafter-experimental-build",
+      "ref": "INF-50",
+      "to": [
+       "INF-50#speculative-decoding-mtp-refresh"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-champion-aggregate",
+      "ref": "INF-62",
+      "to": [
+       "INF-50#dflash2-block-drafter-experimental-build"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-all-devices-all-dimensions",
+      "ref": "INF-62",
+      "to": [
+       "INF-50#dflash2-block-drafter-experimental-build"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "INF-65",
+      "ref": "INF-62",
+      "to": "INF-50"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-62",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-50",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "speculative-decoding.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [
+     "INF-65"
+    ],
+    "curated_priority_rekey_candidates": [
+     "INF-62"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-62: folded into INF-50 (speculative-decoding.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-62": "INF-50"
+    },
+    "files": {
+     "speculative-decoding-mtp-refresh.md": "speculative-decoding.md#track:speculative-decoding-mtp-refresh",
+     "dflash2-block-drafter-experimental-build.md": "speculative-decoding.md#track:dflash2-block-drafter-experimental-build"
+    }
+   },
+   "link_repoint_files": {
+    "dflash2-block-drafter-experimental-build.md": 22,
+    "speculative-decoding-mtp-refresh.md": 37
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "df2",
+     "handoff_from": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+     "handoff_to": "handoffs/active/speculative-decoding.md"
+    },
+    {
+     "slug": "speculative-decoding-mtp",
+     "handoff_from": "handoffs/active/speculative-decoding-mtp-refresh.md",
+     "handoff_to": "handoffs/active/speculative-decoding.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "cafe4-v10-diagnostic-build-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:CAFE-4",
+     "to": "handoffs/active/speculative-decoding.md:CAFE-4"
+    },
+    {
+     "spec": "cafe4-v10-finite-build-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:CAFE-4",
+     "to": "handoffs/active/speculative-decoding.md:CAFE-4"
+    },
+    {
+     "spec": "codex3-cafe1-pmin-hostfix-20261031.json",
+     "from": "speculative-decoding-mtp-refresh.md",
+     "to": "handoffs/active/speculative-decoding.md"
+    },
+    {
+     "spec": "df2-6bbis-gpu-20261101.json",
+     "from": "handoffs/active/dflash2-block-drafter-experimental-build.md:DF2-6b-bis — re-run ngram at COMPARABLE DRAFT VOLUME",
+     "to": "handoffs/active/speculative-decoding.md:DF2-6b-bis — re-run ngram at COMPARABLE DRAFT VOLUME"
+    },
+    {
+     "spec": "df2-exl3-codec-build-20261101-r1.json",
+     "from": "handoffs/active/dflash2-block-drafter-experimental-build.md:DF2-EXL3",
+     "to": "handoffs/active/speculative-decoding.md:DF2-EXL3"
+    },
+    {
+     "spec": "df2-sl2-export-cpu-20261101.json",
+     "from": "handoffs/active/dflash2-block-drafter-experimental-build.md:SL-2",
+     "to": "handoffs/active/speculative-decoding.md:SL-2"
+    },
+    {
+     "spec": "df2-sl2-fresh-cpu-20261101.json",
+     "from": "handoffs/active/dflash2-block-drafter-experimental-build.md:SL-2",
+     "to": "handoffs/active/speculative-decoding.md:SL-2"
+    },
+    {
+     "spec": "g3-v10-hip-build-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:G3",
+     "to": "handoffs/active/speculative-decoding.md:G3"
+    },
+    {
+     "spec": "g3-v10-v4-timed-hip-build-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:G3",
+     "to": "handoffs/active/speculative-decoding.md:G3"
+    },
+    {
+     "spec": "g8-v10-hip-build-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:G8",
+     "to": "handoffs/active/speculative-decoding.md:G8"
+    },
+    {
+     "spec": "g8-v10-hip-build-r2-20261102.json",
+     "from": "handoffs/active/speculative-decoding-mtp-refresh.md:G8",
+     "to": "handoffs/active/speculative-decoding.md:G8"
+    },
+    {
+     "spec": "sr6-qwen36-width-diagnostic-20261101.json",
+     "from": "speculative-decoding-mtp-refresh.md SR-6 current draft-mtp 3 vs 4 diagnostic",
+     "to": "handoffs/active/speculative-decoding.md SR-6 current draft-mtp 3 vs 4 diagnostic"
+    },
+    {
+     "spec": "sr6-qwen36-width-w1-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-6",
+     "to": "handoffs/active/speculative-decoding.md:SR-6"
+    },
+    {
+     "spec": "sr6-qwen36-width-w1-retry-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-6",
+     "to": "handoffs/active/speculative-decoding.md:SR-6"
+    },
+    {
+     "spec": "sr6-qwen36-width-w2-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-6",
+     "to": "handoffs/active/speculative-decoding.md:SR-6"
+    },
+    {
+     "spec": "sr6-qwen36-width-w2-retry-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-6",
+     "to": "handoffs/active/speculative-decoding.md:SR-6"
+    },
+    {
+     "spec": "sr6-qwen36-width-w3-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-6",
+     "to": "handoffs/active/speculative-decoding.md:SR-6"
+    },
+    {
+     "spec": "sr7-qwen36-proposer-w1-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-7",
+     "to": "handoffs/active/speculative-decoding.md:SR-7"
+    },
+    {
+     "spec": "sr7-qwen36-proposer-w2-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-7",
+     "to": "handoffs/active/speculative-decoding.md:SR-7"
+    },
+    {
+     "spec": "sr7-qwen36-proposer-w3-20261102.json",
+     "from": "speculative-decoding-mtp-refresh.md:SR-7",
+     "to": "handoffs/active/speculative-decoding.md:SR-7"
+    },
+    {
+     "spec": "sw2-v9-per-step-successor-20261101.json",
+     "from": "speculative-decoding-mtp-refresh.md SW-2 per-step lower-cap effect on archived v9",
+     "to": "handoffs/active/speculative-decoding.md SW-2 per-step lower-cap effect on archived v9"
+    },
+    {
+     "spec": "sw2-v9-slot-isolation-20261101.json",
+     "from": "speculative-decoding-mtp-refresh.md SW-2 private v9 clamp and slot reuse",
+     "to": "handoffs/active/speculative-decoding.md SW-2 private v9 clamp and slot reuse"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 0
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 57,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 28,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 51,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 5,
+   "box": "BRF-T7-F5",
+   "plan_target": "autokernel-loop.md",
+   "destination": "handoffs/active/autokernel-loop.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/autokernel-research-loop.md",
+   "anchor_row_kept": "INF-06",
+   "members": [
+    {
+     "row": "INF-06",
+     "file_after_1a": "autokernel-research-loop.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 73,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "INF-02",
+     "file_after_1a": "agent-collab-rnd-harness.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 9,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "INF-66",
+     "file_after_1a": "autokernel-rebuild-program.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 40,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "INF-73",
+     "file_after_1a": "autokernel-unified-surface-program.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 69,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "INF-74",
+     "file_after_1a": "autokernel-concurrent-target-coordination.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 13,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "INF-78",
+     "file_after_1a": "autokernel-orchestrator-actor-backend.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 16,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/agent-collab-rnd-harness.md",
+    "handoffs/active/autokernel-rebuild-program.md",
+    "handoffs/active/autokernel-unified-surface-program.md",
+    "handoffs/active/autokernel-concurrent-target-coordination.md",
+    "handoffs/active/autokernel-orchestrator-actor-backend.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/agent-collab-rnd-harness.md handoffs/completed/agent-collab-rnd-harness.md",
+    "git mv handoffs/active/autokernel-rebuild-program.md handoffs/completed/autokernel-rebuild-program.md",
+    "git mv handoffs/active/autokernel-unified-surface-program.md handoffs/completed/autokernel-unified-surface-program.md",
+    "git mv handoffs/active/autokernel-concurrent-target-coordination.md handoffs/completed/autokernel-concurrent-target-coordination.md",
+    "git mv handoffs/active/autokernel-orchestrator-actor-backend.md handoffs/completed/autokernel-orchestrator-actor-backend.md",
+    "git mv handoffs/active/autokernel-research-loop.md handoffs/active/autokernel-loop.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "autokernel-research-loop",
+     "from_file": "autokernel-research-loop.md",
+     "from_row": "INF-06",
+     "kind": "anchor body -> track",
+     "origin_file": "autokernel-research-loop.md",
+     "gate_marker": "<!-- gate: INF-48, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->",
+     "dispatchable": 73,
+     "open": 74,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "agent-collab-rnd-harness",
+     "from_file": "agent-collab-rnd-harness.md",
+     "from_row": "INF-02",
+     "kind": "member body -> track",
+     "origin_file": "agent-collab-rnd-harness.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 6,
+     "open": 6,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autokernel-restart-and-strip",
+     "from_file": "agent-collab-rnd-harness.md",
+     "from_row": "INF-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "agent-collab-rnd-harness.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autokernel-rebuild-program",
+     "from_file": "autokernel-rebuild-program.md",
+     "from_row": "INF-66",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-rebuild-program.md",
+     "gate_marker": "<!-- gate: INF-06#autokernel-research-loop, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip, INF-65 -->",
+     "dispatchable": 40,
+     "open": 41,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "autokernel-unified-surface-program",
+     "from_file": "autokernel-unified-surface-program.md",
+     "from_row": "INF-73",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-unified-surface-program.md",
+     "gate_marker": "<!-- gate: INF-06#autokernel-rebuild-program, INF-65, INF-70 -->",
+     "dispatchable": 69,
+     "open": 69,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "autokernel-concurrent-target-coordination",
+     "from_file": "autokernel-concurrent-target-coordination.md",
+     "from_row": "INF-74",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-concurrent-target-coordination.md",
+     "gate_marker": "<!-- gate: INF-06#autokernel-unified-surface-program -->",
+     "dispatchable": 13,
+     "open": 13,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "autokernel-orchestrator-actor-backend",
+     "from_file": "autokernel-orchestrator-actor-backend.md",
+     "from_row": "INF-78",
+     "kind": "member body -> track",
+     "origin_file": "autokernel-orchestrator-actor-backend.md",
+     "gate_marker": "<!-- gate: INF-77, INF-06#autokernel-rebuild-program, EVL-37, RTG-09, UFH-01 -->",
+     "dispatchable": 16,
+     "open": 16,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "autokernel-loop.md#autokernel-research-loop",
+      "ref": "INF-02",
+      "to": [
+       "INF-06#agent-collab-rnd-harness",
+       "INF-06#autokernel-restart-and-strip"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-rebuild-program",
+      "ref": "INF-06",
+      "to": [
+       "INF-06#autokernel-research-loop"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-rebuild-program",
+      "ref": "INF-02",
+      "to": [
+       "INF-06#agent-collab-rnd-harness",
+       "INF-06#autokernel-restart-and-strip"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-unified-surface-program",
+      "ref": "INF-66",
+      "to": [
+       "INF-06#autokernel-rebuild-program"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-concurrent-target-coordination",
+      "ref": "INF-73",
+      "to": [
+       "INF-06#autokernel-unified-surface-program"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-orchestrator-actor-backend",
+      "ref": "INF-66",
+      "to": [
+       "INF-06#autokernel-rebuild-program"
+      ]
+     },
+     {
+      "where": "speculative-decoding.md#dflash2-block-drafter-experimental-build",
+      "ref": "INF-06",
+      "to": [
+       "INF-06#autokernel-research-loop"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-champion-aggregate",
+      "ref": "INF-06",
+      "to": [
+       "INF-06#autokernel-research-loop"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-champion-aggregate",
+      "ref": "INF-02",
+      "to": [
+       "INF-06#agent-collab-rnd-harness",
+       "INF-06#autokernel-restart-and-strip"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-cross-workload-keep-gate",
+      "ref": "INF-73",
+      "to": [
+       "INF-06#autokernel-unified-surface-program"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-cross-workload-keep-gate",
+      "ref": "INF-66",
+      "to": [
+       "INF-06#autokernel-rebuild-program"
+      ]
+     },
+     {
+      "where": "kernel-champion-and-promotion.md#autokernel-all-devices-all-dimensions",
+      "ref": "INF-73",
+      "to": [
+       "INF-06#autokernel-unified-surface-program"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "INF-65",
+      "ref": "INF-02",
+      "to": "INF-06"
+     },
+     {
+      "row": "UFH-12",
+      "ref": "INF-78",
+      "to": "INF-06"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-02",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-66",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-73",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-74",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-78",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-06",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "autokernel-loop.md",
+     "deps_after": [
+      "INF-48",
+      "EVL-47"
+     ]
+    },
+    "repoint_deps_in_rows": [
+     "INF-65",
+     "UFH-12"
+    ],
+    "curated_priority_rekey_candidates": [
+     "INF-02",
+     "INF-66",
+     "INF-73",
+     "INF-74",
+     "INF-78"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-02: folded into INF-06 (autokernel-loop.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-66: folded into INF-06 (autokernel-loop.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-73: folded into INF-06 (autokernel-loop.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-74: folded into INF-06 (autokernel-loop.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-78: folded into INF-06 (autokernel-loop.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-02": "INF-06",
+     "INF-66": "INF-06",
+     "INF-73": "INF-06",
+     "INF-74": "INF-06",
+     "INF-78": "INF-06"
+    },
+    "files": {
+     "agent-collab-rnd-harness.md": "autokernel-loop.md#track:agent-collab-rnd-harness",
+     "autokernel-research-loop.md": "autokernel-loop.md#track:autokernel-research-loop",
+     "autokernel-rebuild-program.md": "autokernel-loop.md#track:autokernel-rebuild-program",
+     "autokernel-unified-surface-program.md": "autokernel-loop.md#track:autokernel-unified-surface-program",
+     "autokernel-concurrent-target-coordination.md": "autokernel-loop.md#track:autokernel-concurrent-target-coordination",
+     "autokernel-orchestrator-actor-backend.md": "autokernel-loop.md#track:autokernel-orchestrator-actor-backend"
+    }
+   },
+   "link_repoint_files": {
+    "agent-collab-rnd-harness.md": 15,
+    "autokernel-rebuild-program.md": 31,
+    "autokernel-unified-surface-program.md": 22,
+    "autokernel-concurrent-target-coordination.md": 9,
+    "autokernel-orchestrator-actor-backend.md": 22,
+    "autokernel-research-loop.md": 28
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "autokernel-rebuild",
+     "handoff_from": "handoffs/active/autokernel-rebuild-program.md",
+     "handoff_to": "handoffs/active/autokernel-loop.md"
+    },
+    {
+     "slug": "autokernel-research-loop",
+     "handoff_from": "handoffs/active/autokernel-research-loop.md",
+     "handoff_to": "handoffs/active/autokernel-loop.md"
+    },
+    {
+     "slug": "autokernel-unified-surface",
+     "handoff_from": "handoffs/active/autokernel-unified-surface-program.md",
+     "handoff_to": "handoffs/active/autokernel-loop.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "autokernel-lbh21-b3k-cpu-build-20261102.json",
+     "from": "autokernel-rebuild-program.md:LBH-2.1",
+     "to": "handoffs/active/autokernel-loop.md:LBH-2.1"
+    },
+    {
+     "spec": "autokernel-lbh21-sync2-cpu-build-20261102.json",
+     "from": "autokernel-rebuild-program.md:LBH-2.1",
+     "to": "handoffs/active/autokernel-loop.md:LBH-2.1"
+    },
+    {
+     "spec": "autokernel-r18d-pp512-20261102.json",
+     "from": "handoffs/active/autokernel-rebuild-program.md:R18-D",
+     "to": "handoffs/active/autokernel-loop.md:R18-D"
+    },
+    {
+     "spec": "autokernel-r22-4-rebuild-20261102.json",
+     "from": "handoffs/active/autokernel-rebuild-program.md:R22-4 — Next-boundary device experiment",
+     "to": "handoffs/active/autokernel-loop.md:R22-4 — Next-boundary device experiment"
+    },
+    {
+     "spec": "autokernel-r22-5-v10-cpu-compile-20261102-v1.json",
+     "from": "autokernel-rebuild-program.md:R22-5",
+     "to": "handoffs/active/autokernel-loop.md:R22-5"
+    },
+    {
+     "spec": "autokernel-r22-5-v10-cpu-compile-20261102-v2.json",
+     "from": "autokernel-rebuild-program.md:R22-5",
+     "to": "handoffs/active/autokernel-loop.md:R22-5"
+    },
+    {
+     "spec": "autokernel-r23-3-v10-serving-20261102.json",
+     "from": "handoffs/active/autokernel-rebuild-program.md:R23-3",
+     "to": "handoffs/active/autokernel-loop.md:R23-3"
+    },
+    {
+     "spec": "autokernel-r23-4-v10-sweep-20261102.json",
+     "from": "handoffs/active/autokernel-rebuild-program.md:R23-4",
+     "to": "handoffs/active/autokernel-loop.md:R23-4"
+    },
+    {
+     "spec": "refactor-r18a-v10-independent-symbols-r4-20261102.json",
+     "from": "handoffs/active/autokernel-rebuild-program.md:R18-A successor repair",
+     "to": "handoffs/active/autokernel-loop.md:R18-A successor repair"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 14
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 52,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 23,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 220,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 6,
+   "box": "BRF-T7-F6",
+   "plan_target": "harness-program.md",
+   "destination": "handoffs/active/harness-program.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/harness-selection-and-integration.md",
+   "anchor_row_kept": "UFH-01",
+   "members": [
+    {
+     "row": "UFH-01",
+     "file_after_1a": "harness-selection-and-integration.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 16,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "EVL-37",
+     "file_after_1a": "repl-turn-efficiency.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 29,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "UFH-08",
+     "file_after_1a": "harness-improvement-loop.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 16,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "UFH-12",
+     "file_after_1a": "repl-embedding-retrieval.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 21,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "UFH-14",
+     "file_after_1a": "agentic-serving-harness-fixes.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 30,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/repl-turn-efficiency.md",
+    "handoffs/active/harness-improvement-loop.md",
+    "handoffs/active/repl-embedding-retrieval.md",
+    "handoffs/active/agentic-serving-harness-fixes.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/repl-turn-efficiency.md handoffs/completed/repl-turn-efficiency.md",
+    "git mv handoffs/active/harness-improvement-loop.md handoffs/completed/harness-improvement-loop.md",
+    "git mv handoffs/active/repl-embedding-retrieval.md handoffs/completed/repl-embedding-retrieval.md",
+    "git mv handoffs/active/agentic-serving-harness-fixes.md handoffs/completed/agentic-serving-harness-fixes.md",
+    "git mv handoffs/active/harness-selection-and-integration.md handoffs/active/harness-program.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "harness-selection-and-integration",
+     "from_file": "harness-selection-and-integration.md",
+     "from_row": "UFH-01",
+     "kind": "anchor body -> track",
+     "origin_file": "harness-selection-and-integration.md",
+     "gate_marker": "<!-- gate: RTG-09 -->",
+     "dispatchable": 16,
+     "open": 28,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "repl-turn-efficiency",
+     "from_file": "repl-turn-efficiency.md",
+     "from_row": "EVL-37",
+     "kind": "member body -> track",
+     "origin_file": "repl-turn-efficiency.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 19,
+     "open": 19,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "qwen-chat-template-evaluation",
+     "from_file": "repl-turn-efficiency.md",
+     "from_row": "EVL-37",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "repl-turn-efficiency.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 10,
+     "open": 10,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "harness-improvement-loop",
+     "from_file": "harness-improvement-loop.md",
+     "from_row": "UFH-08",
+     "kind": "member body -> track",
+     "origin_file": "harness-improvement-loop.md",
+     "gate_marker": "<!-- gate: UFH-01#harness-selection-and-integration -->",
+     "dispatchable": 15,
+     "open": 16,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "opencode-shell-integration",
+     "from_file": "harness-improvement-loop.md",
+     "from_row": "UFH-08",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "harness-improvement-loop.md",
+     "gate_marker": "<!-- gate: UFH-01#harness-selection-and-integration -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "repl-embedding-retrieval",
+     "from_file": "repl-embedding-retrieval.md",
+     "from_row": "UFH-12",
+     "kind": "member body -> track",
+     "origin_file": "repl-embedding-retrieval.md",
+     "gate_marker": "<!-- gate: RTG-08, INF-06, UFH-01#repl-turn-efficiency, UFH-01#qwen-chat-template-evaluation, UFH-01#harness-selection-and-integration -->",
+     "dispatchable": 21,
+     "open": 23,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "agentic-serving-harness-fixes",
+     "from_file": "agentic-serving-harness-fixes.md",
+     "from_row": "UFH-14",
+     "kind": "member body -> track",
+     "origin_file": "agentic-serving-harness-fixes.md",
+     "gate_marker": "<!-- gate: INF-77, UFH-01#harness-selection-and-integration -->",
+     "dispatchable": 30,
+     "open": 30,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "harness-program.md#harness-improvement-loop",
+      "ref": "UFH-01",
+      "to": [
+       "UFH-01#harness-selection-and-integration"
+      ]
+     },
+     {
+      "where": "harness-program.md#opencode-shell-integration",
+      "ref": "UFH-01",
+      "to": [
+       "UFH-01#harness-selection-and-integration"
+      ]
+     },
+     {
+      "where": "harness-program.md#repl-embedding-retrieval",
+      "ref": "EVL-37",
+      "to": [
+       "UFH-01#repl-turn-efficiency",
+       "UFH-01#qwen-chat-template-evaluation"
+      ]
+     },
+     {
+      "where": "harness-program.md#repl-embedding-retrieval",
+      "ref": "UFH-01",
+      "to": [
+       "UFH-01#harness-selection-and-integration"
+      ]
+     },
+     {
+      "where": "harness-program.md#agentic-serving-harness-fixes",
+      "ref": "UFH-01",
+      "to": [
+       "UFH-01#harness-selection-and-integration"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-orchestrator-actor-backend",
+      "ref": "EVL-37",
+      "to": [
+       "UFH-01#repl-turn-efficiency",
+       "UFH-01#qwen-chat-template-evaluation"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-orchestrator-actor-backend",
+      "ref": "UFH-01",
+      "to": [
+       "UFH-01#harness-selection-and-integration"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "RTG-30",
+      "ref": "UFH-14",
+      "to": "UFH-01"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "EVL-37",
+      "index": "research-evaluation-index.md"
+     },
+     {
+      "row": "UFH-08",
+      "index": "user-facing-harness-index.md"
+     },
+     {
+      "row": "UFH-12",
+      "index": "user-facing-harness-index.md"
+     },
+     {
+      "row": "UFH-14",
+      "index": "user-facing-harness-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "UFH-01",
+     "index": "user-facing-harness-index.md",
+     "plan_owner_index": "user-facing-harness-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "harness-program.md",
+     "deps_after": [
+      "RTG-09"
+     ]
+    },
+    "repoint_deps_in_rows": [
+     "RTG-30"
+    ],
+    "curated_priority_rekey_candidates": [
+     "EVL-37",
+     "UFH-08",
+     "UFH-12",
+     "UFH-14"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: EVL-37: folded into UFH-01 (harness-program.md) — route 1b, D1/D5",
+     "Repoint-Reason: UFH-08: folded into UFH-01 (harness-program.md) — route 1b, D1/D5",
+     "Repoint-Reason: UFH-12: folded into UFH-01 (harness-program.md) — route 1b, D1/D5",
+     "Repoint-Reason: UFH-14: folded into UFH-01 (harness-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "EVL-37": "UFH-01",
+     "UFH-08": "UFH-01",
+     "UFH-12": "UFH-01",
+     "UFH-14": "UFH-01"
+    },
+    "files": {
+     "repl-turn-efficiency.md": "harness-program.md#track:repl-turn-efficiency",
+     "harness-selection-and-integration.md": "harness-program.md#track:harness-selection-and-integration",
+     "harness-improvement-loop.md": "harness-program.md#track:harness-improvement-loop",
+     "repl-embedding-retrieval.md": "harness-program.md#track:repl-embedding-retrieval",
+     "agentic-serving-harness-fixes.md": "harness-program.md#track:agentic-serving-harness-fixes"
+    }
+   },
+   "link_repoint_files": {
+    "repl-turn-efficiency.md": 27,
+    "harness-improvement-loop.md": 22,
+    "repl-embedding-retrieval.md": 20,
+    "agentic-serving-harness-fixes.md": 24,
+    "harness-selection-and-integration.md": 43
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "agentic-serving-harness-fixes",
+     "handoff_from": "handoffs/active/agentic-serving-harness-fixes.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    },
+    {
+     "slug": "harness-improvement-loop",
+     "handoff_from": "handoffs/active/harness-improvement-loop.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    },
+    {
+     "slug": "harness-selection-and",
+     "handoff_from": "handoffs/active/harness-selection-and-integration.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    },
+    {
+     "slug": "qwen-chat-template-evaluation",
+     "handoff_from": "handoffs/active/repl-turn-efficiency.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    },
+    {
+     "slug": "repl-embedding-retrieval",
+     "handoff_from": "handoffs/active/repl-embedding-retrieval.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    },
+    {
+     "slug": "repl-turn-efficiency",
+     "handoff_from": "handoffs/active/repl-turn-efficiency.md",
+     "handoff_to": "handoffs/active/harness-program.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "codex-ni-hil15b-v2-native60-r7-20261031.json",
+     "from": "handoffs/active/harness-improvement-loop.md:HIL-15b",
+     "to": "handoffs/active/harness-program.md:HIL-15b"
+    },
+    {
+     "spec": "codex-ufh12-gs-private-v1-20261102.json",
+     "from": "handoffs/active/repl-embedding-retrieval.md:REPL-EMB-2.11",
+     "to": "handoffs/active/harness-program.md:REPL-EMB-2.11"
+    },
+    {
+     "spec": "codex-ufh12-gs-private-v2-20261102.json",
+     "from": "handoffs/active/repl-embedding-retrieval.md:REPL-EMB-2.11",
+     "to": "handoffs/active/harness-program.md:REPL-EMB-2.11"
+    },
+    {
+     "spec": "codex-ufh12-gs-private-v3-20261102.json",
+     "from": "handoffs/active/repl-embedding-retrieval.md:REPL-EMB-2.11",
+     "to": "handoffs/active/harness-program.md:REPL-EMB-2.11"
+    },
+    {
+     "spec": "codex-ufh12-shadow-gnx-v1-20261102.json",
+     "from": "handoffs/active/repl-embedding-retrieval.md:REPL-EMB-2.3",
+     "to": "handoffs/active/harness-program.md:REPL-EMB-2.3"
+    },
+    {
+     "spec": "handoff-rte-log1-override-r2-20261101.json",
+     "from": "repl-turn-efficiency.md",
+     "to": "handoffs/active/harness-program.md"
+    },
+    {
+     "spec": "handoff-rte-log1-ownercheck-20261101.json",
+     "from": "repl-turn-efficiency.md",
+     "to": "handoffs/active/harness-program.md"
+    },
+    {
+     "spec": "handoff-rte-pfx2-quarter-native-v3-20261102.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:RTE-PFX2-QN-V3",
+     "to": "handoffs/active/harness-program.md:RTE-PFX2-QN-V3"
+    },
+    {
+     "spec": "handoff-rus3-trunc-v1-20261101.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:EVL-37",
+     "to": "handoffs/active/harness-program.md:EVL-37"
+    },
+    {
+     "spec": "handoff-rus3-trunc-v2-20261102.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:EVL-37",
+     "to": "handoffs/active/harness-program.md:EVL-37"
+    },
+    {
+     "spec": "handoff-s4-omega-isolated-pilot-v2-20261102.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:S4-OMEGA-PILOT-V2",
+     "to": "handoffs/active/harness-program.md:S4-OMEGA-PILOT-V2"
+    },
+    {
+     "spec": "handoff-s4-t1-isolated-v1-20261101.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:EVL-37",
+     "to": "handoffs/active/harness-program.md:EVL-37"
+    },
+    {
+     "spec": "handoff-s4-t1-progressfix-v2-20261101.json",
+     "from": "handoffs/active/repl-turn-efficiency.md:EVL-37",
+     "to": "handoffs/active/harness-program.md:EVL-37"
+    },
+    {
+     "spec": "ufh14-b4a-window-8083-20261102.json",
+     "from": "handoffs/active/agentic-serving-harness-fixes.md:UFH14-B4k",
+     "to": "handoffs/active/harness-program.md:UFH14-B4k"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 6
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 48,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 19,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 112,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 7,
+   "box": "BRF-T7-F7",
+   "plan_target": "long-context-program.md",
+   "destination": "handoffs/active/long-context-program.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/yarn-context-extension-research.md",
+   "anchor_row_kept": "INF-59",
+   "members": [
+    {
+     "row": "INF-59",
+     "file_after_1a": "yarn-context-extension-research.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 34,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "INF-05",
+     "file_after_1a": "attention-matching-kv-compaction.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 23,
+     "grouped_by": "fold-list-1a plan_target"
+    }
+   ],
+   "sources": [
+    "handoffs/active/attention-matching-kv-compaction.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/attention-matching-kv-compaction.md handoffs/completed/attention-matching-kv-compaction.md",
+    "git mv handoffs/active/yarn-context-extension-research.md handoffs/active/long-context-program.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "yarn-context-extension-research",
+     "from_file": "yarn-context-extension-research.md",
+     "from_row": "INF-59",
+     "kind": "anchor body -> track",
+     "origin_file": "yarn-context-extension-research.md",
+     "gate_marker": "<!-- gate: RTG-58 -->",
+     "dispatchable": 34,
+     "open": 34,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "attention-matching-kv-compaction",
+     "from_file": "attention-matching-kv-compaction.md",
+     "from_row": "INF-05",
+     "kind": "member body -> track",
+     "origin_file": "attention-matching-kv-compaction.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 9,
+     "open": 9,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "multiscreen-attention-evaluation",
+     "from_file": "attention-matching-kv-compaction.md",
+     "from_row": "INF-05",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "attention-matching-kv-compaction.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "streaming-llm-baseline",
+     "from_file": "attention-matching-kv-compaction.md",
+     "from_row": "INF-05",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "attention-matching-kv-compaction.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "triattention-kv-selection",
+     "from_file": "attention-matching-kv-compaction.md",
+     "from_row": "INF-05",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "attention-matching-kv-compaction.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 7,
+     "open": 7,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-05",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-59",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "long-context-program.md",
+     "deps_after": [
+      "RTG-58"
+     ]
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "INF-05"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-05: folded into INF-59 (long-context-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-05": "INF-59"
+    },
+    "files": {
+     "attention-matching-kv-compaction.md": "long-context-program.md#track:attention-matching-kv-compaction",
+     "yarn-context-extension-research.md": "long-context-program.md#track:yarn-context-extension-research"
+    }
+   },
+   "link_repoint_files": {
+    "attention-matching-kv-compaction.md": 17,
+    "yarn-context-extension-research.md": 10
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "triattention-kv-selection",
+     "handoff_from": "handoffs/active/attention-matching-kv-compaction.md",
+     "handoff_to": "handoffs/active/long-context-program.md"
+    },
+    {
+     "slug": "yarn",
+     "handoff_from": "handoffs/active/yarn-context-extension-research.md",
+     "handoff_to": "handoffs/active/long-context-program.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [
+    {
+     "spec": "yarn-e1-a2-gpu-20261102-v1.json",
+     "from": "yarn-context-extension-research.md:YARN-E1-A2",
+     "to": "handoffs/active/long-context-program.md:YARN-E1-A2"
+    }
+   ],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 0
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 47,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 18,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 57,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 8,
+   "box": "BRF-T7-F8 (BRF-T7-MEQ)",
+   "plan_target": "model-evaluation-queue.md",
+   "destination": "handoffs/active/model-evaluation-queue.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/model-evaluation-queue.md",
+   "anchor_row_kept": "EVL-02",
+   "members": [
+    {
+     "row": "EVL-02",
+     "file_after_1a": "model-evaluation-queue.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 69,
+     "grouped_by": "model_evaluation_queue (D2, BRF-T7-MEQ)"
+    },
+    {
+     "row": "INF-61",
+     "file_after_1a": "gpu-candidates-surface-qwen38-update.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 3,
+     "grouped_by": "model_evaluation_queue (D2, BRF-T7-MEQ)"
+    },
+    {
+     "row": "INF-76",
+     "file_after_1a": "paw-compiled-specialists.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 8,
+     "grouped_by": "model_evaluation_queue (D2, BRF-T7-MEQ)"
+    }
+   ],
+   "sources": [
+    "handoffs/active/gpu-candidates-surface-qwen38-update.md",
+    "handoffs/active/paw-compiled-specialists.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/gpu-candidates-surface-qwen38-update.md handoffs/completed/gpu-candidates-surface-qwen38-update.md",
+    "git mv handoffs/active/paw-compiled-specialists.md handoffs/completed/paw-compiled-specialists.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "model-evaluation-queue",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "anchor body -> track",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 26,
+     "open": 26,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "angelslim-techniques-evaluation",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "delta-mem-reproduction",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "ernie-image-turbo-evaluation",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 6,
+     "open": 6,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "gpu-cot-scaffold-sidecar",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "lightning-attention-port",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "minddr-deep-research-mode",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 6,
+     "open": 8,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "minimax-h3-video-generation-evaluation",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 7,
+     "open": 7,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "qwen-mtp-llamacpp-port",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "strand-rust-coder-rustevo2-verification",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "summary-token-attention-readiness",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "tidar-one-pass-variant-b",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "gpu-candidates-surface-qwen38-update",
+     "from_file": "gpu-candidates-surface-qwen38-update.md",
+     "from_row": "INF-61",
+     "kind": "member body -> track",
+     "origin_file": "gpu-candidates-surface-qwen38-update.md",
+     "gate_marker": "<!-- gate: INF-22 -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "paw-compiled-specialists",
+     "from_file": "paw-compiled-specialists.md",
+     "from_row": "INF-76",
+     "kind": "member body -> track",
+     "origin_file": "paw-compiled-specialists.md",
+     "gate_marker": "<!-- gate: EVL-08 -->",
+     "dispatchable": 8,
+     "open": 8,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-61",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-76",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "EVL-02",
+     "index": "research-evaluation-index.md",
+     "plan_owner_index": "research-evaluation-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "model-evaluation-queue.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "INF-61",
+     "INF-76"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-61: folded into EVL-02 (model-evaluation-queue.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-76: folded into EVL-02 (model-evaluation-queue.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-61": "EVL-02",
+     "INF-76": "EVL-02"
+    },
+    "files": {
+     "gpu-candidates-surface-qwen38-update.md": "model-evaluation-queue.md#track:gpu-candidates-surface-qwen38-update",
+     "paw-compiled-specialists.md": "model-evaluation-queue.md#track:paw-compiled-specialists"
+    }
+   },
+   "link_repoint_files": {
+    "gpu-candidates-surface-qwen38-update.md": 9,
+    "paw-compiled-specialists.md": 10
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "paw-compiled-specialists",
+     "handoff_from": "handoffs/active/paw-compiled-specialists.md",
+     "handoff_to": "handoffs/active/model-evaluation-queue.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 0
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 45,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 16,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 80,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 9,
+   "box": "BRF-T7-F9",
+   "plan_target": "cpu-decode-roofline-program.md",
+   "destination": "handoffs/active/cpu-decode-roofline-program.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/cpu-decode-roofline-program.md",
+   "anchor_row_kept": "INF-70",
+   "members": [
+    {
+     "row": "INF-70",
+     "file_after_1a": "cpu-decode-roofline-program.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 59,
+     "grouped_by": "plan action keep-as-target"
+    },
+    {
+     "row": "INF-49",
+     "file_after_1a": "sarathi-serve-cpu-evaluation.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 5,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "INF-72",
+     "file_after_1a": "moe-routing-tap-and-locality-measurement.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 5,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/sarathi-serve-cpu-evaluation.md",
+    "handoffs/active/moe-routing-tap-and-locality-measurement.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/sarathi-serve-cpu-evaluation.md handoffs/completed/sarathi-serve-cpu-evaluation.md",
+    "git mv handoffs/active/moe-routing-tap-and-locality-measurement.md handoffs/completed/moe-routing-tap-and-locality-measurement.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "cpu-decode-roofline-program",
+     "from_file": "cpu-decode-roofline-program.md",
+     "from_row": "INF-70",
+     "kind": "anchor body -> track",
+     "origin_file": "cpu-decode-roofline-program.md",
+     "gate_marker": "<!-- gate: INF-65 -->",
+     "dispatchable": 59,
+     "open": 59,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "sarathi-serve-cpu-evaluation",
+     "from_file": "sarathi-serve-cpu-evaluation.md",
+     "from_row": "INF-49",
+     "kind": "member body -> track",
+     "origin_file": "sarathi-serve-cpu-evaluation.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "cpu-prefill-compute-large-models",
+     "from_file": "sarathi-serve-cpu-evaluation.md",
+     "from_row": "INF-49",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "sarathi-serve-cpu-evaluation.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "large-moe-expert-parallelism",
+     "from_file": "sarathi-serve-cpu-evaluation.md",
+     "from_row": "INF-49",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "sarathi-serve-cpu-evaluation.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "moe-routing-tap-and-locality-measurement",
+     "from_file": "moe-routing-tap-and-locality-measurement.md",
+     "from_row": "INF-72",
+     "kind": "member body -> track",
+     "origin_file": "moe-routing-tap-and-locality-measurement.md",
+     "gate_marker": "<!-- gate: INF-22, INF-70#cpu-decode-roofline-program -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "cpu-decode-roofline-program.md#moe-routing-tap-and-locality-measurement",
+      "ref": "INF-70",
+      "to": [
+       "INF-70#cpu-decode-roofline-program"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-unified-surface-program",
+      "ref": "INF-70",
+      "to": [
+       "INF-70#cpu-decode-roofline-program"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-49",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-72",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-70",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "cpu-decode-roofline-program.md",
+     "deps_after": [
+      "INF-65"
+     ]
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "INF-49",
+     "INF-72"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-49: folded into INF-70 (cpu-decode-roofline-program.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-72: folded into INF-70 (cpu-decode-roofline-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-49": "INF-70",
+     "INF-72": "INF-70"
+    },
+    "files": {
+     "sarathi-serve-cpu-evaluation.md": "cpu-decode-roofline-program.md#track:sarathi-serve-cpu-evaluation",
+     "moe-routing-tap-and-locality-measurement.md": "cpu-decode-roofline-program.md#track:moe-routing-tap-and-locality-measurement"
+    }
+   },
+   "link_repoint_files": {
+    "sarathi-serve-cpu-evaluation.md": 14,
+    "moe-routing-tap-and-locality-measurement.md": 11
+   },
+   "session_slug_rewrites": [],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 2
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 43,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 14,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 69,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 10,
+   "box": "BRF-T7-F10",
+   "plan_target": "numa-placement-and-contention.md",
+   "destination": "handoffs/active/numa-placement-and-contention.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/numa-placement-and-contention.md",
+   "anchor_row_kept": "INF-45",
+   "members": [
+    {
+     "row": "INF-45",
+     "file_after_1a": "numa-placement-and-contention.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 81,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "EVL-49",
+     "file_after_1a": "reboot-gated-inventory-and-staging.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 16,
+     "grouped_by": "plan action merge-into+split"
+    },
+    {
+     "row": "RTG-07",
+     "file_after_1a": "contention-model-device-and-load-axes-rider.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 1,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/reboot-gated-inventory-and-staging.md",
+    "handoffs/active/contention-model-device-and-load-axes-rider.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/reboot-gated-inventory-and-staging.md handoffs/completed/reboot-gated-inventory-and-staging.md",
+    "git mv handoffs/active/contention-model-device-and-load-axes-rider.md handoffs/completed/contention-model-device-and-load-axes-rider.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "numa-placement-and-contention",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "anchor body -> track",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 42,
+     "open": 42,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "batched-decode-measurement",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 11,
+     "open": 12,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "dynamic-stack-concurrency",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 11,
+     "open": 11,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "numa-placement-defect-20260730",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 9,
+     "open": 10,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "shape-keyed-contention-gating",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "within-role-placement-state-machine",
+     "from_file": "numa-placement-and-contention.md",
+     "from_row": "INF-45",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "numa-placement-and-contention.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 6,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "reboot-gated-inventory-and-staging",
+     "from_file": "reboot-gated-inventory-and-staging.md",
+     "from_row": "EVL-49",
+     "kind": "member body -> track",
+     "origin_file": "reboot-gated-inventory-and-staging.md",
+     "gate_marker": "<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34 -->",
+     "dispatchable": 16,
+     "open": 16,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "contention-model-device-and-load-axes-rider",
+     "from_file": "contention-model-device-and-load-axes-rider.md",
+     "from_row": "RTG-07",
+     "kind": "member body -> track",
+     "origin_file": "contention-model-device-and-load-axes-rider.md",
+     "gate_marker": "<!-- gate: INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "numa-placement-and-contention.md#reboot-gated-inventory-and-staging",
+      "ref": "INF-45",
+      "to": [
+       "INF-45#numa-placement-and-contention",
+       "INF-45#batched-decode-measurement",
+       "INF-45#dynamic-stack-concurrency",
+       "INF-45#numa-placement-defect-20260730",
+       "INF-45#shape-keyed-contention-gating",
+       "INF-45#within-role-placement-state-machine"
+      ]
+     },
+     {
+      "where": "numa-placement-and-contention.md#contention-model-device-and-load-axes-rider",
+      "ref": "INF-45",
+      "to": [
+       "INF-45#numa-placement-and-contention",
+       "INF-45#batched-decode-measurement",
+       "INF-45#dynamic-stack-concurrency",
+       "INF-45#numa-placement-defect-20260730",
+       "INF-45#shape-keyed-contention-gating",
+       "INF-45#within-role-placement-state-machine"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "EVL-49",
+      "index": "research-evaluation-index.md"
+     },
+     {
+      "row": "RTG-07",
+      "index": "routing-and-optimization-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-45",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "numa-placement-and-contention.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "EVL-49",
+     "RTG-07"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: EVL-49: folded into INF-45 (numa-placement-and-contention.md) — route 1b, D1/D5",
+     "Repoint-Reason: RTG-07: folded into INF-45 (numa-placement-and-contention.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "EVL-49": "INF-45",
+     "RTG-07": "INF-45"
+    },
+    "files": {
+     "reboot-gated-inventory-and-staging.md": "numa-placement-and-contention.md#track:reboot-gated-inventory-and-staging",
+     "contention-model-device-and-load-axes-rider.md": "numa-placement-and-contention.md#track:contention-model-device-and-load-axes-rider"
+    }
+   },
+   "link_repoint_files": {
+    "reboot-gated-inventory-and-staging.md": 11,
+    "contention-model-device-and-load-axes-rider.md": 7
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "reboot-gated-inventory-and-staging",
+     "handoff_from": "handoffs/active/reboot-gated-inventory-and-staging.md",
+     "handoff_to": "handoffs/active/numa-placement-and-contention.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 1
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 41,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 12,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 98,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 11,
+   "box": "BRF-T7-F11",
+   "plan_target": "coordination-and-churn-pipeline.md",
+   "destination": "handoffs/active/coordination-and-churn-pipeline.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/coordination-and-churn-pipeline.md",
+   "anchor_row_kept": "RTG-34",
+   "members": [
+    {
+     "row": "RTG-34",
+     "file_after_1a": "coordination-and-churn-pipeline.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 77,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "RTG-48",
+     "file_after_1a": "coordinator-role-failure-modes-and-refactor.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 12,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "RTG-52",
+     "file_after_1a": "loop-owned-fleet-implementation.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 22,
+     "grouped_by": "fold-list-1a plan_target"
+    }
+   ],
+   "sources": [
+    "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+    "handoffs/active/loop-owned-fleet-implementation.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/coordinator-role-failure-modes-and-refactor.md handoffs/completed/coordinator-role-failure-modes-and-refactor.md",
+    "git mv handoffs/active/loop-owned-fleet-implementation.md handoffs/completed/loop-owned-fleet-implementation.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "coordination-and-churn-pipeline",
+     "from_file": "coordination-and-churn-pipeline.md",
+     "from_row": "RTG-34",
+     "kind": "anchor body -> track",
+     "origin_file": "coordination-and-churn-pipeline.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 37,
+     "open": 37,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "churn-pipeline",
+     "from_file": "coordination-and-churn-pipeline.md",
+     "from_row": "RTG-34",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "coordination-and-churn-pipeline.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 24,
+     "open": 24,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "dashboard-architecture-restructure",
+     "from_file": "coordination-and-churn-pipeline.md",
+     "from_row": "RTG-34",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "coordination-and-churn-pipeline.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 12,
+     "open": 12,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "handoff-index-and-backlog-graph",
+     "from_file": "coordination-and-churn-pipeline.md",
+     "from_row": "RTG-34",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "coordination-and-churn-pipeline.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "coordinator-role-failure-modes-and-refactor",
+     "from_file": "coordinator-role-failure-modes-and-refactor.md",
+     "from_row": "RTG-48",
+     "kind": "member body -> track",
+     "origin_file": "coordinator-role-failure-modes-and-refactor.md",
+     "gate_marker": "<!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->",
+     "dispatchable": 12,
+     "open": 12,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "loop-owned-fleet-implementation",
+     "from_file": "loop-owned-fleet-implementation.md",
+     "from_row": "RTG-52",
+     "kind": "member body -> track",
+     "origin_file": "loop-owned-fleet-implementation.md",
+     "gate_marker": "<!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph, RTG-34#coordinator-role-failure-modes-and-refactor -->",
+     "dispatchable": 9,
+     "open": 9,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "fleet-fanout-measurement",
+     "from_file": "loop-owned-fleet-implementation.md",
+     "from_row": "RTG-52",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "loop-owned-fleet-implementation.md",
+     "gate_marker": "<!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph, RTG-34#coordinator-role-failure-modes-and-refactor -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "wrap-up-division-of-labor-policy",
+     "from_file": "loop-owned-fleet-implementation.md",
+     "from_row": "RTG-52",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "loop-owned-fleet-implementation.md",
+     "gate_marker": "<!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph, RTG-34#coordinator-role-failure-modes-and-refactor -->",
+     "dispatchable": 8,
+     "open": 8,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "coordination-and-churn-pipeline.md#coordinator-role-failure-modes-and-refactor",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#loop-owned-fleet-implementation",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#loop-owned-fleet-implementation",
+      "ref": "RTG-48",
+      "to": [
+       "RTG-34#coordinator-role-failure-modes-and-refactor"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#fleet-fanout-measurement",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#fleet-fanout-measurement",
+      "ref": "RTG-48",
+      "to": [
+       "RTG-34#coordinator-role-failure-modes-and-refactor"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#wrap-up-division-of-labor-policy",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     },
+     {
+      "where": "coordination-and-churn-pipeline.md#wrap-up-division-of-labor-policy",
+      "ref": "RTG-48",
+      "to": [
+       "RTG-34#coordinator-role-failure-modes-and-refactor"
+      ]
+     },
+     {
+      "where": "numa-placement-and-contention.md#reboot-gated-inventory-and-staging",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "RTG-48",
+      "index": "routing-and-optimization-index.md"
+     },
+     {
+      "row": "RTG-52",
+      "index": "routing-and-optimization-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "RTG-34",
+     "index": "routing-and-optimization-index.md",
+     "plan_owner_index": "routing-and-optimization-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "coordination-and-churn-pipeline.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "RTG-48",
+     "RTG-52"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: RTG-48: folded into RTG-34 (coordination-and-churn-pipeline.md) — route 1b, D1/D5",
+     "Repoint-Reason: RTG-52: folded into RTG-34 (coordination-and-churn-pipeline.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "RTG-48": "RTG-34",
+     "RTG-52": "RTG-34"
+    },
+    "files": {
+     "coordinator-role-failure-modes-and-refactor.md": "coordination-and-churn-pipeline.md#track:coordinator-role-failure-modes-and-refactor",
+     "loop-owned-fleet-implementation.md": "coordination-and-churn-pipeline.md#track:loop-owned-fleet-implementation"
+    }
+   },
+   "link_repoint_files": {
+    "coordinator-role-failure-modes-and-refactor.md": 20,
+    "loop-owned-fleet-implementation.md": 34
+   },
+   "session_slug_rewrites": [],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 6
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 39,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 10,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 111,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 12,
+   "box": "BRF-T7-F12",
+   "plan_target": "autopilot-program.md",
+   "destination": "handoffs/active/autopilot-program.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/autopilot-program.md",
+   "anchor_row_kept": "RTG-02",
+   "members": [
+    {
+     "row": "RTG-02",
+     "file_after_1a": "autopilot-program.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 100,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "EVL-04",
+     "file_after_1a": "autopilot-sequential-allocation.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 10,
+     "grouped_by": "fold-list-1a plan_target"
+    }
+   ],
+   "sources": [
+    "handoffs/active/autopilot-sequential-allocation.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/autopilot-sequential-allocation.md handoffs/completed/autopilot-sequential-allocation.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "autopilot-program",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "anchor body -> track",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 57,
+     "open": 59,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autopilot-dashboard-fidelity-audit-2026-07-22",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autopilot-decision-plane-audit-2026-07-22",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "batched-edit-parallel-apply",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "bep-dcp-falsification-harness",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "evidence-plane-event-sourcing-and-narrative",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "evidence-plane-instrument-repair",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "evidence-plane-ledger-and-sequential-verdicts",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "loops-and-dashboards-audit-2026-07-05",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "objective-task-rate-goodput",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "orchestration-robustness-audit-2026-07-11",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 4,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "scaffold-autopilot-cost-lever-deployment",
+     "from_file": "autopilot-program.md",
+     "from_row": "RTG-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 12,
+     "open": 12,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "autopilot-sequential-allocation",
+     "from_file": "autopilot-sequential-allocation.md",
+     "from_row": "EVL-04",
+     "kind": "member body -> track",
+     "origin_file": "autopilot-sequential-allocation.md",
+     "gate_marker": "<!-- gate: RTG-02#autopilot-program, RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22, RTG-02#autopilot-decision-plane-audit-2026-07-22, RTG-02#batched-edit-parallel-apply, RTG-02#bep-dcp-falsification-harness, RTG-02#evidence-plane-event-sourcing-and-narrative, RTG-02#evidence-plane-instrument-repair, RTG-02#evidence-plane-ledger-and-sequential-verdicts, RTG-02#loops-and-dashboards-audit-2026-07-05, RTG-02#objective-task-rate-goodput, RTG-02#orchestration-robustness-audit-2026-07-11, RTG-02#scaffold-autopilot-cost-lever-deployment -->",
+     "dispatchable": 8,
+     "open": 8,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "promptforge-mutation-safety-contract",
+     "from_file": "autopilot-sequential-allocation.md",
+     "from_row": "EVL-04",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "autopilot-sequential-allocation.md",
+     "gate_marker": "<!-- gate: RTG-02#autopilot-program, RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22, RTG-02#autopilot-decision-plane-audit-2026-07-22, RTG-02#batched-edit-parallel-apply, RTG-02#bep-dcp-falsification-harness, RTG-02#evidence-plane-event-sourcing-and-narrative, RTG-02#evidence-plane-instrument-repair, RTG-02#evidence-plane-ledger-and-sequential-verdicts, RTG-02#loops-and-dashboards-audit-2026-07-05, RTG-02#objective-task-rate-goodput, RTG-02#orchestration-robustness-audit-2026-07-11, RTG-02#scaffold-autopilot-cost-lever-deployment -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "autopilot-program.md#autopilot-sequential-allocation",
+      "ref": "RTG-02",
+      "to": [
+       "RTG-02#autopilot-program",
+       "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+       "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+       "RTG-02#batched-edit-parallel-apply",
+       "RTG-02#bep-dcp-falsification-harness",
+       "RTG-02#evidence-plane-event-sourcing-and-narrative",
+       "RTG-02#evidence-plane-instrument-repair",
+       "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+       "RTG-02#loops-and-dashboards-audit-2026-07-05",
+       "RTG-02#objective-task-rate-goodput",
+       "RTG-02#orchestration-robustness-audit-2026-07-11",
+       "RTG-02#scaffold-autopilot-cost-lever-deployment"
+      ]
+     },
+     {
+      "where": "autopilot-program.md#promptforge-mutation-safety-contract",
+      "ref": "RTG-02",
+      "to": [
+       "RTG-02#autopilot-program",
+       "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
+       "RTG-02#autopilot-decision-plane-audit-2026-07-22",
+       "RTG-02#batched-edit-parallel-apply",
+       "RTG-02#bep-dcp-falsification-harness",
+       "RTG-02#evidence-plane-event-sourcing-and-narrative",
+       "RTG-02#evidence-plane-instrument-repair",
+       "RTG-02#evidence-plane-ledger-and-sequential-verdicts",
+       "RTG-02#loops-and-dashboards-audit-2026-07-05",
+       "RTG-02#objective-task-rate-goodput",
+       "RTG-02#orchestration-robustness-audit-2026-07-11",
+       "RTG-02#scaffold-autopilot-cost-lever-deployment"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "EVL-04",
+      "index": "research-evaluation-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "RTG-02",
+     "index": "routing-and-optimization-index.md",
+     "plan_owner_index": "routing-and-optimization-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "autopilot-program.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "EVL-04"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: EVL-04: folded into RTG-02 (autopilot-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "EVL-04": "RTG-02"
+    },
+    "files": {
+     "autopilot-sequential-allocation.md": "autopilot-program.md#track:autopilot-sequential-allocation"
+    }
+   },
+   "link_repoint_files": {
+    "autopilot-sequential-allocation.md": 20
+   },
+   "session_slug_rewrites": [],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 1
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 38,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 9,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 110,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 13,
+   "box": "BRF-T7-F13",
+   "plan_target": "rocm-kernel-authoring.md",
+   "destination": "handoffs/active/rocm-kernel-authoring.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/rocm-verify-profile-backend.md",
+   "anchor_row_kept": "INF-48",
+   "members": [
+    {
+     "row": "INF-48",
+     "file_after_1a": "rocm-verify-profile-backend.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 49,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "INF-03",
+     "file_after_1a": "agentic-rocm-kernel-authoring.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 36,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "INF-16",
+     "file_after_1a": "gemma-challenge-kernel-techniques-v7.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 14,
+     "grouped_by": "fold-list-1a plan_target"
+    }
+   ],
+   "sources": [
+    "handoffs/active/agentic-rocm-kernel-authoring.md",
+    "handoffs/active/gemma-challenge-kernel-techniques-v7.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/agentic-rocm-kernel-authoring.md handoffs/completed/agentic-rocm-kernel-authoring.md",
+    "git mv handoffs/active/gemma-challenge-kernel-techniques-v7.md handoffs/completed/gemma-challenge-kernel-techniques-v7.md",
+    "git mv handoffs/active/rocm-verify-profile-backend.md handoffs/active/rocm-kernel-authoring.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "rocm-verify-profile-backend",
+     "from_file": "rocm-verify-profile-backend.md",
+     "from_row": "INF-48",
+     "kind": "anchor body -> track",
+     "origin_file": "rocm-verify-profile-backend.md",
+     "gate_marker": "<!-- gate: EVL-47 -->",
+     "dispatchable": 49,
+     "open": 49,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "agentic-rocm-kernel-authoring",
+     "from_file": "agentic-rocm-kernel-authoring.md",
+     "from_row": "INF-03",
+     "kind": "member body -> track",
+     "origin_file": "agentic-rocm-kernel-authoring.md",
+     "gate_marker": "<!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->",
+     "dispatchable": 25,
+     "open": 25,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "mi210-q8-dequant-gemv-roofline",
+     "from_file": "agentic-rocm-kernel-authoring.md",
+     "from_row": "INF-03",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "agentic-rocm-kernel-authoring.md",
+     "gate_marker": "<!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->",
+     "dispatchable": 11,
+     "open": 11,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "gemma-challenge-kernel-techniques-v7",
+     "from_file": "gemma-challenge-kernel-techniques-v7.md",
+     "from_row": "INF-16",
+     "kind": "member body -> track",
+     "origin_file": "gemma-challenge-kernel-techniques-v7.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 7,
+     "open": 7,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "frontier-f6-upstream-publication",
+     "from_file": "gemma-challenge-kernel-techniques-v7.md",
+     "from_row": "INF-16",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "gemma-challenge-kernel-techniques-v7.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 6,
+     "open": 6,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "llama-cpp-dsa-contribution",
+     "from_file": "gemma-challenge-kernel-techniques-v7.md",
+     "from_row": "INF-16",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "gemma-challenge-kernel-techniques-v7.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "rocm-kernel-authoring.md#agentic-rocm-kernel-authoring",
+      "ref": "INF-48",
+      "to": [
+       "INF-48#rocm-verify-profile-backend"
+      ]
+     },
+     {
+      "where": "rocm-kernel-authoring.md#mi210-q8-dequant-gemv-roofline",
+      "ref": "INF-48",
+      "to": [
+       "INF-48#rocm-verify-profile-backend"
+      ]
+     },
+     {
+      "where": "autokernel-loop.md#autokernel-research-loop",
+      "ref": "INF-48",
+      "to": [
+       "INF-48#rocm-verify-profile-backend"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": [
+     {
+      "row": "INF-77",
+      "ref": "INF-16",
+      "to": "INF-48"
+     }
+    ]
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-03",
+      "index": "inference-research-index.md"
+     },
+     {
+      "row": "INF-16",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-48",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "rocm-kernel-authoring.md",
+     "deps_after": [
+      "EVL-47"
+     ]
+    },
+    "repoint_deps_in_rows": [
+     "INF-77"
+    ],
+    "curated_priority_rekey_candidates": [
+     "INF-03",
+     "INF-16"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-03: folded into INF-48 (rocm-kernel-authoring.md) — route 1b, D1/D5",
+     "Repoint-Reason: INF-16: folded into INF-48 (rocm-kernel-authoring.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-03": "INF-48",
+     "INF-16": "INF-48"
+    },
+    "files": {
+     "agentic-rocm-kernel-authoring.md": "rocm-kernel-authoring.md#track:agentic-rocm-kernel-authoring",
+     "gemma-challenge-kernel-techniques-v7.md": "rocm-kernel-authoring.md#track:gemma-challenge-kernel-techniques-v7",
+     "rocm-verify-profile-backend.md": "rocm-kernel-authoring.md#track:rocm-verify-profile-backend"
+    }
+   },
+   "link_repoint_files": {
+    "agentic-rocm-kernel-authoring.md": 20,
+    "gemma-challenge-kernel-techniques-v7.md": 33,
+    "rocm-verify-profile-backend.md": 20
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "agentic-rocm-kernel-authoring",
+     "handoff_from": "handoffs/active/agentic-rocm-kernel-authoring.md",
+     "handoff_to": "handoffs/active/rocm-kernel-authoring.md"
+    },
+    {
+     "slug": "frontier-f6-upstream-publication",
+     "handoff_from": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+     "handoff_to": "handoffs/active/rocm-kernel-authoring.md"
+    },
+    {
+     "slug": "mi210-q8-dequant-gemv-roofline",
+     "handoff_from": "handoffs/active/agentic-rocm-kernel-authoring.md",
+     "handoff_to": "handoffs/active/rocm-kernel-authoring.md"
+    },
+    {
+     "slug": "rocm-verify-profile-backend",
+     "handoff_from": "handoffs/active/rocm-verify-profile-backend.md",
+     "handoff_to": "handoffs/active/rocm-kernel-authoring.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 1
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 36,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 7,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 99,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 14,
+   "box": "BRF-T7-F14",
+   "plan_target": "memory-program.md",
+   "destination": "handoffs/active/memory-program.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/memory-program.md",
+   "anchor_row_kept": "EVL-10",
+   "members": [
+    {
+     "row": "EVL-10",
+     "file_after_1a": "memory-program.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 45,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "EVL-52",
+     "file_after_1a": "dev-harness-trace-mining.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 8,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/dev-harness-trace-mining.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/dev-harness-trace-mining.md handoffs/completed/dev-harness-trace-mining.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "memory-program",
+     "from_file": "memory-program.md",
+     "from_row": "EVL-10",
+     "kind": "anchor body -> track",
+     "origin_file": "memory-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 16,
+     "open": 16,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "repl-session-memory-maturity",
+     "from_file": "memory-program.md",
+     "from_row": "EVL-10",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "memory-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 15,
+     "open": 15,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "unified-trace-memory-service",
+     "from_file": "memory-program.md",
+     "from_row": "EVL-10",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "memory-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 14,
+     "open": 16,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "dev-harness-trace-mining",
+     "from_file": "dev-harness-trace-mining.md",
+     "from_row": "EVL-52",
+     "kind": "member body -> track",
+     "origin_file": "dev-harness-trace-mining.md",
+     "gate_marker": "<!-- gate: EVL-10#memory-program, EVL-10#repl-session-memory-maturity, EVL-10#unified-trace-memory-service -->",
+     "dispatchable": 8,
+     "open": 8,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "memory-program.md#dev-harness-trace-mining",
+      "ref": "EVL-10",
+      "to": [
+       "EVL-10#memory-program",
+       "EVL-10#repl-session-memory-maturity",
+       "EVL-10#unified-trace-memory-service"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "EVL-52",
+      "index": "research-evaluation-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "EVL-10",
+     "index": "research-evaluation-index.md",
+     "plan_owner_index": "routing-and-optimization-index.md",
+     "move_to_owner_index": true,
+     "handoff_cell": "memory-program.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "EVL-52"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: EVL-52: folded into EVL-10 (memory-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "EVL-52": "EVL-10"
+    },
+    "files": {
+     "dev-harness-trace-mining.md": "memory-program.md#track:dev-harness-trace-mining"
+    }
+   },
+   "link_repoint_files": {
+    "dev-harness-trace-mining.md": 9
+   },
+   "session_slug_rewrites": [],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 1
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 35,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 6,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 53,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 15,
+   "box": "BRF-T7-F15",
+   "plan_target": "reviewer-control-plane.md",
+   "destination": "handoffs/active/reviewer-control-plane.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/glm52-reviewer-capability-gates.md",
+   "anchor_row_kept": "REV-02",
+   "members": [
+    {
+     "row": "REV-02",
+     "file_after_1a": "glm52-reviewer-capability-gates.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 5,
+     "grouped_by": "plan action rename-to-target+split"
+    },
+    {
+     "row": "REV-05",
+     "file_after_1a": "reviewer-escalation-and-human-gate-policy.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 4,
+     "grouped_by": "plan action merge-into"
+    },
+    {
+     "row": "REV-06",
+     "file_after_1a": "reviewer-latency-and-sampling-budget.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 8,
+     "grouped_by": "fold-list-1a plan_target"
+    },
+    {
+     "row": "REV-07",
+     "file_after_1a": "reviewer-model-ablations.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 9,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+    "handoffs/active/reviewer-latency-and-sampling-budget.md",
+    "handoffs/active/reviewer-model-ablations.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/reviewer-escalation-and-human-gate-policy.md handoffs/completed/reviewer-escalation-and-human-gate-policy.md",
+    "git mv handoffs/active/reviewer-latency-and-sampling-budget.md handoffs/completed/reviewer-latency-and-sampling-budget.md",
+    "git mv handoffs/active/reviewer-model-ablations.md handoffs/completed/reviewer-model-ablations.md",
+    "git mv handoffs/active/glm52-reviewer-capability-gates.md handoffs/active/reviewer-control-plane.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "glm52-reviewer-capability-gates",
+     "from_file": "glm52-reviewer-capability-gates.md",
+     "from_row": "REV-02",
+     "kind": "anchor body -> track",
+     "origin_file": "glm52-reviewer-capability-gates.md",
+     "gate_marker": "<!-- gate: INF-77 -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "reviewer-escalation-and-human-gate-policy",
+     "from_file": "reviewer-escalation-and-human-gate-policy.md",
+     "from_row": "REV-05",
+     "kind": "member body -> track",
+     "origin_file": "reviewer-escalation-and-human-gate-policy.md",
+     "gate_marker": "<!-- gate: UFH-01 -->",
+     "dispatchable": 4,
+     "open": 9,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "reviewer-latency-and-sampling-budget",
+     "from_file": "reviewer-latency-and-sampling-budget.md",
+     "from_row": "REV-06",
+     "kind": "member body -> track",
+     "origin_file": "reviewer-latency-and-sampling-budget.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 4,
+     "open": 7,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "reviewer-calibration-accounting",
+     "from_file": "reviewer-latency-and-sampling-budget.md",
+     "from_row": "REV-06",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "reviewer-latency-and-sampling-budget.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "reviewer-typed-artifacts",
+     "from_file": "reviewer-latency-and-sampling-budget.md",
+     "from_row": "REV-06",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "reviewer-latency-and-sampling-budget.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "reviewer-model-ablations",
+     "from_file": "reviewer-model-ablations.md",
+     "from_row": "REV-07",
+     "kind": "member body -> track",
+     "origin_file": "reviewer-model-ablations.md",
+     "gate_marker": "<!-- gate: REV-02#glm52-reviewer-capability-gates -->",
+     "dispatchable": 9,
+     "open": 11,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "reviewer-control-plane.md#reviewer-model-ablations",
+      "ref": "REV-02",
+      "to": [
+       "REV-02#glm52-reviewer-capability-gates"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "REV-05",
+      "index": "reviewer-control-plane-index.md"
+     },
+     {
+      "row": "REV-06",
+      "index": "reviewer-control-plane-index.md"
+     },
+     {
+      "row": "REV-07",
+      "index": "reviewer-control-plane-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "REV-02",
+     "index": "reviewer-control-plane-index.md",
+     "plan_owner_index": "reviewer-control-plane-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "reviewer-control-plane.md",
+     "deps_after": [
+      "INF-77"
+     ]
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "REV-06",
+     "REV-07"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: REV-05: folded into REV-02 (reviewer-control-plane.md) — route 1b, D1/D5",
+     "Repoint-Reason: REV-06: folded into REV-02 (reviewer-control-plane.md) — route 1b, D1/D5",
+     "Repoint-Reason: REV-07: folded into REV-02 (reviewer-control-plane.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "REV-05": "REV-02",
+     "REV-06": "REV-02",
+     "REV-07": "REV-02"
+    },
+    "files": {
+     "glm52-reviewer-capability-gates.md": "reviewer-control-plane.md#track:glm52-reviewer-capability-gates",
+     "reviewer-escalation-and-human-gate-policy.md": "reviewer-control-plane.md#track:reviewer-escalation-and-human-gate-policy",
+     "reviewer-latency-and-sampling-budget.md": "reviewer-control-plane.md#track:reviewer-latency-and-sampling-budget",
+     "reviewer-model-ablations.md": "reviewer-control-plane.md#track:reviewer-model-ablations"
+    }
+   },
+   "link_repoint_files": {
+    "reviewer-escalation-and-human-gate-policy.md": 13,
+    "reviewer-latency-and-sampling-budget.md": 19,
+    "reviewer-model-ablations.md": 11,
+    "glm52-reviewer-capability-gates.md": 21
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "reviewer-latency-and-sampling-budget",
+     "handoff_from": "handoffs/active/reviewer-latency-and-sampling-budget.md",
+     "handoff_to": "handoffs/active/reviewer-control-plane.md"
+    },
+    {
+     "slug": "reviewer-model-ablations",
+     "handoff_from": "handoffs/active/reviewer-model-ablations.md",
+     "handoff_to": "handoffs/active/reviewer-control-plane.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 4
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 32,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 3,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 26,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 16,
+   "box": "BRF-T7-F16",
+   "plan_target": "routing-program.md",
+   "destination": "handoffs/active/routing-program.md",
+   "destination_is_rename": false,
+   "anchor": "handoffs/active/routing-program.md",
+   "anchor_row_kept": "RTG-09",
+   "members": [
+    {
+     "row": "RTG-09",
+     "file_after_1a": "routing-program.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 97,
+     "grouped_by": "not in the plan (new since the pin): stays a singleton"
+    },
+    {
+     "row": "RTG-30",
+     "file_after_1a": "routing-intelligence.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 16,
+     "grouped_by": "plan action merge-into+split"
+    }
+   ],
+   "sources": [
+    "handoffs/active/routing-intelligence.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/routing-intelligence.md handoffs/completed/routing-intelligence.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "routing-program",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "anchor body -> track",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 30,
+     "open": 31,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "internal-interaction-lifecycle",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 5,
+     "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "learned-routing-controller",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 22,
+     "open": 25,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "model-capability-descriptors",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "retrain-routing-models",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "tri-role-coordinator-architecture",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 7,
+     "open": 7,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "typed-decision-plane",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 29,
+     "open": 29,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "x-mas-text-routing",
+     "from_file": "routing-program.md",
+     "from_row": "RTG-09",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "routing-program.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "routing-intelligence",
+     "from_file": "routing-intelligence.md",
+     "from_row": "RTG-30",
+     "kind": "member body -> track",
+     "origin_file": "routing-intelligence.md",
+     "gate_marker": "<!-- gate: UFH-01 -->",
+     "dispatchable": 16,
+     "open": 16,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [
+     {
+      "where": "autokernel-loop.md#autokernel-orchestrator-actor-backend",
+      "ref": "RTG-09",
+      "to": [
+       "RTG-09#routing-program",
+       "RTG-09#internal-interaction-lifecycle",
+       "RTG-09#learned-routing-controller",
+       "RTG-09#model-capability-descriptors",
+       "RTG-09#retrain-routing-models",
+       "RTG-09#tri-role-coordinator-architecture",
+       "RTG-09#typed-decision-plane",
+       "RTG-09#x-mas-text-routing"
+      ]
+     },
+     {
+      "where": "harness-program.md#harness-selection-and-integration",
+      "ref": "RTG-09",
+      "to": [
+       "RTG-09#routing-program",
+       "RTG-09#internal-interaction-lifecycle",
+       "RTG-09#learned-routing-controller",
+       "RTG-09#model-capability-descriptors",
+       "RTG-09#retrain-routing-models",
+       "RTG-09#tri-role-coordinator-architecture",
+       "RTG-09#typed-decision-plane",
+       "RTG-09#x-mas-text-routing"
+      ]
+     }
+    ],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "RTG-30",
+      "index": "routing-and-optimization-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "RTG-09",
+     "index": "routing-and-optimization-index.md",
+     "plan_owner_index": "routing-and-optimization-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "routing-program.md",
+     "deps_after": []
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "RTG-30"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: RTG-30: folded into RTG-09 (routing-program.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "RTG-30": "RTG-09"
+    },
+    "files": {
+     "routing-intelligence.md": "routing-program.md#track:routing-intelligence"
+    }
+   },
+   "link_repoint_files": {
+    "routing-intelligence.md": 16
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "routing-intelligence",
+     "handoff_from": "handoffs/active/routing-intelligence.md",
+     "handoff_to": "handoffs/active/routing-program.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 0
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 31,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 2,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 113,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  },
+  {
+   "order": 17,
+   "box": "BRF-T7-F17",
+   "plan_target": "model-architecture-readiness.md",
+   "destination": "handoffs/active/model-architecture-readiness.md",
+   "destination_is_rename": true,
+   "anchor": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+   "anchor_row_kept": "INF-33",
+   "members": [
+    {
+     "row": "INF-33",
+     "file_after_1a": "log-linear-gated-deltanet-readiness.md",
+     "readiness_after_1a": "blocked",
+     "dispatchable": 11,
+     "grouped_by": "plan action rename-to-target"
+    },
+    {
+     "row": "INF-13",
+     "file_after_1a": "engram-conditional-memory.md",
+     "readiness_after_1a": "ready",
+     "dispatchable": 11,
+     "grouped_by": "plan action merge-into"
+    }
+   ],
+   "sources": [
+    "handoffs/active/engram-conditional-memory.md"
+   ],
+   "moves": [
+    "git mv handoffs/active/engram-conditional-memory.md handoffs/completed/engram-conditional-memory.md",
+    "git mv handoffs/active/log-linear-gated-deltanet-readiness.md handoffs/active/model-architecture-readiness.md"
+   ],
+   "procedure": "anchor: keep its preamble (H1 and header lines up to the first `##` heading) untracked; from that heading to its first existing `## Track:` goes under `## Track: <anchor stem>` (headings demoted two levels outside fences). Each other member: the same for its whole body before its first `## Track:`, appended as `## Track: <member stem>`. Every `## Track:` a member or the anchor already carries is LIFTED verbatim (never demoted) after its owner, with the marker below. Stubs go to completed/ as in route 1a.",
+   "tracks": [
+    {
+     "track": "log-linear-gated-deltanet-readiness",
+     "from_file": "log-linear-gated-deltanet-readiness.md",
+     "from_row": "INF-33",
+     "kind": "anchor body -> track",
+     "origin_file": "log-linear-gated-deltanet-readiness.md",
+     "gate_marker": "<!-- gate: INF-48 -->",
+     "dispatchable": 11,
+     "open": 12,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "engram-conditional-memory",
+     "from_file": "engram-conditional-memory.md",
+     "from_row": "INF-13",
+     "kind": "member body -> track",
+     "origin_file": "engram-conditional-memory.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 11,
+     "open": 12,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    }
+   ],
+   "gate_ref_rewrites": {
+    "track_refs": [],
+    "inert_refs_dropped": [],
+    "deps_cells_coarsened_to_kept_row": []
+   },
+   "index_row_changes": {
+    "delete_rows": [
+     {
+      "row": "INF-13",
+      "index": "inference-research-index.md"
+     }
+    ],
+    "keep_row": {
+     "row": "INF-33",
+     "index": "inference-research-index.md",
+     "plan_owner_index": "inference-research-index.md",
+     "move_to_owner_index": false,
+     "handoff_cell": "model-architecture-readiness.md",
+     "deps_after": [
+      "INF-48"
+     ]
+    },
+    "repoint_deps_in_rows": [],
+    "curated_priority_rekey_candidates": [
+     "INF-13"
+    ],
+    "repoint_reason_trailers": [
+     "Repoint-Reason: INF-13: folded into INF-33 (model-architecture-readiness.md) — route 1b, D1/D5"
+    ]
+   },
+   "redirects": {
+    "rows": {
+     "INF-13": "INF-33"
+    },
+    "files": {
+     "engram-conditional-memory.md": "model-architecture-readiness.md#track:engram-conditional-memory",
+     "log-linear-gated-deltanet-readiness.md": "model-architecture-readiness.md#track:log-linear-gated-deltanet-readiness"
+    }
+   },
+   "link_repoint_files": {
+    "engram-conditional-memory.md": 10,
+    "log-linear-gated-deltanet-readiness.md": 10
+   },
+   "session_slug_rewrites": [
+    {
+     "slug": "log-linear-gated-deltanet-readiness",
+     "handoff_from": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+     "handoff_to": "handoffs/active/model-architecture-readiness.md"
+    }
+   ],
+   "rowflow_handoff_task_rewrites": [],
+   "decision_package_D7": {
+    "pending_choices_in_manifest": 1
+   },
+   "expected_gate": {
+    "per_track_readiness_diff": [],
+    "neutral": true,
+    "readiness_of_node_after": "ready",
+    "graph_after": {
+     "nodes": 30,
+     "readiness_counts": {
+      "ready": 29,
+      "blocked": 1,
+      "no_open": 0
+     }
+    },
+    "dispatchable": 22,
+    "commands": [
+     "python3 scripts/handoffs/index_state.py",
+     "python3 scripts/handoffs/index_state.py --check",
+     "per-track readiness equality: each track == its former handoff (blockers mapped through .folded.json)",
+     "python3 scripts/handoffs/task_lint.py migrate <touched>",
+     "python3 scripts/handoffs/belief_capture_check.py"
+    ]
+   }
+  }
+ ]
+}

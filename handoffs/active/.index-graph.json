@@ -1787,7 +1787,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-03T06:54:17Z",
+  "generated_at": "2026-11-03T06:54:28Z",
   "nodes": [
     {
       "age_days": 1,
@@ -4446,7 +4446,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 4,
       "blocked_by": [],
       "closed": 171,
@@ -4455,7 +4455,7 @@
       "guarded": 1,
       "handoff": "routing-program.md",
       "id": "RTG-09",
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
       "open": 102,
       "priority": 0.1445,
