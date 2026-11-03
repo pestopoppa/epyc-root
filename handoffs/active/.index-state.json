@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 679
+      "open": 684
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1496,7 +1496,7 @@
       "closed": 181,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 45,
+      "open": 50,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 229,
+      "total": 234,
       "tracks": [
         {
           "blocked": 1,
@@ -1515,14 +1515,14 @@
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 26
+          "open": 31
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 624,
+          "line": 632,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 983,
+          "line": 991,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1260,
+          "line": 1268,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1895,
+          "line": 1903,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2190,
+          "line": 2198,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2799,
+          "line": 2807,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2
