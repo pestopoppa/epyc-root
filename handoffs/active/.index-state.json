@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 120
+      "open": 118
     }
   },
   "duplicates": {},
@@ -2601,7 +2601,7 @@
       "closed": 2,
       "guarded": 0,
       "last_advanced": "2026-10-03",
-      "open": 9,
+      "open": 7,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2610,7 +2610,7 @@
       },
       "row_id": "UFH-13",
       "state": "active",
-      "total": 11
+      "total": 9
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,

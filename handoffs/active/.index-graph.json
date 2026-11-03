@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:19:31Z",
+  "generated_at": "2026-11-03T16:20:11Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3739,14 +3739,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
-      "dispatchable": 9,
+      "dispatchable": 7,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "thesis-experiment-orchestrator-vs-strongest-model.md",
       "id": "UFH-13",
       "last_advanced": "2026-10-03",
       "next_action": "ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen",
-      "open": 9,
+      "open": 7,
       "priority": 0.1272,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): TE-3 \u2014 build and freeze the manifest (zero inference).",
