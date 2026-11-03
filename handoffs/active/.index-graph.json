@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:39:41Z",
+  "generated_at": "2026-11-03T16:40:30Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2405,17 +2405,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 42,
+      "blocked": 40,
       "blocked_by": [],
       "closed": 120,
-      "dispatchable": 42,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "last_advanced": "2026-11-03",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 84,
+      "open": 70,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -2435,20 +2435,20 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 33,
+          "dispatchable": 25,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 75,
+          "open": 65,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 5,
           "gates": [],
           "line": 982,
           "name": "multimodal-pipeline",
-          "open": 9,
+          "open": 5,
           "readiness": "ready"
         }
       ]

@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 55,
+      "blocked": 53,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 875
+      "open": 863
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -2461,11 +2461,11 @@
       ]
     },
     "speech-and-multimodal.md": {
-      "blocked": 42,
+      "blocked": 40,
       "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 42,
+      "open": 30,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2474,17 +2474,17 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 204,
+      "total": 190,
       "tracks": [
         {
-          "blocked": 42,
+          "blocked": 40,
           "closed": 75,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 33
+          "open": 25
         },
         {
           "blocked": 0,
@@ -2494,7 +2494,7 @@
           "line": 982,
           "markers": 1,
           "name": "multimodal-pipeline",
-          "open": 9
+          "open": 5
         }
       ]
     },
