@@ -1654,7 +1654,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2182,
+          "line": 2183,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1966,7 +1966,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 644,
+          "line": 645,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 15

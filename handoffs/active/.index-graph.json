@@ -1787,7 +1787,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-03T07:42:20Z",
+  "generated_at": "2026-11-03T07:50:09Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2966,7 +2966,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2182,
+          "line": 2183,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -3879,7 +3879,7 @@
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 644,
+          "line": 645,
           "name": "tq3-quantization-evaluation",
           "open": 16,
           "readiness": "ready"
