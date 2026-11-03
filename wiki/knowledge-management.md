@@ -560,7 +560,7 @@ sessions in one shared clone, and cleared.
 - In the reviewer gates and the AutoKernel rows, a row whose subject is gone was annotated
   **"[Subject deleted 2026-09-22]"** and left **unticked**. Unrunnable is not done. Model-agnostic
   rows were marked as carrying over
-  ([reviewer gates](../handoffs/active/glm52-reviewer-capability-gates.md),
+  ([reviewer gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates),
   [research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)).
 - **Belief kernel.** VB-GLM53-MTP produces no further records, and its completed evidence stays as
   history to project. **VB-DSV41** was filed to wire the `deepseek41` validation/serving producer at
@@ -577,7 +577,7 @@ sessions in one shared clone, and cleared.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — translated gates and not-carried-over list
 - [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — closure banner
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-DSV41
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — disposition gate 2
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — disposition gate 2
 
 ## Compiled Update — 2026-09-19: two write-side rows filed before their producers run — GUI fuzzy workflows and held-out AutoKernel confirmation
 
@@ -3291,7 +3291,7 @@ reader skimming the task list cannot mistake an old measurement for a claim abou
 
 ### Source References (2026-09-01 subject retarget)
 
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — the
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — the
   RETARGETED header (2026-09-01), its "What transfers" / "What does NOT transfer" split, the voided
   `intake-836` hypothesis on GC-3a, and the GC-4 void note.
 - [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
@@ -3500,7 +3500,7 @@ Vidya source registration records where future native artifacts enter the belief
 ### Source References
 
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 - [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
 
@@ -4114,7 +4114,7 @@ MAIN accepted original push run37721932296, attempt1, at source e54175d: all87 e
 
 Dashboard completion means checked tasks, not every card’s generic done scalar. The latest retained response contains6324 checked tasks of9811 (64.5%), with active/blocked3700 of6109 (60.6%). Another180 done scalars are prose✅marker chips on39 completed/archived cards with total0. Adding them yields6504 but does not create more completed tasks. The previous FULL186 raw6500/9810 sum likewise mixed6320 checked tasks with180 markers; its acceptance originals are preserved. Use the checkbox-filtered ratio in future summaries and retain markers separately. These dashboard counts include inference/gated work and are distinct from the scoped NI08 tally.
 
-Sources: [reviewer source-control task](../handoffs/active/reviewer-escalation-and-human-gate-policy.md), [MAIN task integration and scope](../handoffs/active/engineering-hygiene-backlog.md), [dated original-results review](../progress/2026-10/2026-10-08-codex-ni-main.md), [checkbox counting axiom](../agents/shared/SESSION_LIFECYCLE.md#two-axioms-canonical-statements--cite-dont-restate).
+Sources: [reviewer source-control task](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy), [MAIN task integration and scope](../handoffs/active/engineering-hygiene-backlog.md), [dated original-results review](../progress/2026-10/2026-10-08-codex-ni-main.md), [checkbox counting axiom](../agents/shared/SESSION_LIFECYCLE.md#two-axioms-canonical-statements--cite-dont-restate).
 
 ### SC54 and ingestion contract enrollment — 2026-10-08
 

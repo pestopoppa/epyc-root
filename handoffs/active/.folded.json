@@ -256,6 +256,10 @@
    "target": "rocm-kernel-authoring.md",
    "track": "gemma-challenge-kernel-techniques-v7"
   },
+  "glm52-reviewer-capability-gates.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "glm52-reviewer-capability-gates"
+  },
   "gpu-acceleration-path.md": {
    "target": "mi210-serving-program.md",
    "track": "gpu-acceleration-path"
@@ -526,11 +530,23 @@
    "track": "retrain-routing-models"
   },
   "reviewer-calibration-accounting.md": {
-   "target": "reviewer-latency-and-sampling-budget.md",
+   "target": "reviewer-control-plane.md",
    "track": "reviewer-calibration-accounting"
   },
+  "reviewer-escalation-and-human-gate-policy.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-escalation-and-human-gate-policy"
+  },
+  "reviewer-latency-and-sampling-budget.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-latency-and-sampling-budget"
+  },
+  "reviewer-model-ablations.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-model-ablations"
+  },
   "reviewer-typed-artifacts.md": {
-   "target": "reviewer-latency-and-sampling-budget.md",
+   "target": "reviewer-control-plane.md",
    "track": "reviewer-typed-artifacts"
   },
   "rlm-contested-claims-self-evaluation.md": {
@@ -993,11 +1009,23 @@
    "track": "opendataloader-pipeline-integration"
   },
   "REV-03": {
-   "target": "REV-06",
+   "target": "REV-02",
    "track": "reviewer-calibration-accounting"
   },
+  "REV-05": {
+   "target": "REV-02",
+   "track": "reviewer-escalation-and-human-gate-policy"
+  },
+  "REV-06": {
+   "target": "REV-02",
+   "track": "reviewer-latency-and-sampling-budget"
+  },
+  "REV-07": {
+   "target": "REV-02",
+   "track": "reviewer-model-ablations"
+  },
   "REV-09": {
-   "target": "REV-06",
+   "target": "REV-02",
    "track": "reviewer-typed-artifacts"
   },
   "RTG-01": {

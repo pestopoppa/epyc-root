@@ -535,7 +535,7 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 - Phase-2 dataset: `/mnt/raid0/llm/datasets/swe-bench-verified/` (FAIL_TO_PASS oracle).
 - Evidence: `docs/reference/architect-model-selection-2026-07-20.md`.
 - Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (AXA-1),
-  [`reviewer-model-ablations.md`](reviewer-model-ablations.md) (H5, model-role selection sibling),
+  [`reviewer-model-ablations.md`](reviewer-control-plane.md#track-reviewer-model-ablations) (H5, model-role selection sibling),
   [`v7-promotion.md`](../completed/v7-promotion.md) (gate 1), [`inference-batch-loop.md`](eval-tower-program.md#track-inference-batch-loop) (gate 2).
 
 #### Intake (research provenance — persisted 2026-07-20)
@@ -1322,7 +1322,7 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 ## Track: meq-carve-glm52-reviewer-capability-gates
 <!-- gate: INF-77 -->
 
-> Carved from `handoffs/active/glm52-reviewer-capability-gates.md` (in `glm52-reviewer-capability-gates.md`, row REV-02) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+> Carved from `handoffs/active/reviewer-control-plane.md` (in `glm52-reviewer-capability-gates.md`, row REV-02) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
 - [ ] **GC-6 — Evaluate the two-axis reviewer split** (model-agnostic; carries over to the 2026-09-22 DeepSeek-V4.1-Flash retarget unchanged) (intake-1304, intake-1305; 2026-09-07). Split
   review into two independent reviewers — one checks that the artifact *says what was asked*

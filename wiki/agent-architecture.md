@@ -2892,9 +2892,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
 
-- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md).
-- The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
-- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md).
+- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [reviewer model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations).
+- The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [reviewer model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md).
 
 ## Key Findings
 
@@ -4271,8 +4271,8 @@ collapsing into one self-justifying channel.
 
 - [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
-- [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Reviewer-model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations)
 - Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
 
 ## Compiled Update — 2026-08-13: our own fan-out doctrine has no negative condition, and neither does the literature that inspired it
@@ -4889,7 +4889,7 @@ Provider-owned inner loops remain provider-owned unless the protocol exposes a c
 - [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
 - [Decision-aware routing](../handoffs/active/routing-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
 
 **Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
@@ -4913,7 +4913,7 @@ never grants permission, and a valid model choice cannot execute a changed or un
 - [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 owner and consumer boundary.
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
 - [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — selector and shadow consumers.
-- [Reviewer typed artifacts](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
 
 **Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
 
@@ -5318,7 +5318,7 @@ Delegation's compact loop telemetry and user-visible report are separate product
 
 ## Source update — 2026-10-06: detector/fixer topology design
 
-[HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-escalation-and-human-gate-policy.md).
+[HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy).
 
 
 ## 2026-10-06 provisional conversation shadow contract

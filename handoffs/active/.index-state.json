@@ -20,8 +20,8 @@
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
-      "handoffs": 4,
-      "oldest_advance": "2026-10-06",
+      "handoffs": 1,
+      "oldest_advance": null,
       "open": 25
     },
     "routing-and-optimization-index.md": {
@@ -337,7 +337,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 59,
+      "closed": 60,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -349,7 +349,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 64
+      "total": 65
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1027,22 +1027,6 @@
         }
       ]
     },
-    "glm52-reviewer-capability-gates.md": {
-      "blocked": 0,
-      "closed": 52,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 4,
-      "owner_index": "reviewer-control-plane-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "REV-02",
-      "state": "active",
-      "total": 56
-    },
     "harness-program.md": {
       "blocked": 15,
       "closed": 221,
@@ -1483,7 +1467,7 @@
       "blocked": 2,
       "closed": 117,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 53,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2149,46 +2133,54 @@
         }
       ]
     },
-    "reviewer-escalation-and-human-gate-policy.md": {
-      "blocked": 5,
-      "closed": 3,
+    "reviewer-control-plane.md": {
+      "blocked": 12,
+      "closed": 100,
       "guarded": 0,
-      "last_advanced": "2026-10-06",
-      "open": 4,
+      "last_advanced": null,
+      "open": 25,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
         "evidence": null
       },
-      "row_id": "REV-05",
+      "row_id": "REV-02",
       "state": "active",
-      "total": 12
-    },
-    "reviewer-latency-and-sampling-budget.md": {
-      "blocked": 5,
-      "closed": 31,
-      "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 8,
-      "owner_index": "reviewer-control-plane-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "REV-06",
-      "state": "active",
-      "total": 44,
+      "total": 137,
       "tracks": [
+        {
+          "blocked": 0,
+          "closed": 52,
+          "gates": [
+            "INF-77"
+          ],
+          "guarded": 0,
+          "line": 68,
+          "markers": 1,
+          "name": "glm52-reviewer-capability-gates",
+          "open": 4
+        },
+        {
+          "blocked": 5,
+          "closed": 3,
+          "gates": [
+            "UFH-01"
+          ],
+          "guarded": 0,
+          "line": 307,
+          "markers": 1,
+          "name": "reviewer-escalation-and-human-gate-policy",
+          "open": 4
+        },
         {
           "blocked": 3,
           "closed": 3,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 401,
+          "markers": 1,
+          "name": "reviewer-latency-and-sampling-budget",
           "open": 4
         },
         {
@@ -2196,7 +2188,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 107,
+          "line": 512,
           "markers": 1,
           "name": "reviewer-calibration-accounting",
           "open": 3
@@ -2206,28 +2198,24 @@
           "closed": 17,
           "gates": [],
           "guarded": 0,
-          "line": 366,
+          "line": 771,
           "markers": 1,
           "name": "reviewer-typed-artifacts",
           "open": 1
+        },
+        {
+          "blocked": 2,
+          "closed": 14,
+          "gates": [
+            "REV-02#glm52-reviewer-capability-gates"
+          ],
+          "guarded": 0,
+          "line": 914,
+          "markers": 1,
+          "name": "reviewer-model-ablations",
+          "open": 9
         }
       ]
-    },
-    "reviewer-model-ablations.md": {
-      "blocked": 2,
-      "closed": 14,
-      "guarded": 0,
-      "last_advanced": "2026-10-30",
-      "open": 9,
-      "owner_index": "reviewer-control-plane-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "REV-07",
-      "state": "active",
-      "total": 25
     },
     "rocm-kernel-authoring.md": {
       "blocked": 1,
@@ -2842,43 +2830,12 @@
       "deps": [
         "INF-77"
       ],
-      "handoff": "glm52-reviewer-capability-gates.md",
+      "handoff": "reviewer-control-plane.md",
       "id": "REV-02",
       "index": "reviewer-control-plane-index.md",
       "line": 13,
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
       "track": "glm52 reviewer capability gates"
-    },
-    "REV-05": {
-      "deps": [
-        "UFH-01"
-      ],
-      "handoff": "reviewer-escalation-and-human-gate-policy.md",
-      "id": "REV-05",
-      "index": "reviewer-control-plane-index.md",
-      "line": 14,
-      "next_action": "Implement prospective HG5 request-event writer/reader; retain owner runtime and quality gates",
-      "track": "reviewer escalation and human gate policy"
-    },
-    "REV-06": {
-      "deps": [],
-      "handoff": "reviewer-latency-and-sampling-budget.md",
-      "id": "REV-06",
-      "index": "reviewer-control-plane-index.md",
-      "line": 15,
-      "next_action": "LB-1 \u2014 Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing",
-      "track": "reviewer latency and sampling budget"
-    },
-    "REV-07": {
-      "deps": [
-        "REV-02"
-      ],
-      "handoff": "reviewer-model-ablations.md",
-      "id": "REV-07",
-      "index": "reviewer-control-plane-index.md",
-      "line": 16,
-      "next_action": "RM-2 \u2014 finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge",
-      "track": "reviewer model ablations"
     },
     "RTG-02": {
       "deps": [],

@@ -3737,14 +3737,14 @@ adoption here therefore carries three things the source lacks: a **blinding atte
 **hash of the audited artifact** in the record, and the **hit-rate instrumentation** that would let
 the pattern earn an efficacy claim instead of borrowing one. Those are filed as RA-13a (the blind
 read-back), RA-13b (its write-time instrumentation) and RA-13c (its record format) in
-[`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts).
+[`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts).
 
 ### Source References (2026-09-07)
 
 - [intake-1308#record](https://raw.githubusercontent.com/prove2me/prove2me_workspace/main/references/mission_auditor.md)
   — *Mission Auditor: Writing Read-backs*, pinned at `prove2me_workspace @ 58332c69`, dive-verified
   2026-09-07. Prescriptive only; no measurement anywhere in the tree.
-- [`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-typed-artifacts) — RA-13a/b/c.
+- [`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts) — RA-13a/b/c.
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
   SC58, the judgment-frame-pinned-to-artifact-digest row this pattern's staleness rule funded.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
@@ -4091,7 +4091,7 @@ Autonomous-science claims need separate grades for execution success, artifact c
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
 - [Agent collaboration R&D harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
 - [Eval Tower verification](../handoffs/active/eval-tower-program.md)
-- [Reviewer calibration accounting](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-calibration-accounting)
+- [Reviewer calibration accounting](../handoffs/active/reviewer-control-plane.md#track-reviewer-calibration-accounting)
 
 **Confidence:** verified against the cited intake handoffs and repository measurement rules; implementation tasks remain prospective until their own receipts exist.
 
@@ -4118,7 +4118,7 @@ checkbox, and historical runs are not retrofitted into evidence their producers 
 - [Autopilot continuous optimization](../handoffs/active/autopilot-program.md) — selector replay provenance and policy arms.
 - [Autopilot sequential allocation](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation) — shared Shinka/DGM selector comparison.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective replay receipt and trigger profiles.
-- [Reviewer calibration accounting](../handoffs/active/reviewer-latency-and-sampling-budget.md#track-reviewer-calibration-accounting) — autonomous-science activation boundary.
+- [Reviewer calibration accounting](../handoffs/active/reviewer-control-plane.md#track-reviewer-calibration-accounting) — autonomous-science activation boundary.
 - [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — LensVLM bottleneck trigger.
 
 **Confidence:** verified as repository task structure; every algorithmic gain remains prospective until the shared replay emits a governed receipt.

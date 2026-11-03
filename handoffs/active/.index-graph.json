@@ -68,16 +68,6 @@
       "to": "INF-77"
     },
     {
-      "from": "REV-05",
-      "kind": "dep",
-      "to": "UFH-01"
-    },
-    {
-      "from": "REV-07",
-      "kind": "dep",
-      "to": "REV-02"
-    },
-    {
       "from": "RTG-30",
       "kind": "dep",
       "to": "UFH-01"
@@ -108,12 +98,6 @@
       "kind": "ref",
       "to": "EVL-29",
       "weight": 3
-    },
-    {
-      "from": "EVL-02",
-      "kind": "ref",
-      "to": "REV-07",
-      "weight": 2
     },
     {
       "from": "EVL-08",
@@ -244,12 +228,6 @@
     {
       "from": "EVL-47",
       "kind": "ref",
-      "to": "REV-07",
-      "weight": 2
-    },
-    {
-      "from": "EVL-47",
-      "kind": "ref",
       "to": "UFH-13",
       "weight": 2
     },
@@ -374,12 +352,6 @@
       "weight": 2
     },
     {
-      "from": "INF-48",
-      "kind": "ref",
-      "to": "REV-02",
-      "weight": 2
-    },
-    {
       "from": "INF-50",
       "kind": "ref",
       "to": "EVL-02",
@@ -395,12 +367,6 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "EVL-29",
-      "weight": 1
-    },
-    {
-      "from": "INF-50",
-      "kind": "ref",
-      "to": "REV-02",
       "weight": 1
     },
     {
@@ -524,12 +490,6 @@
       "weight": 1
     },
     {
-      "from": "INF-80",
-      "kind": "ref",
-      "to": "REV-02",
-      "weight": 2
-    },
-    {
       "from": "PIP-04",
       "kind": "ref",
       "to": "EVL-02",
@@ -551,43 +511,19 @@
       "from": "REV-02",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 2
+      "weight": 3
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 1
     },
     {
       "from": "REV-02",
       "kind": "ref",
       "to": "INF-77",
       "weight": 10
-    },
-    {
-      "from": "REV-02",
-      "kind": "ref",
-      "to": "REV-07",
-      "weight": 2
-    },
-    {
-      "from": "REV-06",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 1
-    },
-    {
-      "from": "REV-06",
-      "kind": "ref",
-      "to": "REV-07",
-      "weight": 2
-    },
-    {
-      "from": "REV-07",
-      "kind": "ref",
-      "to": "EVL-02",
-      "weight": 1
-    },
-    {
-      "from": "REV-07",
-      "kind": "ref",
-      "to": "REV-02",
-      "weight": 4
     },
     {
       "from": "RTG-02",
@@ -674,12 +610,6 @@
       "weight": 4
     },
     {
-      "from": "RTG-22",
-      "kind": "ref",
-      "to": "REV-05",
-      "weight": 1
-    },
-    {
       "from": "RTG-30",
       "kind": "ref",
       "to": "EVL-02",
@@ -764,7 +694,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:55:10Z",
+  "generated_at": "2026-11-03T08:57:27Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1206,7 +1136,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 117,
@@ -1215,7 +1145,7 @@
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "open": 55,
       "priority": 0.815,
@@ -1303,10 +1233,10 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 5,
+        "unblocks": 4,
         "unblocks_rows": []
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1502,7 +1432,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 10,
+        "unblocks": 9,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1545,7 +1475,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 7,
+        "unblocks": 6,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -1872,7 +1802,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 33,
+      "priority_rank": 30,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2011,7 +1941,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 9,
+        "unblocks": 8,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -2126,7 +2056,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 7,
+        "unblocks": 6,
         "unblocks_rows": [
           "INF-62",
           "INF-65",
@@ -2274,7 +2204,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 6,
+        "unblocks": 5,
         "unblocks_rows": [
           "INF-66",
           "INF-73",
@@ -2515,7 +2445,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 2,
+        "unblocks": 1,
         "unblocks_rows": [
           "INF-78",
           "INF-81",
@@ -2727,20 +2657,18 @@
       ]
     },
     {
-      "age_days": 5,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-77"
-      ],
-      "closed": 52,
-      "dispatchable": 4,
+      "age_days": null,
+      "blocked": 12,
+      "blocked_by": [],
+      "closed": 100,
+      "dispatchable": 25,
       "domain": "reviewer-control-plane",
       "guarded": 0,
-      "handoff": "glm52-reviewer-capability-gates.md",
+      "handoff": "reviewer-control-plane.md",
       "id": "REV-02",
-      "last_advanced": "2026-10-29",
+      "last_advanced": null,
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
-      "open": 4,
+      "open": 37,
       "priority": 0.0636,
       "priority_basis": {
         "basis": "T7 non-inference best open item (I): GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim",
@@ -2750,84 +2678,48 @@
         "source": "file",
         "tier": 7,
         "tier_name": "T7 held / blocked",
-        "unblocks": 1,
+        "unblocks": 0,
         "unblocks_rows": [
           "REV-07"
         ]
       },
-      "priority_rank": 34,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "glm52 reviewer capability gates"
-    },
-    {
-      "age_days": 28,
-      "blocked": 5,
-      "blocked_by": [
-        "UFH-01"
-      ],
-      "closed": 3,
-      "dispatchable": 4,
-      "domain": "reviewer-control-plane",
-      "guarded": 0,
-      "handoff": "reviewer-escalation-and-human-gate-policy.md",
-      "id": "REV-05",
-      "last_advanced": "2026-10-06",
-      "next_action": "Implement prospective HG5 request-event writer/reader; retain owner runtime and quality gates",
-      "open": 9,
-      "priority": 0.2775,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): HG-1 \u2014 Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 126,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 28,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "reviewer escalation and human gate policy"
-    },
-    {
-      "age_days": 0,
-      "blocked": 5,
-      "blocked_by": [],
-      "closed": 31,
-      "dispatchable": 8,
-      "domain": "reviewer-control-plane",
-      "guarded": 0,
-      "handoff": "reviewer-latency-and-sampling-budget.md",
-      "id": "REV-06",
-      "last_advanced": "2026-11-03",
-      "next_action": "LB-1 \u2014 Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing",
-      "open": 13,
-      "priority": 0.3642,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): LB-1 \u2014 Reproduce + attribute the regression: which calls dominate (plan-review prompt coun",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 111,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 27,
+      "priority_rank": 31,
       "readiness": "ready",
       "state": "active",
-      "track": "reviewer latency and sampling budget",
+      "track": "glm52 reviewer capability gates",
       "tracks": [
+        {
+          "blocked_by": [
+            "INF-77"
+          ],
+          "dispatchable": 4,
+          "gates": [
+            "INF-77"
+          ],
+          "line": 68,
+          "name": "glm52-reviewer-capability-gates",
+          "open": 4,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "UFH-01"
+          ],
+          "dispatchable": 4,
+          "gates": [
+            "UFH-01"
+          ],
+          "line": 307,
+          "name": "reviewer-escalation-and-human-gate-policy",
+          "open": 9,
+          "readiness": "blocked"
+        },
         {
           "blocked_by": [],
           "dispatchable": 4,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 401,
+          "name": "reviewer-latency-and-sampling-budget",
           "open": 7,
           "readiness": "ready"
         },
@@ -2835,7 +2727,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 107,
+          "line": 512,
           "name": "reviewer-calibration-accounting",
           "open": 5,
           "readiness": "ready"
@@ -2844,44 +2736,25 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 366,
+          "line": 771,
           "name": "reviewer-typed-artifacts",
           "open": 1,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "REV-02#glm52-reviewer-capability-gates"
+          ],
+          "dispatchable": 9,
+          "gates": [
+            "REV-02#glm52-reviewer-capability-gates"
+          ],
+          "line": 914,
+          "name": "reviewer-model-ablations",
+          "open": 11,
+          "readiness": "blocked"
         }
       ]
-    },
-    {
-      "age_days": 4,
-      "blocked": 2,
-      "blocked_by": [
-        "REV-02"
-      ],
-      "closed": 14,
-      "dispatchable": 9,
-      "domain": "reviewer-control-plane",
-      "guarded": 0,
-      "handoff": "reviewer-model-ablations.md",
-      "id": "REV-07",
-      "last_advanced": "2026-10-30",
-      "next_action": "RM-2 \u2014 finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge",
-      "open": 11,
-      "priority": 0.5723,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): RM-6 \u2014 RA-8 field-order A/B (evidence-first vs verdict-first GBNF) on the leading arm \u2014 op",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 75,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 24,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "reviewer model ablations"
     },
     {
       "age_days": 0,
@@ -3121,7 +2994,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3222,7 +3095,7 @@
         "source": "file",
         "tier": 7,
         "tier_name": "T7 held / blocked",
-        "unblocks": 3,
+        "unblocks": 2,
         "unblocks_rows": [
           "INF-78",
           "REV-05",
@@ -3234,7 +3107,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 30,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3435,7 +3308,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 29,
+      "priority_rank": 26,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -3632,7 +3505,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 31,
+      "priority_rank": 28,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3733,7 +3606,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 4,
+        "unblocks": 3,
         "unblocks_rows": [
           "INF-81"
         ]
@@ -3790,7 +3663,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 59,
+      "closed": 60,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3799,13 +3672,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0187,
+      "priority": 0.0164,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 35,
+      "priority_rank": 32,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -3832,7 +3705,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 2,
+        "unblocks": 1,
         "unblocks_rows": [
           "INF-78",
           "REV-05",
@@ -3968,7 +3841,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 32,
+      "priority_rank": 29,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -4063,6 +3936,9 @@
       "PIP-03",
       "PIP-05",
       "REV-03",
+      "REV-05",
+      "REV-06",
+      "REV-07",
       "REV-09",
       "RTG-01",
       "RTG-03",
@@ -4127,7 +4003,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 34,
+      "file": 31,
       "heuristic": 1,
       "override": 0
     },
@@ -4143,7 +4019,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 6,
+    "blocked": 3,
     "no_open": 0,
     "ready": 29
   },

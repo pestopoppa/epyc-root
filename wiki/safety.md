@@ -111,7 +111,7 @@ OpenCode event duty likewise remains inactive until a reviewed runtime handover.
 
 The operator's settled 1B decision keeps both credential-redaction fixture files under ordinary staged-blob scanning and rejects global whole-file exclusions. ED25519 header recognition is a separately accepted synthetic detector correction, conferring no fixture exception or complete privacy guarantee. A future concrete fixture edit needs an exact staged-content/provenance package; the old whole-file proposal is historical evidence, not pending authority. ([Credential decision](../docs/reference/credential-fixture-hook-decision.md), [header recognition](../docs/reference/staged-ed25519-header-check.md))
 
-HG-9's detection/repair split is an accepted source-backed topology option with future synthetic cases, not an active selector or a demonstration that named registry models qualify as detectors. Tool-grader isolation likewise remains a distinct enforcement boundary: AP-54 hook-only telemetry cannot substitute for genuine OS denial, and reclassifying it into scoring failure would change the evaluated population. ([Escalation owner](../handoffs/active/reviewer-escalation-and-human-gate-policy.md), [tool-eval owner](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
+HG-9's detection/repair split is an accepted source-backed topology option with future synthetic cases, not an active selector or a demonstration that named registry models qualify as detectors. Tool-grader isolation likewise remains a distinct enforcement boundary: AP-54 hook-only telemetry cannot substitute for genuine OS denial, and reclassifying it into scoring failure would change the evaluated population. ([Escalation owner](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy), [tool-eval owner](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 
 ## Source References
 
@@ -123,7 +123,7 @@ HG-9's detection/repair split is an accepted source-backed topology option with 
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 - [Credential decision](../docs/reference/credential-fixture-hook-decision.md)
 - [header recognition](../docs/reference/staged-ed25519-header-check.md)
-- [Escalation owner](../handoffs/active/reviewer-escalation-and-human-gate-policy.md)
+- [Escalation owner](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy)
 - [tool-eval owner](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): CT-18 final, llguidance abort

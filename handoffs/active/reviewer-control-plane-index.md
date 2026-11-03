@@ -10,10 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | GC-1a/2a/3a — run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles | INF-77 |
-| REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | Implement prospective HG5 request-event writer/reader; retain owner runtime and quality gates | UFH-01 |
-| REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 — Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing | — |
-| REV-07 | reviewer model ablations | [reviewer-model-ablations.md](reviewer-model-ablations.md) | RM-2 — finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge | REV-02 |
+| REV-02 | glm52 reviewer capability gates | [reviewer-control-plane.md](reviewer-control-plane.md) | GC-1a/2a/3a — run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles | INF-77 |
 
 ## Cross-domain
 

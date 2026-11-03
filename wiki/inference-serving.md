@@ -516,7 +516,7 @@ loads it yet.
   (DS41-B0 recommends a hybrid: build on `deepseek4` and use vcruz's Engram/loader as reference only).
   It must include an Engram FP8-row get_rows/dequant op and native 3-layer MTP, because the operator
   requires speculative decoding.
-- The reviewer gates (REV-02, [GC-1a/2a/3a](../handoffs/active/glm52-reviewer-capability-gates.md))
+- The reviewer gates (REV-02, [GC-1a/2a/3a](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates))
   were retargeted a second time and are now blocked on the V4.1 port, load/coherence and
   sparse-attention gates. The model-agnostic corpus, K-of-M protocol and schema lane carry over. The
   GLM `indexer_top_k` schedule and quant profile are VOID for the new subject. GC-4b sizes the always-
@@ -558,7 +558,7 @@ checks. The public release is a convenience distribution surface, not a serving 
 - [`progress/2026-09/2026-09-22-main-dsv41.md`](../progress/2026-09/2026-09-22-main-dsv41.md) — GLM-5.3 deletion, V4.1 download and fetch, keeps preserved
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77 artifact identity, runtime status, gate translation
 - [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — INF-69 closure banner
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — disposition gate 2, GC-4b sizing
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — disposition gate 2, GC-4b sizing
 - [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R23-70/71/72
 
 ## Compiled Update — 2026-09-17: the MTP n-max 8 grid is not the batched optimum, the contention waiver now separates lineup servers from foreign ones, and topology tests are green again

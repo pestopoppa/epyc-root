@@ -22,12 +22,10 @@
   "INF-20": 0.3,
   "EVL-05": 0.3,
   "EVL-29": 0.3,
-  "REV-06": 0.3,
   "UFH-01": 0.3,
   "PIP-04": 0.3,
   "INF-13": 0.25,
   "INF-33": 0.25,
-  "REV-07": 0.25,
   "EVL-14": 0.2,
   "RTG-08": 0.15,
   "RTG-50": 0.1,
@@ -103,8 +101,6 @@
   "RTG-02#scaffold-autopilot-cost-lever-deployment": 0.2,
   "EVL-10#repl-session-memory-maturity": 0.25,
   "EVL-10#unified-trace-memory-service": 0.3,
-  "REV-06#reviewer-calibration-accounting": 0.3,
-  "REV-06#reviewer-typed-artifacts": 0.2,
   "RTG-09#internal-interaction-lifecycle": 0.25,
   "RTG-09#learned-routing-controller": 0.35,
   "RTG-09#model-capability-descriptors": 0.05,
@@ -172,7 +168,11 @@
   "INF-48#gemma-challenge-kernel-techniques-v7": 0.3,
   "INF-48#frontier-f6-upstream-publication": 0.3,
   "INF-48#llama-cpp-dsa-contribution": 0.35,
-  "EVL-10#dev-harness-trace-mining": 0.3
+  "EVL-10#dev-harness-trace-mining": 0.3,
+  "REV-02#reviewer-latency-and-sampling-budget": 0.3,
+  "REV-02#reviewer-calibration-accounting": 0.3,
+  "REV-02#reviewer-typed-artifacts": 0.2,
+  "REV-02#reviewer-model-ablations": 0.25
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -206,7 +206,6 @@
   "RTG-02#evidence-plane-instrument-repair": "operator decision or approval pending",
   "RTG-02#orchestration-robustness-audit-2026-07-11": "operator decision or approval pending",
   "RTG-02#scaffold-autopilot-cost-lever-deployment": "operator decision or approval pending",
-  "REV-06#reviewer-typed-artifacts": "operator decision or approval pending",
   "RTG-09#internal-interaction-lifecycle": "",
   "RTG-09#learned-routing-controller": "",
   "RTG-09#model-capability-descriptors": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
@@ -227,7 +226,12 @@
   "INF-45#contention-model-device-and-load-axes-rider": "",
   "RTG-02#promptforge-mutation-safety-contract": "operator decision or approval pending",
   "INF-48#agentic-rocm-kernel-authoring": "operator ruling: parked 2026-09-27",
-  "INF-48#mi210-q8-dequant-gemv-roofline": "operator decision or approval pending"
+  "INF-48#mi210-q8-dequant-gemv-roofline": "operator decision or approval pending",
+  "REV-02#reviewer-escalation-and-human-gate-policy": "",
+  "REV-02#reviewer-latency-and-sampling-budget": "",
+  "REV-02#reviewer-calibration-accounting": "",
+  "REV-02#reviewer-typed-artifacts": "operator decision or approval pending",
+  "REV-02#reviewer-model-ablations": ""
  },
  "park": {
   "INF-06": "MMQ",
