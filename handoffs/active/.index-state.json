@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 56,
+      "blocked": 55,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 1013
+      "open": 988
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1492,11 +1492,11 @@
       ]
     },
     "mi210-serving-program.md": {
-      "blocked": 2,
+      "blocked": 3,
       "closed": 181,
-      "guarded": 1,
+      "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 61,
+      "open": 45,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,64 +1505,64 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 245,
+      "total": 229,
       "tracks": [
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 93,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 33
+          "open": 26
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 621,
+          "line": 615,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 980,
+          "line": 974,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1257,
+          "line": 1251,
           "markers": 1,
           "name": "gpu-acceleration-path",
-          "open": 7
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 18,
           "gates": [],
-          "guarded": 1,
-          "line": 1892,
+          "guarded": 0,
+          "line": 1886,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 11
+          "open": 9
         },
         {
           "blocked": 0,
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2187,
+          "line": 2181,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2796,
+          "line": 2790,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2
@@ -1587,11 +1587,11 @@
       ]
     },
     "model-architecture-readiness.md": {
-      "blocked": 2,
+      "blocked": 0,
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 20,
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1600,10 +1600,10 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 49,
+      "total": 38,
       "tracks": [
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 8,
           "gates": [
             "INF-48"
@@ -1612,17 +1612,17 @@
           "line": 12,
           "markers": 1,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 9
+          "open": 3
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 584,
+          "line": 582,
           "markers": 1,
           "name": "engram-conditional-memory",
-          "open": 11
+          "open": 8
         }
       ]
     },
