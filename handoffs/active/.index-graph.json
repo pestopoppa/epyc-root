@@ -13,11 +13,6 @@
   },
   "edges": [
     {
-      "from": "EVL-52",
-      "kind": "dep",
-      "to": "EVL-10"
-    },
-    {
       "from": "INF-06",
       "kind": "dep",
       "to": "INF-48"
@@ -769,7 +764,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:52:48Z",
+  "generated_at": "2026-11-03T08:55:10Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1149,7 +1144,7 @@
           "INF-76"
         ]
       },
-      "priority_rank": 17,
+      "priority_rank": 16,
       "readiness": "ready",
       "state": "active",
       "track": "canonical judge suite revamp",
@@ -1214,15 +1209,15 @@
       "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 108,
-      "dispatchable": 45,
-      "domain": "research-evaluation",
+      "closed": 117,
+      "dispatchable": 53,
+      "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-02",
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
-      "open": 47,
+      "open": 55,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1232,7 +1227,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 1,
+        "unblocks": 0,
         "unblocks_rows": []
       },
       "priority_rank": 15,
@@ -1243,9 +1238,9 @@
         {
           "blocked_by": [],
           "dispatchable": 16,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 25,
+          "name": "memory-program",
           "open": 16,
           "readiness": "ready"
         },
@@ -1253,7 +1248,7 @@
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 871,
+          "line": 878,
           "name": "repl-session-memory-maturity",
           "open": 15,
           "readiness": "ready"
@@ -1262,10 +1257,27 @@
           "blocked_by": [],
           "dispatchable": 14,
           "gates": [],
-          "line": 1325,
+          "line": 1332,
           "name": "unified-trace-memory-service",
           "open": 16,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "EVL-10#memory-program",
+            "EVL-10#repl-session-memory-maturity",
+            "EVL-10#unified-trace-memory-service"
+          ],
+          "dispatchable": 8,
+          "gates": [
+            "EVL-10#memory-program",
+            "EVL-10#repl-session-memory-maturity",
+            "EVL-10#unified-trace-memory-service"
+          ],
+          "line": 1789,
+          "name": "dev-harness-trace-mining",
+          "open": 8,
+          "readiness": "blocked"
         }
       ]
     },
@@ -1294,7 +1306,7 @@
         "unblocks": 5,
         "unblocks_rows": []
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1416,7 +1428,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 20,
+      "priority_rank": 19,
       "readiness": "ready",
       "state": "active",
       "track": "intake derived work 2026 07 25",
@@ -1510,38 +1522,6 @@
       "readiness": "ready",
       "state": "active",
       "track": "vidya belief substrate program"
-    },
-    {
-      "age_days": 10,
-      "blocked": 0,
-      "blocked_by": [
-        "EVL-10"
-      ],
-      "closed": 9,
-      "dispatchable": 8,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "dev-harness-trace-mining.md",
-      "id": "EVL-52",
-      "last_advanced": "2026-10-24",
-      "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
-      "open": 8,
-      "priority": 0.8092,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): DHM-5 \u2014 Measure the always-on prefix (CLAUDE.md plus the MEMORY.md index) in tokens per tu",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 34,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 16,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "dev harness trace mining"
     },
     {
       "age_days": 0,
@@ -1721,7 +1701,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 23,
+      "priority_rank": 22,
       "readiness": "ready",
       "state": "active",
       "track": "engram conditional memory"
@@ -1862,7 +1842,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 24,
+      "priority_rank": 23,
       "readiness": "blocked",
       "state": "active",
       "track": "log linear gated deltanet readiness"
@@ -1892,7 +1872,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 34,
+      "priority_rank": 33,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2010,7 +1990,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 334,
@@ -2019,7 +1999,7 @@
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "open": 100,
       "priority": 0.8728,
@@ -2546,7 +2526,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 22,
+      "priority_rank": 21,
       "readiness": "blocked",
       "state": "active",
       "track": "deepseek v41 flash evaluation"
@@ -2685,7 +2665,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 21,
+      "priority_rank": 20,
       "readiness": "ready",
       "state": "active",
       "track": "internal kb rag",
@@ -2775,7 +2755,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 35,
+      "priority_rank": 34,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -2807,7 +2787,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer escalation and human gate policy"
@@ -2837,7 +2817,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer latency and sampling budget",
@@ -2898,7 +2878,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer model ablations"
@@ -2931,7 +2911,7 @@
           "RTG-55"
         ]
       },
-      "priority_rank": 19,
+      "priority_rank": 18,
       "readiness": "ready",
       "state": "active",
       "track": "autopilot continuous optimization",
@@ -3141,7 +3121,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3254,7 +3234,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 31,
+      "priority_rank": 30,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3455,7 +3435,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 30,
+      "priority_rank": 29,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -3490,7 +3470,7 @@
           "RTG-52"
         ]
       },
-      "priority_rank": 18,
+      "priority_rank": 17,
       "readiness": "ready",
       "state": "active",
       "track": "session bus thin dispatcher",
@@ -3652,7 +3632,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 32,
+      "priority_rank": 31,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3810,7 +3790,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 58,
+      "closed": 59,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3819,13 +3799,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0191,
+      "priority": 0.0187,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 36,
+      "priority_rank": 35,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -3988,7 +3968,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 33,
+      "priority_rank": 32,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -4032,6 +4012,7 @@
       "EVL-46",
       "EVL-48",
       "EVL-49",
+      "EVL-52",
       "INF-02",
       "INF-03",
       "INF-04",
@@ -4146,7 +4127,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 35,
+      "file": 34,
       "heuristic": 1,
       "override": 0
     },
@@ -4162,7 +4143,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 7,
+    "blocked": 6,
     "no_open": 0,
     "ready": 29
   },

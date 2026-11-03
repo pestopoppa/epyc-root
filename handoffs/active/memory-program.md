@@ -1,5 +1,7 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
+> **Fold destination** (BRF-T7-F14, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `memory-program`, `dev-harness-trace-mining` (rows EVL-52 retired into EVL-10). The former `memory-program.md` body is `## Track: memory-program`; tracks those handoffs already had are lifted verbatim after their owner.
+
 > **Fold destination** (BRF-T1-F24, BRF-T1-1, route 1a, 2026-11-02): renamed from `episodic-memory-integrity.md`; absorbs 2 handoff(s) as `## Track:` sections at the end of this file (`repl-session-memory-maturity.md`, `unified-trace-memory-service.md`). The body above the first track is the former `episodic-memory-integrity.md`.
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 record-design review). Historical NI07 integration source is preserved by APP commit `b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d`; the completed task no longer depends on its throwaway checkout.
@@ -20,13 +22,18 @@ coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are fol
 [standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization)
 (SS-BENCH-GATE)
 
-## Objective
+## Track: memory-program
+<!-- gate: none -->
+
+> Folded from the body of `handoffs/active/memory-program.md` (row EVL-10), from its first `##` section on, @ `ec0a9febab21` on 2026-11-03 (BRF-T7-F14, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+
+#### Objective
 
 The episodic store's vector resolution was silently corrupt from **2026-07-05T15:01:12**. Find the
 root cause, repair the data, make the failure mode self-correcting, and put every write site on one
 record contract so it cannot recur.
 
-## Root cause — one bug, three symptoms
+#### Root cause — one bug, three symptoms
 
 `faiss_store.save()` published `embeddings.faiss` and `id_map.npy` with **two separate renames**. Two
 files cannot be renamed atomically as a pair on POSIX, so a crash between them always leaves a
@@ -44,7 +51,7 @@ interrupted publish costs exactly one id. The live store reached a drift of 42.
 `.id_map.npy.<token>.tmp.npy` paired with a 2.79 GB `.embeddings.faiss.<token>.tmp`, i.e. the exact
 failure caught in amber.
 
-## Tasks
+#### Tasks
 
 - [x] M-1 — Reverse the publish order; fsync each temp before its rename. ✅ 2026-07-27
       (`fe7d4498`)
@@ -640,7 +647,7 @@ failure caught in amber.
   - M-22 scope clarification: the recall arm evaluates the pinned exploration seed/import population and records explicit writes during the study, not learning from normal live REPL exploration completion. `route_advice()` retains its separate live-routing-memory scope. M-20 telemetry and efficacy acceptance remain open; no new traffic, observed-use count or evaluation is claimed. [belief: cc]
   <!-- task-evidence-integrity:end M-20-scope -->
 
-## Why the reseed is necessary (and what it will NOT fix)
+#### Why the reseed is necessary (and what it will NOT fix)
 
 M-4 repaired `memories.embedding_idx → id_map` exactly. But `id_map position → vector` is *also*
 misaligned by a region-dependent offset, which pointer arithmetic cannot fix. Measured: re-embedding
@@ -656,7 +663,7 @@ As observed: the index shrank from ~707k legacy-inclusive vectors to **58,281** 
 because it previously spanned
 `memories_appendonly_legacy` (680,922 archive rows). No code reads that table (verified).
 
-## The store carries real signal — this is worth fixing
+#### The store carries real signal — this is worth fixing
 
 On a held-out temporal split (train pre-2026-06-06, test after), picking the highest-q action per
 suite gives macro test failure **0.1964** vs **0.2518** random and **0.1790** oracle — **76% of
@@ -664,7 +671,7 @@ achievable headroom, permutation p = 0.0025**. It survived adversarial attack as
 artifact (partial corr unchanged at −0.875) and as a popularity artifact (frequency-greedy 0.2211 ≈
 random). Measured *within* suite across actions, so it is not suite identity.
 
-## Corrections to earlier claims in this investigation
+#### Corrections to earlier claims in this investigation
 
 Recorded because three findings were reported before being verified, and two share a mechanism.
 
@@ -685,7 +692,7 @@ Recorded because three findings were reported before being verified, and two sha
 
 Common cause of 2 and 3: **asserting a negative without checking the alternative encoding.**
 
-## Key files
+#### Key files
 
 | file | role |
 |---|---|
@@ -697,17 +704,17 @@ Common cause of 2 and 3: **asserting a negative without checking the alternative
 | `tests/unit/test_faiss_store.py` | `TestDesyncCorruptionRegression` (5 cases) |
 | `tests/unit/test_memory_record.py` | contract (16 cases) |
 
-## Reporting
+#### Reporting
 
 M-10/M-10a are closed with the durable cosine result above. Next memory work is M-11a, M-12,
 M-15, and M-16; do not reopen the reseed unless a new evidence-backed integrity failure appears.
 
-## Research Intake Update — 2026-09-17 (typed memory writes; intake-1472/1473/1474)
+#### Research Intake Update — 2026-09-17 (typed memory writes; intake-1472/1473/1474)
 
 - [x] **M19-RECORD — specify native memory-write diagnostic records.** MAIN accepted 2026-10-06: [APP record contract](https://github.com/pestopoppa/epyc-orchestrator/blob/be8d46f61edcf5cb795d485b1a8171c562ee4971/docs/design/memory-write-decision-record-v1.md), per-question probabilities/local confidence, honest typed/untyped provenance and unresolved states, opaque value receipts, immutable self-hash. No writer, calibrated threshold or enforcement implemented. Parent M-19 remains open.
 - [ ] **M-19 — Typed decision records + confidence gate design (record spec unblocked; gate threshold needs its own calibration record).** *Corrected 2026-09-26 (operator-directed tidy): was "blocked on TD-2". TD-2 landed 2026-09-17 and was never the unlock — `fuzzy-workflow-authoring-gui.md` FW-1 §4 D-1: calibration lifts per (model pin, question catalogue) on an operator-ratified record, never globally, and TD-5 forbids enforcement without operator approval. The record spec is zero-inference and dispatchable now; only a live gate waits on a calibration record for the memory-write catalogue on its model pin.* Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from a calibration record for that catalogue and model pin (TD-2 is the method; owner `typed-decision-plane.md`, RTG-56), never from candidate softmax (intake-1474 measured 65% of 7B wrong fields above 0.90 confidence).
 
-## Work payload bound follow-on — 2026-10-07
+#### Work payload bound follow-on — 2026-10-07
 
 M-11a2b closes producer-to-store wiring only. MAIN source review found that `sanitize_work_text` trusts any suffix marker for the same cap, even after an oversized prefix. This allows an untrusted marker to bypass the nominal bound and the post-truncation redaction pass. Redaction remains the existing default-on, fail-open policy; no privacy guarantee is asserted.
 
@@ -717,14 +724,14 @@ M-11a2b closes producer-to-store wiring only. MAIN source review found that `san
 
 **M-12g complete, 2026-10-08:** Research main `72832ef6` gates explicit SRS comparisons before output/capture and reports populated bins/counts without changing SRS/CAS arithmetic. The original 32 whole-module controls passed, including mismatched-bin refusal and valid comparison paths. [Evidence and limits](../../artifacts/ni08/tulving-srs-workflow-controls-20261008/README.md). Matching bins do not establish equal book difficulty. M-12f metric construction and M-12i prospective offline replay remain separate.
 
-## Research Intake Update — 2026-10-20 (harness cluster)
+#### Research Intake Update — 2026-10-20 (harness cluster)
 
 Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae002602307b0d9ba6435b010be4d6ffd8a495a04605f3967). Monitor and knowledge records below are prose: no checkbox, no index next action.
 
 - **M5 (monitor, 2026-10-20) — SkillBank re-distil and teacher follow-ons (consolidator arm, seed-set size, extractor rubric, GenericAgent, MUSE-Autoskill, SkillLens code, skills-in-the-wild, SWE-Skills-Bench).** Trigger: The first M-11a re-distil is scheduled, or the M-23 readout shows negative role cells. First step when it fires: Apply the arm labels in M-25; dive the listed sources. No immediate step remains: M-11a is operator-directed and inference-gated; the bank is empty.
 - **K3 (knowledge, 2026-10-20) — Skill-benefit sign prior and SkillBank reading rules (SkillsBench -1.3, SkillGenBench about 0, SkillLearnBench +20.3, mean +2.29 with 37 of 150 cells negative; adoption separate from correctness; LLM-judged text quality advisory; four failure reason classes).** Retained use: Cited by M-23 and M-24; no prior borrowed.
 
-## Cache-friendly injection of memory and SkillBank context — 2026-10-21
+#### Cache-friendly injection of memory and SkillBank context — 2026-10-21
 
 Landed on epyc-orchestrator origin/main as `fc02209d` (flag `ORCHESTRATOR_CACHE_FRIENDLY_INJECTION`, default OFF, flag-off byte-identical, 18 tests plus 290 caller tests). Shared helper `src/prompt_builders/reusable_blocks.py`; wired into `SkillRetriever.format_for_prompt` and `build_routing_context`. Purpose: byte-identical, at-least-256-token blocks so chunk-KV reuse (cacheclip port) can hit. Flag-on drops Q-values, rank order and ids from the model-visible text and adds a 160-char objective per memory.
 
@@ -741,11 +748,11 @@ Landed on epyc-orchestrator origin/main as `fc02209d` (flag `ORCHESTRATOR_CACHE_
   - 2026-10-28: M-27(d) top-k source-class composition (k=10, 8 queries; pooled seed 53 / eval_or_external 13 / pre_label_legacy 8 / autopilot 6) vs no predeclared rule (descriptive; the FILLERS row says only that it 'decides whether recall is polluted') → correctness-only (diagnostic observation; embedder proof use_fallback=False). Box M-27 stays unticked: parts (a)(b)(c) and the rest of (d) are not delivered by this run. Evidence: /mnt/raid0/llm/tmp/fillers-3c4ca599/out/m27-live-recall.json. [belief: cc]
   - [ ] **M-27d.1 — add an interactive/cron source label to the episodic write path, then re-run the 8-query composition.** 3 of 8 queries return non-seed rows (up to 8/10 eval_or_external) and the store cannot separate interactive from autopilot; decide whether eval/external rows belong in the default recall pool or behind a `context.source` filter (retrieval-side change needs a flagged A/B, not a silent filter). Filed 2026-10-27 harvest.
 
-## Research Intake Update — 2026-10-21 (harness cluster, DP-F amendment)
+#### Research Intake Update — 2026-10-21 (harness cluster, DP-F amendment)
 
 Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888ef4f19df800a283e82b25caebeb6644746). Durable records only: no checkbox, no index next action. Each monitor row carries its trigger and first step; each knowledge row states what to rely on. Ledger ids (DPF-...) key to the Stage-3 recommendation mapping preserved in `.research-session.json` (`stage3_filing`).
 
-### K10 — Skill reliability, SkillBank, memory and skill-format evidence
+##### K10 — Skill reliability, SkillBank, memory and skill-format evidence
 
 - DPF-117-117-06: Hermes [memory implementation](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/tools/memory_tool.py#L1-L12) freezes the memory/profile snapshot into the prompt at session start. Treat this as a cache-oriented implementation pattern, not evidence of improved task outcomes.
 - DPF-117-117-07: Hermes [background review](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/agent/background_review.py#L1-L12) forks a conversation snapshot to propose memory/skill updates. The current dive found count-triggered updates without an outcome signal; this mechanism is not evidence that a proposed skill helped.
@@ -828,7 +835,7 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
 - DPF-W4-TIDE-TD5 (intake-2338): Name collision: handoffs/active/context-and-token-economy.md refers to a "TIDE post-mortem" for an unrelated early-exit project.
 - DPF-W4-TIDE-TD6 (intake-2338): Evidence quality: games and web environments, difficulty confound in loop pools, horizon-dependent AUV, no intervals.
 
-### M18 — SkillBank follow-on arms waiting on a populated bank or a net-negative cell
+##### M18 — SkillBank follow-on arms waiting on a populated bank or a net-negative cell
 
 - DPF-117-117-08: Hermes [skill ledger](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/tools/skill_ledger.py#L1-L12) explicitly describes telemetry, not a gate; [curator invariants](https://github.com/NousResearch/hermes-agent/blob/369cc6b07f26f4454f56555f1001ea9eb7d8d948/agent/curator.py#L1-L10) retain recoverable archives. A fail-closed mutation ledger is our prospective requirement, not an upstream guarantee. — Trigger: first reviewed skill export through B3 (hs4 doc 3.7) or any autonomous prompt-mutation write path in PromptForge; at that point require content-addressed before/after records and test single-edit rollback.
 - DPF-117-117-09: The current intake-117#record narrows the earlier self-improvement description; it does not establish an outcome benefit. — Trigger: upstream or intake-327 (hermes-agent-self-evolution, DSPy+GEPA) publishes an outcome-based skill evaluation; inspect that evidence before adopting an efficacy claim.
@@ -1778,3 +1785,110 @@ UTM must author and adjudicate its own human-labelled conflicting, stale, poison
 - [x] **UTM-R2 — UTM-R1 reporting addendum: revised-lesson reuse rate and write-side cost.** Add to the UTM-R1 readout: revised-lesson reuse rate equals retrieved-and-used after revision over retrieved-after-revision, defined on the existing superseded and previous_event_id fields, as an adoption proxy and not a quality measure (intake-117#record); and the write-side cost line (LLM calls plus input and output tokens over every memory-construction call, judge excluded) beside the read-side injected-token line (intake-2311#record). Acceptance: both lines are in the UTM-R1 readout text. Estimate: 0.2 day. ✅ 2026-10-21
 - [ ] **UTM-V7 — Profile-write precision audit checklist from the Honcho deriver rubric.** Define the ProfileStore and `user_conclude` write-audit checklist from the Honcho deriver prompt (`src/deriver/prompts.py:67-86 @607438d`): one fact per entry; the fact is about the target user; no conversational mechanics; no paraphrase duplicates; references and dates resolved. Apply by deterministic checks where possible and a human-labelled sample otherwise; add it to the UTM-V3 criteria. Reference intake-2237#record. Acceptance: the checklist is filed, the deterministic checks have unit tests, and one audit run over the current profile store is reported. Estimate: 1 day.
   - 2026-10-21 `dpf-skill` NOT ticked. Checklist filed: [profile-write-audit-checklist](../../docs/reference/profile-write-audit-checklist.md); deterministic checks + unit tests in orchestrator `09396bbe` (`src/user_modeling/write_audit.py`, `tests/unit/test_profile_admission.py`). The one audit run is VACUOUS, not a pass: `features().user_modeling` is off and no `user_profiles.db` exists ([result](../../artifacts/dpf-skill-20261021/utm_v7_audit.json) = `store_not_found`). Run `python -m src.user_modeling.write_audit` once a profile store exists, then tick.
+
+## Track: dev-harness-trace-mining
+<!-- gate: EVL-10#memory-program, EVL-10#repl-session-memory-maturity, EVL-10#unified-trace-memory-service -->
+
+> Folded from `handoffs/active/dev-harness-trace-mining.md` @ `ec0a9febab21` on 2026-11-03 (BRF-T7-F14, route 1b, operator D1/D5; retired row EVL-52 → EVL-10). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Dev-Harness Trace Mining
+
+**Status**: stub
+**Created**: 2026-10-22 (via research intake, operator-approved plan of 2026-10-22)
+**Categories**: agent_architecture, benchmark_methodology, knowledge_management
+
+#### Objective
+
+Mine EPYC's own development-harness transcripts (Claude Code, Codex, opencode) for operator-signal series,
+guard behaviour and lesson efficacy, so that lessons, hooks and harness rules are kept or promoted on
+measured recurrence rather than on anecdote. Measurement only; hook and policy edits stay human-applied.
+
+#### Research Context
+
+| Intake ID | Title | Relevance | Verdict | Verification |
+|-----------|-------|-----------|---------|--------------|
+| intake-2387 | Beacon cross-harness trace capture and distillation | high | adopt_patterns | dive-verified |
+| intake-2395 | Measure Before You Manage (working memory) | medium | worth_investigating | dive-verified |
+| intake-2396 | Agent memory distillation (disjoint-split protocol) | medium | worth_investigating | dive-verified |
+| intake-2397 | SWE-chat (real coding-agent sessions) | medium | worth_investigating | dive-verified |
+| intake-2426 | Invisible failures in human-AI interaction | medium | worth_investigating | dive-verified |
+| intake-2428 | Transluce coding-agent misalignment in the wild | medium | worth_investigating | dive-verified |
+| intake-2429 | Anthropic: measuring agent autonomy in practice | medium | worth_investigating | dive-verified |
+
+#### Tasks
+
+- [x] **DHM-1 — Mechanical operator-signal series: count both interrupt markers (plain and for-tool-use) and the Codex/opencode abort analogues per 1000 turns with Wilson CIs, split main vs subagent and by harness; keyword pass for operator corrections in ~/.claude/history.jsonl since 2026-03 (intake-2397, intake-2429).** ✅ 2026-10-22
+  - *(2026-10-22, workspace-f8 / mining-m1.)* **Code done; full run scheduled tonight (dhm-mining-full)** (main thread, outside the quiet window): `scripts/dev_harness/mine_m1.py` (tests `tests/dev_harness/test_mine_m1.py`), aggregate `dhm1.aggregate.json` (dev-harness-aggregate.v1) under `<private-root>/mining/<run>/m1/aggregates/`. Turn = deduplicated assistant model call; split harness x source x main/subagent plus a monthly series; Codex child threads replay parent history with FRESH timestamps at birth (measured: one parent's aborts copied into 32 forks), so events within 5 s of a child's birth are excluded from numerator and denominator (raw kept); a marker copied into a Claude child with the same ts counts once. Sample (`sample-20261022`, 66 units, tiny N): claude main 2.3/1000 turns (1/429, CI 0.4-13.1), subagent 0/2752; opencode 19/1000 (2/105); codex 0/541. Correction keyword pass is implemented (`--tasks history --history <file>`) but NOT run: its only input, `~/.claude/history.jsonl`, is a live store this lane may not open; the main thread decides whether to pass it.
+    Full run: `nice -n 19 /usr/bin/python3 scripts/dev_harness/mine_m1.py --projection /mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z` (est. 5-10 min, peak RSS ~1.5 GB; covers DHM-1, DHM-5, OAB-LB1, UFH14-LB8).
+  - *(2026-10-22, workspace-f8 / mining results.)* **Full run `full-20261022T1310Z` (42,420 units); acceptance met.** Interrupts per 1000 turns, any marker (Wilson 95% CI): Claude main 6.30 (5.70-6.97, 380/60,294), Claude subagent 0.088 (0.052-0.148, 14/158,974); Codex main 6.83 (5.70-8.18, 116/16,987), Codex subagent 2.21 (1.91-2.56, 178/80,572); opencode main 0.71 (0.55-0.93, 56/78,445), opencode subagent 2.36 (1.61-3.46, 26/11,018). Claude markers: 329 plain, 65 for-tool-use. Per 1000 human turns, Claude main: 41.9 (38.0-46.2). Monthly series and the history keyword pass are in the aggregate. Full tables: `docs/design/dev-harness-mining-results-20261022.md`; committed aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
+- [x] **DHM-2 — Retrospective guard audit over sampled sessions per harness: predicates for pattern kills, edits of a running script, writes outside the allowlist, wholesale git add, piped gate push, glob rm -rf, git clean, llama-cli without timeout and the monitor-evasion surface forms (no-verify, hooks path to /dev/null, skipped or deleted tests), plus a hook-denial and tool-error census; report would-fire, blocked and slipped-through per class and harness (intake-2387, intake-2428).** ✅ 2026-10-22
+  - 2026-10-22 (f8, branch `f8/mining-m2-20261022`): code done; full run scheduled tonight (dhm-mining-full). `scripts/dev_harness/m2_guards.py`: 21 classes; the hooked ones reuse the production scanners (pattern-kill, filesystem containment, llama-cli, shell_scan); outcome from the paired result (blocked_hook / blocked_user / errored / slipped_through / no_result) and hook era (git add-date). Denial census by hook name; tool-error census per tool. Sample `sample-20261022` (65 units, 4,050 tool calls): 63 would-fire, 43 of them containment refusals, all blocked by the hook; 75 hook denials, all Claude Code. Full run: driver `nice -n 19 /usr/bin/python3 scripts/dev_harness/mine_m2.py --projection /mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z`.
+  - *(2026-10-22, workspace-f8 / mining results.)* **Full run: 21,924 would-fire; acceptance met** (per class x harness x blocked/slipped/errored in the aggregate). Top classes per 1000 tool calls (Claude / Codex / opencode): pgrep_pattern 3.59 / 2.02 / 17.57; edit_running_script 1.45 / 0.085 / 0.67; git_stash 1.16 / 0.004 / 0.40; git_worktree_prune_or_force 1.13 / 0.94 / 0.22; glob_rm 0.75 / 0.006 / 0.50; wholesale_git_add 1.04 / 0.064 / 0.64. Claude hook denials: 2,294 blocked_hook (filesystem_containment 1,171, commit_hygiene 926). Almost every would-fire on Codex and opencode slipped through (no hooks). Follow-ups: DHM-8 to DHM-11 below. Full tables: `docs/design/dev-harness-mining-results-20261022.md`; committed aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
+- [x] **DHM-3 — Lesson registry and interrupted-time-series pilot: register feedback memories, incident rules and CLAUDE.md rules with date, channel and a mechanical detector; write the ITS spec (violation, operator-signal and mechanical verified-outcome families; tool-call exposure with a per-turn companion; segmented regression with trend and model/harness change points; permission-mode, work-mode and specificity covariates; session and day clustering, never-lessoned control classes, campaign-grouped self-exclusion); run 3-5 lessons with forbidden surface forms as violations per 1000 tool calls pre/post, split prose-only vs hook-enforced, with the delivered-context rate (intake-2395, intake-2396, intake-2426, intake-2429).** ✅ 2026-10-22
+  - 2026-10-22 (f8): registry + spec done, pilot code done; full run scheduled tonight (dhm-mining-full; same driver). `scripts/dev_harness/lesson_registry.json` (290 lessons: 227 feedback memories, 38 incidents, 25 CLAUDE.md rules; 22 with a detector, 9 hook-enforced; built by `m2_lessons.py build-registry`, read-only on its sources). Spec: `docs/design/dev-harness-its-pilot-spec.md`. Pilot: pattern_kill, llama_cli_unbounded, wholesale_git_add (prose then hook), piped_gate_push, glob_rm (prose-only), with never-lessoned control classes and delivered-context rates. The sample covers 3 days only, so it carries no pre/post read.
+  - *(2026-10-22, workspace-f8 / mining results.)* **Full-run ITS pilot, 5 lessons; acceptance met** (registry and spec already on main; `lesson_registry.json`, `dev-harness-its-pilot-spec.md`). Violations per 1000 tool calls, Claude, pre vs post: pattern_kill 1.71 -> 0.089 (post-hook, k=15); llama_cli_unbounded 0.45 -> 0.032 (post-hook, k=5); piped_gate_push 0.26 -> 0 (prose-only); glob_rm 0.62 -> 1.30 (prose-only, k=56, ROSE; segmented level change -0.52 does not match the raw rates); wholesale_git_add 0.36 -> 0.56 prose-only -> 1.22 post-hook (k=224, ROSE). Delivered-context rate for glob_rm: 0.27 pre, 0.47 post (memory 0.44, incident log 0.03). Rises filed as DHM-8, DHM-9. Full tables: `docs/design/dev-harness-mining-results-20261022.md`; committed aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
+- [ ] **DHM-4 — Prepare a 100-item operator labelling sheet of interrupts plus the next operator message with the reason clusters (correction, slow/hanging, next step myself, requirement change, other) and a lesson-provenance template (harness, session, event range; trigger-phrased applicability) for new incident and feedback lessons; agent labels are not used (intake-2429).**
+  - 2026-10-22 (f8): code done; full run scheduled tonight (dhm-mining-full); the sheet is generated by that run into `/mnt/raid0/llm/private/dev-harness-traces/mining/full-20261022T1310Z/dhm4_label_sheet.{csv,md}` (PRIVATE, never commit). 100 items stratified by harness x source; the operator fills `label` (correction / slow_hanging / next_step_myself / requirement_change / other) + `note`; `m2_label_sheet.read_labels` validates. Provenance template in the sheet and the ITS spec §7. Blocked after the run only on operator labelling.
+  - *(2026-10-22, workspace-f8 / mining results.)* Sheet ready at `/mnt/raid0/llm/private/dev-harness-traces/mining/full-20261022T1310Z/dhm4_label_sheet.{csv,md}` (PRIVATE), 100 items drawn from 863 interrupt candidates. Not ticked: the operator labels it.
+  - *(2026-10-23 15:05Z, operator decision, recorded by workspace-f8.)* The operator chose a **30-item pilot first**: label `dhm4_pilot30.csv` (PRIVATE, same dir as the 100-item sheet; 30 of the 100, harness x source proportions by largest remainder, min 1 per stratum, item_ids kept so labels merge back), then the remaining 70 only if the categories separate. Decision rule, run with `dhm4_pilot_check.py` after labelling: `other` > 25% of labelled items, or any of the five labels used for < 2 items, prints `REVISE_CATEGORIES`; otherwise `PROCEED_TO_70`. Not ticked: the labels are the operator's and the 70 remain.
+- [ ] **DHM-5 — Measure the always-on prefix (CLAUDE.md plus the MEMORY.md index) in tokens per turn from transcript usage fields, per harness (intake-2408, intake-2410).**
+  - *(2026-10-22, workspace-f8 / mining-m1.)* **Code done; full run scheduled tonight (dhm-mining-full)** (same driver, `dhm5.aggregate.json`). Per harness x source x role: first-turn prompt tokens (input incl. cache = the observed per-turn floor), mean prompt per turn, cache-read share, and the always-on files (claude main CLAUDE.md+MEMORY.md, subagent CLAUDE.md, codex/opencode AGENTS.md) in tokens per turn. Finding: Claude Code JSONL `usage.output_tokens` is a stale streamed value (calibrates to 14.5 chars/token), so it is excluded from chars/token calibration; opencode/codex calibrate, else 3.6 assumed (flagged). Sample: claude main first-turn p50 27.9k tok, mean prompt 211k/turn, always-on files ~12.4k tok/turn (3.6 chars/token assumed: nothing calibrated in the sample) = 5.9% of prompt tokens (44% of the first-turn floor); subagents ~6.1k = 3.7%.
+  - *(2026-10-22, workspace-f8 / mining results.)* **Full run measured; NOT ticked.** Always-on files est. 17,158 tok/turn for Claude main (0.451 of the p50 first-turn prompt of 38,056; cache-read share 0.978) and 8,326 tok/turn for Claude subagent, Codex and opencode, where the identical figure shows it is a file-size estimate (chars/token calibration), not a per-harness usage-field measurement. Acceptance asks for usage fields: DHM-5.1 below. Full tables: `docs/design/dev-harness-mining-results-20261022.md`; committed aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
+  - [x] **DHM-5.1 — Measure the real per-harness always-on prefix from usage fields** (cache-creation on turn 1 and first-turn input tokens per harness x role, minus the tool-schema and system-prompt baseline from a turn-1 diff against a session with the files absent), replacing the shared 8,326 file-size estimate; then tick DHM-5. ✅ 2026-10-24
+    - *(2026-10-24, workspace-f8 sweep.)* Measured from turn-1 usage fields (root `ef7902e2c`: `scripts/dev_harness/mine_dhm51.py`, tests `tests/dev_harness/test_mine_dhm51.py`, aggregate `data/dev_harness/dhm51-20261024.aggregate.json`, results doc section DHM-5.1). Regression of turn-1 cache-inclusive prompt tokens on the char counts sent before the first call, intercept per model/version/directory bucket, bootstrap CIs, file-less units as control. Always-on tokens (95 % CI) / system+tools baseline: Claude subagent **14,628** (12,982-15,707; includes the MEMORY.md index, R² 0.998) / 17,647; Codex main **2,525** (2,266-2,796) / 9,355; Claude main 4,459 (3,436-6,694, weak; mostly orchestrator worktrees, a /workspace main fits ~9.4k-12.5k) / 8,276. NOT measurable from transcripts: Codex subagent (unlogged spawn context, fits span 0) and opencode main/subagent (instruction files not logged; no in-config control). Weakest assumption: file size uncorrelated with unlogged prompt parts within a bucket. Per-unit rows private (0600) under `mining/dhm51-20261024/`.
+  - [ ] **DHM-5.2 — paired first-call probe for Codex subagent and opencode** (filed 2026-10-24, f8 sweep): one turn-1 call per harness x role with the always-on files present vs hidden (same cwd, model and config), read the usage-field difference; tick DHM-5 after it. Inference (a few cloud/harness calls, no local model load); class (c).
+  - *(2026-10-24, f8 sweep.)* NOT ticked: DHM-5.1 replaced the shared 8,326 estimate for Claude main, Claude subagent and Codex main; Codex subagent and opencode carry no usage-field number because their transcripts do not log the files or offer a control. The remainder is DHM-5.2 (inference).
+- [x] **DHM-6 — Draft the guard-denial ledger proposal: every PreToolUse refusal appends ts, hook, session, harness, rule and fidelity=observed to one private JSONL (enables detecting a command executed after its denial); hook edits stay human-applied (intake-2387).** ✅ 2026-10-22
+  - *(2026-10-22, workspace-f8 / mining-m1.)* Proposal written: [`docs/design/guard-denial-ledger-proposal.md`](../../docs/design/guard-denial-ledger-proposal.md) (record schema `dev-harness-guard-denial.v1` with keyed-HMAC command blocks joinable to projector tool_call events, best-effort flock append, the 11 refusing Claude hooks + Codex/opencode containment guards, tests, rollout order). Applying it is a human hook edit.
+- [x] **DHM-7 — Write a pure-python converter from Claude Code, Codex and opencode transcripts to AgentRun-style JSON (tool calls and results, both interrupt markers kept, sessions split into capped task-window segments, private output), then run a no-LLM clustering baseline over tool-error and denial segments (CPU sentence embedding, k-means, mechanical facets) validated by planted recovery of known incident classes, reporting a cluster only with at least 3 distinct sessions and 2 distinct days (intake-2443, intake-2444).** ✅ 2026-10-24 (DHM-7.1 converter + DHM-7.2 baseline)
+  - [x] **DHM-7.1 — converter** ✅ 2026-10-22: `scripts/dev_harness/agentrun.py` (stdlib; Docent AgentRun shape
+    written from scratch) → `/mnt/raid0/llm/private/dev-harness-traces/agentrun/<run>/<harness>/<unit>.seg-NNN.json`
+    + `index.jsonl`; task windows split at operator prompts and capped (120 msgs / 60k chars / 4k per message); both
+    Claude markers kept verbatim, Codex/opencode aborts as synthesized markers. Sample `sample-20261022`: 291
+    segments (122 with a tool error, 64 with a denial, 3 with an interrupt), 1.4 s.
+  - [x] **DHM-7.2 — no-LLM clustering baseline** over the index's tool-error/denial segments (CPU sentence embedding, k-means, mechanical facets, planted recovery, ≥3 sessions and ≥2 days per reported cluster); needs the full run (UTM-LB2.1) for the day spread. ✅ 2026-10-24 (on the hashed TF-IDF full run, by the predeclared tie rule; see DHM-7.2a)
+    - 2026-10-22 (f8): code done; full run scheduled tonight (dhm-mining-full). `scripts/dev_harness/m2_cluster.py`: signed-hashed TF-IDF (D=1024) as the CPU embedding, because /usr/bin/python3 has no onnxruntime or sentence-transformers and `embed()` is the drop-in point; spherical k-means; 5 planted incident classes; reports a cluster only with >=3 sessions and >=2 days. Sample: 122 docs, 6 clusters reported; 3 of 5 planted classes recovered at k=8 (two merged), which is expected at sample size.
+    - *(2026-10-22, workspace-f8 / clerical.)* Neural CPU embedder added as the drop-in: `scripts/dev_harness/m2_embed_gguf.py` (`llama-embedding` from the production CPU store, `granite-embedding-97m-multilingual-r2-Q8_0.gguf` already on disk, `-t 1 -ngl 0`, nice 19, docs capped at 1200 chars; wired as `mine_m2.py --embed-gguf`, `m2_cluster.run(embedder=)`; tests in `tests/dev_harness/test_mining_m2.py`). Sample `sample-20261022` (122 docs + 60 planted), same k=10: hashed TF-IDF recovered 3 of 5 planted classes (6 clusters reported), granite-97m recovered 5 of 5 (5 clusters reported, 100% of docs in a reported cluster), 48 s single-threaded, peak RSS 44 MB for the driver. Full-corpus run is scheduled compute, NOT run: `nice -n 19 /usr/bin/python3 scripts/dev_harness/mine_m2.py --projection /mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z --agentrun /mnt/raid0/llm/private/dev-harness-traces/agentrun/full-20261022T1310Z --embed-gguf /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q8_0.gguf` (about 0.25 s per document; output under `mining/<run>/`, private). Stays open for the full-run day spread.
+    - [x] **DHM-7.2a — run the granite-97m embedder over the full corpus** (the tonight `dhm-mining-full` job runs `mine_m2.py` WITHOUT `--embed-gguf`, i.e. hashed TF-IDF only). Command: `nice -n 19 /usr/bin/python3 scripts/dev_harness/mine_m2.py --projection /mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z --agentrun /mnt/raid0/llm/private/dev-harness-traces/agentrun/full-20261022T1310Z --embed-gguf /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q8_0.gguf`. CPU compute (1 core, ~0.25 s/doc, llama-embedding from the production CPU store), needs a CPU-quarter grant; private output only. Compare planted recovery and reported clusters against the TF-IDF full run; tick DHM-7.2 on the better of the two. (filed 2026-10-22, f8 evening wrap-up) ✅ 2026-10-24
+      - *(2026-10-23, workspace-f8.)* Launcher ARMED (pid 1640838) at `/mnt/raid0/llm/tmp/f8-launchers-20261022/dhm72a-granite/` (filler_run7 --repeat, class cpu, one core, nice 19, ~1 h + 15 m TF-IDF pass; FILLERS row `dhm72a-granite`; booking requested from workspace-58). Runs from detached root worktree `f8-dhm72a-run` @ ea5722f79; output private at `mining/full-20261022T1310Z-granite97m` (`--out` added so the TF-IDF run dir is not overwritten). Report-only PREDECLARATION; DHM-7.2 ticks on the better of the two runs.
+      - *(2026-10-24, workspace-f8 subagent, verification.)* The run is DONE: `dhm72a-granite` ENDED rc 0 at 2026-10-23T15:57:18Z, and its FILLERS row is COMPLETE. Output (private): `mining/full-20261022T1310Z-granite97m`.
+        - What remains is the zero-compute read-out: planted recovery and reported clusters vs the TF-IDF full run.
+        - Then tick DHM-7.2a, and DHM-7.2 on the better of the two runs. No launcher is needed.
+      - *(2026-10-24, f8 sweep.)* Run DONE 2026-10-23 15:57Z, rc 0, `aggregate_valid` true (job `dhm72a-granite`, q2 grant, 4,844 s, peak RSS 368 MB; private output `mining/full-20261022T1310Z-granite97m/`). Predeclared quantities: planted recovery 3/5 (fs_containment, pattern_kill, pytest_workers; git_stash and wholesale_add merged into one cluster at purity 0.5), 78 of 80 clusters reported (>= 3 sessions, >= 2 days). Versus TF-IDF 3/5 and 80/80: delta 0 planted, -2 reported; flipped +pattern_kill +pytest_workers, -git_stash -wholesale_add. Predeclared rule: a tie goes to TF-IDF (no model dependency).
+      - *(2026-10-24, workspace-f8 read-out addendum; same verdict, re-derived independently from both private aggregates.)* Per-class best-cluster purity TF-IDF -> granite: fs_containment 0.141 -> 0.045, git_stash 0.128 -> 0.500, pattern_kill 0.375 -> 0.667, pytest_workers 0.375 -> 1.000, wholesale_add 0.255 -> 0.500. Granite's cluster stage took 4,634.9 s against 5.65 s for TF-IDF, which shows the embedder ran. Three additions:
+        - A counts-only aggregate is now committed: `data/dev_harness/mining-full-20261022T1310Z-granite97m.dhm72.aggregate.json`. It has top terms and rules dropped, carries a `dhm72a_vs_tfidf` comparison block, and passed `raw_trace_publish_preflight`. The results-doc table is in the section "DHM-7.2a".
+        - Bug fixed: the private aggregate's `notes` said "hashed TF-IDF (no model)" even under `--embed-gguf`. `mine_m2.py` now names the GGUF, and a test is added.
+        - Belief: there is no adapter yet for `dev-harness-aggregate.v1`. The source row exists (`scripts/vidya/adapters/README.md`) and the adapter task VB-LB1.1 is open, so there was nothing to dry-run. This aggregate is a ready first input for VB-LB1.1.
+  - *(2026-10-22, workspace-f8 / mining results.)* DHM-7.2 baseline on the full corpus (hashed TF-IDF, no model): 13,989 docs, k=80, 80 reported (each >=3 sessions and >=2 days), planted 3/5 recovered (fs_containment, git_stash, wholesale_add yes; pattern_kill, pytest_workers no; best-cluster purity 0.13-0.38). DHM-7.2 stays unticked pending DHM-7.2a (granite embed, NOT run).
+
+- [ ] **DHM-8 — Guard the glob rm -rf class with a hook (D9, per-change operator ack required; file the proposal, do not apply).** The prose-only lesson did not reduce Claude violations: 0.62 pre -> 1.30 post per 1000 tool calls (k=56 vs 116), 180 would-fire, 12 blocked. Draft the PreToolUse predicate from `m2_guards.py` glob_rm and the false-positive count over the same corpus. (2026-10-22 mining results)
+- [ ] **DHM-9 — Explain why wholesale_git_add ROSE after its hook** (Claude 0.36 pre, 0.56 prose-only, 1.22 post-hook per 1000 tool calls, k=224): split by main vs subagent, session cohort and campaign, and check the hook's pathspec coverage (harness mix versus a hook gap). Output: attribution table, then a fix proposal (D9 ack for any hook edit). (2026-10-22 mining results)
+- [ ] **DHM-10 — pgrep_pattern guard coverage for opencode and Codex.** would-fire 17.57 (opencode), 2.02 (Codex), 3.59 (Claude) per 1000 tool calls; 1,658 of 1,659 opencode and 889 of 948 Codex slipped through. Decide per harness: port the process-pattern check, or write an explicit decline (pgrep alone is read-only; the harm is the kill, `pattern_kill` is already counted separately). Hook edits are D9 (per-change operator ack). (2026-10-22 mining results)
+- [ ] **DHM-11 — Hook coverage for Codex and opencode in general.** Both are `harness_uncovered` for every guarded class (e.g. codex git_worktree_prune_or_force 442 would-fire, 0 blocked; opencode write_tool_outside_allowlist 7,138 would-fire, but the allowlist is Claude-rooted, so first calibrate it per harness). Produce a per-harness coverage matrix and a port-or-decline per class. Hook edits are D9 (per-change operator ack). (2026-10-22 mining results)
+
+#### Open Questions
+
+- Does a memory-only lesson change its violation rate at all, or only hook-enforced ones?
+- What fraction of interrupts are agent errors (operator labels, DHM-4) versus slow/hanging or scope change?
+
+#### Notes
+
+- **Sources (operator 2026-10-22, scope ruling: mine EVERYTHING; every record carries a `source` tag epyc|host|twyne).**
+  opencode: the read-only hourly snapshots `/mnt/raid0/llm/opencode-db/{epyc.db,host-daniele.db}` (symlink to
+  `/mnt/raid0/llm/opencode/readonly/`; at most ~1 h stale, full history; open `file:<path>?mode=ro`, retry once if the open
+  fails because the copy is being replaced; tables `session`/`message`/`part`, never `event`). Claude Code + Codex:
+  `/mnt/raid0/llm/cloud-llm-vault/{host,twyne,epyc}/{claude,codex}/` (append-only JSONL). The LIVE opencode stores
+  (`~/.local/share/opencode/opencode.db`, `/mnt/raid0/llm/opencode/<src>/opencode.db`) are never opened for mining.
+  Shared helper: `scripts/dev_harness/dh_sources.py` (`OPENCODE_RO_DBS`, `open_ro`, `refuse_live_opencode_path`).
+- Inputs are read from the existing conversation backup (the nightly cloud-llm-vault sync and the ai-sessions tarballs;
+  coverage checked by UTM-LB1) through the private projector (UTM-LB2); no parallel backup is built. Outputs are
+  aggregate-only and private (F3-LB1). epyc-root is a public repository: never commit transcript content.
+- Hosted annotators are not used on our data (typed-decision ruling); labels come from the operator.
+- harness-improvement-loop.md excludes the shell surface from its mutation loop, which is why this measurement
+  work has its own owner.
+
+#### Memory index readability from intake-2617/2619 (ws58 intake 2026-11-02; operator approved "Approve, go to Stage 4", D9 acknowledged for scripts/coordination)
+
+Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md). **Order (operator, 2026-11-02):** (1) SA-1 + JEV-1; (2) SA-2, SA-3, JEV-3; (3) JEV-5 phase A, KT-1, KT-3; (4) the rest (JEV-2, JEV-4, JEV-6, SA-4, KT-2, KT-4, KT-5). JEV-5 phases B/C only after the operator has used phase A.
+
+- [ ] **KT-5** [S] Split the Claude memory `MEMORY.md` index into category index files under the load limit, and include memory and progress files in the KT-3 map's search by reusing the kb-search index (DHM-5 measures the always-on cost). Note 2026-11-02: proposal at `/mnt/raid0/llm/tmp/ws58-kt5-memory-split-proposal.md`; ws58 applies the memory split. The kb-search indexer config is not in any of our repos, so the search half needs its owner located. removes: the truncated-on-load single index and grep-only access to memory files.

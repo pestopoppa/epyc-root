@@ -180,7 +180,7 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 - [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
 - [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
-- [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
 
 ## Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): belief-kernel readers landed, storage redesign approved and Phase 1 integrated

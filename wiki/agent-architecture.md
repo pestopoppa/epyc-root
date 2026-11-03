@@ -120,11 +120,11 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
 - **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
 
-Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
 
-- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
+- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
 - OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
 - HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 
@@ -183,7 +183,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 
 - [docs/design/harness-improvement-loop-design-20261006.md](../docs/design/harness-improvement-loop-design-20261006.md)
 - [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
-- [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 - [progress/2026-10/2026-10-21-hil16-18.md](../progress/2026-10/2026-10-21-hil16-18.md)
 - [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
 
@@ -5482,7 +5482,7 @@ Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-
 - **Turn-1 grammar default `off` is live** since the 14:59:25Z API reload; the 14-day classification clock earliest ends 2026-11-06T15:00Z.
 - **Dev-harness mining DHM-4: operator chose a 30-item pilot first**, then the remaining 70 only if categories separate (`REVISE_CATEGORIES` if `other` > 25% or any label used < 2 times).
 
-Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [Dev-harness trace mining](../handoffs/active/dev-harness-trace-mining.md)
+Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [Dev-harness trace mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 
 
 ## Compiled Update — 2026-10-27: separate merged actor guards from registration-only recovery

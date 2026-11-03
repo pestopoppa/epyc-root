@@ -13,10 +13,10 @@
       "open": 72
     },
     "research-evaluation-index.md": {
-      "blocked": 18,
-      "handoffs": 7,
-      "oldest_advance": "2026-10-24",
-      "open": 741
+      "blocked": 16,
+      "handoffs": 5,
+      "oldest_advance": "2026-11-02",
+      "open": 688
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 16,
-      "handoffs": 9,
+      "blocked": 18,
+      "handoffs": 10,
       "oldest_advance": "2026-10-21",
-      "open": 682
+      "open": 735
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -337,7 +337,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 58,
+      "closed": 59,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -349,7 +349,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 63
+      "total": 64
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -736,22 +736,6 @@
       "row_id": "INF-77",
       "state": "active",
       "total": 243
-    },
-    "dev-harness-trace-mining.md": {
-      "blocked": 0,
-      "closed": 9,
-      "guarded": 0,
-      "last_advanced": "2026-10-24",
-      "open": 8,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-52",
-      "state": "active",
-      "total": 17
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 1,
@@ -1497,11 +1481,11 @@
     },
     "memory-program.md": {
       "blocked": 2,
-      "closed": 108,
+      "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 45,
-      "owner_index": "research-evaluation-index.md",
+      "open": 53,
+      "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
@@ -1509,16 +1493,16 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 155,
+      "total": 172,
       "tracks": [
         {
           "blocked": 0,
           "closed": 56,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 25,
+          "markers": 1,
+          "name": "memory-program",
           "open": 16
         },
         {
@@ -1526,7 +1510,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 871,
+          "line": 878,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 15
@@ -1536,10 +1520,24 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1325,
+          "line": 1332,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 14
+        },
+        {
+          "blocked": 0,
+          "closed": 9,
+          "gates": [
+            "EVL-10#memory-program",
+            "EVL-10#repl-session-memory-maturity",
+            "EVL-10#unified-trace-memory-service"
+          ],
+          "guarded": 0,
+          "line": 1789,
+          "markers": 1,
+          "name": "dev-harness-trace-mining",
+          "open": 8
         }
       ]
     },
@@ -2235,7 +2233,7 @@
       "blocked": 1,
       "closed": 334,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 99,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2665,8 +2663,8 @@
       "deps": [],
       "handoff": "memory-program.md",
       "id": "EVL-10",
-      "index": "research-evaluation-index.md",
-      "line": 15,
+      "index": "routing-and-optimization-index.md",
+      "line": 22,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2675,7 +2673,7 @@
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "index": "research-evaluation-index.md",
-      "line": 16,
+      "line": 15,
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "track": "eval tower verification"
     },
@@ -2684,7 +2682,7 @@
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
@@ -2693,20 +2691,9 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 18,
+      "line": 17,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
-    },
-    "EVL-52": {
-      "deps": [
-        "EVL-10"
-      ],
-      "handoff": "dev-harness-trace-mining.md",
-      "id": "EVL-52",
-      "index": "research-evaluation-index.md",
-      "line": 19,
-      "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
-      "track": "dev harness trace mining"
     },
     "INF-06": {
       "deps": [

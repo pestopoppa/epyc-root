@@ -84,7 +84,7 @@ Sources: [model-exec-containment](../handoffs/active/stack-lifecycle-program.md#
 
 - [docs/design/guard-denial-ledger-proposal.md](../docs/design/guard-denial-ledger-proposal.md) — ledger schema, hooks, rollout
 - [docs/design/dev-harness-its-pilot-spec.md](../docs/design/dev-harness-its-pilot-spec.md) — registry, segments, controls, threats
-- [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md) — M1/M2 sample results
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining) — M1/M2 sample results
 - [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — F3-LB1 privacy gate and PII scan
 - [docs/guides/agent-workflows/cleanup-reference-check.md](../docs/guides/agent-workflows/cleanup-reference-check.md) — reaper precondition rule
 - [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — token revoke declined

@@ -160,6 +160,10 @@
    "target": "model-evaluation-queue.md",
    "track": "delta-mem-reproduction"
   },
+  "dev-harness-trace-mining.md": {
+   "target": "memory-program.md",
+   "track": "dev-harness-trace-mining"
+  },
   "dflash2-block-drafter-experimental-build.md": {
    "target": "speculative-decoding.md",
    "track": "dflash2-block-drafter-experimental-build"
@@ -787,6 +791,10 @@
   "EVL-49": {
    "target": "INF-45",
    "track": "reboot-gated-inventory-and-staging"
+  },
+  "EVL-52": {
+   "target": "EVL-10",
+   "track": "dev-harness-trace-mining"
   },
   "INF-02": {
    "target": "INF-06",
