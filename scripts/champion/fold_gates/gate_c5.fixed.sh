@@ -95,7 +95,7 @@ bad=[l.rstrip("\n") for l in open(sys.argv[2]) if l.split("\t",1)[1].rstrip("\n"
 print(len(bad)); [print("   unknown:", b, file=sys.stderr) for b in bad]' "$AJ" "$BL" 2>>"$OUT")
 if [ "$unk" = 0 ] && [ "$nb" -gt 0 ]; then verdict=PASS; else verdict=FAIL; fail=1; fi
 say "(d1) strings: $nb /tmp/qwen4exp-builds literal(s) in image libs ($(cut -f1 "$BL" | sort -u | tr '\n' ' ')), unknown-or-ungated=$unk $verdict"
-LL=$(ls "$NEW"/bin/libllama.so* 2>/dev/null | head -n1)
+LL=$(ls "$NEW"/bin/libllama.so* 2>/dev/null | sed -n 1p)
 for s in GGML_FUSED_DECODE_ON 'fused decode disabled for this model'; do
   if strings -a "$LL" | grep -F "$s" >/dev/null; then say "(d2) libllama has '$s': PASS"; else say "(d2) FAIL: '$s' not in $(basename "$LL")"; fail=1; fi
 done
