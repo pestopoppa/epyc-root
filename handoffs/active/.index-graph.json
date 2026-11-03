@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:31:43Z",
+  "generated_at": "2026-11-03T16:32:37Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2126,17 +2126,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 2,
       "blocked_by": [],
       "closed": 235,
-      "dispatchable": 128,
+      "dispatchable": 100,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-03",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 129,
+      "open": 102,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2170,7 +2170,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 35,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2179,43 +2179,43 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 36,
+          "open": 29,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 0,
           "gates": [],
           "line": 1298,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
-          "open": 10,
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1422,
+          "name": "cpu-fused-decoder-blocks",
+          "open": 2,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 1749,
+          "name": "laguna-s21-cpu-port",
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1422,
-          "name": "cpu-fused-decoder-blocks",
-          "open": 3,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 1,
-          "gates": [],
-          "line": 1749,
-          "name": "laguna-s21-cpu-port",
-          "open": 1,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 5,
-          "gates": [],
           "line": 1888,
           "name": "moe-spec-cpu-spec-dec-integration",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         },
         {
@@ -2233,7 +2233,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 13,
+          "dispatchable": 12,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2241,7 +2241,7 @@
           ],
           "line": 2578,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13,
+          "open": 12,
           "readiness": "blocked"
         },
         {
@@ -2253,7 +2253,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 60,
+          "dispatchable": 54,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -2264,7 +2264,7 @@
           ],
           "line": 3420,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 60,
+          "open": 55,
           "readiness": "blocked"
         }
       ]

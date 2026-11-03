@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 54,
+      "blocked": 55,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 939
+      "open": 911
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1113,11 +1113,11 @@
       ]
     },
     "kernel-champion-and-promotion.md": {
-      "blocked": 1,
+      "blocked": 2,
       "closed": 235,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 128,
+      "open": 100,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 364,
+      "total": 337,
       "tracks": [
         {
           "blocked": 1,
@@ -1141,7 +1141,7 @@
           "line": 9,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 35
+          "open": 28
         },
         {
           "blocked": 0,
@@ -1151,7 +1151,7 @@
           "line": 1298,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
-          "open": 10
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1161,7 +1161,7 @@
           "line": 1422,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
@@ -1171,7 +1171,7 @@
           "line": 1749,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1181,7 +1181,7 @@
           "line": 1888,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
-          "open": 5
+          "open": 3
         },
         {
           "blocked": 0,
@@ -1205,10 +1205,10 @@
           "line": 2578,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13
+          "open": 12
         },
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 56,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
@@ -1222,7 +1222,7 @@
           "line": 3420,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 60
+          "open": 54
         }
       ]
     },
