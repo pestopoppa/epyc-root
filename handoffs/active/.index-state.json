@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 9,
       "oldest_advance": "2026-11-02",
-      "open": 734
+      "open": 735
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -539,7 +539,7 @@
       "closed": 371,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 111,
+      "open": 112,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -548,7 +548,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 482,
+      "total": 483,
       "tracks": [
         {
           "blocked": 0,
@@ -651,7 +651,7 @@
           "line": 6634,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 8
+          "open": 9
         }
       ]
     },

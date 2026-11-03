@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T09:04:00Z",
+  "generated_at": "2026-11-03T11:33:38Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3252,14 +3252,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 371,
-      "dispatchable": 111,
+      "dispatchable": 112,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-03",
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
-      "open": 111,
+      "open": 112,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3387,7 +3387,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3397,7 +3397,7 @@
           ],
           "line": 6634,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 8,
+          "open": 9,
           "readiness": "blocked"
         }
       ]

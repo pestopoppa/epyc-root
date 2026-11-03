@@ -7178,3 +7178,5 @@ The current implementation and its remaining gaps are rendered in
 [`docs/coordination/session-bus-task-flow.html`](../../docs/coordination/session-bus-task-flow.html).
 The only operator-only action is approval/merge of the protected Phase 5 policy package and any
 narrow subagent-writer exception.
+
+- [ ] **ROWFLOW-KILLBYNAME** [non-inference] Dry-run/smoke cleanup appears to kill EVERY process whose argv contains the row id, not only the processes it started; this breaks the no-pkill-by-name rule (CLAUDE.md Process Management, INC-20260731). Evidence 2026-11-03: ws58's own `publish_row.py` invocations for `brf-exp01-trellis-build-20261102-r3` exited 144 twice while the smoke cleaned up; the 2026-11-03 quiet-claim audit found the inf22 recipe cleanup killed its sibling custody launcher (`grants/inf22-q38-custody-r1-20261102.ended` rc=143). Find every cleanup path (rowflow dry-run teardown, `filler_run15.sh`, per-packet recipes) that matches by argv/name and make it kill only its own captured pid/pgid; add a test that a bystander process carrying the row id in argv survives. Done when: the test passes and no cleanup path matches processes by name.
