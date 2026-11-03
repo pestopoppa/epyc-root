@@ -145,7 +145,8 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
 - [x] **BRF-T6-1** Bind `task_lint.py migrate` in the fold commit gate and `task_lint.py publish` in rowflow publish.
   ✅ 2026-11-02 `4d6ea0b3d`: publish leg in `publish_row.py` (installed to `compute-flags/bin/rowflow/`, cmp 3/3); migrate leg = the exact command in the gate section above. Tests 9/9 new, rowflow 58 pass + 1 known failure. [no-belief: tooling]
 - [x] **BRF-T6-2** [non-inference] Add `task_lint.py` to `index_state.py --check` as warn-only. `3e2b99bb5` — TASK-LINT column on stderr, exit code untouched. [no-belief: tooling]
-- [ ] **BRF-T6-3** [non-inference] Make the lint blocking in `--check` and in wrap-up once BRF-T7-1 is ticked. Done when: `--check` exits non-zero on an untagged lint failure (test).
+- [x] **BRF-T6-3** [non-inference] Make the lint blocking in `--check` and in wrap-up once BRF-T7-1 is ticked. Done when: `--check` exits non-zero on an untagged lint failure (test).
+  - 2026-11-03: DROPPED by operator decision (decision tool): the check stays binding at row publish (BRF-T6-1) and warn-only in `--check`; no commit-time blocking. [no-belief: operator scope decision]
 
 ## T7 — 1b folds (63 → 29)
 

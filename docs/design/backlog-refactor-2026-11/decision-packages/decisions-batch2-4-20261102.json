@@ -97,7 +97,7 @@
    "manifest_id": "25cd905212ac",
    "fold": 10,
    "dest": "kernel-champion-and-promotion.md",
-   "question": "Ratify the forward-port rule (V6R-4b / OP-58) into CLAUDE.md § Experimental Kernel Workflow?",
+   "question": "Ratify the forward-port rule (V6R-4b / OP-58) into CLAUDE.md \u00a7 Experimental Kernel Workflow?",
    "chosen": "A",
    "chosen_text": "Ratify the proposed text as written",
    "status": "approved, pending ratify script",
@@ -1814,5 +1814,19 @@
   },
   "production stack": "stays DOWN for now (compute first). GPS-PIN-1b and the other approved production changes apply at the next operator-called stack bring-up.",
   "UFH-12-PROD-ADOPT": "fold into the CHAMPION so it ships with the v11 promotion; no exception, no separate swap"
+ },
+ "shelved_20261103": {
+  "by": "operator (decision tool), 2026-11-03",
+  "items": [
+   "V6R-4b",
+   "R23-47",
+   "RC-6a",
+   "TD-30e",
+   "wrap-up division-of-labour",
+   "worktree-apply rule",
+   "SEQ-B1"
+  ],
+  "why": "no practical throughput benefit; ratify just-in-time if a lane needs a decision-grade claim under P-KLD/RC-6a/TD-30e. Ratify script and drafts removed (history: b1bf3f3f7).",
+  "also": "BRF-T6-3 (blocking task lint) dropped"
  }
 }

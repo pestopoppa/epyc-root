@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 20,
       "oldest_advance": "2026-07-29",
-      "open": 663
+      "open": 662
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -501,10 +501,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 12,
+      "open": 11,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
