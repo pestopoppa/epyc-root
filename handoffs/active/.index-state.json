@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 53,
+      "blocked": 52,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 863
+      "open": 840
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -2224,11 +2224,11 @@
       ]
     },
     "rocm-kernel-authoring.md": {
-      "blocked": 1,
-      "closed": 336,
+      "blocked": 0,
+      "closed": 334,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 98,
+      "open": 75,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2237,7 +2237,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 435,
+      "total": 409,
       "tracks": [
         {
           "blocked": 0,
@@ -2249,7 +2249,7 @@
           "line": 36,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 49
+          "open": 40
         },
         {
           "blocked": 0,
@@ -2262,11 +2262,11 @@
           "line": 1731,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
-          "open": 25
+          "open": 21
         },
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 22,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2275,17 +2275,17 @@
           "line": 2998,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 10
+          "open": 5
         },
         {
           "blocked": 0,
-          "closed": 112,
+          "closed": 111,
           "gates": [],
           "guarded": 0,
           "line": 3403,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 6
+          "open": 4
         },
         {
           "blocked": 0,
@@ -2295,17 +2295,17 @@
           "line": 3918,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
-          "open": 6
+          "open": 4
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 4029,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 2
+          "open": 1
         }
       ]
     },

@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:40:30Z",
+  "generated_at": "2026-11-03T16:42:24Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1863,17 +1863,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
-      "closed": 336,
-      "dispatchable": 98,
+      "closed": 334,
+      "dispatchable": 75,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-03",
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
-      "open": 99,
+      "open": 75,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1908,13 +1908,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 49,
+          "dispatchable": 40,
           "gates": [
             "EVL-47"
           ],
           "line": 36,
           "name": "rocm-verify-profile-backend",
-          "open": 49,
+          "open": 40,
           "readiness": "blocked"
         },
         {
@@ -1922,14 +1922,14 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 25,
+          "dispatchable": 21,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 1731,
           "name": "agentic-rocm-kernel-authoring",
-          "open": 25,
+          "open": 21,
           "readiness": "blocked"
         },
         {
@@ -1937,41 +1937,41 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 10,
+          "dispatchable": 5,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2998,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 10,
+          "open": 5,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
           "line": 3403,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 6,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
           "line": 3918,
           "name": "frontier-f6-upstream-publication",
-          "open": 6,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 4029,
           "name": "llama-cpp-dsa-contribution",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         }
       ]
