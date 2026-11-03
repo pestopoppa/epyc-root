@@ -411,9 +411,13 @@ for k, (t, anc, mem) in enumerate(folds, 1):
     ofiles = sorted({units[u]['file'] for r in mem for u in pre_units[r]})
     pend = sum(1 for f0 in ofiles for r_ in refs_by_file[f0] if r_['decision_kind'] == 'pending-choice')
     owner = tmeta.get(t, {}).get('owner_index')
+    # every fold names its destination explicitly: a plan target (or, for a group the plan never named, the
+    # anchor's own file), never empty and never a placeholder; the fold script, its records and its commit
+    # message read this name, so an unnamed fold is refused here rather than at apply time
+    assert isinstance(t, str) and re.fullmatch(r'[a-z0-9][a-z0-9._-]*\.md', t) and t != 'X.md', ('fold without an explicit target name', k, t)
     entries.append({
         'order': k, 'box': f'BRF-T7-F{k}' + (' (BRF-T7-MEQ)' if t == meq['target'] else ''),
-        'plan_target': t, 'destination': f'handoffs/active/{t}', 'destination_is_rename': anchor_file != t,
+        'plan_target': t, 'target_name': t, 'destination': f'handoffs/active/{t}', 'destination_is_rename': anchor_file != t,
         'anchor': f'handoffs/active/{anchor_file}', 'anchor_row_kept': anc,
         'members': [{'row': r, 'file_after_1a': files_before[r], 'readiness_after_1a': per0_1a[r],
                      'dispatchable': pre_disp[r], 'grouped_by': why[r]} for r in [anc] + others],

@@ -102,6 +102,7 @@ One kept row (`EVL-10`, fold 14) moves to its plan owner index. Live-state rewri
 generation: 29 session slugs and 110 rowflow `handoff_task` paths; re-scan them at apply.
 **Apply-time**: regenerate if `origin/main` moves dep gates before a batch. Against the earlier virtual base
 (`74c445166`), every group, anchor, track and gate marker is identical; only track order and two dispatchable counts moved.
+**Regenerated at `a01625aa3`** (origin/main `187957761` + the BRF-T1-MEQ carve): same 17 folds, groups, anchors and members; fold 8 gains the 17 `meq-carve-*` tracks, and folds 5, 6, 10 and 11 rewrite the three gated carve markers (53 track refs, was 49). Still 0 unproven. Every fold now carries an explicit `target_name` (= its plan target); the generator refuses a fold without one.
 
 ---
 

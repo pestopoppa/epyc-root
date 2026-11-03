@@ -1,11 +1,9 @@
 {
  "schema": "brf-fold-list-1b.v1",
  "generated": "2026-11-02",
- "origin_main": "8b0d3d571c289f5d799ce06714d007545bbf4cf1",
+ "origin_main": "1879577612a6fa72d44511fcda6bd3bea18d7762",
  "tooling_on_top_of_origin_main": [
-  "index_state: <ROW>#<track> gate refs (BRF-T7-1 prerequisite)",
-  "BRF-T1-F25: fold 2 handoff(s) into reviewer-latency-and-sampling-budget.md (route 1a, batch 4)",
-  "BRF-T1-F26: fold 7 handoff(s) into routing-program.md (route 1a, batch 4)"
+  "BRF-T1-MEQ: carve 31 model-evaluation boxes into model-evaluation-queue.md (D2 remainder)"
  ],
  "base": "route-1a END state: the 26 folds of fold-list-1a.json applied virtually on origin_main (BRF-T1-1 fold.py semantics)",
  "route_1a_folds_already_on_origin_main": [
@@ -76,7 +74,7 @@
    "vidya-belief-substrate-program.md"
   ],
   "groups": 30,
-  "track_refs_written": 49,
+  "track_refs_written": 53,
   "deps_cells_coarsened": 8,
   "inert_refs_dropped": 0,
   "unproven_folds": 0
@@ -153,6 +151,7 @@
    "order": 1,
    "box": "BRF-T7-F1",
    "plan_target": "kernel-champion-and-promotion.md",
+   "target_name": "kernel-champion-and-promotion.md",
    "destination": "handoffs/active/kernel-champion-and-promotion.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/autokernel-champion-aggregate.md",
@@ -378,10 +377,10 @@
     }
    },
    "link_repoint_files": {
-    "fable5-window2-findings-03-portfolio-and-master-queue.md": 17,
-    "autokernel-cross-workload-keep-gate.md": 11,
-    "autokernel-all-devices-all-dimensions.md": 23,
-    "autokernel-champion-aggregate.md": 42
+    "fable5-window2-findings-03-portfolio-and-master-queue.md": 18,
+    "autokernel-cross-workload-keep-gate.md": 12,
+    "autokernel-all-devices-all-dimensions.md": 24,
+    "autokernel-champion-aggregate.md": 43
    },
    "session_slug_rewrites": [
     {
@@ -621,6 +620,7 @@
    "order": 2,
    "box": "BRF-T7-F2",
    "plan_target": "kv-cache-program.md",
+   "target_name": "kv-cache-program.md",
    "destination": "handoffs/active/kv-cache-program.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
@@ -781,9 +781,9 @@
     }
    },
    "link_repoint_files": {
-    "heterogeneous-slot-fabric-residency.md": 23,
-    "kv-unified-stack-rollout.md": 34,
-    "kv-prefix-fork-and-paged-attention.md": 35
+    "heterogeneous-slot-fabric-residency.md": 24,
+    "kv-unified-stack-rollout.md": 35,
+    "kv-prefix-fork-and-paged-attention.md": 36
    },
    "session_slug_rewrites": [
     {
@@ -963,6 +963,7 @@
    "order": 3,
    "box": "BRF-T7-F3",
    "plan_target": "mi210-serving-program.md",
+   "target_name": "mi210-serving-program.md",
    "destination": "handoffs/active/mi210-serving-program.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/mi210-serving-program.md",
@@ -972,7 +973,7 @@
      "row": "INF-22",
      "file_after_1a": "mi210-serving-program.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 76,
+     "dispatchable": 60,
      "grouped_by": "not in the plan (new since the pin): stays a singleton"
     },
     {
@@ -998,8 +999,8 @@
      "kind": "anchor body -> track",
      "origin_file": "mi210-serving-program.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 37,
-     "open": 37,
+     "dispatchable": 34,
+     "open": 34,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -1022,8 +1023,8 @@
      "kind": "lifted track (marker kept, refs mapped)",
      "origin_file": "mi210-serving-program.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 14,
-     "open": 14,
+     "dispatchable": 3,
+     "open": 3,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -1034,8 +1035,8 @@
      "kind": "lifted track (marker kept, refs mapped)",
      "origin_file": "mi210-serving-program.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 9,
-     "open": 9,
+     "dispatchable": 7,
+     "open": 7,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -1126,7 +1127,7 @@
     }
    },
    "link_repoint_files": {
-    "numa-prefill-decode-disaggregation.md": 9
+    "numa-prefill-decode-disaggregation.md": 10
    },
    "session_slug_rewrites": [],
    "rowflow_handoff_task_rewrites": [],
@@ -1145,7 +1146,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 77,
+    "dispatchable": 61,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -1159,6 +1160,7 @@
    "order": 4,
    "box": "BRF-T7-F4",
    "plan_target": "speculative-decoding.md",
+   "target_name": "speculative-decoding.md",
    "destination": "handoffs/active/speculative-decoding.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/speculative-decoding-mtp-refresh.md",
@@ -1168,7 +1170,7 @@
      "row": "INF-50",
      "file_after_1a": "speculative-decoding-mtp-refresh.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 32,
+     "dispatchable": 30,
      "grouped_by": "plan action rename-to-target+split"
     },
     {
@@ -1195,8 +1197,8 @@
      "kind": "anchor body -> track",
      "origin_file": "speculative-decoding-mtp-refresh.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 32,
-     "open": 33,
+     "dispatchable": 30,
+     "open": 31,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -1281,8 +1283,8 @@
     }
    },
    "link_repoint_files": {
-    "dflash2-block-drafter-experimental-build.md": 22,
-    "speculative-decoding-mtp-refresh.md": 37
+    "dflash2-block-drafter-experimental-build.md": 23,
+    "speculative-decoding-mtp-refresh.md": 39
    },
    "session_slug_rewrites": [
     {
@@ -1423,7 +1425,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 51,
+    "dispatchable": 49,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -1437,6 +1439,7 @@
    "order": 5,
    "box": "BRF-T7-F5",
    "plan_target": "autokernel-loop.md",
+   "target_name": "autokernel-loop.md",
    "destination": "handoffs/active/autokernel-loop.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/autokernel-research-loop.md",
@@ -1634,6 +1637,13 @@
       ]
      },
      {
+      "where": "model-evaluation-queue.md#meq-carve-reboot-gated-inventory-and-staging",
+      "ref": "INF-06",
+      "to": [
+       "INF-06#autokernel-research-loop"
+      ]
+     },
+     {
       "where": "speculative-decoding.md#dflash2-block-drafter-experimental-build",
       "ref": "INF-06",
       "to": [
@@ -1762,12 +1772,12 @@
     }
    },
    "link_repoint_files": {
-    "agent-collab-rnd-harness.md": 15,
-    "autokernel-rebuild-program.md": 31,
-    "autokernel-unified-surface-program.md": 22,
-    "autokernel-concurrent-target-coordination.md": 9,
-    "autokernel-orchestrator-actor-backend.md": 22,
-    "autokernel-research-loop.md": 28
+    "agent-collab-rnd-harness.md": 16,
+    "autokernel-rebuild-program.md": 32,
+    "autokernel-unified-surface-program.md": 23,
+    "autokernel-concurrent-target-coordination.md": 10,
+    "autokernel-orchestrator-actor-backend.md": 23,
+    "autokernel-research-loop.md": 29
    },
    "session_slug_rewrites": [
     {
@@ -1862,6 +1872,7 @@
    "order": 6,
    "box": "BRF-T7-F6",
    "plan_target": "harness-program.md",
+   "target_name": "harness-program.md",
    "destination": "handoffs/active/harness-program.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/harness-selection-and-integration.md",
@@ -1878,7 +1889,7 @@
      "row": "EVL-37",
      "file_after_1a": "repl-turn-efficiency.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 29,
+     "dispatchable": 28,
      "grouped_by": "fold-list-1a plan_target"
     },
     {
@@ -1937,8 +1948,8 @@
      "kind": "member body -> track",
      "origin_file": "repl-turn-efficiency.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 19,
-     "open": 19,
+     "dispatchable": 18,
+     "open": 18,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -2042,6 +2053,13 @@
       ]
      },
      {
+      "where": "model-evaluation-queue.md#meq-carve-routing-intelligence",
+      "ref": "UFH-14",
+      "to": [
+       "UFH-01#agentic-serving-harness-fixes"
+      ]
+     },
+     {
       "where": "autokernel-loop.md#autokernel-orchestrator-actor-backend",
       "ref": "EVL-37",
       "to": [
@@ -2127,11 +2145,11 @@
     }
    },
    "link_repoint_files": {
-    "repl-turn-efficiency.md": 27,
-    "harness-improvement-loop.md": 22,
-    "repl-embedding-retrieval.md": 20,
-    "agentic-serving-harness-fixes.md": 24,
-    "harness-selection-and-integration.md": 43
+    "repl-turn-efficiency.md": 29,
+    "harness-improvement-loop.md": 23,
+    "repl-embedding-retrieval.md": 21,
+    "agentic-serving-harness-fixes.md": 25,
+    "harness-selection-and-integration.md": 44
    },
    "session_slug_rewrites": [
     {
@@ -2252,7 +2270,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 112,
+    "dispatchable": 111,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -2266,6 +2284,7 @@
    "order": 7,
    "box": "BRF-T7-F7",
    "plan_target": "long-context-program.md",
+   "target_name": "long-context-program.md",
    "destination": "handoffs/active/long-context-program.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/yarn-context-extension-research.md",
@@ -2282,7 +2301,7 @@
      "row": "INF-05",
      "file_after_1a": "attention-matching-kv-compaction.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 23,
+     "dispatchable": 22,
      "grouped_by": "fold-list-1a plan_target"
     }
    ],
@@ -2326,8 +2345,8 @@
      "kind": "lifted track (marker kept, refs mapped)",
      "origin_file": "attention-matching-kv-compaction.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 4,
-     "open": 4,
+     "dispatchable": 3,
+     "open": 3,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -2396,8 +2415,8 @@
     }
    },
    "link_repoint_files": {
-    "attention-matching-kv-compaction.md": 17,
-    "yarn-context-extension-research.md": 10
+    "attention-matching-kv-compaction.md": 18,
+    "yarn-context-extension-research.md": 11
    },
    "session_slug_rewrites": [
     {
@@ -2411,13 +2430,7 @@
      "handoff_to": "handoffs/active/long-context-program.md"
     }
    ],
-   "rowflow_handoff_task_rewrites": [
-    {
-     "spec": "yarn-e1-a2-gpu-20261102-v1.json",
-     "from": "yarn-context-extension-research.md:YARN-E1-A2",
-     "to": "handoffs/active/long-context-program.md:YARN-E1-A2"
-    }
-   ],
+   "rowflow_handoff_task_rewrites": [],
    "decision_package_D7": {
     "pending_choices_in_manifest": 0
    },
@@ -2433,7 +2446,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 57,
+    "dispatchable": 56,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -2447,6 +2460,7 @@
    "order": 8,
    "box": "BRF-T7-F8 (BRF-T7-MEQ)",
    "plan_target": "model-evaluation-queue.md",
+   "target_name": "model-evaluation-queue.md",
    "destination": "handoffs/active/model-evaluation-queue.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/model-evaluation-queue.md",
@@ -2456,7 +2470,7 @@
      "row": "EVL-02",
      "file_after_1a": "model-evaluation-queue.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 69,
+     "dispatchable": 101,
      "grouped_by": "model_evaluation_queue (D2, BRF-T7-MEQ)"
     },
     {
@@ -2553,6 +2567,210 @@
      "gate_marker": "<!-- gate: none -->",
      "dispatchable": 4,
      "open": 5,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-document-parser-table-bench",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-eval-tower-verification",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 11,
+     "open": 11,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-frontier-f3-data-flywheel",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-glm52-reviewer-capability-gates",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: INF-77 -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "meq-carve-gpu-acceleration-path",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-gpu-serving-tie-in-program",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 3,
+     "open": 3,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-memento-block-reasoning-compression",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-multimodal-pipeline",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-multiscreen-attention-evaluation",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-opendataloader-pipeline-integration",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-reboot-gated-inventory-and-staging",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: INF-06#autokernel-research-loop, INF-45, RTG-34 -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "meq-carve-repl-turn-efficiency",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-routing-intelligence",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: UFH-01#agentic-serving-harness-fixes -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "blocked",
+     "readiness_after": "blocked"
+    },
+    {
+     "track": "meq-carve-speculative-decoding-mtp-refresh",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 2,
+     "open": 2,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-tq3-quantization-evaluation",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
+     "readiness_before": "ready",
+     "readiness_after": "ready"
+    },
+    {
+     "track": "meq-carve-typed-decision-plane",
+     "from_file": "model-evaluation-queue.md",
+     "from_row": "EVL-02",
+     "kind": "lifted track (marker kept, refs mapped)",
+     "origin_file": "model-evaluation-queue.md",
+     "gate_marker": "<!-- gate: none -->",
+     "dispatchable": 1,
+     "open": 1,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -2698,8 +2916,8 @@
     }
    },
    "link_repoint_files": {
-    "gpu-candidates-surface-qwen38-update.md": 9,
-    "paw-compiled-specialists.md": 10
+    "gpu-candidates-surface-qwen38-update.md": 10,
+    "paw-compiled-specialists.md": 11
    },
    "session_slug_rewrites": [
     {
@@ -2724,7 +2942,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 80,
+    "dispatchable": 112,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -2738,6 +2956,7 @@
    "order": 9,
    "box": "BRF-T7-F9",
    "plan_target": "cpu-decode-roofline-program.md",
+   "target_name": "cpu-decode-roofline-program.md",
    "destination": "handoffs/active/cpu-decode-roofline-program.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/cpu-decode-roofline-program.md",
@@ -2898,8 +3117,8 @@
     }
    },
    "link_repoint_files": {
-    "sarathi-serve-cpu-evaluation.md": 14,
-    "moe-routing-tap-and-locality-measurement.md": 11
+    "sarathi-serve-cpu-evaluation.md": 15,
+    "moe-routing-tap-and-locality-measurement.md": 12
    },
    "session_slug_rewrites": [],
    "rowflow_handoff_task_rewrites": [],
@@ -2932,6 +3151,7 @@
    "order": 10,
    "box": "BRF-T7-F10",
    "plan_target": "numa-placement-and-contention.md",
+   "target_name": "numa-placement-and-contention.md",
    "destination": "handoffs/active/numa-placement-and-contention.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/numa-placement-and-contention.md",
@@ -2948,7 +3168,7 @@
      "row": "EVL-49",
      "file_after_1a": "reboot-gated-inventory-and-staging.md",
      "readiness_after_1a": "blocked",
-     "dispatchable": 16,
+     "dispatchable": 15,
      "grouped_by": "plan action merge-into+split"
     },
     {
@@ -3048,8 +3268,8 @@
      "kind": "member body -> track",
      "origin_file": "reboot-gated-inventory-and-staging.md",
      "gate_marker": "<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34 -->",
-     "dispatchable": 16,
-     "open": 16,
+     "dispatchable": 15,
+     "open": 15,
      "readiness_before": "blocked",
      "readiness_after": "blocked"
     },
@@ -3082,6 +3302,18 @@
      },
      {
       "where": "numa-placement-and-contention.md#contention-model-device-and-load-axes-rider",
+      "ref": "INF-45",
+      "to": [
+       "INF-45#numa-placement-and-contention",
+       "INF-45#batched-decode-measurement",
+       "INF-45#dynamic-stack-concurrency",
+       "INF-45#numa-placement-defect-20260730",
+       "INF-45#shape-keyed-contention-gating",
+       "INF-45#within-role-placement-state-machine"
+      ]
+     },
+     {
+      "where": "model-evaluation-queue.md#meq-carve-reboot-gated-inventory-and-staging",
       "ref": "INF-45",
       "to": [
        "INF-45#numa-placement-and-contention",
@@ -3136,8 +3368,8 @@
     }
    },
    "link_repoint_files": {
-    "reboot-gated-inventory-and-staging.md": 11,
-    "contention-model-device-and-load-axes-rider.md": 7
+    "reboot-gated-inventory-and-staging.md": 12,
+    "contention-model-device-and-load-axes-rider.md": 8
    },
    "session_slug_rewrites": [
     {
@@ -3162,7 +3394,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 98,
+    "dispatchable": 97,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -3176,6 +3408,7 @@
    "order": 11,
    "box": "BRF-T7-F11",
    "plan_target": "coordination-and-churn-pipeline.md",
+   "target_name": "coordination-and-churn-pipeline.md",
    "destination": "handoffs/active/coordination-and-churn-pipeline.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/coordination-and-churn-pipeline.md",
@@ -3374,6 +3607,16 @@
       ]
      },
      {
+      "where": "model-evaluation-queue.md#meq-carve-reboot-gated-inventory-and-staging",
+      "ref": "RTG-34",
+      "to": [
+       "RTG-34#coordination-and-churn-pipeline",
+       "RTG-34#churn-pipeline",
+       "RTG-34#dashboard-architecture-restructure",
+       "RTG-34#handoff-index-and-backlog-graph"
+      ]
+     },
+     {
       "where": "numa-placement-and-contention.md#reboot-gated-inventory-and-staging",
       "ref": "RTG-34",
       "to": [
@@ -3427,8 +3670,8 @@
     }
    },
    "link_repoint_files": {
-    "coordinator-role-failure-modes-and-refactor.md": 20,
-    "loop-owned-fleet-implementation.md": 34
+    "coordinator-role-failure-modes-and-refactor.md": 21,
+    "loop-owned-fleet-implementation.md": 35
    },
    "session_slug_rewrites": [],
    "rowflow_handoff_task_rewrites": [],
@@ -3461,6 +3704,7 @@
    "order": 12,
    "box": "BRF-T7-F12",
    "plan_target": "autopilot-program.md",
+   "target_name": "autopilot-program.md",
    "destination": "handoffs/active/autopilot-program.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/autopilot-program.md",
@@ -3732,7 +3976,7 @@
     }
    },
    "link_repoint_files": {
-    "autopilot-sequential-allocation.md": 20
+    "autopilot-sequential-allocation.md": 21
    },
    "session_slug_rewrites": [],
    "rowflow_handoff_task_rewrites": [],
@@ -3765,6 +4009,7 @@
    "order": 13,
    "box": "BRF-T7-F13",
    "plan_target": "rocm-kernel-authoring.md",
+   "target_name": "rocm-kernel-authoring.md",
    "destination": "handoffs/active/rocm-kernel-authoring.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/rocm-verify-profile-backend.md",
@@ -3954,9 +4199,9 @@
     }
    },
    "link_repoint_files": {
-    "agentic-rocm-kernel-authoring.md": 20,
-    "gemma-challenge-kernel-techniques-v7.md": 33,
-    "rocm-verify-profile-backend.md": 20
+    "agentic-rocm-kernel-authoring.md": 21,
+    "gemma-challenge-kernel-techniques-v7.md": 34,
+    "rocm-verify-profile-backend.md": 21
    },
    "session_slug_rewrites": [
     {
@@ -4010,6 +4255,7 @@
    "order": 14,
    "box": "BRF-T7-F14",
    "plan_target": "memory-program.md",
+   "target_name": "memory-program.md",
    "destination": "handoffs/active/memory-program.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/memory-program.md",
@@ -4134,7 +4380,7 @@
     }
    },
    "link_repoint_files": {
-    "dev-harness-trace-mining.md": 9
+    "dev-harness-trace-mining.md": 10
    },
    "session_slug_rewrites": [],
    "rowflow_handoff_task_rewrites": [],
@@ -4167,6 +4413,7 @@
    "order": 15,
    "box": "BRF-T7-F15",
    "plan_target": "reviewer-control-plane.md",
+   "target_name": "reviewer-control-plane.md",
    "destination": "handoffs/active/reviewer-control-plane.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/glm52-reviewer-capability-gates.md",
@@ -4176,7 +4423,7 @@
      "row": "REV-02",
      "file_after_1a": "glm52-reviewer-capability-gates.md",
      "readiness_after_1a": "blocked",
-     "dispatchable": 5,
+     "dispatchable": 4,
      "grouped_by": "plan action rename-to-target+split"
     },
     {
@@ -4221,8 +4468,8 @@
      "kind": "anchor body -> track",
      "origin_file": "glm52-reviewer-capability-gates.md",
      "gate_marker": "<!-- gate: INF-77 -->",
-     "dispatchable": 5,
-     "open": 5,
+     "dispatchable": 4,
+     "open": 4,
      "readiness_before": "blocked",
      "readiness_after": "blocked"
     },
@@ -4350,10 +4597,10 @@
     }
    },
    "link_repoint_files": {
-    "reviewer-escalation-and-human-gate-policy.md": 13,
-    "reviewer-latency-and-sampling-budget.md": 19,
-    "reviewer-model-ablations.md": 11,
-    "glm52-reviewer-capability-gates.md": 21
+    "reviewer-escalation-and-human-gate-policy.md": 14,
+    "reviewer-latency-and-sampling-budget.md": 20,
+    "reviewer-model-ablations.md": 12,
+    "glm52-reviewer-capability-gates.md": 22
    },
    "session_slug_rewrites": [
     {
@@ -4383,7 +4630,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 26,
+    "dispatchable": 25,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -4397,6 +4644,7 @@
    "order": 16,
    "box": "BRF-T7-F16",
    "plan_target": "routing-program.md",
+   "target_name": "routing-program.md",
    "destination": "handoffs/active/routing-program.md",
    "destination_is_rename": false,
    "anchor": "handoffs/active/routing-program.md",
@@ -4406,14 +4654,14 @@
      "row": "RTG-09",
      "file_after_1a": "routing-program.md",
      "readiness_after_1a": "ready",
-     "dispatchable": 97,
+     "dispatchable": 96,
      "grouped_by": "not in the plan (new since the pin): stays a singleton"
     },
     {
      "row": "RTG-30",
      "file_after_1a": "routing-intelligence.md",
      "readiness_after_1a": "blocked",
-     "dispatchable": 16,
+     "dispatchable": 15,
      "grouped_by": "plan action merge-into+split"
     }
    ],
@@ -4504,8 +4752,8 @@
      "kind": "lifted track (marker kept, refs mapped)",
      "origin_file": "routing-program.md",
      "gate_marker": "<!-- gate: none -->",
-     "dispatchable": 29,
-     "open": 29,
+     "dispatchable": 28,
+     "open": 28,
      "readiness_before": "ready",
      "readiness_after": "ready"
     },
@@ -4528,8 +4776,8 @@
      "kind": "member body -> track",
      "origin_file": "routing-intelligence.md",
      "gate_marker": "<!-- gate: UFH-01 -->",
-     "dispatchable": 16,
-     "open": 16,
+     "dispatchable": 15,
+     "open": 15,
      "readiness_before": "blocked",
      "readiness_after": "blocked"
     }
@@ -4600,7 +4848,7 @@
     }
    },
    "link_repoint_files": {
-    "routing-intelligence.md": 16
+    "routing-intelligence.md": 18
    },
    "session_slug_rewrites": [
     {
@@ -4625,7 +4873,7 @@
       "no_open": 0
      }
     },
-    "dispatchable": 113,
+    "dispatchable": 111,
     "commands": [
      "python3 scripts/handoffs/index_state.py",
      "python3 scripts/handoffs/index_state.py --check",
@@ -4639,6 +4887,7 @@
    "order": 17,
    "box": "BRF-T7-F17",
    "plan_target": "model-architecture-readiness.md",
+   "target_name": "model-architecture-readiness.md",
    "destination": "handoffs/active/model-architecture-readiness.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/log-linear-gated-deltanet-readiness.md",
@@ -4733,8 +4982,8 @@
     }
    },
    "link_repoint_files": {
-    "engram-conditional-memory.md": 10,
-    "log-linear-gated-deltanet-readiness.md": 10
+    "engram-conditional-memory.md": 11,
+    "log-linear-gated-deltanet-readiness.md": 11
    },
    "session_slug_rewrites": [
     {
