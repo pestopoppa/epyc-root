@@ -91,7 +91,7 @@ prompt *screening* (repeated-5-gram fraction), which is necessary but not suffic
 copied text is the model's own **generation**, not the prompt. Rule fed: never replicate a
 context-reading drafter against a live server on a repeated prompt, and always include a
 non-context control arm (`draft-mtp` or `none`) **structurally in the harness** rather than as
-operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding-mtp-refresh.md`.
+operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding.md`.
 
 ## INC-20260731-stale-config-outranked-operator-decision
 The operator's standing decision is the **composed** spec recipe `ngram-mod,draft-mtp`. The committed

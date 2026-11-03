@@ -2017,7 +2017,7 @@ Run *before* downloading, because architecture — not leaderboard rank — is w
 - Operational: **`--flash-attn off` is required**; PR notes degraded quality via Web UI (use the API with specific prompts); bbox prediction reported unreliable; vLLM/SGLang/transformers support is nightly/git-only.
 
 ##### Bearing on the MTP track (separate finding, worth carrying over)
-GLM-OCR ships `num_nextn_predict_layers: 1`, but llama.cpp `src/models/glm4.cpp` comments the NextN/MTP tensors as *"preserved but unused"*. Its headline decoder speedup is **not realized under llama.cpp** — we would carry the tensors and get plain autoregressive decode. This is a banked-but-unexploited MTP lever; cross-reference [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md).
+GLM-OCR ships `num_nextn_predict_layers: 1`, but llama.cpp `src/models/glm4.cpp` comments the NextN/MTP tensors as *"preserved but unused"*. Its headline decoder speedup is **not realized under llama.cpp** — we would carry the tensors and get plain autoregressive decode. This is a banked-but-unexploited MTP lever; cross-reference [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh).
 
 ##### Consequence
 - [ ] **Do not download MinerU2.5-Pro or GLM-OCR as `odl_bench` model swaps** — the harness invokes models single-pass and both would produce void results. ✅ 2026-07-29 — this guardrail is now the operative Phase-D condition; either candidate requires a separately scoped multi-call pipeline harness before any download or benchmark.  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*

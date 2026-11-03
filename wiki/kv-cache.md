@@ -144,7 +144,7 @@ Sources: [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-progr
 
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1 rules v3, KPF-13.1a, KPF-17.4, KPF-18-S1 remainder, KPF-LB1.1 verdict)
 - [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB7, B4j findings, UFH14-B4j.1)
-- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) (SPEC-GRAM.1 part 2 armed on the MTP lane)
+- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (SPEC-GRAM.1 part 2 armed on the MTP lane)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 ---
@@ -837,7 +837,7 @@ Two facts keep being conflated because both are called "grouping": (1) **granula
 
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the KIVI correction (all three load-bearing parts), the dual-cache capacity-vs-bandwidth reframing, the R9 warrant repair, the group-32/axis granularity correction
 - [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — gates G2/G3/G4/G5 and B1/B2 with their named open/close criteria, H11 static read, the massive-activations deprioritisation record, the PR #21089 closed-unmerged re-verification
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — G3: quantized-KV spec-decode bandwidth-positive only at `draft_max = 1` on MI210 (see [Speculative Decoding](speculative-decoding.md))
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — G3: quantized-KV spec-decode bandwidth-positive only at `draft_max = 1` on MI210 (see [Speculative Decoding](speculative-decoding.md))
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) / [RotateKV arXiv 2501.16383](https://arxiv.org/abs/2501.16383) / [arXiv 2606.09864](https://arxiv.org/abs/2606.09864) / [arXiv 2608.12149](https://arxiv.org/abs/2608.12149) — the corrected external evidence base
 
 ## Compiled Update — 2026-08-23 (wave-2 research intake): the KIVI "primary quality gap" never existed, our KV blocks are finer than the published mitigation, and slot-restore loss is conditional
@@ -848,7 +848,7 @@ independently by three separate Stage-2b dives. Every third-party figure is dive
 primary source and is labelled as third-party. Under [MEASUREMENT.md](../MEASUREMENT.md) **no external
 number here gates a stack change**; each is a hypothesis, and the tests are filed on
 [`tq3-quantization-evaluation.md`](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) and
-[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md).
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh).
 
 ### The "primary quality gap" at `kv-cache-quantization.md:320` never existed — and it was wrong in three independent ways
 
@@ -1102,7 +1102,7 @@ point at, as untrusted content.
   retirement leaves behind: G3 (multi-step generation eval against quantized KV), G5 (reproduce KIVI's
   Fig. 2 / Table 2 on our architecture), the `q4_0`-vs-`q4_1` asymmetric-quantizer A/B, and the H11
   read-only audit of what our KV write path does not carry.
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — B5
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — B5
   (re-measure R9 with an acceptance rate and a named correctness instrument) and the rider measuring α
   for `-ctkd`/`-ctvd` KV-asymmetric self-speculation.
 - [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024, dive-verified 2026-08-22, credibility

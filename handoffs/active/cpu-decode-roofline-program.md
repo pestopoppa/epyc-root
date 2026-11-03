@@ -86,8 +86,8 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 - Axis E riders: `unsloth/Qwen3.8-Flash-Next-GGUF` `MTP/` (the published heads, revision `5d16c055`),
   [`qwen38-flash-next-fp8-evaluation.md`](../completed/qwen38-flash-next-fp8-evaluation.md) (INF-63 — its FP8
   re-acquisition is no longer needed for MTP), [`qwen-mtp-llamacpp-port.md`](model-evaluation-queue.md#track-qwen-mtp-llamacpp-port) (INF-46),
-  [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) (INF-50),
-  [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md) (INF-62, the
+  [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) (INF-50),
+  [`dflash2-block-drafter-experimental-build.md`](speculative-decoding.md#track-dflash2-block-drafter-experimental-build) (INF-62, the
   alternative drafter — `--spec-type` takes one value)
 
 ## Completed scope — split out at close-out (2026-09-08)

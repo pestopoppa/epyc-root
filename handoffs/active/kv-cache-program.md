@@ -1753,7 +1753,7 @@ INF-41 (speech VRAM in the capacity gate, OP-48). Downstream, not a dependency: 
 on KVU-1.
 **Related**: [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) DS41-C25,
 [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-3 (native LCP slot pick),
-[`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) SW-9,
+[`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) SW-9,
 [`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md) OAB-4a,
 [`multimodal-pipeline.md`](speech-and-multimodal.md#track-multimodal-pipeline) S-11a
 

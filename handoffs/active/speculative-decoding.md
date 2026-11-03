@@ -1,16 +1,23 @@
 # Speculative-Decoding / MTP Refresh
 
+> **Fold destination** (BRF-T7-F4, BRF-T7-1, route 1b, 2026-11-03): renamed from `speculative-decoding-mtp-refresh.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `speculative-decoding-mtp-refresh`, `dflash2-block-drafter-experimental-build` (rows INF-62 retired into INF-50). The former `speculative-decoding-mtp-refresh.md` body is `## Track: speculative-decoding-mtp-refresh`; tracks those handoffs already had are lifted verbatim after their owner.
+
 **Status**: active (created 2026-06-22 via operator-directed MTP review; v6 status correction added 2026-07-11)
 **Scratch**: `/mnt/raid0/llm/tmp/mtp-target-precision/` · worktrees: `/mnt/raid0/llm/worktrees/mtp-target-precision-*` NI08 original native writer, source and publication custody: `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; own sparse generated product lane `/mnt/raid0/llm/worktrees/ni08-inf50-native-writer-product-20261007/`. · `/mnt/raid0/llm/tmp/refactor-01a16fc3/` (queued XGrammar sources, build receipts, parity and timing evidence; keep) · `/mnt/raid0/llm/tmp/sw2-v9-slot-isolation-20261101/` · `/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/` (published rows; keeper owns reclamation)
 **Categories**: speculative_decoding, hardware_optimization, local_inference, moe_optimization
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`llama-cpp-dsa-contribution.md`](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution), [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
 
-## Objective
+## Track: speculative-decoding-mtp-refresh
+<!-- gate: none -->
+
+> Folded from the body of `handoffs/active/speculative-decoding-mtp-refresh.md` (row INF-50), from its first `##` section on, @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+
+#### Objective
 
 Decide which remaining MTP (multi-token-prediction) speculative-decoding paths are worth operator benches now that production is frozen at `production-consolidated-v8` with native MTP/NEXTN support, and now that the Qwen/native MTP surface has a built experimental checkpoint. The open work is no longer "does our fork have MTP at all"; it is per-model deploy evidence under the v8 native runtime or a future refreshed experimental line started from current production. **All numbers here are OBSERVATIONS (MEASUREMENT.md) — none gate a keep/deploy decision; the operator runs all benches.**
 
-## Start here (updated 2026-11-02)
+#### Start here (updated 2026-11-02)
 
 - Production is `production-consolidated-v10` (`ffc1bac82`, binary 10303). Per-role spec-dec is launch-fixed and
   lives in the lean registry's `speculative_decoding_policy` (SW-4). The v5/v6/v8-era state notes that stood here are
@@ -20,11 +27,11 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 - SW-9 (the MTP accept path fills token probabilities) is on the champion `90c12df42` and bound for v11. SW-9 is now
   exercised on GPU (V6R-4d.2 PASS, 2026-10-01; `autokernel-champion-aggregate.md`).
 
-## Completed Scope
+#### Completed Scope
 
 - Compacted 2026-10-06 (operator /wrap-up): the gemma-4-31B gate-bench and promotion decision, the 2026-07-02 to 2026-07-21 research-intake updates and the KAT-Coder preflight facts moved to the [archived history](../archived/speculative-decoding-mtp-refresh-history-through-2026-10-06.md). Open boxes in the neighbouring sections stayed here.
 
-## Per-model verdict table
+#### Per-model verdict table
 
 | Model / role | Arch | New upstream | Verdict | Why |
 |---|---|---|---|---|
@@ -36,7 +43,7 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 | **Qwen3-Next-80B (ingest)** | SSM-MoE hybrid | native MTP (GPU/vLLM only) | **not viable on CPU** | only GGUF attempt (quivent) = net-negative 0.43×; verification wall holds |
 | **gemma-4-26B-A4B (worker_general)** | MoE A4B | mainline/v6 native gemma4 MTP (#23398 lineage) | **not stale on head; v6-native now** | our head = official; production now uses the consolidated v6 native MTP path, not the separate ik fork. Cheap open check remains `draft_max` / `--spec-draft-n-max` 2→3→4 sweep under operator-approved bench conditions. |
 
-## ngram speculation — **RETRACTED 2026-07-31 · DO NOT DEPLOY**
+#### ngram speculation — **RETRACTED 2026-07-31 · DO NOT DEPLOY**
 
 > ### ⛔ EVERYTHING IN THIS SECTION IS WITHDRAWN
 >
@@ -74,7 +81,7 @@ Decide which remaining MTP (multi-token-prediction) speculative-decoding paths a
 >
 > The original text is preserved **unedited** in the [archived history](../archived/speculative-decoding-mtp-refresh-history-through-2026-10-06.md), as the record of what was believed and why.
 
-## What is and is NOT runtime-switchable — read from source 2026-07-31 (v8, `67a433bf4`)
+#### What is and is NOT runtime-switchable — read from source 2026-07-31 (v8, `67a433bf4`)
 
 Operator question, answered from the frozen production source rather than from a benchmark.
 
@@ -117,7 +124,7 @@ is free.
 
 NG5 source-by-source scope and remaining provenance gaps: [2026-11-02 audit](../../docs/reports/ng5-provenance-audit-20261102.md). The audit is partial and does not close NG5. [COPYSPEC-P1 trace](../../docs/reports/ng5-trace-20261102.md): the retained raw corpus has 85 prompts; its rendered-token repetition fraction remains unrecorded in the examined packet. [T5 trace](../../docs/reports/ng5-trace-second-20261102.md): the inspected 1024-token rerun packet lacks the request text; its three retained outputs consist of repetitions of `benchmark`. Output repetition does not establish prompt repetition or contamination. [belief: cc]
 
-## Outstanding Tasks (priority order)
+#### Outstanding Tasks (priority order)
 
 - [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
 - [x] **NG0 — measure `ngram-mod,draft-mtp` against `draft-mtp` on all four production CPU models**, on realistic text after discarding a synthetic-filler first pass ✅ 2026-07-30
@@ -231,7 +238,7 @@ NG5 source-by-source scope and remaining provenance gaps: [2026-11-02 audit](../
   - 2026-11-02 scoped coverage check: the research master registry working copy `orchestration/model_registry.yaml` (research HEAD `99301fa149af86a6f9743d2b0405c9234ba39586`; that file has uncommitted changes) still contains numerical ngram observations without adjacent corpus and repeated-5-gram provenance, including `evidence_for_reversal.ordinary_text`, `task_class_spec_observation`, `historical_candidate`, `expanded_task_quality_observation`, `quiet_mi210_broader_task_ab` and `ngram_gpu_smoke_observation`. This is a pointer for a complete master-registry audit, not an exhaustive list or evidence that the source measurements lacked the data. A search of active index and campaign files found no same-line numerical ngram claims; it does not prove all index references are covered. No registry or index was edited; NG5 remains open. [no-belief: scoped documentation audit]
 - [ ] **SR-8 — draft-from-existing-source as a distinct speculation arm** (intake-1153, Cursor "speculative edits"). On an edit workload the draft stream *is the unchanged file*, so acceptance should be far higher than any general-purpose drafter — a draft-model-free speculation source, different in kind from the MTP and tree-drafting arms we have measured. Cursor reports ~1000 tok/s (~3500 char/s) on a 70b model, a ~13x speedup over vanilla Llama-3-70b. **Treat that number as vendor-reported and over two years old** (2024-05-14); the transferable content is the mechanism. **This is a HYPOTHESIS about our stack, not a result** — no evidence here says it holds on our kernels or our workloads, and we serve few whole-file-rewrite workloads today. Gate on operator interest before any bench time.
 
-### ⚠ Eval-resolution caveat behind the "A4B ties dense-31B" finding (2026-06-22)
+##### ⚠ Eval-resolution caveat behind the "A4B ties dense-31B" finding (2026-06-22)
 
 The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3.8B active MoE) both score ~90%." Operator flagged this as suspicious ("how can an A4B *match* the dense 31B of its own family?"). Investigated publicly — **verdict: benchmark saturation, NOT a dense-Q4 quantization penalty**:
 
@@ -250,31 +257,31 @@ The promotion decision rests on "gemma-4-31B (31B dense) and gemma-4-26B-A4B (~3
   - Corpus and repeated-5-gram fraction for each cited 512- and 1024-token run: not recorded in this handoff; the composed recipe is explicit for the first run only.
 - [x] **T6 — branch-authority wording sync ✅ 2026-07-19**: future benches now point to the refreshed experimental v7 branch (`experimental-v7-refresh-20260716`) or a successor branch freshly started from current production. Old `experimental-v7-candidate` references in this handoff are historical checkpoints only, not authoritative promotion instructions.
 
-## Dependency graph
+#### Dependency graph
 - T1 is closed as a directional dense-CPU-MTP win; promotion still depends on operator-approved quality/multi-prompt evidence.
 - T3 is closed as a functional dense-Qwen MTP verification and now has experimental-v7 MI210 task-class evidence. The upstream-master multiplier/path-health evidence remains valid but its absolute t/s is not production-comparable; the v7 A/B is deploy-shape evidence, not a broad role promotion.
 - T4 is now blocked by the `qwen-mtp-llamacpp-port.md` P6b model-load gate, a missing matching Q4 artifact pair, and operator bench approval on the experimental `draft-mtp` binary; compare Q4+MTP against Q4 no-MTP, not against the Q8 production role. A same-Q8 no-spec/MTP diagnostic may still be useful for Qwen3.6 MTP mechanics, but it is not the quant-parity T4 gate unless this handoff is explicitly re-scoped.
 - T5 is closed: worker `draft_max=2` remains the measured default; 3/4 did not improve accepted tokens or throughput on the production-shaped 8K worker lane, including the 2026-07-18 1024-token CPU-only rerun.
 - The historical #22673 conflict/cherry-pick analysis lives in [`qwen-mtp-llamacpp-port.md`](model-evaluation-queue.md#track-qwen-mtp-llamacpp-port). As of the 2026-07-11 checkpoint, `/mnt/raid0/llm/llama.cpp-experimental` branch `experimental-v7-candidate` at `46f876c12` already contained the Qwen/native MTP surface and CPU-only help-surface verification; that checkpoint is superseded for promotion by `experimental-v7-refresh-20260716`, and the remaining parent-handoff work is model-load/bench evidence.
 
-## Cross-cutting concerns
+#### Cross-cutting concerns
 - **CPU+MoE is the binding question**: every upstream MTP/EAGLE speedup is GPU; MoE shows ≤1.06× even on GPU (expert-union verification overhead). Dense is where CPU MTP can win; T1/T3 now provide the dense proof-points, while T4 remains the low-EV MoE confirmation bench. Any deploy decision still needs protocol-cited throughput/acceptance and quality evidence.
 - **MTP parallelism must be verified per runtime**: the June ik path asserted on `-np>1`; v6 native MTP must still be checked per role because speculative decoding can trade off against 4×-quarter concurrent splits. Confirm per role before deploy.
 - **NEVER touch production `/mnt/raid0/llm/llama.cpp`** — all port work in `llama.cpp-experimental` (verify_llama_cpp.sh enforces). Promotion means a new production version after positive operator bench + quality pass, never patching v6 in place.
 - Quant parity: Qwen3.6 prod = Q8; MTP-GGUF = Q4 → compare C1(Q4+MTP) vs C0(Q4 no-MTP), not vs Q8 prod.
 - **Draft-head is a small BW slice** (corroborated by FR-Spec vocab-trim, intake-740): trimming the draft LM-head −85% in kernel time yields only +1-3% end-to-end on bandwidth-bound decode — reinforcing that expert-verification overhead, not draft quality, is the CPU wall.
 
-## Watch-items (deferred)
+#### Watch-items (deferred)
 - **EAGLE-3** (mainline PR #18039) — deferred to the **MI210 GPU (~July 2026)** per operator; our fork's EAGLE3 is a stub. **Trigger now due (2026-07-02): the MI210 has landed** — and DeepSpec (intake-737) is an MIT EAGLE-3 training/eval framework, so this watch is actionable once GPU-side spec-dec work opens.
 - **DSpark semi-AR draft head** (intake-738) — candidate future MTP-drafter alternative; deferred like EAGLE-3. Needs DeepSpec-pipeline training (MI210) + a GGUF port, then **measure α vs our native MTP before any investment** (per `feedback_measure_alpha_before_specdec_investment`); note gemma4 native MTP is already ~76.9% saturated → low headroom.
 - **DFlash O(1)-drafting (intake-158 / deep-dive `dflash-dart-diffusion-speculation.md`) — promoted from "not-viable comparison" to explicit MI210 candidate (2026-07-03 intake sweep)**: DFlash was previously cited here only as the "same deployment wall" (CPU/GGUF-blocked). That wall was a *CPU* wall — on the MI210 the recurrent/diffusion draft path runs on GPU (parallel scan; verification bottleneck disappears — the same reason `gpu-acceleration-path.md` revives DFlash/DDTree). Two forks: (a) the deep-dive's Action-A O(1)-drafting port, and (b) the lucebox `llama.cpp-dflash-ggml` tree HIP re-scoped for gfx90a (currently CUDA-pinned). **Still α-gated**: measure acceptance vs native MTP first (G0 log read gives the baseline for free); our own DFlash C++ forward pass is already verified correct to <0.01, so the algorithm was never the blocker. [unverified] that the reference kernels build on ROCm.
 - **Qwen3-Next MTP** — re-measure trigger only if a *merged* `qwen3next` MTP path with a positive CPU speedup appears.
 
-## Operator bench commands
+#### Operator bench commands
 
 See WS4 prep for the historical June commands. **Block A (gemma-4-31B dense)** was run on `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-speculative` (branch `production-gemma4-mtp`) using ik-era flags (`-mtp --spec-type mtp --draft-max`). For July+ measurements, translate to the v6/native surface (`--spec-type draft-mtp`, `--spec-draft-n-max`) on `production-consolidated-v6` or the refreshed `llama.cpp-experimental` v7 branch (`experimental-v7-refresh-20260716`, or a successor branch fresh-pulled from current production), preserve the same operator-approved quiescing / CPU pinning / seed protocol, and record protocol IDs per `MEASUREMENT.md`. Blocks B/C use the experimental `draft-mtp` binary after download. (Full blocks were produced in the session WS4 report.)
 
-## Operator gate packet - prepared 2026-07-11
+#### Operator gate packet - prepared 2026-07-11
 
 This packet packages the remaining T4/T5/Hy3 gates without running inference. It must not be used to patch or rebuild frozen production `/mnt/raid0/llm/llama.cpp`; any kernel/model-load work happens in `/mnt/raid0/llm/llama.cpp-experimental` or a deliberately disposable side tree.
 
@@ -285,7 +292,7 @@ This packet packages the remaining T4/T5/Hy3 gates without running inference. It
 - [x] T5 zero-inference acceptance-log validation: `mtp_acceptance_report.py --no-write-defaults --no-strict` reports no failed MTP roles, acceptance evidence for `architect_general`, `frontdoor`, and `worker_general`, and aggregate token acceptance `0.7183` (observation-only; not a depth-sweep bench). ✅ 2026-07-11
 - [x] Command-shape dry-run validation: `md_self_draft_ab.py --dry-run` prints same-file `-md` vs embedded self-draft commands and creates no output directory until a live run is explicitly approved. ✅ 2026-07-11
 
-## Research context (intake)
+#### Research context (intake)
 
 | Intake | Item | Verdict |
 |---|---|---|
@@ -299,31 +306,31 @@ This packet packages the remaining T4/T5/Hy3 gates without running inference. It
 | intake-740 | FR-Spec draft-vocab trim for native MTP (llama.cpp #25187, `avifenesh@047bfa508`) | worth_investigating — lossless@temp0, −85% draft-head kernel → +1-3% e2e; impl → qwen-mtp-llamacpp-port.md P7 |
 | intake-742 | Graft — training-free prune-then-graft draft tree (arXiv 2605.20104) | adopt_patterns (catalog → moe-spec); EAGLE-3-based + GPU adjacency |
 
-## Reporting instructions
+#### Reporting instructions
 After any task: update the checkbox here + record measured numbers (with protocol-id per MEASUREMENT.md) in the owning artifact (registry entry `gemma4_31b_q4km_mtp` for T1; this handoff for T2 port status). Any promotion requires a fresh experimental candidate, positive operator bench, and quality pass — never auto-promote and never patch frozen production in place.
 
-## Key file locations
+#### Key file locations
 - Historical Qwen/native MTP checkpoint: `/mnt/raid0/llm/llama.cpp-experimental` `experimental-v7-candidate` at `46f876c12`; P6b model-load/gate bench remains operator-gated. Current promotion authority is the refreshed `experimental-v7-refresh-20260716` line tracked in [v7-promotion.md](../completed/v7-promotion.md). Historical `feature/mtp-qwen36-port` / #22673 cherry-pick analysis is preserved in [`qwen-mtp-llamacpp-port.md`](model-evaluation-queue.md#track-qwen-mtp-llamacpp-port).
 - gemma MTP runtime: current production uses `/mnt/raid0/llm/llama.cpp` `production-consolidated-v7` native MTP; `/mnt/raid0/llm/ik_llama.cpp` `production-gemma4-mtp` is historical/reproduction-only
 - Models on disk: `/mnt/raid0/llm/models/gemma-4-31B-it-Q4_K_M.gguf` (+ `-assistant-Q8_0.gguf`); verified Qwen MTP artifact `/mnt/raid0/llm/models/Qwen3.5-9B-MTP-GGUF/Qwen3.5-9B-Q4_K_M.gguf` (older non-MTP LM Studio Qwen3.5-9B quants also exist, but are not the T3 MTP artifact)
 - Registry entries: `gemma4_31b_q4km_mtp` (research registry, Tier B); worker_general (lean registry)
 - Read-only refs: `autopilot/program.md:325` (Qwen3.5 hybrid exhausted), `scripts/session/verify_llama_cpp.sh`
 
-### Audit note 2026-07-21 — quant-pair self-speculation (idea unexamined, not endorsed)
+##### Audit note 2026-07-21 — quant-pair self-speculation (idea unexamined, not endorsed)
 
 intake-870's **confidence-gated full-precision recompute** was dropped bundled with the (falsified) hot-expert delta tier, but it is a distinct mechanism and maps onto ground we already own: it is structurally **speculative decoding with a low-bpw quant as drafter and a higher-bpw quant of the SAME model as verifier** (e.g. GLM-5.2 UD-IQ2_M draft → UD-IQ3_XXS verify; both fit 1.1TB RAM together at ~540GB). Same-model different-quant should give very high acceptance α, which is the favorable spec-dec regime — but verifier bandwidth per accepted token is the whole question on a BW-bound host, and per standing discipline (`feedback_measure_alpha_before_specdec_investment`) **α must be measured before any investment**. Related prior art: completed [hsd-hierarchical-self-speculation.md](../completed/hsd-hierarchical-self-speculation.md).
 
 - [x] ~~IF a GLM-5.2 higher-bpw artifact lands for H-Q1 anyway (glm52-reviewer-capability-gates.md), piggyback a cheap α(IQ2_M→IQ3_XXS) measurement on the same download before considering anything further. No download solely for this.~~ (closed 2026-10-29 audit: OBSOLETE → target GLM-5.2-UD-IQ2_M is in deprecated_models graveyard (epyc-inference-research model_registry.yaml:13063); alpha(IQ2_M->IQ3_XXS) has no IQ2_M to measure)
 
 
-## Laguna DFlash intake integration — 2026-07-22
+#### Laguna DFlash intake integration — 2026-07-22
 _Via /research-intake Stage-2 (intake-879/880); see [laguna-s21-cpu-port.md](kernel-champion-and-promotion.md#track-laguna-s21-cpu-port). All rows operator-gated; numbers are OBSERVATIONS per MEASUREMENT.md._
 - *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-speculative-decoding-mtp-refresh on 2026-11-03 (BRF-T1-MEQ, operator D2): "Bench DFlash accept-rate on Laguna: {Q8_0, Q4_K_M, IQ2_M} target …".*
 - [ ] **Missing control for the target-precision hypothesis.** **PROPOSED design correction, 2026-10-04 retrospective:** compare one fixed BF16-trained DFlash-family drafter against target {BF16/F16, Q8_0, Q4_K_M} on the SAME backend, binary, verification shape/mode, sampling, prompt manifest and drafter artifact. Prefer a resource-admitted CPU-only matrix if the full-precision target cannot share the MI210 comparison envelope; do not pair CPU BF16 with HIP Q4 and call the difference a precision effect. Qwen3.8-27B + DFlash2 remains the bounded carrier, using DF2-4's frozen prompt protocol and a predeclared untouched prompt/seed holdout. Run fresh matched/interleaved arms; the historical GPU Q8 result is context, not the baseline for a CPU matrix. Retain per-prompt/per-position and weighted acceptance, numerical divergence, actual target/drafter identities, raw outputs and all failures/invalids/abstentions. Declare the same-backend numerical floor and causal decision rule before execution; if backend/shape effects or missing controls remain unresolved, return inconclusive, not a target-precision cause. Any CPU–HIP bridge is a separate panel, with no cross-device throughput attribution. Reuse the DFlash capture/receipt machinery where supported and complete VB-RI-OPS-WIRE's native-field binding before new decision-bearing measurements. This refines the existing control, not a new training or deployment campaign; normal resource/campaign gates apply. Discussion: intake-1505#record; [review](../../docs/reviews/research-intake-earlier-applications-20261004.md).
 - [ ] Scope the DFlash draft-dflash spec-path port (poolside fork branch `laguna` only; NOT in ggml-org/llama.cpp PR #25165; reuse EPYC's completed hidden-state-tap + cross-conditioning scaffolding from `feature/dflash-speculation`) — GATED on the accept-rate bench above showing a viable regime
 
 
-## 2026-07-25 — intake Stage-2a dive: the DFlash blocker is dead; two unmeasured production-role drafters
+#### 2026-07-25 — intake Stage-2a dive: the DFlash blocker is dead; two unmeasured production-role drafters
 
 _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md) ID-28..ID-34, ID-15, ID-16._
 
@@ -336,7 +343,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](front
 - [x] **ThinkingCap's MTP head is STOCK — confirmed at byte level.** ✅ 2026-07-29 — durable saved-header evidence and the Stage-2 artifact audit establish that the entire 451 MB layer-64 block is **byte-identical** to local `Qwen3.6-27B-MTP-Q8_0.gguf` (single SHA-256 over the region), as are `token_embd.weight`, `output.weight` (tied shared head), and `output_norm.weight`; a control tensor (`blk.32.ffn_gate`) genuinely differs, so the offset arithmetic is sound. The differing set is exactly the **256 LoRA target modules**, matching upstream `merge_verify_report.json` (r=64, α=128, merged scaling 2.0) and an MTP shard named `model-base-aux.safetensors`. Consequences: **MTP is not a ThinkingCap feature** (hold it constant across arms); it is a genuine **co-trained-head vs modified-trunk mismatch**, predicted worst on the early "keep thinking?" tokens the finetune targets; reported accept-length (3.69/3.65 vs base 3.66/3.61) is **statistically indistinguishable from base** and the vision numbers are slightly *worse*.
   - **Hazard for any Q4_K_M A/B**: our two local Q4_K_M artifacts are **not a clean pair** — `Qwen3.6-27B-MTP-Q4_K_M.gguf` (17,106,773,120 B, 866 tensors) is *smaller* than `Qwen_Qwen3.6-27B-Q4_K_M.gguf` (17,533,552,192 B, 851 tensors), i.e. different quantizer recipes. Any MTP-vs-non-MTP benchmark on those two is confounded.
 
-## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274 / intake-1277)
+#### Research Intake Update — 2026-08-21 (Stage-2b, intake-1274 / intake-1277)
 
 - [ ] **G3 (Z then G) — does the MI210 verify pass ever land in the VEC flash-attention kernel?**
       **The zero-compute half is a static read and should be done first**, at frozen v9
@@ -383,7 +390,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](front
       mechanism* and may not be attributed to the premise. **This does NOT license 4-bit
       verification** — that remains unestablished.
 
-## Research Intake Update — 2026-08-23 (Stage-2b, intake-1282 — VeriCache)
+#### Research Intake Update — 2026-08-23 (Stage-2b, intake-1282 — VeriCache)
 
 - [ ] **G8 (G) — measure α for KV-asymmetric self-speculation: the like-for-like number neither
       paper provides.** Same GGUF as target and drafter (self-speculation, so the *only* difference
@@ -408,7 +415,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](front
   - 2026-11-02: `g8-v10-hip-build-20261102` ended rc1 with no native RESULT; build reached 452/452, but proof searched the server implementation for `G8_COMPARE_BEGIN` while the linked `libllama-common.so` carries it. Filed as a build-proof harness failure. [Retained build and filing evidence](../../docs/reports/g8-kv-asymmetric/failed-build-20261102/verdict.json). No inference, residency or agreement conclusion; G8 remains open. [no-belief: failed operational run]
   - 2026-11-02: published corrected CPU build row `g8-v10-hip-build-r2-20261102` after its four-CPU smoke passed (one unit; clean STOP rc75). Its proof binds `G8_COMPARE_BEGIN` to the receipt-hashed common library resolved by server linkage. Full build and G8 inference remain pending; no agreement result. [no-belief: row preparation only]
 
-## Research Intake Update — 2026-10-06 (Copy-Spec Evaluation)
+#### Research Intake Update — 2026-10-06 (Copy-Spec Evaluation)
 
 - [x] **COPYSPEC-P1 — copy/prompt-lookup speculation re-evaluation, phase 1+2 full-host window.** Script `/mnt/raid0/llm/tmp/copy-spec-eval-20261006/phase1.sh`; survey `SURVEY.md` there. Arms P / ngram-mod(n-min 4)+MTP / ngram-only / P2. Measure acceptance rate, mean draft length, and throughput on production CPU server. Done when all arms complete on a canonical production-shaped prompt set and the results are recorded with run digests and timestamps. ✅ 2026-10-06
   - *(2026-10-06, workspace-ec)* CPU frontdoor Qwen3.6-35B-A3B-MTP Q8_0, canonical :8070 full host. ngram-mod (n-min 4, cap 4)+MTP vs production: code edits +5.25% (floor 0.40%), RAG +0.84%, all +3.22%, identity 85/85. The ngram-only control DIVERGED on 32/85 (see COPYSPEC-NO-DIVERGENCE). The "general" set was MCQ, so the prose control is invalid (see COPYSPEC-SWEEP). Evidence: `artifacts/copyspec-20261006/p1-summary.md`.
@@ -433,7 +440,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](front
 
 - [ ] **COPYSPEC-RECIPE — on v11 promotion, update the canonical :8070/:8083 recipes (registry + launch manifest + codified recipes) to the winning spec-type chain.** Done when `model_registry.yaml`, the orchestrator launch manifest, and `measurement/protocols/canonical_recipes.md` carry the operator-approved spec-type composition and its acceptance-rate calibration note.
 
-## Research Intake Update — 2026-10-06 (kozmic-labs/cafe-llama.cpp, intake-1925; Stage-2 dives intake-1925/1926/1932..1936)
+#### Research Intake Update — 2026-10-06 (kozmic-labs/cafe-llama.cpp, intake-1925; Stage-2 dives intake-1925/1926/1932..1936)
 
 - [x] **CAFE-1 — adaptive draft width, Phase A (flag-only).** Sweep `--spec-draft-p-min` {0,0.5,0.75,0.9} on the MTP chain (CPU :8070 shape), fresh server per arm, distinct prompts (code edits, RAG, real prose), >=5 interleaved pairs. Keep a value only at >= +1.0% aggregate above the window floor, no set worse than -1.0% beyond floor, greedy identity 100%. Done when the table and the keep/decline verdict are recorded. (intake-1925 claim 3, intake-1926 claim 0, intake-1932 claim 2) — Owner: workspace-ec (2026-10-06). ✅ 2026-11-02 [belief: cc]
   - 2026-11-01 derived replay: original `codex3-cafe1-pmin-hostfix-20261031` ended rc1 after 75/75 raw responses because its analyzer expected an absent startup log line. The replay substitutes explicit launch/type and positive per-request draft-counter evidence for that predicate; all other analyzer checks remain. Candidates 0.5/0.75/0.9 match baseline tokens on 4/15, 6/15 and 5/15 pairs respectively; the repeated baseline matches 15/15. All candidates fail the specified 100% identity requirement. Throughput figures and A/A floor are single-window observations only; post-run predicate revision and native rc1 remain visible. [Raw evidence and replay](../../artifacts/compute/cafe1-replay-20261101/README.md). CAFE-1 stays open for owner review of the derived verdict and measurement authority. [belief: cc]
@@ -451,7 +458,7 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](front
 
 2026-10-07 MAIN acceptance: [normally published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and the prospective verifier. SW-5 keeps its wider active editing-reference documentation sweep open. Full source/result custody verified; original capacity collection NULL retained; no shared-host test, runtime reload or measurement warrant.
 
-## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+#### Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
 
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
@@ -535,7 +542,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-112 (intake-2132): knowledge-only: see dive_surfaced_sources
 - DI-128 (intake-2136): knowledge-only: retained as citation boundary for the cost-aware truncation trigger and SPEC-CONF.1 (vendor +4-7% band is estimated, -1.5% at low concurrency, GPU EP64); no new task, tasks already exist (SEED-D1-A1..A3).
 
-### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+##### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [x] **SPEC-GRAM.2 — Extend the grammar smoke with three zero-model measurements and one window measurement: (1) count grammar rejections and reject-resample time per step at 1 token/step and at verify batch 5; (2) time the temp>0 speculative residual verify with a json_schema request (it runs a full-vocab grammar pass per draft position); (3) offline, replay our recorded tool-call and json_schema outputs through the llguidance matcher with the lineup tokenizers and report the forced-token share (flexible vs compact whitespace, canonical-trimmed), run-length histogram and the 1/(1-f) ceiling; (4) audit the 4-token canonical-trim on each lineup tokenizer; forced-span drafting and an llguidance-ON build stay trigger-gated on these numbers (intake-2388, intake-2401, intake-2415, intake-2422).**
   - *(2026-10-22, workspace-f8.)* launcher armed 2026-10-22, FILLERS row locals-specgram2-window; rule in /mnt/raid0/llm/tmp/f8-launchers-20261022/locals-specgram2-window/PREDECLARATION.md.
@@ -578,7 +585,7 @@ Trigger-gated (no checkbox until the trigger fires):
   - *(2026-10-23, f8 wrap-up.)* The MTP-lane case is closed by SPEC-GRAM.1(2): json_schema costs draft-mtp -1.95 pp of acceptance (CI -7.86 to +3.52), inside the 10 pp threshold, on Qwen3.6-35B-A3B CPU. Draft-side masking buys nothing measurable there. The MI210 HIP mask-overlap half and the DSpark lane are untouched by that result, so this item stays open for them.
 - Re-dive Gram2Token when its full text or code is reachable (intake-2390#record).
 
-### C5 caller-graph audit checkpoint — 2026-10-27
+##### C5 caller-graph audit checkpoint — 2026-10-27
 
 - 2026-11-01 backlog reconciliation: the legacy blocked `codex-ni-inf50-native-window-recovery-20261026` is superseded; do not republish it. `codex-ni-inf50-native-margin-recovery-20261026` retained the exact 3900 s reservation and 300 s cleanup margin, with a 3600 s minimum, and ended rc0 on 2026-10-26. Its native `RESULT.json` (SHA-256 `2f9b1a2483d1024196b4a9801402fa85a8a77607b67455ab27697f7457ecd4ba`) records COMPLETE and native-proof-only, not INF-50 completion. Release, ASan/UBSan and TSan native phases passed; five GitNexus impact invocations returned rc1. The graph, fold, GPU, parity and performance gates remain separate. The generated backlog still lists the predecessor from the legacy queue; its existing 2026-10-31 preparation claim does not warrant a second run. [Prior filing](../../progress/2026-10/2026-10-29.md). [belief: cc]
 
@@ -593,7 +600,7 @@ Trigger-gated (no checkbox until the trigger fires):
 2026-10-30 resultsfiling: INF50existing-graphr11 refusedpinnedlbuggraphsourcedrift beforequeries, GRAPH_NOT_RUN andnoRESULT.json. This is aharness/source-pinrefusal, no graphqualification or optimizationresult. Preserveoriginalgraphidentity/refusal; owner mustcapture/qualify theintendedmatchinggraphsource before a new successor. [Evidence](../../artifacts/compute/results-filing-20261030-0038.json). [belief: cc]
 
 
-### 2026-10-30 original HIL continuation partials
+##### 2026-10-30 original HIL continuation partials
 
 2026-10-30: Three fixed-cohort discovery continuations ended rc75 partial. S0 r4 retained 27 original accepted slots and collected two further unit-10 native outcomes, both failures, each joined 1/1 with L2 rc0 and replay verification rc0; unit-10 slot2 was exposed but incomplete and remains unknown, leaving 15 unexposed. Thus its original denominator is 27+2+1+15=45, with no redraw. Its resource receipt reports 1,372,160 output bytes, 1 GiB cap and stop at output-cap-or-remaining-output-disk-reserve; sampled owned-tree peak RSS 40,833,392,640 bytes. S2 r4 reported disk reserve before any new replay exposure: retain 17 accepted, original unit-06 slot2 unknown, 27 unexposed, original denominator45. Fresh HIL15b cohort r3 started its private server but stopped at sampled output-cap-or-disk-reserve with `partial:true`, 8,192 output bytes versus 1 GiB cap, sampled peak RSS 37,540,401,152 bytes and native cleanup verified; no replay manifests or scored results were emitted. Preserve all original partial evidence and any later rearms as separate windows. These are discovery records, not completed cohorts, the 16–20-task band acceptance, an independent confirmation, or an AUC finding. [belief: cc]
 
@@ -612,7 +619,7 @@ Trigger-gated (no checkbox until the trigger fires):
 2026-10-30 S0 v6 original ended03:00:14Z rc75: all263 pinned source entries and native receipt verifiers checked. Original45 slots now32 accepted source-bound receipts,3 unknown(10/2,11/1,12/1),10 unexposed. New11/2 failed its task answer with terminal NameError(defaultdict); new12/0 passed gold. Both have L2rc0 and deterministic replayrc0; a one-item AUC is insufficient for a cohort claim. Exposed12/1 has no terminal manifest/hash listing and remains unknown, with no redraw. Native gate reports output cap OR remaining disk reserve; 1,490,944 output bytes versus1GiB cap alone does not prove which branch triggered. Source SHA406ed13343428ea499e5c7f6674575595953a77215a911f77905164473e864f5; original partial SHA88fd405a04f6c406c0568ca92780884b6b1dcfaf0403ca515e967d882b05d81c. No collection-exhaustion, HIL15a or cohort-AUC tick. [belief: cc] [Durable original native audit references](../../artifacts/compute/20261030-0310/results.json).
 
 
-### Original HIL admission events — 2026-10-30 03:08 UTC
+##### Original HIL admission events — 2026-10-30 03:08 UTC
 
 - **FAILED-RUN `codex3-hil15b-heavy-r5-20261029` (owner codex3):** scheduled q2 job ended 03:08:09 rc1 after the kernel checks and 20 gold checks passed. Its immediately following shell command tests 151 GiB free and silently exits under `set -e` on failure; the observed log and absence of a result directory are consistent with that disk admission failure, but the original log did not record contemporaneous free bytes. No R5 model or cohort output was produced. Retain original units 05–20 accounting: 25 accepted, unknown 11/0 and 12/2, 21 unexposed, with original denominator and no redraw. R6 is prepared with explicit rc75 resource diagnostics at the same threshold; its exact-target smoke is pending admissible headroom. [belief: cc]
 - **FAILED-RUN `codex-hil15-s2-unknown-resume-v5-20261030` (owner refactor):** T1 admission refused at 03:08:05 (inner rc70, final rc6), logging free after estimated output **148.92 GiB**, below the 150 GiB floor. Static source/history preflight passed; no model or official result directory started. Preserve original 45-slot denominator, 17 accepted, immutable unknown 06/2, and 27 unexposed; no quality or completion verdict. [belief: cc]
@@ -622,27 +629,876 @@ Trigger-gated (no checkbox until the trigger fires):
 
 - **FAILED-RUN `codex3-hil15b-heavy-r8-split-20261030` (owner codex3):** ended 12:36:59Z rc1; engine raised `checkpoint_controller.Refusal: native entry failed; evidence retained` after canary unit 05 returned native rc75/partial (cleanup verified, admission raid_free 161.35 GB at the floor). class=disk-floor/harness (native partial was treated as refusal by entry_rc check; `results-remaining` never created). owner action: codex3 reconcile the entry_rc handling of partial canary, then relaunch; original-denominator bounds (39 accepted; unknown 11/0, 12/2, 16/1, 19/0) unchanged, no verdict. [no-belief: failed run]
 
-### 2026-10-31 CAFE-1 host-qualified successor
+##### 2026-10-31 CAFE-1 host-qualified successor
 
 The earlier unarmed `codex3-cafe1-pmin-20261031` READY was withdrawn at 05:10: its host region-lock preflight found the orchestrator venv Python absent; the earlier public control did not cover that real host lock branch. Its old model control remains historical. Corrected hostfix READY manifest SHA-256 `7c120e2d1891db71b4f069c92a2a737ac9dd6f30e436610a4b7e377cb90e39b9` includes actual host startup and lock proof plus public Qwen 0.6B normal control (rc0, 31.72 s) and STOP (rc75, drained); `spec-type none` exercises neither MTP nor the 35B full target. The original five-block decision plan, full target feasibility and CAFE scientific gate remain unrun. [Withdrawal and corrected capsule](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/cafe-hostfix/). [belief: cc]
 
-### 2026-10-31 SW-2 HOST lock supersession
+##### 2026-10-31 SW-2 HOST lock supersession
 
 At 05:17 the owner withdrew the unarmed `codex3-sw2-v9-clamp-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier small-model controls remain historical but do not qualify that host branch; no grant or target exposure occurred. A corrected successor is in preparation; no current-production, v10 or SW-2 conclusion follows. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]
 
-### 2026-10-31 SW-2 HOST-fix qualification limit
+##### 2026-10-31 SW-2 HOST-fix qualification limit
 
 The replacement `codex3-sw2-v9-clamp-hostfix-20261031` publication manifest `839e87ac9dea648a8f655a4d6bf979b820361c479f95c6a17a4bc56f6f8f6325` has HOST startup/lock proof, four private-v9 tiny-model responses and STOP/drain; cap-zero draft count remains UNKNOWN. The keeper reap gate skipped it because its replacement launcher lies outside its declared original scratch root; no arm or grant. A corrected in-scratch successor remains in preparation; no full-prompt, current-production or SW-2 conclusion follows. [Historical HOST controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
 
 At 05:29 the in-scratch HOST-fix2 successor is READY, manifest `684516c6d8f72f85c631f9bcc5434374f5a4e7316862d084b999adf3e1b81821`; its actual launcher resides inside its declared scratch root. Final same-entry tiny private-v9 control and STOP/drain do not establish full-prompt or current-production behavior. [Final and historical controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
 
-### Retained launcher qualification checkpoints — 2026-10-31
+##### Retained launcher qualification checkpoints — 2026-10-31
 
 - [x] **XGRAMMAR-A2 paired/profiling launcher repair** — R2 actual normal/activeSTOP75, source/image/custody, profile-reader and combined-calendar controls passed before publication; reduced profile evidence is CONTROL_ONLY. Original full alternating pairs, profiles,5x and byte-parity acceptance remain open. ✅ 2026-10-31 [Proof](../../artifacts/compute/refactor-xgrammar-a2-r2-preparation-20261031.json). [no-belief: launcher qualification only]
 
-### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+##### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
 - [ ] **SPEC-CANARY.1 — Per-request acceptance-collapse canary for every speculative serving role (intake-2577#record).** In the orchestrator's llama-server telemetry, flag any request with at least 64 drafted tokens and zero accepted, and any request whose last 256 generated tokens repeat one n-gram block, recording role, port, slot, n_parallel, draft settings and request id. Ship it as a passive counter with a dashboard health field; it changes no serving behaviour. Test it with a replayed log containing a planted zero-acceptance run and a planted repetition tail.
 - *Intake trigger record (no checkbox until it fires), M1, row SPEC2-3 (intake-2577#record):* Note thinking-mode default sampling repetition risk: issue says model card recommends presence_penalty 0-2 and attributes loops to degenerate state amplified by temp 1.0 / top_k 20 / top_p 0.95; check the Flash-Next architect_general request sampler against ...
+
+## Track: dflash2-block-drafter-experimental-build
+<!-- gate: INF-06, INF-50#speculative-decoding-mtp-refresh -->
+
+> Folded from `handoffs/active/dflash2-block-drafter-experimental-build.md` @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5; retired row INF-62 → INF-50). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### dFlash2 block drafter — experimental build + measured comparison vs MTP
+
+**Status**: active (created 2026-08-20) — build/regression/np1 complete; np2/4/8 and greedy parity remain
+**Categories**: speculative_decoding, hardware_optimization, local_inference, kernel_experimental
+**Parent index**: [`inference-research-index.md`](inference-research-index.md)
+**Related**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) (this is its Qwen3.8 rider),
+[`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md) (historical DFlash-family sidecar workflow on v9),
+[`autokernel-research-loop.md`](autokernel-research-loop.md); completed:
+[`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) (DFlash NO-GO on **CPU** — sequential
+DeltaNet verification, not a DFlash defect; does not apply to this GPU path)
+
+**AutoKernel routing:** this is the Qwen3.8-27B replacement campaign's `experimental_runtime` sibling,
+not an additional source-mutation portfolio arm. It reuses AutoKernel's planner/critic, device claim,
+stop/resume, typed refusal, telemetry, and dashboard pulse contracts, while owning separate build,
+proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source champion frontier.~~
+
+> **SUPERSEDED 2026-08-27 by operator ruling.** DFlash2 **is** in the aggregate champion
+> (`ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a`): *"It is the superior spec decode path for
+> running qwen3.8-27b. Our future production candidate should support this new spec decode type"*,
+> and *"DFlash2 is a parallel spec decode pathway. Not all models have dflash2 drafter heads. When
+> we promote to production, we will adjust the lean registry compiler accordingly."* `--spec-type`
+> binds a server instance, not the kernel, so one kernel carrying both `draft-mtp` and
+> `draft-dflash` is a capability, not a conflict. Program handoff:
+> [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+>
+> **IN PRODUCTION 2026-10-03.** The ruling above lived only as prose here and in the aggregate handoff for five
+> weeks; :8083 kept serving `draft-mtp` through the v10 freeze and two relabels. It is now structural: the master
+> lists each model's acceptable `drafters`, the orchestrator topology selects one per server
+> (`drafter_selection: {architect_critic: dflash2}`), and compile fails on an unlisted, missing or hand-carried
+> drafter (DRAFT-SEL-1, `stack-change-governance-pipeline.md`). Signed `RATIFY-STACKCHG-DFLASH2-20261003`; research
+> `be2cc414`, orch `d3233170` + `5265e09d`; :8083 PID 3793153 serves DFlash2. Selection box:
+> `qwen38-27b-replace-qwen36.md` (ticked); the production-shape measurement is Q38-T7 there; root cause
+> `INC-20261003-dflash2-ruling-never-compiled`.
+
+#### DRAFTER-PER-MODEL (Qwopus items CANCELLED 2026-10-27; generic capability row below remains open): a served model without a DFlash2 head serves slow (Qwopus3.8-27B, 2026-09-05)
+
+> **Status 2026-10-27 (operator: "We are not using Qwopus... that handoff is stale"):** all Qwopus work here (DF2-QWOPUS, DF2-QWOPUS-K1, K2) is CANCELLED. Download was cancelled at 13.3/29 GB and trashed; K1 pre-registration is void; no Qwopus measurement exists. Non-Qwopus DF2 work in this file is unaffected (e.g. DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1).
+
+**Why this matters (operator-flagged):** DFlash2 is the champion's serving edge (2.38× on Qwen3.8-27B).
+The operator's own ruling above — *"Not all models have dflash2 drafter heads"* — got its first concrete
+measurement: **Qwopus3.8-27B-Flash** (a Qwen3.8-27B fine-tune, same `qwen35` arch) benched on the champion
+build at **identical raw speed** (30.3 t/s, coherent) but its serving spec-decode is capped by drafter quality:
+
+| spec-decode path | decode t/s | speedup | acceptance |
+|---|---|---|---|
+| its own native MTP head | 45.5 | 1.50× | 0.590 |
+| our DFlash2 drafter (base-trained) | 45.7 | 1.51× | **0.356 — does NOT transfer** |
+| (ref) Qwen3.8-27B + its DFlash2 | ~72 | 2.38× | high |
+
+**The lesson generalizes:** a base-trained DFlash2 drafter does not transfer to a fine-tune (distribution
+shift), so **each model we want to serve at champion speed needs its own DFlash2-class drafter.** Qwopus's
+shipped MTP (1.5×) is a floor, not the ceiling.
+
+- [x] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days). ✅ 2026-10-27 — scope analysis + estimate complete (09-15 memo + 10-27 addendum: pilot 0.5-1 MI210 card-day, 20-50M warm-start ~3-8 card-days, 8-15 engineer-days planning range); **training and the K1 measurement are NOT done and are tracked by the open child below** [no-belief: scope/estimate analysis, no measurement produced; cc register row follows this commit]
+  - *2026-09-23 (intake-1505):* Table 4 there is weak support that serving-quant features train fine (direct INT4 4.97 ≈
+    BF16 4.92). Nota's Stage-2 hyperparameters (taps [1,8,15,22,29], CE with exp(-(k-1)/7) decay, lr 1e-3, 2 epochs) are a
+    reference point; their SpecForge trainer is online-HF and does not replace offline llama.cpp feature capture.
+      DFlash2/EAGLE-style drafters are distillation of a small (~2 GB) head from the frozen target — NOT a
+      pretrain — so tractable: capture Qwopus hidden states + outputs over a corpus (teacher-forcing), train
+      the draft head, validate acceptance. Rough recon: **~2–5 days on the single MI210** (inference-bound
+      feature gen + light head training), pending the exact DFlash2 recipe/data volume — which this scoping
+      pass must nail. Weigh against: (a) the native MTP already gives 1.5× for free; (b) GPU contention — the
+      one MI210 also runs AutoKernel/serving, so training days compete with everything else on the card.
+      **Scoping evidence 2026-09-15 (scoping done; training decision NOT made — K1 child below stays open)** →
+      [`docs/design/df2-qwopus-scoping-20260915.md`](../../docs/design/df2-qwopus-scoping-20260915.md).
+      No training card-days until K1 passes.
+      **Premise correction:** Qwopus3.8 holds **no registry role** (0 matches in `model_registry.yaml`).
+      The 09-05 "0.356 does not transfer" figure is **1 prompt / 160 tokens, n=1**, and that MTP arm ran at
+      **n-max 4** (`/mnt/raid0/llm/tmp/mtp_qwopus.sh`).
+      **K1 (next GPU window, ≤4 GPU-h):** run the DF2-4 12-prompt protocol on Qwopus with three arms
+      (none / MTP n-max {2,4,6,8} / base DFlash2 n8), plus a role-suite quality A/B vs Qwen3.8-27B at
+      no-think. KILL if Qwopus loses the role A/B, or if base-DFlash2 acceptance is ≥0.55 (ship the base
+      drafter instead).
+      **K2 (only if K1 passes, ~0.5–1 card-day):** warm-start the Qwen3.8 DFlash2 head on 1.5M
+      Qwopus-generated tokens (one rolling ~77 GB shard). GO at weighted acceptance ≥0.50; KILL below 0.45.
+      **From scratch is REJECTED:** ~93 card-days of response generation, and the 41+ TB feature cache
+      cannot fit in the 157 GB free.
+  - **INF-62 scope audit addendum (2026-10-27, workspace-58; report `/mnt/raid0/llm/tmp/codex-ni-20261027-inf62-scope-audit/INF-62-REPORT.md`, sha256 7f0b2fbc43104ca96f4acb6ffa4a99ef02bd31473947af4ca9ee26ec625c7cf9, MAIN-accepted).** The 09-15 memo remains the decision analysis; the audit adds the record-level data/checkpoint contract (target Q8_0 GGUF + tokenizer/template; per-position taps at layers [6,20,34,48,62], width 5120, bf16 = 51,200 B/token; hard next-token labels; resumable ~30 GB training state is a planning estimate; deliverables = checkpoint, inference-only weights, converted DFlash2 GGUF, manifest, held-out DF2-4 acceptance) and an engineering estimate of **8-15 engineer-days** (+/-50%, conditional on K1; unmeasured). Findings that gate K1: (1) the exact Qwopus GGUF path `/mnt/raid0/llm/models/Qwopus3.8-27B-Flash.Q8_0.gguf` is ABSENT now (`test -e`/`stat`; reclaimed per the 10-25 inventory; no broad search, so another copy may exist) - reacquire and hash GGUF/tokenizer/template or identify a retained copy; (2) the 157 GB free-space figure is historical and must be remeasured; (3) a llama.cpp feature dumper and a new ROCm/NeMo training environment do not exist; (4) conversion registration for `DFlash2DraftModel` was read at `experimental/champion-c5-20261024` `c72ec82f`, but 81-tensor/key parity for the intended checkpoint is NOT validated. No training, inference, GPU booking or K1 run was performed.
+  - [x] ~~**DF2-QWOPUS-K1 — run the K1 gate (≤4 GPU-h) once its prerequisites are confirmed** (checkpoint-keyed child of DF2-QWOPUS, filed 2026-10-27 from the INF-62 scope audit; protocol is the K1 paragraph above, unchanged: DF2-4 12-prompt protocol, none / MTP n-max {2,4,6,8} / base DFlash2 n8, plus no-think role A/B vs Qwen3.8-27B; KILL rules unchanged). Prerequisites before booking: current target/drafter files and hashes (Qwopus GGUF reacquired or located), champion/instrument commit and binary identity, exact role-suite and DF2-4 prompts, disk headroom, and a granted MI210 window. No K2/training card-days until K1 passes.~~ CANCELLED 2026-10-27, operator: Qwopus not used (handoff stale). The Qwopus Q8_0 download was cancelled at 13.3/29 GB and trashed; the K1 pre-registration is void; no Qwopus measurement exists. [no-belief: administrative cancellation]
+- [x] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
+      under the canonical np4 recipe, 1/2/4/8 in-flight, >=5 alternating pairs, temp 0.6/seed 42; report
+      `aggregate_tok_s` AND verifier steps/s. External per-position acceptance decay says positions 6–8
+      carry 10–30%; external S6 says a BW-bound verifier LOSES tokens with shorter blocks — either answer
+      is decision-grade. `p-min` has never been set on any GPU arm. n-max 7 makes the np1 verify batch
+      exactly 8 = a confound-free test of seed 19's premise (verify runs MMQ at ne11 9..36).
+      ✅ 2026-09-16 (sub-gpu-runner). **Evidence:** research `sub/gpu-runner-20260916`, commit `6b585b58` (on main as `8146880b`),
+      `data/inf62-sl1-20260916/`; runner `scripts/benchmark/sl1_dflash2_nmax_pmin_sweep.py`.
+      **Setup.**
+      - Champion `ef81196d5` (`build-fold-ef81196d5`, llama-server sha `869effe5`). Canonical np4 recipe;
+        only these fields changed: in-flight = np ∈ {1,2,4,8}, temp 0.6, `--seed 42`, and the two swept flags.
+      - Each sample is one `serving.calibrate_floor(samples=1)` launch (unit = launch).
+      - 5 interleaved rounds with arm order shuffled per round: **160/160 launches ok, residency proven on
+        all** (peak VRAM 42.6 GiB), GPU claim held throughout.
+      - Verifier steps/s is an **estimate**: per slot, `predicted_n − 1 − draft_n_accepted` over
+        `predicted_ms`, teed from `/completion` timings. SL-2's server counter was not adopted.
+      **Source facts that shape the reading (`common/speculative.cpp` @ `ef81196d5`):**
+      - The drafter's `dflash.block_size` = 8, so n_draft_max = 7, and n-max 8 is **clamped to 7**
+        (`:1390-1395`). The canonical "n-max 8" is really 7, and seed 19's "n-max 7 = verify batch 8"
+        premise is identical to the canonical config.
+      - The `is_dflash2` draft branch (`:1657-1700`) **never reads `p_min`**, so p-min 0.5 is a no-op for
+        DFlash2.
+      - So the 8 arms are 3 distinct configs. Measurement confirms both facts: tokens/step is bit-identical
+        across n7/n8/p0/p0.5 at np1 and np2 (5.803 and 4.848), and the p0.5 medians sit within each arm's
+        own spread.
+      **Pooled medians (tok/s aggregate | est. verify steps/s)** — n4 (n=10) / n6 (n=10) / n7≡n8 (n=20):
+
+      | in-flight | n4 | n6 | n7≡n8 |
+      |---|---|---|---|
+      | 1 | 59.3 \| 13.6 | 70.4 \| 13.2 | **77.0** \| 13.2 |
+      | 2 | 93.5 \| 24.4 | 103.1 \| 23.5 | **113.4** \| 22.9 |
+      | 4 | 138.8 \| 34.8 | 153.2 \| 31.8 | **160.7** \| 30.2 |
+      | 8 | 168.2 \| 44.9 | 171.1 \| 37.8 | **177.2** \| 36.2 |
+
+      Per-arm p95_dev is 1–10%, with outliers: n8-p50-np1 at 18.6% (one launch at 62.8) and n4-p50-np8 at 13.4%.
+
+      **Reading.**
+      - **The longest block wins at every in-flight level.** Against n4 it gains +30% at np1, +21% at np2
+        and +16% at np4, all above the 7.9% launch floor. At np8 it gains +5%, which is inside the floor
+        and so unresolved.
+      - **Verifier steps/s falls as the block grows**, most strongly at np8 (44.9 → 36.2, −19%). This is the
+        external S6 "BW-bound verifier does more work per step" effect, and it is real here. Accepted
+        tokens per step grow faster, so tok/s still rises.
+      - **Decision: keep the canonical n-max 8 (≡7).** p-min is irrelevant to DFlash2 on this build.
+      - **A/A.** The n7 vs n8 identical-config medians differ by 0.4% (np1), 2.5% (np2), 2.2% (np4) and
+        0.6% (np8), all within the floor.
+      - **Belief kernel:** pre-hook, zero rows (VB-GPU-RUNNER).
+- [ ] **SL-2 — verifier steps/s in the serving keep gate** (`loop/serving.py`): emit sum-over-slots
+      `n_draft_verif_steps`/wall (already counted at `server-context.cpp:295`) beside `aggregate_tok_s`.
+      tok/s = steps/s × accepted/step; only steps/s is a kernel property. Our np4 floor 3.536% vs tg128
+      0.638% is mostly acceptance-trajectory variance. Re-calibrate the floor on both; keep gate on
+      steps/s, headline on tok/s. Lands at a run boundary (changes the calibrated metric).
+      - **Partial 2026-09-16 (sub-gpu-prep; NOT the exact metric, box stays open):** research `5368766b` on
+        `sub/gpu-prep-20260916` (base `lane/autokernel-unified-20260908`). The champion server (`ef81196d5`,
+        server-context.cpp:343/4216) counts `n_draft_verif_steps` but does **not** export it in `timings`
+        (only `draft_n`/`draft_n_accepted`). So `loop/serving.py` emits `target_sample_steps_est` =
+        `predicted_n - draft_n_accepted` per slot (= verify steps + plain steps incl. the prefill-sampled
+        token), rated over each slot's `predicted_ms` and summed like `aggregate_tok_s`
+        (`aggregate_target_sample_steps_s_est`; a server-exported counter is preferred when present). It appears
+        per arm in `compare()` and as an A/A floor in `calibrate_floor()` (legacy + matched, inside the seal);
+        reporting only, gate unchanged. Exact SL-2 needs `n_draft_verif_steps` added to `result_timings` in
+        the champion tree (champion boundary). Pins `_measure_once`'s callable identity → integrate at a run
+        boundary via the owning autokernel session. Tests: `test_serving_target_steps_est.py` 22/22; affected loop
+        suite shows no new failures vs lane tip (1162 pass; 31 pre-existing fail/error on the unmodified base).
+      - [x] **SL-2 current-source audit.** ✅ 2026-11-01 — champion C5 `c72ec82f5417` counts speculative verifier rounds per slot but `get_timings` does not export that counter. Research `aa2143357d` consumes predicted token counts and per-slot rates; `5368766b` is not an ancestor of current research main, so the earlier estimate is not present there. Next: on an authorized experimental champion branch export and test the per-slot counter, then at a run boundary integrate its explicit observation window and recalibrate its own floor. The current aggregate tok/s is a sum of per-slot rates, not counts over a common wall window; do not silently reuse its floor. A speculative-round counter is not an unconditional count of backend kernel calls. No inference or code change was made. [belief: cc]
+      - [x] **SL-2 experimental export build row prepared and published.** ✅ 2026-11-01 — keeper row `df2-sl2-export-cpu-20261101`, CPU any-quarter, source snapshot C5 `c72ec82f5417bb2937310326120f149b665e8400` plus proposed counter-export patch; source manifest SHA-256 `f44484bb8f61e7bec0dd1c4ccbb20eb3021cc129786dc01959a3f6012bbed8e5`, launcher/spec under `/mnt/raid0/llm/tmp/handoff-df2-sl2-build-20261101/`. No build or test result claimed. [no-belief: preparation and publication only]
+      - [x] **SL-2 CPU serializer row filed:** ✅ 2026-11-01 — `df2-sl2-export-cpu-20261101` scheduled end rc0 at 22:15:06Z, verdict **INCONCLUSIVE**: [result](../../artifacts/compute/df2-sl2-export-cpu-20261101/results.jsonl) completed at 22:14:15Z, before the [qualification end](../../artifacts/compute/df2-sl2-export-cpu-20261101/PASS.json) at 22:14:18Z. The launcher accepts an existing `out/DONE` as completion, so the scheduled run has no fresh execution proof. Qualification reports CPU build and 10 serializer cases PASS; this is not a scheduled-run pass, live check or performance claim. [no-belief: inconclusive row filing]
+      - [x] **SL-2 fresh CPU serializer validation:** publish a successor with isolated qualification and scheduled outputs, then file its end and ten actual serializer cases. Live slot/reset/streaming/concurrency, CPU/GPU regression checks, rate aggregation and a new floor remain open. ✅ 2026-11-01 [no-belief: serializer test result, no inference measurement]
+        Scheduled row `df2-sl2-fresh-cpu-20261101` ended rc0 at 23:44:24Z; scheduled attempt `ab15d3eb5e464b1cb977e73174d087c4` started at 23:43:21Z and reports 10/10 serializer cases PASS, independently of qualification. [Result, qualification and end](../../docs/evidence/df2-runs-20261102/df2-sl2-fresh-cpu-20261101/). Qualification recorded repaired launcher SHA-256 `3a6723a4a07f7acd5d0eaa874a38aad446eecfe3c3f7cb9d5d651080b76c981f`; READY retained the older launcher digest, so preserve this binding limitation. Model-free serializer only; live serving and performance remain open.
+- [ ] **SL-4 — serving-gate hygiene**: add one long-context cell (~32k prompt) and randomise arm order
+      after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
+      with context for some quants). Also gives a C8 sustained cell to confront the external
+      "DFlash2 −19% at sustained C8 on Qwen3.8-27B" one-liner (contradicts our DF2-5 +47.8% at 8 in-flight).
+  - [x] **SL-4 source and integration audit.** ✅ 2026-11-01 — research `aa2143357d`: matched serving already freezes a randomized pair order, while the default legacy instrument remains anchor-first; `longctx.derive_launch` refuses non-CPU or np>1. The loop currently binds one serving launch/request set and its floor. A complete SL-4 needs a separate GPU np8 ~32k-token frozen workload, capacity validation, its own frame-bound A/A floor, keep-dimension integration, and tests; do not reuse the CPU slot-restore surface or an unrelated floor. No serving change or measurement was made. [belief: cc]
+  - 2026-11-01: unvalidated, unwired C8 workload and comparison proposals preserved in [`artifacts/coordination/df2-sl4-proposals-20261101`](../../artifacts/coordination/df2-sl4-proposals-20261101/README.md). Focused tests did not start because the required CPU region was occupied; tokenizer/model binding, capacity, calibration-write concurrency and a real matched floor remain unproved. The session brief forbids editing gates. SL-4 stays open. [no-belief: unvalidated proposal only]
+  - [x] **SL-4 proposal review and corrections.** ✅ 2026-11-01 — reviewed against research `aa2143357d`; proposed source now refuses speculative recipes without an explicit draft bound and serializes calibration per floor. Strengthened offline tests are unexecuted; the keeper CPU validation row is the next step. The cell is eight complete long-prompt requests, not the CPU restored-slot protocol. [no-belief: code review and untested proposal, no measurement]
+  - [x] **SL-4 offline proposal validation — PARKED after three failed qualifications:** final permitted keeper retry `handoff-df2-sl4-offline-validate-r3-20261101`, CPU any-quarter, published 2026-11-01; same lineage, supersedes r2. Proposal commit `72823ebe85773da8159dbc3f0ec769fbab8745e8`; seal SHA-256 `db7ead3c1d820f8eb13997c7114fb73db3ca992abadc3bd7d935da4281a565f9`; spec, launcher and seal under `/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r3-20261101/`. File `results/RESULT.json` against the published decision rule and end receipt. PASS requires child rc0, exactly 8 tests, zero failures/errors/skips/cutoff, sealed input integrity, a reaped child, and current-child bootstrap/final offline-guard proofs. This synthetic validation cannot close SL-4. ✅ 2026-11-02 — r4 (repaired successor of r3; ran in the owner turn, not as a keeper row) PASSED: child rc0, exactly 8 tests, 0 failures/errors/skips, cutoff null, child reaped (pid 1091070), `input_seal_sha256` `a26c593fe26b20ee6481f8e1ed5449935cea15591dcb048d689308880a48515a`, offline-guard installed before imports (bootstrap `3168c1923607d534b846ac82e457042fb5d5dca47565f6169098ede9b748e877`, final `60b01b0bea684110fceb1ff126eb174cb5e38c26779b2442decb51c7d6f6b920`, 47 wrapper + 9 audit checks), wall 3.3 s, research `aa2143357d5382934580bcab6744b87b5fd1a6d4`, proposal `72823ebe85773da8159dbc3f0ec769fbab8745e8`. One local correction recorded in the result: the np=8 frozen-request fixture in `test_longctx_c8_comparison.py` (test defect found by the r4 trial; original kept as `.r3-original`). **Evidence:** `/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r4-20261102/results/RESULT.json` (scope field: offline synthetic proposal tests only; SL-4 remains open). [no-belief: synthetic offline proposal-test validation, no scientific measurement]
+    - [x] **Repair first qualification failure and publish successor.** ✅ 2026-11-01 — original keeper dry-run `FAIL-1.json` ended `rc=1 ... reason=job-rc-1:exited`; result child rc4, 0 tests, cutoff null, child reaped. The `pytest.log` under the `attempt` path recorded in `/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-20261101/results/RESULT.json` records missing `scripts.benchmark.belief_capture`. The r2 snapshot adds the pinned import closure and requires attempt-bound offline-guard proof. Static preparation only; no r2 qualification/result claimed. First failed qualification of this lineage; park after three. [no-belief: qualification failure and preparation, no scientific measurement]
+    - [x] **Repair second qualification failure and publish final retry.** ✅ 2026-11-01 — r2 dry-run `FAIL-1.json` ended rc1 at 20:36:13Z, child rc1, 0 tests, no cutoff and reaped child; the pytest log under the attempt path in `/mnt/raid0/llm/tmp/handoff-df2-sl4-validate-r2-20261101/results/RESULT.json` records `ModuleNotFoundError: pytest` under isolated Python. R3 vendors a sealed local pytest dependency closure and checks vendor origins; no r3 qualification result claimed. Two lineage failures; a third parks it, with no lineage reset. [no-belief: qualification failure and preparation only]
+    - [x] **File third qualification failure and park lineage.** ✅ 2026-11-01 — r3 failed at 22:39:13Z before its first unit: current keeper does not set `WS58_REGIONS`; [failure](../../artifacts/compute/df2-sl4-offline-validate-r3-20261101/FAIL-3.json). This is the third lineage failure (earlier r1 import closure and r2 isolated pytest), so no retry or lineage reset. The SL-4 serving task remains open and no test result was obtained. [no-belief: qualification failure and parking only]
+- [x] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
+      the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
+      identical-checkpoint control: 95.24 vs 90.69).
+      ✅ 2026-09-16 (sub-gpu-runner).
+      **Evidence:** research `sub/gpu-runner-20260916`, commit `416cd853` (on main as `8146880b`), `data/inf62-sl5-20260916/`
+      (`aa_report.json`); runner `scripts/benchmark/sl5_df26_aa_control.py`.
+      **Setup:**
+      - The unchanged `df2_greedy_parity.py` was run twice (runs A and B) on champion `ef81196d5`.
+      - Each run covered baseline, dflash2 and draft_simple on 12 prompts, with temp 0 / top_k 1 / seed 42.
+      - Every arm used a fresh process, with host threads pinned to 184-191.
+
+      **Results:**
+      - **The A/A distribution is degenerate: every arm reproduces itself byte-for-byte across fresh
+        processes.** baseline_A vs baseline_B, dflash2_A vs dflash2_B and draft_simple_A vs draft_simple_B
+        are each **12/12 identical**.
+      - Draft volumes are identical across runs: dflash2 draft_n 3912 (2490 accepted); draft_simple
+        11948 (1542 accepted).
+      - Negative controls are clean: the baseline drafted nothing, and both spec arms drafted.
+      - **The verdicts on this build are dflash2 6/12 and draft_simple 5/12, the same against either
+        run's baseline.**
+        - Both arms fail at identical indices on 4 prompts: 1659@128, 1938@247, 1664@238, and 1882
+          (34 for dflash2, 62 for draft_simple).
+        - dflash2's other failures are 1869@182 and 1662@212.
+        - draft_simple's other failures are 1818@193, 2415@36 and 1662@250.
+
+      **Reading:**
+      - The external "95.24 vs 90.69 on an identical checkpoint" run-to-run noise **does not exist on this
+        stack at temp 0**. Pass counts here are deterministic properties of (build, arm, prompt), so
+        7/12 → 6/12 (5c278648a → ef81196d5) is a build difference, not sampling noise.
+      - The cause is localised by the DF2-8 serial-exact confirmation below.
+      - Belief kernel: pre-hook, zero rows (VB-GPU-RUNNER).
+- [x] **DF2-RNG — diagnostic lead for the DF2-6 failures**: both DFlash2 AND `draft_simple` fail at the
+      SAME first-differing indices (34/216/238) → a shared verify-path cause. External S24 names "draft
+      RNG entangled with acceptance RNG" as exactly this shape. Check whether the drafter's sampling
+      advances the target's RNG stream under `--spec-type draft-dflash`/`draft-simple` at temp 0.6.
+      ✅ 2026-09-16 (sub-akfix, **source reading at `ef81196d5`**, no run) — **NO; the RNG hypothesis is ruled out.**
+      - The drafters own separate samplers (`common/speculative.cpp:236-241`, `:1401-1407`) and always take
+        `cur_p->data[0]` (`:1731,1744`).
+      - The DFlash2 selector RNG is private and used only at temp > 0 (`:1662-1690`).
+      - Verify at temp > 0 uses a separate `speculative_rng` (`common/sampling.cpp:411-422`).
+      - DF2-6 ran at temp 0 / top_k 1 (`df2_greedy_parity.py:148-152`), where the dist sampler draws nothing
+        (`src/llama-sampler.cpp:1046-1049`).
+      - The shared indices 34/216/238 are better explained by the **batch-shape numeric split** (see DF2-2).
+      - Details and the GPU confirmation experiment: `progress/2026-09/2026-09-16-sub-akfix.md`.
+- [ ] **RULE-RESCOPE — "all spec-dec levers are a single-stream story" is now contradicted by two
+      sources**: external MTP +51.5% C1 → +52.3% C32 (flat), and our own DF2-5 (+28%→+48% from 1→8
+      in-flight, flat per-slot acceptance). The rule (fable5 lever-category matrix) was derived on
+      GPU-MoE/gemma4 MTP; re-scope it to that regime rather than leave it standing over dense-27B DFlash2.
+- [ ] **DF2-DRAFTER-CAPABILITY — generalize:** treat "train a DFlash2 drafter for target model X" as a
+      reusable capability (the pipeline, not a one-off), since every new serving candidate will need one.
+  - [x] **Drafter onboarding guide.** ✅ 2026-11-01 — [target pins, capture/training and conversion evidence, pilot controls and adoption route](../../docs/guides/agent-workflows/dflash2-drafter-onboarding.md) documented from the current handoff and existing stack-change process. The feature dumper, offline trainer, checkpoint tensor parity and target-specific measurements remain open; the guide does not establish the reusable pipeline. [no-belief: documentation and source review, no measurement]
+
+#### OPEN — composing DFlash2 with n-gram lookup (3090/LABD intake, 2026-10-03)
+
+The HyperQwen/LABD wave (intake-1827#record through intake-1849#record) asks whether context-copy lookup adds to DFlash2 on our
+agentic traffic. Two v10 facts constrain every probe. Both were read from the frozen tree `ffc1bac82`:
+
+- **`--spec-type a,b` order is ignored.** `common_speculative_init` builds the chain in a fixed priority:
+  `ngram-simple`, `ngram-map-k`, `ngram-map-k4v`, `ngram-mod`, `ngram-cache`, then the model drafters
+  (`common/speculative.cpp:2973-3009`, comment "this list here defines the priority"). The draft loop takes
+  the **first non-empty draft** and skips the rest for that step (`:3199-3243`). So `draft-dflash,ngram-mod`
+  and `ngram-mod,draft-dflash` are the same server: any n-gram hit displaces the whole DFlash2 block for that
+  step. This is upstream's chosen design. PR #22838 shipped first-non-empty-in-order chaining and closed the
+  scoring design (`intake-1843#01`). Per-position merge, where lookup fills only the positions it is
+  confident about, does not exist upstream (`intake-1843#record`). In llama.cpp the composition is whole-draft
+  fallback (`intake-1833#03`).
+- **`ngram-mod` keeps one pool shared across all sequences and requests.** The comment at
+  `common/speculative.cpp:2334` says "shared across all sequences". `begin()` adds every new prompt to the pool
+  and resets it only when occupancy crosses a threshold (`:2376-2400`). One server therefore drafts from
+  earlier requests' prompts and generations. This is the mechanism behind the July retraction: a repeated
+  prompt on a warm server let ngram copy its own earlier answer, and the claimed 2.80× fell to -17.4%..+2.7%
+  on run 1 only. See [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) §"ngram
+  speculation — RETRACTED 2026-07-31" and research `84067a6e`. **Every n-gram arm must use a fresh server per
+  arm and per rep, distinct prompts, no warm-up, and report `draft_n` per implementation.** The
+  lukaLLM bench followed the same hygiene, and its warm-server probes are the contaminated ones
+  (`intake-1833#04`).
+- **Priors, not expectations.** Every LABD number is greedy and copy-workload-specific. The source itself
+  says to keep k=7 for agentic clients (`intake-1827#04`, `intake-1827#06`). The best llama.cpp composition
+  evidence (Blackwell, Q4_K_M, np1, temperature unrecorded) does not license an MI210 temperature-1.0
+  change without our own replay (`intake-1833#record`).
+
+- [x] **DF2-14 (intake P1) — offline lookup replay on our own agentic transcripts.** ✅ 2026-10-03
+      (`/mnt/raid0/llm/tmp/p1-lookup-replay-20261003/`). CPU-only, no inference. For each generated position
+      in the F12/C95 wire transcripts, test whether a 6-12-token suffix match on the request's own history
+      (prompt plus generated, LABD's rule, `intake-1827#02`) would have proposed the emitted continuation.
+      Report the copy rate and the implied accepted-length ceiling per turn class: tool-call arguments,
+      reasoning, final answer. No external copy-rate evidence exists for coding agents (`intake-1844#01`), so
+      this replay is the only basis for P2.
+      - **Result 2026-10-03: no material signal.** 320 codex turns / 630k generated tokens (F12 DFlash2 subset 220
+        requests / 486k). Lookup coverage (k=8, runs ≥3) is 8.0% overall: reasoning 91.7% of tokens at 5.6%, tool-call
+        args 45%, patches 30%, final answer 17%. Step simulation vs measured DFlash2 (3.20 tok/step): +1.4–2.4%
+        optimistic, −1.0 to −2.6% after overlap (DFlash2 accepted length already tracks lookup coverage, Spearman
+        0.68; 3.04→4.06 as coverage rises). Cross-context control keeps 57% of coverage (generic boilerplate).
+        Temp-1.0 sampled text is a direct acceptance sample (no logprobs needed). Report:
+        `/mnt/raid0/llm/tmp/p1-lookup-replay-20261003/` (`out/position_table_k8.txt`, `out/gated_sims_table.txt`).
+- [x] ~~**DF2-15 (intake P2) — DFlash2 vs DFlash2+ngram serving A/B. NOT RUN: DF2-14 gate failed 2026-10-03 (≤+1% expected).** Gated on DF2-14 showing a copy rate~~ (closed 2026-10-29 audit: OBSOLETE → handoff:242 NOT RUN: DF2-14 gate failed 2026-10-03 (<=+1% expected copy-rate gain); box gated on that gate)
+      worth testing. Arms: `draft-dflash` vs `draft-dflash,ngram-mod`, plus `draft-dflash,ngram-map-k4v` per
+      `intake-1833#02`. Run at production shape, temperature 1.0, on replayed multi-turn agentic prompts.
+      Apply the hygiene above: fresh server per arm and rep, distinct prompts, `draft_n` per implementation.
+      Read it knowing the composition is whole-draft fallback with n-gram first. A loss can mean "lookup
+      displaced better DFlash2 blocks", not "lookup has no signal". Only DF2-16 can separate those two.
+- [x] ~~**DF2-16 (intake P4) — per-position merge plus an entropy gate on `llama.cpp-experimental`. Gated on~~ (closed 2026-10-29 audit: OBSOLETE → gated on DF2-15 (line 242) which is not run after DF2-14 gate failure)
+      DF2-15.** Keep the DFlash2 block and replace position i with the lookup token only where a suffix match
+      exists. Gate retrieval on the target's low entropy over the key suffix (`intake-1838#00`; the relaxed
+      verification in that paper is declined). A point-mass proposal keeps rejection sampling lossless
+      (`intake-1827#03`). Not upstream (`intake-1843#01`), so this is experimental-kernel work under the
+      four-step workflow. Measure it against the DF2-15 winner at temperature 1.0.
+
+- [x] **DF2-19 (intake-1988#record + intake-2020) — corpus-table n-gram replay on the DF2-14 transcripts (CPU only, no inference)** ✅ 2026-10-20 (STOP): re-enumerate and sha256 the F12/C95 `wire-bodies.jsonl.gz` set DF2-14 used (`/mnt/raid0/llm/tmp/ds41-c95/results/C{2,4}/cxf{1,12}/r{1,2}/wire/`; DF2-14's own scratch dir no longer exists, so recompute its baseline), pin `allenai/dolma2-tokenizer`, the `IanMagnusson/count-ngram-tables` general-17gb revision and COUNT repo `31fd41ef`, retokenize generated text in Dolma2 space, and score every generated position under (a) request-local suffix lookup (DF2-14 rule) in the same space, (b) the 17 GB table's top-1/top-3 for the longest matching history via the COUNT NumPy reference reader, (c) a domain-matched table built only from other prompt groups' transcripts, and (d) unions with each other and with DFlash2-accepted spans; report coverage, top-1/top-3 hit rate, per turn class (reasoning, tool-call args, patch, final answer) and hit rate by stored-history-count stratum, plus DF2-14's step simulation (optimistic and after-overlap) on a prompt-group holdout fixed before scoring. Predeclared rule: GO only if the after-overlap simulated gain over request-local-only is >= +3.0% on the holdout for arm (b) or (c); otherwise record the corpus-table n-gram lane closed at the 17 GB size. Measures token-level n-gram predictability under a retokenization proxy, not drafter acceptance; keeps every position, miss and failed turn in the denominator; one HF download stream; delete the 17 GB download after the report unless GO.
+      - **Result 2026-10-20: predeclared rule returns STOP (approved by main 2026-10-20).** CPU-only, no inference,
+        single-process (no region claim needed). Protocol fixed and committed before scoring (`scripts/research/df2_19/PROTOCOL.md`,
+        commit `7777076f8`; scripts `aabf32fb0`; secondary-bounds addition `e7b393c26` after the primary run, verdict rule unchanged).
+        Evidence: `artifacts/research/df2-19-20261020/` (`results.json`, `provenance.json`, `transcript_manifest.json`, `analyze.log`,
+        per-position `positions.csv.gz`). Pins: dataset rev `5a284fd648f90a45add297fe077233721796e062` (`general-17gb` sha256
+        `e32a6f3a...b893ea4`, equals the HF LFS and `SHA256SUMS` value), `allenai/dolma2-tokenizer` rev `5292e5d6c0f40b67cc765fe41bec991cf4345b5c`,
+        COUNT `31fd41ef4be88327d656af48463883628ceb8598`; reader output matched the repo's own `CountLookup` on a spot check (87/87 top-1).
+        - **Input.** 8 runs, 241 turns, 582,991 Qwen predicted tokens (DF2-14 recorded 320 turns / 630k; not reconcilable, its scratch is gone).
+          Generated text is recovered from the next request's echoed items: 225 turns fully, 8 final turns message-only (30,602 Qwen tokens
+          unscored), 5 turns lost to auto-compaction and 3 aborted turns (46,479 Qwen tokens unscored). Scored positions: 472,609 Dolma2 tokens
+          (C2 238,914, C4 233,695); the `patch` class is empty (no tool-call arguments matched a patch marker). The wire data carries only
+          per-request `draft_n`/`draft_n_accepted`, so the filed per-position "DFlash2-accepted flag via character-offset alignment" is
+          impossible; DFlash2 enters the simulation only through each turn's measured tokens/step plus a fitted overlap (PROTOCOL.md).
+        - **Arm (a), Dolma2 space, k=8.** coverage 9.19%, top-1 hit 7.44% of all positions (81% precision), runs>=3 coverage 6.81%;
+          DF2-14's 8.0% is within 2 points, so no discrepancy flag. Holdout C4 alone: coverage 9.75%, hit 7.90%.
+        - **All positions (C2+C4), coverage / top-1 / top-3 of all positions.** (b) 17 GB table: 100% / 11.4% / 20.1%.
+          (c) leave-prompt-group-out table (built from 0.43-0.46M tokens of the other context): 98.4% / 29.4% / 37.8%.
+          Per class top-1 (a8 / b / c): reasoning 5.2 / 11.4 / 27.9%, commentary 7.8 / 10.3 / 32.0%, final answer 43.7 / 11.2 / 35.1%,
+          tool-call args 39.3 / 11.6 / 53.0%. Any-correct unions, top-1 (top-3): a+b 17.9% (26.0%), a+c 32.0% (39.9%), b+c 34.0% (45.2%), a+b+c 36.4% (47.0%).
+          Strata: (b) top-1 by matched order 2..6 = 6.2 / 10.8 / 12.3 / 15.9 / 23.5%, by stored top-1 score 0-0.2 6.1% up to 0.8-1.0 65.2%;
+          (c) by true history count 1 / 2 / 3-4 / 5-9 / 10-24 / 25+ = 29.3 / 32.5 / 31.5 / 33.9 / 32.9 / 26.3%. The 17 GB table stores no per-history counts.
+        - **Step simulation, holdout C4, gates and overlap fit chosen on C2** (a chosen k=8; fitted q_cov 0.97 for (b), 0.94 for (c) against
+          q_unc 0.66; simulated DFlash2-alone 2.96 tok/step against 2.97 measured). Gain of (a + X) over (a) alone, diluted denominator:
+          fitted-overlap realistic gate (the predeclared cell): (b) -0.00%, (c) -0.04% (CI -0.06..-0.02%). Both chosen gates sit at the strictest
+          grid corner (>=5-token history, stored top-1 score >=0.9), i.e. the calibration found no gate setting that helps.
+          Independence + oracle gate (optimistic): (b) +0.02%, (c) +0.66%. Reverse direction (C4 calibrate, C2 holdout): (b) -0.01%, (c) -0.14%.
+        - **Secondary bounds (added after the primary run, not in the rule).** Per-position merge, loosest gate, realistic: (b) -56%, (c) -47%
+          (a wrong stored-score-gated guess displaces a DFlash2 token that is right ~65% of the time, and the tables are right 11% / 29% of the time).
+          With a perfect oracle gate and fitted overlap the headroom is (b) +0.5%, (c) +9.0%, generated-only (c) +8.8%; independence + oracle: (b) +8%, (c) +20%.
+          So a domain table carries predictability, but only a gate far better than stored score or order could convert it; no such gate is available in these data.
+        - **Deviation from the filed method, stated plainly.** Per-position DFlash2 acceptance was not on the wire (only per-request
+          `draft_n`/`draft_n_accepted`), so the filed character-offset alignment of accepted spans was replaced by a calibration-fitted overlap model.
+          The verdict does not depend on that model: every realistic-gate cell is under +3.0% with the overlap model fitted AND with it removed
+          (independence: (b) +0.02%, (c) +0.54%; fitted: (b) -0.00%, (c) -0.04%), and the best case for the 17 GB table with an oracle gate and fitted
+          overlap is +0.5%. Only a perfect-gate oracle under independence exceeds the bar ((b) +8%, (c) +20%); that is an unattainable bound, not a result.
+        - **Verdict: STOP.** The corpus-table n-gram lane is closed at the 17 GB size (and at request-local scale for a ~0.45M-token domain table).
+          No 142 GB re-screen trigger: (b) oracle headroom with fitted overlap is +0.5%. Limits: 2 prompt groups only; (c) is a small proxy corpus; Dolma2
+          retokenization of the wire JSON, not the served chat template; one-draft top-1 chains only (top-3 is a hit-rate column, not a verification tree).
+          The 17 GB file remains at `/mnt/raid0/llm/tmp/df2-19-20261020/dl/tables/general-17gb/forward_index_topk.bin` (17,113,892,384 bytes) pending the operator's delete confirmation.
+          2026-10-21 correction: the directory `/mnt/raid0/llm/tmp/df2-19-20261020/` no longer exists (checked read-only 2026-10-21 08:55Z; the 17 GB table is gone, so the delete confirmation above is moot). It was removed without a recorded confirmation (likely the tmp reclaim; unverified), and the corpus-table lane is closed (STOP) so nothing depends on it. Drop it from the pending-operator list.
+
+**Owned follow-ons if DF2-19 returns GO (no checkbox until then).** (1) Add a corpus-table arm to DF2-15's arm list; DF2-15 itself stays gated on this result. (2) Write a C++ reader for the COUN v2 format (mmap, per-order binary search, 8-bit score decode; the COUNT repo's reader is NumPy `np.searchsorted` and is not the optimized runtime behind the paper's throughput) and benchmark single-thread lookup latency per token and per 5-token chained draft on EPYC, table on one NUMA node versus interleaved, before any drafter integration; the paper gives only end-to-end overhead for a 1B model on an H200 host, so no CPU lookup latency figure exists to reuse. (3) If the lowest stored-history-count stratum alone would clear the +3.0% bar, a 142 GB-table re-screen becomes the next trigger. **Declined 2026-10-20:** inference-only late fusion (kNN-LM-style top-K interpolation) on production models: it changes the sampled distribution, is the weaker baseline in the source, and n-gram arms were retracted twice (`speculative-decoding-mtp-refresh.md`).
+
+The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
+`matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
+build/model/protocol identities, predecessor hash, and (for GPU stages) the claim window. A stopped
+campaign resumes at the first missing or invalid receipt and never reruns a sealed cell. The dashboard
+must identify this as `campaign_kind=experimental_runtime`, keep the AutoKernel/planner tails open,
+and show only headline np1/np8/parity/decision values while keeping raw grids and receipts collapsed.
+
+##### Declined 2026-10-03 — from the 3090/LABD intake, deliberately NOT filed
+
+- **Ship LABD or the 16-token verify block to production on current numbers** (intake-1827#record,
+  intake-1830#record): every gain is greedy and copy-workload-specific, the author's own figure puts it about
+  2:1 behind MTP elsewhere, and it costs recurrent-state pages per slot. Reopen only through DF2-14 → DF2-16.
+- **Context-copy chaining** (intake-1827#record, intake-1828#record): measured -8% at default temperature on
+  chat. It is greedy-only, and under sampling a point-mass copy displaces the drafter's distribution.
+- **WhiFlash router** (intake-1846#record): it routes whole drafts between two model drafters, and we serve one.
+  It says nothing about lookup fusion or sampled traffic, its repo is a README only, and its oracle comparison
+  is not like-for-like.
+- **AsymSpec / ReSpec lossy relaxed verification** (intake-1837#record, intake-1838#record): neither preserves
+  the target distribution. Only ReSpec's entropy gate carries over, into DF2-16.
+- **CacheWise eviction** (intake-1844#record): built and measured on vLLM/H200. Admission and eviction on
+  :8083 are already owned by KVU-5, KVU-6, KVU-14 and UFH14-B2. Keep it as characterization only
+  (prefill-dominance).
+- **AngelSpec D-cut / DFly** (intake-1848#record): these need drafter retraining and serve the vendor's
+  stack. Only the temperature-1 production acceptance prior is used, in UFH14-A2.
+- **`--no-kv-unified`**: there is no evidence it would pay. Unified KV is what lets one slot reach 262144
+  (KVU-16). The decode tax is measured by KVU-18 first (intake-1849#record) and fixed by KVU-19 if it is real,
+  not by splitting the pool.
+- **`--spec-draft-n-max 5` as its own probe**: fold it into the existing n_max sweep (SL-1 is done at
+  {4,6,7,8}; KVU-1b covers the production depth). A one-off n_max 5 cell adds nothing a sweep row cannot.
+
+#### Objective
+
+Decide, on measured evidence, whether the dFlash2 block-diffusion drafter beats our in-file MTP head for
+**Qwen3.8-27B on the MI210**. This is an *alternative* to MTP, not additive. *(Corrected 2026-10-03: v10
+`--spec-type` accepts a comma list, but it chains by fixed priority with first-non-empty-draft-wins and
+ignores the order you give. See "composing DFlash2 with n-gram lookup" above.)*
+
+#### Why this is a build task and not a bench task
+
+v9 already ships `--spec-type draft-dflash` and `draft-dspark` (verified 2026-08-19 from `llama-server --help`),
+so DFlash1/DSpark drafters run on frozen production today. **dFlash2 weights do not.** Only DFlash2 GGUFs are
+published for Qwen3.8-27B — there is no DFlash1 build of this drafter — and v9's loader is the DFlash1
+implementation. Measured, not assumed:
+
+```
+load_arch_hparams: missing target_hidden_size; using legacy draft hidden size 5120
+llama_model_load: error loading model: done_getting_tensors:
+    wrong number of tensors; expected 81, got 58
+```
+
+The file is a valid GGUF declaring `dflash.*` keys; v9 requires 81 tensors and a `target_hidden_size` key
+(`src/models/dflash.cpp:19-21`) that DFlash2 weights do not carry. 58-vs-81 is a **format difference, not a bad
+download**. Evidence: `epyc-inference-research/artifacts/architect-bench-gpu-20260814/dflash2_20260819/dflash2_n8/server.stderr`.
+
+So this needs llama.cpp **PR #27342** (open, NOT merged as of 2026-08-18), built per the four-step workflow in
+`CLAUDE.md`: pull fresh production → build on `llama.cpp-experimental` → validate no regressions (GPU + CPU) →
+deploy as a NEW production version. **The frozen v9 tree is never edited.**
+
+#### The bar it has to clear — measured 2026-08-19, not assumed
+
+There was **no plain-vs-MTP baseline for Qwen3.8-27B anywhere in the repo** before this. There is now.
+Protocol: np=1, 12 real olympiadbench prompts, 2048-token cap, v9 `0db32c06e` / build `10125`, one flag varied.
+Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nmax_sweep_20260819/`.
+
+| `--spec-draft-n-max` | plain | 2 | 3 | 4 | 6 | **8** | 12 |
+|---|---|---|---|---|---|---|---|
+| decode t/s | 27.78 | 39.77 | 46.61 | 51.03 | 55.22 | **55.46** | 51.14 |
+| draft acceptance | — | 0.842 | 0.773 | 0.702 | 0.579 | 0.482 | — |
+
+- **MTP is worth 1.85× at n-max 4 and 2.00× at n-max 8.** dFlash2 must beat **55.46 t/s**, not 27.78.
+- The vendor's 2.7–4.6× headline is versus *plain*, at batch 1, on an Apple M5 Max. We already capture 2.00×
+  of that for free from the in-file head. Their like-for-like claim is 4.80 vs MTP's 4.28 accepted tokens ≈ **+12%**.
+- **Suffix decay is real on our own drafter**: acceptance nearly halves from depth 2 → 8. That is the effect
+  dFlash2 claims to fix, so the headroom is real — but it is ~12%, not 2.7×.
+
+#### Tasks
+
+- [x] **DF2-1 — Build.** Fresh production tip → `llama.cpp-experimental`, apply PR #27342, build HIP/gfx90a.
+      Forward-port our local gfx90a patches into the candidate, **notably `a6b4b5263`** (routes small Q8_0
+      MTP-verify batches to MMQ, `ne11<=1`, +17.4% single-stream MTP on MI210).
+- [x] **DF2-2 — Check the MMQ patch still fires.** `a6b4b5263` is *MTP-verify-shaped* (`ne11<=1`); a dFlash2
+      block verify has `ne11≈8` and may land on a less-tuned path. **This is the single most likely cause of a
+      disappointing first number** — confirm before attributing any shortfall to dFlash2 itself.
+      ✅ 2026-09-16 (sub-akfix, **source reading at `ef81196d5`**, no run; `a6b4b5263` is an ancestor) — **the patch
+      does not decide the route for a block verify.**
+      - **Verify batch shape.** A batch at n_max 8 has 9 rows (`tools/server/server-context.cpp:516-520`).
+      - **Route at 9 rows.** 9 > `MMVQ_MAX_BATCH_SIZE` = 8 (`ggml-cuda/mmvq.cuh:3`), so the batch takes
+        **MMQ with or without the patch** (`mmq.cu:303`, `ggml-cuda.cu:1898-1906`).
+      - **Plain 1-row decode** takes MMVQ.
+      - **Current form of the patch rule.** At `ef81196d5` it is `ne11 <= 4` (`b0eb4fab4`, `mmvq.cu:747-758`).
+        The old `mmvq.cu:341-344` citation is valid only at `5c278648a`.
+      - **Two more 1-row vs multi-row kernel splits:**
+        - GDN autoregressive vs chunked (`src/models/delta-net-base.cpp:435-446,573-577`);
+        - FA vec vs rocWMMA (`fattn.cu:556-559`).
+      - **This is the likely DF2-6 cause (medium-high confidence).** It is not a DFlash2 defect. Its impact scales
+        with draft volume: ngram drafted 218 tokens vs 4012 for dflash2 and 11951 for draft_simple. ngram's single
+        failure is at the same prompt 2127, index 183.
+      - **Confirmation needs the GPU.** Arms `LLAMA_SPEC_EXACT=serial` vs unset, plus an A/A pair; the
+        experiment is in `progress/2026-09/2026-09-16-sub-akfix.md`.
+- [x] **DF2-3 — No-regression validation vs v9** (GPU + CPU) before any comparison is quoted.
+- [x] **DF2-4 — Matched comparison.** Replay the exact protocol above (same 12 prompts, np=1, 2048 cap) with
+      `--spec-type draft-dflash` + `incoai/Qwen3.8-27B-DFlash2-GGUF:Q8_0`
+      (already downloaded: `/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf`, 2,056,414,752 bytes, Apache-2.0).
+      Report decode t/s **and** acceptance against the table above.
+- [x] **DF2-5 — Concurrency.** ✅ 2026-08-28 — PASS, see the results section below. *(compute-gated; design REVISED 2026-08-21 by intake-1277 — the earlier
+      wording would have returned a clean sheet that means nothing.)* Re-run against the MTP grid
+      (47.6 / 75.4 / 108.7 / 157.3 t/s) with five design changes, each of which fixes a specific way
+      the naive version fails:
+      1. **Sweep IN-FLIGHT REQUESTS 1/2/4/8, not `-np`.** Upstream #27117 establishes with its own
+         control matrix that `-np` alone is inert — a `-np 16` server carrying only 4 concurrent
+         requests is *bit-identical* to `-np 4`. A grid that varies `-np` while issuing serially sits
+         entirely in the healthy region. Hold `-np` at or above the request count.
+      2. **Instrument per-slot `draft acceptance` and `mean accepted length`**, not aggregate
+         throughput. Throughput cannot separate a scheduling cost from a correctness defect — which is
+         exactly why the whole upstream PR #27342 concurrency argument is still unresolved.
+      3. **Three arms at every point: none / MTP / DFlash2.** Without the no-drafter arm a regression
+         cannot be attributed to speculation; without the MTP arm it cannot be attributed to DFlash.
+         **#27117 is DFlash-1 and predates PR #27342 by three days**, so an unattributed result would
+         blame DFlash-2 for a defect that is not its own.
+      4. **Hold `--spec-draft-n-max` FIXED across the sweep.** `accepted/generated` is structurally
+         n_max-dependent: measured upstream at 0.708 (n-max 1) vs 0.523 (n-max 3) on the same drafter
+         and a single slot, with per-position acceptance 0.719 / 0.496 / 0.353. If n_max is varied at
+         all, report mean accepted length beside the ratio.
+      5. **Run every cell twice, with and without `--kv-unified`.** *(the highest-value item here)*
+      **Gate:** the paired `--kv-unified` arm is the single discriminating control that **nobody
+      upstream has ever run, on any backend, for any drafter** — the #27117 reporter demonstrably never
+      used it (verified three ways). A negative retires the leading root-cause hypothesis for free; a
+      positive localises a real defect that is present verbatim in frozen v9. Note that the flag
+      correlation cited for that hypothesis is 3-point with a counter-example and fully confounded
+      with CUDA-vs-AMD (see intake-1264 as corrected), and that a `split_equal` row-permutation defect
+      is backend-agnostic *by construction*.
+      Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
+      sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
+- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. *(2026-09-16 pointer: the cause is localised by the `LLAMA_SPEC_EXACT=serial` confirmation under **DF2-8**, research `7a876f23` (on main as `8146880b`), and the determinism of the pass counts is established by **SL-5**.)* dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
+      at temp 0, reusing the method preserved in
+      [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md).
+      *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
+      establishes that **batched speculative verification ALONE** deterministically diverges from the
+      greedy baseline at near-ties, reproducing with `draft-simple` and no DFlash code involved. A
+      DF2-6 non-parity result is therefore **not automatically a DFlash2 defect**, and without the
+      control this task cannot distinguish the two.
+      **THIRD FINDING, 2026-08-22 — the two-arm control is STILL insufficient, because of a patch of
+      our own.** Frozen v9 carries EPYC-local commit `a6b4b5263` (`ggml/src/ggml-cuda/mmvq.cu:341-344`,
+      verified absent upstream) that **deliberately** routes Q8_0 to a different kernel at `ne11>=2`:
+      `// MMVQ->MMQ campaign ... so MTP verify blocks (4-col batch) use batched mul_mat_q instead of
+      per-column mul_mat_vec_q` → `case GGML_TYPE_Q8_0: return log_decision(ne11 <= 1);`. Its own
+      commit message says it is **"numerically-valid (not bit-exact)"**, taken for +17.4 % single-stream
+      MTP on MI210. A verify batch is `ne11 = n_max+1 >= 2`; the non-speculative baseline is `ne11 = 1`.
+      **So on gfx90a a DF2-6 parity failure may be entirely attributable to a performance patch we
+      knowingly accepted, and none of the currently-filed arms can tell the difference.**
+      Two consequences, both mandatory: capture **`GGML_CUDA_LOG_MMVQ_ROUTE=1`** on every arm (it is a
+      runtime env var — `ggml-cuda.cu:1812-1814` — so it needs no rebuild) and report which kernel each
+      verify batch actually took; and note that **`--spec-draft-n-max 1` is NOT a safe bit-exact
+      reference** here, because it still produces a 2-column batch and our local rule splits at exactly
+      `ne11 >= 2`. The same `N==1` vs `N>1` split exists on both CPU paths too (`llamafile_sgemm`'s
+      `mnpack` register blocking; iqk's `funcs[ny-1]` dispatch), so batch invariance is not a property
+      any of our three compute planes holds.
+- [x] **DF2-6b — add an `ngram` arm.** ✅ 2026-08-28 — ngram 11/12 vs external drafters 7/12. *(2026-08-22.)* Upstream #25618 — a five-week-older, far
+      better-diagnosed thread that #27407 never cites, with 15 comments and reproductions on Vulkan,
+      Metal and ROCm — reports `ngram-simple` and `ngram-mod` staying **byte-identical on the same
+      quantized target even with accepts**, through the same `common_sampler_sample_and_accept_n` path,
+      while `draft-dspark` diverges. Nobody in 15 comments revisited it. If a multi-token verify batch
+      alone were sufficient, ngram should break too.
+      **Gate:** ngram byte-identical while `draft-simple` diverges, on our identical target and prompts,
+      would localise the defect to the **external-drafter verify path** rather than to multi-token
+      verify as such — and would overturn #27407's headline for our stack. v9 supports both spec types.
+- [x] **DF2-6c — protocol fixes that decide whether DF2-6 means anything.** *(2026-08-22.)*
+      (i) **Run at least 5 prompts, not 1.** #27407's own `draft-simple` arm was byte-identical on one
+      workload and divergent on the other; a third-party run went 0/5 → 4/5 depending on patch. A
+      single-prompt parity check returns a false clean sheet at a rate near 50 %.
+      (ii) **Fresh process per phase.** One reporter measured 1/5 with a reused server versus 4/5 with
+      fresh processes *despite* `cache_prompt=false`.
+      (iii) **Run at `-ctk f16 -ctv f16`.** Quantized KV alone moves greedy output even with
+      `--spec-type none`, so a q8_0-KV arm needs its own non-speculative baseline first or non-parity
+      is unattributable.
+      (iv) Compare by stripped-output hash **plus** first-differing *generation-token* index via
+      same-vocab `llama-tokenize`, and report per-prompt PASS/FAIL — never an aggregate verdict.
+- [x] **DF2-7 — `draft-dflash` multi-slot guard. CLOSED 2026-08-28 AS UNNECESSARY, not done.** ✅
+      Its own trigger condition was *"if DF2-5 reproduces #27117 on gfx90a"*. **DF2-5 did not
+      reproduce it**: DFlash2 scales cleanly to 8 in-flight requests (+47.8% over MTP at 8) with
+      per-slot acceptance FLAT across the sweep (0.6205 → 0.6294), and 8 is precisely where every
+      upstream report places onset. There is no failure to guard against, so adding a guard would
+      forbid a configuration we have measured to be healthy and would cost real throughput.
+      Closed on the operator's instruction, 2026-08-28.
+
+      Retained for the record: frozen v9 hard-refuses `draft-dspark` above `--parallel 1` citing
+      #26741 and has no equivalent guard for `draft-dflash`. That asymmetry is now understood as
+      **correct rather than an oversight** — the two drafters do not share the defect. Should a
+      multi-slot DFlash failure ever be observed, reopen with the measurement that shows it; a
+      guard is only justified by a reproduced fault.
+- [ ] **DF2-10 (2026-09-02, owned by ak-rebuild-20260828 per operator reassignment) — post-keep
+      capability verification.** Run 23 advanced the champion three keeps past `5c278648a`
+      (`7d2ea88b` mmvq · `db18f393` fattn-wmma-f16 · `732389d6` mmvq rewrite) with zero DFlash2
+      exercise. `scripts/benchmark/dflash2_capability_smoke.sh` (research `b412f37d`) replays the
+      DF2-5 server recipe on any build and gates acceptance ≥0.58 / boost ≥1.5×; first run
+      targets anchor-gen-014 at the boundary GPU seam (~2026-09-02T13:00Z), run-24 launch held on
+      its PASS. Tracking + verdict live in `autokernel-rebuild-program.md` R23-17/R23-18.
+- [x] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
+      `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
+      reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
+      protocol fixes. If parity holds across >=5 prompts once those land, this work is unnecessary
+      and should be CLOSED, not carried.** The problem it solves is that DF2-6 currently has no arm
+      that is *guaranteed* bit-exact, so a divergence cannot be localised.
+      **`--spec-draft-n-max 1` is NOT a safe substitute** and must not be used as one: it still
+      produces a **2-column** verify batch, and our local `a6b4b5263` rule splits at exactly
+      `ne11 >= 2` (`ggml/src/ggml-cuda/mmvq.cu:341-344`) — so the "reference" arm would take the same
+      MMQ route as the arms under test and prove nothing. Capture `GGML_CUDA_LOG_MMVQ_ROUTE=1` on it
+      like every other arm.
+      **Experimental branch only**, branched from the current production tip per the four-step
+      workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
+      [intake-1288#record]
+      ✅ 2026-09-16 (sub-gpu-runner): **Satisfied by the existing `LLAMA_SPEC_EXACT=serial` path (no widening
+      needed).**
+      - **Build and evidence.** `build-champion-c463f601b-hip-20260909`, llama-server sha256 `ed72d9d1…`.
+        It descends from champion `ef81196d5` and is identical to it in mmvq/mmq/fattn/sampling. It carries
+        INF-70 E2a's `LLAMA_SPEC_EXACT` and `LLAMA_SPEC_DIAG_ACCEPT`. Linkage PASS. Evidence is in research
+        `sub/gpu-runner-20260916` commit **`7a876f23`** (on main as `8146880b`), `data/inf62-df26-serial-exact-20260916/report.json`;
+        runner `scripts/benchmark/df26_serial_exact_confirmation.py`.
+      - **Protocol.** The DF2-6 argv on 12 prompts, temp 0 / top_k 1 / seed 42, 256 tokens, a fresh process
+        per arm, residency proven on every arm.
+      - **Results.**
+        - none A/A: 12/12 identical.
+        - **Serial arms are bit-exact:** draft-simple 12/12 and draft-dflash 12/12, with `draft_n` > 0 on
+          every prompt (1924–2004 and 266–386). Serial mode is confirmed by the server's own startup line.
+        - Unset arms reproduce the failures: draft-simple 5/12, draft-dflash 6/12.
+        - **At all 6 dflash first-differing tokens, the arm's 8-row verify row had the baseline's token as
+          its top-2**, with a top-1/top-2 logit margin of **0.005–0.079** (rows 1, 3 and 5).
+        - The draft-simple diag rows do not prefix-map to its emitted tokens, so those margins are recorded
+          as unmapped, not guessed.
+      - **Conclusion.** The DF2-6 non-parity is the **1-row vs multi-row numeric split** in batched
+        verification (MMVQ vs MMQ, GDN chunked vs autoregressive, FA vec vs rocWMMA). It is **not a DFlash2
+        defect**.
+      - **Instrument gap.** `GGML_CUDA_LOG_MMVQ_ROUTE=2` was set and is compiled in, yet emitted **0** route
+        lines. `LLAMA_SPEC_DIAG_ACCEPT` (plain `fprintf`) emitted thousands. The route logger writes through
+        `GGML_LOG_INFO`, which the server most likely filters. The next probe is `--verbose` on one arm.
+      - Belief kernel: pre-hook, zero rows (VB-GPU-RUNNER).
+      - [ ] **DF2-8a — make the MMVQ route logger visible:** (2026-10-20 note: kept open with a reason: DF2-18 observed the first differing node on HIP, which supersedes it for the dense path, but the route logger would additionally name the kernel per k and nothing else asked for that; closure is main's call)  rerun one serial-exact arm with `--verbose` and
+            `GGML_CUDA_LOG_MMVQ_ROUTE=2` to confirm the server filters `GGML_LOG_INFO`. This turns the
+            1-row vs multi-row attribution from inferred to observed. GPU; waits for the operator to lift the
+            2026-09-17 GPU hold. Filed 2026-09-17.
+
+- [ ] **DF2-6b-bis (new, 2026-08-28) — re-run the ngram arm at COMPARABLE DRAFT VOLUME.**
+      The 2026-08-28 ngram arm drafted 218 tokens against dflash2's 4012 and draft_simple's 11951,
+      and drafted nothing at all on one of the 12 prompts, so its 11/12 parity is explained by lack
+      of exposure rather than by immunity. Its kernel-route profile is byte-identical to the
+      no-drafter baseline, confirming it barely speculated. Until an ngram arm speculates at a
+      comparable rate, #25618's localisation cannot be tested on our stack. Use `ngram-cache` or
+      `ngram-mod`, or prompts with high n-gram repetition, and REPORT `draft_n` per arm beside the
+      verdict so exposure is visible rather than assumed.
+      - *2026-09-23 (intake-1513):* classify each FAIL's first divergence as near-tie (baseline token top-2, small margin;
+  - [ ] **DF2-6b-bis GPU measurement:** keeper row `df2-6bbis-gpu-20261101` published 2026-11-01; spec, pinned identities, runner and frozen `PREDECLARED.md` under `/mnt/raid0/llm/tmp/handoff-df2-6bbis-20261101/`. Result `results.jsonl`, final verdicts `verdicts.json`; file against the published rule and end receipt. Comparable volume and width criteria are predeclared implementation conventions, not historical ratification. The generated CPU classification is incorrect for the gfx90a question. No measurement or qualification claimed.
+    - 2026-11-02: scheduled row ended rc75 `disk-floor` after 21 arm records; four prompts have partial verdicts. All four ngram arms were `INCONCLUSIVE_INSTRUMENT`, with draft volume 0.058–0.276 of dflash and verify-width TV 0.958–1.0. These are partial, instrument-limited outputs, not a localization verdict; the task remains open. [Preserved evidence and end](../../docs/evidence/df2-runs-20261102/df2-6bbis-gpu-20261101/). [no-belief: partial run without valid comparable-exposure warrant]
+        the 6/12 unset-arm failures had margins 0.0046-0.079) or degenerative, and count partial-acceptance rounds.
+- [ ] **DF2-11 — Drafter-precision sweep.** Fixed Qwen3.8-27B Q8_0 target on MI210, DF2-4 protocol. Drafter arms: BF16, Q8_0 (on disk), Q4_K_M (incoai official), Q2_K (analogalok, 705 MB), plus FFN-only-Q4 and fc-at-Q8_0/rest-Q4_K arms. Report weighted acceptance, per-position acceptance and decode t/s in alternating pairs. Expected decode upside is small (the drafter reads ~2 GB vs ~28 GB target per block, projection); the value is VRAM headroom and settling intake-1256#record and intake-1506. Priors: intake-1505 Table 5 (4-bit drafter about -1% acceptance), intake-1512 (INT4-FFN TPC -0.03 to +0.01, below that paper's own table-to-table noise). ~2-4 GPU-h, ~6 GB downloads; piggyback on the next GPU window.
+  - 2026-11-02: controlled Q2 row `h-df2-11-controlled-q2-r2-20261102` scheduled rc0, attempt `2ef733657cfc459191c544e87bdcdbc3`, generated 705,431,072-byte Q2_K from pinned BF16 with C5 quantizer and mapped-library evidence. Output SHA-256 `bbbcd5b66b571f438ff2018184648e37211a1d82c492d32834af2da2c7193755`, as computed by the job, matches the acquired third-party Q2 file digest; independently rehash before treating exact equivalence as verified. Output hardlinked under `/mnt/raid0/llm/models/dflash/df2-11-20261101/`; [result and proofs](../../docs/evidence/df2-runs-20261102/df2-controlled-q2-r2-20261102/). Generation only; sweep and model quality remain open. [no-belief: generated artifact, no inference measurement]
+  - 2026-11-02: controlled BF16-derived Q2 row `h-df2-11-controlled-q2-20261101` passed qualification but its scheduled run ended rc1 before quantization because free space did not satisfy the 150 GiB floor plus BF16-size output and 4 GiB reserve. No scheduled Q2 artifact was generated; [result and end](../../docs/evidence/df2-runs-20261102/df2-controlled-q2-20261101/). [no-belief: failed generation, no measurement]
+  - [x] **DF2-11 acquire pinned drafter inputs:** ✅ 2026-11-01 — `handoff-df2-11-inputs-20261101` ended rc0 at 21:56:45Z (`reason=complete`); result and current sentinel report ACQUIRED, 3/3 unique VERIFIED units match the sealed repo/revision/filename/size/SHA-256 manifest. [Receipt and manifest](../../artifacts/compute/df2-11-inputs-20261101/RESULT.json); [end](../../artifacts/compute/df2-11-inputs-20261101/ended.txt); [units](../../artifacts/compute/df2-11-inputs-20261101/artifacts.jsonl). Preserved hardlinks under `/mnt/raid0/llm/models/dflash/df2-11-20261101/`. BF16 and Q4_K_M use original incoai release; Q2_K provenance comparison, custom quants, instrument and GPU sweep remain open. This is acquisition only, no measured acceptance or throughput. [no-belief: verified acquisition, no inference measurement]
+  - [x] **DF2-11 generate custom quantization arms:** ✅ 2026-11-01 — row `h-df2-11-quants-20261101` ended rc0 at 22:46:11Z; [result and current sentinel](../../artifacts/compute/df2-11-quants-20261101/RESULT.json) report GENERATED with two unique arms, matching attempt `59d5e311b98a455f887702e2ac1a223f`. Tensor proofs match sealed maps and metadata, BF16 provenance and mapped C5 quantizer witnesses are recorded; first arm was digest-verified reuse of qualification output, as permitted. Output SHA-256 values `42c9c566170705ce3c3666300921d470a9fcac48f3747b2d60fd374676373625` (FFN-only Q4_K) and `c265eb5f2d97c8b724daab6b86b2a8b47cb22f861b50dd7cfa847ab16ca80d95` (fc Q8/rest Q4_K_M) were computed by the job, not independently rehashed at filing. Same-inode hardlinks preserved under `/mnt/raid0/llm/models/dflash/df2-11-20261101/`. Generation only; no quant quality, acceptance, throughput or DF2-11 closure. [no-belief: generated artifacts only, no inference measurement]
+    - 2026-11-01 qualification 1 failed before first unit: launcher required `WS58_REGIONS`, which current rowflow does not supply. Re-published same row with `launch-quants-v2.sh`, letting filler use grant-parsed CPUs as its claim; resealed `INPUTS-v2.sha256` SHA-256 `b90af0d4c6ebd8a7802ad22db698e4035ee492986f8b47d886ba8e7462035545`. [Failure and repaired launcher](../../artifacts/compute/df2-11-quants-launcher-repair-20261101/FAIL-1.json); `bash -n` and seal verification pass. Keeper must requalify; no quantization result is claimed. [no-belief: launcher repair, no measurement]
+    - 2026-11-01: repaired row qualification PASS at 22:41:28Z; rc75 cutoff after one `QUANTIZED` first unit. Grantable only; full two-arm generation remains unfiled. [no-belief: qualification status only]
+- [ ] **DF2-12 — np>1 GDN parity arm.** Qwen3.8-27B DFlash2 at np=4, mixed prompts so slots interleave speculative and non-speculative steps; classify every divergence as near-tie vs degenerative. vLLM #39273 (hybrid GDN state corruption under speculation, still open) reports silent corruption with healthy acceptance on Qwen3.8-27B. Our rollback has no structural analog (`llama-memory-recurrent.cpp:1293-1310`), but np>1 is untested. Evidence: intake-1513.
+- [ ] **DF2-13 — Checkpoint + prompt-reuse test on a GDN target under DFlash2.** Two requests (B extends A's conversation); compare B's output with a cold-cache run of B. The context-checkpoint path carries an upstream TODO (`server-context.cpp:2398-2400`). Evidence: intake-1513.
+      - *2026-10-03 (intake P7, code read plus F12 wire logs):* the reuse path is live in production on every turn.
+        On 179 of 230 follow-on F12 turns, all previous output was reused from the live recurrent state, and
+        41 turns fell back to the prompt-end checkpoint. So a B-extends-A request can exercise both restore
+        and live continuation. Details are under UFH14-A6 in
+        [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md).
+- [ ] **DF2-EXL3 — Integrate speculative serving only after the EXL3 target passes codec-only CPU/HIP gates.** Bind the exact target and drafter revisions, keep draft and target quant methods separate, and require fail-closed tensor/sidecar loading. For Qwen GDN, test direct ReplaySSM commit over short, long, concurrent, reject-heavy, cache-reuse, uniform, and nonuniform paths. Cap both admission and execution allocation for sliding-window drafters. If GLM is selected, validate hidden-plus-residual contraction only on the DFlash path and verify k→k+1 capture mapping. Report acceptance, verifier cost, target throughput, context capacity, and concurrency separately. (`intake-1768#record`, `intake-1769#record`, `intake-1771#record`, `intake-1777#record`, `intake-1778#record`, `intake-1780#record`)
+  - [x] **DF2-EXL3 codec build prerequisite:** ✅ 2026-11-01 — `df2-exl3-codec-build-20261101-r1` ended rc0 at 22:06:53Z (`reason=complete`); [build receipt](../../artifacts/compute/df2-exl3-codec-build-20261101/build.json) and [end line](../../artifacts/compute/df2-exl3-codec-build-20261101/ended.txt) verify source hashes, gfx90a:xnack-:sramecc+, wave64, code-object v5, two MFMA instructions, no runtime allocation imports and exact output hashes. This is compile-only (`execution=not_run`), not a CPU/HIP runtime gate or a speculative-serving result. Source/build preserved under `/mnt/raid0/llm/tmp/h-df2-exl3-preserved-20261101/`; device execution still requires its existing authorized inference-owner or delegated GPU lease. [no-belief: compile-only artifact, no runtime measurement]
+
+**LiLiCorr monitor:** Revisit candidate-lattice correction only when the native EXL3 target is stable and ordinary DFlash/DSpark serving has passed correctness and throughput gates. Until then it has no active checkbox; the H100 paper and open SGLang implementation add no CPU/gfx90a evidence. (`intake-1773#record`, `intake-1774#record`)
+- [x] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
+      recipe.** The flag **defaults to OFF** (`ggml/CMakeLists.txt:219`), and on gfx90a with
+      `-fa on` the non-rocWMMA path produces non-finite values at longer sequence lengths — see the
+      2026-08-27 checkpoint below. The standalone DF2 candidate build already carries it ON, so no
+      DF2 result to date is affected; this task is to make that explicit in the recipe rather than
+      inherited by luck. Related: **CH-8** in
+      [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), where AutoKernel's own
+      GPU builder omits it.
+      - **Root cause, 2026-10-04** (V11-FA-2 in [`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout)): the
+        pre-#27870 MMA divergent-barrier race on the ROCWMMA-OFF route. The 27B probe fails 6/10 with OFF and
+        passes with OFF + #27870 alone. v11 must carry #27870 (V11-FA-6); the pin stays until then.
+- [x] **DF2-17 — Horizon and width replay of the greedy-parity ruling at the production shape (intake-2004/2021; filed 2026-10-20).** Extends DF2-6/DF2-8 on the champion HIP build in a scheduled MI210 window (standing approval, scheduled by workspace-ec). Frozen manifest: the 12 DF2-8 prompts (continuity set, stage 1) and the 24-prompt Q38-T7 production mix (held-out set, stage 2, never used to choose arms), prompt digests recorded. Stage 1 at f16 KV, cap 1600 tokens (256 kept as the comparison point), fresh process per arm, residency proven: spec off twice (A/A), `LLAMA_SPEC_EXACT=serial`, and spec on at verify widths 2, 3, 4 (MTP n-max 1, 2, 3), 5 (DFlash2 n-max 4), 6 (MTP n-max 5) and 8 (DFlash2 n-max 7), plus the ngram arm at comparable draft volume only if it adds no extra run (report `draft_n`; this settles DF2-6b-bis, whose localisation test intake-2021 shows cannot work because upstream's ngram arms barely drafted). Stage 2 at the production q8_0 KV with its own spec-off baseline: spec off, serial, DFlash2 n-max 7. Per prompt, never aggregate: PASS/FAIL, first-differing generation-token index, the baseline arm's top1-top2 margin there (near-tie vs degenerative by the existing INF-70 classifier), baseline near-tie density, generated length vs cap, and outcome equivalence for every divergent pair whose suite has a grader; fork positions tabulated by verify width and by drafter. Predeclared: the A/A and serial arms must be 100% identical or the run is void; the DF2-8 ruling stands with a horizon caveat if every spec-arm first divergence is a near-tie and no graded outcome flips; a degenerative first divergence or a graded flip opens the per-role speculation decision (M6, Q38-T10). Done when the per-prompt tables, raw outputs and the verdict under these rules are filed here and DF2-6b-bis is closed or kept with a stated reason. ✅ 2026-10-20
+  - **2026-10-20 RESULT (gpu-queue lane; record only, no tick; evidence [`artifacts/gpu-queue-20261020/df2-17/`](../../artifacts/gpu-queue-20261020/df2-17/), the repo copy is digest-only per precedent `8146880b`; the raw model outputs and server logs were deleted at close-out, the per-prompt token sha256, content sha256, margins and first-divergence rows are committed).** Build: champion HIP build `gpu-20261006-4348de400` (src `4348de400`; live tip differs only in CPU-only `ggml-cpu.c`), `LD_LIBRARY_PATH` pinned to the build, linkage PASS, per arm one fresh `llama-server` (own PID, verified dead), `-np 1 -c 32768 --no-kv-unified` (read back from the log: `kv_unified = 'false'`), `-fa on -ngl 99`, greedy (temp 0, top_k 1, seed 42, cache_prompt false), cap 1600, KV f16 (stage 1) and q8_0 (stage 2). Residency per arm from samples taken during the run (VRAM peak 31-37 GB, gpu_busy 100 %, server PID in KFD; `arms.json`). Rules, near-tie/degenerative operational definitions and the void rule were frozen first (`PREDECLARED.md`, sha256 `9d8cc670...`).
+    - **Controls (void test): PASSED.** Stage 1: spec-off A/A (off_A vs off_B) 12/12 token-identical, `LLAMA_SPEC_EXACT=serial` with DFlash2 n-max 7 (startup line `serial` logged, `draft_n` > 0 on all 12) 12/12 identical to spec off. Stage 2: A/A 24/24, serial 24/24. The baseline stream was reproduced by the `n_probs` margin pass on every prompt (tokens identical, both stages).
+    - **Stage 1 (f16 KV, 12 DF2-8 prompts, cap 1600; `stage1/df2_17_tables.md` has every per-prompt row):** every speculative arm differs from spec off on **12 of 12 prompts**: MTP n-max 1, 2, 3, 5 (verify widths 2, 3, 4, 6) and DFlash2 n-max 4, 7 (widths 5, 8), `draft_n` > 0 on every prompt of every arm (negative control OK). 11 of 12 baseline prompts hit the 1600 cap (1 stopped at EOS at 1391). First-divergence generation-token index: width 2 min/median/max 128/248/960; width 3 and 4 36/182/1222; width 5, 6 and 8 34/300/1222 (6 to 9 of 12 diverge before token 256 depending on width). The first-divergence index is **identical for widths 5, 6 and 8** on all 12 prompts and for widths 3 and 4 on all 12 (matching the matmul route classes in the DF2-18 inventory: MMVQ geometry at k = 2..4, MMQ at k >= 5). Baseline top1-top2 logit margin at the first divergence: 0.0005-0.182 nats on all 72 (arm, prompt) forks (max 0.109 for widths >= 5). Baseline near-tie density (positions with margin < 0.5 nats): 2.6-12.8 percent of generated positions per prompt.
+    - **Classification under the frozen rule (arm token == baseline top-2 and margin < 0.5):** 65 of 72 forks near-tie; **7 forks (2 prompts: `olympiadbench_hard_algebra_1938` at token 247 in 4 arms, `..._combinatorics_1818` at token 451 in 3 arms) are labelled `degenerative(non-near-tie)` by the literal rule because the arm token is the baseline's THIRD candidate, not its second.** Post-hoc, not predeclared (`stage1/diag_rank_posthoc.json`, baseline re-run with top-8 logprobs, baseline tokens reproduced): in both cases the arm token is rank 3 at 0.116 and 0.038 nats below the baseline top-1 and 0.007 and 0.021 nats below its rank 2 (three-way ties: `(x` -1.350, `(z` -1.459, `(u` -1.466; ` implication` -1.691, ` specific` -1.708, ` intersection` -1.729), i.e. near-ties by margin. Both readings are recorded; the frozen label stands as the predeclared verdict input.
+    - **Stage 1 graded outcomes:** 11 of 12 baseline outputs are cut at the cap with no `\boxed` answer, so 66 of 72 divergent (arm, prompt) pairs are ungradable at 1600 tokens; the 6 gradable pairs (`algebra_2574`, 6 arms) are same-correctness (both answer `2`, expected `2,-log10 250`, both wrong), 0 graded flips (`grading_stage1_auto.json`).
+    - **Stage 2 (q8_0 KV, 24-prompt production mix, cap 1600, DFlash2 n-max 7, width 8; `stage2/df2_17_tables.md`):** 11 of 24 prompts differ from spec off (13 identical; 4 of those 13 outputs are only 2, 2, 2 and 27 tokens long). First divergence at index 7-375 (median 221), baseline margins 0.005-0.032 nats, all 11 near-tie under the frozen rule (arm token = baseline top-2). Baseline near-tie density 0.0-18.5 percent of positions. `draft_n` > 0 on every prompt.
+    - **Stage 2 graded outcomes (offline, `stage2_grading.md`, 10 of 11 divergent pairs graded, no gold invented):** **2 graded flips.** `ifeval_1481`: baseline PASS, arm FAIL (arm wrote 4 markdown bullets, exactly 2 required; official-checker re-implementation for `detectable_format:number_bullet_lists`). `gpqa_diamond_cot_8116937b0ca6`: baseline FAIL, arm PASS (gold A) and truncation-driven: the baseline hit the 1600 cap with no `ANSWER:` line while the arm finished at 1435 tokens with `ANSWER: A`. No flip for `mbpp_0508` (both pass), `gsm8k_00041` (both 200), `real_suite_v1_0032` (both pass, F1 0.945), `real_suite_v1_0003` (both pass, suite oracle is a substring check and cannot separate the outputs); both fail: `mbpp_0303`, `phybench_electricity_25`, `gpqa_diamond_cot_5fd3fe9084c9` (all three cut off at the cap), `ifeval_3456`. `leetcode_the-number-of-the-smallest-unoccupied-chair` is ungraded (no local tests; ASTs identical and both pass the prompt's examples).
+    - **Verdict under the frozen rules (stated, not decided):** the A/A and serial controls hold, so the 1600-token result is valid. The "DF2-8 ruling stands with a horizon caveat" branch required every spec-arm first divergence to be a near-tie AND no graded flip. Stage 1 has 7 forks the literal rule labels non-near-tie (three-way ties, see above) and stage 2 has 2 graded flips (one regression `ifeval_1481`, one truncation-driven gain `gpqa_8116`), so the frozen rule's other branch ("a degenerative first divergence or a graded flip opens the per-role speculation decision (M6, Q38-T10)") is triggered by the graded flips on the production mix; whether the single regression is a speculation-induced defect or a near-tie-driven sample is the per-role speculation parity decision under Q38-T10 / monitor M6, which main packages for the operator; it is NOT decided in this note. Reading A of the 7 rank-3 forks (frozen literal rule): degenerative. Reading B (post-hoc ranks and margins): three-way near-ties. The gpqa flip is a baseline-cap artefact (baseline truncated), the ifeval flip is a genuine instruction-following regression on one sample. Parity is bit-exact only under spec off and `LLAMA_SPEC_EXACT=serial` at every width and both KV types; every speculative width 2 to 8 diverges within 1600 tokens on every stage-1 prompt, and the fork position tracks the matmul route class rather than the drafter.
+    - **DF2-6b-bis stays open:** the ngram arm was not run because it would have added a run beyond the nine stage-1 arms (the task allows it only if it adds none); no `draft_n`-comparable ngram evidence exists, so #25618's localisation test is still untested here. Belief kernel: no producer exists for these records yet (VB-GPU-RUNNER pre-hook), native JSONL with config echo kept.
+- [x] **DF2-18 — Observe where the champion's multi-row verify forward differs from single-token decode: `rowexact` on HIP per verify width, plus the width-gate inventory (intake-2037/2044/2046; filed 2026-10-20).** Step 1 (source only, no GPU, can start now): list every batch-width-conditioned branch on the Qwen3.8 verify path with file:line, enabling condition and the env/cparam knob that disables it (none where none exists): graph builders (`delta-net-base.cpp` n_tokens==1 and n_seq_tokens==1 gates, `fused_gdn_ar`/`fused_gdn_ch`), `llama-graph.cpp` decode flags, and ggml-cuda route and fusion predicates (`mmvq.cu` `should_use_mmvq`/`calc_nwarps`, `fattn.cu` vec vs rocWMMA thresholds, `fattn-common.cuh` `parallel_blocks`, the GDN gate/beta and ADD+RMS_NORM fusions); the CPU knobs `LLAMA_SPEC_EXACT` and `GGML_FA_SPLIT_KV` are listed too. Step 2 (scheduled MI210 window): the existing `examples/rowexact` batch mode (n tokens as ONE batch vs n single-token decodes, every graph node compared bitwise) on the champion HIP build with Qwen3.8-27B Q8_0, widths 2, 3, 4, 5, 8, 9, two different prefixes (code and prose) and an A/A repeat, residency proven; report per width the first differing node (layer, op, type), the count of differing nodes by op, and final-logit max |delta| with the top1-top2 margin at each row. Step 3: where a Step-1 knob maps to a first differing node, one knob-off re-run to confirm attribution. This replaces the DF2-8a route-logger rerun as the way to turn the 1-row-vs-multi-row attribution from inferred to observed (the MMVQ route logger never sees MUL_MAT_ID, per the DF2-6 results section). Predeclared: the A/A must be bitwise identical or the width read is void; a node counts as attributed only if its knob-off re-run removes it. Done when the inventory and per-width table are filed here and DF2-8a is marked superseded or kept with a reason. ✅ 2026-10-20
+  - **2026-10-20 RESULT (gpu-queue lane; Steps 1-3 done; evidence [`artifacts/gpu-queue-20261020/df2-18/`](../../artifacts/gpu-queue-20261020/df2-18/); raw rowexact logs for Step 2 kept at `/mnt/raid0/llm/tmp/gpu-queue-20261020/df2-18/runs` (57 MB, sha256 in `run_meta.jsonl`); the Step 3 logs were deleted at close-out, their per-node attribution is committed in `step3_attribution.json` and `step3_rows.jsonl`).**
+    - **Step 1 (source only, frozen before any probe run, sha256 in `FROZEN_BEFORE_PROBES.sha256`):** 58 width-gate entries with file:line, verbatim predicate, widths and disabling knob in `step1_inventory.md`. Live flips on the dense Q8_0 27B at k = 1..9: matmul at **1|2** (MMVQ 8-warp/vdr4/DPP geometry vs the k=2..4 geometry) and **4|5** (MMVQ to MMQ; the older `a6b4b5263` `ne11<=1` rule is no longer live, `b0eb4fab4` made it `ne11<=4`); flash-attn at **1|2** (VEC cols 1 to 2) and **2|3** (VEC to rocWMMA); FFN gate+up+SwiGLU and GDN gate `softplus*ssm_a` fusions exist only at k=1. GDN, ssm_conv, norms and rope have no flip in 1..9. `fused_gdn_ar`/`fused_gdn_ch` are hard-coded true with no knob. No runtime knob exists for the MMVQ/MMQ threshold, the k=1 geometry, the VEC/WMMA threshold or `parallel_blocks`.
+    - **Step 2 instrument:** examples/rowexact batch mode, source-additive copy (adds top1-top2 margins, FNV digests, `--nocap`; patch `rowexact_margin.patch`, stock sha256 `85bf4ddf...`) compiled out-of-tree against the champion HIP build `/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400` (src `4348de400`, built after the commit, SHA256SUMS verified; live champion tip `e33229348` differs only in the CPU-only `ggml-cpu.c`). Qwen3.8-27B Q8_0, f16 KV, 24-token prefix fed one token at a time in both arms, widths 2,3,4,5,8,9, prefixes code and prose, each config run twice (A/A) in capture mode (every graph node compared) and in `--nocap` mode (fusions and HIP graphs active, logits and state compared). Residency per run: VRAM 29-55 GB, gpu_busy 100 %, child PID in `/sys/class/kfd/kfd/proc` (sampled every 0.5 s during the run, `run_meta.jsonl`). **A/A: 24 of 24 config pairs bitwise identical** (node, reference and logit digests), so no read is void.
+    - **Per-width result (`STEP2_TABLE.md`):** the **first differing node is the same for every width, prefix and row: `node_13`, `MUL_MAT` (f32 output) in layer 0, the GDN `linear_attn_qkv_mixed` Q8_0 projection**; the 13 nodes before it are bitwise equal. From there 2335-2338 of 2341 comparable nodes differ per row (1346 of 3687 nodes have no token dimension and are counted as shape-skipped), dominated by MUL_MAT, MUL, RESHAPE, VIEW, RMS_NORM, UNARY. Final-logit max |delta| per row: code 0.11-0.63 (widths 2-4), up to 2.46 on one row at widths 5, 8 and 9; prose 0.146-0.21. Reference top1-top2 margin minimum 0.316 (prose) and 1.77 (code); **argmax flips 0 of 62 rows** (31 per prefix) and the top-2 token identity never changed; the batch-vs-reference margin moved by at most 0.058 (median 0.024), so only a near-tie below roughly 0.06 nats would flip at these prefixes. `--nocap` logit deltas are identical to capture-mode deltas, so the per-node callback did not hide a fusion or graph effect on the logits.
+    - **Step 3 (knob-off re-runs, widths 2/5/9 x both prefixes):** `GGML_CUDA_DISABLE_FUSION=1`, `GGML_CUDA_DISABLE_GRAPHS=1` and `GGML_CUDA_FA_MASK_SKIP=0` remove **zero** differing nodes and leave logit digests unchanged, so by the predeclared rule (attributed only if the knob-off re-run removes the node) **no node is attributed to any runtime knob**; fusions, graphs and mask-skip are cleared as causes. `--fa 0` rebuilds a different graph (control, not an attribution). The first differing node maps to the matmul geometry/route, which has no runtime knob: its mechanism stays source-inferred (inventory C5-C11), its location is now observed.
+    - **Caveats:** rowexact `--prefix` tokens are single-token decodes, so these are verify-vs-decode deltas at small context (n_kv about 24-33), not at 1600-token depth (flash-attn rows are therefore only touched at n_kv 33); MoE paths not reachable for the dense 27B. Belief kernel: no producer exists for this record class yet (VB-GPU-RUNNER pre-hook), native JSONL with config echo kept. DF2-8a: **proposed superseded** (not ticked; main to decide) by this result for the dense path (the route logger would only confirm the `ne11` route, the node-level location is now observed); the MUL_MAT_ID blind spot of the logger does not arise for the dense 27B.
+
+- [ ] **DF2-20 - row-exact verify prototype to obtain the gfx90a decode-cost number (M6 sequence, experimental branch from the champion tip).** The Q38-T10 recommendation was to build the Option 2 prototype only for this number; the M6 record says the prototype stays unstarted (cost unmeasured), and the operator ruling (Option 3, per-role, "as far as possible without a stack change") did not decline it. Q8_0 and Q4_K MUL_MAT first (AKX-ALL-26 first-fail k=2) reproducing the k=1 reduction geometry, then a flash-attn path matching ncols=1 `parallel_blocks`; the probe cell must flip FAIL to PASS, a token-identical DF2-17 rerun at 1600, decode cost against the noise floor. If main declines, record the decline in the M6 monitor instead. (filed 2026-10-20)
+  - *(2026-10-27 21:35Z, ws58 results filing, DF2 build recovery and byte-diagnostic build.)* (a) `codex-ni-df2-build-recovery-q0-20261027` rc0 complete at 20:42:05Z: existing DF2 CPU/HIP build artifacts verified and an owner recovery completion produced after corrected cleanup (scratch `/mnt/raid0/llm/tmp/codex-ni-20261027-quarter-recovery-variants/df2/`, keep set `ORIGINAL-EVIDENCE.sha256`, linkage and marker logs). No build, GPU or model. (b) `codex-ni-df2-byte-diag-ready-20261027` COMPLETE: private C5 (`c72ec82f5417bb2937310326120f149b665e8400`) row-exact correctness-only byte-diagnostic HIP build, `BUILD-COMPLETE` with `candidate.patch` sha256 `4760167aa011177236c08a214ca475e3141cfb4e82400e25c4f463350f0dedd3` and `model_runs=none` (scratch `/mnt/raid0/llm/tmp/codex-ni-20261027-df2-followons-ready/diag/`). Build and compile-only native probe only: no decode-cost number, no probe-cell FAIL-to-PASS result; DF2-20 stays open. [no-belief: build and artifact verification, no measurement]
+
+**Exactness monitor (M6, 2026-10-20, intake-2021/2037/2038/2039/2044):** no active checkbox. Fires when (a) AKX-ALL-26 or DF2-18 attributes a first failing cell/node to a route a small experimental-branch change can pin AND DF2-17 shows a spec-arm FAIL (then: experimental-branch prototype, probe cell must flip, token-identical DF2-17 re-run at 1600, gfx90a decode-cost measurement, operator decision package only if cost exceeds the noise floor); or (b) DF2-17 reports a degenerative first divergence or a graded-outcome flip, or a machine-parsed exact-output role on the DFlash2 server is named and a replay corpus exists (then: paired spec on/off replay with parsed-call equality). **2026-10-20 update: trigger (b) FIRED** (DF2-17 graded flips: `ifeval_1481` regression, `gpqa_diamond_cot_8116937b0ca6` truncation-driven gain); trigger (a) route located (DF2-18 layer-0 Q8_0 MUL_MAT) but with no runtime knob. **Resolved to the per-role contract** (operator ruling Option 3, Q38-T10 in `qwen38-27b-replace-qwen36.md`): bitwise-required roles (eval, judge, replay, parity-gated) vs distributional serving roles; follow-up is Q38-T10.1. The experimental-branch row-exact prototype stays unstarted (cost unmeasured).
+
+#### 2026-08-28 RESULTS — DF2-5 PASS, DF2-6 non-parity but not DFlash2's fault
+
+Both gates run against the champion `5c278648a` (rocWMMA ON), GPU exclusively held.
+Artifacts: `artifacts-df25/dflash2_concurrency_20260827/` and `…/dflash2_greedy_parity_20260828/`.
+
+##### DF2-5 — PASS. 24/24 cells, 192 per-slot rows, zero refusals.
+
+| in-flight | none | MTP | DFlash2 | DF2 vs MTP |
+|---|---|---|---|---|
+| 1 | 26.6 | 54.5 | **70.0** | +28.4% |
+| 2 | 31.4 | 78.7 | **117.2** | +48.9% |
+| 4 | 54.2 | 104.5 | **153.6** | +47.0% |
+| 8 | 58.0 | 104.9 | **155.0** | +47.8% |
+
+*(`--kv-unified` OFF; the ON half of the grid is in `cells.json` and tells the same story.)*
+
+**The #27117 phenomenon does not reproduce on gfx90a.** Per-slot acceptance is FLAT across the
+sweep — DFlash2 0.6205 → 0.6294 and MTP 0.4782 → 0.4818 from 1 to 8 in-flight — with no degradation
+at 8, which is where every upstream report places onset. Aggregate throughput could never have
+shown this; it required the per-slot parsing that no prior parser captured (the `id N` field was
+present in the logs all along).
+
+**Replication is exact where it can be checked**: np=1 DFlash2 gives 70.0 t/s and weighted
+acceptance 0.6205 against DF2-4's 70.0 and 0.62049 — a different binary, a rewritten harness, the
+same answer.
+
+**The `--kv-unified` control came back NEGATIVE** — DFlash2 is slightly *worse* with it on at c4
+(142.7 vs 153.6) and c8 (151.9 vs 155.0), and acceptance is unmoved. Per this handoff's own gate
+wording, a negative "retires the leading root-cause hypothesis for free". It is retired.
+
+**The `none` arm earned its place**: it scales weakly (26.6 → 58.0), so without it the concurrency
+gains could not have been attributed to speculation rather than ordinary scheduling.
+
+##### DF2-6 — DFlash2 is NOT bit-exact, and the controls prove that is not a DFlash2 defect
+
+| arm | PASS | FAIL | drafted? |
+|---|---|---|---|
+| baseline (`--spec-type none`) | — | — | **no** (negative control clean) |
+| dflash2 | 7 | 5 | yes |
+| **draft_simple** | **7** | **5** | yes |
+| ngram_simple | 11 | 1 | yes |
+
+`draft-simple` contains **no DFlash code whatsoever**, yet fails at the same rate and at three
+**identical first-differing generation-token indices** (34, 216, 238). Two unrelated drafters
+diverging at the same token positions places the divergence in the shared speculative-verify path,
+reproducing upstream #27407 on our stack.
+
+> **RETRACTED 2026-08-28 — the ngram claim in the first version of this section.** It read: *"ngram
+> — same multi-token verify path, no external drafter — diverges 1/12 rather than 5/12, consistent
+> with #25618 and pointing at the external-drafter verify path specifically."* **That comparison is
+> confounded and does not support the conclusion.** Drafting volumes over the same 12 prompts:
+>
+> | arm | total `draft_n` | accepted | prompts that drafted nothing |
+> |---|---:|---:|---:|
+> | dflash2 | 4012 | 2479 | 0 |
+> | draft_simple | 11951 | 1541 | 0 |
+> | **ngram_simple** | **218** | 135 | **1** |
+>
+> ngram drafted **18× less than dflash2 and 55× less than draft_simple**, and produced no draft at
+> all on one prompt. Its 11/12 pass rate is largely explained by **near-absence of exposure**, not
+> by immunity to the divergence mechanism. The route capture agrees: ngram's kernel-route profile
+> is byte-identical to the no-drafter baseline (MMQ 1984 / MMVQ 581), i.e. it barely speculated.
+> A #25618-style localisation needs an ngram arm with **comparable draft volume**; until then this
+> arm adjudicates nothing. Filed as **DF2-6b-bis**.
+
+**Verdict: DFlash2's losslessness claim fails bit-exactness, but DFlash2 is no worse than the
+generic speculative path, so this is not a reason to withhold it.** Combined with DF2-5, DFlash2 is
+the superior spec-decode path for Qwen3.8-27B on this hardware.
+
+**One mandated instrument did NOT produce evidence — stated plainly rather than glossed.**
+`GGML_CUDA_LOG_MMVQ_ROUTE=1` yielded **zero** route lines on all four arms, and a dedicated probe
+with the flag passed directly on a successful generation also yielded zero. Cause:
+`ggml_cuda_log_mul_mat_route` is called only from `ggml_cuda_mul_mat` (`ggml-cuda.cu:1863–1890`)
+and **never from `ggml_cuda_mul_mat_id`**, so MoE expert matmuls are invisible to it. Therefore the
+`a6b4b5263` attribution question is **not settled by direct evidence**; it is addressed only
+indirectly by the ngram asymmetry above. Tracked as **CH-9** in
+[`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+
+#### 2026-08-27 checkpoint — runners landed, grid running, and a build-flag trap
+
+**Gate runners now exist** (epyc-inference-research `c84ecdb7`). The DF2-5 reader contract
+(`epyc.g2_df25_draft_grid.v1` in `scripts/vidya/adapters/research_sweeps.py`) already existed and
+its docstring stated *"G2–G4 runners do not exist yet"* — that gap is closed:
+
+- `scripts/benchmark/g2_df25_concurrency_grid.py` — DF2-5. Implements all five revised design
+  rules, including the paired `--kv-unified` control and **per-slot** acceptance parsing (the
+  `id N` field is present in every `slot print_timing` line and every prior parser dropped it).
+  Written as a new runner rather than an extension of `dflash2_followups.py`, whose sealed
+  `EXPECTED_PROTOCOL` / `REQUIRED_ARM_FILES` contracts carry DF2-4's receipts and would be
+  invalidated by adding arms.
+- `scripts/benchmark/df2_greedy_parity.py` — DF2-6, with the `draft-simple` and `ngram` controls
+  (DF2-6b), `GGML_CUDA_LOG_MMVQ_ROUTE=1` on every arm, `-ctk f16 -ctv f16`, a fresh process per
+  arm, ≥5 prompts, per-prompt PASS/FAIL with the first-differing generation-token index, and the
+  `draft_n == 0` / `draft_n > 0` negative controls carried from the k35 dspark method — without
+  which a PASS can be a false clean sheet produced by speculation never engaging.
+
+**DF2-5 grid launched 2026-08-27 22:15Z** against the champion `5c278648a` (24 cells: in-flight
+1/2/4/8 × none/MTP/DFlash2 × `--kv-unified` off/on). First cell `none_c1_kvu0` = 26.6 t/s.
+
+**The build-flag trap, recorded because it nearly invalidated the whole grid.**
+`GGML_HIP_ROCWMMA_FATTN` defaults to OFF. A champion built with it OFF failed **every** pinned
+olympiadbench prompt on task 0:
+
+```
+E process: rejecting DFlash batch after 3020800/3020800 non-finite target features (limit=16)
+```
+
+while a 25-character prompt succeeded on the same binary — **prompt length is the discriminator**,
+so a short smoke test passes and hides it. Attribution was verified, not assumed: the standalone
+DF2 build `2046c64e9` ran the identical prompts and flags at 46.1 / 69.4 / 58.9 t/s with zero
+non-finite errors, and `git diff 2046c64e9 5c278648a -- src/ common/` is +67/−0, so DFlash's source
+is byte-identical between them. Rebuilt with the flag ON: all prompts pass, zero errors. Scope
+discipline: this was observed in the DFlash **target-feature** path; whether plain non-speculative
+decode also degrades at length on an OFF build is **not measured** and is not claimed.
+
+#### 2026-08-20 measured checkpoint
+
+The manual PR #27342 forward-port is complete on the isolated experimental branch
+`ak/dflash2-qwen38-20260820` at `2046c64e9948671c7557428b198acebc6f416575`; frozen v9 was not modified.
+The full Release/gfx90a HIP build completed, CPU and real-model GPU smoke tests passed, and the one initially
+observed broad-suite `SOFT_MAX+sinks` failure passed on exact v9 and candidate reruns at both `-j1` and `-j4`.
+`a6b4b5263` is already an ancestor of v9 and remains present; DF2-2 stays open until the DFlash2 block-verify
+dispatch itself is proven rather than inferred from source presence.
+
+The matched np=1 campaign used the same 12 prompts, 2048-token cap, seed 42, temperature 0.6, top-p 0.95,
+top-k 20, and no-thinking envelope for all three arms. All 36 requests completed without error:
+
+| arm | decode t/s | mean acceptance | weighted acceptance |
+|---|---:|---:|---:|
+| plain | 29.4 | — | — |
+| MTP nmax8 | 55.2 | 0.48246 | 0.47823 (19,220/40,190) |
+| DFlash2 block8 | **70.0** | **0.62804** | **0.62049 (19,960/32,168)** |
+
+DFlash2 is **+26.81%** over the matched MTP arm, **+26.22%** over the historical v9 MTP value of 55.46 t/s,
+and **+138.10%** over matched plain. This clears the single-stream half of the decision rule but is not yet a
+promotion result: DF2-5 np=8 scaling and DF2-6 exact greedy parity remain mandatory.
+
+Evidence: `epyc-inference-research/artifacts/architect-bench-gpu-20260814/dflash2_np1_20260820/`;
+campaign summary SHA-256 `e4f9e21fd399c37fceca31e171be0299bcd4c35284d5a5828e3201a8bf50b053`;
+59-file manifest SHA-256 `ebfc55f5706d549e7c5e00cf814e968f299491fe9ab23466f83a7dfb6cb6be4e`.
+All three official GPU claims released, captured KFD processes exited, and VRAM returned to the 13,094,912-byte
+idle baseline.
+
+#### Known negative evidence — do not wave this away
+
+`llama.cpp` issue #25117 reports DFlash at **0.48× baseline** on AMD (gfx1151 APU, Q4_K MoE target), attributed
+partly to a BF16-trained drafter meeting a quantized target and partly to HIP-backend immaturity. That is an APU
+with a MoE target, not our discrete MI210 with a dense Q8_0 target — but it is a **real AMD-specific negative
+datapoint** and DF2-2/DF2-5 are the checks that would catch the same failure mode here.
+
+#### Decision rule
+
+If dFlash2 does not beat **55.46 t/s single-stream** *and* hold up at np=8, it does not displace MTP. A ~12%
+acceptance gain bought with a 2.0 GB extra resident model and its KV-injection overhead is not obviously worth
+it; say so plainly rather than shipping a marginal win.
+
+#### Adjacent finding this surfaced (separate work, not part of DF2)
+
+The v9 24-cell throughput grid was captured at `--spec-draft-n-max 4`, i.e. **below peak** — 6–8 is optimal,
+worth ~8% single-stream. Re-collecting that grid at n-max 8 is outstanding. Also `model_registry.yaml:849` ships
+`draft_max: 4` while `epyc-orchestrator/stack_templates/default.yaml:148` ships `24`; **measured, both are wrong**
+(24 is far past the turnover). That config conflict gates the pending Qwen3.6→3.8 registry swap and belongs with
+whoever owns the swap, not with this handoff.
+
+#### Sources
+
+[inco.ai/blog/dflash2](https://inco.ai/blog/dflash2/) · [z-lab/dflash (MIT)](https://github.com/z-lab/dflash) ·
+[Qwen3.8-27B-DFlash2-GGUF (Apache-2.0)](https://huggingface.co/incoai/Qwen3.8-27B-DFlash2-GGUF) ·
+[llama.cpp PR #27342](https://github.com/ggml-org/llama.cpp/pull/27342) ·
+[llama.cpp issue #25117](https://github.com/ggml-org/llama.cpp/issues/25117) ·
+[arXiv 2602.06036](https://arxiv.org/html/2602.06036v2)
+
+All vendor speedup figures above are **CLAIMS**, unverified on gfx90a. Every number in the n-max table is a
+**measured OBSERVATION** (MEASUREMENT.md) — none gates a keep/deploy decision on its own.
+
+##### Native row-exact readout, 2026-10-27
+
+- [x] Audit native output and repair byte evidence reader ✅ 2026-10-27. Q8_0 and Q4_K each reproduced a width-2 difference in all three D27 shapes with the candidate off and had none through width 8 with it on; all three repeats and width-1 identity passed. This supports the native output FIXED verdict only, not a performance or promotion decision. The byte job remains HELD: its parser rejected lowercase native type names and stopped before its producer-time record. A corrected retrospective parse finds 210 row tuples and the deliberately injected byte failure; it does not create a historical producer record. The reader and successor validator now enforce exact three-repeat coverage, Q8_1 ABI byte lengths, and the declared mutation row. [belief: cc]
+- [x] Owner install the reviewed reader, rerun a synthetic installed-root planning canary, enroll the byte successor bound to that reader and seal, then schedule the fresh byte-only job under a normal grant. Successor and evidence: `/mnt/raid0/llm/tmp/codex-ni-20261027-df2-native-readout/OWNER-APPLICATION.md`; source seal `536858d62bffaaa0f80265d920f7d797bbc56855f8a668d6031a418ef3d97917`. ✅ 2026-10-28. The owner-run `codex-ni-df2-byte-parser-successor-20261027` completed rc0 at 23:09:16Z and wrote `/mnt/raid0/llm/tmp/codex-ni-20261027-df2-native-readout/byte-capture/out/belief-native.json` at producer time. Independent installed-adapter replay rederived 210 distinct Q8_1 row tuples across Q8_0/Q4_K, three D27 shapes, widths 2-8, exactly three repeats per tuple, and the declared injected failure; native artifact/source hashes and shared grade were valid (Judged/Located; no protocol). q8/q4/mutation receipts report rc0/0/-6, reaped, and 65/67/4 in-window same-PID KFD/own-VRAM observations on PCI 0000:43:00.0 / KFD 57300. Source `/mnt/raid0/llm/tmp/codex-ni-20261028-df2-byte-existing-audit/audit.log`. Scope: native model-free in-path byte memcmp and injected mutation only; no model parity, timing or promotion claim. The original samples lack per-process loaded-library maps and per-thread masks; do not infer them from linkage or loader configuration. No new source class or grading ladder: existing `df2-row-exact-akx` producer-time native source handles the record. The earlier failed capture remains unmodified and is not regraded. The newer privately prepared R2 was withdrawn as duplicate. [belief: cc]
+
+##### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **DF2-LB1 — At the next GPU correctness window on an own scratch server with the production 27B shape (np 4, draft n-max 7): census ubatches per target decode with per-slot token counts on a replayed trace (hybrid split_equal turns ragged slots into extra full weight sweeps), and A/B the target backend-sampling flag with the greedy-identity and acceptance checks (intake-2386).**
+  - *(2026-10-22, workspace-f8.)* launcher armed 2026-10-22, FILLERS row locals-df2-lb1-ubatch-census; rule in /mnt/raid0/llm/tmp/f8-launchers-20261022/locals-df2-lb1-ubatch-census/PREDECLARATION.md. Not run yet, nothing ticked.
+  - *(2026-10-23, workspace-f8; CENSUS HALF DONE, A/B HALF STILL OPEN, so the row stays unticked.)* GPU replay 2026-10-23 00:41-00:42Z, champion HIP build `gpu-20261006-4348de400`, production :8083 shape (np 4, -c 393216, -b/-ub 512, kv-unified, q8_0 KV, DFlash2 n-max 7), 12 streams x 384 tokens (rc 0, own-pid VRAM peak 51.5 GB). The first `census.py` pass crashed: `seq_id` is printed as a fixed-width positional string (`[0]`, `[.1..]`, `[...3]`, `[0...]`, `.` = absent slot), not a comma list, so `int('.1')` raised. Fixed to take the digits (`re.findall`), re-run offline on the captured log, same predeclared rule (`/mnt/raid0/llm/tmp/f8-launchers-20261022/locals-df2-lb1-ubatch-census/{VERDICT,RUN_RECORD.json,out/census.json}`).
+    - [x] **Ubatch census: verdict FRAGMENTS_RARELY.** 3,783 decode calls, 953 target calls, 0 unattributed; **721 qualifying verify calls, 25 fragment (3.47%)**, below the 10% FRAGMENTS line and above 0. All 25 are ragged and cost 43 extra ubatches (extra full weight sweeps); ubatch-count histogram over qualifying calls {1: 696, 2: 14, 3: 4, 4: 7}. Typical split shape is 8-token ubatches plus a short remainder (e.g. 8+4, 8+2, 8+8+4). Observation under the predeclared rule, not a production claim: one verify call in ~29 pays 1-3 extra sweeps on this synthetic M-4 np4 trace.
+    - [ ] **Backend-sampling A/B (intake-2386): greedy-identity and acceptance of the target backend-sampling flag, own scratch server, same shape.** Left out of the census row by design (needs its own predeclared identity/acceptance rule and a second server arm); to be filed as its own FILLERS row.
+
+
+2026-10-30: Original DF2 recovery r2 scheduled attempt `attempt-1793321880` passed its recorded retained artifact checks including HIP row-exact marker and diagnostic-symbol absence, then started the native CPU architecture test; the disk-floor guard stopped it after 1.494 seconds, child rc -15, explicit controlled cutoff and verified cleanup, with overall rc75/PARTIAL. Native first-compute and full architecture-test acceptance are not met. Its original result SHA-256 `135724692716f03596548c6890b36adf3684ad37fbeedc152895afab9f068813`. A later same-ID attempt `attempt-1793322180` separately refused rc70 before work; it does not overwrite the original. No build, GPU run, model inference, parity or kernel promotion is implied. [belief: cc] [Original native audit](../../artifacts/compute/results-filing-20261030-0102.json). Existing full-run checkbox remains open.
+
+- **DF2 retained-artifact recovery R3 preparation (2026-10-30, codex-ni):** repaired the R2 pre-work disk-refusal handling without changing retained C5 source/artifact pins or the full native-architecture acceptance criterion. Real R11 smoke through the final launcher on CPUs 132-133 exited 0 after native architecture compute (5.351 s); total supervisor wall 7.071 s, sampled peak RSS 197,439,488 B, result writer and owned-child cleanup verified. Result `/mnt/raid0/llm/tmp/codex-ni-df2-recovery-r3-20261030/smoke-runs/20261030T124444Z-3394959/SMOKE.json` SHA-256 `0816fb14853cb102bb4c3ea7432a6836456ddd97aea374441918f3ae8ec08372`. No-argument env-i entry with WS58_REGIONS reached the same R13 engine and was drained by the captured 5 s supervisor. RAID admission retains the 150 GiB floor, 2 MiB native-output cap and 128 MiB metadata allowance (estimated total growth 0.127 GiB). Pre-work resource waits are rc75/work_started=false/partial=false; controlled cutoffs after native work are rc75/PARTIAL only with verified cleanup. Normal keeper accepted `codex-ni-df2-build-recovery-r3-20261030` at 12:47:37Z: QUEUED, PID 3443454, relocated quarter 24-47, validator 0 refusals; qualification is a bounded preparation result, not completion of the full scheduled recovery, build, GPU, parity or promotion work. [no-belief: bounded native diagnostic smoke and admission checkpoint]
+
+- *(2026-10-30 ws58 filing, `codex-ni-df2-build-recovery-r3-20261030`, rc0 COMPLETE 12:48:30Z)* Predeclared rule MET as written: pinned retained CPU/HIP artifacts, linkage, HIP row-exact marker and diagnostic-symbol absence validated; native CPU architecture test child rc0 (wall 4.749 s), cleanup verified, controlled_cutoff false, partial false. Replaces the R2 rc75/PARTIAL native audit for this recovery series. Claims only that: no fresh build, GPU run, parity, inference or kernel promotion. The full-run checkbox stays open (rule scope excludes it). [belief: cc]
+  - [x] Fix prep-only terminal rows reappearing as blocked in the generated handoff backlog. ✅ 2026-11-01 — `backlog_gen.py` now applies the existing ended/FILED classification to priority entries without READY manifests; 13 coordination tests pass, including both receipt forms. Read-only generation against the live priority file classifies all four listed DF2 rows as done; R2 already has the successful R3 successor above, byte capture has its successful successor, and Qwopus work is cancelled. Coordination owner `ws58` should review and deploy the generator change; no keeper, grant, or READY manifest was modified. [no-belief: backlog classification repair; no measurement]
+  - [x] Decide whether the recovered C5 artifacts feed the DF2 byte-diagnostic/parity row. ✅ 2026-11-01 — Keep R3 as DF2-20 retained-artifact recovery evidence; do not substitute it for a parity image. The separate byte-parser successor already completed on its diagnostic build (native readout above), and DF2-12.1 requires corrected, same-source CPU/GPU image proofs before its own qualification. R3's scheduled RESULT `0f1f644afb65d0571a2e859bd1af5496f94a2125e64a8742790a12b5d001f8ab` records rc0, child rc0 and verified cleanup; launcher ended `2026-10-30T12:48:30Z` rc0 complete. Evidence: `/mnt/raid0/llm/tmp/codex-ni-df2-recovery-r3-20261030/runs/attempt-1793365380/RESULT.json` and `ready/codex-ni-df2-build-recovery-r3-20261030.launcher.out` under compute-flags. No GPU parity or decode-cost conclusion follows. [belief: cc]
+  - **2026-10-30 RESULT — DF2 recovery R3 (original scheduled event, 12:48:30Z):** rc0 COMPLETE under its predeclared diagnostic rule. The retained CPU/HIP artifact pins, house profiles, linkage, HIP row-exact marker and diagnostic-symbol absence passed; native CPU architecture test exited 0 in 4.749 s and child cleanup was verified. Native result SHA-256 `0f1f644afb65d0571a2e859bd1af5496f94a2125e64a8742790a12b5d001f8ab`, retained at `/mnt/raid0/llm/tmp/codex-ni-df2-recovery-r3-20261030/runs/attempt-1793365380/RESULT.json`. This validates recovery only: no fresh build, GPU run, inference, parity, decode cost or kernel promotion. DF2-20 remains open. [belief: cc]
+
+##### 2026-10-31 DF2-12 and DF2-13 prospective preparation
+
+Both CPU diagnostic packets have final same-entry HOST normal and STOP/drain controls and prospective source enrollment; their staged manifests use placeholder enrollment and are not READY until the actual promoted source SHA is bound. DF2-13 captures warm versus independently cold B plus actual draft/accept and checkpoint-restoration trace; DF2-12 captures mixed four-slot output, effective caps and interleaving. Missing native fork/draft evidence stays UNKNOWN. The 0.001-nat comparator is a historical KPF17.4 band, not a same-run floor. No full-target inference, throughput or promotion result follows. [Bounded preparation](../../artifacts/compute/codex3-df2-ernie-prep-20261031/). [belief: cc]
+
+  - *(2026-10-31, DF2-12/13 publication.)* The two diagnostic READY manifests now bind existing-family enrollment `4d2f90c47480f5920142090dae334ce1e448accb`: DF2-13 SHA-256 `aff14b9a671d7994d44f901b644ee45bf963aa04ea6fbf9ada9cd16c4f585848`; DF2-12 `4180778a6929db7c5b347203c62d47c63a8c93f724b6e21ca4b96669799d5c43`. These supersede the zero-enrollment staged snapshots. Same-launcher public 0.6B spec-none controls exercised the paths, not DFlash or the target; full-target feasibility and outcomes remain unknown at publication. [Receipts](../../artifacts/compute/codex3-df2-publication-20261031/SHA256SUMS). [no-belief: preparation and publication only]
+
+##### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+**First priority (operator 2026-10-31): DF2-12.1** — the temp-0 cross-slot token-identity check on the production speculative shapes (:8070 frontdoor draft-MTP np 4 and :8083 27B DFlash2 np 4) runs before any other task in this block.
+
+- [ ] **DF2-12.1 — Run the DF2-12 np>1 parity check on every production speculative role served at np>1, as one temp-0 cross-slot token-identity run (intake-2591#record, intake-2577#record, intake-2597#record).** Two shapes, each on its own scratch server in a GPU correctness window: the :8083 Qwen3.8-27B DFlash2 Q8_0 recipe (n-max 7, np 4) and the :8070 frontdoor Qwen3.6-35B-A3B draft-MTP recipe (n-max 4, np 4), which DF2-12 does not cover. Send c = 2, 3 and 5 equal-length salted prompts issued together so they prefill in one scheduler step, and compare every output token with the same prompt served alone at np 1. Add a slot-reuse arm (conversation A, then an unrelated conversation B in the same slot, compared with a cold B), which is the untested condition in llama.cpp #28019 (intake-2598#record). Controls: speculation off at np 4; an np-4 server carrying a single request; a low-entropy prompt pair; a repeat run for the numeric floor; a planted string that must never appear in another slot. Before the run, prove the binary is fresh and pass tests/test-recurrent-state-rollback including its dirty-context check; a failure there voids the run. Log per round draft_n, accepted count and rollback length versus batch length, and classify each first divergence as near-tie (small top-2 margin) or degenerative. Freeze the prompt manifest by sha256, keep per-request raw outputs and acceptance counters, and count every request in the denominator. Decision rule: a degenerative divergence that the speculation-off np-4 control does not show is a cross-slot defect, so file it against the champion, keep the role at its current shape and open the snapshot-slot patch trigger; zero such divergence across all arms closes the question for these two recipes. This run does not close G2-CONC, which belongs to the promotion candidate binary.
+  - 2026-11-01 native gate checkpoint: under standing R11, the exact frozen production CPU rollback test (SHA `1b430e8d5910553f6867db9ee80ac684552ce0c1f973a3c84557d8c796d44892`) failed dirty-context replay twice on the real 0.8B qwen35 Q8 model (SHA `0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c`), at position 6/token 0: 6.07728 versus 8.13747. The repeat captured actual frozen production libllama/ggml maps and hashes; no frontend DSO was mapped. Full and partial clean restore stages precede the failing dirty branch in the same test. This is a model-scoped native dirty-restore failure, not measured 35B/27B cross-slot parity or a regression-versus-baseline claim. The predeclared prerequisite voids DF2-12.1 science issuance; all 304 frozen identities remain unexposed, with no HARD receipt, grant or FILED verdict. Original raw `dirty_context_reached:false` is retained with the source-backed correction that the helper conflated reached with PASS. Coordinate reproduction/repair in the existing experimental champion and pass its same-source dirty test before calibration, keeper qualification and parity. [Evidence](../../artifacts/coordination/df2-12-1-20261101/README.md). [belief: cc]
+  - 2026-11-01 correction: the original frozen-test rc1 records remain valid, but source audit found the test overwrites its FULL replay oracle with PARTIAL replay logits before comparing the dirty FULL checkpoint. FULL first logit=8.13747 and PARTIAL=6.07728 account for the original mismatch. A minimal test-only patch preserving the FULL reference (SHA `e55c0418c0468948450af20440364a4c9f4e51e00f5bc04dac8aec010e6562ed`) passed under R11 with the same frozen libraries and 0.8B qwen35 model; omitting the final restore still failed the dirty comparator (8.13747 versus 7.72676). This establishes a test-oracle bug; a kernel dirty-state defect is not established. The earlier interpretation is superseded, while all raw records remain immutable. MAIN accepted this harness correction before any cohort exposure, preserving epsilon and full/partial/dirty checks; NI may build and validate its own versioned D2 measurement images without waiting for a champion-owner acknowledgement. Coordinate the test-only fix into the existing experimental champion; production stays frozen. Exact corrected CPU/GPU image proofs, resource-bound calibration, keeper HARD qualification and parity remain required, and all 304 science identities remain unissued. [Correction evidence](../../artifacts/coordination/df2-12-1-oracle-correction-20261101/README.md). [belief: cc]
+  - [x] Preserve corrected CPU/GPU small-model native image proof for DF2-12.1. ✅ 2026-11-01 — Both corrected image rollback records report rc0, dirty context reached and PASS on qwen35 0.8B; GPU receipt records KFD and 2.14 GB VRAM during the test. This supersedes the preceding statement that corrected image proofs remain required, not the need for full-resource calibration, HARD qualification or the unissued parity run. [Evidence and hashes](../../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md). [belief: cc]
+- [ ] **DF2-LAT — Zero-training lattice-headroom probe for the DFlash2 selector (intake-2561#record, intake-2560#record, intake-2569#record).** DFlash2 already ships a learned top-16 candidate lattice with a rank-256 transition score and a prefix-first walk (src/models/dflash.cpp:735-824, common/speculative.cpp:1658-1700 @ ffc1bac82), so the open question is how much headroom any re-selector has above it. On an experimental build, env-gated and off by default, dump per draft step the 16 candidate ids, unary logits, pair scores and chosen ids. In one MI210 correctness window (27B Q8_0 + DFlash2 Q8_0, n-max 7, np 1, temp 0, 1024-token cap) run the 12 DF2-4 olympiadbench prompts as dev and at least 36 disjoint agentic replay turns as holdout. Offline, exact at temp 0: arm A unary argmax, arm B the live walk (must reproduce the server accepted counts on every request or the probe is void), arm C the oracle that takes the verifier token whenever it is in the top 16, 8 or 4, and per-slot top-k coverage. Decision rule on the holdout with H = (tau_C16 - tau_B) / tau_B: H >= 0.25 on dev and holdout with a bootstrap 95% lower bound >= 0.15 opens a trained-selector port; H < 0.10 closes it; otherwise monitor.
+- [ ] **DF2-PM — Point-mass draft proposals at production temperature (intake-2561#record).** Behind an env knob on the experimental build, make the DFlash2 temp>0 branch propose the argmax selector walk with a point-mass distribution instead of sampling softmax(scores/T); the verifier then accepts with p_target(draft) and resamples from the residual (common/sampling.cpp:740-766), which is lossless. A/B against the stock sampled walk on the DF2-4 protocol (12 prompts, temp 0.6, top-p 0.95, top-k 20) at np 1 and np 4, at least 5 interleaved pairs; primary metric weighted acceptance, secondary tok/s; the SPEC-PIT.1 distribution gate must pass. Adopt into the next champion fold only if weighted acceptance improves by at least 3% in at least 4 of 5 pairs at both np values, tok/s does not regress and SPEC-PIT.1 passes; otherwise record the per-pair numbers and close.
+- [ ] **DF2-FT-1 — KL re-alignment pilot of the served 27B DFlash2 drafter on its own agentic traffic, target frozen (intake-2548#04, intake-2549#record, intake-2578#record, intake-297#record, intake-1848#record).** Why: at the production :8083 shape the drafter accepts 0.29-0.39 on real temp-1 agentic traffic (agentic-serving-harness-fixes.md:60,74,79). On the canonical benchmark shape it accepts 0.62-0.73. The two shapes differ in several factors, so this pilot is the deciding probe, not a presumed fix. Drafter facts (GGUF header): Qwen3.8-27B-DFlash2-Q8_0, size_label 1.9B, 81 tensors, 5 non-causal blocks with sliding window 2048, fc 25600->5120, selector codebooks 2 x 256 x 248320. It is headless and borrows the target's frozen token_embd and output (5120 x 248320 each). Steps: (0) Corpus = the DS41-C95 wire contexts under /mnt/raid0/llm/tmp/ds41-c95/results (36 wire-body captures; DF2-14 counted 320 turns / 630k generated tokens). Hold out every C4 run untouched. For each held-in request, regenerate 2 completions at the production sampler on the :8083 argv (X0_ARGV_8083.txt), capped at 2048 tokens, <=3 MI210-h; this also removes the need to reconstruct reasoning text from the wire bodies. (1) Write a feature-dump tool on a llama.cpp-experimental branch cut from the current champion tip. Per token it writes the 5 taps at target_layers [6,20,34,48,62] plus the target final post-norm hidden: 5 x 10,240 + 10,240 = 61,440 B/token, the DF2-DRAFTER-CAPABILITY.OBJ contract. It writes only each completion and its 2,048-token window prefix. Expect ~0.8-1.2M tokens = 50-75 GB in <=2 rolling shards. Capture held-out C4 the same way for the offline proxy. Prefill runs at the measured production-shape 410-574 t/s, <=3 MI210-h. (2) Train in a NEW ROCm venv; do not modify the two verified venvs. Use NeMo Automodel train_dflash2 @1667095 with the sdpa attention backend and an offline-feature dataset in place of the online target. Warm-start from z-lab/Qwen3.8-27B-DFlash2 bf16. The whole drafter is trainable: bf16 weights + fp32 master + AdamW ~16 B/param = ~31 GB, plus frozen embed/output 5.1 GB; that fits 64 GB because target features are precomputed. Arm H = Automodel hard block CE on the sampled tokens. Arm K = forward KL at T=1 to the teacher, computed from the final-hidden tap through the frozen output_norm + W with Automodel KDLoss (as in jetspec_core.py), chunked; its selector term is KL over the top-16 candidates, renormalized. Both arms share data order, seed, steps and LR; add a second seed for K; <=4 MI210-h total. (3) Convert with convert_hf_to_gguf.py (DFlash2DraftModel, --target-model-dir /mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw for config and tokenizer), then quantize to Q8_0. Six controls: (i) frozen manifest: sha256 of the target, served drafter and z-lab bf16; champion binary identity; held-out request list; sampler; seeds. (ii) Baselines: the served drafter, plus a round-trip arm (z-lab bf16 through our converter and quantizer, untrained) that must be tensor-equal after dequant or within the A/A band on DF2-4. (iii) Per-request raw draft_n, draft_n_accepted, predicted_n and timings in JSONL, plus the offline teacher-forced expected-accept-length proxy per held-out block. (iv) Holdout: all C4 runs, replayed twice ABAB on a fresh server per arm at the production argv, plus the DF2-4 12-prompt benchmark per arm. (v) Full denominator: every held-out request, failures counted. (vi) Predeclared rule. PROMOTE (open DF2-FT-2) if the best arm beats the incumbent on held-out weighted acceptance (sum accepted / sum drafted) by >=0.05 absolute on both reps (about +10% tokens per verify step at n_max 7), AND on held-out decode tok/s by >=8%, AND DF2-4 acceptance is >= incumbent - 0.02, AND the coherence gate is clean with the DF2-6 greedy pass count not below the incumbent. KL becomes the default drafter objective if K - H >= 0.02 on both reps and the seed-2 replicate has the same sign; |K - H| < 0.01 means cost-neutral (pick hard labels, which need no final-hidden tap). A gain of +0.02..+0.05 earns one more shard of <=1M fresh resamples, a retrain, and one more application of the rule. Below +0.02, KILL and record. Final step, on any verdict: amend DF2-DRAFTER-CAPABILITY with the objective verdict and an onboarding rule. The rule makes frozen-trunk re-alignment on the model's own served traffic the default for any served drafter or MTP head not co-trained on that exact trunk and quant. It names the next instances: the frontdoor 35B-A3B MTP head, then the Flash-Next head. Budget: ~13 MI210-h (~0.55 card-day) in GPU windows booked through the backlog-scheduling calendar, with :8083 drained per preempt-by-drain, plus 4-6 desk days (dump tool, trainer adaptation, venv; CPU-only smoke first).
+- *Intake knowledge note, K1, row SPEC-4 (intake-2560#record, intake-2561#record, intake-2569#record):* Prepare a text update (owning session applies) to the LiLiCorr monitor paragraph: name DCOCO (intake-2561#record) and Domino (intake-2569#record) as the same correction family; record that DFlash2 already ships a learned K=16 rank-256 selector lattice with a ...
+- *Intake knowledge note, K1, row SPEC-6 (intake-2561#record, intake-2569#record):* CPU: no separate action. The 27B DFlash2 path is served on the MI210 only, and CPU speculative work for Flash-Next is MTP (Axis E). If SPEC-3 is ever built, its graph ops are backend-agnostic and must pass CPU no-regression in the four-step workflow.
+- *Intake knowledge note, K1, row SPEC2-4 (intake-2578#record):* Add to DF2-DRAFTER-CAPABILITY the Nemotron Sec 3.4 head/drafter fine-tune recipe as an option: freeze target, sample hidden states from earlier draft steps, forward-KL T=2 to target logits on target on-policy rollouts at temp 1 (reference scale: 12K steps, bs ...
+- *Intake knowledge note, K1, row SPEC2-5 (intake-1724#record):* Answer only (no entry): the z-lab card text does not say how the DFlash2 selector (top-16, rank-256 transition score) was trained, and reports no tau gain over DFlash 1 for Qwen3.8-27B. The inco.ai blog (sha256-12 99dc56f49911) gives the selector score ...
+- *Intake knowledge note, K1, row W3SPEC-x (intake-297#record):* DF2-DRAFTER-CAPABILITY input: z-lab/dflash @ 07ebd93db9f4 (2026-08-18, remote HEAD identical today) contains NO training code. 659-line dflash/model.py has only inference: CandidateSelector (selector_top_k=16 candidates per position via topk of the draft ...
+- *Intake knowledge note, K1, row MTP-3 (intake-2548#record):* No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it.
+- *Intake trigger record (no checkbox until it fires), M1, row SPEC-3 (intake-2560#record, intake-2561#record):* Port the DCOCO head to llama.cpp as a replacement DFlash2 selector, and train it on the frozen DFlash2 backbone. Gated on SPEC-1 PROMOTE. Port: converter keys/tensors for cand_proj, ctx_h_proj, cand_ctx_proj + LN, pair_proj and the 386->256->1 MLP (~100 LOC ...
+- *Intake trigger record (no checkbox until it fires), M1, row SPEC-5 (intake-2569#record):* Domino-style GRU + full-vocab low-rank correction head on the DFlash2 drafter: no work now. It needs full drafter co-training with the curriculum, and its sequential head adds a 256x248320 logit-residual projection per position on the critical path. Revisit ...
+- *Intake trigger record (no checkbox until it fires), M1, row LOOP-6 (intake-2546#record, intake-2568#record):* Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M ...
+- *Intake trigger record (no checkbox until it fires), M1, follow-on DF2-FT-2 gated on DF2-FT-1 promoting:* Scale the winning DF2-FT-1 objective to 3-5M on-policy tokens: fresh completions at the production sampler on role-matched architect_critic / coder_escalation / ingest_long_context contexts, generated at np8 on the :8083 argv (~5-10 MI210-h). Capture in rolling ~60 GB shards and train <=8 MI210-h. Keep the DF2-FT-1 holdout (C4) and a new held-out role set untouched. Run the serving keep gate: SL-2 verify steps/s plus aggregate tok/s at np 1/4/8, fresh server per arm, ABAB with >=5 pairs, the coherence gate, the DF2-6 greedy pass count not below the incumbent, and DF2-4 acceptance >= incumbent - 0.02. Keep only if held-out acceptance is >= incumbent + 0.05 and np4 aggregate tok/s clears the calibrated floor. On a keep, emit the stack-change package that repoints the registry drafters.dflash2.draft_model, keeping the incumbent file as the rollback anchor, for one operator signature.

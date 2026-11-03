@@ -36,7 +36,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 **Confidence: verified** for the pass rates and timings (30/30 cells, task-cluster bootstrap); the gain is being confirmed on a larger task set (UFH14-LB3.4).
 
 - **Result.** On a private frontdoor-shaped server (Qwen3.6-35B-A3B MTP Q8_0), 30 cells per arm: `off` passed 66.7% at 17.8 ms/token on turn 1, `legacy` 40.0% at 23.6, `call` 36.7%, and `lazy-legacy` 3.3% at 54.8. Off vs legacy: +26.7 pp (95% CI +10 to +46.7).
-- **Why lazy lost.** `lazy-legacy` forced an immediate FINAL on every task (1.0 turns) and PATTERN-trigger grammar evaluation was about 2x slower per token on this server. The measured result supersedes the 2.1% lazy-cost figure from the synthetic window. GRAM-LAZY-1 is closed and the lazy branch was not landed ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)).
+- **Why lazy lost.** `lazy-legacy` forced an immediate FINAL on every task (1.0 turns) and PATTERN-trigger grammar evaluation was about 2x slower per token on this server. The measured result supersedes the 2.1% lazy-cost figure from the synthetic window. GRAM-LAZY-1 is closed and the lazy branch was not landed ([speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh)).
 - **Decision.** The operator set the turn-1 grammar default to off (orchestrator main `93055064`; opt back in with `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call`). It goes live at the next API reload, together with `a498ffba`, `96c30079` and `a73af3cc` ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) UFH14-LB3.1/1b/1c).
 - **The silent-failure path is closed (UFH14-LB3.3, orchestrator main `f3ab78b2`).** The turn-1 grammar block's blanket `except` now warns once per exception type, bumps `diag_counters["turn1_grammar_error"]` and writes a `turn1_grammar` parse_event, so the sweep-17 defect (a grammar that never applied, with no trace) cannot recur unseen.
 - **Fence-cut thinking turns are now counted (UFH14-LB11.1, same commit, flag-off).** A `turn_ended_in_unclosed_think` counter and a `think_fence_cut` parse_event are always on; one bounded continuation of a fence-cut turn sits behind `REPL_THINK_FENCE_CONTINUE` (default off, byte-identical). Dropping the fence stop was rejected because it brings back repetition loops. Next: read the counter on live traffic after the reload ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md)).
@@ -45,7 +45,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
 - [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB3.1b/1c, LB3.3, LB3.4, LB11.1)
-- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) (GRAM-LAZY-1 closed, XGRAMMAR-A2 reconciled)
+- [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) (GRAM-LAZY-1 closed, XGRAMMAR-A2 reconciled)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
 
@@ -95,7 +95,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ## Latest source review — 2026-10-07
 
-The canonical registry-banner and undeclared environment-override fixes are source proposals, enrolled prospectively for full compiler/environment/diagnostic/embedder compatibility capture. The diagnostic proposal reports expired or wrong-PID overrides with restore hints while preserving existing coverage; canonical registry banners distinguish the disposable view from its master. SW-5/SW-6 and SCG-ENVOVR-EXPIRED remain unchecked pending original native proof and integration. Fake process environments and temporary records establish no live `/proc`, reload or runtime change. ([Registry refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [stack-change governance](../handoffs/active/stack-lifecycle-program.md), [prospective controls](../handoffs/active/vidya-belief-substrate-program.md))
+The canonical registry-banner and undeclared environment-override fixes are source proposals, enrolled prospectively for full compiler/environment/diagnostic/embedder compatibility capture. The diagnostic proposal reports expired or wrong-PID overrides with restore hints while preserving existing coverage; canonical registry banners distinguish the disposable view from its master. SW-5/SW-6 and SCG-ENVOVR-EXPIRED remain unchecked pending original native proof and integration. Fake process environments and temporary records establish no live `/proc`, reload or runtime change. ([Registry refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh), [stack-change governance](../handoffs/active/stack-lifecycle-program.md), [prospective controls](../handoffs/active/vidya-belief-substrate-program.md))
 
 ## Source synthesis — advertised tools and bounded shared exploration
 
@@ -1683,7 +1683,7 @@ Choice 2A approved the OP-73/LR-6a host cron preview and installation. The opera
 
 Registry editing guidance now points to the Research master; the APP lean view is generated. MAIN reviewed all six actual document edits without attributing earlier native97 results to this later prose patch. The governance reference corrections bind actual local sources and pinned cross-repo links without weakening readiness policy. Frozen agent files remain untouched: the project overlay is staged for the next candidate promotion. A missing historical LB1 seed scratch path is described as unretained context, without claiming reproducibility.
 
-Source references: [registry/stale source acceptance](../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md), [spec-dec handoff](../handoffs/active/speculative-decoding-mtp-refresh.md), [research writer](../docs/guides/agent-workflows/research-writer.md), [agent-file matrix](../docs/reference/agent-config/CLAUDE_MD_MATRIX.md), [loop design](../docs/guides/agent-workflows/agent-loop-design.md), [index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md).
+Source references: [registry/stale source acceptance](../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md), [spec-dec handoff](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh), [research writer](../docs/guides/agent-workflows/research-writer.md), [agent-file matrix](../docs/reference/agent-config/CLAUDE_MD_MATRIX.md), [loop design](../docs/guides/agent-workflows/agent-loop-design.md), [index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md).
 
 
 ### Verified mocked workflow and benchmark pin checker — 2026-10-07
@@ -1776,7 +1776,7 @@ Source references: [C106 original/publication](../artifacts/ni08/c106-hold-sourc
 
 **Confidence: verified for source/output custody and exact publication.** The supported registry writer now regenerates the retired-policy description into APP main `01db99c`. MAIN accepted the actual output, generated banner and hidden cache from the corrected original capture; its typed delta is solely the historical retired-field prose scalar. The first original upload remains partial because it omitted hidden cache bytes. Complete custody and exact product publication close the two enrolled source/document checks while operative selection policy and runtime remain unchanged. This document operation stays ungraded, with native receipt/JUnit/ClaimTuple absent; neither the custody completeness nor successful publication creates a performance or inference claim.
 
-Source references: [original output and publication](../artifacts/ni08/inf50-native-writer-product-acceptance-20261007/README.md), [source owner and remaining runtime probes](../handoffs/active/speculative-decoding-mtp-refresh.md), [belief-source association](../handoffs/active/vidya-belief-substrate-program.md), [NI08 progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [original output and publication](../artifacts/ni08/inf50-native-writer-product-acceptance-20261007/README.md), [source owner and remaining runtime probes](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh), [belief-source association](../handoffs/active/vidya-belief-substrate-program.md), [NI08 progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 ## Reviewed sparse-index preflight — 2026-10-07
 

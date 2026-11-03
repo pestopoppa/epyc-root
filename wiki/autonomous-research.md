@@ -530,7 +530,7 @@ INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here
   `-kvu` `:8083`, and its first planner reply is not truncated at 98,304 tokens. The calibration window must be
   agreed with the operator, because it blocks the production frontdoor for hours.
   ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C25;
-  [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9)
+  [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) SW-9)
 - **The shared research clone cannot fast-forward past its own untracked copies (DS41-C10a blocker).** Research main
   now tracks `artifacts/np_context_kvu_study_20260924/{driver,q38_27b_q8,q38_27b_q8_h,q38_27b_q8_depth}/` and
   `artifacts/speech_cpu_realtime_20260924/`, and the shared clone still holds untracked copies of the same files.
@@ -1749,7 +1749,7 @@ that the later GPU phase failed to run.
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
-- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — sibling runtime campaign boundary and write-side evidence requirement.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — sibling runtime campaign boundary and write-side evidence requirement.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
 - [AutoKernel dashboard progress](../progress/2026-08/2026-08-18-dashboard.md) — actor-aware lifecycle projection and the bounded campaign-selection surface now promoted to root main.
 
@@ -3524,7 +3524,7 @@ Closing one half and reporting the loop as available is a category error, not a 
 
 - [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-INST-1, the v36 postmortem and the lineage fix
 - [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
-- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2 gates the champion carries
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — the DF2 gates the champion carries
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
 
 

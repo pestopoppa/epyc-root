@@ -18,7 +18,6 @@
   "EVL-47": 0.5,
   "UFH-12": 0.5,
   "RTG-22": 0.5,
-  "INF-62": 0.45,
   "INF-72": 0.4,
   "INF-79": 0.4,
   "INF-80": 0.4,
@@ -170,7 +169,8 @@
   "INF-65#autokernel-all-devices-all-dimensions": 0.6,
   "RTG-58#heterogeneous-slot-fabric-residency": 0.45,
   "RTG-58#kv-unified-stack-rollout": 0.8,
-  "INF-22#numa-prefill-decode-disaggregation": 0.1
+  "INF-22#numa-prefill-decode-disaggregation": 0.1,
+  "INF-50#dflash2-block-drafter-experimental-build": 0.45
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -2073,7 +2073,7 @@
   },
   {
    "filler": "codex-ni-df2-byte-capture-ready-20261027",
-   "row": "INF-62",
+   "row": "INF-50",
    "map": "handoff dflash2-block-drafter-experimental-build.md",
    "owner": "Codex NI / MAIN",
    "blocker": "harness fix",
@@ -2082,7 +2082,7 @@
   },
   {
    "filler": "codex-ni-df2-row-exact-build-20261027",
-   "row": "INF-62",
+   "row": "INF-50",
    "map": "handoff dflash2-block-drafter-experimental-build.md",
    "owner": "Codex NI / MAIN",
    "blocker": "harness fix",
@@ -2352,7 +2352,7 @@
   },
   {
    "filler": "refactor-01a16fc3-df2-k1-download-q2-v2-20261027",
-   "row": "INF-62",
+   "row": "INF-50",
    "map": "handoff dflash2-block-drafter-experimental-build.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix (ws58 13:20Z)",
@@ -2566,7 +2566,7 @@
   "(^|-)cme": "EVL-50",
   "^hpr-": "RTG-58",
   "(^|-)gnx-": "INF-50",
-  "(^|-)df2-": "INF-62",
+  "(^|-)df2-": "INF-50",
   "(^|-)parakeet-": "INF-79"
  },
  "dep_tracks": {
@@ -2686,6 +2686,12 @@
    {
     "track": "mi210-big-model-and-acceleration-roadmap",
     "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
+   }
+  ],
+  "INF-65>INF-50": [
+   {
+    "track": "dflash2-block-drafter-experimental-build",
+    "next_action": "DF2 open rows (DF2-DRAFTER-CAPABILITY, DF2-11/12/13/15/16/20, DF2-LB1); Qwopus items CANCELLED 2026-10-27"
    }
   ]
  }

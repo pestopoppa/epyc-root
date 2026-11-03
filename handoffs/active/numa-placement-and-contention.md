@@ -4189,8 +4189,8 @@ primary artefact.
 | Production anchors for the three roles that have none | N25 **P2-2** |
 | Ratify the TBD thresholds, incl. `INTERLEAVE_TOLERANCE` which blocks T5 | N25 **P2-3** |
 | Context-depth field in the claim grammar (generalises **T8**) | N25 **P2-4** |
-| Fold the ngram result into the production recipe | N25 **P2-5** + [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) **NG1–NG5** |
-| Report the in-flight GPU ngram sweep (36 cells) | [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) **NG4** |
+| Fold the ngram result into the production recipe | N25 **P2-5** + [speculative-decoding-mtp-refresh.md](speculative-decoding.md#track-speculative-decoding-mtp-refresh) **NG1–NG5** |
+| Report the in-flight GPU ngram sweep (36 cells) | [speculative-decoding-mtp-refresh.md](speculative-decoding.md#track-speculative-decoding-mtp-refresh) **NG4** |
 
 N25 additionally owns five defects this handoff never named — `stack_templates/default.yaml` as a
 **fourth** hand-maintained copy of the topology (**P1-4**), the missing

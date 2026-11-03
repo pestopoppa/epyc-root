@@ -112,6 +112,10 @@
    "target": "model-evaluation-queue.md",
    "track": "delta-mem-reproduction"
   },
+  "dflash2-block-drafter-experimental-build.md": {
+   "target": "speculative-decoding.md",
+   "track": "dflash2-block-drafter-experimental-build"
+  },
   "document-parser-table-bench.md": {
    "target": "knowledge-pipelines.md",
    "track": "document-parser-table-bench"
@@ -465,6 +469,10 @@
    "target": "knowledge-pipelines.md",
    "track": "sliders-local-validation"
   },
+  "speculative-decoding-mtp-refresh.md": {
+   "target": "speculative-decoding.md",
+   "track": "speculative-decoding-mtp-refresh"
+  },
   "stack-change-governance-pipeline.md": {
    "target": "stack-lifecycle-program.md",
    "track": null
@@ -779,6 +787,10 @@
   "INF-60": {
    "target": "INF-22",
    "track": "qwen38-27b-replace-qwen36"
+  },
+  "INF-62": {
+   "target": "INF-50",
+   "track": "dflash2-block-drafter-experimental-build"
   },
   "INF-64": {
    "target": "INF-02",

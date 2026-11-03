@@ -2,7 +2,7 @@
 
 Prepared 2026-11-01 for the open **DF2-DRAFTER-CAPABILITY** task. This is an implementation and evidence checklist; it does not establish a working reusable training pipeline or close that task. No capture, training, conversion, inference or deployment was performed to prepare this guide.
 
-The controlling task and pilot are in the [DFlash2 handoff](../../../handoffs/active/dflash2-block-drafter-experimental-build.md), under DF2-DRAFTER-CAPABILITY and DF2-FT-1. That handoff owns their status and decision rules. The references below were checked against local root `origin/main` at `2689038d77c5220f78f1061ba237e0b459fd275c`. This guide introduces no measurement grading rule or replacement gate.
+The controlling task and pilot are in the [DFlash2 handoff](../../../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build), under DF2-DRAFTER-CAPABILITY and DF2-FT-1. That handoff owns their status and decision rules. The references below were checked against local root `origin/main` at `2689038d77c5220f78f1061ba237e0b459fd275c`. This guide introduces no measurement grading rule or replacement gate.
 
 ## Evidence and remaining implementation
 

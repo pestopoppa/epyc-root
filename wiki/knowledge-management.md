@@ -1260,7 +1260,7 @@ witnesses still exist.
 ### Source References (2026-08-20 DFlash2 claim carrier)
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
-- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — immutable DF2-4 evidence and DF2-5 measurement plan.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — immutable DF2-4 evidence and DF2-5 measurement plan.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — runtime-campaign receipt chain and no-source-champion authority.
 
@@ -2037,7 +2037,7 @@ A config-level check reports a model's draft head "preserved" while the model
 ships **zero** such tensors. Any architecture claim about a fine-tune must be
 settled against `model.safetensors.index.json` or GGUF tensor counts. Full rule
 and evidence: [Speculative Decoding](speculative-decoding.md).
-[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) §2026-07-29 Stage-4
 
 ### Two intake-pipeline failure modes with named remedies
 
@@ -2134,7 +2134,7 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the five-month-stale capability assertion and its live mis-scoping effect
 - [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — weight-map-over-config verification rule
 - [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — near-identical-title dedup hazard; cite by arXiv ID
 - [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
 ## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
@@ -4249,7 +4249,7 @@ Sources: [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-prog
 
 The post-cut checkpoint adds a scoped C5 GitNexus caller audit to the existing committed-conclusion path: the accepted handoff records one `[belief: cc]` result tick and files the prospective `VB-GNX-C5-CALLER-AUDIT-1` source task. That observation concerns the tool's audited caller graph; it is not a measurement tuple, kernel-source application, global graph qualification, or fold decision. The INF-75 host-excluding preflight remains preparation evidence with `[no-belief]`, because no census ran. META-ASSERT-1, XGRAMMAR-A2, and M4 GPU records remain build/parser/load-only or candidate-only evidence. No wrap-up ingest was run; ledger synchronization is a read-only freshness check.
 
-Sources: [C5 accepted checkpoint](../handoffs/active/speculative-decoding-mtp-refresh.md); [Vidya program](../handoffs/active/vidya-belief-substrate-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [WS58 result harvest](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
+Sources: [C5 accepted checkpoint](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh); [Vidya program](../handoffs/active/vidya-belief-substrate-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [WS58 result harvest](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
 
 
 ## Compiled Update — 2026-10-28 (CME7T, CS22 and STT2 sources are enrolled ahead of reader use)

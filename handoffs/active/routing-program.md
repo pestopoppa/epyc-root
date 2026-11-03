@@ -2952,7 +2952,7 @@ episodic memory writing."
     the frozen `production-consolidated-v10` tree in place — full experimental → validate → new-production
     cycle per CLAUDE.md), then advance the AutoKernel champion so campaigns pick up the fix. A subagent is
     preparing the patch on an experimental branch as of this wrap-up; build/validation needs an operator-granted
-    CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding-mtp-refresh.md` **SW-9** (filed
+    CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding.md` **SW-9** (filed
     there as the kernel-side task; this row tracks the typed-decision consumer side and is closed by SW-9
     landing + a native re-bench).
     ✅ 2026-09-24 — fixed in the champion (`2b57340bf`, SW-9): native mode works on the champion build (16/16

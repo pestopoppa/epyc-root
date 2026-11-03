@@ -5,7 +5,7 @@
 **Scratch**: `/mnt/raid0/llm/tmp/codex-c6-mmqfix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-remain-q4k-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-combined-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-q4k-fix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-fp64-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-route-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-mmvq-fix-20261102/` · `/mnt/raid0/llm/tmp/ch33-private-20261102-v7g1tu/` · `/mnt/raid0/llm/tmp/codex-ch27-custody-20261102/` · `/mnt/raid0/llm/tmp/codex-ch31-server-20261102/` · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/` (live paired route diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/` (live CH-31 diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch26b-20261101/` (live CH-26b row; keeper reaps only after filing receipt) · `/mnt/raid0/llm/tmp/codex-ni-nemo-accepted-wrap-20261031/` · retained evidence: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/` · C6 fold: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` · C6 build evidence: `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/` · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-01a16fc3/full-wrapup-20261031/`, `/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/`, `/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r3-20261031/`
 
 ## Track: autokernel-champion-aggregate
-<!-- gate: INF-06, INF-62, INF-02 -->
+<!-- gate: INF-06, INF-50#dflash2-block-drafter-experimental-build, INF-02 -->
 
 > Folded from the body of `handoffs/active/autokernel-champion-aggregate.md` (row INF-65), from its first `##` section on, @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
@@ -1760,7 +1760,7 @@ Checklist (the dashboard gate — flipped as the phases land):
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**:
 - [`iqk-iquant-enablement.md`](quantization-and-low-bit.md#track-iqk-iquant-enablement) — Laguna UD-IQ2_M IQ-quant acceleration (already-coded branch; add Laguna as 5th beneficiary)
-- [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) — the DFlash draft-dflash spec path + accept-rate bench
+- [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) — the DFlash draft-dflash spec path + accept-rate bench
 - [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) — the reusable experimental-branch new-arch CPU-port precedent (pattern, not coupling)
 - [`architect-model-selection-bench.md`](model-evaluation-queue.md) — Laguna as a candidate once served
 
@@ -3416,7 +3416,7 @@ Not operator decisions, handled in-spec:
 The armed packet uses separate scratch files. Its source manifest remains SHA-256 `ddb15b7d8fa741baf54cf9563710df2ab9dade4ef3471eaed0a62aec2fe90d78`; no scratch source, seal, or launcher was changed. The branch retains original preparation commit `5d5d5f98906bf1ba0b0bee2ad27959a0e017d989`. This appendix records only the source hygiene repair; the owner retains the census and index row.
 
 ## Track: autokernel-all-devices-all-dimensions
-<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-62, RTG-58#kv-unified-stack-rollout, RTG-58#kv-prefix-fork-and-paged-attention -->
+<!-- gate: INF-73, INF-65#autokernel-cross-workload-keep-gate, INF-77, INF-50#dflash2-block-drafter-experimental-build, RTG-58#kv-unified-stack-rollout, RTG-58#kv-prefix-fork-and-paged-attention -->
 
 > Folded from `handoffs/active/autokernel-all-devices-all-dimensions.md` @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5; retired row INF-81 → INF-65). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -3444,7 +3444,7 @@ every merge into research main.
 **Depends on**: INF-73 [`autokernel-unified-surface-program.md`](autokernel-unified-surface-program.md) (the
 loop, serial router and target model), INF-75 [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
 (the keep gate G5 extends), RTG-57 [`kv-unified-stack-rollout.md`](kv-cache-program.md#track-kv-unified-stack-rollout) (`:8083` argv and
-its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md)
+its windows), INF-62 [`dflash2-block-drafter-experimental-build.md`](speculative-decoding.md#track-dflash2-block-drafter-experimental-build)
 (DF2-9, the rocWMMA FA pin and its NaN reproducer)
 **Related**: INF-77 [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) (DS41 lane; finding 1,
 DS41-C9, DS41-T2, DS41-B14), RTG-58 [`kv-prefix-fork-and-paged-attention.md`](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)

@@ -582,7 +582,7 @@ Deep-dive of `review-benchmark.md` + the released repos + `eval_common.py` sourc
 
 ### EV-9 saturation: empirical instance — our production review suite cannot resolve top-of-stack models (operator-flagged)
 
-The DRACO "reject sentinels scoring >90% / saturated → non-discriminative" methodology (L409) now has a **concrete, dated instance from our own production review suite**, surfaced during the 2026-06-22 MTP-refresh promotion analysis (see [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) "Eval-resolution caveat"):
+The DRACO "reject sentinels scoring >90% / saturated → non-discriminative" methodology (L409) now has a **concrete, dated instance from our own production review suite**, surfaced during the 2026-06-22 MTP-refresh promotion analysis (see [`speculative-decoding-mtp-refresh.md`](speculative-decoding.md#track-speculative-decoding-mtp-refresh) "Eval-resolution caveat"):
 
 - **Symptom**: gemma-4-31B (31B **dense**) and gemma-4-26B-A4B (~3.8B-active **MoE**) both score ~90% on our `benchmarks/results/reviews/summary.csv` suites — i.e. a small MoE *appears tied* with a much larger dense model of the same family. Operator (correctly) flagged this as implausible.
 - **Diagnosis = instrument saturation, NOT model parity and NOT quantization**: public dense-Q4 gemma-4-31B ≈ 92% (above our 90%) rules out a Q4 penalty; the dense 31B is genuinely ~1–3pp stronger on standard suites and ~8–10pp on frontier/agentic suites **we do not run**. Our suites sit in the saturated 90–94% band, so they cannot resolve the real gap — the exact failure mode EV-9 saturation-rejection exists to prevent, observed on a *deploy-gating* comparison rather than a sentinel-construction screen.

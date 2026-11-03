@@ -571,7 +571,7 @@ Three changes landed on the serving plane on 2026-09-16. First, re-collecting th
 
 - **The INF-61 grid on v9 (`0db32c06e`/`10125`, HIP binary sha `21cfb750`), MTP n-max 8, unit = launch, category CANDIDATE.** 18 launchable cells × 2 passes, 36/36 ok, with residency proven and host threads fenced to 184-191. The 6 cells np16 @16k/32k and np32 at every depth failed at startup (`failed to allocate ROCm0 buffer`), so they are capacity skips. Mean aggregate decode t/s at 2k: np1 46.4, np2 63.0, np4 91.8, np8 112.3, np16 116.8. Between-launch spread reached 13.6%, and MTP acceptance was 0.39–0.47. Research evidence commit `0a711890`. ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
 - **n-max 8 does not beat n-max 4 at np≥2.** Examples: np8/2k 112.3 vs 157.3, np16/2k 116.8 vs 153.5, np2/8k 59.8 vs 66.6. Single-stream is level (46.4 vs 47.6 at 2k). The 2026-08-15 n-max 4 grid also launched np32 @2k (141.1 t/s), which OOMs at startup under n-max 8. **The comparison is cross-session**: the 2026-08-15 grid used one launch per cell and different containment, and each launch serves only `np` questions with heavy truncation at 2k. **Consequence:** no cell ships as "best config" without a same-window n-max 4 vs 8 ABA at np≥2. This qualifies the earlier record that the n-max 4 grid sat "~8.7% under the measured optimum": the 8.7% came from a single-stream depth sweep. ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
-- **For contrast, DFlash2's block length does not reverse under concurrency.** On the champion, n-max 8 (≡7) beats n4 at every in-flight level from 1 to 8 (SL-1; see [Speculative Decoding](speculative-decoding.md)). The two drafters answer this question differently. ([dflash2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md))
+- **For contrast, DFlash2's block length does not reverse under concurrency.** On the champion, n-max 8 (≡7) beats n4 at every in-flight level from 1 to 8 (SL-1; see [Speculative Decoding](speculative-decoding.md)). The two drafters answer this question differently. ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
 - **Serving steps/s now has an estimate, not the exact counter.** `loop/serving.py` emits `aggregate_target_sample_steps_s_est` beside `aggregate_tok_s`, both per arm and as an A/A floor. It is reporting only, because the champion server does not export `n_draft_verif_steps` in `timings`. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
 - **The contention waiver now distinguishes lineup servers from foreign ones.** `_host_health_probe` now waives only llama processes whose `--port` is in `_expected_lineup_ports()`: the launch-manifest `PORT_MAP`, every `NUMA_CONFIG` instance, and `EMBEDDER_PORTS`. Any process on an undeclared port, or with no attributable port (llama-bench, llama-cli), stays in the gating attestation, and a blocker names its `pid (port)`. An unresolvable lineup waives nothing. The explicit-only GPU shadow lane (:18100) is deliberately excluded from the lineup. This landed in orchestrator merge `864c3b3b`. The contention suite passes 164 tests, and a mutation that restores the whole-class waiver fails 5 new tests. Live relevance: a read-only `ps` on 2026-09-16 showed a llama-server on `--port 18361`, which the old waiver would have hidden. ([shape-keyed-contention-gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating))
 - **`enumerate_feasible` warns on a stale matrix instead of refusing.** The feasibility model reads no measured cell, so it now warns and stamps `consumed_by_this_model: false`, while N-way enumeration still refuses (rc 2). The code had been in place since orchestrator `a517793c`. Two tests now pin the behaviour. ([shape-keyed-contention-gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating))
@@ -588,7 +588,7 @@ Three changes landed on the serving plane on 2026-09-16. First, re-collecting th
 ### Sources
 
 - [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md): the INF-61 n-max 8 grid and the cross-session comparison.
-- [dflash2-block-drafter-experimental-build.md](../handoffs/active/dflash2-block-drafter-experimental-build.md): SL-1 per-concurrency medians, used for the contrast.
+- [dflash2-block-drafter-experimental-build.md](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build): SL-1 per-concurrency medians, used for the contrast.
 - [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the serving steps/s estimator.
 - [shape-keyed-contention-gating.md](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating): the lineup-port waiver and the `enumerate_feasible` flip.
 - [numa-topology-cutover-resume-20260730.md](../handoffs/active/numa-placement-and-contention.md): the P0-0 stack-priors resolution and the E8 guard ruling.
@@ -1044,7 +1044,7 @@ is immutable pre-hook evidence and must not be upgraded by a read-side reconstru
 ### Source References (2026-08-20 Qwen3.8 DFlash2 serving candidate)
 
 - [Qwen3.8 replacement handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — production-successor context and existing registry boundary.
-- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — matched metrics, build identity, and mandatory residual gates.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — matched metrics, build identity, and mandatory residual gates.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — governed `experimental_runtime` stage/receipt chain and nonpromotion boundary.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact branch, evidence hashes, cleanup, and carrier integration order.
 
@@ -2527,7 +2527,7 @@ scope, not their results.
 process (pid 896239), and the campaign posture is read from the handoff's receipt chain.
 
 Sources: `handoffs/active/mi210-serving-program.md` (Q38-T5/T6),
-`handoffs/active/dflash2-block-drafter-experimental-build.md`,
+`handoffs/active/speculative-decoding.md`,
 `progress/2026-08/2026-08-21-operator.md`, `progress/2026-08/2026-08-21-research-intake.md`,
 `progress/2026-08/2026-08-21.md`.
 
@@ -2591,7 +2591,7 @@ DF2-2/DF2-5 are designed to catch.
 ### Source References (2026-08-23 Qwen3.8-27B stack + DFlash2 posture)
 
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T5 ✅ five-point live evidence + operator flag; Q38-T6 root cause and recovery path
-- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — campaign state, predeclared comparator + decision rule, receipt chain, DF2-2/5/6 gates, #25117 negative
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — campaign state, predeclared comparator + decision rule, receipt chain, DF2-2/5/6 gates, #25117 negative
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — executed ratification `7483d7fb`, derived-layer verification, coordination sequence
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — fourth-pass ratification execution + validation, dFlash2 `challenger_under_evaluation` carried through the recompile
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — AutoKernel lifecycle (v20–v25) and the CPU-TP proposal; the governed loop the experimental_runtime contract routes through
@@ -2737,7 +2737,7 @@ The plan approval authorizes only HSF-1 and HSF-3, which are passive instrumenta
 
 - [2026-09-29 workspace-8d :8083 window progress](../progress/2026-09/2026-09-29-workspace-8d-w8083-window.md) — the window, the three aborts, the hardened checks.
 - [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — V6R-4d: the HIP build, the abort log, the re-plan.
-- [Speculative decoding MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) — SW-9's GPU status.
+- [Speculative decoding MTP refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — SW-9's GPU status.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — ARCHSWAP applied; the second-MI210 direction.
 - [CPU speech contention](../docs/reference/speech/cpu-speech-contention-20260924.md) — voice-turn routing to the 27B under `architect_critic`.
 - [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — SSU-F3 done, SSU-F10 and KVU-1d open.
@@ -3066,7 +3066,7 @@ Sources: [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixe
 **Confidence: scoped to cited records and source controls.**
 
 - Stack launch validation now checks the resolved active template before capacity or launch effects; the older nine-error template inventory is historical. Same-ticket lease telemetry is a source-control result, not a reload. ([stack cutover](../handoffs/active/numa-placement-and-contention.md); [KVU](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout); [model integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity))
-- Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/engineering-hygiene-backlog.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [speculative harness](../handoffs/active/speculative-decoding-mtp-refresh.md))
+- Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/engineering-hygiene-backlog.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [speculative harness](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
