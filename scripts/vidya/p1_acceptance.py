@@ -139,7 +139,7 @@ def _host_lines(ev: dict[str, Any]) -> int:
     count = 0
     for line in lines:
         if line.startswith("### "):
-            inside = line.startswith("### Host tier")
+            inside = line.startswith("### Device-scope claims")
             continue
         if inside and line.startswith("- "):
             count += 1

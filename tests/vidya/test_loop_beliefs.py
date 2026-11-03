@@ -1172,3 +1172,40 @@ def test_ac5_amended_fails_on_each_leg(kw, why):
     import p1_acceptance as acc
     result = acc.ac5(_StubReader(*_ac5_inputs(**kw)))
     assert not result["pass"] and why in result["detail"], result["detail"]
+
+
+def test_device_scope_group_renders_below_model_claims_and_is_not_target_evidence(tmp_path, alarm):
+    """VB-LOOP-TEXT (operator 2026-11-02): a target with both kinds of claim renders the
+    model-scoped claims first and the device-only claims in a separate, labelled device-scope
+    group below them; the device-only claims are not counted as target evidence."""
+    own = _loop("ds41-own", mech="akm-own")
+    hosts = [_host(f"inf70-both-{i}", value=f"{400 + i}.5") for i in range(2)]
+    path = _write(tmp_path, own, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    section = ev["section"]
+    group = "### Device-scope claims"
+    assert group in section and "scoped by device only, no model" in section
+    assert section.index("### Usable, target tier") < section.index(group)
+    assert ev["tiers"]["target"] == 1 and ev["tiers"]["host"] == 2
+    assert ev["claim_ids"] == [_cid(own)]                       # only the model claim is reliance-eligible
+    host_ids = {_cid(h) for h in hosts}
+    assert not host_ids & set(ev["claim_ids"])
+    assert all(_tier_of(ev, h) == "host" for h in host_ids)
+    tail = section[section.index(group):].split("### Tried mechanisms")[0]
+    assert "device-scope: host ceiling, not about this model" in tail
+    assert "akm-own" not in tail                                # no model claim leaks into the group
+
+
+def test_target_with_only_device_scope_claims_has_no_target_evidence(tmp_path, alarm):
+    """A target whose only claims are device-only: zero target-tier evidence, the empty-target
+    banner, and the device-scope group is still shown, labelled as not about this model."""
+    hosts = [_host(f"inf70-only-{i}", value=f"{410 + i}.5") for i in range(3)]
+    path = _write(tmp_path, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, QWEN35_T)
+    assert ev["tiers"]["target"] == 0 and ev["tiers"]["host"] == 3
+    assert ev["claim_ids"] == []
+    section = ev["section"]
+    assert "No beliefs are scoped to" in section
+    assert "### Device-scope claims" in section
+    assert "### Usable, target tier" not in section
+    assert "3 of 3 device-scope (host) claim(s)" in section

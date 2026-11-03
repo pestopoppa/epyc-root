@@ -1283,8 +1283,8 @@ TIER_TITLES = {
                "(lineup-wide knobs)"),
     "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
                 "(other weights, quant or recipe); transfer unproven, never target evidence"),
-    "host": ("### Host tier -- host ceiling, not about this model; not evidence for a "
-             "proposal"),
+    "host": ("### Device-scope claims (host tier) -- scoped by device only, no model: host "
+             "ceiling, not about this model; not evidence for a proposal"),
 }
 FLAG_TITLES = {
     "contested": ("### Contested -- the evidence disagrees or is under review; do not build on "
@@ -1347,7 +1347,7 @@ def _where(row: Mapping[str, Any], tier: str) -> str:
     if tier == "lineup":
         return f"lineup regime {row['stack_regime'][:12]}{tail}"
     if tier == "host":
-        return "host ceiling, not about this model"
+        return "device-scope: host ceiling, not about this model"
     if tier == "sibling":
         recipe = f", recipe {row['recipe']}" if row["recipe"] else ""
         return (f"sibling: measured on {row['model_file'] or row['locator']}{recipe}; "
@@ -1540,12 +1540,13 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         "Claims are tiered by declared applicability: knob (the target's own weights and a "
         "knob family it can change), target (the target's own weights), lineup (this stack "
         "regime), "
-        "sibling (same declared lineage, other weights or recipe; transfer unproven), host "
-        "(device-only scope; a ceiling, not about this model). Grade is the folded "
+        "sibling (same declared lineage, other weights or recipe; transfer unproven), then a "
+        "separate device-scope group (host tier: device-only scope, no model; a ceiling, not "
+        "about this model, never target evidence). Grade is the folded "
         f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
     tail = [f"Optional reply field {reply_field}: a list of the knob-, target-, lineup- or "
             "sibling-tier claim ids above that the proposal depends on; omit it when it depends "
-            "on none. Host-tier "
+            "on none. Device-scope (host-tier) "
             "lines and contested, withdrawn or refuted claims are not evidence for a proposal."]
 
     def compose() -> str:
@@ -1599,7 +1600,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                  f"{shown_counts['target']} of {total['target']} target, "
                  f"{shown_counts['lineup']} of {total['lineup']} lineup, "
                  f"{shown_counts['sibling']} of {total['sibling']} sibling, "
-                 f"{shown_counts['host']} of {total['host']} host claim(s) "
+                 f"{shown_counts['host']} of {total['host']} device-scope (host) claim(s) "
                  f"({flags['contested']} contested, {flags['withdrawn']} withdrawn, "
                  f"{flags['refuted']} refuted); tried index {len(entries)} of "
                  f"{len(tried or [])} mechanism(s); bounded at {max_claims} claims / "
