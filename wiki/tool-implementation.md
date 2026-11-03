@@ -347,7 +347,7 @@ Two implementation surfaces arrive from the intake batch, both aimed at the orch
 - **TD-1a — the actual speed lever is the native candidate-scoring fast path**: enum-constrained single-token readout with `n_probs`/`completion_probabilities` over a shared prompt prefix with prompt-cache reuse. It is benchmarked against TD-1 on wall time, output tokens, argmax agreement, and cache-reuse drift.
 - **TD-4 / TU-TD-1 — closed-set tool-argument selection.** Map tool arguments to closed sets (Literal→Choice, list[Literal]→multi-choice, bool→Noul) with per-argument confidence; score exact-match argument correctness against the current free-form tool-call path. ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 - **FW-2 — the fuzzy/deterministic authoring GUI's build posture is an operator decision against HS-4.** HS-4 settled on a thin OpenCode shell with Hermes features inside the orchestrator; FW-2 asks whether the GUI is an orchestrator page, a harness plugin, or deferred. FW-3 is a ≤1-day prior-art survey (Dify/LangFlow-class flow UIs; the PAW playground). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
-- **PAW-2 — self-hosted compile spike tooling.** Prove one end-to-end compile producing a modern GGUF-ZIP `.paw` using the unofficial MIT compile server with pinned weights, then one local call; measure compile wall time, peak RAM and disk; document the Compact GPT-2 canonicalization caveat and CPU-only workability before MI210. ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md))
+- **PAW-2 — self-hosted compile spike tooling.** Prove one end-to-end compile producing a modern GGUF-ZIP `.paw` using the unofficial MIT compile server with pinned weights, then one local call; measure compile wall time, peak RAM and disk; document the Compact GPT-2 canonicalization caveat and CPU-only workability before MI210. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
 - **The audit discipline is part of the tooling.** The independent audit of the reference implementation found the shipped shuffled-context control defective (informed-vs-blind lift ~25 points after correction, intake-1490); expect the same class of control defect in a first local implementation.
 
 ### Open questions
@@ -360,7 +360,7 @@ Two implementation surfaces arrive from the intake batch, both aimed at the orch
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1/TD-1a fast path, TD-4 pilot, the converter question.
 - [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1.
 - [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-2 build posture, FW-3 prior art.
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-2 compile spike and its measurements.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-2 compile spike and its measurements.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
 
 ## Compiled Update — 2026-09-17 (evening): the dead registry entries never existed, and a lock that `close()` never released

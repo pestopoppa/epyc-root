@@ -29,8 +29,6 @@
 | INF-49 | sarathi serve cpu evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md) | Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2) | — |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-58 |
-| INF-61 | model evaluation queue (INF-60-gated) | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Run a same-window n-max 4 vs 8 ABA at np≥2 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna | INF-22 |
-| INF-76 | model evaluation queue (EVL-08-gated) | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

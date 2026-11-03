@@ -2346,7 +2346,7 @@ offline, not a model gap — here the "gap" was 19 silently-empty rows inside on
   two falsified attestation caveats with their live-host evidence.
 - [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the two
   cache-stats instrumentation defects and their v9-source verification.
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — the 21-patches/19-empty split and the native tool-call grammar fix.
 
 ## Compiled Update — 2026-08-16: measurement RESOLUTION as a first-class gate concept — the measured band does not block, and the blocking bound was never measured
@@ -4666,7 +4666,7 @@ result, and mutation-test any new guard.
 ### Source References
 
 - [`progress/2026-08/2026-08-20.md`](../progress/2026-08/2026-08-20.md) — the mixed-protocol capture, the endpoint investigation, and the duplicate-key fix
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md) — both SWE protocols and their provenance caveats
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update) — both SWE protocols and their provenance caveats
 - `epyc-inference-research` commits `baf36757` (`effective_request` provenance + mutation-verified test) and `a94e0e01` (duplicate `evidence` key) — direct commit reads
 - [Speculative Decoding](speculative-decoding.md) — the same session's per-artifact draft-depth finding
 

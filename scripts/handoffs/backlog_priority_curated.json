@@ -16,7 +16,6 @@
   "INF-80": 0.4,
   "EVL-08": 0.4,
   "RTG-34": 0.4,
-  "INF-61": 0.35,
   "EVL-02": 0.35,
   "EVL-10": 0.35,
   "EVL-50": 0.35,
@@ -37,7 +36,6 @@
   "RTG-07": 0.2,
   "RTG-48": 0.2,
   "RTG-52": 0.2,
-  "INF-76": 0.15,
   "RTG-08": 0.15,
   "INF-49": 0.1,
   "RTG-50": 0.1,
@@ -170,7 +168,9 @@
   "INF-59#attention-matching-kv-compaction": 0.3,
   "INF-59#multiscreen-attention-evaluation": 0.15,
   "INF-59#streaming-llm-baseline": 0.1,
-  "INF-59#triattention-kv-selection": 0.25
+  "INF-59#triattention-kv-selection": 0.25,
+  "EVL-02#gpu-candidates-surface-qwen38-update": 0.35,
+  "EVL-02#paw-compiled-specialists": 0.15
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -2588,12 +2588,6 @@
     "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
    }
   ],
-  "INF-61>INF-22": [
-   {
-    "track": "qwen38-27b-replace-qwen36",
-    "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after"
-   }
-  ],
   "EVL-49>INF-45": [
    {
     "track": "batched-decode-measurement",
@@ -2714,6 +2708,12 @@
    {
     "track": "agentic-serving-harness-fixes",
     "next_action": "Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun"
+   }
+  ],
+  "EVL-02>INF-22": [
+   {
+    "track": "qwen38-27b-replace-qwen36",
+    "next_action": "Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after"
    }
   ]
  }

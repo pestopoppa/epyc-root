@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 19,
-      "oldest_advance": "2026-09-16",
-      "open": 1019
+      "handoffs": 17,
+      "oldest_advance": "2026-10-30",
+      "open": 1008
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 18,
       "handoffs": 9,
       "oldest_advance": "2026-10-24",
-      "open": 755
+      "open": 766
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -372,7 +372,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 51,
+      "closed": 52,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -384,7 +384,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 57
+      "total": 58
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1054,22 +1054,6 @@
       "state": "active",
       "total": 56
     },
-    "gpu-candidates-surface-qwen38-update.md": {
-      "blocked": 0,
-      "closed": 8,
-      "guarded": 0,
-      "last_advanced": "2026-09-16",
-      "open": 3,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-61",
-      "state": "active",
-      "total": 11
-    },
     "harness-program.md": {
       "blocked": 15,
       "closed": 221,
@@ -1440,7 +1424,7 @@
       "blocked": 0,
       "closed": 75,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 56,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1705,10 +1689,10 @@
     },
     "model-evaluation-queue.md": {
       "blocked": 4,
-      "closed": 110,
+      "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 101,
+      "open": 112,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1717,16 +1701,16 @@
       },
       "row_id": "EVL-02",
       "state": "active",
-      "total": 215,
+      "total": 237,
       "tracks": [
         {
           "blocked": 0,
           "closed": 78,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 13,
+          "markers": 1,
+          "name": "model-evaluation-queue",
           "open": 26
         },
         {
@@ -1734,7 +1718,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 884,
+          "line": 891,
           "markers": 1,
           "name": "angelslim-techniques-evaluation",
           "open": 2
@@ -1744,7 +1728,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 909,
+          "line": 916,
           "markers": 1,
           "name": "delta-mem-reproduction",
           "open": 5
@@ -1754,7 +1738,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 936,
+          "line": 942,
           "markers": 1,
           "name": "ernie-image-turbo-evaluation",
           "open": 6
@@ -1764,7 +1748,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1035,
+          "line": 1041,
           "markers": 1,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 1
@@ -1774,7 +1758,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1061,
+          "line": 1067,
           "markers": 1,
           "name": "lightning-attention-port",
           "open": 4
@@ -1784,7 +1768,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1132,
+          "line": 1138,
           "markers": 1,
           "name": "minddr-deep-research-mode",
           "open": 6
@@ -1794,7 +1778,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1194,
+          "line": 1200,
           "markers": 1,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 7
@@ -1804,7 +1788,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1217,
+          "line": 1223,
           "markers": 1,
           "name": "qwen-mtp-llamacpp-port",
           "open": 2
@@ -1814,7 +1798,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1234,
+          "line": 1240,
           "markers": 1,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 3
@@ -1824,7 +1808,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1247,
+          "line": 1253,
           "markers": 1,
           "name": "summary-token-attention-readiness",
           "open": 4
@@ -1834,7 +1818,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1261,
+          "line": 1267,
           "markers": 1,
           "name": "tidar-one-pass-variant-b",
           "open": 3
@@ -1844,7 +1828,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1273,
+          "line": 1279,
           "markers": 1,
           "name": "meq-carve-gpu-serving-tie-in-program",
           "open": 3
@@ -1854,7 +1838,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1284,
+          "line": 1290,
           "markers": 1,
           "name": "meq-carve-gpu-acceleration-path",
           "open": 2
@@ -1864,7 +1848,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1293,
+          "line": 1299,
           "markers": 1,
           "name": "meq-carve-eval-tower-verification",
           "open": 2
@@ -1874,7 +1858,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1301,
+          "line": 1307,
           "markers": 1,
           "name": "meq-carve-multiscreen-attention-evaluation",
           "open": 1
@@ -1884,7 +1868,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1308,
+          "line": 1314,
           "markers": 1,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
           "open": 2
@@ -1896,7 +1880,7 @@
             "INF-77"
           ],
           "guarded": 0,
-          "line": 1316,
+          "line": 1322,
           "markers": 1,
           "name": "meq-carve-glm52-reviewer-capability-gates",
           "open": 1
@@ -1906,7 +1890,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1330,
+          "line": 1336,
           "markers": 1,
           "name": "meq-carve-typed-decision-plane",
           "open": 1
@@ -1918,7 +1902,7 @@
             "UFH-01#agentic-serving-harness-fixes"
           ],
           "guarded": 0,
-          "line": 1337,
+          "line": 1343,
           "markers": 1,
           "name": "meq-carve-routing-intelligence",
           "open": 1
@@ -1928,7 +1912,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1347,
+          "line": 1353,
           "markers": 1,
           "name": "meq-carve-memento-block-reasoning-compression",
           "open": 1
@@ -1938,7 +1922,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1361,
+          "line": 1367,
           "markers": 1,
           "name": "meq-carve-frontier-f3-data-flywheel",
           "open": 1
@@ -1948,7 +1932,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1369,
+          "line": 1375,
           "markers": 1,
           "name": "meq-carve-tq3-quantization-evaluation",
           "open": 1
@@ -1958,7 +1942,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1376,
+          "line": 1382,
           "markers": 1,
           "name": "meq-carve-multimodal-pipeline",
           "open": 1
@@ -1968,7 +1952,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1383,
+          "line": 1389,
           "markers": 1,
           "name": "meq-carve-opendataloader-pipeline-integration",
           "open": 1
@@ -1978,7 +1962,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1390,
+          "line": 1396,
           "markers": 1,
           "name": "meq-carve-document-parser-table-bench",
           "open": 1
@@ -1988,7 +1972,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1397,
+          "line": 1403,
           "markers": 1,
           "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 11
@@ -2002,7 +1986,7 @@
             "RTG-34"
           ],
           "guarded": 0,
-          "line": 1414,
+          "line": 1420,
           "markers": 1,
           "name": "meq-carve-reboot-gated-inventory-and-staging",
           "open": 1
@@ -2012,10 +1996,34 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1425,
+          "line": 1431,
           "markers": 1,
           "name": "meq-carve-repl-turn-efficiency",
           "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 8,
+          "gates": [
+            "INF-22"
+          ],
+          "guarded": 0,
+          "line": 1438,
+          "markers": 1,
+          "name": "gpu-candidates-surface-qwen38-update",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 3,
+          "gates": [
+            "EVL-08"
+          ],
+          "guarded": 0,
+          "line": 1594,
+          "markers": 1,
+          "name": "paw-compiled-specialists",
+          "open": 8
         }
       ]
     },
@@ -2112,22 +2120,6 @@
           "open": 5
         }
       ]
-    },
-    "paw-compiled-specialists.md": {
-      "blocked": 0,
-      "closed": 3,
-      "guarded": 0,
-      "last_advanced": "2026-10-29",
-      "open": 8,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-76",
-      "state": "active",
-      "total": 11
     },
     "quantization-and-low-bit.md": {
       "blocked": 1,
@@ -2863,17 +2855,6 @@
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
-    "INF-61": {
-      "deps": [
-        "INF-22"
-      ],
-      "handoff": "gpu-candidates-surface-qwen38-update.md",
-      "id": "INF-61",
-      "index": "inference-research-index.md",
-      "line": 32,
-      "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
-      "track": "model evaluation queue (INF-60-gated)"
-    },
     "INF-65": {
       "deps": [
         "INF-06",
@@ -2908,17 +2889,6 @@
       "line": 21,
       "next_action": "RT-1 (Q38FN) + RT-9 (Q36) traced/analysed, RT-5 gate not met; RT-10 DS41 tap hook (C++), then RT-6/7 on DS41",
       "track": "moe routing locality tap"
-    },
-    "INF-76": {
-      "deps": [
-        "EVL-08"
-      ],
-      "handoff": "paw-compiled-specialists.md",
-      "id": "INF-76",
-      "index": "inference-research-index.md",
-      "line": 33,
-      "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
-      "track": "model evaluation queue (EVL-08-gated)"
     },
     "INF-77": {
       "deps": [

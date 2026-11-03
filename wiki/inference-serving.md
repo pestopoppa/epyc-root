@@ -569,8 +569,8 @@ Three changes landed on the serving plane on 2026-09-16. First, re-collecting th
 
 ### Key findings
 
-- **The INF-61 grid on v9 (`0db32c06e`/`10125`, HIP binary sha `21cfb750`), MTP n-max 8, unit = launch, category CANDIDATE.** 18 launchable cells × 2 passes, 36/36 ok, with residency proven and host threads fenced to 184-191. The 6 cells np16 @16k/32k and np32 at every depth failed at startup (`failed to allocate ROCm0 buffer`), so they are capacity skips. Mean aggregate decode t/s at 2k: np1 46.4, np2 63.0, np4 91.8, np8 112.3, np16 116.8. Between-launch spread reached 13.6%, and MTP acceptance was 0.39–0.47. Research evidence commit `0a711890`. ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
-- **n-max 8 does not beat n-max 4 at np≥2.** Examples: np8/2k 112.3 vs 157.3, np16/2k 116.8 vs 153.5, np2/8k 59.8 vs 66.6. Single-stream is level (46.4 vs 47.6 at 2k). The 2026-08-15 n-max 4 grid also launched np32 @2k (141.1 t/s), which OOMs at startup under n-max 8. **The comparison is cross-session**: the 2026-08-15 grid used one launch per cell and different containment, and each launch serves only `np` questions with heavy truncation at 2k. **Consequence:** no cell ships as "best config" without a same-window n-max 4 vs 8 ABA at np≥2. This qualifies the earlier record that the n-max 4 grid sat "~8.7% under the measured optimum": the 8.7% came from a single-stream depth sweep. ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
+- **The INF-61 grid on v9 (`0db32c06e`/`10125`, HIP binary sha `21cfb750`), MTP n-max 8, unit = launch, category CANDIDATE.** 18 launchable cells × 2 passes, 36/36 ok, with residency proven and host threads fenced to 184-191. The 6 cells np16 @16k/32k and np32 at every depth failed at startup (`failed to allocate ROCm0 buffer`), so they are capacity skips. Mean aggregate decode t/s at 2k: np1 46.4, np2 63.0, np4 91.8, np8 112.3, np16 116.8. Between-launch spread reached 13.6%, and MTP acceptance was 0.39–0.47. Research evidence commit `0a711890`. ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
+- **n-max 8 does not beat n-max 4 at np≥2.** Examples: np8/2k 112.3 vs 157.3, np16/2k 116.8 vs 153.5, np2/8k 59.8 vs 66.6. Single-stream is level (46.4 vs 47.6 at 2k). The 2026-08-15 n-max 4 grid also launched np32 @2k (141.1 t/s), which OOMs at startup under n-max 8. **The comparison is cross-session**: the 2026-08-15 grid used one launch per cell and different containment, and each launch serves only `np` questions with heavy truncation at 2k. **Consequence:** no cell ships as "best config" without a same-window n-max 4 vs 8 ABA at np≥2. This qualifies the earlier record that the n-max 4 grid sat "~8.7% under the measured optimum": the 8.7% came from a single-stream depth sweep. ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
 - **For contrast, DFlash2's block length does not reverse under concurrency.** On the champion, n-max 8 (≡7) beats n4 at every in-flight level from 1 to 8 (SL-1; see [Speculative Decoding](speculative-decoding.md)). The two drafters answer this question differently. ([dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
 - **Serving steps/s now has an estimate, not the exact counter.** `loop/serving.py` emits `aggregate_target_sample_steps_s_est` beside `aggregate_tok_s`, both per arm and as an A/A floor. It is reporting only, because the champion server does not export `n_draft_verif_steps` in `timings`. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
 - **The contention waiver now distinguishes lineup servers from foreign ones.** `_host_health_probe` now waives only llama processes whose `--port` is in `_expected_lineup_ports()`: the launch-manifest `PORT_MAP`, every `NUMA_CONFIG` instance, and `EMBEDDER_PORTS`. Any process on an undeclared port, or with no attributable port (llama-bench, llama-cli), stays in the gating attestation, and a blocker names its `pid (port)`. An unresolvable lineup waives nothing. The explicit-only GPU shadow lane (:18100) is deliberately excluded from the lineup. This landed in orchestrator merge `864c3b3b`. The contention suite passes 164 tests, and a mutation that restores the whole-class waiver fails 5 new tests. Live relevance: a read-only `ps` on 2026-09-16 showed a llama-server on `--port 18361`, which the old waiver would have hidden. ([shape-keyed-contention-gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating))
@@ -587,7 +587,7 @@ Three changes landed on the serving plane on 2026-09-16. First, re-collecting th
 
 ### Sources
 
-- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md): the INF-61 n-max 8 grid and the cross-session comparison.
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update): the INF-61 n-max 8 grid and the cross-session comparison.
 - [dflash2-block-drafter-experimental-build.md](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build): SL-1 per-concurrency medians, used for the contrast.
 - [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the serving steps/s estimator.
 - [shape-keyed-contention-gating.md](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating): the lineup-port waiver and the `enumerate_feasible` flip.
@@ -1089,7 +1089,7 @@ withdraws it. Corrections must land in the cell being quoted, not in prose benea
 
 ### Source References (2026-08-18 coding ladder)
 
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — the "Coding ladder — WAS RUN" section with all rungs, the corrected axis table with its
   RETRACTED block, the 21-patches/19-empty split, and the parked re-run's exact next steps.
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the arm's
@@ -1194,7 +1194,7 @@ of scope for the coder/architect swap.
   verification and the embedded-MTP correction, load smoke (31.98 GB VRAM), the real-prompt
   flat-decode result and its explicit CORRECTION of the synthetic decline, prefill pp512, and the
   remaining registry-swap step.
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — the synthetic sweep's per-depth and MTP-workload-gate cells (the retracted values, still present
   in its axis table), the `np=4` @512 batched cell, and the 2026-08-15 24-cell re-run that supersedes
   them.

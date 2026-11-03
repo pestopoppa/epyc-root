@@ -236,6 +236,10 @@
    "target": "mi210-serving-program.md",
    "track": "gpu-acceleration-path"
   },
+  "gpu-candidates-surface-qwen38-update.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "gpu-candidates-surface-qwen38-update"
+  },
   "gpu-cot-scaffold-sidecar.md": {
    "target": "model-evaluation-queue.md",
    "track": "gpu-cot-scaffold-sidecar"
@@ -416,6 +420,10 @@
   "orchestration-robustness-audit-2026-07-11.md": {
    "target": "autopilot-program.md",
    "track": "orchestration-robustness-audit-2026-07-11"
+  },
+  "paw-compiled-specialists.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "paw-compiled-specialists"
   },
   "per-request-reasoning-budget.md": {
    "target": "context-and-token-economy.md",
@@ -852,6 +860,10 @@
    "target": "INF-22",
    "track": "qwen38-27b-replace-qwen36"
   },
+  "INF-61": {
+   "target": "EVL-02",
+   "track": "gpu-candidates-surface-qwen38-update"
+  },
   "INF-62": {
    "target": "INF-50",
    "track": "dflash2-block-drafter-experimental-build"
@@ -879,6 +891,10 @@
   "INF-75": {
    "target": "INF-65",
    "track": "autokernel-cross-workload-keep-gate"
+  },
+  "INF-76": {
+   "target": "EVL-02",
+   "track": "paw-compiled-specialists"
   },
   "INF-78": {
    "target": "INF-06",

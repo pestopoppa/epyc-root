@@ -255,7 +255,7 @@ tg128, 1.2% on pp512).
 
 ### Key findings
 
-- **PAW is artifact-available but not officially self-hostable.** Compiler weights (2026-06-07) and FuzzyBench eval data (2026-02-17) both predate the 2026-07-11 "compiler is CLOSED" blocker recorded in intake-811 — the re-open trigger is MET on availability. An unofficial MIT self-hosted compile server compiles for the default Qwen3 compiler (intake-1481#record), with no ROCm proof, and the Compact GPT-2 SDK-compat claim was overturned. Independent eval on one adversarial task: standard 94 / finetuned 97 / compact 85 (n=100, author labels); semantic abstention 98.9% on decided cases while logit-confidence thresholding fails (intake-1482). ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md))
+- **PAW is artifact-available but not officially self-hostable.** Compiler weights (2026-06-07) and FuzzyBench eval data (2026-02-17) both predate the 2026-07-11 "compiler is CLOSED" blocker recorded in intake-811 — the re-open trigger is MET on availability. An unofficial MIT self-hosted compile server compiles for the default Qwen3 compiler (intake-1481#record), with no ROCm proof, and the Compact GPT-2 SDK-compat claim was overturned. Independent eval on one adversarial task: standard 94 / finetuned 97 / compact 85 (n=100, author labels); semantic abstention 98.9% on decided cases while logit-confidence thresholding fails (intake-1482). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
 - **License scope is resolved for internal work only.** Operator ruling (OP-43 closed 2026-09-17): "everything we do is internal research" — the unlicensed weights, the FuzzyBench dataset (43,128 + 7,550 rows, no train split) and the 7,226-program corpus are usable internally; no redistribution, no deployed-service use, no shipping of outputs. Distribution would re-open the question.
 - **The local target question is open on economics, not capability.** PAW-2 must prove one end-to-end compile to a GGUF-ZIP `.paw` and one local call, including whether CPU-only is workable before MI210; whether the Qwen3-0.6B interpreter (594 MB Q6_K) is fast enough per call for always-on loops versus the current cheap-first models is filed as an open question.
 - **The local one-pass readout's real numbers.** A fully local pinned implementation measures **5.21x vs same-model JSON on a 3090** and 20.03 decisions/s under parallel reuse (intake-1487); the honest pattern range is **3.4–7.9x**, not the vendor's 40–200x (intake-1474). Reuse drifts 5–6 of 777 argmaxes under BF16 — acceptable only where the consumer tolerates it.
@@ -269,7 +269,7 @@ tg128, 1.2% on pp512).
 
 ### Source References (2026-09-17 research-intake delta)
 
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — availability, license scope, PAW-2/PAW-3, and the open economics.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — availability, license scope, PAW-2/PAW-3, and the open economics.
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the local one-pass mechanism (TD-1a) and the TD-2 calibration gate.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side requirement.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
@@ -287,7 +287,7 @@ Four of the five hypotheses this page took from the rtx6kpro field wiki on 2026-
 - **The RNG-entanglement lead is ruled out.** The drafter and verify samplers are separate objects, and at temp 0 / top_k 1 no RNG is drawn. The shared failing indices come instead from the batched-verify numeric split. Under a 1-row serial verify (`LLAMA_SPEC_EXACT=serial`), both spec arms are 12/12 bit-exact. The divergent tokens had top-1/top-2 logit margins of only 0.005–0.079. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md), [dflash2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build))
 - **The steps/s keep-gate metric is only partly available.** The champion server counts verify steps but does not export them, so the loop reports an estimate (`predicted_n − draft_n_accepted`) and the gate is unchanged. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
 - **The long-context and sustained-C8 cell (SL-4) is still unrun**, so the external "DFlash2 −19% at sustained C8" vs our +47.8% contradiction stays open.
-- **The same caution applies to MTP.** On production v9, the Qwen3.8 MTP n-max 8 grid came out below the older n-max 4 grid at np≥2 (cross-session observation). A single-stream depth optimum is therefore not assumed to hold for batched local serving. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
+- **The same caution applies to MTP.** On production v9, the Qwen3.8 MTP n-max 8 grid came out below the older n-max 4 grid at np≥2 (cross-session observation). A single-stream depth optimum is therefore not assumed to hold for batched local serving. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
 
 ### Open questions
 
@@ -299,7 +299,7 @@ Four of the five hypotheses this page took from the rtx6kpro field wiki on 2026-
 - [dflash2-block-drafter-experimental-build.md](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build): the SL-1, SL-5 and DF2-8 results.
 - [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the DF2-RNG source reading.
 - [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the SL-2 estimator.
-- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md): the MTP n-max 8 grid.
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update): the MTP n-max 8 grid.
 
 ## Compiled Update — 2026-09-08: the rtx6kpro intake — a same-class local-GPU field wiki, read for our hypotheses
 

@@ -619,7 +619,7 @@ Four of the 2026-09-08 rtx6kpro-wave rows (see the 09-08 section below) are now 
 - **SL-2 is only partially done: the exact steps/s counter is not exported.** The champion server counts `n_draft_verif_steps` (`server-context.cpp:343/4216` at `ef81196d5`, not `:295` as the 09-08 section cites for an older tree) but leaves it out of `timings`. `loop/serving.py` now reports an **estimate**, `target_sample_steps_est = predicted_n − draft_n_accepted` (verify steps plus plain steps), per arm and as an A/A floor. It is reporting only, and the gate is unchanged (research `5368766b`, unmerged, to integrate at a run boundary). The exact metric needs the counter added to `result_timings` in the champion tree. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md), [sub-gpuprep-port](../progress/2026-09/2026-09-16-sub-gpuprep-port.md))
 - **The P-CAL spec-dec contamination ratifier is built.** The operator chose option (a) on 2026-09-16: caveat the E7c and EV-4c calibration numbers now. E7c math is **CONTAMINATED and INVALID**; 1528/1684 and 1485/1628 rows sit at confidence ≥ 0.999999. EV-4c code is **CONTAMINATED, size unmeasured** (0/820 and 2/817 rows saturated) and is demoted to a prior. RLVR code calibration, EV-5/EV-7 verifier promotion and the math ECE stability check are suspended until EV-CONF-2 reports. The standing re-baseline rule is spec-off runs only, or runs with placeholder tokens excluded. No historical number is edited. The operator applies it through `run_pcal_ratify_20260916.sh`; `CURRENT-CAMPAIGN` already marks EV-4c SUSPENDED. ([sub-pcal-ratify](../progress/2026-09/2026-09-16-sub-pcal-ratify.md), [CURRENT-CAMPAIGN](../handoffs/active/CURRENT-CAMPAIGN.md))
 - **The MoE-spec `moe_spec_budget: 128` proposal lost its E8 gate.** The "E8-reseed/OP-19 gate" on the architect_critic registry proposal is resolved by operator ruling `ruling_op19_e8_chain_20260827` (root `1ee8bd7c`). The ruling retires the E8 chain and binds the reseed gate only at promotion. Registry integration is still not done. ([moe-spec handoff](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration))
-- **Batched MTP serving may not share the single-stream n-max optimum.** The Qwen3.8 np×depth grid re-collected at MTP n-max 8 on v9 comes out *below* the withdrawn n-max 4 grid at np≥2. Example: np8/2k 112.3 vs 157.3 t/s. This is a cross-session observation, and a same-window ABA is required before any cell ships. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
+- **Batched MTP serving may not share the single-stream n-max optimum.** The Qwen3.8 np×depth grid re-collected at MTP n-max 8 on v9 comes out *below* the withdrawn n-max 4 grid at np≥2. Example: np8/2k 112.3 vs 157.3 t/s. This is a cross-session observation, and a same-window ABA is required before any cell ships. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update))
 
 ### Open questions
 
@@ -636,7 +636,7 @@ Four of the 2026-09-08 rtx6kpro-wave rows (see the 09-08 section below) are now 
 - [2026-09-16-sub-pcal-ratify.md](../progress/2026-09/2026-09-16-sub-pcal-ratify.md): the E7c/EV-4c contamination amendment and the ratifier and wrapper tests.
 - [CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md): the EV-4c suspension pointer.
 - [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration): the OP-19 ruling note on the budget proposal.
-- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md): the MTP n-max 8 grid observation.
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update): the MTP n-max 8 grid observation.
 
 ## Compiled Update — 2026-09-08 (pm): production never ran the DFlash2 lane, so the champion's advantage here is partly a CAPABILITY and NO ratio exists — plus the measured DFlash2 serving ceiling
 
@@ -2405,7 +2405,7 @@ Key findings:
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — measurement record,
   all arms, VRAM, acceptance, and the two corrected false alarms.
 - sudoingX/qwen38-mtp PR #70 and `sweeps/instinct-cdna.md` — the public artifact and its caveats.
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.
 
 ## Compiled Update — 2026-09-09 (incremental): a concurrency sweep confounds itself if the prompt set moves with `np`

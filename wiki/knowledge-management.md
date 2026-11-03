@@ -448,7 +448,7 @@ commit message.
 - **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) OBS-13, NIB2-68)
 - **A landed fix whose box is never ticked reads as open work for three weeks.** Both boxes above described defects that had already been fixed; the closure on 2026-09-23 was bookkeeping, not engineering. The same session closed four other stale boxes (NI-IO, NIB2-81b, PAW-4, and the reaper item) the same way. The recurrence check in the operating constraints exists for exactly this: an item carried forward unchanged is evidence about the record, not about the work. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 - **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md) KB-WM-5)
-- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) PAW-4)
+- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) PAW-4)
 - **A descriptor "drift" can be a spelling, not a change.** The K4 item declared `-ub 2048` (the effective value was already that) and recompiled the derived chain; the apparent descriptor drift turned out to be **symlink path spelling only**. Worth a check before treating a descriptor mismatch as a state divergence. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 
 ### Open questions
@@ -460,7 +460,7 @@ commit message.
 
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
 - [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-4 record correction.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-4 record correction.
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: stale boxes closed, K4, and what remains open.
 
 ## Compiled Update — 2026-09-23 (wrap-up compile): three producers already write belief rows, and nothing reads them yet
@@ -3759,7 +3759,7 @@ The plan also drafted the exact text for its wiki corrections, and Stage 4 appli
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — the orphaned-residual boxing (NIB2-88/89) and the NIB2-86/87 renumbering.
 - [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — *Start here* and the standing-rule boxes that must never be ticked.
 - [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the *Completed Scope* table pattern.
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-5 JSON repair struck (TD-21 owns it).
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-5 JSON repair struck (TD-21 owns it).
 - [repl-embedding-retrieval.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-B.1 via `/v1`, OP-66 closed.
 
 

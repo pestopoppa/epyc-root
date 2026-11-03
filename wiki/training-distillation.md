@@ -344,7 +344,7 @@ relative to a baseline you can independently locate.
 - **Abstention on the author-labelled 100-case set:** binary 97/100; semantic 3-class 88 decided, 12 unsure, 87/88 correct on decided (0.989). Logit-confidence thresholding caught 0/3 baseline errors at 0.60-0.95 and 1/3 at 0.99 (22 abstentions). Direction matches the source record; single-domain, archive identity unproven.
 - **Own-slice transfer is mixed (n=8 each, exploratory):** paraphrase TRANSFER_SUPPORTED (7/7 decided correct, 1/8 unsure); the contradiction slice TRANSFER_NOT_SHOWN (semantic 5/8 vs required 90%), with errors on superlative and differing-comparison-scope cases. Sentiment was not supported. No threshold superiority or general efficacy claim; noise floor not enrolled.
 
-Sources: [paw-compiled-specialists handoff](../handoffs/active/paw-compiled-specialists.md); [paw3 paraphrase reserve progress](../progress/2026-10/2026-10-29-paw3-paraphrase-reserve.md); [paw3 sentiment preparation](../progress/2026-10/2026-10-29-paw3-sentiment-q0-preparation.md); [paw standard capacity checkpoint](../progress/2026-10/2026-10-29-paw-standard-capacity-checkpoint.md)
+Sources: [paw-compiled-specialists handoff](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists); [paw3 paraphrase reserve progress](../progress/2026-10/2026-10-29-paw3-paraphrase-reserve.md); [paw3 sentiment preparation](../progress/2026-10/2026-10-29-paw3-sentiment-q0-preparation.md); [paw standard capacity checkpoint](../progress/2026-10/2026-10-29-paw-standard-capacity-checkpoint.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 

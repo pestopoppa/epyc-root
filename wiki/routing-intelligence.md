@@ -447,7 +447,7 @@ serving detail is compiled in [Inference Serving](inference-serving.md).
   2026-08-15 Stage-2b combined ingest+dive: credibility `3/6`, the published noise-floor convention
   and its reading rule, the 111-run normalized-gain comparison, and the explicit warning that this
   entry does not inherit `intake-1134`'s venue credit.
-- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — the presentation-vs-evidence-authority split, the era-labelling rule, and the
   `operator-declined — deferred` cell convention.
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — which roles the
