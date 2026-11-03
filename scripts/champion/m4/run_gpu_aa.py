@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -169,6 +170,29 @@ def qualification_unit(env, capture_path, doc, plan_digest):
         fh.write('\n'); fh.flush(); os.fsync(fh.fileno())
 
 
+def prepare_watch_dir(watch_dir, qualification_only):
+    """Create the plan-bound, single-use watcher directory.
+
+    The watcher path is sealed in the native plan and re-checked by the V2
+    launcher, so it cannot vary per attempt. A real run therefore keeps the
+    strict single-use rule. A qualification (dry-run) attempt may be repeated
+    after a failed one: a stale directory is renamed (never deleted) into a
+    sibling ``superseded/`` directory so its evidence is retained and the next
+    attempt starts clean. Returns the superseded path, or None.
+    """
+    moved = None
+    if qualification_only and (watch_dir.is_symlink() or watch_dir.exists()):
+        if watch_dir.is_symlink() or not watch_dir.is_dir():
+            raise RuntimeError('stale watcher path is not a plain directory')
+        graveyard = watch_dir.parent / 'superseded'
+        graveyard.mkdir(mode=0o700, exist_ok=True)
+        moved = graveyard / ('%s-%s-%09d-pid%d' % (watch_dir.name, time.strftime('%Y%m%dT%H%M%SZ', time.gmtime()), time.time_ns() % 10**9, os.getpid()))
+        os.rename(watch_dir, moved)  # atomic, same filesystem
+        print('superseded stale qualification watcher dir %s -> %s' % (watch_dir, moved), file=sys.stderr)
+    watch_dir.mkdir(mode=0o700, exist_ok=False)
+    return moved
+
+
 def main():
     plan_path, plan_digest, qualification_only = aa_enrollment.selected()
     trust = write_capture.enrolled()
@@ -208,7 +232,7 @@ def main():
                 or watch_dir.parent.resolve(strict=True) != watch_dir.parent
                 or (trust.capture_root != watch_dir.parent and trust.capture_root not in watch_dir.parent.parents)):
             raise RuntimeError('watcher outside capture root or noncanonical path')
-        watch_dir.mkdir(mode=0o700, exist_ok=False)
+        prepare_watch_dir(watch_dir, qualification_only)
         work = watch_dir / 'native'
         env = dict(os.environ, M4_PLAN_CELL=entry['native_cell'], M4_WATCH_DIR=str(watch_dir))
         sensitive = ('LD_', 'GGML_', 'LLAMA_', 'HSA_', 'HIP_', 'ROCR_', 'OMP_', 'KMP_')

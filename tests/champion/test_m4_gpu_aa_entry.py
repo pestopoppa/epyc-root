@@ -273,3 +273,22 @@ def test_clean_runtime_bypass_is_qualification_only():
     pairs=mod.validate_plans(aa,native)
     with pytest.raises(RuntimeError,match='qualification'):mod.validate_runtime_mode(pairs,False)
     mod.validate_runtime_mode(pairs,True)
+
+
+def test_stale_watch_dir_blocks_real_run_but_is_superseded_in_qualification(tmp_path):
+    watch = tmp_path / 'dry-captures' / 'x'; watch.mkdir(parents=True)
+    (watch / 'watch-result.json').write_text('evidence')
+    with pytest.raises(FileExistsError):  # the pre-fix dry-run failure; real runs stay strict
+        mod.prepare_watch_dir(watch, False)
+    assert (watch / 'watch-result.json').read_text() == 'evidence'
+    moved = mod.prepare_watch_dir(watch, True)
+    assert moved.parent == tmp_path / 'dry-captures' / 'superseded'
+    assert (moved / 'watch-result.json').read_text() == 'evidence'
+    assert watch.is_dir() and not any(watch.iterdir())
+    (watch / 'second').write_text('2')
+    moved2 = mod.prepare_watch_dir(watch, True)
+    assert moved2 != moved and (moved2 / 'second').exists() and (moved / 'watch-result.json').exists()
+    other = tmp_path / 'dry-captures' / 'y'
+    assert mod.prepare_watch_dir(other, True) is None and other.is_dir()
+    with pytest.raises(FileExistsError):
+        mod.prepare_watch_dir(other, False)
