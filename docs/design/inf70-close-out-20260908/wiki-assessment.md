@@ -74,7 +74,7 @@ manifest), `C` = changed (content hash differs).
 | 2 | C | handoff-active | `handoffs/active/numa-placement-and-contention.md` | `hardware_optimization` | `inference_serving`, `benchmark_methodology` |
 | 3 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `benchmark_methodology` (champion/floor/harness), `quantization` (Q4_K gating) |
 | 4 | C | handoff-active | `handoffs/active/kernel-champion-and-promotion.md` | `hardware_optimization` | — |
-| 5 | C | handoff-active | `handoffs/active/sarathi-serve-cpu-evaluation.md` | `hardware_optimization` | `inference_serving` |
+| 5 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `inference_serving` |
 | 6 | C | handoff-active | `handoffs/completed/cpu-shape-specialized-gemv-decode.md` | `hardware_optimization` | `quantization` |
 | 7 | C | handoff-active | `handoffs/active/numa-placement-and-contention.md` | `hardware_optimization` | `inference_serving` |
 | 8 | C | handoff-active | `handoffs/active/loop-owned-fleet-implementation.md` | `agent_architecture` | `knowledge_management` |

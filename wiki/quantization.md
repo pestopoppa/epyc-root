@@ -268,7 +268,7 @@ Complete `EXL3-1`: freeze the content-addressed packed artifact and metadata sch
   - the share of token-layers with at least one replaced expert;
   - a repeat floor and a chance baseline.
 
-  The result is labelled occurrence-only, not damage. The only published weight-domain measurement of this is an occurrence statistic with no interventional attribution (intake-1524#03, intake-1524#record). v10's `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so any flips come from upstream perturbation ([moe-routing-tap-and-locality-measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md)).
+  The result is labelled occurrence-only, not damage. The only published weight-domain measurement of this is an occurrence statistic with no interventional attribution (intake-1524#03, intake-1524#record). v10's `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so any flips come from upstream perturbation ([moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)).
 - **DFlash on quantized targets.** The 2026-09-23 correction of this page's Summary and Key Findings, demoting target quantization to a hypothesis, now also covers the two cross-reference lines below. The drafter-side precision priors (4-bit ≈ −1% acceptance, weak) and the filed missing control are in [speculative-decoding](speculative-decoding.md).
 
 ### Open questions
@@ -281,7 +281,7 @@ Complete `EXL3-1`: freeze the content-addressed packed artifact and metadata sch
 - [iqk-iquant-enablement.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — T3 gate rewrite.
 - [tq3-quantization-evaluation.md](../handoffs/active/quantization-and-low-bit.md#track-tq3-quantization-evaluation) — STEP 3 gate rewrite and the flip-counting amendment.
 - [cpu-decode-roofline-program.md](../handoffs/active/cpu-decode-roofline-program.md) — the B7 fidelity scope note.
-- [moe-routing-tap-and-locality-measurement.md](../handoffs/active/moe-routing-tap-and-locality-measurement.md) — RT-2 route-set agreement rider.
+- [moe-routing-tap-and-locality-measurement.md](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-2 route-set agreement rider.
 - [p-kld-annex-proposals-20260923.md](../docs/research-intake/p-kld-annex-proposals-20260923.md) — the drafted V6/V8 wording from the same evidence.
 - [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — the DFlash record correction.
 - intake-1510#01/#02/#04, intake-1519#00/#03/#05, intake-1508#04, intake-1524#03/#04 — dive-verified external evidence.
@@ -672,7 +672,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 **Port path.** User authorized 2026-05-28: experimental branch `feature/deepseek4-port` off ik_llama production tree with explicit dual quality + throughput merge gates ([`deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md)) — 20-prompt × 5-category quality set with per-prompt MAD ≤ 0.05 nats + ≥ 15/20 token-1 exact-match; throughput floors Q4 ≥ 18 t/s solo, Q2 ≥ 35 t/s solo on canonical NPS4 stack.
 
-Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`handoffs/completed/deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) · [`handoffs/active/sarathi-serve-cpu-evaluation.md` §2026-05-28](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
+Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`handoffs/completed/deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) · [`handoffs/active/cpu-decode-roofline-program.md` §2026-05-28](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism) · `progress/2026-05/2026-05-28.md` §research-intake-batch.
 
 ### New (2026-07-21, iqk acceleration silently skipped IQ-quant tensors)
 

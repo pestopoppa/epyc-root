@@ -785,7 +785,7 @@ INF-63's stage-1 premise that Qwen is "group 1" (no shared experts) is FALSE. Qw
 
 - [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/completed/qwen38-flash-next-fp8-evaluation.md) — BLOCKED status, artifact-deletion correction, the census half, and the re-acquisition checkbox.
 - [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the 2026-09-07 HIP-offload measurement and the miss-split overturn record.
-- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/moe-routing-tap-and-locality-measurement.md) — the qwen4exp v9-coverage gap the tap port must close.
+- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — the qwen4exp v9-coverage gap the tap port must close.
 
 ## Compiled Update — 2026-09-01: GLM-MoE-DSA is dense-mask on this fork, GLM-5.2 is KILLED, and a requant A/B fixed how a CPU headline is denominated
 

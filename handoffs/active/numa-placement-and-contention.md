@@ -1784,7 +1784,7 @@ was in flight and several items touch the shared clone.
 **Created**: 2026-06-12
 **Priority**: ACTIVE-HIGH — bench-only, ~1 day for E1+E2; rank 2 in the findings-06 "what remains" table; an evidence vacuum under the highest-volume workload (the eval harness)
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §2 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 — read both before claiming any waypoint
-**Related**: [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign) (E1/E2 are quiesce-window Queue-2 items); [cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md) (E3 landing zone); [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md) (its reopen gate may fire from these results); [within-role-placement-state-machine.md](numa-placement-and-contention.md#track-within-role-placement-state-machine) (the multi-instance layer this complements); [inference-research-index.md](inference-research-index.md) (merged CPU/GPU inference routing)
+**Related**: [bulk-inference-campaign.md](eval-tower-program.md#track-bulk-inference-campaign) (E1/E2 are quiesce-window Queue-2 items); [cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md) (E3 landing zone); [sarathi-serve-cpu-evaluation.md](cpu-decode-roofline-program.md#track-sarathi-serve-cpu-evaluation) (its reopen gate may fire from these results); [within-role-placement-state-machine.md](numa-placement-and-contention.md#track-within-role-placement-state-machine) (the multi-instance layer this complements); [inference-research-index.md](inference-research-index.md) (merged CPU/GPU inference routing)
 
 #### Why
 

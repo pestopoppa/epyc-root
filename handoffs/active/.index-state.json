@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 17,
+      "handoffs": 15,
       "oldest_advance": "2026-10-30",
       "open": 1008
     },
@@ -153,7 +153,7 @@
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
-            "INF-70"
+            "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
           "line": 9406,
@@ -372,7 +372,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 53,
+      "closed": 54,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -384,7 +384,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 58
+      "total": 59
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -653,11 +653,11 @@
       "total": 60
     },
     "cpu-decode-roofline-program.md": {
-      "blocked": 0,
-      "closed": 108,
+      "blocked": 1,
+      "closed": 146,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 59,
+      "open": 69,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -666,7 +666,64 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 167
+      "total": 216,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 108,
+          "gates": [
+            "INF-65"
+          ],
+          "guarded": 0,
+          "line": 95,
+          "markers": 1,
+          "name": "cpu-decode-roofline-program",
+          "open": 59
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 5090,
+          "markers": 1,
+          "name": "sarathi-serve-cpu-evaluation",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 27,
+          "gates": [],
+          "guarded": 0,
+          "line": 5243,
+          "markers": 1,
+          "name": "cpu-prefill-compute-large-models",
+          "open": 1
+        },
+        {
+          "blocked": 1,
+          "closed": 2,
+          "gates": [],
+          "guarded": 0,
+          "line": 5739,
+          "markers": 1,
+          "name": "large-moe-expert-parallelism",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 9,
+          "gates": [
+            "INF-22",
+            "INF-70#cpu-decode-roofline-program"
+          ],
+          "guarded": 0,
+          "line": 5853,
+          "markers": 1,
+          "name": "moe-routing-tap-and-locality-measurement",
+          "open": 5
+        }
+      ]
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
@@ -2027,22 +2084,6 @@
         }
       ]
     },
-    "moe-routing-tap-and-locality-measurement.md": {
-      "blocked": 0,
-      "closed": 9,
-      "guarded": 0,
-      "last_advanced": "2026-10-31",
-      "open": 5,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-72",
-      "state": "active",
-      "total": 14
-    },
     "numa-placement-and-contention.md": {
       "blocked": 3,
       "closed": 235,
@@ -2395,54 +2436,6 @@
         }
       ]
     },
-    "sarathi-serve-cpu-evaluation.md": {
-      "blocked": 1,
-      "closed": 29,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 5,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-49",
-      "state": "active",
-      "total": 35,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 0,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 2
-        },
-        {
-          "blocked": 0,
-          "closed": 27,
-          "gates": [],
-          "guarded": 0,
-          "line": 149,
-          "markers": 1,
-          "name": "cpu-prefill-compute-large-models",
-          "open": 1
-        },
-        {
-          "blocked": 1,
-          "closed": 2,
-          "gates": [],
-          "guarded": 0,
-          "line": 645,
-          "markers": 1,
-          "name": "large-moe-expert-parallelism",
-          "open": 2
-        }
-      ]
-    },
     "speculative-decoding.md": {
       "blocked": 1,
       "closed": 101,
@@ -2791,7 +2784,7 @@
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "track": "gpu serving tie in program"
     },
@@ -2802,7 +2795,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2811,7 +2804,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2822,25 +2815,16 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
-    },
-    "INF-49": {
-      "deps": [],
-      "handoff": "sarathi-serve-cpu-evaluation.md",
-      "id": "INF-49",
-      "index": "inference-research-index.md",
-      "line": 29,
-      "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
-      "track": "sarathi serve cpu evaluation"
     },
     "INF-50": {
       "deps": [],
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 30,
+      "line": 28,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2851,7 +2835,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 31,
+      "line": 29,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2878,18 +2862,6 @@
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
-    "INF-72": {
-      "deps": [
-        "INF-22",
-        "INF-70"
-      ],
-      "handoff": "moe-routing-tap-and-locality-measurement.md",
-      "id": "INF-72",
-      "index": "inference-research-index.md",
-      "line": 21,
-      "next_action": "RT-1 (Q38FN) + RT-9 (Q36) traced/analysed, RT-5 gate not met; RT-10 DS41 tap hook (C++), then RT-6/7 on DS41",
-      "track": "moe routing locality tap"
-    },
     "INF-77": {
       "deps": [
         "INF-16",
@@ -2898,7 +2870,7 @@
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -2907,7 +2879,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -2916,7 +2888,7 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
     },

@@ -1551,7 +1551,7 @@ Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-
 **Confidence: scoped to cited records and source controls.**
 
 - Source-scoped improvements include full objective storage, default-off cutoff retry and strict value-only tool argument shadow selection. They do not establish live quality or adoption. ([learned routing](../handoffs/active/routing-program.md#track-learned-routing-controller); [multi-file coding](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane))
-- MoE calibration-lag reproduction and the proposed delegation fold replay retain their bounded surrogate and prospective scopes. An empty Pareto archive reflected the current-era boundary and absence of current-era rows, not proof of optimizer behavior. ([MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [routing](../handoffs/active/routing-intelligence.md); [task rate](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
+- MoE calibration-lag reproduction and the proposed delegation fold replay retain their bounded surrogate and prospective scopes. An empty Pareto archive reflected the current-era boundary and absence of current-era rows, not proof of optimizer behavior. ([MoE](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [routing](../handoffs/active/routing-intelligence.md); [task rate](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

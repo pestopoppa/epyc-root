@@ -125,7 +125,7 @@
    "track": "cpu-fused-decoder-blocks"
   },
   "cpu-prefill-compute-large-models.md": {
-   "target": "sarathi-serve-cpu-evaluation.md",
+   "target": "cpu-decode-roofline-program.md",
    "track": "cpu-prefill-compute-large-models"
   },
   "dashboard-architecture-restructure.md": {
@@ -301,7 +301,7 @@
    "track": "laguna-s21-cpu-port"
   },
   "large-moe-expert-parallelism.md": {
-   "target": "sarathi-serve-cpu-evaluation.md",
+   "target": "cpu-decode-roofline-program.md",
    "track": "large-moe-expert-parallelism"
   },
   "learned-routing-controller.md": {
@@ -372,6 +372,10 @@
   "model-stack-update-pipeline-audit.md": {
    "target": "stack-lifecycle-program.md",
    "track": "model-stack-update-pipeline-audit"
+  },
+  "moe-routing-tap-and-locality-measurement.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "moe-routing-tap-and-locality-measurement"
   },
   "moe-spec-cpu-spec-dec-integration.md": {
    "target": "kernel-champion-and-promotion.md",
@@ -500,6 +504,10 @@
   "rlm-contested-claims-self-evaluation.md": {
    "target": "benchmark-suites.md",
    "track": "rlm-contested-claims-self-evaluation"
+  },
+  "sarathi-serve-cpu-evaluation.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "sarathi-serve-cpu-evaluation"
   },
   "scaffold-autopilot-cost-lever-deployment.md": {
    "target": "autopilot-program.md",
@@ -757,7 +765,7 @@
    "track": "batched-decode-measurement"
   },
   "INF-09": {
-   "target": "INF-49",
+   "target": "INF-70",
    "track": "cpu-prefill-compute-large-models"
   },
   "INF-12": {
@@ -789,7 +797,7 @@
    "track": "laguna-s21-cpu-port"
   },
   "INF-29": {
-   "target": "INF-49",
+   "target": "INF-70",
    "track": "large-moe-expert-parallelism"
   },
   "INF-30": {
@@ -831,6 +839,10 @@
   "INF-46": {
    "target": "EVL-02",
    "track": "qwen-mtp-llamacpp-port"
+  },
+  "INF-49": {
+   "target": "INF-70",
+   "track": "sarathi-serve-cpu-evaluation"
   },
   "INF-51": {
    "target": "INF-59",
@@ -879,6 +891,10 @@
   "INF-67": {
    "target": "INF-65",
    "track": "cpu-fused-decoder-blocks"
+  },
+  "INF-72": {
+   "target": "INF-70",
+   "track": "moe-routing-tap-and-locality-measurement"
   },
   "INF-73": {
    "target": "INF-06",

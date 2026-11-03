@@ -1245,7 +1245,7 @@ CPU20 bundles: [`2026-04-29-mab-tree-selector-phase-0/`](../repos/epyc-inference
 
 Spec-dec round decomposes as: drafter forward + target verification + accept-evaluation. All three orthogonal axes added in 2026-04-28 (MoE-Spec budget, MAB tree topology, slot-promotion) target the verification step only, and inherit the same Amdahl ceiling. REAP +13.5% pp32 verify → +3% e2e because drafter+accept-eval are unchanged.
 
-This means NUMA-4-way concurrent serving (~6.7× frontdoor aggregate, see [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism)) remains the primary CPU acceleration lever. Spec-dec axes are stacking incremental gains on top of an already-saturated verification-step budget. To push past the Amdahl ceiling, future work would need to accelerate the drafter forward or accept-evaluation steps independently.
+This means NUMA-4-way concurrent serving (~6.7× frontdoor aggregate, see [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism)) remains the primary CPU acceleration lever. Spec-dec axes are stacking incremental gains on top of an already-saturated verification-step budget. To push past the Amdahl ceiling, future work would need to accelerate the drafter forward or accept-evaluation steps independently.
 
 ### Mamba Drafters EMNLP'25 Findings (intake-491)
 

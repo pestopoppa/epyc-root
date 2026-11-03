@@ -37,7 +37,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ## Compiled Update — 2026-10-28 (ws58 delta): RT-10 DS41 routing trace prepared, not run
 
-- RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/moe-routing-tap-and-locality-measurement.md)
+- RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
 - The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
 - INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
 
@@ -47,14 +47,14 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **RT-5 (schema, validator, 16 tests, C++ change spec) is met and on research main** (`ce1a1f4e5` is an ancestor of origin/main). The tap itself shipped under RT-1, and its traces carry the shape RT-6/7/8 consumed (prefill vs decode legs, T = 1 and 3). The DS41 part (hash layers, 128-expert DSpark/MTP layers, int16 ids) belongs to RT-10, which keeps RT-6 and RT-7 open.
 
-Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md).
+Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement).
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a cheap PPL screen for a faster Q38FN low-bit file
 
 - **Arm P: change only the expert gate/up from IQ3_S to IQ4_XS.** The old uniform file's +17.8% PPL came from degrading tensors the UD file keeps at Q8_0 (attn, ssm, shared experts), so arm P keeps every other tensor at its UD type (96,970 vs 89,332 MiB). PPL P 2.9701 vs UD 2.9761, i.e. equal, measured without iqk.
 - **The coherence half was void, not failed.** The harness ran without the serving env, so the default-ON fused decode made even the UD file produce garbage (see the FD-DIV-2 note in hardware-optimization). A v2 coherence run with the recipe env and the speed A/B (pp256 >= +27%, pp5 >= +19%, tg128 >= -2.0%, INDICATIVE on one quarter) are queued.
 - **Routing skew on the frontdoor model (RT-9).** Qwen3.6-35B-A3B top-10% expert share is 0.50 / 0.42 / 0.46 (prefill; code / prose / reasoning) against a uniform 0.104, with 0 of 40 layers at >= 0.60, so the written decision rule (>= 0.60 on >= 2 workloads) is not met on that model. The DS41 arm (RT-10) keeps the box open.
 
-Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
+Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement), [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): the repacked MXFP4 expert GEMV now has a real correctness gate
 **Confidence: verified** for the gate run (named artifacts); **inferred** for the S1-S5 seed implications and W8b (not run).
@@ -85,13 +85,13 @@ Sources: [IQK i-quant enablement](../handoffs/active/quantization-and-low-bit.md
 
 **Confidence: verified** for the recorded schema/test deliverables and ledger entries; **observation** where a keep's gain was measured on a model since deleted.
 
-- **Routing tap: schema, validator and C++ change spec landed; the tap itself is still RT-1.** epyc-inference-research `feat/rt21-20261020` @ `ce1a1f4e5` (merged to research main 2026-10-20) carries the schema, a validator, 16 tests and the C++ change spec. No tap data exists yet, so the placement replays in the sweep-2 section remain offline inputs only. ([MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md))
+- **Routing tap: schema, validator and C++ change spec landed; the tap itself is still RT-1.** epyc-inference-research `feat/rt21-20261020` @ `ce1a1f4e5` (merged to research main 2026-10-20) carries the schema, a validator, 16 tests and the C++ change spec. No tap data exists yet, so the placement replays in the sweep-2 section remain offline inputs only. ([MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement))
 - **GLM-5.3 MoE keeps were folded into candidate C, but they were measured on a model deleted 2026-09-22.** Folded: 16 clean picks including `moe-up-gate-safe-fusion` and `moe-fused-expert-cohorts`, the row-exact prerequisite `04ffb8ad0`, and `akm-moe-rowexact-weighted-slabs` re-ported by hand (active only when `mmid_rowexact`, Q4_K/Q5_K and cne1 <= `GGML_ROWEXACT_N`, so every other case is byte-identical). `akm-moe-rowexact-qact-2d-partition` (+18.168%) is SUBSUMED by the champion's flat activation grain blocks over `ne11 * ne12 * ngrain_row` in `ggml_iqk_try_mul_mat_id` (256-element grain for Q8_K activations versus the keep's fixed 128: same bytes, finer versus coarser balance only). ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
 - **Three DS41 MoE keeps were SUBSUMED, not applied.** `mmid-flat-qact-rows`, `mmid-qact-block-partition` (by `4348de400`), `mmid-verify-flat-slabs` and `mmid-deduplicate-empty-selection` (by `253e50c32`) were empty after conflict resolution because the champion's unledgered keeps carry the same optimisation; the slab path gates on `2 <= ids->ne[1] <= 8` with `slab_ok = false` whenever any active expert has `cne1 > 8`, which is exactly the earlier C112 shape gate, so that gate commit is not needed. Presence is proved by source greps plus the `GGML_MMID_SLAB` string gate. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
 - **`test-rowexact-backend-toggle` mode `mmid` returns rc=3 on C, and the control/bisect says it is not a fold regression.** Toggling row-exactness off does not change the Q4_K 4-token x 8-expert output (difference_witness=0 at ROWEXACT_N 4/8/16/32, with and without `GGML_MMID_SLAB=0`). The champion cannot be a control (it lacks the test and the setter); building only the champion plus the prerequisite `5251e5cc6` gives the same result, so none of C's other 58 commits changes it. Dense-q8 and dense-f32 modes pass. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
 - **Deterministic-batch MoE identity on C.** Qwen3.6-35B-A3B-MTP-Q8_0 greedy, MTP on, 3 prompts x 256 tokens: byte-identical to champion `dd3d9721c` on 3/3 with equal draft counters; MUL_MAT_ID 815/815 on the final build. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
 
-**Sources (sweep 3):** [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md).
+**Sources (sweep 3):** [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md).
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): the routing tap becomes the input to two offline placement replays
 
@@ -109,18 +109,18 @@ Open questions: does `qwen4exp`/`glm5next` need graph-side work for the tap? How
 
 ### Source References (2026-10-20 sweep 2)
 
-- [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md) — RT-1..RT-7, RT-2.1, dormant triggers.
+- [MoE routing tap and locality measurement](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-7, RT-2.1, dormant triggers.
 
 ## Latest source review — 2026-10-07
 
 ### Measurement prerequisite for the conditional expert cache
 
-The routing-tap handoff now owns RT-5: per-layer expert-selection shares on at least two workloads, with the proposed cache trigger requiring at least 60% of selections in the top 10% on both. This is a filed measurement, not an observed hot set. The [conditional MI210 cache port](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) additionally requires an accepted host-resident serving target; its `moe-direct` seeds wait for that port. The [routing instrument](../handoffs/active/moe-routing-tap-and-locality-measurement.md) must supply the trace before the existing conditional cache discussion becomes an executable performance case.
+The routing-tap handoff now owns RT-5: per-layer expert-selection shares on at least two workloads, with the proposed cache trigger requiring at least 60% of selections in the top 10% on both. This is a filed measurement, not an observed hot set. The [conditional MI210 cache port](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) additionally requires an accepted host-resident serving target; its `moe-direct` seeds wait for that port. The [routing instrument](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) must supply the trace before the existing conditional cache discussion becomes an executable performance case.
 
 ## Source References
 
 - [conditional MI210 cache port](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
-- [routing instrument](../handoffs/active/moe-routing-tap-and-locality-measurement.md)
+- [routing instrument](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
 - [Fable5 window-2 findings 02 — OD-A rider](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu)
 
 ## Compiled Update — 2026-09-26 (research-intake orch-prior-art): Fiddler and HybriMoE are now indexed as lineage only
@@ -275,7 +275,7 @@ The census that makes the offload/caching question OPEN rather than settled: all
 
 ### Source References (2026-09-08, routing tap)
 
-- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/moe-routing-tap-and-locality-measurement.md) — RT-1..RT-4 with the four port adjustments, the EOR rider, the chance baselines, the stride hazard, and the open questions.
+- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — RT-1..RT-4 with the four port adjustments, the EOR rider, the chance baselines, the stride hazard, and the open questions.
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the rewritten reopen trigger, the ρ=2 budget, the OD-A evidence rider (FreeToken vs KTransformers), and the intake-1318/1328/1336/1338 dispositions.
 - [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/completed/qwen38-flash-next-fp8-evaluation.md) — the qwen4exp census half (`intake-1328#record`, `intake-1328#03`).
 
@@ -299,7 +299,7 @@ This is the cheapest available inoculation against **Fiddler, HybriMoE, SMoE and
 
 ### Cross-reference: reading MoE routing state wrongly manufactures a plausible negative
 
-Both items above are about *not being fooled by someone else's measurement*. The mirror-image hazard on our own side — a flat read of a strided router tensor, whose tell-tale signature is **every expert appearing exactly k times with sub-chance reuse** — is recorded with its fix and its in-tree anchors in [`handoffs/active/moe-routing-tap-and-locality-measurement.md`](../handoffs/active/moe-routing-tap-and-locality-measurement.md) § stride hazard. Same failure family: MoE routing/expert state read wrongly yields a negative that looks entirely plausible.
+Both items above are about *not being fooled by someone else's measurement*. The mirror-image hazard on our own side — a flat read of a strided router tensor, whose tell-tale signature is **every expert appearing exactly k times with sub-chance reuse** — is recorded with its fix and its in-tree anchors in [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) § stride hazard. Same failure family: MoE routing/expert state read wrongly yields a negative that looks entirely plausible.
 
 ## Compiled Update — 2026-08-16: the MoE decode kernel is a DIFFERENT kernel from the one synthetic probes measure — and on gfx90a that difference is 2 waves/SIMD
 
@@ -398,7 +398,7 @@ A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resid
 ### Source References (2026-08-12)
 
 - [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
-- [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism) — the CPU15 expert-parallelism disposition this sits inside.
+- [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism) — the CPU15 expert-parallelism disposition this sits inside.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
 
 ## Compiled Update — 2026-07-20
@@ -478,7 +478,7 @@ The 2026-07-02 refresh surfaces five threads that sharpen the MoE picture. (1) A
 
 ### DeepSeek-V4-Flash GGUF Heterogeneous MoE Quant Reference (2026-05-28)
 
-- **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, now with a first (provisionally-failing) CPU throughput datapoint.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host. As of the 2026-05-30 Strategy-B port attempt, the Q4 variant measured 8-11 t/s canonical CPU decode (provisional FAIL vs an 18 t/s floor that needs V4-arch-aware recalibration — see the 2026-07-02 refinding above). Still a transferable heterogeneous-MoE quant recipe; the `deepseek4` arch is a structural rewrite into ik_llama's older API, not a hand-merge. Sources: [large-moe-expert-parallelism.md](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism), [deepseek-v4-flash-cpu-port.md](../handoffs/completed/deepseek-v4-flash-cpu-port.md).
+- **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, now with a first (provisionally-failing) CPU throughput datapoint.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host. As of the 2026-05-30 Strategy-B port attempt, the Q4 variant measured 8-11 t/s canonical CPU decode (provisional FAIL vs an 18 t/s floor that needs V4-arch-aware recalibration — see the 2026-07-02 refinding above). Still a transferable heterogeneous-MoE quant recipe; the `deepseek4` arch is a structural rewrite into ik_llama's older API, not a hand-merge. Sources: [large-moe-expert-parallelism.md](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism), [deepseek-v4-flash-cpu-port.md](../handoffs/completed/deepseek-v4-flash-cpu-port.md).
 
 ### REAP Core Technique
 
@@ -589,7 +589,7 @@ The fundamental issue: ggml's threadpool is fixed-size per process, so it can't 
 
 The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning, drone mode, lazy shard) is **complete and correct**. The 13 commits constituting Phase 3.2 deliver a deployable EP capability for medium-MoE. For REAP-246B-class, treat closure as provisional pending CPU24 attribution rather than "bandwidth-saturation-closed."
 
-[CPU15 handoff](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
+[CPU15 handoff](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
 
 ### MoE Serving and Offloading Research
 
@@ -603,13 +603,13 @@ The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning
 
 ### Large-MoE as primary CPU target (2026-04-26 reframe)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13×: single-instance NPS4 best is 48.81 t/s vs concurrent 48×4t aggregate ~104 t/s. REAP-246B single-instance is 5.94 t/s and has no viable concurrent serving path due to NUMA memory contention.
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13×: single-instance NPS4 best is 48.81 t/s vs concurrent 48×4t aggregate ~104 t/s. REAP-246B single-instance is 5.94 t/s and has no viable concurrent serving path due to NUMA memory contention.
 
 Strategic reframe: shift the CPU-optimization target from 30B-class models (where concurrent NUMA-4-way already wins) to ≥100B sparse MoE where total params fit RAM but only a fraction are activated per token. Expert parallelism (EP) exploits the 4-way NUMA + 12-CCD topology to convert aggregate bandwidth to single-stream throughput — turning an aggregate-only win into a per-stream win.
 
 ### Inter-process EP Phase 3 results — honest baselines (2026-04-26)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). 13 commits on `feature/cpu-ep-inter-process` during the 2026-04-26 session, with honest `--mmap 0` canonical baselines that supersede the earlier warmed-baseline artifact (which had inflated Qwen3.6-35B-A3B to +100%):
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism). 13 commits on `feature/cpu-ep-inter-process` during the 2026-04-26 session, with honest `--mmap 0` canonical baselines that supersede the earlier warmed-baseline artifact (which had inflated Qwen3.6-35B-A3B to +100%):
 
 | Model | Class | Honest baseline | EP best | Δ |
 |-------|-------|-----------------|---------|---|
@@ -654,7 +654,7 @@ Both Phase 0 are diagnostic — measure prediction accuracy / threshold curves, 
 
 ### Per-CCD / per-process expert sharding variants (Phase 1+)
 
-Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism). Two variants tracked under the EP umbrella:
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism). Two variants tracked under the EP umbrella:
 
 - **Variant 1 — intra-process per-CCD**: reuses the CPU1 substrate (NPS4 + GGML_NUMA_WEIGHTS=1). Expert weights reorganized per-CCD so each CCD's threads pull from L3-local expert ranges. Composes with existing single-instance bandwidth wins.
 
@@ -745,7 +745,7 @@ Per [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-eva
 - [Large-MoE EP Handoff (completed, Kimi addendum)](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md) -- Kimi-K2 deferral row + 2026-06-20 K2.7-Code specifics (footprints, MoonViT unsupported, storage pre-gate)
 - [intake-449] OpenAI Privacy Filter (huggingface.co/openai/privacy-filter) -- 2026-04-23: **aggressive small-MoE sparsity reference**. 128 experts with top-4 routing in a 1.5B-total / **50M-active (3.3%)** bidirectional encoder — ~2.6× sparser than our Qwen3.5/3.6-35B-A3B (8.6% active). 96% F1 on PII-Masking-300k. Not for deployment (PII task is off-roadmap), but design reference if `project_learned_routing_controller` upgrades from dense MLP to MoE router. [Deep-dive](../research/deep-dives/openai-privacy-filter-pii-preprocessor.md)
 - [intake-467] MegaBlocks (arXiv:2211.15841, Stanford/MosaicML, MLSys 2023) -- 2026-04-26: foundational dropless-MoE via block-sparse grouped GEMM with **blocked-CSR-COO + transpose-indices** encoding. Eliminates capacity-factor padding/dropping. Anchors CPU18 backlog item: port the **indexing scheme** (not the GPU kernel) into CPU2's AVX-512BW Q8_0 expert-GEMM path for padding-free CPU MoE expert dispatch. Compounds with already-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) wins.
-- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md#track-large-moe-expert-parallelism).
+- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/cpu-decode-roofline-program.md#track-large-moe-expert-parallelism).
 - [intake-471] Expert Choice Routing (arXiv:2202.09368, Google, NeurIPS 2022) -- 2026-04-26: **filed not_applicable**. Inverts dispatch (experts pick top-k tokens vs token picks top-k experts) for perfect load balance with no auxiliary loss. Three independent reasons: (1) training-time choice — our stack does no pre-training; (2) all production MoEs ship token-choice routers, cannot retrofit without retraining; (3) load-imbalance is largely absent on single-user CPU decode. Filed as literature reference only.
 
 ## 2026-05-04 Update — Probe B closes 122B-A10B + REAP-246B arch classes; opposite verdicts
@@ -829,7 +829,7 @@ The only third-party numbers for KT on EPYC compare different precisions and dif
 
 **Confidence: source-read only (cafe-llama.cpp `0ae77ef49`, intake-1925 dive); nothing built or run.** The fork's hook-based MoE expert cache registers for HIP in source although its document says CUDA only; six CUDA symbols have no HIP mapping; the only comparable number is +18.3% on a single GPU on an unstated host, and no expert-skew statistic is published. It is therefore a conditional rebuild (CAFE-7, trigger: measured routing skew of at least 60%, RT-5) rather than a candidate, and `moe-direct` CPU-fraction knobs are a hypothesis with no data (CAFE-8, only after CAFE-7). MoE-Spec expert budgeting was declined (lossy, GPU trees, ceiling already in-house).
 
-Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [MI210 roadmap handoff](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap), [MoE routing tap handoff](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [speculative-decoding wiki update](speculative-decoding.md).
+Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [MI210 roadmap handoff](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap), [MoE routing tap handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [speculative-decoding wiki update](speculative-decoding.md).
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -841,7 +841,7 @@ Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-
 - **Load-balance rider:** Flash-Next prefill MaxVio 19.2/15.9/12.9 (null 0.04); per 512-token chunk 41-48% of experts are inactive; MinVio is about 1.0 and carries no signal at this expert count.
 - **DS41 1017 baseline plus MUL_MAT_ID microbench prepared (DS41-W5d), not armed.** Tests whether the MXFP4 CPU_REPACK path loses to the Q4_K iqk path by more than 3.0% at pp512 expert shapes (384 experts, 6 used); held behind the operator's DS41-1017 hold.
 
-Sources: [MoE routing tap and locality](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+Sources: [MoE routing tap and locality](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 

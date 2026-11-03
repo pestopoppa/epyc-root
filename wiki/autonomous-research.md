@@ -4503,7 +4503,7 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 
 **Confidence: scoped to cited records and source controls.**
 
-- Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [MoE](../handoffs/active/moe-routing-tap-and-locality-measurement.md); [retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
+- Cited source repairs and historical-evidence reconciliation preserve the implementation date; closure hygiene is not new implementation quota. The retained GLA/RT-6.2 and REPL subsets do not establish broader runtime or model acceptance. ([refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [MoE](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement); [retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
 - Research-intake design and trigger rows describe future proposed experiments, including KV history and typed decision backend conformance; they are not evidence that those experiments ran. ([KV prefix](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [typed decisions](../handoffs/active/routing-program.md#track-typed-decision-plane); [tool-use contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 
 

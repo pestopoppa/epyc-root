@@ -804,7 +804,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 | [llama-cpp-dsa-contribution](gemma-challenge-kernel-techniques-v7.md#track-llama-cpp-dsa-contribution) | 4 | 4 | **LIVE** | **add `Lifecycle: live` override** — board over-flags it "superseded" (only the *original* objective was); D2/D3 re-anchored + live. GLM-5.2 box co-owned by glm51-reap |
 | [qwen36-27b-cpu-feasibility](../archived/qwen36-27b-cpu-feasibility.md) | 4 | 0 | PARKED | keep parked (CPU foreclosed) **+ cross-link the MI210 GPU campaign** (see callout) so it doesn't read as "dead model"; consider close |
 | [gpu-drafter-mi200-investigation](../archived/gpu-drafter-mi200-investigation.md) | 1 | 0 | LIVE | re-anchor — Stage 4 box blocked on Stages 1–3 (failed economics 2026-07-17); add drafter-redesign task |
-| [sarathi-serve-cpu-evaluation](sarathi-serve-cpu-evaluation.md) | 1 | 0 | PARKED | **reactivate** — multi-tenant trigger may have fired via batched-decode E1/E2 (active) |
+| [sarathi-serve-cpu-evaluation](cpu-decode-roofline-program.md#track-sarathi-serve-cpu-evaluation) | 1 | 0 | PARKED | **reactivate** — multi-tenant trigger may have fired via batched-decode E1/E2 (active) |
 | [agent-file-prose-compression](frontier-lab-automation.md#track-agent-file-prose-compression) | 1 | 1 | LIVE | keep — single operator rollout decision pending |
 
 ##### Batch B — routing / eval / RAG

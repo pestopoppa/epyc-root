@@ -4550,7 +4550,7 @@ calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](agentic-rocm-ker
 | **G16 MoE expert-gather GEMV** | Our dense/MoE attainment ratio is **2.1×** (fp16 62.6 → MoE-Q8 21.3) against NVIDIA's **1.3×** (GB10 dense 77–80 → MoE-Q8 59.6) on the same engine. That excess ratio is the gather, not the quant — it is the one place where our sag is measurably worse than a comparison platform's rather than merely present | `MEASUREMENT_FIRST`; first artifact is an expert-token histogram plus gather wall share at the production routing skew, then one atomic gather experiment. Band ~2.0×, MEDIUM |
 
 **CPU families.** Current anchors: [CPU optimization index](inference-research-index.md),
-[prefill compute](sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models), and the research repository's preserved CPU
+[prefill compute](cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models), and the research repository's preserved CPU
 optimization reports.
 
 | Draft family | Audit verdict | Seed disposition |
@@ -4560,7 +4560,7 @@ optimization reports.
 | **C3 persistent CPU thread team** | Plausible but large and race-prone; should follow local fusion/dispatch work only if residual OpenMP/barrier share remains material | `BLOCKED_BY_C2_RESIDUAL`; cheap first experiment is a scheduler/barrier trace or bounded prototype, then race/teardown stress |
 | **C4 expert-local NUMA placement** | Valid question, but historical private/shared results include a later-discovered mmap/first-touch confound and topology changes; import as confounded/superseded, never learned as a negative sign | `REBASE_AND_MEASURE_FIRST`; require current topology, explicit allocation policy, routing skew, and production anchor |
 | **C5 grouped CPU MoE** | Strong only for batched/eval/prefill regimes; existing eval-batch evidence means the workload trigger is real, and batch-one must not be a sentinel for expected gain | `READY_BATCHED_REGIME`; seed after the exact target workload and expert-token histogram are compiled |
-| **C6 CPU prefill continuation** | Useful catalog, but substantially overlaps C2, C7, and the existing PC-4 lineage ([`cpu-prefill-compute-large-models.md:152`](sarathi-serve-cpu-evaluation.md#track-cpu-prefill-compute-large-models), PC-4 open); several subideas already profiled or rejected | Import as a family; compile only unresolved PC-4 successors. Do not create a second catch-all prefill campaign |
+| **C6 CPU prefill continuation** | Useful catalog, but substantially overlaps C2, C7, and the existing PC-4 lineage ([`cpu-prefill-compute-large-models.md:152`](cpu-decode-roofline-program.md#track-cpu-prefill-compute-large-models), PC-4 open); several subideas already profiled or rejected | Import as a family; compile only unresolved PC-4 successors. Do not create a second catch-all prefill campaign |
 | **C7 automatic CONCAT dispatcher** | Concrete and high-readiness: a default-off path and positive/negative regime split already exist in the current production lineage | `READY_POSITIVE_CONTROL`; ideal early campaign for learning a safe dispatcher with prefill positives and decode regression sentinels |
 | **C8 CPU LM head/sampling** | Plausible and portable with G7 but profile-gated; full-logit avoidance changes observable sampling behaviour unless exact requirements are explicit | `MEASUREMENT_FIRST`; separate projection and sampler seeds |
 | **C9 tensor-class hybrid quantization** | Valuable system idea, but partly an artifact/quality optimization rather than a kernel-only mutation; it changes residency and quality as well as dispatch | Keep as an adjacent `artifact_quantization` family; require an immutable quality objective and a separate release adapter before activation |
@@ -9404,7 +9404,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - [ ] **AK-FAILRULE-1 — Turn recurring AK rejection reasons into pre-GPU rules from existing records (intake-2589#record, intake-2588#record).** Zero inference: classify every rejected candidate in the existing CPU and GPU campaign stores by failure reason (compile, correctness gate and which gate, timing loss, noise, harness error). For each reason class with at least 3 occurrences, draft a cheap static or pre-GPU check (CAKE-style hazard filter) and replay it over the historical candidates. Adopt a rule only if it would have rejected at least one historical failure before GPU time and no historical keep.
 
 ## Track: autokernel-unified-surface-program
-<!-- gate: INF-06#autokernel-rebuild-program, INF-65, INF-70 -->
+<!-- gate: INF-06#autokernel-rebuild-program, INF-65, INF-70#cpu-decode-roofline-program -->
 
 > Folded from `handoffs/active/autokernel-unified-surface-program.md` @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5; retired row INF-73 → INF-06). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
