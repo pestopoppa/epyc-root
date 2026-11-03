@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """worker_runner.py — one assignment, one visible worker, one typed report, then exit.
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P2-1, P2-4, P2-6)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P2-1, P2-4, P2-6)
 Plan of record: docs/design/loop-owned-fleet.html  (runner lifecycle diagram)
 Contract:       coordination/session-bus/BUS_PROTOCOL.md
 Ratified decisions this file implements: D1 (bounds), D2/D2b (harness knob +
@@ -1493,7 +1493,7 @@ def park_rows(bus_root: Path, agent: str, rows: list[dict], verdicts: dict,
                 "lane": "none",
                 "gating": "none",
                 "spec_ref": str(row.get("source_handoff")
-                                or "handoffs/active/loop-owned-fleet-implementation.md#P2-2"),
+                                or "handoffs/active/coordination-and-churn-pipeline.md#P2-2"),
                 "summary": (f"Re-verify the premise of {row['task_id']} "
                             f"(screener: {verdict['verdict']})"),
                 "task_text": (f"Premise check on {row['task_id']} returned "
@@ -1816,7 +1816,7 @@ def write_results(bus_root: Path, agent: str, results: list[dict], report: Optio
             "to": "coordinator-agent", "needs_routing_to": ["coordinator-agent"],
             "action_required": True, "assignee": "coordinator-agent",
             "payload": {"lane": "none", "gating": "none",
-                        "spec_ref": "handoffs/active/loop-owned-fleet-implementation.md#P2-8",
+                        "spec_ref": "handoffs/active/coordination-and-churn-pipeline.md#P2-8",
                         "summary": f"Merge-gate promotion for batch {ctx['batch_id']}",
                         "task_text": f"Promote pool-worker batch {ctx['batch_id']} "
                                      f"({', '.join(promo['task_ids'])}) through the merge gate",

@@ -7,7 +7,7 @@ fan-out metrics. This turns the F-15 assertion ("did a main actually fan out,
 or work serially?") into a number for every session already on disk.
 
 Metric definitions follow OrchBench Appendix D-I real-side definitions as
-scoped in handoffs/active/loop-owned-fleet-implementation.md FM-1:
+scoped in handoffs/active/coordination-and-churn-pipeline.md FM-1:
 
   declared_agents        subagent transcripts found for the workflow (a main
                          that issued a Task/SendMessage leaves one file/rollout

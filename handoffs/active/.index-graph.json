@@ -103,21 +103,6 @@
       "to": "UFH-01"
     },
     {
-      "from": "RTG-48",
-      "kind": "dep",
-      "to": "RTG-34"
-    },
-    {
-      "from": "RTG-52",
-      "kind": "dep",
-      "to": "RTG-34"
-    },
-    {
-      "from": "RTG-52",
-      "kind": "dep",
-      "to": "RTG-48"
-    },
-    {
       "from": "RTG-58",
       "kind": "dep",
       "to": "EVL-14"
@@ -775,12 +760,6 @@
       "weight": 4
     },
     {
-      "from": "RTG-08",
-      "kind": "ref",
-      "to": "RTG-52",
-      "weight": 2
-    },
-    {
       "from": "RTG-09",
       "kind": "ref",
       "to": "EVL-02",
@@ -833,30 +812,6 @@
       "kind": "ref",
       "to": "EVL-02",
       "weight": 3
-    },
-    {
-      "from": "RTG-34",
-      "kind": "ref",
-      "to": "RTG-48",
-      "weight": 2
-    },
-    {
-      "from": "RTG-48",
-      "kind": "ref",
-      "to": "RTG-34",
-      "weight": 3
-    },
-    {
-      "from": "RTG-52",
-      "kind": "ref",
-      "to": "RTG-34",
-      "weight": 2
-    },
-    {
-      "from": "RTG-52",
-      "kind": "ref",
-      "to": "RTG-48",
-      "weight": 5
     },
     {
       "from": "RTG-58",
@@ -937,7 +892,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T08:45:32Z",
+  "generated_at": "2026-11-03T08:47:47Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1229,7 +1184,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "dispatchable": 1,
           "gates": [
@@ -1240,7 +1198,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "line": 1420,
           "name": "meq-carve-reboot-gated-inventory-and-staging",
@@ -1791,7 +1752,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 34,
+      "priority_rank": 32,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic rocm kernel authoring",
@@ -2209,7 +2170,7 @@
       "track": "log linear gated deltanet readiness"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
       "closed": 247,
@@ -2218,7 +2179,7 @@
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "open": 100,
       "priority": 0.0751,
@@ -2233,7 +2194,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 39,
+      "priority_rank": 37,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2301,7 +2262,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "dispatchable": 15,
           "gates": [
@@ -2312,7 +2276,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "line": 5759,
           "name": "reboot-gated-inventory-and-staging",
@@ -3040,7 +3007,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 40,
+      "priority_rank": 38,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -3072,7 +3039,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 33,
+      "priority_rank": 31,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer escalation and human gate policy"
@@ -3449,7 +3416,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 36,
+      "priority_rank": 34,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3650,7 +3617,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 35,
+      "priority_rank": 33,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -3659,15 +3626,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 246,
-      "dispatchable": 77,
+      "closed": 371,
+      "dispatchable": 111,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-02",
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
-      "open": 77,
+      "open": 111,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3677,7 +3644,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 2,
+        "unblocks": 0,
         "unblocks_rows": [
           "RTG-48",
           "RTG-49",
@@ -3693,9 +3660,9 @@
         {
           "blocked_by": [],
           "dispatchable": 37,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 18,
+          "name": "coordination-and-churn-pipeline",
           "open": 37,
           "readiness": "ready"
         },
@@ -3703,7 +3670,7 @@
           "blocked_by": [],
           "dispatchable": 24,
           "gates": [],
-          "line": 3224,
+          "line": 3231,
           "name": "churn-pipeline",
           "open": 24,
           "readiness": "ready"
@@ -3712,7 +3679,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 3346,
+          "line": 3353,
           "name": "dashboard-architecture-restructure",
           "open": 12,
           "readiness": "ready"
@@ -3721,10 +3688,92 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3820,
+          "line": 3827,
           "name": "handoff-index-and-backlog-graph",
           "open": 4,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "dispatchable": 12,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "line": 4272,
+          "name": "coordinator-role-failure-modes-and-refactor",
+          "open": 12,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "dispatchable": 9,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "line": 5785,
+          "name": "loop-owned-fleet-implementation",
+          "open": 9,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "dispatchable": 5,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "line": 6446,
+          "name": "fleet-fanout-measurement",
+          "open": 5,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-34#churn-pipeline",
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "dispatchable": 8,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "line": 6634,
+          "name": "wrap-up-division-of-labor-policy",
+          "open": 8,
+          "readiness": "blocked"
         }
       ]
     },
@@ -3765,7 +3814,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 37,
+      "priority_rank": 35,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3841,119 +3890,6 @@
           "name": "wp12-fleet-layer-design",
           "open": 1,
           "readiness": "ready"
-        }
-      ]
-    },
-    {
-      "age_days": 26,
-      "blocked": 0,
-      "blocked_by": [
-        "RTG-34"
-      ],
-      "closed": 48,
-      "dispatchable": 12,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "coordinator-role-failure-modes-and-refactor.md",
-      "id": "RTG-48",
-      "last_advanced": "2026-10-08",
-      "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
-      "open": 12,
-      "priority": 0.3526,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (O): RTG48-C49-COMMENTS-D9 \u2014 publish the exact two-file cadence comment correction after D9 ack",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 113,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 1,
-        "unblocks_rows": [
-          "RTG-49",
-          "RTG-51",
-          "RTG-52"
-        ]
-      },
-      "priority_rank": 31,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "coordinator role failure modes"
-    },
-    {
-      "age_days": 1,
-      "blocked": 0,
-      "blocked_by": [
-        "RTG-34",
-        "RTG-48"
-      ],
-      "closed": 77,
-      "dispatchable": 22,
-      "domain": "routing-and-optimization",
-      "guarded": 0,
-      "handoff": "loop-owned-fleet-implementation.md",
-      "id": "RTG-52",
-      "last_advanced": "2026-11-02",
-      "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
-      "open": 22,
-      "priority": 0.3468,
-      "priority_basis": {
-        "basis": "T2 non-inference best open item (N): RTG52-D9-SOURCE \u2014 integrate reviewed target-selection and exact assignment-stdin source co",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 114,
-        "source": "file",
-        "tier": 2,
-        "tier_name": "T2 non-inference, unblocked",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 32,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "loop owned fleet implementation",
-      "tracks": [
-        {
-          "blocked_by": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "dispatchable": 9,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
-          "open": 9,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "dispatchable": 5,
-          "gates": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "line": 657,
-          "name": "fleet-fanout-measurement",
-          "open": 5,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "dispatchable": 8,
-          "gates": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "line": 845,
-          "name": "wrap-up-division-of-labor-policy",
-          "open": 8,
-          "readiness": "blocked"
         }
       ]
     },
@@ -4036,7 +3972,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 55,
+      "closed": 56,
       "dispatchable": 5,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -4045,13 +3981,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 5,
-      "priority": 0.0199,
+      "priority": 0.0192,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 41,
+      "priority_rank": 39,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -4214,7 +4150,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 38,
+      "priority_rank": 36,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -4340,8 +4276,10 @@
       "RTG-45",
       "RTG-46",
       "RTG-47",
+      "RTG-48",
       "RTG-49",
       "RTG-51",
+      "RTG-52",
       "RTG-54",
       "RTG-55",
       "RTG-56",
@@ -4367,7 +4305,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 40,
+      "file": 38,
       "heuristic": 1,
       "override": 0
     },
@@ -4383,7 +4321,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 12,
+    "blocked": 10,
     "no_open": 0,
     "ready": 29
   },

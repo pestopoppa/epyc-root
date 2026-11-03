@@ -1094,7 +1094,7 @@ withdraws it. Corrections must land in the cell being quoted, not in prose benea
   RETRACTED block, the 21-patches/19-empty split, and the parked re-run's exact next steps.
 - [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the arm's
   verified identity and throughput evidence the ladder rows sit beside.
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the reconciliation-merge "instructive case" naming this exact table as why union is the worst
   outcome for a retraction.
 
@@ -3066,7 +3066,7 @@ Sources: [serving-harness fixes](../handoffs/active/harness-program.md#track-age
 **Confidence: scoped to cited records and source controls.**
 
 - Stack launch validation now checks the resolved active template before capacity or launch effects; the older nine-error template inventory is historical. Same-ticket lease telemetry is a source-control result, not a reload. ([stack cutover](../handoffs/active/numa-placement-and-contention.md); [KVU](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout); [model integrity](../handoffs/active/stack-lifecycle-program.md#track-model-artifact-integrity))
-- Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/engineering-hygiene-backlog.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [speculative harness](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh))
+- Queued qualification, keeper succession, midnight admission and exact row-text identity remain separate operational contracts; partial or failed launches do not become measurements. ([fleet backlog](../handoffs/active/engineering-hygiene-backlog.md); [loop fleet](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation); [speculative harness](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)

@@ -77,7 +77,7 @@ manifest), `C` = changed (content hash differs).
 | 5 | C | handoff-active | `handoffs/active/cpu-decode-roofline-program.md` | `hardware_optimization` | `inference_serving` |
 | 6 | C | handoff-active | `handoffs/completed/cpu-shape-specialized-gemv-decode.md` | `hardware_optimization` | `quantization` |
 | 7 | C | handoff-active | `handoffs/active/numa-placement-and-contention.md` | `hardware_optimization` | `inference_serving` |
-| 8 | C | handoff-active | `handoffs/active/loop-owned-fleet-implementation.md` | `agent_architecture` | `knowledge_management` |
+| 8 | C | handoff-active | `handoffs/active/coordination-and-churn-pipeline.md` | `agent_architecture` | `knowledge_management` |
 | 9 | C | progress | `progress/2026-09/2026-09-08-ak-rebuild-20260828.md` | `hardware_optimization` | `agent_architecture`, `autonomous_research` |
 | 10 | **A** | progress | `progress/2026-09/2026-09-08-inf70-audit.md` | `hardware_optimization` | `benchmark_methodology` (STAT-1 pseudo-replication, DRIFT-5, the floor-conditions rule) |
 | 11 | **A** | docs | `docs/design/champion-consolidation-audit-20260908.md` | `hardware_optimization` | `tool_implementation` / `agent_architecture` (git custody, the `--branches` backup lesson) |

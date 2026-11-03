@@ -7,7 +7,7 @@ Every key name and bound in this document was read out of that file, out of
 document follows the code and says so.
 
 **Design context** (not repeated here): `docs/design/loop-owned-fleet.html` (plan of record),
-`handoffs/active/loop-owned-fleet-implementation.md` (P2-*), `coordination/session-bus/BUS_PROTOCOL.md`
+`handoffs/active/coordination-and-churn-pipeline.md` (P2-*), `coordination/session-bus/BUS_PROTOCOL.md`
 (rule 8, amended 2026-08-16 for pool workers).
 
 ---

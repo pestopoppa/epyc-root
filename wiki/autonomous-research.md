@@ -1967,7 +1967,7 @@ cannot be trusted with a *yes*.
 - [`frontier-f2-self-running-lab.md`](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab) — W3
   reliability-ladder thresholds, `promote_job.py` as the sole promotion path, the review-queue
   compliance rule, and the accepted/rejected gold-tuple pair.
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the Phase-2 acceptance gate and kill criteria, `premise_screener` (P2-2), the headless audit
   (P2-7), and the two `premise-unknown` refusals in the pilot record.
 - [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →

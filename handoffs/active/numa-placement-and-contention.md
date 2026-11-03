@@ -5757,7 +5757,7 @@ Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the se
 - TB-A10 (intake-2216#03): two tiers suffice (a third added about 2% in the paper's simulation); WP-15 arm (e) never uses more than one threshold.
 
 ## Track: reboot-gated-inventory-and-staging
-<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34 -->
+<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-45#dynamic-stack-concurrency, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-45#within-role-placement-state-machine, RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
 
 > Folded from `handoffs/active/reboot-gated-inventory-and-staging.md` @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5; retired row EVL-49 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

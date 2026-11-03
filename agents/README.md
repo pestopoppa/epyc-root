@@ -66,7 +66,7 @@ from pane text — it may only capture scrollback as evidence for a human to tri
 Design of record: `docs/design/loop-owned-fleet.html` — *The pivot: pool workers in visible panes*
 (`#pivot`), *worker_runner: per-assignment lifecycle* (`#d-runner`), and *Ratified decisions*
 (`#decisions`, D0/D1/D2/D6/D8). Task-level state and gates:
-`handoffs/active/loop-owned-fleet-implementation.md` (Phase 2). Consult those rather
+`handoffs/active/coordination-and-churn-pipeline.md` (Phase 2). Consult those rather
 than this section for the design rationale.
 
 ## Model Routing (Task-Based)

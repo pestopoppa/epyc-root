@@ -124,6 +124,10 @@
    "target": "speech-and-multimodal.md",
    "track": null
   },
+  "coordinator-role-failure-modes-and-refactor.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "coordinator-role-failure-modes-and-refactor"
+  },
   "cpu-fused-decoder-blocks.md": {
    "target": "kernel-champion-and-promotion.md",
    "track": "cpu-fused-decoder-blocks"
@@ -217,7 +221,7 @@
    "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
   },
   "fleet-fanout-measurement.md": {
-   "target": "loop-owned-fleet-implementation.md",
+   "target": "coordination-and-churn-pipeline.md",
    "track": "fleet-fanout-measurement"
   },
   "frontier-f2-self-running-lab.md": {
@@ -319,6 +323,10 @@
   "llama-cpp-dsa-contribution.md": {
    "target": "gemma-challenge-kernel-techniques-v7.md",
    "track": "llama-cpp-dsa-contribution"
+  },
+  "loop-owned-fleet-implementation.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "loop-owned-fleet-implementation"
   },
   "loop-state-offraid-backup.md": {
    "target": "engineering-hygiene-backlog.md",
@@ -619,7 +627,7 @@
    "track": "wp12-fleet-layer-design"
   },
   "wrap-up-division-of-labor-policy.md": {
-   "target": "loop-owned-fleet-implementation.md",
+   "target": "coordination-and-churn-pipeline.md",
    "track": "wrap-up-division-of-labor-policy"
   },
   "x-mas-text-routing.md": {
@@ -1095,13 +1103,21 @@
    "target": "RTG-34",
    "track": "dashboard-architecture-restructure"
   },
+  "RTG-48": {
+   "target": "RTG-34",
+   "track": "coordinator-role-failure-modes-and-refactor"
+  },
   "RTG-49": {
-   "target": "RTG-52",
+   "target": "RTG-34",
    "track": "fleet-fanout-measurement"
   },
   "RTG-51": {
-   "target": "RTG-52",
+   "target": "RTG-34",
    "track": "wrap-up-division-of-labor-policy"
+  },
+  "RTG-52": {
+   "target": "RTG-34",
+   "track": "loop-owned-fleet-implementation"
   },
   "RTG-54": {
    "target": "UFH-01",

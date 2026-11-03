@@ -640,7 +640,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 - **F9b: a relayed subagent claim was false, and checking it took one `cat`.** The task claimed the two sub-repos had LFS-only pre-push hooks with no serialization guard. Both in fact carry the chained hook installed 2026-08-12, byte-identical to epyc-root's, and running the guard in each repo refused as designed. What *was* true is more interesting. Before SSU-F9, the guard hardcoded `/workspace/coordination/push-locks` while the wrapper locked in each repo's own directory. So in the sub-repos every correctly locked push would have been refused, on every attempt. In epyc-root the two derivations happened to produce the same string, which is why the breakage was invisible from there. Pushes to both sub-repos after the fix ended on `PUSH VERIFIED`. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9b)
 - **SSU-F9c: the same shape, one lease over, still live.** `promote_lane.py:519` defaults `--lock-dir` to the `__file__`-relative fallback. In a lane worktree that is the lane's *private* directory, so the promote lease serializes nothing across lanes. That is the 2026-09-01 incident that the push lease's git-common-dir derivation was introduced to fix. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9c)
 - **A module that parses `sys.argv` at import answers the importer's flags (DS41-C2e).** `autokernel_enrollment.py:276` imports `scripts.server.orchestrator_stack`, which parses `sys.argv` at import time. So it saw the enrollment's flags, printed stack status and exited 0 without writing the output: another success-shaped non-result. The campaign route taken instead is `--registry-snapshot` (an `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities). The import-time argparse is filed to be fixed separately. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2e)
-- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/loop-owned-fleet-implementation.md), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
+- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
 - **Ownership follows the lane, not the session.** The typed-decision plane is now owned by the research-intake lane: the session it was assigned to is closed, and its orchestrator worktree retired after its branch merged. New TD work cuts a fresh lane worktree from origin/main. The `research-intake` skill's Stage 4 now ends with a lane close-out rule. The same cleanup recorded a process miss: worktree and branch removals ran without the operator's per-list delete confirmation. Nothing unique was lost, and every tip is recorded for restore. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
 
 ### Open questions
@@ -654,7 +654,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 - epyc-root commit `0f9a4ef1` — the SSU-F9 fix and its `D9-ack` trailer.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2e.
 - [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the owner line.
-- [loop-owned-fleet-implementation.md](../handoffs/active/loop-owned-fleet-implementation.md) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
+- [loop-owned-fleet-implementation.md](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
 - [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — lane cleanup, the close-out rule and the process miss.
 
 ## Compiled Update — 2026-09-19: a dormant browser-agent surface is filed, and the typed-decision plane's agent-facing results settle
@@ -1255,7 +1255,7 @@ by this compilation; the existing implementation task remains open.
 
 ### Source References (September 8 end-to-end qualification)
 
-- [Wrap-up division-of-labor handoff](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
+- [Wrap-up division-of-labor handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
 
 ## Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
 
@@ -1430,7 +1430,7 @@ compiled on [Knowledge Management](knowledge-management.md)).
 - [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
   censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
   with their C39/C49 preconditions and intake anchors.
-- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — the FM-5/FM-6
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — the FM-5/FM-6
   result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
   FM-6 reconnection requirement, and the corpus reproducibility caveat.
 - [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
@@ -1438,9 +1438,9 @@ compiled on [Knowledge Management](knowledge-management.md)).
 - [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the AIR-12/13/14 landing
   record (`945c8820`, 719 coordination tests) and the wave-2 RTG-51 manifest-preservation fix
   (`af4c5c63`).
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the P5-1/P5-2/P5-3 trust-boundary riders.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
   — the F-33(a) evidence note WS-1 mechanises.
 - [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68/OBS-13, the
   scanner-side half of the same content-hash migration.
@@ -1732,7 +1732,7 @@ easily as it fails a working one.
 
 ### Source References (2026-08-19)
 
-- [`handoffs/active/loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
   — the closed `test_hook_worktree_resolution.py` task and its pre-existence check.
 - Commit `25726a78` — "worktree-resolution tests: the fixtures were stale, the cascade was fine".
 - Commit `e8e93262` — the task closure.
@@ -1843,7 +1843,7 @@ only per-message reading produced:
 
 ### Source References (2026-08-18 reconciliation close-out)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the wrap-up findings block: the two guards as built, the OP-11 `-s ours` refutation with the
   103-both-changed table, the merge policy, and the full bus-triage disposition list.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
@@ -1869,7 +1869,7 @@ The coordination layer was restructured on 2026-08-15 (decisions ratified) and i
 2026-08-16 (20 commits). Its thesis is one sentence, and it is a subtraction: **code owns the loop;
 models judge at choke points; workers run in visible panes the operator can steer — but the
 machine's only channel to a worker is spawn-args in, report file and exit status out**
-([`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)).
+([`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)).
 Everything below follows from taking that channel seriously.
 
 ### The machine stopped reading panes — the three-state liveness problem was deleted, not classified
@@ -1885,7 +1885,7 @@ heartbeat written once is a birth certificate, not a liveness signal, and **a st
 worse than no heartbeat** — the stall ladder reads it as a stall and nudges a healthy agent.
 
 The failure record shows the instrument failing in *every* direction, which is what rules out a
-threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)):
+threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)):
 
 - **Compacting read as idle, twice** (F-07) — the coordinator's own admission at 10:28:19Z, and the
   second misread happened *between* its first and second corrections. Closed by `83f204cf`, which
@@ -2136,10 +2136,10 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 
 ### Source References (2026-08-16 loop-owned fleet)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
   record and pilot table, and open defect PD-1.
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
   the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
   (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
   identity-is-not-session correction.
@@ -2148,7 +2148,7 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 - [`agents/shared/SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another
   session's liveness* — the three-state model, the authoritative instrument, and the measured
   446-second stale heartbeat.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
   — F-07 (compacting read as idle, twice), F-15 (the fan-out detector gap and its 1,070-item cost),
   F-37/H-3 (redrawing panes defeat the quiet-check), F-43 (a SIGSTOPped session reading idle), and
   the 12:37Z handover heartbeat-staleness table.
@@ -2210,7 +2210,7 @@ instruction acknowledgments, and canaries are not. Rollout therefore remains `of
 
 ### Source References (2026-08-13 RTG-51 implementation)
 
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-wrap-up-division-of-labor-policy) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
   authority table, state machine, implementation phases, acceptance matrix, and live gaps.
 - [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
   failure loops, authority boundaries, implementation evidence, and deployment status.
@@ -2375,7 +2375,7 @@ The retracted "4,602 pending picks" number (carried in corrected form in the pas
 ### Source References (2026-08-12, second pass)
 
 - [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
 - [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
 - [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
@@ -4114,7 +4114,7 @@ comparison keyed to *this process's last write*, not to a static disk/memory dif
 
 **Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
 adversarial audit of that catalogue, and an eight-phase implementation whose claims were
-mutation-tested. Sources: `handoffs/active/coordinator-role-failure-modes-and-refactor.md`,
+mutation-tested. Sources: `handoffs/active/coordination-and-churn-pipeline.md`,
 `handoffs/active/coordination-and-churn-pipeline.md`,
 `progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
 
@@ -4241,7 +4241,7 @@ missing mechanism wearing a decision's clothes). The check that catches both is 
 
 ### Sources
 
-- `handoffs/active/coordinator-role-failure-modes-and-refactor.md` — the catalogue, the
+- `handoffs/active/coordination-and-churn-pipeline.md` — the catalogue, the
   adversarial audit, and the per-item closure evidence
 - `handoffs/active/coordination-and-churn-pipeline.md` — addressing, dispatch typing, worktree rider
 - `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
@@ -4303,7 +4303,7 @@ actually fanned out from one that worked serially and reported otherwise. Kimi's
 (intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
 citable, the measurement is not — that detector is the open work in
-[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement). Separately, a
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement). Separately, a
 controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
 returns from adding agents go structurally negative once a single agent already clears roughly 45%
 accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
@@ -4334,14 +4334,14 @@ success/failure oracle to do it: its induction pipeline is deliberately outcome-
 specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
 utilization, workflow depth) built from real transcript timestamps rather than the simulated,
 duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
-[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) rather than adopted
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) rather than adopted
 sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
 
 ### Source References
 
 - [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
-- [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
-- [Fleet Fan-Out Measurement](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
+- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
 - [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
 - [REPL Turn Efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
@@ -4465,7 +4465,7 @@ The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows
 
 ### Source References (2026-08-25)
 
-- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
 
 ## Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
@@ -4624,7 +4624,7 @@ Key findings:
 
 ### Source References (2026-09-01)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
   §OP-11 — the original options table and the 2026-09-01 closing banner.
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
   conflict-by-conflict resolution record and the push-guard mechanics.
@@ -4736,7 +4736,7 @@ it — and what the clause adds is a **diagnosis order**: when a fan-out looks e
 measure the share of subagents whose output was never used, and only then consider the number of
 subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
 measurement is FM-5 (discarded-work accounting) in
-[`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement).
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement).
 
 **Sources**
 - [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
@@ -4749,7 +4749,7 @@ measurement is FM-5 (discarded-work accounting) in
   ratified width, and the ablation caveats.
 - [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
   bottleneck.
-- [`fleet-fanout-measurement.md`](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement) — FM-5, FM-6.
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-5, FM-6.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record and the ratification (`fb755192`).
 ## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
@@ -5581,7 +5581,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 **Confidence: scoped to cited native records and source controls.**
 
 - PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/autopilot-sequential-allocation.md#track-promptforge-mutation-safety-contract); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [REPL replay](../handoffs/active/harness-program.md#track-repl-turn-efficiency))
-- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
@@ -5589,7 +5589,7 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
 - Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
-- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/loop-owned-fleet-implementation.md#track-fleet-fanout-measurement)
+- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement)
 - HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)

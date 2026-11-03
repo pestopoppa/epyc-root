@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """headless_audit.py — the P2-7 headless auditor: derive the truth, then read the claim.
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P2-7)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P2-7)
 Plan of record: docs/design/loop-owned-fleet.html  (red-team finding R12)
 Contract:       coordination/session-bus/BUS_PROTOCOL.md (single writer)
 

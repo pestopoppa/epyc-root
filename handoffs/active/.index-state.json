@@ -26,8 +26,8 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 16,
-      "handoffs": 11,
-      "oldest_advance": "2026-10-08",
+      "handoffs": 9,
+      "oldest_advance": "2026-10-21",
       "open": 672
     },
     "user-facing-harness-index.md": {
@@ -372,7 +372,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 55,
+      "closed": 56,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 5,
@@ -384,7 +384,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 60
+      "total": 61
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -564,10 +564,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 246,
+      "closed": 371,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 77,
+      "open": 111,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -576,16 +576,16 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 323,
+      "total": 482,
       "tracks": [
         {
           "blocked": 0,
           "closed": 170,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 18,
+          "markers": 1,
+          "name": "coordination-and-churn-pipeline",
           "open": 37
         },
         {
@@ -593,7 +593,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 3224,
+          "line": 3231,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 24
@@ -603,7 +603,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 3346,
+          "line": 3353,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 12
@@ -613,28 +613,75 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3820,
+          "line": 3827,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 4
+        },
+        {
+          "blocked": 0,
+          "closed": 48,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
+          ],
+          "guarded": 0,
+          "line": 4272,
+          "markers": 1,
+          "name": "coordinator-role-failure-modes-and-refactor",
+          "open": 12
+        },
+        {
+          "blocked": 0,
+          "closed": 53,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "guarded": 0,
+          "line": 5785,
+          "markers": 1,
+          "name": "loop-owned-fleet-implementation",
+          "open": 9
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "guarded": 0,
+          "line": 6446,
+          "markers": 1,
+          "name": "fleet-fanout-measurement",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 20,
+          "gates": [
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph",
+            "RTG-34#coordinator-role-failure-modes-and-refactor"
+          ],
+          "guarded": 0,
+          "line": 6634,
+          "markers": 1,
+          "name": "wrap-up-division-of-labor-policy",
+          "open": 8
         }
       ]
-    },
-    "coordinator-role-failure-modes-and-refactor.md": {
-      "blocked": 0,
-      "closed": 48,
-      "guarded": 0,
-      "last_advanced": "2026-10-08",
-      "open": 12,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-48",
-      "state": "active",
-      "total": 60
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 1,
@@ -1531,60 +1578,6 @@
         }
       ]
     },
-    "loop-owned-fleet-implementation.md": {
-      "blocked": 0,
-      "closed": 77,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 22,
-      "owner_index": "routing-and-optimization-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "RTG-52",
-      "state": "active",
-      "total": 99,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 53,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 9
-        },
-        {
-          "blocked": 0,
-          "closed": 4,
-          "gates": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "guarded": 0,
-          "line": 657,
-          "markers": 1,
-          "name": "fleet-fanout-measurement",
-          "open": 5
-        },
-        {
-          "blocked": 0,
-          "closed": 20,
-          "gates": [
-            "RTG-34",
-            "RTG-48"
-          ],
-          "guarded": 0,
-          "line": 845,
-          "markers": 1,
-          "name": "wrap-up-division-of-labor-policy",
-          "open": 8
-        }
-      ]
-    },
     "memory-program.md": {
       "blocked": 2,
       "closed": 108,
@@ -2029,7 +2022,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
           "line": 1420,
@@ -2077,7 +2073,7 @@
       "blocked": 3,
       "closed": 247,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 97,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2160,7 +2156,10 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
-            "RTG-34"
+            "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#churn-pipeline",
+            "RTG-34#dashboard-architecture-restructure",
+            "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
           "line": 5759,
@@ -3004,29 +3003,6 @@
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
-    "RTG-48": {
-      "deps": [
-        "RTG-34"
-      ],
-      "handoff": "coordinator-role-failure-modes-and-refactor.md",
-      "id": "RTG-48",
-      "index": "routing-and-optimization-index.md",
-      "line": 20,
-      "next_action": "R-7 \u2014 Assign a successor to retired namespace owner mainD; then reconcile the C49 references",
-      "track": "coordinator role failure modes"
-    },
-    "RTG-52": {
-      "deps": [
-        "RTG-34",
-        "RTG-48"
-      ],
-      "handoff": "loop-owned-fleet-implementation.md",
-      "id": "RTG-52",
-      "index": "routing-and-optimization-index.md",
-      "line": 21,
-      "next_action": "P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture",
-      "track": "loop owned fleet implementation"
-    },
     "RTG-58": {
       "deps": [
         "EVL-14",
@@ -3035,7 +3011,7 @@
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 22,
+      "line": 20,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },
@@ -3044,7 +3020,7 @@
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "index": "routing-and-optimization-index.md",
-      "line": 23,
+      "line": 21,
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "track": "backlog refactor 2026-11"
     },

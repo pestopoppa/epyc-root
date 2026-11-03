@@ -12,7 +12,7 @@
 >
 > Ported forward from `lane/auditor` with this note rather than silently, because importing an
 > unannotated charter for a session that no longer exists is how a false premise gets rebuilt on.
-> See `handoffs/active/loop-owned-fleet-implementation.md` for the corrected division of labor.
+> See `handoffs/active/coordination-and-churn-pipeline.md` for the corrected division of labor.
 
 ## Mission
 

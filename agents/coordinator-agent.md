@@ -218,7 +218,7 @@ warning, validation failure, lease action, revocation, or reprovisioning.
 
 Narrative only; every contract above is complete without it. Ledgers:
 `docs/reference/agent-config/INCIDENT_LOG.md` and
-`handoffs/active/coordinator-role-failure-modes-and-refactor.md`.
+`handoffs/active/coordination-and-churn-pipeline.md`.
 
 | Origin | What it cost |
 |---|---|
