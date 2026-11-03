@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:30:49Z",
+  "generated_at": "2026-11-03T16:31:43Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1527,12 +1527,9 @@
             "INF-77",
             "RTG-09#internal-interaction-lifecycle",
             "RTG-09#learned-routing-controller",
-            "RTG-09#model-capability-descriptors",
-            "RTG-09#retrain-routing-models",
             "RTG-09#routing-program",
             "RTG-09#tri-role-coordinator-architecture",
             "RTG-09#typed-decision-plane",
-            "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration",
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
@@ -3020,17 +3017,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 4,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 177,
-      "dispatchable": 111,
+      "dispatchable": 62,
       "domain": "routing-and-optimization",
-      "guarded": 1,
+      "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-03",
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
-      "open": 116,
+      "open": 63,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3059,87 +3056,87 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 30,
+          "dispatchable": 15,
           "gates": [],
           "line": 15,
           "name": "routing-program",
-          "open": 31,
+          "open": 15,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 536,
           "name": "internal-interaction-lifecycle",
-          "open": 5,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 22,
-          "gates": [],
-          "line": 1007,
-          "name": "learned-routing-controller",
-          "open": 25,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 1,
-          "gates": [],
-          "line": 2266,
-          "name": "model-capability-descriptors",
-          "open": 1,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 2,
-          "gates": [],
-          "line": 2342,
-          "name": "retrain-routing-models",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2475,
-          "name": "tri-role-coordinator-architecture",
-          "open": 7,
+          "line": 1007,
+          "name": "learned-routing-controller",
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 28,
+          "dispatchable": 0,
+          "gates": [],
+          "line": 2266,
+          "name": "model-capability-descriptors",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 2342,
+          "name": "retrain-routing-models",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 2475,
+          "name": "tri-role-coordinator-architecture",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 26,
           "gates": [],
           "line": 2775,
           "name": "typed-decision-plane",
-          "open": 28,
+          "open": 26,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 3491,
+          "line": 3489,
           "name": "x-mas-text-routing",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [
             "UFH-01"
           ],
-          "dispatchable": 15,
+          "dispatchable": 8,
           "gates": [
             "UFH-01"
           ],
-          "line": 3572,
+          "line": 3570,
           "name": "routing-intelligence",
-          "open": 15,
+          "open": 8,
           "readiness": "blocked"
         }
       ]
@@ -3623,12 +3620,9 @@
           "blocked_by": [
             "RTG-09#internal-interaction-lifecycle",
             "RTG-09#learned-routing-controller",
-            "RTG-09#model-capability-descriptors",
-            "RTG-09#retrain-routing-models",
             "RTG-09#routing-program",
             "RTG-09#tri-role-coordinator-architecture",
-            "RTG-09#typed-decision-plane",
-            "RTG-09#x-mas-text-routing"
+            "RTG-09#typed-decision-plane"
           ],
           "dispatchable": 12,
           "gates": [

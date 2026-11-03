@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 13,
+      "blocked": 10,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 624
+      "open": 575
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -2310,11 +2310,11 @@
       ]
     },
     "routing-program.md": {
-      "blocked": 4,
+      "blocked": 1,
       "closed": 177,
-      "guarded": 1,
+      "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 111,
+      "open": 62,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2323,17 +2323,17 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 293,
+      "total": 240,
       "tracks": [
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 42,
           "gates": [],
           "guarded": 0,
           "line": 15,
           "markers": 1,
           "name": "routing-program",
-          "open": 30
+          "open": 15
         },
         {
           "blocked": 0,
@@ -2343,17 +2343,17 @@
           "line": 536,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
-          "open": 5
+          "open": 4
         },
         {
-          "blocked": 2,
+          "blocked": 1,
           "closed": 45,
           "gates": [],
-          "guarded": 1,
+          "guarded": 0,
           "line": 1007,
           "markers": 1,
           "name": "learned-routing-controller",
-          "open": 22
+          "open": 7
         },
         {
           "blocked": 0,
@@ -2363,17 +2363,17 @@
           "line": 2266,
           "markers": 1,
           "name": "model-capability-descriptors",
-          "open": 1
+          "open": 0
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 4,
           "gates": [],
           "guarded": 0,
           "line": 2342,
           "markers": 1,
           "name": "retrain-routing-models",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2383,7 +2383,7 @@
           "line": 2475,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
-          "open": 7
+          "open": 2
         },
         {
           "blocked": 0,
@@ -2393,17 +2393,17 @@
           "line": 2775,
           "markers": 1,
           "name": "typed-decision-plane",
-          "open": 28
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3491,
+          "line": 3489,
           "markers": 1,
           "name": "x-mas-text-routing",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2412,10 +2412,10 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3572,
+          "line": 3570,
           "markers": 1,
           "name": "routing-intelligence",
-          "open": 15
+          "open": 8
         }
       ]
     },
