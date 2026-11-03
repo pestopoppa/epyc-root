@@ -210,9 +210,10 @@ def _distillation_pool(tmp: Path) -> Path:
 def _s4_omega_ab(tmp: Path) -> Path:
     # The fixture runs the actual producer from the pinned orchestrator checkout; absent that
     # checkout (env-gated like the other cross-repo tests) there is nothing to run.
-    if not os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT"):
-        pytest.skip("s4-omega-ab fixture requires EPYC_ORCHESTRATOR_SOURCE_ROOT")
-    return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
+    helpers = _helpers("test_s4_omega_ab_adapter")
+    if helpers.producer_path() is None:
+        pytest.skip("s4-omega-ab fixture requires EPYC_ORCHESTRATOR_SOURCE_ROOT or the default orchestrator clone")
+    return helpers.write_fixture(tmp)
 
 
 def _usage_provenance(tmp: Path) -> Path:
