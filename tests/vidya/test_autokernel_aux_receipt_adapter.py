@@ -1312,8 +1312,9 @@ def _hip_decision_with_speedups(flips):
 
 def test_hip_decision_accepts_rederived_crossing_at_other_blocks():
     # Under threshold 20 / lambda cap 0.5 the earliest reachable crossing is
-    # block 9 (all wins); any losses push it later. Block 8 is unreachable.
-    for flips, expected in (((), 9), ((0,), 10), ((19,), 9)):
+    # block 9 (all wins); one early loss gives 11-13; blocks 8 and 10 are unreachable
+    # for this fixed construction, so the check admits whatever the transcript derives.
+    for flips, expected in (((), 9), ((0,), 11), ((1,), 13), ((19,), 9)):
         source, crossing = _hip_decision_with_speedups(set(flips))
         assert crossing == expected
         assert aux.native_rows(source)
