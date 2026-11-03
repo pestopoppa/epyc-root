@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:21:50Z",
+  "generated_at": "2026-11-03T16:22:42Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2918,17 +2918,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 4,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 144,
-      "dispatchable": 68,
+      "closed": 143,
+      "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-03",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 72,
+      "open": 41,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2948,74 +2948,74 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 8,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 16,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 8,
           "gates": [],
-          "line": 250,
+          "line": 247,
           "name": "delegation-context-preassembly",
-          "open": 12,
+          "open": 8,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 444,
+          "name": "memento-block-reasoning-compression",
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 447,
-          "name": "memento-block-reasoning-compression",
+          "line": 710,
+          "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
-          "line": 713,
-          "name": "per-request-reasoning-budget",
-          "open": 6,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 6,
-          "gates": [],
-          "line": 1208,
+          "line": 1205,
           "name": "rao-redel-substrate-spike",
-          "open": 7,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 2,
           "gates": [],
-          "line": 1745,
+          "line": 1742,
           "name": "reasoning-compression",
-          "open": 6,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 10,
           "gates": [],
-          "line": 2507,
+          "line": 2504,
           "name": "reasoning-effort-levels",
-          "open": 15,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 4,
           "gates": [],
-          "line": 2940,
+          "line": 2930,
           "name": "tool-output-compression",
-          "open": 7,
+          "open": 4,
           "readiness": "ready"
         }
       ]
