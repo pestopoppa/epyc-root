@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T15:56:03Z",
+  "generated_at": "2026-11-03T15:59:02Z",
   "nodes": [
     {
       "age_days": 0,
@@ -989,7 +989,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 62,
@@ -998,7 +998,7 @@
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
       "open": 68,
       "priority": 0.7283,
@@ -1153,7 +1153,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 8,
       "blocked_by": [],
       "closed": 215,
@@ -1162,7 +1162,7 @@
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "open": 72,
       "priority": 0.5376,
@@ -1562,7 +1562,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 181,
@@ -1571,7 +1571,7 @@
       "guarded": 1,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
       "open": 64,
       "priority": 0.9884,
@@ -2368,7 +2368,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2380,7 +2380,7 @@
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
-      "last_advanced": "2026-10-30",
+      "last_advanced": "2026-11-03",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "open": 136,
       "priority": 0.6069,
@@ -2409,7 +2409,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 42,
       "blocked_by": [],
       "closed": 120,
@@ -2418,7 +2418,7 @@
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "open": 84,
       "priority": 0.948,
@@ -2459,7 +2459,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 68,
@@ -2468,7 +2468,7 @@
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "open": 40,
       "priority": 0.8382,
@@ -2518,7 +2518,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
       "closed": 107,
@@ -2527,7 +2527,7 @@
       "guarded": 1,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
       "open": 68,
       "priority": 0.6185,
@@ -2917,7 +2917,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 4,
       "blocked_by": [],
       "closed": 144,
@@ -2926,7 +2926,7 @@
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
       "open": 72,
       "priority": 0.5087,

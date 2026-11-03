@@ -3,13 +3,13 @@
     "inference-research-index.md": {
       "blocked": 56,
       "handoffs": 12,
-      "oldest_advance": "2026-10-30",
+      "oldest_advance": "2026-11-03",
       "open": 1013
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
-      "oldest_advance": "2026-11-02",
+      "oldest_advance": "2026-11-03",
       "open": 64
     },
     "research-evaluation-index.md": {
@@ -346,7 +346,7 @@
       "blocked": 0,
       "closed": 62,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 68,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -424,7 +424,7 @@
       "blocked": 4,
       "closed": 144,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 68,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -716,7 +716,7 @@
       "blocked": 1,
       "closed": 107,
       "guarded": 0,
-      "last_advanced": "2026-10-30",
+      "last_advanced": "2026-11-03",
       "open": 135,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -820,7 +820,7 @@
       "blocked": 8,
       "closed": 215,
       "guarded": 1,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 63,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -1230,7 +1230,7 @@
       "blocked": 3,
       "closed": 107,
       "guarded": 1,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 64,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
@@ -1495,7 +1495,7 @@
       "blocked": 2,
       "closed": 181,
       "guarded": 1,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 61,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2095,7 +2095,7 @@
       "blocked": 0,
       "closed": 68,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2464,7 +2464,7 @@
       "blocked": 42,
       "closed": 120,
       "guarded": 0,
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-03",
       "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
