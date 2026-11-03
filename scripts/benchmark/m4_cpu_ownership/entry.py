@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """M4 CPU entry integration fixture. Real inference remains hard-disabled.
 
-This exercises the real guard/watch ownership path with a source-pinned dummy
-workload. It does not accept the retired job or a model-bearing command.
+This exercises the real watch path (pidfd stop; cgroup.kill when a cgroup is
+delegated, else a private session) with a source-pinned dummy workload. The CPU
+lease is the caller's `region-lock run`; the caller is not authenticated and no
+lease descriptor is re-verified here. It does not accept the retired job or a
+model-bearing command.
 """
 from __future__ import annotations
 
 import argparse
-import fcntl
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -55,10 +57,13 @@ def _grant(path: Path, expected_region: str, deadline: float, *, require_host_ho
     required = {'regions', 'start', 'end'}
     if require_host_holds:
         if keys != required | {'holds'}:
-            raise ValueError('live v3 grant must include host and GPU holds')
+            raise ValueError('live v3 grant must include host holds')
         holds = values['holds'].split(',')
-        if len(holds) != 5 or set(holds) != {'q0', 'q1', 'q2', 'q3', 'gpu-quiet'}:
-            raise ValueError('full host and GPU-quiet holds required')
+        host = {'q0', 'q1', 'q2', 'q3'}
+        # gpu-quiet is optional: a CPU run may share the host with a GPU job (operator
+        # co-run decision 2026-11-03); the entry records which it was.
+        if len(holds) != len(set(holds)) or set(holds) not in (host, host | {'gpu-quiet'}):
+            raise ValueError('full host holds q0-q3 required (gpu-quiet optional)')
     elif keys in (required | {'holds', 'schema', 'id', 'kind'}, required | {'holds', 'schema', 'id', 'kind', 'admission_class'}):
         if (not allow_dryrun or os.environ.get('FILLER_DRYRUN') != '1'
                 or values['schema'] != 'epyc.rowflow.dryrun-grant.v1'
@@ -80,14 +85,10 @@ def main() -> int:
         p.add_argument('--'+name, type=Path, required=True)
     p.add_argument('--plan-sha256', required=True)
     p.add_argument('--deadline', type=float, required=True)
-    p.add_argument('--owner-pid', type=int, required=True)
-    p.add_argument('--owner-birth', type=int, required=True)
     a = p.parse_args()
     try:
         if _sha(a.plan) != a.plan_sha256:
             raise ValueError('plan digest mismatch')
-        if a.owner_pid != os.getppid() or watch.m4_cgroup_guard.birth(a.owner_pid) != a.owner_birth:
-            raise ValueError('outer owner must be the actual birth-verified parent')
         plan = json.loads(a.plan.read_bytes())
         if not isinstance(plan, dict):
             raise ValueError('plan must be an object')
@@ -123,7 +124,7 @@ def main() -> int:
             if plan.get('role'):
                 command.extend(['--role', plan['role']])
         else:
-            command = None  # resolved only after canonical grant and enrollment
+            command = None  # resolved only after grant and resource admission
         if not isinstance(plan.get('region'), str) or not plan['region']:
             raise ValueError('region missing')
         if not a.output.is_dir() or any(a.output.iterdir()):
@@ -134,43 +135,16 @@ def main() -> int:
             raise ValueError('STOP or HOLD before entry')
         grant_hash = _sha(a.grant)
         if mode == 'owned-execute':
-            # The independently sealed entry and native plan bind one fresh
-            # queue row; an environment variable alone cannot select authority.
+            # The sealed plan names the row; FILLER_ID, when a filler sets it, must agree.
+            # Grant/STOP/HOLD are checked as resources (content, absence), never by path.
             filler_id = _row_id(plan.get('row_id'))
-            canonical_grant = Path('/mnt/raid0/llm/tmp/compute-flags/grants') / (filler_id + '.grant')
-            if (a.grant != canonical_grant or plan['region'] != '0-95'
-                    or os.environ.get('FILLER_ID') != filler_id):
-                raise ValueError('native execution requires its bound canonical full-host grant')
-            if (not isinstance(plan.get('stopfile'), str) or Path(plan['stopfile']) != a.stop
-                    or os.environ.get('FILLER_STOPFILE') != str(a.stop)
-                    or a.hold != Path('/mnt/raid0/llm/tmp/compute-flags')):
-                raise ValueError('native STOP/HOLD path differs from bound row')
-            if sorted(os.sched_getaffinity(0)) != list(range(96)):
-                raise ValueError('native execution requires exact full-host affinity')
-            # Require the exact open lease descriptions, not stale lock-file text.
-            # The guardian inherits these FDs before any workload is released.
-            lease_fds = [int(x) for x in os.environ.get('M4_LEASE_FDS','').split(',') if x]
-            lock_names = {f'cpu_region.GLOBAL.q{i}.lock' for i in range(4)} | {'gpu_quiet.lock'}
-            found = {}
-            for fd in lease_fds:
-                path = Path(os.readlink(f'/proc/self/fd/{fd}'))
-                name = path.name
-                if path.parent == Path('/mnt/raid0/llm/tmp') and name in lock_names:
-                    if name in found: raise ValueError('ambiguous inherited lease FD')
-                    found[name] = fd
-            if set(found) != lock_names:
-                raise ValueError('inherited cross-role/GPU lease descriptors missing')
-            for name,fd in found.items():
-                target = os.stat(Path('/mnt/raid0/llm/tmp')/name)
-                held = os.fstat(fd)
-                if (target.st_dev,target.st_ino) != (held.st_dev,held.st_ino):
-                    raise ValueError('lease descriptor inode changed')
-            quiet_mode = plan.get('gpu_quiet')
-            if quiet_mode not in ('shared', 'exclusive') or os.environ.get('M4_GPU_QUIET_MODE') != quiet_mode:
-                raise ValueError('GPU-quiet lease mode differs from bound plan')
-            for name,fd in found.items():
-                operation = fcntl.LOCK_SH if name == 'gpu_quiet.lock' and quiet_mode == 'shared' else fcntl.LOCK_EX
-                fcntl.flock(fd, operation | fcntl.LOCK_NB)
+            if plan['region'] != '0-95':
+                raise ValueError('native execution requires the full-host region 0-95')
+            if os.environ.get('FILLER_ID') not in (None, '', filler_id):
+                raise ValueError('FILLER_ID differs from the plan row')
+            # The caller's `region-lock run --regions q0,q1,q2,q3` holds the lease; the
+            # workload runs on the physical cores it covers.
+            os.sched_setaffinity(0, set(range(96)))
             resource = plan['resource']
             minimum = resource['min_remaining_s']; output_bytes = resource['estimated_output_bytes']
             max_ram = resource['max_ram_bytes']; reserve = resource['memory_reserve_bytes']
@@ -203,8 +177,7 @@ def main() -> int:
                        '--plan', str(bound['native_plan']), '--baseline-image', str(bound['images']['baseline']),
                        '--candidate-image', str(bound['images']['candidate']), '--out', str(output),
                        '--role', bound['role'], '--execute']
-        env = dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',
-                   M4_OUTER_OWNER_PID=str(a.owner_pid), M4_OUTER_OWNER_BIRTH=str(a.owner_birth))
+        env = dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')
         if mode == 'owned-execute':
             env.update(FILLER_ID=filler_id, FILLER_STOPFILE=str(a.stop), FILLER_DEADLINE=str(int(a.deadline)), M4_SPEED_WRITER_WIRED='1')
         rc = watch.run(command, a.grant, a.stop, a.hold,

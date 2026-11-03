@@ -38,8 +38,18 @@ def module(name, path):
 
 
 def recipe_digest(scenario):
-    raw = json.dumps(dataclasses.asdict(scenario), sort_keys=True, separators=(",", ":"), default=str).encode()
+    data = dataclasses.asdict(scenario)
+    # Loader knobs (--load-threads) cannot change a result and are never part
+    # of the recipe seal; recipes without one hash exactly as before.
+    extra = data.get('extra_args')
+    if extra:
+        data['extra_args'] = tuple(_native_loader_helpers().strip_loader_args(extra))
+    raw = json.dumps(data, sort_keys=True, separators=(",", ":"), default=str).encode()
     return hashlib.sha256(raw).hexdigest()
+
+
+def _native_loader_helpers():
+    return sys.modules.get("m4_k35_native") or module("m4_k35_native", RUNNER)
 
 
 def scenarios_for_plan(native, plan):

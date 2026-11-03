@@ -230,8 +230,7 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutof
     values = {'M4_PLAN_CELL':'c','FILLER_ID':'grant-1','FILLER_NEEDGPU':'1',
               'FILLER_END':str(int(end_dt.timestamp())), 'FILLER_DEADLINE':str(int(end_dt.timestamp())-1),
               'FILLER_STOPFILE':str(tmp_path/'STOP'), 'M4_WATCH_DIR':str(watch_dir),
-              'M4_DELEGATED_CGROUP_PARENT':'/sys/fs/cgroup','M4_OUTER_OWNER_PID':str(os.getpid()),
-              'M4_OUTER_OWNER_BIRTH':str(m4_cgroup_guard.birth(os.getpid()))}
+              'M4_DELEGATED_CGROUP_PARENT':'/sys/fs/cgroup'}
     for name,value in values.items(): monkeypatch.setenv(name,value)
     if cutoff:
         import threading

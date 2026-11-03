@@ -55,22 +55,17 @@ def test_frame_refuses_unbound_or_changed_plan(tmp_path,monkeypatch,defect):
     with pytest.raises(ValueError):mod.verify(path,sha(path))
 
 
-def test_guarded_entry_refuses_empty_or_changed_enrollment(tmp_path,monkeypatch):
+def test_entry_seal_is_plan_digest_only(tmp_path):
     spec=importlib.util.spec_from_file_location('m4_recipe_entry_test',ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py')
     entry_mod=importlib.util.module_from_spec(spec);sys.modules[spec.name]=entry_mod;spec.loader.exec_module(entry_mod)
-    root=tmp_path/'capture';root.mkdir();out=root/'attempt';out.mkdir();path=tmp_path/'plan';path.write_text('{}')
-    with pytest.raises(ValueError,match='enrollment absent'):
-        entry_mod.check_enrollment(path,sha(path),'row',out)
-    names=[ROOT/'scripts/benchmark/m4_cpu_recipe_entry.py',ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py',
-           *[ROOT/'scripts/benchmark/m4_cpu_ownership'/n for n in ('entry.py','watch.py','lease_owner.py','m4_cgroup_guard.py','owned.py')],
-           *[ROOT/'scripts/benchmark/m4_cpu_producer'/n for n in ('capture.py','native/k35_stack_context_matrix_runner.py','native/compare_v9_promotion_arms.py')]]
-    monkeypatch.setattr(entry_mod.enrollment,'ENABLED',True);monkeypatch.setattr(entry_mod.enrollment,'ROW_ID','row')
-    monkeypatch.setattr(entry_mod.enrollment,'PLAN_PATH',str(path));monkeypatch.setattr(entry_mod.enrollment,'PLAN_SHA256',sha(path))
-    monkeypatch.setattr(entry_mod.enrollment,'OUTPUT_ROOT',str(root));monkeypatch.setattr(entry_mod.enrollment,'SOURCE_SEALS',{str(p):sha(p) for p in names})
-    entry_mod.check_enrollment(path,sha(path),'row',out)
-    path.write_text('{"changed":true}')
-    with pytest.raises(ValueError,match='plan or row enrollment mismatch'):
-        entry_mod.check_enrollment(path,sha(path),'row',out)
+    out=tmp_path/'attempt';out.mkdir();path=tmp_path/'plan';path.write_text('{"row_id":"row"}')
+    assert entry_mod.check_plan(path,sha(path),out)['row_id']=='row'
+    digest=sha(path);path.write_text('{"row_id":"row","changed":true}')
+    with pytest.raises(ValueError,match='plan digest mismatch'):entry_mod.check_plan(path,digest,out)
+    (out/'stale').write_text('x')
+    with pytest.raises(ValueError,match='empty directory'):entry_mod.check_plan(path,sha(path),out)
+    assert not (ROOT/'scripts/benchmark/m4_cpu_recipe_enrollment.py').exists()
+
 
 def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch):
     import argparse,os,threading,time
@@ -85,9 +80,8 @@ def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch
     for k,v in {'FILLER_DRYRUN':'1','FILLER_SMOKE':'1','FILLER_DRYRUN_DIR':str(dd),
                 'FILLER_DRYRUN_RESULT_PATH':str(result),'FILLER_FLAGS_DIR':str(flags),
                 'FILLER_STOPFILE':str(stop),'FILLER_CPUS':'0-3','FILLER_DEADLINE':str(deadline)}.items():monkeypatch.setenv(k,v)
-    monkeypatch.setattr(q,'check_enrollment',lambda *args:None)
     a=argparse.Namespace(plan=tmp_path/'plan',plan_sha256='ignored',grant=grant,stop=stop,hold=flags,
-        deadline=deadline,owner_pid=os.getppid(),owner_birth=q.watch.m4_cgroup_guard.birth(os.getppid()))
+        deadline=deadline)
     def stop_after_unit():
         end=time.monotonic()+10
         while not result.exists() and time.monotonic()<end:time.sleep(.02)
@@ -103,3 +97,86 @@ def test_qualification_worker_refuses_real_environment(monkeypatch):
     q=importlib.util.module_from_spec(spec);sys.modules[spec.name]=q;spec.loader.exec_module(q)
     monkeypatch.delenv('FILLER_DRYRUN',raising=False)
     with pytest.raises(ValueError,match='guarded smoke'):q.qualification_worker()
+
+
+def test_frame_ignores_loader_threads_but_not_real_recipe_differences(tmp_path, monkeypatch):
+    path,plan=packet(tmp_path,monkeypatch)
+    plan['recipes']['canonical_t48']['extra_args']=['-b','512','--load-threads','48']
+    plan['recipes']['configured_t96']['extra_args']=['-b','512','--load-threads=96']
+    path.write_text(json.dumps(plan))
+    mod.verify(path,sha(path))
+    plan['recipes']['configured_t96']['extra_args']=['-b','1024','--load-threads','96']
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError,match='unintended recipe differences'):mod.verify(path,sha(path))
+
+
+def bare_compare_run(tmp_path, monkeypatch, mutate=None, **kwargs):
+    """Drive compare.run end to end with fake native modules and no M4_OWNED_CGROUP."""
+    import os,subprocess
+    from datetime import datetime,timedelta,timezone
+    path,plan=packet(tmp_path,monkeypatch)
+    if mutate: mutate(plan); path.write_text(json.dumps(plan))
+    monkeypatch.delenv('M4_OWNED_CGROUP',raising=False)
+    monkeypatch.setenv('M4_SERVER_PID_REGISTRY',str(tmp_path/'server-pids.txt'))
+    now=datetime.now(timezone.utc)
+    grant=tmp_path/'any-name.grant'
+    grant.write_text('regions=0-95 start='+(now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+                     +' end='+(now+timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%MZ')+' holds=q0,q1,q2,q3')
+    hold=tmp_path/'hold';hold.mkdir()
+    seen=[]
+    class Fake:
+        @staticmethod
+        def load_arm(paths,server,arm): return [{'arm':arm}]
+    monkeypatch.setattr(mod,'module',lambda name,p:Fake)
+    monkeypatch.setattr(mod.capture,'capture',lambda **k:{'ok':True})
+    real_spawn=mod.owned.spawn
+    def spawn(cmd,*,env,**k):
+        seen.append(json.loads(env['M4_SCENARIO_JSON']))
+        return real_spawn([sys.executable,'-c','pass'],env=env,**k)
+    monkeypatch.setattr(mod.owned,'spawn',spawn)
+    out=tmp_path/'capture'
+    rc=mod.run(path,sha(path),out,grant=grant,stop=tmp_path/'stop',hold=hold,deadline=__import__('time').time()+120,**kwargs)
+    return rc,out,seen,plan
+
+
+def test_bare_compare_run_needs_no_owned_cgroup_or_canonical_grant(tmp_path,monkeypatch):
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch)
+    assert rc==0 and len(seen)==12
+    assert json.loads((out/'RESULT.json').read_text())['status']=='COMPLETE_DIAGNOSTIC'
+
+
+def test_load_threads_reaches_server_args_without_touching_the_seal(tmp_path,monkeypatch):
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch,load_threads=96)
+    assert rc==0
+    assert all(cfg['extra_args'][-2:]==['--load-threads','96'] for cfg in seen)
+    sealed=json.loads((out/'comparison-plan.json').read_text())
+    assert all('--load-threads' not in (c.get('extra_args') or []) for c in sealed['recipes'].values())
+
+
+HARNESS=[ROOT/'scripts/benchmark'/n for n in ('m4_cpu_recipe_entry.py','m4_cpu_recipe_compare.py')]+\
+        [ROOT/'scripts/benchmark/m4_cpu_ownership'/n for n in ('entry.py','m4_cgroup_guard.py','native_authorization.py',
+                                                                'owned.py','planning_canary.py','watch.py')]
+
+
+def test_harness_has_no_caller_identity_check():
+    # Operator order 2026-11-03: region-lock holds the lease; nothing authenticates its caller.
+    assert not (ROOT/'scripts/benchmark/m4_cpu_ownership/lease_owner.py').exists()
+    for path in HARNESS:
+        text=path.read_text().lower()
+        for needle in ('lease_owner','getppid','outer owner','m4_outer_owner','owner-pid','owner_pid','m4_lease_fds','m4_gpu_quiet_mode'):
+            assert needle not in text, (path.name,needle)
+
+
+def test_harness_never_hashes_its_own_source():
+    for path in HARNESS:
+        text=path.read_text()
+        assert 'SOURCE_SEALS' not in text and 'm4_cpu_recipe_enrollment' not in text, path.name
+        assert "compute-flags/grants" not in text, path.name
+
+
+def test_explicit_load_threads_replaces_planned_one(tmp_path,monkeypatch):
+    mod.module('m4_compare_native',mod.PRODUCER/'native/k35_stack_context_matrix_runner.py')  # real strip helper
+    def planned(plan):
+        for cfg in plan['recipes'].values(): cfg['extra_args']=['-b','512','--load-threads','48']
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch,mutate=planned,load_threads=96)
+    assert rc==0 and all(cfg['extra_args']==['-b','512','--load-threads','96'] for cfg in seen)

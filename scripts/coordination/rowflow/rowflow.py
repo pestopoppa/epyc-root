@@ -53,6 +53,11 @@ import subprocess
 import sys
 import time
 
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
+    sys.path.insert(0, _HERE)
+import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
+
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
                      "block-timing-pairable", "block-timing-quiet", "filler"}
@@ -889,10 +894,14 @@ def row_rank(d):
 
 
 def plan_order(c):
-    """Candidate order. Urgent rows (rank < URGENT_RANK) go first by rank; within a rank, and for every other row,
-    the starved lane (fewest live rows) goes first, then rank, then a grantable row before a dry run."""
+    """Candidate order. Rows that failed to arm/launch since their PASS (arm_fails > 0) go LAST, behind every healthy
+    row, so they can never idle a region another row could take (2026-11-03 session review item 7: a rank-7 row that
+    could not arm was planned first every tick and nothing else was placed); they are still retried when nothing
+    healthy fits, so they reach MAX_FAILS and park instead of lingering forever. Then urgent rows (rank < URGENT_RANK)
+    by rank; within a rank, and for every other row, the starved lane (fewest live rows) goes first, then rank, then a
+    grantable row before a dry run."""
     r = float(c["rank"])
-    return (min(r, URGENT_RANK), c["lane_count"], r, 0 if c["kind"] == "grant" else 1, c["id"])
+    return (1 if int(c.get("arm_fails") or 0) > 0 else 0, min(r, URGENT_RANK), c["lane_count"], r, 0 if c["kind"] == "grant" else 1, c["id"])
 
 
 def placeable(x, free, ram, gpu_grant_open=False, held_ports=()):
@@ -1085,7 +1094,51 @@ def lineage_fails(flags, rid, allrows):
     return lin, max(0, n - reset)
 
 
-def status(flags, rid, allrows=None):
+RUN_DIRECT = os.path.join(_HERE, "run_direct.sh")
+
+
+def next_action(st, flags, rid):
+    """DETERMINISTIC one-line next action per state (2026-11-03: an agent reads it, never infers it)."""
+    rp = ready_path(flags, rid)
+    s = st["state"]
+    if s in ("done", "running", "dryrun-running"):
+        return "-"
+    if s == "held":
+        return st.get("fix") or "-"
+    if s in ("failed", "parked"):
+        return (st.get("fix_task") or "fix the launcher") + f"; then republish: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+    if s in ("grantable", "armed"):
+        return f"wait for a keeper tick, or run it now on a free lane: {RUN_DIRECT} {rp}"
+    if s in ("stale", "needs-dryrun"):
+        return f"re-run the smoke: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+    return f"publish the row: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+
+
+def status(flags, rid, allrows=None, util=None):
+    """Row state + the fixed companions every surface prints: `next` (one deterministic action), `logs` (the row's
+    dry-run dir: poller.out / launcher.out), `held` (regions its open grant books) and, when the caller passes a
+    hostutil measurement, `util` (measured % of those regions). A grant is never reported as work: only `util` is."""
+    st = _status_raw(flags, rid, allrows)
+    st["next"] = next_action(st, flags, rid)
+    st["logs"] = dry_dir(flags, rid)
+    if st["state"] == "running":
+        g = next((g for g in open_grants(flags) if g["id"] == rid), None)
+        if g:
+            held = sorted(r for r in compress(g["holds"]) if r in REGIONS)
+            st["held"] = held
+            try:
+                st["grant_age_s"] = int(time.time() - os.path.getmtime(g["path"]))
+            except OSError:
+                pass
+            if util is not None:
+                st["util"] = hostutil.regions_pct(util, held)
+                idle = hostutil.idle_regions(util, held)
+                if idle and st.get("grant_age_s", 0) > IDLE_HELD_AFTER_S:
+                    st["blocker"] = f"IDLE-HELD {','.join(idle)}: measured <{hostutil.IDLE_PCT:g}% busy {st['grant_age_s']}s into the grant"
+    return st
+
+
+def _status_raw(flags, rid, allrows=None):
     allrows = rows(flags) if allrows is None else allrows
     d = allrows.get(rid)
     if not d:
@@ -1114,9 +1167,14 @@ def status(flags, rid, allrows=None):
     fails = [load_json(x) or {} for x in fail_paths(flags, rid)]
     last_fail = fails[-1] if fails else None
     if p and p.get("launcher_sha256") == cur:
+        sf = str(d.get("stop_file") or "")
+        if sf and os.path.exists(sf):   # 2026-11-03: a STOP file holds the row; it is never granted and never burns the id
+            out.update(state="held", reason=f"STOP file present: {sf}", fix=f"rm {sf}"); return out
         a = load_json(armed_path(flags, rid))
         if a and alive(a.get("pid")):
-            out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+            if armed_engine_ok(a.get("pid"), rid):
+                out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+            out["rearm"] = f"ARMED pid {a['pid']} runs no filler_run*.sh engine for this row; re-armed on the next tick"
         af = arm_fails_since_pass(flags, rid, p)
         out["arm_fails"] = len(af)
         if len(af) >= MAX_FAILS:   # ws58 2026-11-03: a PASS no longer keeps a row that cannot be armed grantable
@@ -1252,8 +1310,8 @@ def _same(pid, birth):
 
 def reap_pids(tracked, grace=20):
     """TERM every still-same process (and every process group one of them leads), wait up to grace s, KILL, verify via
-    /proc. Only pids this harness started (or captured by row id) with a matching start time are signalled. Returns
-    (reaped, survivors)."""
+    /proc. Only pids this harness started (tracked by harness_tree: pid + start time) are signalled; nothing is ever
+    selected by name, argv or cwd (2026-11-03 session review). Returns (reaped, survivors)."""
     live = {p: b for p, b in tracked.items() if _same(p, b) and p != os.getpid()}
     if not live:
         return [], []
@@ -1277,46 +1335,6 @@ def reap_pids(tracked, grace=20):
         if not any(_same(p, b) for p, b in live.items()):
             break
     return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
-
-
-def _owned_by_other_row(pid, rid, cmdline):
-    """True when this process is demonstrably ANOTHER row's: its argv carries `--id <other>` or its environment FILLER_ID is
-    another id. A row's argv may name a sibling's path (inf22 custody launched filler_run15.sh out of the recipe row's source
-    dir, so the dry-run teardown of the recipe row killed the armed custody launcher, rc=143, 2026-11-03). Unattributed
-    processes that merely name rid still count as its orphans."""
-    argv = cmdline.split("\0")
-    for i, a in enumerate(argv):
-        other = a[5:] if a.startswith("--id=") else (argv[i + 1] if a == "--id" and i + 1 < len(argv) else None)
-        if other is not None and other != rid:
-            return True
-    try:
-        for kv in open(f"/proc/{pid}/environ", "rb").read().decode("utf8", "replace").split("\0"):
-            if kv.startswith("FILLER_ID="):
-                return kv[10:] != rid
-    except OSError:
-        pass
-    return False
-
-
-def row_dir_procs(rid, dirs):
-    """pids (not ours) whose argv names rid or whose cwd lies under one of the row's own dirs, with start times."""
-    out = {}
-    dirs = [os.path.realpath(x) + os.sep for x in dirs if x and rid in x]  # only dirs that are the row's own
-    for q in os.listdir("/proc"):
-        if not q.isdigit() or int(q) == os.getpid():
-            continue
-        try:
-            raw = open(f"/proc/{q}/cmdline", "rb").read().decode("utf8", "replace")
-            hit = rid in raw and not _owned_by_other_row(q, rid, raw)
-            if not hit and dirs:
-                cwd = os.path.realpath(os.readlink(f"/proc/{q}/cwd")) + os.sep
-                hit = any(cwd.startswith(x) for x in dirs)
-        except OSError:
-            continue
-        st = _proc_stat(int(q))
-        if hit and st:
-            out[int(q)] = st[2]
-    return out
 
 
 def record_fail(flags, rid, d, reason, extra):
@@ -1586,8 +1604,11 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                 except subprocess.TimeoutExpired:
                     pass
         # ws58 2026-11-02: the harness owns every process it started, PASS, FAIL or timeout alike (a private engine copy
-        # included): TERM the group + tracked descendants, 20 s, KILL, verify. Then anything still naming the row (argv,
-        # or cwd under the row's own dirs) is stopped by its captured pid. Never left for the owner, never by name.
+        # included): TERM the group + tracked descendants, 20 s, KILL, verify. ONLY tracked descendants (pid + start
+        # time captured while the run was live) are ever signalled. 2026-11-03 (session review, DELETE verdict): the
+        # argv/cwd "still naming the row" sweep is gone - on a shared host a row id in another process's command line
+        # is not ownership (it killed the publisher's own tool shells 3x, exit 144, and an armed sibling launcher,
+        # rc=143). Anything it would have found is reported read-only by row_orphans() in the record, never killed.
         harness_tree(p.pid, tracked)
         reaped, surv = reap_pids(tracked)
         try:
@@ -1596,11 +1617,9 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             pass
         if reaped:
             out.write(f"==== REAPED {reaped}\n")
-        orphans = row_dir_procs(rid, [x for x in (dd, d.get("workdir")) if x and rid in x])  # a shared workdir never counts
-        if orphans:
-            r2, s2 = reap_pids(orphans)
-            out.write(f"==== ORPHANS {sorted(orphans)} still naming this row after the dry run ended; REAPED {r2}\n")
-            surv += s2
+        leftover = sorted(set(row_orphans(rid)) - set(tracked))
+        if leftover:
+            out.write(f"==== NOTE {leftover} name this row but were not started by this dry run; left alone (never kill by name)\n")
         if surv:
             warning = (warning + "; " if warning else "") + f"UNREAPED {sorted(set(surv))}: survived TERM+KILL"
             out.write(f"==== {warning}\n")
@@ -1705,14 +1724,32 @@ def mem_available_gib():
     return 0.0
 
 
-def admit(flags, rid, d, pid, regions, window_s):
-    """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
-    regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
-    import argparse as _ap
+def _gate():
     here = os.path.dirname(os.path.abspath(__file__))
     if here not in sys.path:  # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
         sys.path.insert(0, here)
     import grant_ok_launcher as gate
+    return gate
+
+
+def armed_engine_ok(pid, rid, proc="/proc"):
+    """True when the ARMED pid is alive AND it (or a descendant, depth <= 6) runs a filler_run*.sh engine with --id rid.
+    2026-11-03 session review item 7: an ARMED.json whose pid was a grant_supervisor.py (no engine under it) was planned
+    first every tick, refused by admission (rc=15) and never re-armed; a pid that is not an engine is not armed."""
+    try:
+        if not alive(pid):
+            return False
+        o, _epid, _own = _gate().find_launcher(proc, int(pid), rid)
+    except Exception:  # noqa: BLE001 - Refuse (another row's engine), OSError, UnicodeDecodeError: not this row's engine
+        return False
+    return bool(o)
+
+
+def admit(flags, rid, d, pid, regions, window_s):
+    """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
+    regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
+    import argparse as _ap
+    gate = _gate()
     cls = "gpu" if "mi210" in regions else ("whole-host" if regions == "0-95" else "block-correctness")
     # ws58 23:56Z: a cpu job with --gpu-quiet holds the GPU through the allocator's holds=, not a mi210 token in regions=
     a = _ap.Namespace(row=rid, pid=int(pid), window_s=int(window_s), regions=regions,
@@ -1843,6 +1880,38 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
     return out
 
 
+IDLE_HELD_AFTER_S = 60   # a grant older than this whose regions measure < hostutil.IDLE_PCT busy is IDLE-HELD
+
+
+def measure_util(sample_s=hostutil.SAMPLE_S):
+    """One measured utilisation reading per tick (patched in tests)."""
+    return hostutil.measure(sample_s)
+
+
+def idle_held(flags, grants, holders, util, log, seen, now=None):
+    """2026-11-03 session review item 2: every held region is judged by MEASUREMENT, not by its grant file - a grant
+    older than IDLE_HELD_AFTER_S whose region reads < IDLE_PCT busy logs IDLE-HELD (one line: region, row, %, age,
+    where the logs are). Never kills, never de-grants; the 3rd consecutive tick raises the repeat ALERT. Returns the
+    [(region, rid, pct)] list."""
+    now = time.time() if now is None else now
+    age = {}
+    for g in grants:
+        try:
+            age[g["id"]] = int(now - os.path.getmtime(g["path"]))
+        except OSError:
+            continue
+    out = []
+    for r, rid in sorted(holders.items()):
+        if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
+            continue
+        v = hostutil.regions_pct(util, [r]).get(r)
+        if v is not None and v < hostutil.IDLE_PCT:
+            out.append((r, rid, v))
+            seen.add(f"idle-held:{r}:{rid}")
+            log(f"IDLE-HELD {r} {rid}: measured {v:.0f}% busy, grant {age[rid]}s old; logs {dry_dir(flags, rid)}")
+    return out
+
+
 # ---------------------------------------------------------------- allocate: ONE snapshot, dry runs + grants together
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
@@ -1879,12 +1948,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if st not in ("grantable", "armed"):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
         kind = "grant"
-        # ws58 2026-11-01: a row flagged UNDERUSED is never granted again until its owner republishes it (a single-core
-        # prep step inside a quarter/host grant idles compute; kvu-vkq3 took the whole host to run llama-tokenize).
-        uu = os.path.join(flags, "dryrun", rid, "UNDERUSED.json")
-        mf = os.path.join(flags, "ready", rid + ".json")
-        if os.path.exists(uu) and os.path.exists(mf) and os.path.getmtime(uu) >= os.path.getmtime(mf):
-            continue
+        # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
         opts, bench = row_shape(d)
         since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
         window = int(d["window_s"])
@@ -1895,51 +1959,72 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
-    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags),
-                                    held_ports=held_ports, drain_prev=drain_prev)
-    if not dry:
-        atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
-    for hc, bc in plan.drain_held:
-        log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
-    if plan.last_drain:
-        dc, T = plan.last_drain
-        log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
-    log(f"SNAPSHOT free={','.join(compress(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in compress(busy)) or '-'} "
-        f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']}")
-    out = []
-    for c, opt in assigned:
-        rid, d = c["id"], allrows[c["id"]]
-        regions = grant_regions(d, opt)
-        if dry:
-            log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(compress(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
-        try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
-            a = load_json(armed_path(flags, rid))
-            if not (a and alive(a.get("pid"))):
-                pid, msg = arm_one(flags, rid, d, regions, log=log)
-                log(f"ROW-ARM {msg}")
-                if not pid:
-                    continue
-            else:
-                pid = a["pid"]
-            ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
-            if not ok:
-                n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
-                log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})"); continue
-            gl = write_grant(flags, rid, regions, opt, d["window_s"])
-            atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
-            log(f"GRANT {rid} {gl} ({line[:160]})")
-            out.append(("grant", rid, regions))
-        except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
-            log(f"ERROR {rid}: {type(e).__name__}: {e}")
-            seen.add(f"error:{rid}")
+    out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
+    util = measure_util()
+    idle_held(flags, grants, holders, util, log, seen)
+    # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
+    # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
+    # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
+    for _pass in range(len(cands) + 1):
+        assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
+                                        grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags), held_ports=held_ports,
+                                        drain_prev=drain_prev)
+        if not dry:
+            atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
+        for hc, bc in plan.drain_held:
+            log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
+        if plan.last_drain:
+            dc, T = plan.last_drain
+            log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
+        if _pass == 0:
+            log(f"SNAPSHOT free={','.join(compress(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in compress(busy)) or '-'} "
+                f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']} {hostutil.line(util)}")
+        failed = []
+        for c, opt in assigned:
+            rid, d = c["id"], allrows[c["id"]]
+            regions = grant_regions(d, opt)
+            if dry:
+                log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(compress(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
+            try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
+                a = load_json(armed_path(flags, rid))
+                if a and alive(a.get("pid")) and not armed_engine_ok(a.get("pid"), rid):
+                    log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row (not killed; re-armed)")
+                    a = None
+                if not (a and alive(a.get("pid"))):
+                    pid, msg = arm_one(flags, rid, d, regions, log=log)
+                    log(f"ROW-ARM {msg}")
+                    if not pid:
+                        failed.append(rid); continue
+                else:
+                    pid = a["pid"]
+                ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
+                if not ok:
+                    n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
+                    log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
+                    failed.append(rid); continue
+                gl = write_grant(flags, rid, regions, opt, d["window_s"])
+                atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
+                log(f"GRANT {rid} {gl} ({line[:160]})")
+                out.append(("grant", rid, regions))
+                plan_free -= expand(set(opt)); ram -= float(c.get("gib") or 0)
+            except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
+                log(f"ERROR {rid}: {type(e).__name__}: {e}")
+                seen.add(f"error:{rid}"); failed.append(rid)
+        if dry or not failed:
+            break
+        excluded |= set(failed)
+        plan_free = {t for t in plan_free if t not in QUARTERS or expand({t}) <= plan_free}
+        if not any(c["id"] not in excluded for c in pending):
+            break
+        log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
     for r, why in idle.items():
         log(f"IDLE-WHY {r}: {why}")
-    left = free - expand(set().union(*[o for _, o in assigned])) if assigned else free
+    left = plan_free - expand(set().union(*[o for _, o in assigned])) if assigned else plan_free
     for c in pending:
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
             seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
     if not dry:
-        idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log)
+        idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
@@ -1948,7 +2033,27 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
 IDLE_VIOLATION_TICKS = 2
 
 
-def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_ports=(), log=print):
+ALARM_CHANNEL = os.environ.get("ROWFLOW_ALARM_CHANNEL", os.path.join(os.path.dirname(os.path.dirname(_HERE)), "coordination", "alarm_channel.py"))
+
+
+def route_alert(kind, message, evidence, log=print):
+    """Push an allocator alert to the operator-reachable alarm channel (alarm_channel.py raise: emits once per state
+    change). 2026-11-03 item 2: the IDLE-VIOLATION alert was the one signal that was right all afternoon, and it went
+    to a log nobody reads. Best effort: a missing channel is logged, never fatal."""
+    if not os.path.isfile(ALARM_CHANNEL):
+        log(f"ALERT-ROUTE {kind}: alarm channel {ALARM_CHANNEL} missing; alert only in ws58-keeper-alerts.jsonl")
+        return False
+    try:
+        r = subprocess.run([sys.executable, ALARM_CHANNEL, "raise", "--severity", "warning", "--key", f"rowflow-{kind}",
+                            "--message", message, "--evidence", json.dumps(evidence)], capture_output=True, text=True, timeout=30)
+        log(f"ALERT-ROUTE {kind}: rc={r.returncode} {(r.stdout or r.stderr).strip()[:160]}")
+        return r.returncode == 0
+    except (OSError, subprocess.TimeoutExpired) as e:
+        log(f"ALERT-ROUTE {kind}: {type(e).__name__}: {e}")
+        return False
+
+
+def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_ports=(), log=print, util=None):
     """ws58 2026-11-03 (the yarn-e1-a2 deadlock: 7 h with every region free and nothing granted). Free regions + a
     grantable row that fits them + no grant written this tick, IDLE_VIOLATION_TICKS ticks in a row -> IDLE-VIOLATION
     alert (log every such tick, one ws58-keeper-alerts.jsonl record per episode). Returns the consecutive tick count."""
@@ -1972,12 +2077,14 @@ def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_po
     if n >= IDLE_VIOLATION_TICKS:
         ids = ",".join(c["id"] for c in fit[:6]) + (f",+{len(fit) - 6}" if len(fit) > 6 else "")
         msg = (f"IDLE-VIOLATION ALERT {n} ticks since {since}: free {','.join(compress(fr))}, {len(fit)} grantable row(s) fit "
-               f"({ids}), nothing granted")
+               f"({ids}), nothing granted" + (f"; {hostutil.line(util)}" if util else ""))
         log(msg)
         if not old.get("alerted"):
+            rec = {"ts": now_iso(), "from": "rowflow-allocator", "kind": "idle-violation", "ticks": n, "since": since,
+                   "free": sorted(fr), "grantable_fit": [c["id"] for c in fit], "util": util}
             with open(os.path.join(flags, "ws58-keeper-alerts.jsonl"), "a") as f:
-                f.write(json.dumps({"ts": now_iso(), "from": "rowflow-allocator", "kind": "idle-violation", "ticks": n, "since": since,
-                                    "free": sorted(fr), "grantable_fit": [c["id"] for c in fit]}) + "\n")
+                f.write(json.dumps(rec) + "\n")
+            route_alert("idle-violation", msg, rec, log)
     return n
 
 
@@ -2024,6 +2131,18 @@ def start_gpu_batch(flags, log):
 
 
 # ---------------------------------------------------------------- cli
+def status_text(st):
+    """The fixed <= 8-line form (2026-11-03 operator design goal): state, measured util, blocker, next, logs."""
+    L = [f"id:      {st['id']}", f"state:   {st['state']} - {str(st.get('reason', ''))[:160]}"]
+    if st.get("held") is not None:
+        u = st.get("util") or {}
+        L.append("util:    " + (" ".join(f"{r}={hostutil.pct(u.get(r))}" for r in st["held"]) or "-") + f"  (held {','.join(st['held']) or '-'}, grant {st.get('grant_age_s', '?')}s old, measured now)")
+    L.append(f"blocker: {st.get('blocker') or '-'}")
+    L.append(f"next:    {st.get('next', '-')}")
+    L.append(f"logs:    {st.get('logs', '-')}")
+    return "\n".join(L)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--flags", default=FLAGS)
@@ -2044,14 +2163,18 @@ def main(argv=None):
             print(published_line(publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
             return 0
         if a.cmd == "status":
-            st = status(a.flags, a.id)
-            print(json.dumps(st, indent=1) if a.json else f"{st['state']}\t{st.get('reason', '')}")
+            st = status(a.flags, a.id, util=measure_util())
+            print(json.dumps(st, indent=1) if a.json else status_text(st))
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "list":
             allrows = rows(a.flags)
+            util = measure_util()
+            print(hostutil.line(util))
             for rid in sorted(allrows, key=lambda r: row_rank(allrows[r])):
-                st = status(a.flags, rid, allrows)
-                print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  {st.get('reason', '')[:100]}")
+                st = status(a.flags, rid, allrows, util=util)
+                u = " ".join(f"{r}={hostutil.pct(v)}" for r, v in (st.get("util") or {}).items())
+                print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  "
+                      f"{(u + '  ') if u else ''}{st.get('blocker') or st.get('reason', '')[:100]}")
             return 0
         if a.cmd == "allocate":
             allocate(a.flags, a.log, dry=a.plan)

@@ -2,7 +2,8 @@
 """Run the predeclared M4 same-frame CPU recipe comparison under an owned lease.
 
 The output is a diagnostic capture, not a best-recipe, fold or promotion verdict.
-Invocation is allowed only through the admitted M4 ownership entry.
+It is launched by m4_cpu_recipe_entry.py under watch.run, which supplies the server
+PID registry; the seal is the plan digest plus the image manifests the plan names.
 """
 from __future__ import annotations
 import argparse
@@ -39,6 +40,12 @@ def module(name: str,path: Path):
     return mod
 
 
+def _strip_loader_args(args: list) -> tuple:
+    # The native runner owns the loader-knob definition; load it lazily.
+    native=sys.modules.get('m4_compare_native') or module('m4_compare_native',PRODUCER/'native/k35_stack_context_matrix_runner.py')
+    return native.strip_loader_args(args)
+
+
 def _checked(path: Path, digest: str) -> Path:
     if not path.is_absolute() or '..' in path.parts or not path.is_file(): raise ValueError('unbound input path')
     if not isinstance(digest,str) or len(digest)!=64 or sha(path)!=digest: raise ValueError(f'input digest mismatch: {path}')
@@ -68,22 +75,15 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
     _checked(plan_path,expected_sha); plan=json.loads(plan_path.read_bytes())
     if plan.get('schema')!='epyc.m4.q38.recipe-comparison.v1' or plan.get('status')!='REVIEWED_DIAGNOSTIC':
         raise ValueError('comparison is not independently reviewed for diagnostic execution')
-    if plan.get('decision_authority')!='descriptive_only' or plan.get('row_id')!=os.environ.get('FILLER_ID'):
+    if plan.get('decision_authority')!='descriptive_only' or os.environ.get('FILLER_ID') not in (None,'',plan.get('row_id')):
         raise ValueError('diagnostic purpose or row identity mismatch')
     if plan.get('champion')!='c72ec82f5417bb2937310326120f149b665e8400' or plan.get('candidate')!='bc441f1a261766d11bfeff21668a1031c4dbf8cd':
         raise ValueError('candidate source mismatch')
     current=subprocess.check_output(['git','-C','/mnt/raid0/llm/llama.cpp','rev-parse',
         'refs/heads/ak/champion/llama-cpp-ffc1bac82eec'],text=True).strip()
     if current!=plan['champion']: raise ValueError('champion moved; rebind comparison')
-    sources=plan.get('sources')
-    expected={'compare','runner','writer','comparator','ownership'}
-    if not isinstance(sources,dict) or set(sources)!=expected: raise ValueError('source seals incomplete')
-    for name, rel in {'compare':'scripts/benchmark/m4_cpu_recipe_compare.py',
-        'runner':'scripts/benchmark/m4_cpu_producer/native/k35_stack_context_matrix_runner.py',
-        'writer':'scripts/benchmark/m4_cpu_producer/capture.py',
-        'comparator':'scripts/benchmark/m4_cpu_producer/native/compare_v9_promotion_arms.py',
-        'ownership':'scripts/benchmark/m4_cpu_ownership/owned.py'}.items():
-        _checked(ROOT/rel,sources[name])
+    # Sealed: the plan (by digest) and the image manifests it names. The harness never
+    # hashes its own source; a legacy plan 'sources' block is ignored.
     images={}
     for arm,commit in [('baseline',plan['champion']),('candidate',plan['candidate'])]:
         info=plan['images'][arm]; manifest=_checked(Path(info['path']),info['sha256'])
@@ -131,20 +131,28 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
             raise ValueError('draft is unsealed or unexpected image supplied')
         fixed=dict(cfg)
         for key in ('name','threads','recipe_env'): fixed.pop(key,None)
+        # Loader knobs (--load-threads) cannot change a result: not a recipe difference.
+        if isinstance(fixed.get('extra_args'),list):
+            fixed['extra_args']=list(_strip_loader_args(fixed['extra_args']))
         stripped.append(fixed)
     if stripped[0] != stripped[1]: raise ValueError('comparison has unintended recipe differences')
     return {'plan':plan,'images':images}
 
 
-def run(plan_path: Path, expected_sha: str, output: Path) -> int:
+def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: Path, hold: Path,
+        deadline: float, load_threads: int | None = None) -> int:
     bound=verify(plan_path,expected_sha);plan=bound['plan'];images=bound['images']
-    row=entry._row_id(plan['row_id']); grant=Path('/mnt/raid0/llm/tmp/compute-flags/grants')/(row+'.grant')
-    deadline=float(os.environ['FILLER_DEADLINE']);stop=Path(os.environ['FILLER_STOPFILE'])
+    # Loader knobs are not part of the seal: --load-threads only changes how fast weights
+    # are read, so it is appended at run time and recorded beside the sealed scenario.
+    loader_args=[] if load_threads is None else ['--load-threads',str(load_threads)]
+    if load_threads is not None and (type(load_threads) is not int or not 1<=load_threads<=192):
+        raise ValueError('invalid --load-threads')
+    entry._row_id(plan['row_id'])
     entry._grant(grant,'0-95',deadline,require_host_holds=True)
-    hold=Path('/mnt/raid0/llm/tmp/compute-flags')
     if not hold.is_dir() or stop.exists() or any(hold.glob('HOLD_*')): raise ValueError('STOP or HOLD')
-    if not os.environ.get('M4_OWNED_CGROUP') or not os.environ.get('M4_SERVER_PID_REGISTRY'):
-        raise ValueError('guarded ownership missing')
+    # watch.run always provides the registry; a delegated cgroup (M4_OWNED_CGROUP) is optional.
+    if not os.environ.get('M4_SERVER_PID_REGISTRY'):
+        raise ValueError('server PID registry missing: run under the M4 watcher')
     if output.exists(): raise ValueError('output already exists')
     output.mkdir(parents=True)
     (output/'comparison-plan.json').write_bytes(plan_path.read_bytes())
@@ -160,7 +168,11 @@ def run(plan_path: Path, expected_sha: str, output: Path) -> int:
         cmd=[sys.executable,'-B',str(PRODUCER/'native/k35_stack_context_matrix_runner.py'),'--execute',
              '--only',cfg['name'],'--context','8192','--max-tokens','128','--min-completion-tokens','128',
              '--reps','1','--binary',str(server),'--output-dir',str(case)]
-        env=dict(os.environ,M4_SCENARIO_JSON=json.dumps(cfg,sort_keys=True,separators=(',',':')),
+        effective=dict(cfg)
+        if loader_args:  # an explicit --load-threads replaces any planned or runner default
+            base=list(cfg.get('extra_args') or [])
+            effective['extra_args']=[*(_strip_loader_args(base) if base else ()),*loader_args]
+        env=dict(os.environ,M4_SCENARIO_JSON=json.dumps(effective,sort_keys=True,separators=(',',':')),
                  M4_TREATMENT='default-off' if arm=='baseline' else 'srpf-cap512')
         env.pop('LLAMA_ARG_PREFILL_ORDER',None);env.pop('LLAMA_ARG_PREFILL_CONTEND_CAP',None)
         child,fd,birth=owned.spawn(cmd,env=env)
@@ -175,7 +187,7 @@ def run(plan_path: Path, expected_sha: str, output: Path) -> int:
             finally: os.close(fd)
         summary=case/'summary.json';rows=comparator.load_arm([summary],server,arm)
         if len(rows)!=1: raise ValueError('native cell incomplete')
-        recipe={'scenario':cfg['name'],'scenario_config':cfg,'treatment':env['M4_TREATMENT']}
+        recipe={'scenario':cfg['name'],'scenario_config':cfg,'treatment':env['M4_TREATMENT'],'loader_args':loader_args}
         measurement=capture.capture(directory=case/'process-captures',row=rows[0],arm=arm,pair=rep,
             role='architect_general',model=plan['model']['path'],model_sha=plan['model']['sha256'],recipe=recipe,
             context=8192,binary=server,commit=plan['champion'] if arm=='baseline' else plan['candidate'],
@@ -192,8 +204,12 @@ def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--plan',type=Path,required=True);p.add_argument('--plan-sha256',required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--execute',action='store_true')
+    for name in ('grant','stop','hold'): p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--deadline',type=float,required=True)
+    p.add_argument('--load-threads',type=int,default=None,help='loader knob, outside the plan seal')
     args=p.parse_args()
     if not args.execute: raise SystemExit('REFUSED: explicit diagnostic execution required')
-    return run(args.plan,args.plan_sha256,args.output)
+    return run(args.plan,args.plan_sha256,args.output,grant=args.grant,stop=args.stop,hold=args.hold,
+               deadline=args.deadline,load_threads=args.load_threads)
 
 if __name__=='__main__': raise SystemExit(main())
