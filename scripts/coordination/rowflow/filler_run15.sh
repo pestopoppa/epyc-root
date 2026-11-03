@@ -12,7 +12,9 @@
 # keeper-launched job never sees it (class-A launch failures 2026-11-01: `region-lock: No such file or directory`).
 # --- original header (filler_run2.sh) ---
 # filler_run2.sh = filler_run.sh + exclusive-GPU mode + precondition gate (2026-10-21, v11-drivers). filler_run.sh is left untouched (it is RUNNING).
-#   NEW  --gpu-quiet shared|exclusive|none  claim mode of the region-lock wrapper. Defaults reproduce filler_run.sh exactly (cpu: none, gpu/cpu+gpu: shared).
+#   NEW  --gpu-quiet shared|exclusive|none  claim mode of the region-lock wrapper. Default none for EVERY class (2026-11-03 session
+#                                           review item 6: gpu-quiet is opt-in for decision-grade/quiet rows only; a gpu row left at
+#                                           `none` runs on the MI210 beside other work under the 2026-10-22 co-residency policy).
 #   NEW  --role ROLE                        region-lock --role (default build; timing items use bench).
 #   NEW  --no-fold-siblings                 gpu class: claim gpu-quiet only, no CPU region (host threads tasksetted by the job); cpu class: region-lock --no-fold-siblings
 #   NEW  --claim-cpus LIST                  region-lock --cpu-list override (default = grant cpus). Timing items: 0-95. With --gpu-quiet exclusive on a
@@ -287,9 +289,9 @@ run_one() {
   case $CLASS in
     cpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ -n "$gq" ] && [ "$gq" != none ] && rlargs+=(--gpu-quiet "$gq");;
     gpu) if [ "$gq" = exclusive ]; then rlargs=(--cpu-list "$cc" --gpu-quiet exclusive)
-         elif [ "$gq" = none ]; then rlargs=()
-         else rlargs=(--gpu-quiet "${gq:-shared}"); [ -n "$cc" ] && rlargs=(--cpu-list "$cc" --gpu-quiet "${gq:-shared}"); fi;;
-    cpu+gpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ "$gq" != none ] && rlargs+=(--gpu-quiet "${gq:-shared}");;
+         elif [ -z "$gq" ] || [ "$gq" = none ]; then rlargs=()
+         else rlargs=(--gpu-quiet "$gq"); [ -n "$cc" ] && rlargs=(--cpu-list "$cc" --gpu-quiet "$gq"); fi;;
+    cpu+gpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ -n "$gq" ] && [ "$gq" != none ] && rlargs+=(--gpu-quiet "$gq");;
   esac
   # GRANT_CPUS (ws58 2026-11-02): a gpu-class grant locks ONLY the cpus the grant names (its cpus= field, else its
   # regions list): primary cpus (0-95) as an exact --cpu-list claim, SMT-sibling host threads (184-191) unlocked and
@@ -299,7 +301,7 @@ run_one() {
   if [ "$CLASS" = gpu ]; then
     gcl=$(sed -n 's/.* cpus=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n'); valid_list "$gcl" || gcl=$CPUS
     gprim=$(expand "$gcl" | awk '$1<96' | sort -un | paste -sd, -)
-    case $gq in exclusive) rlargs=(--gpu-quiet exclusive);; none) rlargs=();; *) rlargs=(--gpu-quiet "${gq:-shared}");; esac
+    case $gq in exclusive|shared) rlargs=(--gpu-quiet "$gq");; *) rlargs=();; esac   # opt-in only (2026-11-03 item 6)
     [ -n "$gprim" ] && rlargs=(--cpu-list "$gprim" --no-fold-siblings "${rlargs[@]}")
   fi
   # --no-fold-siblings (2026-10-22): a GPU job's host threads 184-191 must not fold into a whole-q3 claim (MI210 sat idle behind a q3 build)
@@ -308,7 +310,7 @@ run_one() {
   if [ $NOFOLD = 1 ] && [ "$CLASS" != gpu ]; then   # GRANT_CPUS: a gpu claim is the grant's cpus (above)
     if [ "$CLASS" = gpu ]; then
       _n=(); _skip=0; for a in "${rlargs[@]}"; do if [ $_skip = 1 ]; then _skip=0; continue; fi; [ "$a" = --cpu-list ] && { _skip=1; continue; }; _n+=("$a"); done
-      rlargs=("${_n[@]}"); [[ " ${rlargs[*]} " == *" --gpu-quiet "* ]] || rlargs+=(--gpu-quiet shared)
+      rlargs=("${_n[@]}")   # 2026-11-03 item 6: no implicit --gpu-quiet shared
     elif [[ " ${rlargs[*]} " == *" --cpu-list "* ]]; then rlargs+=(--no-fold-siblings); fi
   fi
   if [ "${SMOKE_NOLOCK:-0}" = 1 ]; then
@@ -320,11 +322,12 @@ run_one() {
   elif [ "${SMOKE_NOLOCK:-0}" = 1 ] && [ ${#rlargs[@]} = 0 ]; then
     setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
-  elif [ $SELFCLAIM = 1 ]; then
+  elif [ $SELFCLAIM = 1 ] || [ ${#rlargs[@]} = 0 ]; then   # nothing to lock (gpu row, gpu-quiet none, host threads only): no region-lock call
     setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   else
-    setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s $(( e - $(date -u +%s) )) --tag "filler-$ID" -- \
+    local rl_to=$(( e - $(date -u +%s) )); [ "$rl_to" -ge 1 ] || rl_to=1   # region-lock: 0 = wait forever; never that
+    setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
       /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   fi
