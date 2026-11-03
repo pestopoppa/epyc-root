@@ -16,7 +16,7 @@
       "blocked": 7,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 511
+      "open": 489
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -939,7 +939,7 @@
       "closed": 75,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 28,
+      "open": 6,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -948,7 +948,7 @@
       },
       "row_id": "EVL-29",
       "state": "active",
-      "total": 103,
+      "total": 81,
       "tracks": [
         {
           "blocked": 0,
@@ -958,7 +958,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 12
+          "open": 3
         },
         {
           "blocked": 0,
@@ -968,7 +968,7 @@
           "line": 382,
           "markers": 1,
           "name": "agent-file-prose-compression",
-          "open": 5
+          "open": 2
         },
         {
           "blocked": 0,
@@ -978,7 +978,7 @@
           "line": 488,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -988,7 +988,7 @@
           "line": 571,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
-          "open": 3
+          "open": 0
         },
         {
           "blocked": 0,
@@ -998,7 +998,7 @@
           "line": 763,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
-          "open": 6
+          "open": 0
         }
       ]
     },

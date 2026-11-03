@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:48:03Z",
+  "generated_at": "2026-11-03T16:48:39Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1278,14 +1278,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
-      "dispatchable": 28,
+      "dispatchable": 6,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-02",
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
-      "open": 28,
+      "open": 6,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -1305,48 +1305,48 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 12,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 5,
-          "gates": [],
-          "line": 382,
-          "name": "agent-file-prose-compression",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 488,
-          "name": "frontier-f2-self-running-lab",
+          "line": 382,
+          "name": "agent-file-prose-compression",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": [],
-          "line": 571,
-          "name": "frontier-f3-data-flywheel",
-          "open": 3,
+          "line": 488,
+          "name": "frontier-f2-self-running-lab",
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 0,
+          "gates": [],
+          "line": 571,
+          "name": "frontier-f3-data-flywheel",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
           "gates": [],
           "line": 763,
           "name": "stale-open-audit-2026-07-18",
-          "open": 6,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
