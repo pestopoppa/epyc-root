@@ -223,7 +223,7 @@ failure caught in amber.
       correct id_map resolution moves it to **0.5570**, which no longer clears the probe's own
       close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
       "expected ~1.0", recovering to 0.9101 under the correct mapping. The line was closed on bad
-      evidence. Re-run after the reseed.
+      evidence. Re-run after the reseed. Done when pooled AUC under the correct id_map is recomputed on the reseeded store: <= 0.55 closes the line for good, > 0.55 reopens COMP_r as a routing signal candidate.
 - [x] M-16 — **Record contract IS exercised in production.** ✅ 2026-07-28. Verified once traffic
       flowed: the last 40 rows are **40/40 on contract**, newest `2026-07-28T06:25:53`, keys
       `['objective', 'priority', 'record_version', 'source', 'task_type']`. The chokepoint guard in
@@ -497,7 +497,7 @@ failure caught in amber.
         discriminating core. Prompt-match all arms — do NOT give the memory arm a closed-book
         instruction the memory-off arm lacks.
         *2026-09-16 (B2, merged `cfbfa448`):* arms are selected with `BEAM_CONTEXT_MODE=full|rag|trace`
-        and scored with `score_beam_run --arm full|rag|trace`.
+        and scored with `score_beam_run --arm full|rag|trace`. Absorbs UTM-B2/UTM-B3: the `trace` arm is the FTS5 store + navigation.py (RRF k=60) backend, and the run artifact records the ingest FILTER (which turns were indexed, at what granularity) as a first-class experimental parameter.
     - 2026-11-02 evidence recovery: research `benchmarks/results/runs/20260918_195111`,
       `20260918_221626`, and `20260918_232546` contain reader, judged, scored and belief
       artifacts for full, rag and trace respectively (400 questions each). The saved judge is
@@ -516,13 +516,13 @@ failure caught in amber.
         held FIXED across arms; (5) no SSL bypass — stage the dataset under
         `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget and
         identical chunking for the control and the arm under test; (7) prompt-match all arms,
-        including the closed-book instruction.
+        including the closed-book instruction. Item (8), absorbing M-12d: use the external reference curves only as floors and sanity checks — Tulving's shipped 12-arm results (`result_lenient_all_book_200.csv`) and BEAM issue #125's Raw ChromaDB arm (49.0% author fold / 55.7% BEAM fold); far below the floor means a configuration defect, never a result.
     - 2026-11-02 staged-input check: `/mnt/raid0/llm/data/eval/beam/data/100K-00000-of-00001.parquet`
       hashes to `c0519be25907005ba873c927c50877471d550873039d96c041554d0075a78ace`, matching
       the staged `PROVENANCE.txt` for revision `3205395e897e7318c7b094ef4e6047b9b82dbb03`.
       This verifies the file now; it is not a receipt that the 2026-09-18 runs checked its digest
       or satisfied the other checklist items. [belief: cc]
-  - [ ] **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
+  - **[declined: ws58 2026-11-03 content-review: merged into M-12c as its item (8); a reference note, not a task]** **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
         (a) Tulving: the authors' shipped 12-arm results at
         `/mnt/raid0/llm/data/eval/tulving_episodic/episodic-memory-benchmark/epbench/data/result_lenient_all_book_200.csv`
         (548 per-question rows × 12 arms) plus the 17 raw answer directories under
@@ -578,7 +578,7 @@ failure caught in amber.
         two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is
         structurally 0.0 — a CAS construction question, not a scorer bug
         (`scripts/benchmark/tulving_episodic_adapter.py:325` `compute_chronological_awareness_score`) (found
-        2026-09-14, noninf sweep).
+        2026-09-14, noninf sweep). Absorbs M-12i: the same write-up codifies the offline re-scoring protocol, so a corrected SRS/CAS can be cited as a protocol result and never as a back-filled tuple.
   - [x] **M-12g — stop comparing SRS across book sizes until the bin sets match**: ✅ 2026-10-08; bin `6+` is empty in the
         20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
         (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
@@ -587,7 +587,7 @@ failure caught in amber.
         dead in the deterministic path but `compute_f1_for_result` still branches on it and returns
         `matched_gt_items: []` when a judge fires, silently giving every judged question zero tau coverage
         (`scripts/benchmark/tulving_episodic_adapter.py:685-710`) (found 2026-09-14, noninf sweep).
-  - [ ] **M-12i — codify an offline re-scoring protocol before any decision cites the corrected SRS/CAS**,
+  - **[declined: ws58 2026-11-03 content-review: merged into M-12f (one scoring-validity write-up)]** **M-12i — codify an offline re-scoring protocol before any decision cites the corrected SRS/CAS**,
         since the 2026-09-14 re-score artifact is deliberately not an admissible claim and emits no belief
         rows, so the path is a protocol and never a back-filled tuple
         (`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`) (found 2026-09-14,
@@ -959,7 +959,7 @@ SQLite-backed rather than a single `state.json`. No task is filed for it.
          `uv sync` silently changes what a DataFrame requires.
       Also surfaced: `builtins.slice` is required by 18 of 19 cases and is not allowlisted, so no
       partial pandas allowlist would have worked as written anyway.
-- [ ] D-a5 — **If DataFrame persistence is ever wanted, use a typed columnar codec, not the
+- **[declined: ws58 2026-11-03 content-review: unbounded conditional ("file only if a real workload needs it") with no workload named; the codec design stays readable here]** D-a5 — **If DataFrame persistence is ever wanted, use a typed columnar codec, not the
       allowlist.** Encode to a plain dict of `{str: ndarray | list | str | int}` with a closed dtype
       tag set and explicit index encodings, then pickle *that*; reconstruction happens in our code via
       public `pd.DataFrame(...)`, never in the unpickler. Prototyped during the audit: **17 of 19
@@ -1022,7 +1022,7 @@ non-executable format.
         the checkpoint *claimed*. A name dropped at restore time (builtin collision) was invisible:
         the metric reported success for a variable that never landed. Now sourced from the
         reconciliation, with new `claimed_globals` and `unavailable_globals` fields alongside.
-- [ ] D-c — **Code-log resume.** Carry the executed code log into the resume preamble instead of
+- **[declined: ws58 2026-11-03 content-review: merged into D-c1 — the operator said measure first; the design question is D-c1's decision]** D-c — **Code-log resume.** Carry the executed code log into the resume preamble instead of
       prose findings. **Do not design for this yet** (operator, 2026-07-27): the source's own caveat
       says the code dump only stays cheap when follow-ups add a line or two, and "a session where
       every query does heavy multi-step work is the case to watch" — which is our regime. Rather than
@@ -1032,7 +1032,7 @@ non-executable format.
         *would* have cost, and (c) re-derivation work observed after a resume (repeat greps/reads for
         state that was dropped). T3's hard-workflow/tool-use/REPL probe slice is the natural carrier —
         it is already the exploration target for the current era. Zero added inference: this rides
-        traffic that is already running.
+        traffic that is already running. Decision rule (absorbs D-c, D-c2 and D-e1): if the measured re-derivation work after a resume exceeds the cost of a code-log preamble on real traffic, design D-c (code-log resume) and revisit the 12/8 defaults in the same change; if it is negligible, close D-c and D-e1 here with the numbers.
     - 2026-11-02 readiness audit: the code-log instrumentation in `REPLState` is not the full
       measurement. `Checkpoint` and both production checkpoint constructors omit `code_log` and
       `code_log_metrics`, so they do not survive that persistence path; the audit also found no
@@ -1040,10 +1040,10 @@ non-executable format.
       transport and measurement, including belief write-side capture, before collecting on a
       verified real-traffic carrier. The backlog's CPU-row classification does not override the
       zero-added-inference requirement. [no-belief: source inspection; no measurement collected]
-  - [ ] D-c2 — Decide D-c on D-c1's numbers, or close it if the measured re-derivation cost is
+  - **[declined: ws58 2026-11-03 content-review: merged into D-c1 as its decision rule]** D-c2 — Decide D-c on D-c1's numbers, or close it if the measured re-derivation cost is
         negligible.
   - **M-MP1 (monitor, 2026-10-30 intake) — pointer-only cross-session resume as a D-c variant.** Mainplane continues a session with one sentence plus the old session's log path and no summary (intake-2523). Our resume path returns summary + findings (`build_resume_context`, `src/api/routes/sessions.py:171`), and past-session search (`SQLiteSessionStore.search_sessions` / `search_by_embedding`, `src/session/sqlite_store.py:1449,1572`) is reachable only from the API/CLI, not the REPL. Trigger: D-c1 resumed-session numbers exist AND tool-output-compression TOC-MP-4 shows pointer-only recall >= summary+pointer. Then file a D-c arm that resumes from the log pointer alone and exposes past-session search to the REPL. No checkbox until the trigger fires.
-- [ ] D-d — **Curation layer.** An agent-facing annotate/pin call layered over the existing auto-save,
+- **[declined: ws58 2026-11-03 content-review: no workload demand named; by its own text lowest priority with an existing substitute (variable_lineage); the admission-gate spec stays readable here]** D-d — **Curation layer.** An agent-facing annotate/pin call layered over the existing auto-save,
       plus comment-to-variable binding. Lowest priority — we already have `variable_lineage`.
   - **D-d acceptance (added 2026-09-26, research intake).**
     - *Admission gate for shared or pinned notes.* A deterministic grounding check comes first: a note's cited span must appear verbatim in its source, and a note that claims a result must reference an execution present in the session record. Only after that, an optional worker-tier semantic check. Admission is never routed to the architect. The one ablated DeLM component is admission verification (LongBench-v2, GPT-5.4, a single model; 60.1 → 55.2 without it) [intake-1803#6]; its cheapest form is a verbatim reference check [intake-1803#4]. Cost bound (intake-1820#1, intake-1820#3, intake-1820#4): writes are event-triggered (a subtask result or a new grounded fact), never every step; the verbatim-anchor check runs against the writer's own tool/REPL output at 0 LLM calls; summary/gist compression and any LLM faithfulness stage stay OFF unless an A/B on a fact-pooling workload shows they pay; budget ≤1 extra model call per admitted note. The only independent cost curve for a DeLM-style board (synchronous, every agent writes every step, 5N calls per round) runs 10.8–12.6× no-communication at every N, and its one win is fact pooling.
@@ -1056,7 +1056,7 @@ non-executable format.
       default flip. Also fixed a real defect while there: the skipped-variable list was truncated to
       8 with **no elision indicator**, so a session with 30 dropped variables silently claimed 8; it
       now reports `(and N more)`.
-  - [ ] D-e1 — Decide whether to raise the 12/8 defaults. Same evidence question as D-c
+  - **[declined: ws58 2026-11-03 content-review: merged into D-c1 (its own text says fold it there)]** D-e1 — Decide whether to raise the 12/8 defaults. Same evidence question as D-c
         (prompt-size vs re-derivation cost) — fold into **D-c1's real-workload measurement**, not a
         synthetic arm.
 
@@ -1234,7 +1234,7 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   regression fixtures. Preserve read-only concurrent inspection.
   - [ ] **D-f1 — Verify the lease under the live 6-worker API** once the API is back up: two concurrent
     `/chat` requests on one `session_id` must serialize (second reports a later `lease_token`, both
-    checkpoints land, none lost), and `session_leases` must show no live row after both return.
+    checkpoints land, none lost), and `session_leases` must show no live row after both return. In the same live-API check confirm `graph_snapshots` volume under the landed retention defaults (newest 100 runs / 100 rows per run, orch 0151a3dbe) — absorbs D-f3a.
   - [ ] **D-f2 — Decide whether findings, documents and tags are fenced too.** D-f fences the session row,
     checkpoints and delete only; `add_finding`/`add_tag`/`add_document` remain unfenced append-style
     writes. Either fence them or record why concurrent appends are safe.
@@ -1256,7 +1256,7 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
     checkpoint_type=...)`, a signature `SQLiteSessionStore.save_checkpoint(checkpoint)` has never had;
     the `TypeError` is swallowed at debug level, so those snapshots are silently dropped (pre-existing,
     found 2026-09-17). Route them through a real snapshot write (fenced) or delete the dead calls.
-    - [ ] **D-f3a — Give `graph_snapshots` a reader or a retention bound.** [too-big: source landed; live API volume confirmation belongs to D-f1 owner] Nothing reads the table yet
+    - **[declined: ws58 2026-11-03 content-review: merged into D-f1 — source landed 2026-10-30; only the live-volume confirmation remains and it rides D-f1]** **D-f3a — Give `graph_snapshots` a reader or a retention bound.** [too-big: source landed; live API volume confirmation belongs to D-f1 owner] Nothing reads the table yet
       (`SQLiteStatePersistence.load_next()` is still `None` by design, TM-7). With
       `STATE_HISTORY_SNAPSHOTS` on, it grows by one row per turn without bound. Either wire a consumer
       (trace/debug view) or add a prune (keep the last N runs), and confirm the volume on the live
@@ -1445,7 +1445,7 @@ existing writers (unchanged):
 - [x] **T4: progress/ markdown parser** — Walk `progress/YYYY-MM/*.md` for date-keyed sessions; treat each top-level `## ` heading as a session record with `summary` from the heading and `detail_json` from the section body. Where a sibling `.jsonl` exists, prefer that for granular events. ~2 h.
 - [x] **T5: CLI + Python API** — `python -m epyc.trace query [--from TS] [--to TS] [--session ID] [--trial N] [--role R] [--category C] [--text "..."] [--limit N]` returning ranked event rows. Python module exports `query(...)` returning dicts. ~2 h.
 - [x] **T6: Cross-source join recipes** — Document 3–4 high-value recipes in the handoff body or a `docs/` page: (a) "all events for trial N" (autopilot + agent_audit by time range), (b) "session timeline for date D" (progress + agent_audit), (c) "all failures + their preceding 5 actions". ~1 h. **2026-06-28 refresh**: `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N` now provide the primary trial recipe directly, with exact trial events and configurable nearby agent/progress/autopilot context.
-- [ ] **T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize into events. Gated on whether Hermes goes into production use (currently CLI-only validation). ~2 h. Defer until Hermes outer-shell graduates from validation to daily use.
+- **[declined: ws58 2026-11-03 content-review: unbounded watch — gated on Hermes entering production use, which nothing schedules; ~2 h to refile if it ever does]** **T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize into events. Gated on whether Hermes goes into production use (currently CLI-only validation). ~2 h. Defer until Hermes outer-shell graduates from validation to daily use.
 - [x] **UTM-P1 — Add pairing keys to the unified trace event schema**: harness identity, seed, and a horizon/turn ordinal, at `src/trace/store.py:94-197`. Today **two runs cannot be paired on the same task across harnesses at all**, and `EventSource.HERMES_SESSION` (`store.py:36`) is a declared constant with **no ingester and no producer** — the dead constant is T7's stub. This blocks ANY cross-harness comparison, not just one metric, and it bites the moment HS-4 closes and a second harness goes live (soft-blocks HS-4 follow-through). **Schema-only change, no inference.** `intake-1341#04`. Zero compute. ✅ 2026-09-17 — orchestrator `dd24ed10` (on `origin/main`): event schema v2 adds nullable `harness` / `seed` / `turn_ordinal` / `task_key` plus a per-row `schema_version` (`src/trace/store.py` `EVENT_SCHEMA_VERSION`, `EVENT_PAIRING_COLUMNS`, `migrate_event_pairing_columns`). v1 stores migrate by idempotent additive ALTER with no back-fill (legacy rows read `schema_version` NULL = "never captured"); `query()` NULL-projects the columns on an unmigrated store and gains pairing filters; new `paired_runs(task_key, seed=...)` returns `{turn_ordinal: {harness: [events]}}`; the live-emit content key includes the pairing keys only when set (pre-v2 keys unchanged); `ReviewTracingProcessor` threads `harness`/`seed`/`task_key` from `Trace.metadata` and `turn_ordinal` from span data. `task_key` was added beyond the three named keys because "same task" has no other cross-harness identity. Tests: `tests/unit/test_trace_pairing_keys.py` (13); 180 adjacent trace/ledger tests green.
   - [x] **UTM-P1a — wire producers to stamp the pairing keys**: no live producer sets `harness`/`seed`/`turn_ordinal`/`task_key` yet (the AutoPilot live push `autopilot_live` and the eval tower are the first candidates; the file ingesters have nothing to stamp). Until one does, `paired_runs()` returns `{}` on the real store. Zero compute.
     ✅ 2026-09-17 (orchestrator `9a7181f2`) — **first producer wired: the review plane**
@@ -1642,7 +1642,7 @@ Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md
   - Key techniques worth mining (adopt_patterns, not a drop-in): (1) **four-tier provenance pyramid** (L1 raw conversations → L2 typed memory records `fact/event/instruction/preference` → L3 topic tracks → L4 user profile) mirroring our tiered event families; (2) memory exposed as **5 tools** (`search_records/search_conversation/get_records/get_conversation/read_file`) — a plain store API, no model-specific machinery; (3) **RRF hybrid vector+keyword retrieval** at k=60 (weaker than [[colbert-reranker-web-research]], which already exceeds it — contrast not adoption); (4) an RL (GRPO) **tool-call-frugality reward** (3.97→2.15 calls/query; unnecessary GPQA-D calls 34.51%→6.90%).
   - **Deep-dive (2026-07-11) load-bearing finding:** the Table-4 ablation, read on the conversational-memory subset that matches our use case (LoCoMo+LongMemEval), shows the **borrowable store+navigation half contributes MORE than the RL policy** (+11.94 vs +7.92 L-J); prompt-only navigation over the same store reaches **~89% of full-system quality**. So we do **NOT** need their (unreleased) trained 9B — **adopt_patterns confirmed, not adopt_component**. RL's durable unique value is call-frugality, a later optional efficiency lever.
   - Reported (self-graded L-J, no code release): LongMemEval F1 57.41 / L-J 80.33; 4.83 GiB storage vs Mem0's 10.44. Credibility 3. Note metric non-comparability: not comparable to MemPalace 96.6% R@5 (intake-326) — NapMem is orthogonal (navigation interface), not better/worse.
-- [ ] Operator-review candidate: prototype a **read-only 5-tool navigation surface over the already-landed `src/trace/` FTS5 store — NO RL** (search/get by `event_id` + `read_file` on a progress summary), plus an **RRF(k=60) hybrid** fusing FTS5 lexical + a vector index (existing BGE embedders :8090-8095). ~89%-of-value path; days of inference-free work. Cadence to copy: records flush at 1/2/4/5-turn boundaries; tracks >20 new records; profile >50.
+- **[declined: ws58 2026-11-03 content-review: merged into UTM-B1 — duplicate; UTM-B1 registers exactly this already-built navigation.py surface (RRF k=60); the gap is registration]** Operator-review candidate: prototype a **read-only 5-tool navigation surface over the already-landed `src/trace/` FTS5 store — NO RL** (search/get by `event_id` + `read_file` on a progress summary), plus an **RRF(k=60) hybrid** fusing FTS5 lexical + a vector index (existing BGE embedders :8090-8095). ~89%-of-value path; days of inference-free work. Cadence to copy: records flush at 1/2/4/5-turn boundaries; tracks >20 new records; profile >50.
   - [x] Read-only navigation primitive landed in `epyc-orchestrator` commit `d364835a`: `src/trace/navigation.py` exposes `search_records`, `search_conversation`, `get_records`, `get_conversation`, allowlisted/size-bounded `read_file`, and pure RRF(k=60) fusion over caller-supplied vector candidates. No ingestion/schema/runtime mutation and no embedding-server calls. ✅ 2026-07-11
   - [x] CLI access for the five read tools landed in `epyc-orchestrator` commit `e1e6d271`: `trace search-records`, `trace search-conversation`, `trace get-records`, `trace get-conversation`, and `trace read-file`, covered by `tests/unit/test_trace_cli.py`. ✅ 2026-07-11
   - Note 2026-09-16 (sub-trace-bm25), **integrated** (orchestrator merge `21172688`, pushed in `d748b4c7`): `query(text=...)` / `search_records` claimed bm25 ranking but ordered by `ts_utc DESC`, so a limited search kept the newest matches and RRF fused a recency rank. Fixed on orchestrator branch `sub/trace-bm25-20260916` at `6302b381`: text queries now default to bm25 ranking applied before LIMIT; an explicit `order="recency"` option (CLI `--order`) is available; filter-only callers are unchanged and now pass recency explicitly. No recorded result used the old ordering: CME-4's retriever (research `ccc41d4b`) fetches every match and re-ranks by bm25 itself, and UTM-B2/B4 have not been run.
@@ -1656,7 +1656,7 @@ Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md
   - Correction to the first-pass assumption: the sample uses **plain SQLite with NO vector DB and NO embeddings** (a deliberate non-RAG stance) + Google ADK — NOT Vertex AI Agent Engine / Memory Bank. That makes the *pattern* portable but the *stack* irrelevant to us.
   - Transferable pattern (adopt_patterns, not a component): a **timer-triggered background consolidation loop** (default 30-min) that scans *unconsolidated* memories, generates cross-cutting insights, and compresses — gated by an **ingest-time 0–1 importance score** — over a two-state (unconsolidated→consolidated) store. Analogous to sleep-time-compute / autopilot-nightshift overnight passes; conceptually already covered by intake-155 (AgentFold) and intake-413/418 (hierarchical memory distillation), so novelty is low.
   - Fit vs the landed `src/trace/` surface: this service is **read-only by design**; a consolidation/insight pass is a *write/derive* step, so it targets the **agent-facing memory store** (the AutoMem write half above / B1 User Modeling per [[delta-mem-reproduction]]), not the trace store. Zero empirical results (demo-grade) — pattern-adoption only.
-- [ ] Operator-review candidate: consider an **importance-scored background consolidation pass** (periodic insight-generation + compaction over the agent-facing episodic/strategy store) as an optional extension of the AutoMem write surface — inference-free, mirrors the GCP loop, and is distinct from the read-only trace store.
+- **[declined: ws58 2026-11-03 content-review: curiosity — "consider" an AutoMem extension with no measured need and no decision; memory has not yet shown a benefit (M-12k)]** Operator-review candidate: consider an **importance-scored background consolidation pass** (periodic insight-generation + compaction over the agent-facing episodic/strategy store) as an optional extension of the AutoMem write surface — inference-free, mirrors the GCP loop, and is distinct from the read-only trace store.
 
 #### Research Intake Update — 2026-07-29 (agent-memory dives: ReasoningBank / CORE / SkillOS / EvoMemBench)
 
@@ -1694,7 +1694,7 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
   rollback provenance. `UPDATE` creates a new version; soft `DELETE` creates a tombstone and preserves
   history; physical privacy erasure is a separate explicit state and must not be claimed from a
   tombstone. Implement restore/rollback and stale-fencing fixtures. Existing raw traces are never
-  overwritten or made unrecoverable.
+  overwritten or made unrecoverable. Sequencing: start UTM-V1..V6 only after M-12k/M-12 show memory-on >= memory-off on the frontdoor; a verified-operation envelope over a store that has not yet shown a benefit has no substrate to protect.
 
 - [ ] **UTM-V2 — Add a local scoped write proposer, not an authoritative writer.** Combine Mem0's
   user/agent/run scoping, recent-message context, top-k conflict retrieval, and four-way mutation
@@ -1719,7 +1719,7 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
   rather than assuming sixty entries is optimal. Score answer quality, evidence precision/recall,
   unsupported claims, tokens, latency, and raw-source recoverability against no-distiller retrieval.
 
-- [ ] **UTM-V5 — Emit per-operation credit in shadow, without RL training.** Record deterministic
+- **[declined: ws58 2026-11-03 content-review: no consumer — per-operation credit for an RL policy we do not train (Memory-R1 releases no training code); the structural/semantic fields it would emit already belong to UTM-V3]** **UTM-V5 — Emit per-operation credit in shadow, without RL training.** Record deterministic
   structural result, calibrated local/global semantic result, downstream task outcome, evidence
   recall, operation cost, and rollback/recovery outcome as separate fields. Compare task-only credit
   with operation-level credit. No learned policy may consume this signal until deterministic and
@@ -1743,13 +1743,13 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
       gap is registration, not construction.** Correction to the bearing dive text: it is not
       "zero consumers" — re-grepped 2026-09-07, it has exactly **one non-test consumer,
       `src/trace/cli.py:22`**, and **no MCP registration and no orchestrator wiring**. That is the
-      gap.
-- [ ] **UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a
+      gap. Absorbs the 2026-07-16 "read-only 5-tool navigation surface + RRF hybrid" candidate: registration as an MCP/orchestrator tool is the whole gap; no new construction.
+- **[declined: ws58 2026-11-03 content-review: merged into M-12b — duplicate; M-12b's trace arm (BEAM_CONTEXT_MODE=trace, merged cfbfa448) is this run]** **UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a
       BEAM 128K run** (`intake-1330#record`) — the cheapest first-party test of the append-only-log
       thesis. BEAM's driver reuses one retriever/prefix across all 20 questions of a conversation
       with no cross-question accumulation, so the arm is embarrassingly parallel and
       order-independent. COMPUTE-GATED: filed, not run.
-- [ ] **UTM-B3 — Record the ingest FILTER in the run artifact as a first-class experimental
+- **[declined: ws58 2026-11-03 content-review: merged into M-12b as a recorded run parameter]** **UTM-B3 — Record the ingest FILTER in the run artifact as a first-class experimental
       parameter, not plumbing** (`intake-1337#record`). Record exactly which turns were indexed and at
       what granularity: a silent role filter or chunking choice moves the score more than the
       retrieval algorithm does. COMPUTE-GATED rider on UTM-B2.
@@ -1863,8 +1863,8 @@ measured recurrence rather than on anecdote. Measurement only; hook and policy e
 
 - [ ] **DHM-8 — Guard the glob rm -rf class with a hook (D9, per-change operator ack required; file the proposal, do not apply).** The prose-only lesson did not reduce Claude violations: 0.62 pre -> 1.30 post per 1000 tool calls (k=56 vs 116), 180 would-fire, 12 blocked. Draft the PreToolUse predicate from `m2_guards.py` glob_rm and the false-positive count over the same corpus. (2026-10-22 mining results)
 - [ ] **DHM-9 — Explain why wholesale_git_add ROSE after its hook** (Claude 0.36 pre, 0.56 prose-only, 1.22 post-hook per 1000 tool calls, k=224): split by main vs subagent, session cohort and campaign, and check the hook's pathspec coverage (harness mix versus a hook gap). Output: attribution table, then a fix proposal (D9 ack for any hook edit). (2026-10-22 mining results)
-- [ ] **DHM-10 — pgrep_pattern guard coverage for opencode and Codex.** would-fire 17.57 (opencode), 2.02 (Codex), 3.59 (Claude) per 1000 tool calls; 1,658 of 1,659 opencode and 889 of 948 Codex slipped through. Decide per harness: port the process-pattern check, or write an explicit decline (pgrep alone is read-only; the harm is the kill, `pattern_kill` is already counted separately). Hook edits are D9 (per-change operator ack). (2026-10-22 mining results)
-- [ ] **DHM-11 — Hook coverage for Codex and opencode in general.** Both are `harness_uncovered` for every guarded class (e.g. codex git_worktree_prune_or_force 442 would-fire, 0 blocked; opencode write_tool_outside_allowlist 7,138 would-fire, but the allowlist is Claude-rooted, so first calibrate it per harness). Produce a per-harness coverage matrix and a port-or-decline per class. Hook edits are D9 (per-change operator ack). (2026-10-22 mining results)
+- **[declined: ws58 2026-11-03 content-review: merged into DHM-11 — the per-harness coverage matrix covers the pgrep_pattern class]** **DHM-10 — pgrep_pattern guard coverage for opencode and Codex.** would-fire 17.57 (opencode), 2.02 (Codex), 3.59 (Claude) per 1000 tool calls; 1,658 of 1,659 opencode and 889 of 948 Codex slipped through. Decide per harness: port the process-pattern check, or write an explicit decline (pgrep alone is read-only; the harm is the kill, `pattern_kill` is already counted separately). Hook edits are D9 (per-change operator ack). (2026-10-22 mining results)
+- [ ] **DHM-11 — Hook coverage for Codex and opencode in general.** Both are `harness_uncovered` for every guarded class (e.g. codex git_worktree_prune_or_force 442 would-fire, 0 blocked; opencode write_tool_outside_allowlist 7,138 would-fire, but the allowlist is Claude-rooted, so first calibrate it per harness). Produce a per-harness coverage matrix and a port-or-decline per class. Hook edits are D9 (per-change operator ack). (2026-10-22 mining results) Includes the pgrep_pattern class (absorbs DHM-10): would-fire 17.57 (opencode), 2.02 (Codex), 3.59 (Claude) per 1000 tool calls; port the process-pattern check or write an explicit decline per harness.
 
 #### Open Questions
 

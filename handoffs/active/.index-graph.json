@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:18:37Z",
+  "generated_at": "2026-11-03T16:19:31Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1078,17 +1078,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 117,
-      "dispatchable": 53,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-03",
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
-      "open": 55,
+      "open": 40,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1108,29 +1108,29 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 14,
           "gates": [],
           "line": 25,
           "name": "memory-program",
-          "open": 16,
+          "open": 14,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 9,
           "gates": [],
           "line": 878,
           "name": "repl-session-memory-maturity",
-          "open": 15,
+          "open": 9,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 10,
           "gates": [],
           "line": 1332,
           "name": "unified-trace-memory-service",
-          "open": 16,
+          "open": 10,
           "readiness": "ready"
         },
         {
@@ -1139,7 +1139,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [
             "EVL-10#memory-program",
             "EVL-10#repl-session-memory-maturity",
@@ -1147,7 +1147,7 @@
           ],
           "line": 1789,
           "name": "dev-harness-trace-mining",
-          "open": 8,
+          "open": 7,
           "readiness": "blocked"
         }
       ]

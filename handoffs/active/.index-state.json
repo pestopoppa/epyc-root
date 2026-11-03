@@ -25,10 +25,10 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 17,
+      "blocked": 15,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 730
+      "open": 717
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1430,11 +1430,11 @@
       ]
     },
     "memory-program.md": {
-      "blocked": 2,
+      "blocked": 0,
       "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 53,
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1443,7 +1443,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 172,
+      "total": 157,
       "tracks": [
         {
           "blocked": 0,
@@ -1453,7 +1453,7 @@
           "line": 25,
           "markers": 1,
           "name": "memory-program",
-          "open": 16
+          "open": 14
         },
         {
           "blocked": 0,
@@ -1463,17 +1463,17 @@
           "line": 878,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 15
+          "open": 9
         },
         {
-          "blocked": 2,
+          "blocked": 0,
           "closed": 38,
           "gates": [],
           "guarded": 0,
           "line": 1332,
           "markers": 1,
           "name": "unified-trace-memory-service",
-          "open": 14
+          "open": 10
         },
         {
           "blocked": 0,
@@ -1487,7 +1487,7 @@
           "line": 1789,
           "markers": 1,
           "name": "dev-harness-trace-mining",
-          "open": 8
+          "open": 7
         }
       ]
     },
