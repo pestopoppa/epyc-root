@@ -122,7 +122,7 @@ def test_owned_entry_refuses_wrong_v3_grant_or_row_before_workload(tmp_path, def
     if defect in ('missing_holds','partial_host','duplicate_holds'):
         assert 'holds' in result.stderr
     else:
-        assert 'bound canonical' in result.stderr
+        assert 'FILLER_ID differs' in result.stderr
 
 
 def test_same_entry_accepts_rowflow_synthetic_grant_only_in_fixture_mode(tmp_path):

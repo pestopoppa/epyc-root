@@ -64,10 +64,9 @@ def qualification(a, row: str) -> int:
     if os.environ.get('FILLER_SMOKE') != '1': raise ValueError('fixture only allowed during smoke')
     check_enrollment(a.plan,a.plan_sha256,row,None)
     dd=Path(os.environ['FILLER_DRYRUN_DIR']).resolve(strict=True)
-    if (a.grant != dd/'grants'/(row+'.grant') or a.stop != dd/'stop'
-            or a.hold != Path(os.environ['FILLER_FLAGS_DIR']) or str(a.stop) != os.environ['FILLER_STOPFILE']
-            or int(a.deadline) != int(os.environ['FILLER_DEADLINE'])):
-        raise ValueError('qualification grant or control path mismatch')
+    # Dry-run only: the smoke's STOP must be the one the smoke harness touches.
+    if str(a.stop) != os.environ['FILLER_STOPFILE'] or int(a.deadline) != int(os.environ['FILLER_DEADLINE']):
+        raise ValueError('qualification STOP or deadline mismatch')
     cpus=os.environ['FILLER_CPUS']
     entry._grant(a.grant,cpus,a.deadline,allow_dryrun=True,expected_row_id=row)
     result=Path(os.environ['FILLER_DRYRUN_RESULT_PATH'])
@@ -104,9 +103,11 @@ def main() -> int:
     p.add_argument('--plan-sha256',required=True);p.add_argument('--deadline',type=float,required=True)
     a=p.parse_args()
     try:
-        row=entry._row_id(os.environ.get('FILLER_ID'))
         if os.environ.get('FILLER_DRYRUN') == '1':
-            return qualification(a,row)
+            return qualification(a,entry._row_id(os.environ.get('FILLER_ID')))
+        plan=json.loads(a.plan.read_bytes())
+        row=entry._row_id(plan.get('row_id') if isinstance(plan,dict) else None)
+        if os.environ.get('FILLER_ID') not in (None,'',row): raise ValueError('FILLER_ID differs from the plan row')
         check_enrollment(a.plan,a.plan_sha256,row,a.output)
         sys.path.insert(0,str(ROOT/'scripts/vidya'))
         from adapters import m4_cpu_speed as reader
@@ -114,16 +115,10 @@ def main() -> int:
         if (reader_config.producer_root != ROOT/'scripts/benchmark/m4_cpu_producer'
                 or reader_config.diagnostic_plan_sha256 != a.plan_sha256):
             raise ValueError('diagnostic reader enrollment mismatch')
-        plan=json.loads(a.plan.read_bytes())
-        if plan.get('row_id')!=row or plan.get('status')!='REVIEWED_DIAGNOSTIC':
-            raise ValueError('diagnostic plan not reviewed for this row')
-        if a.grant!=Path('/mnt/raid0/llm/tmp/compute-flags/grants')/(row+'.grant'):
-            raise ValueError('wrong canonical grant path')
-        if (a.hold!=Path('/mnt/raid0/llm/tmp/compute-flags') or not a.hold.is_dir()
-                or str(a.stop)!=os.environ.get('FILLER_STOPFILE') or a.stop.exists()
-                or any(a.hold.glob('HOLD_*'))): raise ValueError('unbound STOP or HOLD')
-        if int(a.deadline) != int(os.environ.get('FILLER_DEADLINE','0')):
-            raise ValueError('deadline differs from admitted row')
+        if plan.get('status')!='REVIEWED_DIAGNOSTIC':
+            raise ValueError('diagnostic plan not reviewed')
+        if not a.hold.is_dir() or a.stop.exists() or any(a.hold.glob('HOLD_*')):
+            raise ValueError('STOP or HOLD before entry')
         resource=plan.get('resource')
         if not isinstance(resource,dict): raise ValueError('resource envelope missing')
         needed,reserve,output_bytes,minimum=(resource.get(k) for k in ('max_ram_bytes','memory_reserve_bytes','estimated_output_bytes','min_remaining_s'))
@@ -139,9 +134,10 @@ def main() -> int:
         # releases its flock on exit); the workload runs on the physical cores it covers.
         os.sched_setaffinity(0,set(range(96)))
         if time.time()>=a.deadline: raise ValueError('deadline expired')
-        env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')
+        env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',FILLER_ID=row)
         command=[sys.executable,'-B',str(ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py'),
-                 '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),'--execute']
+                 '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),
+                 '--grant',str(a.grant),'--stop',str(a.stop),'--hold',str(a.hold),'--deadline',str(a.deadline),'--execute']
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         if reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json') != reader_config:

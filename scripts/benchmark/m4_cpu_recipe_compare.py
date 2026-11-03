@@ -75,7 +75,7 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
     _checked(plan_path,expected_sha); plan=json.loads(plan_path.read_bytes())
     if plan.get('schema')!='epyc.m4.q38.recipe-comparison.v1' or plan.get('status')!='REVIEWED_DIAGNOSTIC':
         raise ValueError('comparison is not independently reviewed for diagnostic execution')
-    if plan.get('decision_authority')!='descriptive_only' or plan.get('row_id')!=os.environ.get('FILLER_ID'):
+    if plan.get('decision_authority')!='descriptive_only' or os.environ.get('FILLER_ID') not in (None,'',plan.get('row_id')):
         raise ValueError('diagnostic purpose or row identity mismatch')
     if plan.get('champion')!='c72ec82f5417bb2937310326120f149b665e8400' or plan.get('candidate')!='bc441f1a261766d11bfeff21668a1031c4dbf8cd':
         raise ValueError('candidate source mismatch')
@@ -146,15 +146,15 @@ def verify(plan_path: Path, expected_sha: str, *, full_hash: bool=True) -> dict:
     return {'plan':plan,'images':images}
 
 
-def run(plan_path: Path, expected_sha: str, output: Path) -> int:
+def run(plan_path: Path, expected_sha: str, output: Path, *, grant: Path, stop: Path, hold: Path,
+        deadline: float) -> int:
     bound=verify(plan_path,expected_sha);plan=bound['plan'];images=bound['images']
-    row=entry._row_id(plan['row_id']); grant=Path('/mnt/raid0/llm/tmp/compute-flags/grants')/(row+'.grant')
-    deadline=float(os.environ['FILLER_DEADLINE']);stop=Path(os.environ['FILLER_STOPFILE'])
+    entry._row_id(plan['row_id'])
     entry._grant(grant,'0-95',deadline,require_host_holds=True)
-    hold=Path('/mnt/raid0/llm/tmp/compute-flags')
     if not hold.is_dir() or stop.exists() or any(hold.glob('HOLD_*')): raise ValueError('STOP or HOLD')
-    if not os.environ.get('M4_OWNED_CGROUP') or not os.environ.get('M4_SERVER_PID_REGISTRY'):
-        raise ValueError('guarded ownership missing')
+    # watch.run always provides the registry; a delegated cgroup (M4_OWNED_CGROUP) is optional.
+    if not os.environ.get('M4_SERVER_PID_REGISTRY'):
+        raise ValueError('server PID registry missing: run under the M4 watcher')
     if output.exists(): raise ValueError('output already exists')
     output.mkdir(parents=True)
     (output/'comparison-plan.json').write_bytes(plan_path.read_bytes())
@@ -202,8 +202,11 @@ def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--plan',type=Path,required=True);p.add_argument('--plan-sha256',required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--execute',action='store_true')
+    for name in ('grant','stop','hold'): p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--deadline',type=float,required=True)
     args=p.parse_args()
     if not args.execute: raise SystemExit('REFUSED: explicit diagnostic execution required')
-    return run(args.plan,args.plan_sha256,args.output)
+    return run(args.plan,args.plan_sha256,args.output,grant=args.grant,stop=args.stop,hold=args.hold,
+               deadline=args.deadline)
 
 if __name__=='__main__': raise SystemExit(main())

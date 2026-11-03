@@ -114,3 +114,37 @@ def test_frame_ignores_loader_threads_but_not_real_recipe_differences(tmp_path, 
     plan['recipes']['configured_t96']['extra_args']=['-b','1024','--load-threads','96']
     path.write_text(json.dumps(plan))
     with pytest.raises(ValueError,match='unintended recipe differences'):mod.verify(path,sha(path))
+
+
+def bare_compare_run(tmp_path, monkeypatch, **kwargs):
+    """Drive compare.run end to end with fake native modules and no M4_OWNED_CGROUP."""
+    import os,subprocess
+    from datetime import datetime,timedelta,timezone
+    path,plan=packet(tmp_path,monkeypatch)
+    monkeypatch.delenv('M4_OWNED_CGROUP',raising=False)
+    monkeypatch.setenv('M4_SERVER_PID_REGISTRY',str(tmp_path/'server-pids.txt'))
+    now=datetime.now(timezone.utc)
+    grant=tmp_path/'any-name.grant'
+    grant.write_text('regions=0-95 start='+(now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+                     +' end='+(now+timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%MZ')+' holds=q0,q1,q2,q3')
+    hold=tmp_path/'hold';hold.mkdir()
+    seen=[]
+    class Fake:
+        @staticmethod
+        def load_arm(paths,server,arm): return [{'arm':arm}]
+    monkeypatch.setattr(mod,'module',lambda name,p:Fake)
+    monkeypatch.setattr(mod.capture,'capture',lambda **k:{'ok':True})
+    real_spawn=mod.owned.spawn
+    def spawn(cmd,*,env,**k):
+        seen.append(json.loads(env['M4_SCENARIO_JSON']))
+        return real_spawn([sys.executable,'-c','pass'],env=env,**k)
+    monkeypatch.setattr(mod.owned,'spawn',spawn)
+    out=tmp_path/'capture'
+    rc=mod.run(path,sha(path),out,grant=grant,stop=tmp_path/'stop',hold=hold,deadline=__import__('time').time()+120,**kwargs)
+    return rc,out,seen,plan
+
+
+def test_bare_compare_run_needs_no_owned_cgroup_or_canonical_grant(tmp_path,monkeypatch):
+    rc,out,seen,plan=bare_compare_run(tmp_path,monkeypatch)
+    assert rc==0 and len(seen)==12
+    assert json.loads((out/'RESULT.json').read_text())['status']=='COMPLETE_DIAGNOSTIC'

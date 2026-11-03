@@ -121,7 +121,7 @@ def main() -> int:
             if plan.get('role'):
                 command.extend(['--role', plan['role']])
         else:
-            command = None  # resolved only after canonical grant and enrollment
+            command = None  # resolved only after grant and resource admission
         if not isinstance(plan.get('region'), str) or not plan['region']:
             raise ValueError('region missing')
         if not a.output.is_dir() or any(a.output.iterdir()):
@@ -132,17 +132,13 @@ def main() -> int:
             raise ValueError('STOP or HOLD before entry')
         grant_hash = _sha(a.grant)
         if mode == 'owned-execute':
-            # The independently sealed entry and native plan bind one fresh
-            # queue row; an environment variable alone cannot select authority.
+            # The sealed plan names the row; FILLER_ID, when a filler sets it, must agree.
+            # Grant/STOP/HOLD are checked as resources (content, absence), never by path.
             filler_id = _row_id(plan.get('row_id'))
-            canonical_grant = Path('/mnt/raid0/llm/tmp/compute-flags/grants') / (filler_id + '.grant')
-            if (a.grant != canonical_grant or plan['region'] != '0-95'
-                    or os.environ.get('FILLER_ID') != filler_id):
-                raise ValueError('native execution requires its bound canonical full-host grant')
-            if (not isinstance(plan.get('stopfile'), str) or Path(plan['stopfile']) != a.stop
-                    or os.environ.get('FILLER_STOPFILE') != str(a.stop)
-                    or a.hold != Path('/mnt/raid0/llm/tmp/compute-flags')):
-                raise ValueError('native STOP/HOLD path differs from bound row')
+            if plan['region'] != '0-95':
+                raise ValueError('native execution requires the full-host region 0-95')
+            if os.environ.get('FILLER_ID') not in (None, '', filler_id):
+                raise ValueError('FILLER_ID differs from the plan row')
             # The caller's `region-lock run --regions q0,q1,q2,q3` holds the lease; the
             # workload runs on the physical cores it covers.
             os.sched_setaffinity(0, set(range(96)))
