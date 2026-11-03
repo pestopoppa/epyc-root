@@ -1578,7 +1578,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2186,
+          "line": 2187,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1595,7 +1595,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2795,
+          "line": 2796,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
