@@ -126,11 +126,21 @@ def test_duplicate_basenames_require_explicit_path(refs, consumer):
 
 
 @pytest.mark.parametrize("consumer", ["index", "map"])
-def test_explicit_track_is_verified_in_both_consumers(refs, consumer):
+@pytest.mark.parametrize("separator", [":", "-"])
+def test_explicit_track_is_verified_in_both_consumers(refs, consumer, separator):
     (refs[1] / "owner.md").write_text("## Track: present\n")
-    assert errors_for(refs, "owner.md#track:present", consumer) == []
+    assert errors_for(refs, f"owner.md#track{separator}present", consumer) == []
     assert "missing '## Track: absent'" in "\n".join(
-        errors_for(refs, "owner.md#track:absent", consumer)
+        errors_for(refs, f"owner.md#track{separator}absent", consumer)
+    )
+
+
+@pytest.mark.parametrize("consumer", ["index", "map"])
+@pytest.mark.parametrize("fragment", ["arbitrary-heading", "track-", "track:"])
+def test_non_track_or_empty_fragments_are_rejected(refs, consumer, fragment):
+    (refs[1] / "owner.md").write_text("# Owner\n\n## Arbitrary Heading\n")
+    assert "handoff fragment must name" in "\n".join(
+        errors_for(refs, f"owner.md#{fragment}", consumer)
     )
 
 

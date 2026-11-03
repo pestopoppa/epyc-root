@@ -392,7 +392,7 @@
       "from": "INF-70",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 6
+      "weight": 7
     },
     {
       "from": "INF-70",
@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:22:09Z",
+  "generated_at": "2026-11-03T16:23:45Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1078,17 +1078,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 117,
-      "dispatchable": 53,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-03",
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
-      "open": 55,
+      "open": 40,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1108,29 +1108,29 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 14,
           "gates": [],
           "line": 25,
           "name": "memory-program",
-          "open": 16,
+          "open": 14,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 9,
           "gates": [],
           "line": 878,
           "name": "repl-session-memory-maturity",
-          "open": 15,
+          "open": 9,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 10,
           "gates": [],
           "line": 1332,
           "name": "unified-trace-memory-service",
-          "open": 16,
+          "open": 10,
           "readiness": "ready"
         },
         {
@@ -1139,7 +1139,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [
             "EVL-10#memory-program",
             "EVL-10#repl-session-memory-maturity",
@@ -1147,7 +1147,7 @@
           ],
           "line": 1789,
           "name": "dev-harness-trace-mining",
-          "open": 8,
+          "open": 7,
           "readiness": "blocked"
         }
       ]
@@ -1986,14 +1986,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 101,
-      "dispatchable": 49,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-03",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 50,
+      "open": 35,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -2024,11 +2024,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 30,
+          "dispatchable": 20,
           "gates": [],
           "line": 13,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 31,
+          "open": 21,
           "readiness": "ready"
         },
         {
@@ -2036,14 +2036,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 19,
+          "dispatchable": 14,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 659,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 14,
           "readiness": "blocked"
         }
       ]
@@ -2276,17 +2276,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 146,
-      "dispatchable": 69,
+      "dispatchable": 32,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "last_advanced": "2026-11-03",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
-      "open": 70,
+      "open": 32,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
@@ -2314,55 +2314,55 @@
           "blocked_by": [
             "INF-65"
           ],
-          "dispatchable": 59,
+          "dispatchable": 27,
           "gates": [
             "INF-65"
           ],
           "line": 95,
           "name": "cpu-decode-roofline-program",
-          "open": 59,
+          "open": 27,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
-          "line": 5090,
+          "line": 5054,
           "name": "sarathi-serve-cpu-evaluation",
-          "open": 2,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5243,
+          "line": 5207,
           "name": "cpu-prefill-compute-large-models",
           "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
-          "line": 5739,
+          "line": 5697,
           "name": "large-moe-expert-parallelism",
-          "open": 3,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [
             "INF-22",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [
             "INF-22",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5853,
+          "line": 5811,
           "name": "moe-routing-tap-and-locality-measurement",
-          "open": 5,
+          "open": 4,
           "readiness": "blocked"
         }
       ]
@@ -2918,17 +2918,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 4,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 144,
-      "dispatchable": 68,
+      "closed": 143,
+      "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-03",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 72,
+      "open": 41,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2948,74 +2948,74 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 8,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 16,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 8,
           "gates": [],
-          "line": 250,
+          "line": 247,
           "name": "delegation-context-preassembly",
-          "open": 12,
+          "open": 8,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 0,
+          "gates": [],
+          "line": 444,
+          "name": "memento-block-reasoning-compression",
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 447,
-          "name": "memento-block-reasoning-compression",
+          "line": 710,
+          "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
-          "line": 713,
-          "name": "per-request-reasoning-budget",
-          "open": 6,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 6,
-          "gates": [],
-          "line": 1208,
+          "line": 1205,
           "name": "rao-redel-substrate-spike",
-          "open": 7,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 2,
           "gates": [],
-          "line": 1745,
+          "line": 1742,
           "name": "reasoning-compression",
-          "open": 6,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 10,
           "gates": [],
-          "line": 2507,
+          "line": 2504,
           "name": "reasoning-effort-levels",
-          "open": 15,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 4,
           "gates": [],
-          "line": 2940,
+          "line": 2930,
           "name": "tool-output-compression",
-          "open": 7,
+          "open": 4,
           "readiness": "ready"
         }
       ]
@@ -3398,17 +3398,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 120,
       "dispatchable": 29,
       "domain": "routing-and-optimization",
-      "guarded": 9,
+      "guarded": 0,
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "last_advanced": "2026-11-02",
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
-      "open": 40,
+      "open": 30,
       "priority": 0.1387,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM \u2014 `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
@@ -3440,11 +3440,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
@@ -3480,12 +3480,12 @@
           "gates": [],
           "line": 795,
           "name": "model-stack-single-source-update-pipeline",
-          "open": 11,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 1358,
           "name": "model-stack-update-pipeline-audit",
@@ -3498,7 +3498,7 @@
           "gates": [],
           "line": 2019,
           "name": "standardized-stack-update-pipeline-finalization",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -3739,14 +3739,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
-      "dispatchable": 9,
+      "dispatchable": 7,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "thesis-experiment-orchestrator-vs-strongest-model.md",
       "id": "UFH-13",
       "last_advanced": "2026-10-03",
       "next_action": "ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen",
-      "open": 9,
+      "open": 7,
       "priority": 0.1272,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): TE-3 \u2014 build and freeze the manifest (zero inference).",

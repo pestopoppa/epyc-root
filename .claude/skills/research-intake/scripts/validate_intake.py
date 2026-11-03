@@ -312,8 +312,8 @@ class _HandoffReferences:
         if not isinstance(ref, str) or not ref:
             raise ValueError("handoff reference must be non-empty text")
         filename, sep, fragment = ref.partition("#")
-        if sep and (not fragment.startswith("track:") or not fragment[6:].strip()):
-            raise ValueError("handoff fragment must name '#track:<name>'")
+        if sep and (not fragment.startswith(("track:", "track-")) or not fragment[6:].strip()):
+            raise ValueError("handoff fragment must name '#track:<name>' or '#track-<name>'")
         return filename, fragment[6:] if sep else None
 
     def resolve(self, ref: str) -> tuple[Path, str | None]:

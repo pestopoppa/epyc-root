@@ -68093,10 +68093,12 @@
     "validation": {
       "intake_entries": 2623,
       "intake_exit": 0,
-      "regression_tests": 53,
+      "regression_tests": 69,
       "subtests": 16,
       "digest_stale": 0,
-      "wiki_sources_discovered": 3
+      "wiki_sources_discovered": 3,
+      "index_exit": 0,
+      "post_merge_intake_exit": 0
     }
   },
   "last_checkpoint": "2026-11-03T16:22:44.122744+00:00"

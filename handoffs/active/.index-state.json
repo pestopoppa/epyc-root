@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 55,
+      "blocked": 54,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 991
+      "open": 939
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -25,16 +25,16 @@
       "open": 25
     },
     "routing-and-optimization-index.md": {
-      "blocked": 18,
+      "blocked": 13,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 730
+      "open": 688
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 120
+      "open": 118
     }
   },
   "duplicates": {},
@@ -421,11 +421,11 @@
       ]
     },
     "context-and-token-economy.md": {
-      "blocked": 4,
-      "closed": 144,
+      "blocked": 2,
+      "closed": 143,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 68,
+      "open": 39,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 216,
+      "total": 184,
       "tracks": [
         {
           "blocked": 0,
@@ -444,77 +444,77 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 16
+          "open": 8
         },
         {
           "blocked": 0,
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 250,
+          "line": 247,
           "markers": 1,
           "name": "delegation-context-preassembly",
-          "open": 12
+          "open": 8
         },
         {
           "blocked": 0,
-          "closed": 4,
+          "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 447,
+          "line": 444,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
-          "open": 3
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 713,
+          "line": 710,
           "markers": 1,
           "name": "per-request-reasoning-budget",
-          "open": 6
+          "open": 3
         },
         {
           "blocked": 1,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1208,
+          "line": 1205,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
-          "open": 6
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1745,
+          "line": 1742,
           "markers": 1,
           "name": "reasoning-compression",
-          "open": 6
+          "open": 2
         },
         {
-          "blocked": 3,
+          "blocked": 1,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2507,
+          "line": 2504,
           "markers": 1,
           "name": "reasoning-effort-levels",
-          "open": 12
+          "open": 10
         },
         {
           "blocked": 0,
           "closed": 48,
           "gates": [],
           "guarded": 0,
-          "line": 2940,
+          "line": 2930,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 7
+          "open": 4
         }
       ]
     },
@@ -640,11 +640,11 @@
       ]
     },
     "cpu-decode-roofline-program.md": {
-      "blocked": 1,
+      "blocked": 0,
       "closed": 146,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 69,
+      "open": 32,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -653,7 +653,7 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 216,
+      "total": 178,
       "tracks": [
         {
           "blocked": 0,
@@ -665,37 +665,37 @@
           "line": 95,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 59
+          "open": 27
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5090,
+          "line": 5054,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5243,
+          "line": 5207,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 1
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5739,
+          "line": 5697,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
@@ -705,10 +705,10 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5853,
+          "line": 5811,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
-          "open": 5
+          "open": 4
         }
       ]
     },
@@ -1430,11 +1430,11 @@
       ]
     },
     "memory-program.md": {
-      "blocked": 2,
+      "blocked": 0,
       "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 53,
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1443,7 +1443,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 172,
+      "total": 157,
       "tracks": [
         {
           "blocked": 0,
@@ -1453,7 +1453,7 @@
           "line": 25,
           "markers": 1,
           "name": "memory-program",
-          "open": 16
+          "open": 14
         },
         {
           "blocked": 0,
@@ -1463,17 +1463,17 @@
           "line": 878,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 15
+          "open": 9
         },
         {
-          "blocked": 2,
+          "blocked": 0,
           "closed": 38,
           "gates": [],
           "guarded": 0,
           "line": 1332,
           "markers": 1,
           "name": "unified-trace-memory-service",
-          "open": 14
+          "open": 10
         },
         {
           "blocked": 0,
@@ -1487,7 +1487,7 @@
           "line": 1789,
           "markers": 1,
           "name": "dev-harness-trace-mining",
-          "open": 8
+          "open": 7
         }
       ]
     },
@@ -2424,7 +2424,7 @@
       "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 49,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2433,7 +2433,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 151,
+      "total": 136,
       "tracks": [
         {
           "blocked": 1,
@@ -2443,7 +2443,7 @@
           "line": 13,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 30
+          "open": 20
         },
         {
           "blocked": 0,
@@ -2456,7 +2456,7 @@
           "line": 659,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19
+          "open": 14
         }
       ]
     },
@@ -2499,9 +2499,9 @@
       ]
     },
     "stack-lifecycle-program.md": {
-      "blocked": 2,
+      "blocked": 1,
       "closed": 120,
-      "guarded": 9,
+      "guarded": 0,
       "last_advanced": "2026-11-02",
       "open": 29,
       "owner_index": "routing-and-optimization-index.md",
@@ -2512,7 +2512,7 @@
       },
       "row_id": "RTG-36",
       "state": "active",
-      "total": 160,
+      "total": 150,
       "tracks": [
         {
           "blocked": 0,
@@ -2522,7 +2522,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 1,
@@ -2558,27 +2558,27 @@
           "blocked": 0,
           "closed": 48,
           "gates": [],
-          "guarded": 7,
+          "guarded": 0,
           "line": 795,
           "markers": 1,
           "name": "model-stack-single-source-update-pipeline",
           "open": 4
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
           "line": 1358,
           "markers": 1,
           "name": "model-stack-update-pipeline-audit",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 9,
           "gates": [],
-          "guarded": 2,
+          "guarded": 0,
           "line": 2019,
           "markers": 1,
           "name": "standardized-stack-update-pipeline-finalization",
@@ -2601,7 +2601,7 @@
       "closed": 2,
       "guarded": 0,
       "last_advanced": "2026-10-03",
-      "open": 9,
+      "open": 7,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2610,7 +2610,7 @@
       },
       "row_id": "UFH-13",
       "state": "active",
-      "total": 11
+      "total": 9
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 4,

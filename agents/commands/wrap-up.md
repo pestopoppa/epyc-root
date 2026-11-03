@@ -33,7 +33,7 @@ regen, Step 7's promotion merge). The two operator-cadence rows are *deferred, n
 them for the next operator-invoked `/wrap-up`, and report in your output anything you saw that they
 would have handled.
 
-### Typed heavy-wrap transaction (RTG-51; only from an accepted request)
+### Typed heavy-wrap transaction (RTG-34, track `wrap-up-division-of-labor-policy`; only from an accepted request)
 
 This transaction is separate from the per-task routine above. It adds no timer, hook, scheduled
 invocation, or self-issued wrap request. A heavy wrap starts only after Coordinator validates and

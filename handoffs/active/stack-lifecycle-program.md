@@ -21,7 +21,7 @@ completed governance history through 2026-06-19 is compacted under
 
 ## NI18 source-correlated fixture route — 2026-10-05
 
-- [ ] **SCG-NI18-FIXTURES** — Review the six stack-change/:8083 modules against exact registry/prior/backend/receipt inputs and owner-approved disposable fixture boundaries. Keep synthetic fixtures distinct from operator/runtime evidence; no peer source edits, API traffic, reload or operator receipt is authorized by classification. Modules: `test_stack_change_guard.py`, `test_stack_change_pipeline.py`, `test_stack_change_pipeline_simulated_fixtures.py`, `test_stackchg_8083_batch.py`, `test_stackchg_8083_idle_slots.py`, `test_sync_procedure_role_enums.py`.
+- [ ] **SCG-NI18-FIXTURES** — Review the six stack-change/:8083 modules against exact registry/prior/backend/receipt inputs and owner-approved disposable fixture boundaries. Keep synthetic fixtures distinct from operator/runtime evidence; no peer source edits, API traffic, reload or operator receipt is authorized by classification. Modules: `test_stack_change_guard.py`, `test_stack_change_pipeline.py`, `test_stack_change_pipeline_simulated_fixtures.py`, `test_stackchg_8083_batch.py`, `test_stackchg_8083_idle_slots.py`, `test_sync_procedure_role_enums.py`. Done when each of the six modules either asserts against the generated registry/prior artifact or carries a docstring naming its fixtures synthetic, and none reads an operator receipt.
 
 ## 2026-07-26 Staleness Review
 
@@ -77,7 +77,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - [x] **W1 - Stack truth precedence spec**: live serving facts have documented precedence, shared-runtime alias handling, retired-role handling, and generated-consumer source evidence.
 - [x] **W2 - Derived stack-priors generator**: descriptors compile the machine-readable stack-prior artifact consumed by validators and migrated consumers.
 - [x] **W3 - Stack drift validator foundation**: freshness, structural contract, scanner ownership, exception metadata, runtime witness, surface summary, and promotion-gate reporting are live. Strict/future hardening continues through owned consumer surfaces rather than a new guard system.
-- [ ] **W4 - Consumer migration**: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. Use the N11/N11a handoffs and `stack_change_surface_manifest.yaml` for prioritization.
+- [ ] **W4 - Consumer migration: make the remaining set queryable first.** The manifest `stack_change_surface_manifest.yaml` records no migration state, so "remaining consumers" cannot be listed. Add a `migration_state` field (`migrated` / `degraded_fallback` / `pending`) to each of the 13 `consumer_surfaces` entries, populate it from the code (implementation_refs), and add a check that fails on an entry without it. Then migrate only `pending` entries that restate a live model/role/serving fact. Done when the field exists on all 13 entries and the pending list is printed by one command.
   **2026-08-11 (`mainB`) — sized, and the reason it has stayed open is structural: THE MANIFEST
   RECORDS NO MIGRATION STATE.** `consumer_surfaces` carries 13 entries whose fields are
   `classification / consumer_scope / source_of_truth / promotion_blocker / review_cadence /
@@ -228,8 +228,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (filed 2026-10-03, from `INC-20261003-urgent-fix-slowed-by-bundling`). When live serving is wrong and the
   operator wants it fixed now, phase 0 presents (a) an operator-terminal relaunch with the target argv, then (b)
   the permanent package behind it — instead of only (b). It also refuses to bundle an unrelated lineup move into
-  an urgent package without the operator choosing that. Edit `.claude/skills/stack-change/SKILL.md` phase 0.
-- [ ] **SCG-RULING-TO-FIELD — an operator recipe ruling must land as a registry field plus a compile check, or a
+  an urgent package without the operator choosing that. Edit `.claude/skills/stack-change/SKILL.md` phase 0. Same edit absorbs SCG-RULING-TO-FIELD: the skill's intake treats any operator ruling that names a launch recipe ("use X for model Y") as a stack-change intent that lands as a registry field plus a compile check; the handoff carries only a pointer.
+- **[declined: ws58 2026-11-03 content-review: merged into SCG-FASTPATH (one edit of the same skill file)]** **SCG-RULING-TO-FIELD — an operator recipe ruling must land as a registry field plus a compile check, or a
   task that does so** (filed 2026-10-03, same incident). Add to the stack-change skill's intake: any operator
   ruling that names a launch recipe ("use X for model Y") is a stack-change intent, not handoff prose; the
   handoff carries only a pointer to the package or to an open `- [ ]` task.
@@ -904,16 +904,16 @@ Any future stack update should be accepted only when these hold:
 > dispatchable in `BACKLOG-DISPATCH-QUEUE.md`'s runner-up bench. The reliable tell is the BOX TEXT
 > — a continuous imperative plus a standing condition — not the section title.
 
-- [ ] Preserve env override precedence and explicit degraded fallbacks whenever
+- **[declined: ws58 2026-11-03 content-review: standing rule with no completion state, not a task; stays readable here]** Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
-- [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
+- **[declined: ws58 2026-11-03 content-review: duplicate of W4 consumer migration (Waypoints), which now carries the queryable-set step]** Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
 - [x] Re-audit `scripts.benchmark.seeding_rewards`, `scripts.benchmark.corpus_quality_gate`
   and `scripts.autopilot.kv_compress` for duplicated live facts ✅ 2026-07-29 — each imports
   generated stack-prior helpers for normal operation; each fallback remains explicitly marked
   degraded and derives from the manifest rather than copied live model/endpoint facts.
-- [ ] **STANDING — do not churn `seeding_rewards`, `corpus_quality_gate` or `kv_compress`**
+- **[declined: ws58 2026-11-03 content-review: standing constraint with no completion state (its own text says so); stays readable here]** **STANDING — do not churn `seeding_rewards`, `corpus_quality_gate` or `kv_compress`**
   unless a concrete duplicated live fact reappears. They are re-audited surfaces that keep
   generated stack priors primary with an explicit degraded fallback.
   *(SPLIT 2026-08-11 by `mainC`, adopting `auditor`'s synthesis over my own first fix. One box
@@ -923,7 +923,7 @@ Any future stack update should be accepted only when these hold:
   pickup box. Splitting is the only form that keeps both true. Consequence for consumers: any
   queue row marking this a CLOSED task is wrong, and the dated result now lives on its own
   checked line where a completion record belongs.)*
-- [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
+- **[declined: ws58 2026-11-03 content-review: merged into the Finish-W4-swap-CI box; "opportunistically" is unbounded]** Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest re-audits: the simulated vision swap already covers
   the migrated vision serving consumers (`stack_prior_vl_ports`,
@@ -943,11 +943,11 @@ Any future stack update should be accepted only when these hold:
   held-out quiet-window A/B with required policy
   `incumbent_constrained_cheapfirst_v2`; the 2026-07-03 artifact is
   `promote_candidate` with no blockers.
-- [ ] Keep production routing default-off until an explicit operator
+- **[declined: ws58 2026-11-03 content-review: standing constraint, not a task; the enablement decision is owned by routing-program.md]** Keep production routing default-off until an explicit operator
   enablement/reload/attestation decision accepts the repaired-policy evidence.
-- [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
+- **[declined: ws58 2026-11-03 content-review: bookkeeping with no behaviour change]** Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
-- [ ] Keep completed implementation logs out of active indices; record future
+- **[declined: ws58 2026-11-03 content-review: bookkeeping with no behaviour change; the wrap-up routine already owns it]** Keep completed implementation logs out of active indices; record future
   closures in `progress/` and compact/archive at wrap-up.
 
 #### Validation
@@ -1987,7 +1987,7 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 - [x] W2 high-risk consumer migrations (q_scorer, seeding, routing, config, health, autopilot - ~29 cleanups) ✅
 - [x] Residual classified docs/tests cleanup (legacy_test=72, historical_doc=25 warning buckets) ✅ 2026-07-22
 - [x] Descriptor ctx_model_max contract extension (native ctx_max still incomplete) ✅ 2026-07-22
-- [ ] Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient
+- [ ] **Is promotion-gate coverage insufficient?** (the actual open question behind the conditional "direct benchmark runtime enforcement" row, mainB 2026-08-12). Enumerate every benchmark runtime entry point (bench_canonical, llama-bench wrappers, autopilot preflight, direct launches in scripts/) and record for each whether it passes through the canonical gate. Decision: any bypass that can produce a ratification-bearing number -> file the enforcement task with that path named; none -> close this row. Read-only, one session.
   **2026-08-12 (`mainB`) — screened and NOT actionable as written: the row is CONDITIONAL and its
   condition has never been assessed.** "Only if promotion-gate coverage proves insufficient" is a
   gate, not a task; nobody has established insufficiency, so the work it authorises is not yet
@@ -2288,7 +2288,7 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   unless `stack_change_guard.py` / `stack_change_pipeline.py` is run with
   `--allow-production-blocker-waivers`, leaving any accepted emergency waiver
   visible as `hardcoded_surface.waived.production_blocker`.
-- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
+- **[declined: ws58 2026-11-03 content-review: standing constraint, explicitly "not a dispatchable task"; stays readable here]** *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
       Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
   Latest completed slices: Orchestrator `95a23aa` canonicalized the
@@ -2311,14 +2311,14 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   consumption after `cacd8c44`; `4bf414d6` keeps that factual-risk degraded
   fallback compatibility explicit. The remaining gap is opportunistic expansion
   as new high-risk consumers are migrated rather than a missing end-to-end
-  happy-path proof.
+  happy-path proof. Absorbs the "broaden swap-CI opportunistically" row: new witness surfaces are added only when a migrated consumer creates one. Done when every role class in the live lineup (frontdoor, architect, critic, worker, vision, speech, long-context ingest) has one simulated swap fixture that proves descriptors, priors, q_scorer priors, summary and gate execution move together.
 - [x] Fix promotion-gate test failures: `test_seed_specialist_routing_main_and_retry.py`
   had 4 failures — `_role_result` fixture missing `tool_chains` attribute that
   `seed_specialist_routing.py:447` / `seed_specialist_routing_v2.py:423` access.
   Orchestrator `91cb03bf` adds `tool_chains=[]` to the fixture. Combined with
   the prior `083e2736` (stale ingest topology fixture expectation), full
   promotion-gate is now `181 passed`, pipeline `summary: ok`. ✅ 2026-07-07
-- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
+- **[declined: ws58 2026-11-03 content-review: standing constraint, explicitly "not a dispatchable task"; stays readable here]** *(STANDING CONSTRAINT — not a dispatchable task; do not flip. `auditor` 2026-07-29.)*
       Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
@@ -2603,7 +2603,7 @@ vision quarter-preference — pre-exist at the base commit, verified by stash-ru
 - [x] One API-only reload (new PID 3051676) + no-inference attestation: `ORCHESTRATOR_FLEET_LAYER=1` in worker env (attest_orchestrator_workers), API healthy, /health backend probes now group the shared fleet (`coder_escalation/frontdoor/worker_summarize` as one probe) ✅ 2026-07-23
 - [x] Both boundary commits pushed to origin ✅ 2026-07-23
 - **DELIBERATE SCOPE DEVIATION (flagged in `a172d2dd`)**: the §5 WP-13 interim deletion did NOT execute at this boundary. Reasoning chain: instant-rollback requirement ⇒ the legacy per-role build stays ⇒ Fix-A delegations + generator alias-ports inheritance are its substrate (deleting them breaks rollback after any priors regeneration: toolrunner KeyError degraded, worker_math single-quarter re-serialization) ⇒ their guard tests stay with the code they guard. Fleet-wins-at-runtime resolves the two-descriptions concern the §5 atomicity clause guarded against. The permission classifier independently blocked live-tree test deletion, converging on the same outcome.
-- [ ] **Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegations, `_LEGACY_SERVER_URL_FALLBACKS`, generator alias-ports inheritance, and their guard tests (4 in `test_full_slot_demotion.py` + convergence test in `test_stack_priors_compiler.py`) — once the fleet layer survives its soak and the operator retires the flag-off rollback
+- [ ] **Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegations, `_LEGACY_SERVER_URL_FALLBACKS`, generator alias-ports inheritance, and their guard tests (4 in `test_full_slot_demotion.py` + convergence test in `test_stack_priors_compiler.py`) — once the fleet layer survives its soak and the operator retires the flag-off rollback Trigger: ask the operator ONCE, in a decision package carrying the soak evidence (days with the fleet-layer flag on, incidents attributed), to retire the flag-off rollback; if approved, run this cleanup as one change; if declined, retire this row.
   **2026-08-11 (`mainB`) — PRECONDITION CHECKED AND IT DOES NOT HOLD. Do not start this row.**
   The gate on this row is *"the operator retires the flag-off rollback"*. Verified against the tree,
   three ways, all negative:
