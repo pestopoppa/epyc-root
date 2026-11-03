@@ -1787,7 +1787,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-03T07:06:03Z",
+  "generated_at": "2026-11-03T07:24:12Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2966,7 +2966,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2175,
+          "line": 2182,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -3879,7 +3879,7 @@
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 638,
+          "line": 644,
           "name": "tq3-quantization-evaluation",
           "open": 16,
           "readiness": "ready"
@@ -4438,7 +4438,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2941,
+          "line": 2947,
           "name": "tool-output-compression",
           "open": 7,
           "readiness": "ready"
@@ -5071,15 +5071,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 41,
-      "dispatchable": 9,
+      "closed": 43,
+      "dispatchable": 7,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 9,
+      "open": 7,
       "priority": 0.0202,
       "priority_basis": {
         "campaign": 0,

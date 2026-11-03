@@ -394,6 +394,12 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
     est: ~3900 s (BUILD) from `/mnt/raid0/llm/tmp/brf-exp01/fixture/quant-IQ4_KT.log` (87 s on 8 cores for 0.6B, scaled by parameter count x58 and 24 cores = ~1700 s per KT arm; Q4_K_M ~85 s, IQ2_XXS ~250 s, 4 source reads).
     An end-to-end self-test on a non-identity fixture (Qwen3-0.6B requantized to Q4_K_M/IQ4_KT by the instrument) passed validity, linkage, mechanism-selected,
     looks, quality capture and summary; its numbers are not EXP-01 evidence (fixture tg128 ratio 0.64 is a plumbing check only).
+    - 2026-11-03 BRF-T4 close-out (ws58): **NO VERDICT, nothing was measured.** The BUILD row `brf-exp01-trellis-build-20261102` ended rc=4 after 3 s (22:10:33Z), although rowflow
+      shows it `done`. Its `plan-IQ2KT` unit returned rc=1 (`Missing importance matrix for tensor blk.0.attn_gate.weight in a very low-bit quantization`; `build/plan-IQ2KT.log`
+      sha256 `df3ac0336156…`). The job forced `--ignore-imatrix-rules` for IQ2_XXS only, and the smoke planned IQ4_KT only. No arm exists and BUILD-DONE is absent, so MEASURE
+      `brf-exp01-trellis-pilot-20261102` was never published and no smoke ran. The `post_build.sh` watcher is still polling and was not re-run.
+      Repaired in scratch, not run: `bin/build_job.sh` now forces IQ2_KT the same way (the shared no-imatrix caveat now covers both 2-bit arms), and resume skips only successful
+      units. Next: republish BUILD as `brf-exp01-trellis-build-20261102-r2`. [no-belief: no measurement produced]
 - [ ] **T3 — Port only if T2 wins.** Gate: IQ4_KT must reach **≥95% of Q4_K_M tg128** under the canonical protocol **and** show a measurable task-eval win (paired per-item flips vs the reference; report PPL/KLD beside it as fidelity context only — a near-baseline KLD/PPL ordering is not a quality ordering, intake-1510, intake-1519#05). Slower than 95% ⇒ **DROP permanently** — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no `IQ*_KT` GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover giant MoEs we do not serve. Viterbi is the **encoding** cost only — at inference the trellis LCG runs forward — so self-quantising is hours on 192 cores plus an imatrix, not prohibitive, but not free.
 

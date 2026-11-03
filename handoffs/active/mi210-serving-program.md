@@ -2146,6 +2146,13 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
         coverage and the owner's EXPAND / REVISE / INCONCLUSIVE review. Stop rule: manifest `sufficiency` EXP-04: planned look
         per block; stop on answer or futility (residency unproven on ≥ 2 GPU units; control diverges > 25%); labelled operational,
         never a PF1 gate result; the 2K/8K screen never yields a negative PF1 verdict.
+    - 2026-11-03 owner review (ws58, BRF-T4 close-out): **REVISE, screen; the run is INVALID on every GPU arm**, so the box stays open.
+      Row r3 ended rc 0 with the futility stop at block 0: 4/8 units valid, capture 0.75, 505 s. A2 never ran, because `llama-bench` rejects `-cmoe` (the bench spelling is `-ncmoe N`; the arm
+      text above needs the same fix). A1 failed store identity at both L: it mapped the unversioned `kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so` (68,101,784 B,
+      mtime 2026-10-27, sha256 `daf086c2a805…`, absent from the store SHA256SUMS) next to the listed `.so.0.16.0`. A1@2K also lacked a placement proof (RSS still growing
+      at exit). Controls (n=1): A1-disabled/A0 = 0.859 (2K) and 0.959 (8K). A1's about 1.9× over A0 (453.9/238.6, 420.6/213.5 t/s) is identity-invalid and carries no claim.
+      PF1, HSF and NPD stay untested. Before the r=5 matrix: fix the argv, have the operator resolve the unlisted store file, then re-run the pilot in a granted window.
+      OBSERVATION: research `99944fe12`; `/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl` `02a9c611ffa3…`, `summary.json` `34d2264ccf9e…`. [belief: cc]
   - [x] **PF1 native launcher preparation** — source-frozen initial and conditional holdout packets; model-free native driver, STOP/reap, failure denominator, resume/no-redraw and holdout fixtures passed. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/PF1-NATIVE-READY.md` (NEXT `0c94cb0f-fda7-43c1-9759-ff71b043e574`); source manifest `e5b51ff0cf4a90383c4afeb052f32b077e78f7259aed9314aa4627d8d0d9364d`. Initial whole-host request max 24 h/min 4 h; holdout conditional on complete initial receipt and >=4 h elapsed. No P3 closure or serving decision. ✅ 2026-10-27 [no-belief: preparation and fixture only]
   - [x] **PF1-pre — the v8 CPU prefill runner is retired, so the A0 arm cannot silently reuse it.** ✅ 2026-09-26 —
         research `3d3581e6` (operator decision): `scripts/benchmark/cpu_prefill_v8_regression_runner.py` is retired IN

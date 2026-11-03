@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 13,
       "oldest_advance": "2026-08-03",
-      "open": 660
+      "open": 658
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -501,10 +501,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 41,
+      "closed": 43,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 9,
+      "open": 7,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -700,7 +700,7 @@
           "closed": 48,
           "gates": [],
           "guarded": 0,
-          "line": 2941,
+          "line": 2947,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 7
@@ -1654,7 +1654,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2175,
+          "line": 2182,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1966,7 +1966,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 638,
+          "line": 644,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 15

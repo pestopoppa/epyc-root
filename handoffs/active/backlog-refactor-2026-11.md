@@ -112,14 +112,39 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
   futility at each checkpoint; quality pass not reducible (gate stays open). Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
   Identity: Q38FN-lane IQ4_KT/Q4_K_M + IQ2_KT/IQ2_XXS GGUFs on `ik_llama.cpp@c04881fc0`, one CPU quarter, ≤90 min; pilot box T2 → EXP01-PILOT.
   BLOCKED (operator decision, 2026-11-02 ws58): the manifest identity is not runnable — see EXP01-PILOT in the owner.
+  - 2026-11-03 T4 close-out (ws58): **NO VERDICT, the pilot never measured.** Rowflow shows the BUILD row `brf-exp01-trellis-build-20261102` as `done`, but its grant ended
+    `rc=4 reason=job-rc-4:exited` at 22:10:33Z, 3 s in. Unit `plan-IQ2KT` (`llama-quantize --dry-run` IQ2_KT) returned rc=1 with `Missing importance matrix for tensor
+    blk.0.attn_gate.weight in a very low-bit quantization`. The build job forced `--ignore-imatrix-rules` for IQ2_XXS only, and its smoke planned IQ4_KT only, so the smoke passed.
+    No arm was built: `models/` is empty, there is no `BUILD-DONE.json` and the `*_SHA` pins are empty. So the MEASURE row `brf-exp01-trellis-pilot-20261102` was never published
+    (rowflow `unknown`; no smoke was run). The watcher `post_build.sh` is still alive (started 2026-11-02 19:11Z) and polls for BUILD-DONE until about 19:11Z today, then exits 2.
+    It was not re-run, because the build did not finish. Repaired in scratch (not run): `bin/build_job.sh` now forces IQ2_KT like IQ2_XXS, so the 2-bit pair stays like-for-like under
+    the shared no-imatrix caveat. A failed unit no longer counts as done on resume. Backup: `build_job.sh.bak-iq2kt-imatrix-20261103`.
+    Residual: republish the BUILD row as `-r2`; `post_build.sh` then publishes MEASURE with its smoke. [no-belief: no measurement produced]
 - [ ] **BRF-T4-EXP04** [inference] EXP-04 crossover screen, riding a granted quiet window only. Owner: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) PF1 (executes as its box **PF1-EXP04**,
   row `brf-exp04-pf1-crossover-pilot-20261102-r3` (r1 smoke FAIL rc=3: bench_canonical rejected store binaries; r2 raw llama-bench GPU arms; r3 all arms via bench_canonical after research `99944fe12` store-identity fix), published by ws58 2026-11-02).
   Stop rule: manifest `sufficiency` EXP-04; stop on answer/futility; no window granted → not READY. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff (PF1-EXP04 filed with the owner's EXPAND/REVISE/INCONCLUSIVE review).
-- [ ] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](context-and-token-economy.md#track-tool-output-compression) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+  - 2026-11-03 T4 close-out (ws58): **REVISE, screen, run INVALID on every GPU arm**, so not ticked. Rowflow `done` (rc 0, 22:59-23:07Z, 505 s of the 3600 s cap). The futility stop fired at
+    block 0 with 4/8 units valid and capture completeness 0.75; 0 of 4 GPU cells are valid. Causes: (1) A2 never ran, because `llama-bench` rejects `-cmoe` (`error: invalid parameter for
+    argument: -cmoe`; the bench spelling is `-ncmoe N`). The summary labels this a residency failure, but the cause is the argv. (2) A1 failed identity at both L. The process mapped the
+    store's unversioned `gpu-20260921-ffc1bac82/bin/libggml-hip.so` (regular file, 68,101,784 B, mtime 2026-10-27, sha256 `daf086c2a805…`, **not in the store's SHA256SUMS**) next to
+    the listed `libggml-hip.so.0.16.0` (`f26a166b8ea3…`). (3) A1@2K also had no placement proof, because RSS was still growing at exit under the 3 s cadence. Valid controls (n=1, no CI):
+    A1-disabled/A0 = 0.859 at 2K and 0.959 at 8K. At 2K that diverges from A0 by more than 10%, which on its own is a REVISE trigger. Not evidence: A1 tps 453.9 and 420.6 against A0
+    238.6 and 213.5 (about 1.9×). Those cells are identity-invalid, n=1, and carry no claim. OBSERVATION: research `99944fe12`, `/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl` sha256
+    `02a9c611ffa3…`, `summary.json` = `PILOT-COMPLETE.json` `34d2264ccf9e…`, `IDENTITY.json` `f7567e34b7c9…`. [belief: cc]
+- [x] **BRF-T4-EXP09** [inference] EXP-09 pilot. Owner: [`tool-output-compression.md`](context-and-token-economy.md#track-tool-output-compression) (TOC-SP-3). Stop rule: manifest `sufficiency` EXP-09. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
   Row `brf-exp09-pilot-20261102` (ws58; one CPU quarter, cap 45 min, own v10 kernel-store llama-server on :18409,
   worker Qwen3.6-35B-A3B-MTP-Q8_0, greedy, MTP off). Control = current `_spill_output` (orchestrator `3a428cb3`,
   executed unchanged). Corpus: 12 frozen failing logs, [`exp09-failing-log-corpus-manifest-20261102.json`](../../docs/design/backlog-refactor-2026-11/exp09-failing-log-corpus-manifest-20261102.json).
-- [ ] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot on the SERVED config, bounded at <=76 generations. Owner:
+  - ✅ 2026-11-03 T4 close-out (ws58): **REVISE (harness), screen, not decision-grade.** The run was valid: the control `_spill_output` ran unchanged (fn sha `e1707a1b`), the planted mismatch
+    was rejected in 9/9 verified-quote cells, linkage stayed inside the v10 store and the model sha matched. The predeclared futility look fired after 37 of 48 cells (22:19:44Z, 553 s;
+    grant rc 75, partial): verified-quote 6.592 over 9 cells could not reach the control total of 9.717 over 12. Per-arm accuracy: control 0.81 (n 12), verified-quote 0.732 (9),
+    shape-header 0.50 (8), pointer-only 0.271 (8, re-fetch 8/8). Retention: control 0.42, verified-quote 0.73, shape-header 1.00.
+    By the box's rule this is neither EXPAND (verified-quote is below the control) nor STOP (verified-quote beat the control on item-04).
+    **The futility is confounded:** all 5 parse failures are answers truncated at exactly 256 completion tokens, while the answer model was listing failed IDs (4 shape-header, 1
+    verified-quote on item-07, which scored 0.0). On the 8 items where verified-quote parsed, it scored 0.824 against the control's 0.808 on the same items. On the 4 items where
+    shape-header parsed, it scored 1.00 against the control's 0.875. Revise before expanding: raise the answer budget or cap the ID list, then re-run the pass.
+    OBSERVATION: orchestrator `3a428cb3`, `/mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl` sha256 `cb8f455daa1d…`, `identity.json` `67f41238d28e…`, `job.py` `f0196ae6be17…`. [belief: cc]
+- [x] **BRF-T4-CAP04** [inference] CAP-04 reasoning-budget-curve pilot on the SERVED config, bounded at <=76 generations. Owner:
   [`reasoning-effort-levels.md`](context-and-token-economy.md#track-reasoning-effort-levels) (TB-1) (executing session ws58). Row `brf-cap04-pilot-20261102-v3` (v2 smoke FAIL rc=4: residency proof matched the store symlink path against /proc maps realpaths and a log line this build never prints; now realpath + SHA256SUMS-listed libggml-hip.so.0.16.0 only + KFD VRAM) (supersedes `brf-cap04-pilot-20261102`, whose critic ran thinking OFF and so did not describe the served model) on the MI210 `mi210_0,184-191`;
   est: provisional; pilot: bounded <=76 generations, 2.5 h cap (expected ~1.75 h, estimate 7800 s). Metric: accuracy, higher is better. Identity: frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 (sha c1283d8b) + architect_critic Qwen3.8-27B-Q8_0
   (sha a680f44a), v10 kernel store 10303, own llama-server, chat path, served terse template 1443ea9ab4bb, q8_0 KV, seed 42, top_k 40, top_p 0.95, repeat_penalty 1.1; 20
@@ -133,8 +158,32 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
   Stop rule: manifest `sufficiency` CAP-04 (exploratory; look at every cell; stop on answer or futility is an
   operational decision, never a gate result). Critic LOOK at 8 items: futility when >=75% are truncated at 32768 (no knee inside the range), answer when trunc<=5% and no correctness change between that budget and 32768; otherwise continue to 12 items. STOP, deadline or 9000 s cap gives a resumable partial; budget overrun,
   frontdoor think leak, critic thinking not engaged or short slot context is INVALID. Done when: the pilot stops on answer or futility at a manifest checkpoint and its result is recorded as an OBSERVATION in the owner handoff.
+  - ✅ 2026-11-03 T4 close-out (ws58): **REVISE (budget derivation), screen, not decision-grade.** All 76 of 76 units ran (23:07-23:52Z, rc 0, about 45 min). The run was valid: 0 budget violations,
+    0 frontdoor think leaks, 0 cases of critic thinking not engaged and 0 request errors. KFD VRAM was 41.9/43.3 GB (frontdoor/critic), only the SHA256SUMS-listed `libggml-hip.so.0.16.0`
+    was mapped, `n_ctx_slot` was 34816 and the template sha matched. **The nested-prefix derivation failed its own check:** 0/4 fresh 8192 CHK generations matched the 32k base as an
+    equal or prefix string. Sampling at temp 0.3/0.1 with speculative decoding does not reproduce across launches. So `nested_derivation_valid=false`, and by the predeclared rule
+    every derived 8k/16k TB cell and the X@8k cells do not count. That is the manifest REVISE condition ("resume conflates budgets"). **TB-4 is therefore UNCOVERED, not
+    "COVERED (screen)"**, and TB-1, TB-2 and TB-3 have no valid knee. Valid fresh 32k cells: frontdoor olympiad 0.50 (20/20 finished, 2386 mean tokens); critic olympiad 0.25 overall
+    and 0.30 finished-only, with 2/12 truncated inside thinking (the critic does not finish within the 32k ceiling on about 17% of items); E frontdoor GPQA L2 0.95 vs L3 0.95,
+    with 1 rescued and 1 harmed of 20 paired, at +1178 mean tokens for L3 (1343 to 2522). The critic look at 8 items said `continue` (32k truncation 0.25).
+    OBSERVATION: `/mnt/raid0/llm/tmp/brf-cap04/job/out/results.jsonl` sha256 `81397b10396f…`, `summary.json` `9d2204432edc…`, `residency.jsonl` `eac2cda13f06…`. [belief: cc]
   - [ ] **CAP04-AG** [inference], NOT covered by this pilot: architect_general (87 GB, served on CPU). The pilot screens the curve shape on the served critic config only; architect_general is the expansion if a knee appears below the production ceiling (budget curve on its own served config, CPU, placement and thinking flags re-read from the registry at that time). Not READY until the pilot's result is recorded; est: provisional; Metric: accuracy, higher is better; Stop rule: manifest `sufficiency` CAP-04. Done when: either the pilot shows no knee below the production ceiling (recorded as an OBSERVATION: expansion not needed) or the architect_general curve stops on answer or futility at a checkpoint and is recorded as an OBSERVATION in the owner handoff.
+    - 2026-11-03 (ws58): stays not READY. The pilot's verdict is REVISE, and it produced no valid sub-32k cell, so it neither shows nor excludes a knee below the production ceiling.
 - [ ] **BRF-T4-R** [non-inference] NEEDS-OWNER Owner review of the four pilot results; promote or re-scope the 16 provisional packages.
+  - 2026-11-03 partial (ws58): three of four pilots have verdicts. The review is below. Residual: EXP-01 has no verdict yet (build repair done; BUILD `-r2` then MEASURE).
+    The promote or re-scope call on the 16 provisional packages waits for that verdict. [no-belief: review of recorded OBSERVATIONs]
+
+### T4 owner review — 2026-11-03 (screens only; none is decision-grade)
+
+Every verdict below is an operational screen under `docs/guides/agent-workflows/measurement-sufficiency.md`, never a gate result. It says whether the package is ready to EXPAND as the
+experiment manifest defines it.
+
+| Pilot | Verdict | Expand the package? | What must change first |
+|---|---|---|---|
+| EXP-09 spill / evidence retention | REVISE (harness) | Not yet. The control is verified and the mechanism fired, so the package is runnable. The futility stop is confounded by answer truncation at 256 tokens. On parsed cells verified-quote is level with the control (0.824 vs 0.808). | Raise the answer budget or cap the ID list, then re-run the 12-log pass. The manifest's EXPAND (full corpus) follows only if verified-quote ≥ control there. REPL-EMB-3.2 still needs the online arm. |
+| EXP-04 CPU/GPU prefill crossover | REVISE (run invalid on GPU arms) | No. 0/4 GPU cells are valid, so PF1 is not testable at 2K/8K. The screen never yields a negative PF1 verdict. | Fix A2's argv (`-ncmoe`). Resolve the unlisted `libggml-hip.so` in the frozen v10 GPU store bin (an operator matter, because the store is frozen). Lengthen the placement-proof window for A1. Then re-run the pilot in a granted quiet window before the r=5 matrix. |
+| CAP-04 reasoning budget curve | REVISE (budget derivation) | No. The validity checks pass, but the nested-prefix derivation failed 0/4. The budget axis is unmeasured, TB-4 is uncovered and CAP04-AG stays not READY. | Generate fresh at each budget, as the manifest's "generate at EVERY budget" requires. Or predeclare a distributional (not bitwise) equivalence test. Then re-screen before expanding to all stack models × 5 budgets. The 32k E cells already screen E-2/E-3: L3 buys no accuracy for +88% tokens (n 20). |
+| EXP-01 trellis speed pair | NO VERDICT | Undecidable. No arm was built. | BUILD `-r2` with the repaired job, then MEASURE through `post_build.sh`. |
 
 ## T5 — D7 decision-package delivery
 
