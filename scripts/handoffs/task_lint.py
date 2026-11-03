@@ -7,11 +7,11 @@ execution-type validation against the deliverable wins.
                                            NEEDS-OPERATOR / NEEDS-DECOMPOSITION; NEEDS-OPERATOR is never itself a failure;
                                            an already-issued authorization is not an operator decision; exit 1 only on
                                            an UNTAGGED failure
-  task_lint_v2.py publish  FILE.md:LINE    rowflow publish gate for ONE box: class must be inference (explicit or
-                                           validated), identity complete (model, build, harness, metric+direction, rule,
-                                           region, est), est may be `provisional` ONLY with a bounded pilot clause (a plain
-                                           numeric est passes; no run citation is required);
-                                           NEEDS-* present -> refuse; non-inference deliverable -> refuse. exit 1 on refuse
+  task_lint_v2.py publish  FILE.md:LINE    rowflow publish gate for ONE box (operator 2026-11-03: relaxed). REFUSES (exit 1) only when
+                                           the box names no model/build identity (check c: model, quant_build) or states no
+                                           stop rule (check s). Everything else (NEEDS-*, pending choice, non-inference
+                                           payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
+                                           fields) prints as WARN and is recorded in the row's publish record.
 Changes vs task_lint.py (2026-11-02 second-pass review §1): (i) execution-type validator — the deliverable decides, not a
 metric mention (scorer/build/wire/implement/audit/replay/read-only => non-inference even if 't/s' appears; measure/run/
 compare/A/B/floor/calibrat/sweep on a model => inference); (ii) authorization classes — pending-choice vs historical-ruling
@@ -153,25 +153,42 @@ def missing_fields_text(miss):
     return '; '.join(FIELD_HINT.get(m, m) for m in miss)
 
 
+# T6-1 relaxed (operator 2026-11-03, decision tool, relax LOOP-50 / T6-1): publish REFUSES only for a box that does not say
+# WHAT it measures (model / build identity, check (c)) or that states no STOP RULE (check (s)). A box that does not
+# resolve to a real open task is refused by publish_row.task_box. Everything else is a WARNING, printed and recorded in
+# the row's publish record (`publish_warnings`); the smoke test still gates every row.
+IDENTITY_FIELDS = ('model', 'quant_build')
+
+
+def publish_findings(txt, ch=0):
+    """(refuse, warn): two lists of one-line reasons. refuse = missing model/build identity or missing stop rule."""
+    r = score2(txt, ch); refuse, warn = [], []
+    if r['tags']: warn.append(f"NEEDS tags present {r['tags']}")
+    if r['class'] != 'inference': warn.append(f"class {r['class']} ({r['class_basis']}) — non-inference payload "
+                                              "(state the run/measurement the row performs, or tag the box [inference])")
+    ident = [m for m in r['missing_c'] if m in IDENTITY_FIELDS]
+    other = [m for m in r['missing_c'] if m not in IDENTITY_FIELDS]
+    if ident: refuse.append(f"identity incomplete (what it measures): {ident} — add {missing_fields_text(ident)}")
+    if other: warn.append(f"identity fields incomplete: {other} — add {missing_fields_text(other)}")
+    if 's' in r['fails']: refuse.append('no sufficiency/stop rule stated — add `stop-on-answer when <condition>; stop-on-futility on <condition>; '
+                                        'gate-class = futility-only` (inference task must say stop-on-answer / stop-on-futility)')
+    if r['rollup']: warn.append('roll-up is non-dispatchable')
+    if 'h' in r['fails'] or r['decision_kind'] == 'pending-choice': warn.append('pending operator choice (field h) — route to the operator queue first')
+    if 'd' in r['fails']: warn.append(f"untestable prose prerequisite: {r['named_prereq']!r}")
+    if r['decision_kind'] == 'standing-constraint': warn.append('standing constraint / operator hold named in the box')
+    return refuse, warn
+
+
 def publish_text(txt, ch=0):
-    r = score2(txt, ch); why = []
-    if r['tags']: why.append(f"NEEDS tags present {r['tags']}")
-    if r['class'] != 'inference': why.append(f"class {r['class']} ({r['class_basis']}) — non-inference payload refused "
-                                             "(state the run/measurement the row performs, or tag the box [inference])")
-    if r['missing_c']: why.append(f"identity incomplete: {r['missing_c']} — add {missing_fields_text(r['missing_c'])}")
-    if 's' in r['fails']: why.append('no sufficiency/stop rule stated — add `stop-on-answer when <condition>; stop-on-futility on <condition>; '
-                                     'gate-class = futility-only` (inference task must say stop-on-answer / stop-on-futility)')
-    if r['rollup']: why.append('roll-up is non-dispatchable')
-    if 'h' in r['fails'] or r['decision_kind'] == 'pending-choice': why.append('pending operator choice (field h) — route to the operator queue first')
-    if 'd' in r['fails']: why.append(f"untestable prose prerequisite: {r['named_prereq']!r}")
-    if r['decision_kind'] == 'standing-constraint': why.append('standing constraint / operator hold named in the box')
-    return why
+    """The REFUSAL reasons only (empty = publishable); warnings come from publish_findings."""
+    return publish_findings(txt, ch)[0]
 
 def run_publish(spec):
     p, ln = spec.rsplit(':', 1); ln = int(ln)
     lines = open(p, encoding='utf-8', errors='replace').read().split('\n'); txt, ch = L1.block(lines, ln - 1)
-    why = publish_text(txt, ch)
+    why, warn = publish_findings(txt, ch)
     print(f"{spec}: {'PUBLISHABLE' if not why else 'REFUSE — ' + '; '.join(why)}")
+    for w in warn: print(f"{spec}: WARN — {w}")
     return 1 if why else 0
 
 if __name__ == '__main__':

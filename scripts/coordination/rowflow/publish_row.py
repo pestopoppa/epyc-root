@@ -16,11 +16,12 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
 Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
 `file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
 Task lint (BRF-T6-1, D6 staged, operator 2026-11-02): handoff_task must also name the TASK (`file.md:<TASK-ID>` or
-`file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish` and the row is refused when the
-box fails the inference identity (field c; a plain numeric `est` passes, `est: provisional` needs a bounded pilot),
-states no stop rule (field s), carries NEEDS-* / a pending operator choice / a standing hold, or is a non-inference
-payload. Each refusal names the exact missing fields of that box. The lint runs before the smoke, so a refused row costs
-no compute.
+`file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish`. RELAXED (operator 2026-11-03):
+the row is REFUSED only when the box names no model/build identity (field c), states no stop rule (field s), or
+handoff_task does not resolve to a real open task box (file-only, or not found). Every other finding (NEEDS-*, pending
+operator choice, non-inference payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
+fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the smoke still gates every row. The lint
+runs before the smoke, so a refused row costs no compute.
 Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
 (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
 dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap; never refused), for
@@ -42,7 +43,7 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_native_result")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -188,11 +189,21 @@ def task_box(spec, repo=None):
 
 
 def check_task_lint(spec, repo=None):
-    """BRF-T6-1: refuse the row unless its task box passes `task_lint.py publish`."""
+    """BRF-T6-1, relaxed (operator 2026-11-03): refuse only (1) a box that does not resolve to a real open task (task_box),
+    (2) a box with no model/build identity, (3) a box with no stop rule. Every other finding is a WARNING: printed, and
+    recorded in the row's publish record as spec["publish_warnings"] (-> ready/<id>.json). Returns the warnings."""
     path, ln, txt, ch = task_box(spec, repo)
-    why = _task_lint().publish_text(txt, ch)
-    rf.need(not why, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
-            + "\n  - ".join(why) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
+    refuse, warn = _task_lint().publish_findings(txt, ch)
+    rf.need(not refuse, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
+            + "\n  - ".join(refuse) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
+    warn = [f"{os.path.basename(path)}:{ln}: {w}" for w in warn]
+    for w in warn:
+        print(f"WARN task_lint {w}")
+    if warn:
+        spec["publish_warnings"] = warn
+    else:
+        spec.pop("publish_warnings", None)
+    return warn
 
 
 def smoke_regions(lane, regions, flags):

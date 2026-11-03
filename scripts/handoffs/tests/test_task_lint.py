@@ -3,19 +3,27 @@
 import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")); import task_lint as L
 INF = ("- [ ] **X-1** [inference] measure decode t/s of Qwen3.8-27B Q8_0 on the C5 champion build with llama-bench, metric tg128 (higher better),"
        " rule keep if ≥0.95× control, region gpu")
+def _all(txt): r, w = L.publish_findings(txt); return r + w   # refusals + warnings
 def t(name, cond): print(('PASS ' if cond else 'FAIL ') + name); return cond
 def _run():
     ok = True
     # v5-1 publish fails on field h (pending operator choice)
-    ok &= t('publish refuses pending operator choice', any('pending operator choice' in w for w in L.publish_text(INF + ", est 600 s from run r1; operator to decide whether to adopt")))
-    ok &= t('publish allows issued authorization', not any('pending operator choice' in w for w in L.publish_text(INF + ", est 600 s from run r1 (operator 2026-10-25: authorized one bounded window)")))
+    ok &= t('publish WARNS (not refuses) on pending operator choice', not any('pending operator choice' in w for w in L.publish_text(INF + ", est 600 s from run r1; stop-on-futility; operator to decide whether to adopt"))) and t('publish warning lists pending operator choice', any('pending operator choice' in w for w in L.publish_findings(INF + ", est 600 s from run r1; stop-on-futility; operator to decide whether to adopt")[1])) and t('pending operator choice is reported', any('pending operator choice' in w for w in _all(INF + ", est 600 s from run r1; operator to decide whether to adopt")))
+    ok &= t('publish allows issued authorization', not any('pending operator choice' in w for w in _all(INF + ", est 600 s from run r1 (operator 2026-10-25: authorized one bounded window)")))
     # v5-2 est provisional requires a bounded pilot clause
-    ok &= t('bare est provisional refused', any('identity incomplete' in w and 'estimate' in w for w in L.publish_text(INF + ", est provisional")))
-    ok &= t('est provisional + bounded pilot accepted', not any('estimate' in w for w in L.publish_text(INF + ", est provisional ~900 s; pilot: bounded n=6 launches/arm")))
-    ok &= t('est from a measured run accepted', not any('estimate' in w for w in L.publish_text(INF + ", est 600 s from run r1")))
+    ok &= t('bare est provisional warned (estimate field)', any('incomplete' in w and 'estimate' in w for w in _all(INF + ", est provisional")))
+    ok &= t('est provisional + bounded pilot accepted', not any('estimate' in w for w in _all(INF + ", est provisional ~900 s; pilot: bounded n=6 launches/arm")))
+    ok &= t('est from a measured run accepted', not any('estimate' in w for w in _all(INF + ", est 600 s from run r1")))
     # ws58 2026-11-02: no run citation is required; a plain numeric est passes
-    ok &= t('plain numeric est accepted (no run-cited rule)', not any('estimate' in w for w in L.publish_text(INF + ", est 600 s; stop-on-futility")))
-    ok &= t('identity refusal names the exact field to add', any('add region:' in w for w in L.publish_text("- [ ] **X-2** [inference] measure decode t/s of Qwen3.8-27B Q8_0, rule keep if >= 1, est 600 s; stop-on-futility")))
+    ok &= t('plain numeric est accepted (no run-cited rule)', not any('estimate' in w for w in _all(INF + ", est 600 s; stop-on-futility")))
+    ok &= t('identity refusal names the exact field to add', any('add region:' in w for w in _all("- [ ] **X-2** [inference] measure decode t/s of Qwen3.8-27B Q8_0, rule keep if >= 1, est 600 s; stop-on-futility")))
+    # operator 2026-11-03: publish REFUSES only on missing model/build identity or missing stop rule; the rest WARN
+    ok &= t('relaxed: model/build missing refuses', any('quant_build' in w for w in L.publish_text("- [ ] **X-3** [inference] measure decode t/s, rule keep if >= 1, region gpu, est 600 s; stop-on-futility")))
+    ok &= t('relaxed: missing metric/rule/region/estimate only warns', (lambda r, w: not r and any('identity fields incomplete' in x for x in w))(*L.publish_findings("- [ ] **X-4** [inference] run the Qwen3.8-27B Q8_0 champion build; stop-on-futility")))
+    ok &= t('relaxed: NEEDS tag warns, does not refuse', (lambda r, w: not r and any('NEEDS tags' in x for x in w))(*L.publish_findings(INF + ", est 600 s; stop-on-futility NEEDS-OWNER")))
+    ok &= t('relaxed: non-inference warns, does not refuse', (lambda r, w: not r and any('non-inference' in x for x in w))(*L.publish_findings("- [ ] **X-5** [non-inference] implement the scorer adapter")))
+    ok &= t('relaxed: roll-up and standing hold warn', (lambda r, w: not r and any('roll-up' in x for x in w) and any('standing' in x for x in w))(*L.publish_findings(INF + ", est 600 s; stop-on-futility [roll-up] STANDING CONSTRAINT: keep off")))
+    ok &= t('relaxed: no stop rule still refuses', any('stop rule' in w for w in L.publish_text(INF + ", est 600 s")))
     # v5-3 own block excludes nested descendants
     parent = "- [ ] **P-1** wire the scorer into run.py (non-inference deliverable)\n  - [ ] **P-1.a** measure t/s with llama-bench on the GPU, operator to decide whether to adopt"
     r = L.score2(parent, 1)

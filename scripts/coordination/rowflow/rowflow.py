@@ -475,7 +475,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
-    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result"):
+    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     if spec.get("shape") is not None:
