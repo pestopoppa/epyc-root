@@ -675,14 +675,7 @@ Sawtooth / duplicate-processing argument, banked for the summarize-family cluste
 #### Progress checklist
 
 - [x] S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅
-- [ ] S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)
-      **Pipeline PROVEN end-to-end 2026-08-12** (`mainC`, research `c62ba27e`) — but the table stays
-      empty deliberately. At **16 optimizer steps** a format-compliance number would read ~0% and would
-      later be cited as *"Memento format learning failed"*; that column needs a real run, not a smoke.
-      The one solid figure is **compression ratio 5.91×** (corpus block:summary tokens, 300 records) —
-      a dataset ground-truth property with no model involved. Loss 1.354 → 1.249 is a drift, **not** a
-      convergence claim. Adapter verified real: 336 tensors all finite, **168/168 `lora_B` off zero
-      init**, so weights genuinely updated.
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-memento-block-reasoning-compression on 2026-11-03 (BRF-T1-MEQ, operator D2): "S2 Stage-1 format-learning smoke on Qwen3-0.6B …".*
 - [ ] S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)
       ⚠️ **Feasibility unproven — see the corrected ladder above.** At the measured 4.74 s/sample the
       0.6B *smoke* model implies ~301 h/epoch at seq 1024; the 1.7B "validation target" is not a

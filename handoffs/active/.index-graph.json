@@ -356,13 +356,13 @@
       "from": "EVL-02",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 4
+      "weight": 5
     },
     {
       "from": "EVL-02",
       "kind": "ref",
       "to": "EVL-29",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "EVL-02",
@@ -457,6 +457,12 @@
     {
       "from": "EVL-14",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 4
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
       "to": "EVL-29",
       "weight": 3
     },
@@ -530,7 +536,7 @@
       "from": "EVL-29",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 3
+      "weight": 5
     },
     {
       "from": "EVL-29",
@@ -597,6 +603,12 @@
       "kind": "ref",
       "to": "UFH-01",
       "weight": 4
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
     },
     {
       "from": "EVL-37",
@@ -683,6 +695,12 @@
       "weight": 2
     },
     {
+      "from": "EVL-49",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
       "from": "INF-02",
       "kind": "ref",
       "to": "EVL-47",
@@ -735,6 +753,12 @@
       "kind": "ref",
       "to": "INF-80",
       "weight": 1
+    },
+    {
+      "from": "INF-05",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 8
     },
     {
       "from": "INF-05",
@@ -824,7 +848,7 @@
       "from": "INF-22",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 4
+      "weight": 34
     },
     {
       "from": "INF-22",
@@ -975,6 +999,12 @@
       "kind": "ref",
       "to": "INF-44",
       "weight": 4
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 7
     },
     {
       "from": "INF-50",
@@ -1273,6 +1303,12 @@
     {
       "from": "INF-79",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-79",
+      "kind": "ref",
       "to": "EVL-47",
       "weight": 6
     },
@@ -1299,6 +1335,12 @@
       "kind": "ref",
       "to": "RTG-57",
       "weight": 6
+    },
+    {
+      "from": "INF-80",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
     },
     {
       "from": "INF-80",
@@ -1405,6 +1447,12 @@
     {
       "from": "PIP-04",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 4
+    },
+    {
+      "from": "PIP-04",
+      "kind": "ref",
       "to": "EVL-29",
       "weight": 3
     },
@@ -1424,6 +1472,12 @@
       "from": "PIP-04",
       "kind": "ref",
       "to": "RTG-08",
+      "weight": 2
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "EVL-02",
       "weight": 2
     },
     {
@@ -1507,6 +1561,12 @@
     {
       "from": "RTG-08",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
       "to": "EVL-29",
       "weight": 1
     },
@@ -1555,6 +1615,12 @@
     {
       "from": "RTG-09",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
       "to": "EVL-10",
       "weight": 4
     },
@@ -1593,6 +1659,12 @@
       "kind": "ref",
       "to": "REV-05",
       "weight": 1
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 3
     },
     {
       "from": "RTG-34",
@@ -1787,21 +1859,21 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-03T07:50:09Z",
+  "generated_at": "2026-11-03T08:16:49Z",
   "nodes": [
     {
       "age_days": 1,
       "blocked": 4,
       "blocked_by": [],
       "closed": 110,
-      "dispatchable": 69,
+      "dispatchable": 101,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
       "last_advanced": "2026-11-02",
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
-      "open": 73,
+      "open": 105,
       "priority": 0.8208,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AMS-TCAP-1 \u2014 A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-",
@@ -1925,6 +1997,175 @@
           "line": 1261,
           "name": "tidar-one-pass-variant-b",
           "open": 3,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 3,
+          "gates": [],
+          "line": 1273,
+          "name": "meq-carve-gpu-serving-tie-in-program",
+          "open": 3,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1284,
+          "name": "meq-carve-gpu-acceleration-path",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1293,
+          "name": "meq-carve-eval-tower-verification",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1301,
+          "name": "meq-carve-multiscreen-attention-evaluation",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": [],
+          "line": 1308,
+          "name": "meq-carve-speculative-decoding-mtp-refresh",
+          "open": 2,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "INF-77"
+          ],
+          "dispatchable": 1,
+          "gates": [
+            "INF-77"
+          ],
+          "line": 1316,
+          "name": "meq-carve-glm52-reviewer-capability-gates",
+          "open": 1,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1330,
+          "name": "meq-carve-typed-decision-plane",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "UFH-14"
+          ],
+          "dispatchable": 1,
+          "gates": [
+            "UFH-14"
+          ],
+          "line": 1337,
+          "name": "meq-carve-routing-intelligence",
+          "open": 1,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1347,
+          "name": "meq-carve-memento-block-reasoning-compression",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1361,
+          "name": "meq-carve-frontier-f3-data-flywheel",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1369,
+          "name": "meq-carve-tq3-quantization-evaluation",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1376,
+          "name": "meq-carve-multimodal-pipeline",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1383,
+          "name": "meq-carve-opendataloader-pipeline-integration",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1390,
+          "name": "meq-carve-document-parser-table-bench",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 11,
+          "gates": [],
+          "line": 1397,
+          "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
+          "open": 11,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "INF-06",
+            "INF-45",
+            "RTG-34"
+          ],
+          "dispatchable": 1,
+          "gates": [
+            "INF-06",
+            "INF-45",
+            "RTG-34"
+          ],
+          "line": 1414,
+          "name": "meq-carve-reboot-gated-inventory-and-staging",
+          "open": 1,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1425,
+          "name": "meq-carve-repl-turn-efficiency",
+          "open": 1,
           "readiness": "ready"
         }
       ]
@@ -2139,14 +2380,14 @@
       "blocked": 8,
       "blocked_by": [],
       "closed": 213,
-      "dispatchable": 67,
+      "dispatchable": 65,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-02",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 76,
+      "open": 74,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -2166,11 +2407,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 27,
+          "dispatchable": 25,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 33,
+          "open": 31,
           "readiness": "ready"
         },
         {
@@ -2338,14 +2579,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
-      "dispatchable": 29,
+      "dispatchable": 28,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-02",
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
-      "open": 29,
+      "open": 28,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -2392,18 +2633,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 569,
           "name": "frontier-f3-data-flywheel",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 762,
+          "line": 761,
           "name": "stale-open-audit-2026-07-18",
           "open": 6,
           "readiness": "ready"
@@ -2415,14 +2656,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 63,
-      "dispatchable": 29,
+      "dispatchable": 28,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "last_advanced": "2026-11-02",
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
-      "open": 29,
+      "open": 28,
       "priority": 0.8497,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): RUS-3 \u2014 Repeated-sample run to measure within-question trace-length agreement (needs an in",
@@ -2445,11 +2686,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 18,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 19,
+          "open": 18,
           "readiness": "ready"
         },
         {
@@ -2515,14 +2756,14 @@
         "RTG-34"
       ],
       "closed": 4,
-      "dispatchable": 16,
+      "dispatchable": 15,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "last_advanced": "2026-10-29",
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
-      "open": 16,
+      "open": 15,
       "priority": 0.1561,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): S-04 \u2014 Capture contemporaneous E5 Stage-B readiness before future execution. The July stag",
@@ -2689,14 +2930,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 18,
-      "dispatchable": 23,
+      "dispatchable": 22,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "attention-matching-kv-compaction.md",
       "id": "INF-05",
       "last_advanced": "2026-11-02",
       "next_action": "Add exact PrefixRouter-key fingerprints to serving records; rerun KV-1 rolling-window count",
-      "open": 23,
+      "open": 22,
       "priority": 0.8035,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): KV-1a \u2014 Record a privacy-preserving hash of the exact canonical PrefixRouter key and immut",
@@ -2725,11 +2966,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 367,
           "name": "multiscreen-attention-evaluation",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
@@ -2892,14 +3133,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 180,
-      "dispatchable": 76,
+      "dispatchable": 60,
       "domain": "inference-research",
       "guarded": 1,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-02",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 79,
+      "open": 63,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -2919,45 +3160,45 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 37,
+          "dispatchable": 34,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 37,
+          "open": 34,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 616,
+          "line": 614,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 3,
           "gates": [],
-          "line": 975,
+          "line": 973,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 14,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 7,
           "gates": [],
-          "line": 1253,
+          "line": 1250,
           "name": "gpu-acceleration-path",
-          "open": 9,
+          "open": 7,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1889,
+          "line": 1885,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 12,
           "readiness": "ready"
@@ -2966,7 +3207,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2183,
+          "line": 2179,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -3262,14 +3503,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 59,
-      "dispatchable": 32,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-11-02",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 33,
+      "open": 31,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -3782,14 +4023,14 @@
       "blocked": 42,
       "blocked_by": [],
       "closed": 119,
-      "dispatchable": 44,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "last_advanced": "2026-11-02",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 86,
+      "open": 85,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -3818,11 +4059,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 9,
           "gates": [],
           "line": 982,
           "name": "multimodal-pipeline",
-          "open": 10,
+          "open": 9,
           "readiness": "ready"
         }
       ]
@@ -3832,14 +4073,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 64,
-      "dispatchable": 43,
+      "dispatchable": 42,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-02",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 44,
+      "open": 43,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -3877,11 +4118,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 14,
           "gates": [],
           "line": 645,
           "name": "tq3-quantization-evaluation",
-          "open": 16,
+          "open": 15,
           "readiness": "ready"
         }
       ]
@@ -3928,14 +4169,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 99,
-      "dispatchable": 74,
+      "dispatchable": 72,
       "domain": "pipeline-integration",
       "guarded": 1,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-02",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 78,
+      "open": 76,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -3973,20 +4214,20 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 18,
+          "dispatchable": 17,
           "gates": [],
           "line": 1850,
           "name": "document-parser-table-bench",
-          "open": 19,
+          "open": 18,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 17,
+          "dispatchable": 16,
           "gates": [],
           "line": 2466,
           "name": "opendataloader-pipeline-integration",
-          "open": 17,
+          "open": 16,
           "readiness": "ready"
         },
         {
@@ -4016,14 +4257,14 @@
         "INF-77"
       ],
       "closed": 52,
-      "dispatchable": 5,
+      "dispatchable": 4,
       "domain": "reviewer-control-plane",
       "guarded": 0,
       "handoff": "glm52-reviewer-capability-gates.md",
       "id": "REV-02",
       "last_advanced": "2026-10-29",
       "next_action": "GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles",
-      "open": 5,
+      "open": 4,
       "priority": 0.0636,
       "priority_basis": {
         "basis": "T7 non-inference best open item (I): GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim",
@@ -4346,14 +4587,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 143,
-      "dispatchable": 70,
+      "dispatchable": 69,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-02",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 74,
+      "open": 73,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -4391,18 +4632,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 447,
           "name": "memento-block-reasoning-compression",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 720,
+          "line": 713,
           "name": "per-request-reasoning-budget",
           "open": 6,
           "readiness": "ready"
@@ -4411,7 +4652,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1215,
+          "line": 1208,
           "name": "rao-redel-substrate-spike",
           "open": 7,
           "readiness": "ready"
@@ -4420,7 +4661,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1752,
+          "line": 1745,
           "name": "reasoning-compression",
           "open": 6,
           "readiness": "ready"
@@ -4429,7 +4670,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 2514,
+          "line": 2507,
           "name": "reasoning-effort-levels",
           "open": 15,
           "readiness": "ready"
@@ -4438,7 +4679,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2947,
+          "line": 2940,
           "name": "tool-output-compression",
           "open": 7,
           "readiness": "ready"
@@ -4450,14 +4691,14 @@
       "blocked": 4,
       "blocked_by": [],
       "closed": 171,
-      "dispatchable": 97,
+      "dispatchable": 96,
       "domain": "routing-and-optimization",
       "guarded": 1,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-03",
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
-      "open": 102,
+      "open": 101,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -4540,11 +4781,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 29,
+          "dispatchable": 28,
           "gates": [],
           "line": 2768,
           "name": "typed-decision-plane",
-          "open": 29,
+          "open": 28,
           "readiness": "ready"
         },
         {
@@ -4660,14 +4901,14 @@
         "UFH-14"
       ],
       "closed": 6,
-      "dispatchable": 16,
+      "dispatchable": 15,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "last_advanced": "2026-10-21",
       "next_action": "RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24",
-      "open": 16,
+      "open": 15,
       "priority": 0.1734,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): RI-25 \u2014 Zero-inference fold replay over delegation records (intake-2565#record). Apply the",

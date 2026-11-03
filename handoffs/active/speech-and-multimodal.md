@@ -1813,7 +1813,7 @@ the only open question is wall-clock. Scope any trial accordingly: latency, neve
 (The quality-side resolution and the ERNIE swap decline live in
 [`ernie-image-turbo-evaluation.md`](ernie-image-turbo-evaluation.md) — not this handoff.)
 
-- [ ] Keep Z-Image-Turbo as a LATENCY candidate only, decoupled from quality (6B vs 8B, GGUF 2.59-6.58 GB, apache-2.0, runnable on today's binary) against the ~3 min @1024² CPU problem. Any trial must repeat the Q8-vs-Q4 A/B locally.
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-multimodal-pipeline on 2026-11-03 (BRF-T1-MEQ, operator D2): "Keep Z-Image-Turbo as a LATENCY candidate only, decoupled from …".*
 - [ ] Note the rank-32 distill-patch LoRA (476 BF16 tensors over all 34 blocks) as a Base↔Turbo conversion mechanism; alpha-scaling for step-vs-quality is an UNTESTED hypothesis, and sd.cpp `lora.hpp` key resolution for z_image is unverified.
 
 #### Trigger Gate: worker_vision 4×-quarters recollection

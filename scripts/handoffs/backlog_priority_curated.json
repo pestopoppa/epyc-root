@@ -152,7 +152,24 @@
   "RTG-09#learned-routing-controller": 0.35,
   "RTG-09#model-capability-descriptors": 0.05,
   "RTG-09#typed-decision-plane": 0.35,
-  "RTG-09#x-mas-text-routing": 0.1
+  "RTG-09#x-mas-text-routing": 0.1,
+  "EVL-02#meq-carve-gpu-serving-tie-in-program": 0.7,
+  "EVL-02#meq-carve-gpu-acceleration-path": 0.3,
+  "EVL-02#meq-carve-eval-tower-verification": 0.2,
+  "EVL-02#meq-carve-multiscreen-attention-evaluation": 0.15,
+  "EVL-02#meq-carve-speculative-decoding-mtp-refresh": 0.55,
+  "EVL-02#meq-carve-glm52-reviewer-capability-gates": 0.2,
+  "EVL-02#meq-carve-typed-decision-plane": 0.35,
+  "EVL-02#meq-carve-routing-intelligence": 0.2,
+  "EVL-02#meq-carve-memento-block-reasoning-compression": 0.15,
+  "EVL-02#meq-carve-frontier-f3-data-flywheel": 0.25,
+  "EVL-02#meq-carve-tq3-quantization-evaluation": 0.45,
+  "EVL-02#meq-carve-multimodal-pipeline": 0.4,
+  "EVL-02#meq-carve-opendataloader-pipeline-integration": 0.25,
+  "EVL-02#meq-carve-document-parser-table-bench": 0.2,
+  "EVL-02#meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix": 0.4,
+  "EVL-02#meq-carve-reboot-gated-inventory-and-staging": 0.2,
+  "EVL-02#meq-carve-repl-turn-efficiency": 0.5
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -202,7 +219,11 @@
   "RTG-09#retrain-routing-models": "operator decision or approval pending",
   "RTG-09#tri-role-coordinator-architecture": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-09#typed-decision-plane": "",
-  "RTG-09#x-mas-text-routing": ""
+  "RTG-09#x-mas-text-routing": "",
+  "EVL-02#meq-carve-glm52-reviewer-capability-gates": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
+  "EVL-02#meq-carve-typed-decision-plane": "",
+  "EVL-02#meq-carve-routing-intelligence": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
+  "EVL-02#meq-carve-reboot-gated-inventory-and-staging": "operator decision or approval pending"
  },
  "park": {
   "INF-06": "MMQ",

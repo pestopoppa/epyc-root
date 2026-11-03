@@ -4,31 +4,31 @@
       "blocked": 59,
       "handoffs": 30,
       "oldest_advance": "2026-07-29",
-      "open": 1039
+      "open": 1018
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
       "oldest_advance": "2026-11-02",
-      "open": 74
+      "open": 72
     },
     "research-evaluation-index.md": {
       "blocked": 18,
       "handoffs": 11,
       "oldest_advance": "2026-10-24",
-      "open": 776
+      "open": 803
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
       "handoffs": 4,
       "oldest_advance": "2026-10-06",
-      "open": 26
+      "open": 25
     },
     "routing-and-optimization-index.md": {
       "blocked": 14,
       "handoffs": 13,
       "oldest_advance": "2026-08-03",
-      "open": 659
+      "open": 656
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -140,7 +140,7 @@
       "closed": 18,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 23,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -149,7 +149,7 @@
       },
       "row_id": "INF-05",
       "state": "active",
-      "total": 41,
+      "total": 40,
       "tracks": [
         {
           "blocked": 0,
@@ -169,7 +169,7 @@
           "line": 367,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
@@ -614,7 +614,7 @@
       "closed": 143,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 70,
+      "open": 69,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -623,7 +623,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 217,
+      "total": 216,
       "tracks": [
         {
           "blocked": 0,
@@ -653,14 +653,14 @@
           "line": 447,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 720,
+          "line": 713,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 6
@@ -670,7 +670,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1215,
+          "line": 1208,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 6
@@ -680,7 +680,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1752,
+          "line": 1745,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 6
@@ -690,7 +690,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2514,
+          "line": 2507,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 12
@@ -700,7 +700,7 @@
           "closed": 48,
           "gates": [],
           "guarded": 0,
-          "line": 2947,
+          "line": 2940,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 7
@@ -954,7 +954,7 @@
       "closed": 213,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 67,
+      "open": 65,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -963,7 +963,7 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 289,
+      "total": 287,
       "tracks": [
         {
           "blocked": 6,
@@ -973,7 +973,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 27
+          "open": 25
         },
         {
           "blocked": 1,
@@ -1140,7 +1140,7 @@
       "closed": 75,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 29,
+      "open": 28,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1149,7 +1149,7 @@
       },
       "row_id": "EVL-29",
       "state": "active",
-      "total": 104,
+      "total": 103,
       "tracks": [
         {
           "blocked": 0,
@@ -1189,14 +1189,14 @@
           "line": 569,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 762,
+          "line": 761,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 6
@@ -1256,7 +1256,7 @@
       "closed": 52,
       "guarded": 0,
       "last_advanced": "2026-10-29",
-      "open": 5,
+      "open": 4,
       "owner_index": "reviewer-control-plane-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1265,7 +1265,7 @@
       },
       "row_id": "REV-02",
       "state": "active",
-      "total": 57
+      "total": 56
     },
     "gpu-candidates-surface-qwen38-update.md": {
       "blocked": 0,
@@ -1360,7 +1360,7 @@
       "closed": 99,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 74,
+      "open": 72,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1369,7 +1369,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 177,
+      "total": 175,
       "tracks": [
         {
           "blocked": 0,
@@ -1399,7 +1399,7 @@
           "line": 1850,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 18
+          "open": 17
         },
         {
           "blocked": 0,
@@ -1409,7 +1409,7 @@
           "line": 2466,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 17
+          "open": 16
         },
         {
           "blocked": 1,
@@ -1588,7 +1588,7 @@
       "closed": 180,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 76,
+      "open": 60,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1597,7 +1597,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 259,
+      "total": 243,
       "tracks": [
         {
           "blocked": 0,
@@ -1607,14 +1607,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 37
+          "open": 34
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 616,
+          "line": 614,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 2
@@ -1624,27 +1624,27 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 975,
+          "line": 973,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 14
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1253,
+          "line": 1250,
           "markers": 1,
           "name": "gpu-acceleration-path",
-          "open": 9
+          "open": 7
         },
         {
           "blocked": 0,
           "closed": 18,
           "gates": [],
           "guarded": 1,
-          "line": 1889,
+          "line": 1885,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 11
@@ -1654,7 +1654,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2183,
+          "line": 2179,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1666,7 +1666,7 @@
       "closed": 110,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 69,
+      "open": 101,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1675,7 +1675,7 @@
       },
       "row_id": "EVL-02",
       "state": "active",
-      "total": 183,
+      "total": 215,
       "tracks": [
         {
           "blocked": 0,
@@ -1796,6 +1796,184 @@
           "markers": 1,
           "name": "tidar-one-pass-variant-b",
           "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1273,
+          "markers": 1,
+          "name": "meq-carve-gpu-serving-tie-in-program",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1284,
+          "markers": 1,
+          "name": "meq-carve-gpu-acceleration-path",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1293,
+          "markers": 1,
+          "name": "meq-carve-eval-tower-verification",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1301,
+          "markers": 1,
+          "name": "meq-carve-multiscreen-attention-evaluation",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1308,
+          "markers": 1,
+          "name": "meq-carve-speculative-decoding-mtp-refresh",
+          "open": 2
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [
+            "INF-77"
+          ],
+          "guarded": 0,
+          "line": 1316,
+          "markers": 1,
+          "name": "meq-carve-glm52-reviewer-capability-gates",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1330,
+          "markers": 1,
+          "name": "meq-carve-typed-decision-plane",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [
+            "UFH-14"
+          ],
+          "guarded": 0,
+          "line": 1337,
+          "markers": 1,
+          "name": "meq-carve-routing-intelligence",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1347,
+          "markers": 1,
+          "name": "meq-carve-memento-block-reasoning-compression",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1361,
+          "markers": 1,
+          "name": "meq-carve-frontier-f3-data-flywheel",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1369,
+          "markers": 1,
+          "name": "meq-carve-tq3-quantization-evaluation",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1376,
+          "markers": 1,
+          "name": "meq-carve-multimodal-pipeline",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1383,
+          "markers": 1,
+          "name": "meq-carve-opendataloader-pipeline-integration",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1390,
+          "markers": 1,
+          "name": "meq-carve-document-parser-table-bench",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1397,
+          "markers": 1,
+          "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
+          "open": 11
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [
+            "INF-06",
+            "INF-45",
+            "RTG-34"
+          ],
+          "guarded": 0,
+          "line": 1414,
+          "markers": 1,
+          "name": "meq-carve-reboot-gated-inventory-and-staging",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 1425,
+          "markers": 1,
+          "name": "meq-carve-repl-turn-efficiency",
+          "open": 1
         }
       ]
     },
@@ -1930,7 +2108,7 @@
       "closed": 64,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 43,
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1939,7 +2117,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 108,
+      "total": 107,
       "tracks": [
         {
           "blocked": 0,
@@ -1969,7 +2147,7 @@
           "line": 645,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
-          "open": 15
+          "open": 14
         }
       ]
     },
@@ -1978,7 +2156,7 @@
       "closed": 4,
       "guarded": 0,
       "last_advanced": "2026-10-29",
-      "open": 16,
+      "open": 15,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1987,7 +2165,7 @@
       },
       "row_id": "EVL-49",
       "state": "active",
-      "total": 20
+      "total": 19
     },
     "repl-embedding-retrieval.md": {
       "blocked": 2,
@@ -2010,7 +2188,7 @@
       "closed": 63,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 29,
+      "open": 28,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2019,7 +2197,7 @@
       },
       "row_id": "EVL-37",
       "state": "active",
-      "total": 92,
+      "total": 91,
       "tracks": [
         {
           "blocked": 0,
@@ -2029,7 +2207,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 19
+          "open": 18
         },
         {
           "blocked": 0,
@@ -2144,7 +2322,7 @@
       "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-10-21",
-      "open": 16,
+      "open": 15,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2153,14 +2331,14 @@
       },
       "row_id": "RTG-30",
       "state": "active",
-      "total": 22
+      "total": 21
     },
     "routing-program.md": {
       "blocked": 4,
       "closed": 171,
       "guarded": 1,
       "last_advanced": "2026-11-03",
-      "open": 97,
+      "open": 96,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2169,7 +2347,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 273,
+      "total": 272,
       "tracks": [
         {
           "blocked": 1,
@@ -2239,7 +2417,7 @@
           "line": 2768,
           "markers": 1,
           "name": "typed-decision-plane",
-          "open": 29
+          "open": 28
         },
         {
           "blocked": 0,
@@ -2306,7 +2484,7 @@
       "closed": 59,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 32,
+      "open": 30,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2315,14 +2493,14 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 92
+      "total": 90
     },
     "speech-and-multimodal.md": {
       "blocked": 42,
       "closed": 119,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 44,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2331,7 +2509,7 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 205,
+      "total": 204,
       "tracks": [
         {
           "blocked": 42,
@@ -2351,7 +2529,7 @@
           "line": 982,
           "markers": 1,
           "name": "multimodal-pipeline",
-          "open": 10
+          "open": 9
         }
       ]
     },

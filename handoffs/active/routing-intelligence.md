@@ -405,10 +405,7 @@ is a purpose-built prompt-router encoder and is therefore a useful external refe
 a dedicated router head buys over our MLP; it is **not** a replacement candidate, and opening it as
 one would fork an already-unfinished program.
 
-- [ ] **RI-CMP-1** — file LFM2.5-Encoder-350M-Prompt-Router as a `monitor_only` comparator against the MLP learned-routing controller. Do NOT open a work item: Phases 1.5-3 are unfinished and this is a comparator, not a replacement.
-  - *2026-09-23 (intake-1502, intake-1501):* also file Laya (laya / laya-multilingual) as a `monitor_only` comparator — near
-    chance zero-shot on routing (DDnim tier 9/20 and 5/20), its worst-calibrated bucket (choice:11+) is where an 11-way
-    routing choice lands, and it re-encodes the state per question. Not a work item.
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-routing-intelligence on 2026-11-03 (BRF-T1-MEQ, operator D2): **RI-CMP-1**.*
 
 ## Reporting Instructions
 

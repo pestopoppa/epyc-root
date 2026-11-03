@@ -309,11 +309,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
   - **Source phase accepted, 2026-10-21 (original event 2026-10-08):** the same capture closed by VB-EVL49-S05-CORRECTED-ROSTER-CAPTURE preserves original TRUE outer1/1, corrected saved-E1 33 manifests, two W1/W4 dry plans, 48 outputs and 2,764 inputs. Roster SHA-256 `c577e45a0d37682b1d536df5c12ce86fe43807b9f25fd08e0ae74d312a96ef2e`. [Original custody and exclusions](../../artifacts/ci/evl49-s05-native-source-20261008/README.md). S05 stays open for current 1.35 GB pool/placement and owner-window observations; synthetic observer capture is separately tracked by VB-EVL49-S05-OBSERVER-SOURCE-CAPTURE, not a new completed S05 source checkbox.
   - **2026-11-02 BRF-T3 (ws58):** the existing `e5_manifests_a7_placement1` Qwen set (20) does NOT yet satisfy the five requirements. 10 C1b manifests fail (b), with straddling cpusets, policy none and no control declaration. 0/20 declare a per-cell drop for (c). (a) passes. The grid still needs generating, and the launcher `a7-fire-20260813` is MISSING. The box stays open. [belief: cc] `docs/design/backlog-refactor-2026-11/t3-evidence/e5-adjudication-20261102.json`
 
-- [ ] **S-06 — Build the ThinkPRM-1.5B Q4_K_M GGUF and land the EV-5 wiring** (HF pull →
-      `convert_hf_to_gguf.py` → `llama-quantize`; `orchestrator_stack.py` sequential-load config;
-      `eval_t2()` uncertain-question selection + P(yes) extraction; wire the existing
-      `check_cross_family()`). Zero inference; it is the acknowledged blocker on the largest gated
-      cluster.
+- *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-reboot-gated-inventory-and-staging on 2026-11-03 (BRF-T1-MEQ, operator D2): **S-06**.*
 - [ ] **S-07 — Acquire the OmniDocBench source PDFs and mint an immutable manifest.** Unblocks
       `opendataloader-pipeline-integration.md` and `document-parser-table-bench.md` (same work filed
       twice). Record that the real local ceiling is 51 eligible PDFs, not 200.

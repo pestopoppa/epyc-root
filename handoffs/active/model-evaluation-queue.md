@@ -1269,3 +1269,162 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 - [ ] **W2 — checkpoint gate + Q4 quality validation** (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exists today — deep-dive §10.4.3 calls this question dormant until then); on release, quantize and measure the quality delta (TiDAR-8B showed 6–9% HumanEval/MBPP loss at BF16; the gap may widen under Q4). Acceptance: go/no-go quality verdict recorded with eval protocol.
 - [ ] **W3 — ggml-op implementation** (5–10 days, gated on W2 go): unified causal+bidirectional mask single-forward draft+verify path in the experimental fork (per `feedback_experimental_repo`). Acceptance: correctness vs reference AR output; acceptance-rate instrumentation in place.
 - [ ] **W4 — canonical bench + decision memo** (~1 day): end-to-end decode vs AR baseline per the canonical protocol; synthesize into the Variant A vs B memo per deep-dive §10.5 step 4. Acceptance: claim filed per MEASUREMENT.md grammar; promote/park decision recorded.
+
+## Track: meq-carve-gpu-serving-tie-in-program
+<!-- gate: none -->
+
+> Carved from `handoffs/active/gpu-serving-tie-in-program.md` (since folded into `mi210-serving-program.md`, row INF-22) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 3 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **P3-5 (NEW 2026-10-20) — re-seat the bake-off arms; P3-1 cannot run as written.** All three gpu_shadow_lane tenant GGUFs were deleted in the operator-approved 2026-10-20 disk reclaim: stock `Qwen_Qwen3.6-27B-Q8_0.gguf`, FF `Qwen3.6-27B-Fable-Fus-711-...-Q8_0.gguf` and its `-MTP-Q8_0` build (graveyard rows in the research registry, research `2bc4fe3ca`). The served 27B is now Qwen3.8-27B (operator: "we use qwen3.8 now"). Choose the new arms (e.g. the on-disk Qwen3.8-27B Q8 MTP, or a re-download) as a decision package for the operator. Then update `orchestration/gpu_shadow_lane_tenancy.yaml`, `gpu_shadow_lane_np_ceiling.yaml` (new np_ceiling rows need measurement) and `scripts/server/gpu_shadow_lane.py` `TENANT_CANDIDATE_MODEL`, which carry dated deleted-weights comments since orch `9fbcbcf3`.
+  - [Arm-selection decision package](../../docs/design/gpu-serving-p3-5-arm-selection.md): recommends Qwen3.8-27B versus the existing A4 bridge as a sequential control, subject to artifact and recipe verification. The operator's arm choice remains outstanding; neither this recommendation nor the incumbent's presence authorizes configuration or traffic changes.
+  - 2026-11-02 operator decision: Qwen3.8-27B vs the A4 bridge as sequential control (package recommendation) (decisions-batch2-4-20261102.json)
+- [ ] **GPU-LOOP-2 — Looped small model as a reliability-boosted batch worker on the MI210: quality vs loops vs aggregate throughput against equal-cost dense and K-sample controls (intake-2585#record, intake-2547#record, intake-2551#record).** Question: at high concurrency (elastic-duty D1 batch-shedding class, np 16), does Ouro-1.4B (and 2.6B-Thinking as second tier) at 1/2/4 loops buy more correct worker answers per HBM byte than a non-looped model? Arms, served-cost arithmetic at np=16, C=1k, f16 KV (ideal step times, to be measured in GPU-LOOP-1): A1 Ouro-1.4B L=4 (5.76 GB weights/step + 12.9 GB KV, 13.0 ms, 1,230 tok/s); A2 L=2 (about 2,300); A3 L=1 (about 7,100 on the same weights); A4 Ouro-2.6B-Thinking L=4 (48 layers, about 11.3 GB weights/step, 1.5 MiB/token KV); C1 Qwen3-4B-Thinking-2507 Q8 (4.28 GB, 144 KiB/token, 3,420 tok/s, the equal-quality-class dense control); C2 Qwen3-1.7B Q8 majority-of-4 (about the same bytes per final answer as A1, 1,545 answer-equivalent tok/s: the K-sample route that the idle MFMA headroom makes free); C3 Qwen3-1.7B Q8 single sample (equal resident bytes); C0 the incumbent worker, Qwen3.6-35B-A3B on CPU :8070 (registry roles.worker_general.performance.quality_pct is null: it has never been scored on the worker battery, so it is measured here on the same frozen items). Frozen inputs: GSM8K-style math (n>=200, same problem list as the PR so the 26.0/67.0/80.5 published curve is a replication check) plus worker-battery items for explore, summarize, transform and strict tool-call JSON (n>=150 per suite), item list and scorer hashed before any generation; Ouro context stays under its trained 1024-token block (Ouro RECIPES: block_size 1024), longer prompts are a separate reported stratum. Per arm: pass@1 over 3 seeds, seed-to-seed agreement, JSON-validity rate, aggregate tok/s at np 16, wall-seconds per correct answer and correct answers per HBM GB moved; per-item raw outputs kept; correctness legs may share the card with :8083, throughput legs run in a GPU window with the host threads under the q3 claim. Controls: frozen inputs, incumbent baseline (C0 and C1), per-item raw outputs, 3-seed repeat with the A/B order alternated, full denominator including parse failures, predeclared rule. Decision rule: an Ouro arm earns a shadow-lane tenancy row (D3 shadow-only, no production traffic) only if (i) its paired accuracy vs C1 is within 2 points (McNemar not worse) and its seconds per correct answer at np=16 is at most 1.5x C1, or (ii) it beats C1 by at least 5 points at paired p<0.05 at no more than 2.5x C1 cost; the arithmetic predicts A1 costs 2.8x C1 per token, so (i) needs a real quality edge. Otherwise record NO-GO with the table and keep Ouro only as the vehicle for GPU-LOOP-3. Depends on the GPU-LOOP-1 build (our own task, not an external event).
+- [ ] **GPU-PLT-1 — LoopCoder-v2 (7.6B PLT coder, Apache-2.0) quality screen on the MI210 through transformers custom code, before and independent of the GGUF port (intake-2584#record, intake-2571#record).** Load Multilingual-Multimodal-NLP/LoopCoder-V2 at the pinned HF sha b87cf3a (BF16, 7,615,749,680 params, 15.2 GB, fits the about 19 GiB headroom beside :8083 without a KV problem) in an isolated venv with the transformers version its configuration_iquestpltcoder.py needs (Ouro needed 4.57.x, the research venv has 5.15.0: do not assume); confirm torch.version.hip and bf16 on gfx90a first; read config.json to see whether the loop count is a config field (the paper trains R=1..4 as separate models, so a forced R=1 on the released weights is not the paper R=1). Frozen inputs: HumanEval+ (164), LiveCodeBench subset released after the model cutoff (n>=200), BigCodeBench-hard subset, plus the frozen coder-suite items used for coder_escalation (cruxeval and the others E-7 scored: math 85.0, mmlu_pro 27.5, gpqa_diamond 47.5, cruxeval 22.5 at terse template 1443ea9ab4bb). Arms: LoopCoder-v2 as released; incumbent coder_escalation Qwen3.8-27B Q8 on :8083 (same harness, thinking off and medium); frontdoor Qwen3.6-35B-A3B on CPU; size control Qwen3-4B-Instruct-2507 (on disk). Controls: frozen items and scorer hashes, incumbent baselines, per-item raw outputs, 2 seeds, full denominator, rule below. Replication check against the paper own table: R=2 reports HE+ 84.1, LCB 35.4, BCB 46.1 and SWE-bench Verified 64.4 (harness unnamed, single seed, vendor-authored); accept the replication if HE+ >= 80 and the LCB subset score is within 5 points of the paper 35.4 after harness adjustment stated. Decision rule: open the serving legs of GPU-PLT-2 (agentic SWE-40 on the same scaffold that scored Qwen3.8-27B 21/40 = 52.5%, shadow lane only) if pooled pass@1 over HE+ and LCB is non-inferior to Qwen3.8-27B within 8 points (paired bootstrap lower bound) or the replication check passes; otherwise record NO-GO with the table (the port of GPU-PLT-2 still completes as parity work). Arithmetic that motivates it: at np=16, C=8k, Q8 (about 8.1 GB incl. head, KV 56 KiB/token f16 because later loops share loop-1 KV and keep only a 64-token window) a PLT-2 step is about 15.2 GB / 1433 GB/s = 10.6 ms bandwidth vs 2.5 ms compute at 32 rows, i.e. 1,510 tok/s ideal aggregate (about 600 derated by the 27B np8 ratio 157/400), vs 94 tok/s live at 4 concurrent on the 27B.
+
+## Track: meq-carve-gpu-acceleration-path
+<!-- gate: none -->
+
+> Carved from `handoffs/active/gpu-acceleration-path.md` (since folded into `mi210-serving-program.md` § Track: gpu-acceleration-path, row INF-22) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 2 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] intake-310 -ot exps=CPU / --n-cpu-moe hybrid MoE offload probe on MI210
+  - PRIOR (2026-09-07, first real-hardware measurement of exactly this comparison — it moves the probe's expected value DOWN, the useful direction): Gemma-4-26B-A4B, same GGUF, llama.cpp b10630, RX 9060 XT 16 GB on a 6-core/32 GB host — offload 62–73 tok/s vs --n-cpu-moe 15.0, and fully-resident llama.cpp still beat it at 84.8. TWO MANDATORY SCOPE LIMITS: the model FITS in VRAM there, and the 15.0 baseline is 6 cores of dual-channel memory against our 48.5 t/s on the same model family. Carrying artifact is the fork README, not issue #122. intake-1343#03.
+- [ ] **GPU-LOOP-1 — Looped-architecture build on llama.cpp-experimental (Nanbeige #25994 + Ouro #29823) and its MI210 + CPU roofline curves (intake-2585#record, intake-2586#record, intake-2547#record, intake-2571#record).** Cut a fresh llama.cpp-experimental branch from the production v10 tip (ffc1bac82), cherry #25994 (merged b77d646, 265 lines) then #29823 (open, head e79d8cab5, 324 lines) with no other change; build HIP gfx90a and CPU; convert ByteDance Ouro-1.4B and 2.6B (+Thinking) to GGUF Q8_0 and Q4_K_M and record sha256. Gate 1 (correctness, may share the card with :8083): tests/test-llama-archs passes for ouro and nanbeige on CPU and HIP, and top-1 logit parity vs the transformers reference on the PR 829-position fixture at loops 1/2/4 is reproduced on gfx90a (use -ngl 999: -ngl counts logical layers, 192 for 2.6B, and -ngl 99 spilled to 1.6 tok/s in the PR thread). Gate 2 (timing, in a GPU window, host threads on 184-191 under the q3 claim): llama-batched-bench tg at loops {1,2,4} x np {1,2,4,8,16,32} x ctx {512,1024,2048} x KV {f16,q8_0} for Ouro-1.4B Q8_0, with Qwen3-1.7B-Q8_0 and Qwen3-4B-Thinking-2507-Q8_0 (both on disk) as same-build dense comparators; per cell report aggregate tok/s, achieved GB/s under the byte model bytes/step = W_body*L + W_head + B*C*kv_per_slot*L against the 1433 GB/s measured roof, and the ratio to the ideal step time. Same build, CPU leg (replaces W2LOOP-1): loops 1/2/4 on one quarter and the full socket, GB/s vs the C0 153 GB/s ceiling. Predictions fixed before the run (arithmetic, Ouro-1.4B: W_body 1.41 GB Q8, head 0.11 GB, 24 layers, 16 MHA KV heads x 128 = 8 KiB per layer slot): aggregate falls as 1/L at every np (a 55 MB layer cannot sit in the 8 MB L2, so no reuse across loops); at C=1024, f16 KV, L=4 the np-to-infinity ceiling is 1433e9/(1024*786432) = 1,780 tok/s and np=16 gives 16/13.0 ms = 1,230 tok/s ideal vs 3,420 for Qwen3-4B Q8 (4.28 GB, 144 KiB/token); the KV share exceeds the weight share beyond np=7; compute time is under 1/5 of byte time at every np that fits (VRAM headroom beside the 43 GiB :8083 is about 19 GiB, so np about 23 at C=1k f16), so the B*=64 knee is not reached for C above about 123 tokens. Six controls: frozen GGUF sha256 and prompts; comparators on the same build; per-cell raw JSON kept; 3 repeats ABA-alternated with the noise floor stated with its unit; full grid denominator (no cell dropped, VRAM-skipped cells listed); the rule below. Decision rule: PASS if parity holds and every measured aggregate lies within 0.5-1.1x of the byte-model prediction; a cell below 0.5x opens a HIP-kernel root-cause row (stale-binary check first: strings the lib, compare mtime to the commit) and is not a verdict on looping; this task issues no quality verdict. Writes the GPU arithmetic table into cpu-decode-roofline-program.md as the GPU half of the weight-reuse note (LOOP-1).
+
+## Track: meq-carve-eval-tower-verification
+<!-- gate: none -->
+
+> Carved from `handoffs/active/eval-tower-verification.md` (since folded into `eval-tower-program.md`, row EVL-14) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 2 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] Add server config for ThinkPRM in `orchestrator_stack.py` (load only during T2 eval, unload main models — sequential loading per memory note) [too-big: shared-runtime unload lifecycle requires serving owner]
+- [ ] Integrate Ouro-2.6B (P7) as T0 sentinel verification candidate
+
+## Track: meq-carve-multiscreen-attention-evaluation
+<!-- gate: none -->
+
+> Carved from `handoffs/active/multiscreen-attention-evaluation.md` (since folded into `attention-matching-kv-compaction.md` § Track: multiscreen-attention-evaluation, row INF-05) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **HRM-1**: Pull `huggingface.co/sapientinc/HRM-Text-1B` and run a **fair head-to-head against `Qwen3.5-1.7B-Instruct`** on our benchmark suite (MMLU, ARC-C, GSM8K, MATH, DROP — the same reported suite, plus our REPL/tool benchmark for cross-coverage). The apples-to-oranges concern is the headline-killer; resolve it before any downstream decision. Inference path: transformers-library CPU (no llama.cpp option today). Effort: low — public weights, public eval scripts, runs on EPYC CPU at maybe 5-10 t/s like Ouro. Owner: TBD. **Gates**: HRM-2, HRM-3.
+
+## Track: meq-carve-speculative-decoding-mtp-refresh
+<!-- gate: none -->
+
+> Carved from `handoffs/active/speculative-decoding-mtp-refresh.md` (in `speculative-decoding-mtp-refresh.md`, row INF-50) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 2 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **T4 (after T2 binary, low EV) — gate-bench Qwen3.6-35B-A3B** (Block C) for frontdoor/coder; mind the Q8(prod)-vs-Q4(MTP-GGUF) quant-parity caveat + MoE-on-CPU skepticism. **2026-07-17 artifact audit:** no Qwen3.6-35B-A3B Q4 or Q4-MTP GGUF is present under `/mnt/raid0/llm/models` or the old LM Studio cache; only Q8 frontdoor files and a stale HF metadata stub remain. Do not burn a quiet window on a Q8-vs-Q4 mismatch or call same-Q8 diagnostics the T4 gate. T4 is artifact-blocked until a matching Q4 no-spec / Q4-MTP pair is available, or explicitly re-scoped to a same-quant Q8 diagnostic.
+- [ ] Bench DFlash accept-rate on Laguna: {Q8_0, Q4_K_M, IQ2_M} target x BF16 DFlash drafter. PRECONDITION: download Q8_0 (128GB) after architect benches free disk. Reopen the March NO-GO (`../completed/dflash-block-diffusion-speculation.md`) only if the Q8_0 target recovers per-token acceptance toward ~60%. **Causal correction 2026-07-29:** target-side quant noise in conditioning hidden states remains a hypothesis, not an established root cause: Laguna moved only 17.2% (Q4) → 19.0% (Q8), and BF16/F16 targets remain untested. The BF16 drafter alone cannot settle a target-side effect; treat acceptance as the gate rather than presuming its cause.
+
+## Track: meq-carve-glm52-reviewer-capability-gates
+<!-- gate: INF-77 -->
+
+> Carved from `handoffs/active/glm52-reviewer-capability-gates.md` (in `glm52-reviewer-capability-gates.md`, row REV-02) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **GC-6 — Evaluate the two-axis reviewer split** (model-agnostic; carries over to the 2026-09-22 DeepSeek-V4.1-Flash retarget unchanged) (intake-1304, intake-1305; 2026-09-07). Split
+  review into two independent reviewers — one checks that the artifact *says what was asked*
+  (faithfulness), the other checks *quality* — with both required to approve, against our current
+  single-reviewer gate. The source ran this at scale: reviewers were 13,602 of its 30,046 agent runs,
+  i.e. 45% of all runs were review passes, which is a real cost this evaluation must price. **Weigh
+  it against the counter-evidence in the follow-up system:** stricter review there produced an
+  adversarial dynamic in which workers "hide axioms in increasingly subtle ways", so the question to
+  answer is whether a second axis buys fidelity or merely displaces evasion into a subtler form.
+
+## Track: meq-carve-typed-decision-plane
+<!-- gate: none -->
+
+> Carved from `handoffs/active/typed-decision-plane.md` (since folded into `routing-program.md` § Track: typed-decision-plane, row RTG-09) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **TD-23.D1 — Prepare d1-2B as TD-23's local compact decision backend, behind parity and batch-invariance gates (intake-2582#record, intake-2581#record, intake-2593#record, intake-2595#record, intake-2602#record).** Build a scratch upstream llama-server on llama.cpp-experimental from a fresh production tip that contains the /v1/systemone endpoint (PR 29818, merge a4cb4c61) as a measurement instrument, not a port onto v10; include the non-causal ubatch fix (PR 30408) only if the screened model is non-causal; read the LFM Open License v1.0 first. Before any quality number: (1) parity gate, the same d1-2B GGUF at BF16 and Q8_0 on CPU and on HIP, stop on any argmax flip or a worst probability difference above 2.2e-2; (2) batch-invariance gate, request alone at np 1 versus the same request co-batched at np 3 with shorter, longer and identical companions and across two batch cuts, threshold 1e-3. Run the screen at np 1 per decision server until an upstream hybrid-prefix fix lands, and pin np, n_batch and n_ubatch in the receipt. Only choice, score and noul answers are served. When CJ-15 and HS-TD-4 exist, d1-2B Q8_0 is the TD-23 local backend arm against the constrained incumbent on the sealed row-pinned workload.
+
+## Track: meq-carve-routing-intelligence
+<!-- gate: UFH-14 -->
+
+> Carved from `handoffs/active/routing-intelligence.md` (in `routing-intelligence.md`, row RTG-30) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **RI-CMP-1** — file LFM2.5-Encoder-350M-Prompt-Router as a `monitor_only` comparator against the MLP learned-routing controller. Do NOT open a work item: Phases 1.5-3 are unfinished and this is a comparator, not a replacement.
+  - *2026-09-23 (intake-1502, intake-1501):* also file Laya (laya / laya-multilingual) as a `monitor_only` comparator — near
+    chance zero-shot on routing (DDnim tier 9/20 and 5/20), its worst-calibrated bucket (choice:11+) is where an 11-way
+    routing choice lands, and it re-encodes the state per question. Not a work item.
+
+## Track: meq-carve-memento-block-reasoning-compression
+<!-- gate: none -->
+
+> Carved from `handoffs/active/memento-block-reasoning-compression.md` (since folded into `context-and-token-economy.md` § Track: memento-block-reasoning-compression, row RTG-08) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)
+      **Pipeline PROVEN end-to-end 2026-08-12** (`mainC`, research `c62ba27e`) — but the table stays
+      empty deliberately. At **16 optimizer steps** a format-compliance number would read ~0% and would
+      later be cited as *"Memento format learning failed"*; that column needs a real run, not a smoke.
+      The one solid figure is **compression ratio 5.91×** (corpus block:summary tokens, 300 records) —
+      a dataset ground-truth property with no model involved. Loss 1.354 → 1.249 is a drift, **not** a
+      convergence claim. Adapter verified real: 336 tensors all finite, **168/168 `lora_B` off zero
+      init**, so weights genuinely updated.
+
+## Track: meq-carve-frontier-f3-data-flywheel
+<!-- gate: none -->
+
+> Carved from `handoffs/active/frontier-f3-data-flywheel.md` (since folded into `frontier-lab-automation.md` § Track: frontier-f3-data-flywheel, row EVL-29) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+  - [ ] Repeat the W3(a) fit check on the real Qwen3.5-9B once its HF weights are local (~19 GB download, operator
+    approval) — only if the 9B answer itself is wanted rather than this bound.
+
+## Track: meq-carve-tq3-quantization-evaluation
+<!-- gate: none -->
+
+> Carved from `handoffs/active/tq3-quantization-evaluation.md` (since folded into `quantization-and-low-bit.md` § Track: tq3-quantization-evaluation, row INF-80) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] Parked operator-review candidate (re-scoped 2026-07-19): the GGUFs already EXIST and are public (`prism-ml/Bonsai-27B-gguf` Q1_0 ~3.8 GB; `prism-ml/Ternary-Bonsai-27B-gguf` Q2_0 ~7.17 GB). The **1-bit Q1_0** variant is v7-loadable and partially coherent, but the first CPU+MI210 strict-output gate failed instruction-format compliance; reopen only on a named prompt/template/protocol fix, not broader speed or generic quality churn. The **ternary Q2_g64** variant is acceleration-interesting with MI210 `ngram-mod` on structured-copy tasks, but also failed strict quality and is not role-ready; reopen only on a named quality/protocol fix. The **ternary Q2_0** headline variant is verifier-confirmed noncanonical under current v7; reopen only after an explicit producer/export fix, transcode, or compatibility-loader decision, not ordinary CPU/MI210 smoke retry. NB: quality is self-reported **and independently contested** (gibberish/hallucination/tool-call-collapse reports; no third-party reproduction of the 80.49 avg) — treat as a footprint/density experiment, not a quality win. Append every reopened probe to `docs/reference/model-probe-scoreboard.md`.
+
+## Track: meq-carve-multimodal-pipeline
+<!-- gate: none -->
+
+> Carved from `handoffs/active/multimodal-pipeline.md` (since folded into `speech-and-multimodal.md` § Track: multimodal-pipeline, row INF-79) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] Keep Z-Image-Turbo as a LATENCY candidate only, decoupled from quality (6B vs 8B, GGUF 2.59-6.58 GB, apache-2.0, runnable on today's binary) against the ~3 min @1024² CPU problem. Any trial must repeat the Q8-vs-Q4 A/B locally.
+
+## Track: meq-carve-opendataloader-pipeline-integration
+<!-- gate: none -->
+
+> Carved from `handoffs/active/opendataloader-pipeline-integration.md` (since folded into `knowledge-pipelines.md` § Track: opendataloader-pipeline-integration, row PIP-04) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **P1 — evaluate MinerU2.5-Pro (1.2B) and GLM-OCR (0.9B)**: check single-pass vs pipeline architecture and llama.cpp/GGUF availability first; create one intake entry per candidate before measurement.
+
+## Track: meq-carve-document-parser-table-bench
+<!-- gate: none -->
+
+> Carved from `handoffs/active/document-parser-table-bench.md` (since folded into `knowledge-pipelines.md` § Track: document-parser-table-bench, row PIP-04) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] Only if PaddleOCR-VL underperforms: consider **MinerU2.5-Pro** or **GLM-OCR**. Architecture pre-check already done 2026-07-20 (below) — **neither is single-pass**, so neither is an `odl_bench` model swap. Nothing to download until a pipeline harness is scoped.
+
+## Track: meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix
+<!-- gate: none -->
+
+> Carved from `handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md` (since folded into `mi210-serving-program.md` § Track: fable5-window2-findings-05c-mi210-lever-category-matrix, row INF-22) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 10 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **EAGLE-3 on pure-dense** (L10) — needs a trained head + relax `target_layer_ids_n==3`; also gemma-MoE untested.
+- [ ] **GPU-draft / CPU-target spec** (L18) — for overflow-to-CPU MoE (122B, GLM-5.2 IQ2) and CPU-target GDN roles.
+- [ ] **Diffusion serving path + all DiT levers** (§3.5) — no path exists yet.
+- [ ] **Auxiliary baselines (BGE encode, VL prefill)** (§3.6) — BGE measured; VL remains open in the nested baseline task below. Do not duplicate the BGE run.
+- [ ] **Dense-Q4_K / K-quant** — the registry **default** quant (Q4_K 291 hits), a distinct 33%-roofline dequant regime where L1 barely applies (+5.8% vs +17–32% Q8). Treated as a lever, is really a category.
+- [ ] **Pure-MoE vs GDN-hybrid-MoE split** inside "MoE-on-GPU-decode" — the campaign's own sharpest distinction (spec-dec viable + 5.9–8.6x scaling for pure-MoE vs net-negative + 3.4x for GDN-hybrid-MoE).
+- [ ] **Sub-4-bit / IQ codebook quant** — architecturally different dequant kernel from K-quant block dequant; the bytes/token axis deciding 64 GB fit.
+- [ ] **Lightning / linear-attention hybrid** (Ring, bailingmoe_linear) — a third distinct linear kernel, neither delta-net nor Mamba2.
+- [ ] **VL split** (ViT vision-**encoder** prefill = compute-bound MFMA target; VL decoder = full MoE/dense decode; spec-dec mmproj-forbidden) — currently hidden inside "Auxiliary(vision)."
+  - [ ] **VL vision-encoder prefill baseline — the unrun half of A3.** 2026-08-12 ran the BGE encode half only (13 GPU points, `artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl`, commit `182f30b6`): bge-m3 Q8_0 and f16 land within noise at every sequence point, so **the quant lever is inert on encode** and buys memory, not speed. The VL prefill half was never run and is the compute-bound MFMA regime where L16's bf16-vs-Q8 crossover is actually testable — the row's own ⚙︎corrected note says VL prefill, not the decode tail, is the correct auxiliary analog. Needs a dedicated encoder-timing harness and a GPU window. Local starting pair: `/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf` and `mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf`. Prepare fixed image inputs and measure vision encoding separately from decoder prompt processing; the production `libmtmd.so` contains the native `image slice encoded in ... ms` timing string. Bind binary and model provenance and sample GPU residency during the run. The available projector is F16 only, so a Q8-versus-bf16 projector crossover is not established by this baseline.
+- [ ] **ASR / speech encoder-decoder** (Whisper large-v3-turbo) — conv frontend + bidirectional encoder + cross-attention decoder fits none of the 6 buckets.
+
+## Track: meq-carve-reboot-gated-inventory-and-staging
+<!-- gate: INF-06, INF-45, RTG-34 -->
+
+> Carved from `handoffs/active/reboot-gated-inventory-and-staging.md` (in `reboot-gated-inventory-and-staging.md`, row EVL-49) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] **S-06 — Build the ThinkPRM-1.5B Q4_K_M GGUF and land the EV-5 wiring** (HF pull →
+      `convert_hf_to_gguf.py` → `llama-quantize`; `orchestrator_stack.py` sequential-load config;
+      `eval_t2()` uncertain-question selection + P(yes) extraction; wire the existing
+      `check_cross_family()`). Zero inference; it is the acknowledged blocker on the largest gated
+      cluster.
+
+## Track: meq-carve-repl-turn-efficiency
+<!-- gate: none -->
+
+> Carved from `handoffs/active/repl-turn-efficiency.md` (in `repl-turn-efficiency.md`, row EVL-37) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
+
+- [ ] Add the intake-537 **open-source-hardened RLM system prompt** (tuned on Minimax-M2.7 / GLM-5.1 — the only RLM prompt in the corpus tuned for open-weight drivers) as a third A/B arm beside the promoted SkyRL child prompt. Its distinctive lever is a **verbatim-slice return** instruction that suppresses sub-agent decode.
