@@ -1,5 +1,7 @@
 # GPU Serving Tie-In Program — one fabric, two devices
 
+> **Fold destination** (BRF-T7-F3, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `mi210-serving-program`, `numa-prefill-decode-disaggregation` (rows INF-44 retired into INF-22). The former `mi210-serving-program.md` body is `## Track: mi210-serving-program`; tracks those handoffs already had are lifted verbatim after their owner.
+
 > **Fold destination** (BRF-T1-F11, BRF-T1-1, route 1a, 2026-11-02): renamed from `gpu-serving-tie-in-program.md`; absorbs 5 handoff(s) as `## Track:` sections at the end of this file (`fable5-window2-findings-02-heterogeneous-gpu.md`, `fable5-window2-findings-05c-mi210-lever-category-matrix.md`, `gpu-acceleration-path.md`, `mi210-big-model-and-acceleration-roadmap.md`, `qwen38-27b-replace-qwen36.md`). The body above the first track is the former `gpu-serving-tie-in-program.md`.
 
 **Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-cpu-q2-prep/` (queued and active owner packets and evidence; keep).
@@ -18,7 +20,12 @@
 [reviewer-control-plane-index.md](reviewer-control-plane-index.md) (co-critic plumbing) ·
 `docs/runbooks/vision-escalation-minicpmo-promotion.md` (the State-A/B lane choreography template — **note 2026-07-31: that runbook is DEPRECATED as a promotion plan (MiniCPM-o deleted) but remains valid as the choreography template cited here; it now carries a banner saying exactly that**)
 
-## M4 fold gate — current execution route (2026-11-02 audit)
+## Track: mi210-serving-program
+<!-- gate: none -->
+
+> Folded from the body of `handoffs/active/mi210-serving-program.md` (row INF-22), from its first `##` section on, @ `f71d6fd1ee54` on 2026-11-03 (BRF-T7-F3, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
+
+#### M4 fold gate — current execution route (2026-11-02 audit)
 
 **Start here for M4:** [audited implementation plan](../../docs/design/inf22-m4-execution-readiness-20261102/README.md). The champion ref and fork ref resolved to C5 `c72ec82f5`; C6 is an unqualified candidate. Re-resolve at execution, recut if the ref moves, and do not use a historical binary as a current one without content-based proof. The prior C1/C2/C3 and GPU-quality results are scoped evidence, not a complete fold. The GPU speed plan, decision floor, actual-entry qualification and independently trusted provenance remain unbound; retired launchers and the unreviewed refusing prototype are not runnable. The unrelated TD-29.M4 cache rows are not this task. Implement the plan in order, retain failure and partial evidence, and use the current queue/grant and production-kernel boundaries. No inference or production change is authorized by this readiness review. [no-belief: source and handoff audit, no measurement]
 
@@ -35,11 +42,11 @@
 - [ ] **M4-Q38-RECIPE-COMPARISON** — custody row `inf22-q38-custody-r1-20261102` passed model-free smoke and is grantable; its genuine run must produce three remaining receipts. Row `inf22-m4-q38-recipe-r1-20261102` is `needs-dryrun` until then; dependency watcher PID 3901906 (`/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/dependency.sh`) waits for actual custody completion, then seals and qualifies the final plan without writing a grant. RTG-58 reserved its F-to-FB boundary for this full-host comparison when qualified. Result is a descriptive recipe comparison, not a fold verdict.
 - [ ] **M4-CURRENT-ROLE-BINDING** — resolve changed source pins into current physical-server recipes and verify model/image and policy bindings before the fold run.
 
-## NI18 source-correlated fixture route — 2026-10-05
+#### NI18 source-correlated fixture route — 2026-10-05
 
 - [x] **GPU-NI18-FIXTURES** — Review four GPU-shadow modules against exact fake-path, collection, compiler and kernel-store seams; separate pure source/argv proposals from actual owner-only kernel-store/residency evidence. No fake binaries, store changes or production launch. Modules: `test_gpu_shadow_lane.py`, `test_gpu_shadow_lane_compile_contract.py`, `test_gpu_shadow_lane_p2.py`, `test_gpu_shadow_lane_preflight.py`. ✅ 2026-11-01: source review at orchestrator `9e138e3a`; the four test hashes match the source-correlated [NI18 action map](../../artifacts/ni05/unit-sweep-37327810408/exception-action-map.json). Three module collection failures and five compile-contract failures reach the intentional `backend_dir("gpu")` refusal during `gpu_shadow_lane.py` import. The remaining compile-contract failure expects eight slots but obtains unknown: the committed policy declares `np_slots: 8`, while `_gpu_shadow_lane_serving_shape()` catches import errors and returns `None`. Proposal: isolate pure policy/argv inspection through a reviewed seam while retaining a negative control for missing-store refusal; do not infer actual binary identity, ggml linkage or GPU residency from a fixture path. `build_tenant_launch_plan` binds its binary default at import, and tenancy, lease, stage0, preflight and compiler consume the module, so changing resolution timing needs caller review. No tests, fake binaries, store modifications or production launch in this review. [no-belief: source-correlated review, no new measurement]
 
-## Vision (ratified)
+#### Vision (ratified)
 
 Wire the MI210 into the orchestration stack as a **serving resource** with a **role-agnostic
 GPU-resident lane**, then let AutoPilot explore the new surfaces through **typed, pre-validated
@@ -49,7 +56,7 @@ latency-cliff-free. **The engineering deliverable is the slot, not the tenant** 
 data, swappable via the vision-runbook State-A/State-B choreography; every strategic pivot is a
 config change with a rehearsed rollback, never a rebuild.
 
-## Ratified decisions (2026-07-28 consensus — do not relitigate without new evidence)
+#### Ratified decisions (2026-07-28 consensus — do not relitigate without new evidence)
 
 | # | Decision |
 |---|---|
@@ -65,9 +72,9 @@ config change with a rehearsed rollback, never a rebuild.
 | D10 | **Explicit declines**: no 27B-Q4-CPU bench (27B's home is the GPU; decision made); the E1 dense-control 1.1 t/s anomaly is NOT investigated (reopen only if a future decision depends on dense-CPU throughput). v9 note filed: the v8 compact endpoint conflates empty-slot with failure (blanket 500) — fix at v9, never patch frozen v8; the orchestrator marker-string match is v8-contract-coupled. |
 | D11 | **Activation sequencing = HYBRID, option C, "sign-off last"** (operator-chosen 2026-07-29 via AskUserQuestion in `fable-auditor`, from the options package on bus task_id `lane-activation-decision-package`; full option text/costs/risks/reversibility reconstructible from that bus record). Order: P2-2 tenant landing → Steps 0-7 choreography → P3-1/P3-2 bake-off starts on the **incumbent 184-191 placement** (P3-2 package carries a placement-pending caveat on absolute latency/token-economics) → P2-5j sweep folds into the P2-5c campaign → placement + carve (O2+O1 default) + residency decided TOGETHER at the verdict → **P3-3 production sign-off LAST**, on the final placement. Clarifications that correct earlier framing: activating on the incumbent placement does NOT invalidate the measured serving-shape lineage (it uses it; re-derivation triggers only if the sweep later moves the threads, regardless of activation order); P2-5g finer-region minting does not change sequencing (every carve variant is downstream of the sweep gate). Optional early-warning attachment: a 2-arm mini-probe (incumbent vs one node-1 candidate, one shape, ~2-4h). See `coordination/session-bus/tasks/post-reboot-session.md` §4 for the full writeup. |
 
-## Prioritized task list
+#### Prioritized task list
 
-### Phase 0 — pre-reboot (now)
+##### Phase 0 — pre-reboot (now)
 - [x] Autopilot resume preconditions fixed: tiny-n hard-gate guard (`4d329002`) + kv_compaction per-role skip (`24fa1399`), tested, pushed ✅ 2026-07-28
 - [x] Laguna weights deleted (108G freed; in-use guard verified) ✅ 2026-07-28
 - [x] ~~**P0-1 (operator)** — run the E8 ratification only when Codex presents the apply-ready~~ (closed 2026-10-29 audit: SUPERSEDED → OP-19 ruling commit 1ee8bd7cc (2026-08-27, artifacts/operator/ruling_op19_e8_chain_20260827.json) retired the E8 chain (B9/B10 closed SUPERSEDED, E8 hold already closed))
@@ -90,7 +97,7 @@ config change with a rehearsed rollback, never a rebuild.
   No action, activation, reload, region claim, or benchmark was requested. ✅ 2026-07-29
 - [x] **P0-6 (guarded, operator-gated)** — delete TC weights (28G) only after **G3 scaffold-generator results are back AND the operator has reviewed them** (off-chance of idea revision) AND `lsof` empty on `/mnt/raid0/llm/models/ThinkingCap-Qwen3.6-27B-GGUF`. Not merely G3-drain. ✅ 2026-10-29 (audit: ThinkingCap-Qwen3.6-27B-GGUF absent from /mnt/raid0/llm/models; graveyard row model_registry.yaml:13429 path_was ...; deletion executed) [no-belief: audit-reconciliation]
 
-### Phase 1 — reboot scheduled (**RECONCILED 2026-07-28 ~16:30Z** — supersedes the 15:08Z "reboot not needed" reading)
+##### Phase 1 — reboot scheduled (**RECONCILED 2026-07-28 ~16:30Z** — supersedes the 15:08Z "reboot not needed" reading)
 > History, kept for honesty: at 15:08Z this handoff corrected the stale uptime-20d reboot-gate text
 > (host had been rebooted 2026-07-24; uptime 4d complied with P-BENCH ≤1wk until ~07-31 → deadline
 > framing). At ~16:20Z the **operator SCHEDULED a host reboot** (relayed via coordinator-agent).
@@ -103,7 +110,7 @@ config change with a rehearsed rollback, never a rebuild.
   - **Scope correction 2026-11-02:** Stage-B's throughput values and rankings were subsequently withdrawn for the straddling-cpuset NUMA defect; the 26/31 bookkeeping is not valid placement evidence. The corrected CPU re-measurement, R1–R4 re-derivation, and operator-artifact update are owned by [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement) (INF-07). Do not publish a duplicate GPU row or treat the historical Stage-B results as a provisioning verdict. This box remains open until those deliverables land.
 - [x] **P1-3 (POST-reboot, NEW session)** — AutoPilot resume on existing CPU surfaces — gated on P0-1 (E8 signature); preconditions ✅ (`4d329002`, `24fa1399`); fresh-reseeded routing memory learns from scratch; F1 real-task grounding applies. **Completed 2026-08-08:** the operator-authorized daemon restarted at 17:43:46Z on the ratified E15 boundary and trial 1474 entered four-way T1; see [AutoPilot history](../completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md#L2969). OP-19 (`1ee8bd7c`) later retired the E8 chain; the original E8 signature condition was superseded, not met. AutoPilot is now intentionally stopped and any new restart requires separate operator action (see [current handoff](autopilot-program.md)). This historical restart does not establish the representative stress-duty-cycle evidence required by P2-5e/f. ✅ 2026-11-02 [belief: cc]
 
-### Phase 2 — GPU lane build (shadow-only per D3)
+##### Phase 2 — GPU lane build (shadow-only per D3)
 - [x] **P2-1** — role-agnostic resident lane ✅ 2026-07-28 (claude-gpu-lane; orchestrator **`e70722f0`** + **`2aff58e6`**, committed not pushed). Tenancy-as-data `orchestration/gpu_shadow_lane_tenancy.yaml` + loader `scripts/server/gpu_shadow_lane_tenancy.py`: slot properties (device/port/host cpuset/binary pin/region claim) separated from tenant properties (path, sha, mode, duty bindings); 4 tenants (stock-27B, FF, FF-MTP, A4 bridge). Six invariants ENFORCED at load, not reviewed: state_a-only, per-tenant policy row w/ byte+sha match, shadow-only bindings rejecting production role names (D3 at the data layer), unimplemented admission classes 3–4 unbindable, `mtp: true` requires explicit `draft_n_max`, unattested hash ⇒ planning-only. **No apply path exists in the module** (D3 by absence of the function, not a flag over one); `render_registry_proposal` emits diffs only. Launch argv fully parameterised — swapping tenant/mode/port/host-slice is a data edit. Lease layer `scripts/server/gpu_shadow_lane_lease.py`: host slice → `q3` flock via the production `cpu_region_lock`, GPU → its OWN non-blocking flock (never a CPU pseudo-region, fabric axiom 1); `LaneLease` implements reclaim as quiesce-and-drain only — `at_boundary()` is the sole release path, `force_release()` raises by construction, ignored revocation surfaces as `overdue` (axiom 4 / BUS_PROTOCOL rule 8). 50 targeted tests.
 - [x] **P2-1a — SMT-folding helpers unified** ✅ 2026-07-28 (orchestrator **`50abc23d`**). Both sessions implemented SMT folding the same day — the P2-1 lease module folding DOWN to physical cores, the P2-6 preflight expanding to the sibling CLOSURE (P2-6 had marked the seam with `TODO(P2-1a unify)` pointing at `fold_smt_to_physical`, conditioned on that module being committed — it now is, `e70722f0`). `gpu_shadow_lane_lease.fold_cpus_to_physical()` is now THE fold, taking cpu-id sets so both callers share it; the preflight's `smt_fold()` delegates and re-expands to both hyperthreads. **Both representations kept deliberately**: the lease module answers in physical cores because that is what maps onto atomic regions, while the probe reports both hyperthreads because an operator reading a blocker wants the mask that actually collided. Only the reported ids differ — the predicate is computed once. Two tests pin the equivalence instead of assuming it: the predicate must agree across every real `NUMA_CONFIG` cpuset in the fleet plus adversarial cases, and the closure must equal the physical fold re-expanded. A re-fork of the math fails them.
 - [x] **P2-1b — the q3 coupling is now a first-class program constraint** ✅ 2026-07-28 (operator-accepted). **An idle MI210 does NOT imply a startable lane.** The lane's host threads pin to SMT siblings 184-191 → physical cores 88-95 → atomic region **`q3`**, so starting it requires holding q3's flock — the same lock the production CPU roles take. **Measured, not inferred** (`scripts/region-lock status`, 2026-07-28T16:2xZ): `q0` HELD frontdoor[1], `q1` HELD frontdoor[2], `q2` free, **`q3` HELD by `bench-e8-quality` (`e8-v5-r2-cadencefix-20260728T160917Z`)** — while `rocm-smi` simultaneously reported VRAM 0% and no KFD PIDs. The GPU was entirely idle and the lane was still not startable. Encoded where the next reader cannot miss it: a banner block in `orchestration/gpu_shadow_lane_tenancy.yaml` `slot.region_claim`, the `gpu_shadow_lane_lease.py` module docstring, and `docs/gpu-shadow-lane.md` §7 Step 4. Consequence for scheduling: "the GPU looks free" is not a precondition, not exclusion, and not evidence; activation waits for the q3 holder to quiesce-and-drain at its own boundary, never forced (fabric axiom 4).
@@ -141,7 +148,7 @@ config change with a rehearsed rollback, never a rebuild.
 - [ ] **P2-5c (NEW, blocked)** — RUN the P2-5a measurement. **Gated, and not merely procedurally:** (G1) `q3` is HELD by `bench-e8-quality` (`e8-v5-r2-cadencefix-20260728T160917Z`, re-verified 2026-07-28T17:0xZ) and the lane's host threads need exactly that region — reclaim is drain-at-boundary, never forced; (G2) host-health tier — uptime measured 4d3h so P-BENCH-1's ≤1wk tier applies today, lapsing ~2026-07-31; scheduled post-reboot regardless, which satisfies it by construction. **Do not squeeze into the pre-07-31 window** — multi-hour campaign, window belongs to E8/E5; (G3) lane activation Steps 0–7, operator-gated, requires G1 first — **G1 precedes G3**; (G4) P2-5b ratification; (G5) operator run grant + quiet window; (G6) acquired q3 + GPU claims.
 - [ ] **P2-5f (NEW, POST-REBOOT ONLY — do not start early)** — **measure the stress duty cycle, and only after AutoPilot has resumed and run representatively.** The dependency chain is invisible from any single link and must be stated explicitly: **P0-1 (E8 signature) → AutoPilot resume (P1-3) → stress duty cycle measurable → complexity threshold settable → P2-5 decision rule executable.** `P-SHED-1` was ratified by the operator 2026-07-28 (epyc-root **`aa0af6e0`**, `MEASUREMENT.md`), but its decision rule's top row — "gain exceeds the operator's complexity threshold" — is still **UNDEFINED**. As ratified, that row does not self-execute: a marginal positive `net_gain` from P2-5c still needs an operator number before it can gate anything. The threshold cannot honestly be set on `net_gain` alone — expected benefit is `net_gain × duty_cycle` (P2-5e), and a large gain during rare stress does not justify a permanent admission class plus flag plus telemetry surface plus failure mode. **The duty cycle is measured nowhere, and measuring it now would be a trap**, which is the point worth preserving here: AutoPilot is the representative production load generator and is currently DOWN (no process; last journal activity `2026-07-27T08:23:07Z`; resume gated on the E8 signature, P0-1 → P1-3), independently re-verified 2026-07-28 by the coordinator. Sampling duty cycle against a quiesced host returns a near-zero value and would **wrongly close class 3 (shed batch) on a measurement artifact**, not a finding. Duty cycle must therefore be measured only **after** AutoPilot has resumed and been running representatively — i.e. post-reboot, post-E8-signature — not against a cold restart. **Open sub-question, not to be pre-answered here:** what "representatively" needs to mean — a stated observation window long enough to cover AutoPilot's natural stress cadence, not an instantaneous sample; the window length is undetermined and should be set by whoever picks this up post-reboot, informed by however much of a duty-cycle history AutoPilot's journal has accumulated by then. Cross-reference: this item elaborates **P2-5e** (the coordinator's own threshold question, corrected in-place after checking AutoPilot's real state rather than assuming it was running) and is what turns **P2-5c**'s eventual `net_gain` measurement into an executable verdict rather than a number waiting on a still-undefined constant. **A future session must not pick this up before the reboot and the E8 signature land — doing so repeats the exact artifact mistake this item exists to prevent.**
 
-### Phase 3 — shadow bake-off (eval path only, never live /chat)
+##### Phase 3 — shadow bake-off (eval path only, never live /chat)
 - [x] **Operator sequencing decision 2026-07-29 (HYBRID, sign-off last)** ✅ 2026-07-29 — chosen
   from fable-auditor's three-option decision package (bus task `lane-activation-decision-package`;
   full option text + choice durably on the bus, held by coordinator-agent for the post-reboot lane
@@ -169,12 +176,12 @@ config change with a rehearsed rollback, never a rebuild.
   zero compute until an operator grant.
   - Design proposal: [paired serving comparison](../../docs/design/gpu-serving-mtp-dflash-ab.md). Actual candidate/model identities, applicable sustained-serving protocol, workload weights, decision thresholds and execution authority must be resolved before booking; this is not a measurement verdict.
 
-### Phase 4 — AutoPilot on the new surface
+##### Phase 4 — AutoPilot on the new surface
 - [ ] **P4-1** — Stage-2 typed knobs ONLY: tenant ∈ {stock, FF} + np_ceiling within measured bounds; flag-gate + strategy-store seeding pattern; fail-closed on any 5xx class. **Invariant: autopilot never touches launch plumbing, registry, or lane lifecycle.**
   - Implementation preparation: [typed-knob contract and source review](../../docs/design/gpu-serving-p4-typed-knobs.md). P3-5 must first select replacement arms and provide measured ceiling rows; the deleted stock/FF artifacts cannot be seeded as live candidates. This design does not implement or activate P4-1.
 - [ ] **P4-2** — staged widening after N clean trials (N set at P4-1 review).
 
-### Phase 5 — SWE-bench agentic (Phase-2 of architect-bench)
+##### Phase 5 — SWE-bench agentic (Phase-2 of architect-bench)
 - [ ] **P5-1** — build the agentic/tool-using harness over `/mnt/raid0/llm/datasets/swe-bench-verified/` + exec-sandbox.
   - Adversarial row `codex-gpu-serving-p5-adversarial-20261102` was published while its packet was being resealed; the preparation agent cannot establish whether the final source preceded smoke. The row was already running when discovered. At filing, do not treat its smoke as proof of the final packet identity; verify the actual run against a producer-bound source seal or retain the result as inconclusive. No process was interrupted. [no-belief: source-identity limitation]
   - Input preparation, 2026-11-02: the existing research `artifacts/architect-code-eval-20260724/swebench_verified.json` (SHA-256 `b087b5dad72b3e765a6cf93a9e7d516d8796698a0fd358abb73c6627df19f66e`) parses to the exact same ordered 500 complete rows as `data/test-00000-of-00001.parquet` in the specified dataset (SHA-256 `43ed5a3d1d98da36472c1ade65ddd2085d7b4ff694fcaf6a023a07c5c1f32f21`), compared with PyArrow `to_pylist()` and JSON decoding. The research agentic harness can consume that JSON; the P5-1 execution sandbox integration and isolation proof remain open. This establishes input equivalence only, not scorer validity or a frozen P5 question selection. [no-belief: input preparation; no inference or scorer result]
@@ -333,7 +340,7 @@ config change with a rehearsed rollback, never a rebuild.
   - [ ] **GPS-PIN-2a — first-GPU-run check of the GPS-PIN-2 drivers.** At each driver's next GPU run (no dedicated window): its affinity record shows `ok` with one `184-191` census mask (~196 tasks for llama-server) and `env_knob == "0"`. Also confirm: the `numactl ... -- taskset` and `taskset ... numactl` exec chains keep the Popen pid equal to the server/bench pid (the direct-child check depends on it); occ1's reader parent is the runner shell (`--server-launcher-pid` otherwise); `PinWatch`'s 0.5 s poll does not move a llama-bench number outside the same-build A/A noise. Fix any driver whose record is missing or not ok. (filed 2026-10-23, workspace-58)
 - [ ] **GPS-PIN-3 — AutoKernel GPU A/A re-check, then the ROCr env knob in the AK loader (operator D2, 2026-10-22).** At the next GPU AK window, run one GPU serving A/A under the re-pinning loader (research `loop/serving.py` layer 2) and compare against the stored GPU floor; every existing GPU floor was calibrated with one ROCr thread free on 0-191. Then add `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` as a loader-owned key (this also covers `direct_gpu_control.py`, moved here from GPS-PIN-2: its llama-bench env is the AK bench instrument's `residency.loader_env` and its T0 replay compares env exactly, so the knob goes in with the same identity change), threading it through `resolved_recipe` (two allowlists), `unified_planner`, `production_enrollment`, `runtime_identity` and `legacy_targets` as one AK identity change (a first attempt without that threading broke ~173 AK tests). Owner: the AutoKernel session. After GPS-PIN-1 lands. (filed 2026-10-22, workspace-58)
 
-## Dependency graph
+#### Dependency graph
 
 ```
 P0-3 (E5 prep) ─▶ P1-2 (E5 runs, DEADLINE ~07-31)      P0-1 (E8 sign) ─▶ P1-3 (autopilot resume)
@@ -343,7 +350,7 @@ P2-1..P2-5 (lane build; parallel to Phase 1) ─▶ P3 (bake-off) ─▶ P3-3 (r
 P2 lane stable ─▶ P5 (SWE-agentic) ─▶ 122B verdict
 ```
 
-## Cross-cutting concerns
+#### Cross-cutting concerns
 
 - **MEASUREMENT discipline**: every gating number needs protocol-id + attestation; bench observations
   (this program cites many) inform design but never gate promotion alone.
@@ -353,13 +360,13 @@ P2 lane stable ─▶ P5 (SWE-agentic) ─▶ 122B verdict
   boundary tokens presented only while compute is saturated.
 - **v9 queue**: compact-endpoint typed responses (D10). Production v8 is FROZEN — no patches.
 
-## Reporting
+#### Reporting
 
 Flip checkboxes here as gates land (checkbox discipline — prose is invisible to the dashboard); record
 phase completions in `progress/`; tenancy + rebind decisions get operator decision packages
 (AskUserQuestion contract). On program completion, extract the lane spec to `docs/` and archive.
 
-## Key files
+#### Key files
 
 - Lane template: `docs/runbooks/vision-escalation-minicpmo-promotion.md` (State-A/B choreography) — **still valid as a template 2026-07-31; DEPRECATED as a MiniCPM-o promotion plan (weights deleted). Reuse the steps, not the literals.**
 - Registry: `epyc-inference-research/orchestration/model_registry.yaml` (master; lean is compiled)
@@ -370,7 +377,7 @@ phase completions in `progress/`; tenancy + rebind decisions get operator decisi
 
 - [x] **GPUWIN-STANDING-APPROVAL — finish tests, fix the ratify placeholder, merge, operator ratify.** Owner: workspace-ec. (filed 2026-10-07) epyc-orchestrator `feat/gpu-window-standing-approval-20261007` @ 7dfc4c32 (WIP, pushed, tests NOT run). Ratify script `/mnt/raid0/llm/tmp/gpuwin-standing/ratify_gpu_window_standing_approval_20261007.sh` has the `__ORCH_FILE_SHA__` placeholder and needs the branch merged first. Operator approved a 180-min standing approval plus a workspace-ec consumer row. Done when tests pass, the script is operator-ready and the operator has run `--apply`. ✅ 2026-10-29 (audit: commit 9b6b98cd0 2026-10-07 "RATIFIED: GPU-window standing approval" with receipt artifacts/operator/receipts/RATIFY-GPUWIN-STANDING-20261007.json and compute_policy.yaml change) [no-belief: audit-reconciliation]
 
-## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+#### Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
 
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
@@ -500,7 +507,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
         - Budget: about 50 min (min 35 m), RAM about 48 GiB, STOP flag `STOP.f8-pb-qcost-1-confirm`.
         - **Blocker:** the confirm run has no launcher yet. Write one job that covers both; that is not a reason to wait. It also needs a timing-class window from the calendar owner (MI210 exclusive with the siblings of 184-191 idle).
 
-## Research intake 2026-10-21 — prefill head-of-line residual (intake-2218, 2219, 2221, see research/intake_index.yaml)
+#### Research intake 2026-10-21 — prefill head-of-line residual (intake-2218, 2219, 2221, see research/intake_index.yaml)
 
 Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the session's stage3_filing).
 
@@ -577,24 +584,24 @@ Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the se
 - GL-A5 (intake-2220#04): decode is memory-bound so a lower SM clock costs little TBT; the first probe to run on the MI210 (rsmi energy counter, rocm-verify-profile-backend.md) if a power or thermal cap ever constrains the champion; not applicable under the maximum-performance fixed-clock posture.
 - SW-A3 (intake-2223#00): lockstep decode makes every per-slot next-token deadline equal, so a deadline-merged budget equals one global target-ms minus the host gap (GPU-ZOS-1); SW-A6 (intake-2223#02): SLOWeave leaves the no-decoder case unbounded and admits one prefill per iteration, so the PB-HOL-1 no-decoder arm stays the deciding measurement for the collision.
 
-### 2026-10-31 GPU-ZOS-2.3 serial fallback R4
+##### 2026-10-31 GPU-ZOS-2.3 serial fallback R4
 
 `codex-ni-gpu-zos23-c5-serial-r4-20261031` completed the original §9.3 conditional serial tier rc0. The previously filed np4 A/A result remains within its original tolerance (`m_AA=24`), which triggered this tier rather than proving identity. Independent rederivation checked the original first eight prompts in four separate serial arms SA1, SA2, SB and SO, one request at a time with max_tokens 256 and the original np4/context 393216 shape. Each arm's eight matched prompt bytes and all tokens, nonempty content, draft counts and accepted-draft counts agree with SA1. Captured per-arm files rehash; native HIP maps and in-window own VRAM samples are retained. The tier's correctness result is **PASS**, with `ship_authorized=false`: original speed and all other gates remain required. This does not change the earlier np4 result or establish a speed promotion. [Native records and independent rederivation](../../artifacts/compute/codex3-zos23-serial-r4-20261031/). [belief: cc]
 
 
-### GPU-ZOS-2.3 atomic concurrent R5 — 2026-10-31 08:57 UTC
+##### GPU-ZOS-2.3 atomic concurrent R5 — 2026-10-31 08:57 UTC
 
 `codex-ni-gpu-zos23-c5-concurrent-r5-20261031` completed rc 0 with **ATOMIC_DIAGNOSTIC_UNDERPOWERED**, not SHIP. Independent replay of A1/B1/A2/B2/O (24 measured responses each) and F1–F3 (8 each) verified matched prompt sequences and generation settings, zero A1/A2 token mismatches and zero OFF/ON/feature token, content or draft-count mismatches. The original native records have positive in-window VRAM and per-slot graph-reuse proofs; all 40 completion-referenced file digests rechecked. The 24-pair geometric decode effect S was +0.7249354%, same-arm NF was 2.5754954%, and adjacent alternations were +1.9733174%, +2.1219834%, and -0.5081636%. The original NF >1.85% rule gives UNDERPOWERED and permits one A3/B3 extension; no speed or adoption decision follows. This is the atomic batched diagnostic; `ship_authorized=false` and the original independent-chat parent remains open. DEBUG attribution is descriptive only. [Lossless native receipts and independent audit](../../artifacts/compute/codex3-zos23-concurrent-r5-0857-20261031/SHA256SUMS). [belief: cc]
 
 
-### GPU-ZOS-2.3 atomic extension R6 — 2026-10-31 15:17 UTC
+##### GPU-ZOS-2.3 atomic extension R6 — 2026-10-31 15:17 UTC
 
 `codex-ni-gpu-zos23-c5-extension-r6-20261031` ended rc0 at 15:17:17Z. **Capture COMPLETE; decision INCONCLUSIVE (analysis-contract gap); no SHIP.** A3 and B3 each completed six counted waves of four 1024-token responses: 12 waves / 48 fresh responses, with the four earlier arms retained. The native collector reports `ATOMIC_DIAGNOSTIC_EXTENSION_CAPTURED`, `partial=false`, `qualification_only=false`, `ship_authorized=false` and `original_parent_complete=false`. Its full-capture checker verifies structural completion, not the statistical verdict.
 
 The prior R5 values S=+0.7249354% and NF=2.5754954% belong to A1/B1/A2/B2; they are **not** a six-pass result. The original §9.4 permits one A3/B3 extension and says to recompute over all six passes, but specifies NF and alternation equations only for two passes per arm. Both the original analyzer and extension collector leave the six-pass NF/alternation definition unimplemented; the collector explicitly avoids introducing one. Therefore this filing does not invent a post-hoc grading rule or infer adoption from capture success. The original independent-chat adoption parent remains OPEN. C5 images are historical diagnostic pins; C6 `729599d698` is unchanged. Native completion seals, timing and token-identity projections, contemporaneous own-PID KFD/VRAM evidence, raw-file hashes and the governing analysis sources are retained in the [result capsule](../../artifacts/compute/ni-gpu-zos23-r6-20261031/). [belief: cc]
 
 
-### YARN-E1-MEM launcher admission (2026-10-31)
+##### YARN-E1-MEM launcher admission (2026-10-31)
 
 A historical E1/W memory-attribution diagnostic for the original YaRN E1 A0/A1 launch settings is READY as `codex-ni-yarn-e1-mem-phase-r1-20261031`. It uses the original pinned E1 inputs and `yarn_needle.py` runner, the KVU-16h hipMalloc shim, own-PID 1 Hz KFD samples, and distinct old E1 `9a3f1392a` / W arena-fix `b0ba1d427` GPU store images. Each image sets its own `LD_LIBRARY_PATH`; static linkage, binary mtime versus commit, runtime ggml maps, shim symbol and KFD process residency are checked. A0/A1 native stages are split into low and high groups and reset the server between groups; the diagnostic records that boundary. The stage analyzer writes KFD peak and live public HIP allocation deltas by stage; the final writer compares matched image/stage pairs. No current champion, quality or production conclusion follows from this historical replay.
 
@@ -604,7 +611,7 @@ Keeper imported and ARMED the row at 16:49:48Z with live poller PID 484062. Mani
 
 [Committed launcher and qualification evidence](../../artifacts/compute/ni-yarn-e1-mem-prep-20261031/README.md). [no-belief: launcher smoke and cutoff are admission tests, not a measurement verdict]
 
-### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+##### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
@@ -2784,3 +2791,87 @@ swapped first, because it compiles *from* that file.
       you would expect** — see the rewritten G6 in `rocm-verify-profile-backend.md`: fla 0.4.2 is the
       broken release and declares **no** torch/triton floor, so a resolver asked for an fla compatible
       with an older torch selects it. **Never install fla < 0.5.2 on this host.**
+
+## Track: numa-prefill-decode-disaggregation
+<!-- gate: INF-22#mi210-serving-program, INF-22#fable5-window2-findings-02-heterogeneous-gpu, INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix, INF-22#gpu-acceleration-path, INF-22#mi210-big-model-and-acceleration-roadmap, INF-22#qwen38-27b-replace-qwen36 -->
+
+> Folded from `handoffs/active/numa-prefill-decode-disaggregation.md` @ `f71d6fd1ee54` on 2026-11-03 (BRF-T7-F3, route 1b, operator D1/D5; retired row INF-44 → INF-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### NUMA-Disaggregated Prefill / Decode — Feasibility Investigation
+
+**Status**: stub (created 2026-04-26 via research intake batch — disaggregated-serving literature)
+**Categories**: inference_serving, hardware_optimization, kv_cache
+**Priority**: MEDIUM (feasibility-gated; could collapse to NOT-PURSUED if Tier 2b critique generalizes to our regime)
+**Workstream**: Inference Acceleration → CPU Optimization
+**Parent index**: [`inference-research-index.md`](inference-research-index.md), [`inference-research-index.md`](inference-research-index.md)
+**Related**: [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) (the live CPU shapes are one full 96t instance and two 48t halves per quarterable role — quarters retired 2026-07-30, numa-topology-cutover-resume-20260730.md:96 — the closest existing analogue)
+
+**Hygiene note (2026-05-27)**: Second-pass backlog audit flagged this handoff for DEREFERENCE. Keep the active surface to the Phase 0 xGMI KV-transfer falsification test and the multi-tenant reopen condition; move chronology/literature context out of domain index rows.
+
+> **Correction 2026-09-26 (research intake `intake/orch-prior-art-20260926`, `intake-1810#02`):** this stub's topology premise is wrong for this host. The EPYC 9655 host is **one socket, NPS4 = 4 NUMA nodes** (`lscpu`: `Socket(s): 1`, `NUMA node(s): 4`, captured 2026-09-26 in `/mnt/raid0/llm/tmp/dive-intake-1810/sources/host_lscpu_20260926.txt`). There is **no xGMI inter-socket link**, so the Phase 0 xGMI KV-transfer falsifier cannot run as written. Between NPS4 nodes, KV in DRAM stays addressable from every node: there is no copy to make, only a remote-node read penalty. The disaggregation that stays live here is the one intake-1810 measures: **GPU prefill vs CPU decode** over one DRAM-resident weight copy. llama.cpp's op-offload already does that split inside one process (KV in host RAM, experts streamed per ubatch, `fable5-window2-findings-02-heterogeneous-gpu.md:165-167`). The open question is therefore whether a *separate* prefill instance ever beats it. The multi-tenant reopen trigger is already recorded as fired (`sarathi-serve-cpu-evaluation.md:12`, 2026-07-18).
+
+#### Objective
+
+Evaluate whether prefill/decode disaggregation yields net throughput-under-SLO gains on this host — one EPYC 9655 socket (NPS4, 4 NUMA nodes) plus one MI210 — in the form intake-1810 measures: long prefill on the GPU with weights streamed from DRAM, decode on the CPU against the same DRAM-resident weight copy, short prompts prefilled on the CPU. *(Re-scoped 2026-09-26; the original 2-socket / 8-node / KV-over-xGMI premise does not match the host — see the correction note above.)*
+
+**This is a feasibility study, not an implementation proposal.** Tier 2b literature search (2026-04-26) surfaced strong counter-evidence; the burden of proof for proceeding is on this stub.
+
+#### Research Context
+
+| Intake ID | Title | Verdict | Notes |
+|-----------|-------|---------|-------|
+| intake-459 | DistServe (arXiv:2401.09670) | worth_investigating | Foundational; 4.48× throughput on summarization vs vLLM colocated |
+| intake-460 | Splitwise (arXiv:2311.18677) | new_opportunity | Goodput-under-SLO framing; per-phase machine specialization |
+| intake-472 | Mooncake (arXiv:2407.00079) | adopt_patterns | KVCache-centric pool + cache-aware Conductor scheduler |
+| intake-468 | ORCA (OSDI'22, no arXiv) | adopt_patterns | Iteration-level + selective batching foundation |
+| intake-469 | Sarathi v1 (arXiv:2308.16369) | superseded by intake-048 (Sarathi-Serve) | Counter-architecture: chunked prefill instead of disagg |
+| intake-1810 | Cloud-grade-SLO MoE serving on dual EPYC 9355 + 2× RTX 5090 (OSDI'26) | adopt_patterns | dive-verified. Long prefill → GPU weight streaming, decode → CPU over ONE shared DRAM weight copy, <2K chunked, decode batched to a target (intake-1810#02). Its 4K switch is a policy on an unquantified PCIe 5.0 link, not a crossover (intake-1810#01). The disaggregated form dedicates a GPU to prefill; KV handoff not costed. No code released. |
+| intake-1817 | Dynamo PR #7977 — heterogeneous XPU-prefill / CPU-decode example | declined (port) | dive-verified. Examples-only launch scripts; no device-class routing or Planner support (intake-1817#0, intake-1817#2). The mechanism lives in vLLM's CPU_ATTN decoder + NIXL KV transfer (intake-1817#5); we serve llama.cpp, dual residents are quant-asymmetric, and the in-process op-offload split (correction note) needs no KV handoff. |
+
+#### Tier 2b Counter-Evidence (must be addressed before proceeding)
+
+1. **Workload-sensitivity**: Disaggregation can REGRESS 20-30% on small workloads, short prompts, or low concurrency (BentoML handbook; vLLM disagg_prefill experimental docs explicitly state "does not improve throughput").
+2. **Sarathi-Serve counter-argument** (intake-048): chunked prefill + stall-free hybrid batching achieves the same prefill/decode interference elimination WITHOUT KV migration. Sarathi authors note disagg "could be challenging in the absence of high-bandwidth interconnects."
+3. **NVIDIA "Beyond the Buzz"** (arXiv:2506.05508, Jun 2025 — first systematic study): disagg only wins on prefill-heavy traffic + larger models. Static splits lose. Requires dynamic rate-matching + elastic scaling.
+4. **KV-transfer overhead dominates at short prompts / low QPS**: Splitwise §overhead and Together.ai's CPD blog both show transfer becoming a significant TBT fraction even on InfiniBand.
+5. **EPYC-specific bandwidth concern**: xGMI inter-socket ≈ 64 GB/s/dir vs NVLink ≈ 900 GB/s. KV-transfer tax on EPYC is **proportionally worse** than on the GPU systems where these papers were validated. *(Void on this host, 2026-09-26: single socket, no xGMI — see the correction note. The link that matters is PCIe Gen4 x16 to the MI210, measured H2D 28.89 GB/s, gpu-acceleration-path.md:313-316.)*
+6. **Single-user regime mismatch**: Per `feedback_canonical_baseline_protocol`, our production target is single-session inference. Disagg's win condition is **multi-tenant, prefill-heavy, long-context, large model** — opposite of our regime. The user-flagged "EPYC NUMA analogue" intuition runs into a real workload-regime wall.
+
+#### Key Question
+
+Is there ANY workload regime on this host where NUMA-disaggregated prefill/decode beats both:
+- (a) the existing stack shapes (one full 96t prefill-favorable instance + two 48t halves), which is already a soft form of phase specialization, AND
+- (b) chunked-prefill / Sarathi-Serve-style hybrid batching?
+
+Plausible candidates for "yes":
+- Large-batch seeding runs (bench/eval) where TTFT matters less and prefill is genuinely compute-bound
+- Long-context (32k+) prompts where prefill dominates and KV-transfer overhead amortizes
+- Multi-replica autoresearch sessions with heterogeneous prompt lengths
+
+Plausible candidates for "no" (default expectation):
+- Interactive single-user sessions
+- Short-context coding/chat workloads
+- REAP-246B / large MoE that already saturates aggregate bandwidth from a single instance
+
+#### Proposed Phase 0 — re-scoped 2026-09-26 (original xGMI test void on a 1-socket host)
+
+Phase 0 is the CPU-vs-MI210 prefill crossover, owned by mi210-big-model-and-acceleration-roadmap.md PF1 (not duplicated here). The superseded xGMI steps asked for inter-socket KV-transfer bandwidth; there is no inter-socket link on this host.
+
+**Reopen trigger (durable, no checkbox until it fires):** PF1 reports a GPU-prefill regime (L* ≤ 32K). Then NPD-1: on the served over-HBM MoE, measure decode TPOT inflation while ONE concurrent long prefill runs through in-process op-offload (the interference 1810 disaggregates away; CPU23 measured 9.6× first-decode TTFT amplification under concurrent CPU prefill, sarathi-serve-cpu-evaluation.md:110). Spec a separate prefill instance only if the inflation exceeds a bound predeclared in that run's manifest. If PF1 finds no regime ≤ 32K, close this handoff's GPU branch; the CPU-only question stays with INF-49.
+
+#### Open Questions
+
+- What does Sarathi-Serve performance look like on EPYC NUMA? (Cheaper to evaluate than disagg; may obviate this stub entirely.)
+- Does Mooncake's KVCache pool design (intake-472) translate to NUMA DRAM tiering even without disagg, as a pure prefix-cache improvement?
+- Does the existing DS-7 quarter-scheduler already capture most of the available gain via instance specialization?
+
+#### Notes
+
+- User flagged disaggregation as the "most interesting finding" of the 2026-04-26 intake batch, motivating this stub. Tier 2b critique surfaced after that flag; this stub records the qualified scope honestly.
+- Do NOT propagate the 4.48× / 1.4× / 525% headline numbers from DistServe / Splitwise / Mooncake without the workload caveats above. Those are goodput-under-SLO multi-tenant GPU numbers, not transferable defaults.
+- Closely related: [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) Phase F (KVCOMM) is the existing closest-analogue work and should be the integration point if this stub advances past Phase 0.
+- 2026-10-21 research intake (intake-2214#04, knowledge-only): a practitioner's position on DeepSeek's prefill parallelism: models with per-layer heterogeneity are PP-unfriendly, a full EP prefill needs substantial traffic and many prefill workers, so small/medium deployments favour a few dedicated prefill workers. Single-host analogue = prefill-dedicated halves; no consumer until the PF1 reopen trigger above fires.
+
+#### Progress checklist
+
+- [ ] BLOCKED on mi210-big-model-and-acceleration-roadmap.md PF1 (CPU-vs-MI210 prefill crossover); the xGMI falsifier is void on a 1-socket host (2026-09-26); then NPD-1 per the reopen trigger, or close the GPU branch

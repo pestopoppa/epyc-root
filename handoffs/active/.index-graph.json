@@ -68,11 +68,6 @@
       "to": "INF-48"
     },
     {
-      "from": "INF-44",
-      "kind": "dep",
-      "to": "INF-22"
-    },
-    {
       "from": "INF-48",
       "kind": "dep",
       "to": "EVL-47"
@@ -806,13 +801,7 @@
       "from": "INF-45",
       "kind": "ref",
       "to": "INF-22",
-      "weight": 2
-    },
-    {
-      "from": "INF-45",
-      "kind": "ref",
-      "to": "INF-44",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "INF-45",
@@ -854,12 +843,6 @@
       "from": "INF-48",
       "kind": "ref",
       "to": "INF-06",
-      "weight": 4
-    },
-    {
-      "from": "INF-49",
-      "kind": "ref",
-      "to": "INF-44",
       "weight": 4
     },
     {
@@ -1565,7 +1548,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-11-03T08:24:19Z",
+  "generated_at": "2026-11-03T08:26:35Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1592,7 +1575,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 24,
+      "priority_rank": 23,
       "readiness": "ready",
       "state": "active",
       "track": "model evaluation queue",
@@ -1903,7 +1886,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 40,
+      "priority_rank": 39,
       "readiness": "blocked",
       "state": "active",
       "track": "autopilot sequential allocation",
@@ -1961,7 +1944,7 @@
           "INF-76"
         ]
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "canonical judge suite revamp",
@@ -2047,7 +2030,7 @@
         "unblocks": 1,
         "unblocks_rows": []
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "ready",
       "state": "active",
       "track": "episodic memory integrity",
@@ -2106,7 +2089,7 @@
         "unblocks": 9,
         "unblocks_rows": []
       },
-      "priority_rank": 41,
+      "priority_rank": 40,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -2228,7 +2211,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 32,
+      "priority_rank": 31,
       "readiness": "ready",
       "state": "active",
       "track": "intake derived work 2026 07 25",
@@ -2308,7 +2291,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 20,
+      "priority_rank": 19,
       "readiness": "ready",
       "state": "active",
       "track": "repl turn efficiency",
@@ -2371,7 +2354,7 @@
           "INF-75"
         ]
       },
-      "priority_rank": 14,
+      "priority_rank": 13,
       "readiness": "ready",
       "state": "active",
       "track": "vidya belief substrate program"
@@ -2405,7 +2388,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 53,
+      "priority_rank": 52,
       "readiness": "blocked",
       "state": "active",
       "track": "reboot gated inventory and staging"
@@ -2437,7 +2420,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "blocked",
       "state": "active",
       "track": "dev harness trace mining"
@@ -2467,7 +2450,7 @@
         "unblocks": 18,
         "unblocks_rows": []
       },
-      "priority_rank": 33,
+      "priority_rank": 32,
       "readiness": "ready",
       "state": "active",
       "track": "agent collab rnd harness",
@@ -2520,7 +2503,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 51,
+      "priority_rank": 50,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic rocm kernel authoring",
@@ -2579,7 +2562,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "attention matching kv compaction",
@@ -2663,7 +2646,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 13,
+      "priority_rank": 12,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel research loop"
@@ -2693,7 +2676,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 37,
+      "priority_rank": 36,
       "readiness": "ready",
       "state": "active",
       "track": "engram conditional memory"
@@ -2723,7 +2706,7 @@
         "unblocks": 7,
         "unblocks_rows": []
       },
-      "priority_rank": 34,
+      "priority_rank": 33,
       "readiness": "ready",
       "state": "active",
       "track": "gemma challenge kernel techniques v7",
@@ -2762,14 +2745,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 180,
-      "dispatchable": 60,
+      "dispatchable": 61,
       "domain": "inference-research",
       "guarded": 1,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-02",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 63,
+      "open": 64,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -2779,7 +2762,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 3,
+        "unblocks": 2,
         "unblocks_rows": []
       },
       "priority_rank": 2,
@@ -2790,9 +2773,9 @@
         {
           "blocked_by": [],
           "dispatchable": 34,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
+          "gates": [],
+          "line": 23,
+          "name": "mi210-serving-program",
           "open": 34,
           "readiness": "ready"
         },
@@ -2800,7 +2783,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 614,
+          "line": 621,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 4,
           "readiness": "ready"
@@ -2809,7 +2792,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 973,
+          "line": 980,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 3,
           "readiness": "ready"
@@ -2818,7 +2801,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1250,
+          "line": 1257,
           "name": "gpu-acceleration-path",
           "open": 7,
           "readiness": "ready"
@@ -2827,7 +2810,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1885,
+          "line": 1892,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 12,
           "readiness": "ready"
@@ -2836,10 +2819,33 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2179,
+          "line": 2186,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
+            "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
+            "INF-22#gpu-acceleration-path",
+            "INF-22#mi210-big-model-and-acceleration-roadmap",
+            "INF-22#mi210-serving-program",
+            "INF-22#qwen38-27b-replace-qwen36"
+          ],
+          "dispatchable": 1,
+          "gates": [
+            "INF-22#mi210-serving-program",
+            "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
+            "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
+            "INF-22#gpu-acceleration-path",
+            "INF-22#mi210-big-model-and-acceleration-roadmap",
+            "INF-22#qwen38-27b-replace-qwen36"
+          ],
+          "line": 2795,
+          "name": "numa-prefill-decode-disaggregation",
+          "open": 1,
+          "readiness": "blocked"
         }
       ]
     },
@@ -2870,42 +2876,10 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 38,
+      "priority_rank": 37,
       "readiness": "blocked",
       "state": "active",
       "track": "log linear gated deltanet readiness"
-    },
-    {
-      "age_days": 97,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-22"
-      ],
-      "closed": 0,
-      "dispatchable": 1,
-      "domain": "inference-research",
-      "guarded": 0,
-      "handoff": "numa-prefill-decode-disaggregation.md",
-      "id": "INF-44",
-      "last_advanced": "2026-07-29",
-      "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
-      "open": 1,
-      "priority": 0.9249,
-      "priority_basis": {
-        "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-inf34-pf1-initial-20261027: harness fix",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 14,
-        "source": "file",
-        "tier": 0,
-        "tier_name": "T0 inference-prep",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 9,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "numa prefill decode disaggregation"
     },
     {
       "age_days": 1,
@@ -2932,7 +2906,7 @@
         "unblocks": 2,
         "unblocks_rows": []
       },
-      "priority_rank": 57,
+      "priority_rank": 56,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -3033,7 +3007,7 @@
           "INF-78"
         ]
       },
-      "priority_rank": 17,
+      "priority_rank": 16,
       "readiness": "blocked",
       "state": "active",
       "track": "rocm verify profile backend"
@@ -3063,7 +3037,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 50,
+      "priority_rank": 49,
       "readiness": "ready",
       "state": "active",
       "track": "sarathi serve cpu evaluation",
@@ -3165,7 +3139,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 16,
+      "priority_rank": 15,
       "readiness": "blocked",
       "state": "active",
       "track": "yarn context extension research"
@@ -3197,7 +3171,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 30,
+      "priority_rank": 29,
       "readiness": "blocked",
       "state": "active",
       "track": "model evaluation queue (INF-60-gated)"
@@ -3279,7 +3253,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 11,
+      "priority_rank": 10,
       "readiness": "ready",
       "state": "active",
       "track": "autokernel aggregate candidate (champion)",
@@ -3424,7 +3398,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 12,
+      "priority_rank": 11,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel teardown and rebuild"
@@ -3462,7 +3436,7 @@
           "INF-81"
         ]
       },
-      "priority_rank": 10,
+      "priority_rank": 9,
       "readiness": "blocked",
       "state": "active",
       "track": "cpu decode roofline program"
@@ -3495,7 +3469,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 44,
+      "priority_rank": 43,
       "readiness": "blocked",
       "state": "active",
       "track": "moe routing locality tap"
@@ -3533,7 +3507,7 @@
           "INF-81"
         ]
       },
-      "priority_rank": 19,
+      "priority_rank": 18,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel unified surface"
@@ -3565,7 +3539,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 21,
+      "priority_rank": 20,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel concurrent targets"
@@ -3597,7 +3571,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 42,
+      "priority_rank": 41,
       "readiness": "blocked",
       "state": "active",
       "track": "model evaluation queue (EVL-08-gated)"
@@ -3638,7 +3612,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 36,
+      "priority_rank": 35,
       "readiness": "blocked",
       "state": "active",
       "track": "deepseek v41 flash evaluation"
@@ -3676,7 +3650,7 @@
           "UFH-12"
         ]
       },
-      "priority_rank": 23,
+      "priority_rank": 22,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel orchestrator actor backend"
@@ -3756,7 +3730,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 22,
+      "priority_rank": 21,
       "readiness": "ready",
       "state": "active",
       "track": "exl3 cpu mi210 implementation",
@@ -3815,7 +3789,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 35,
+      "priority_rank": 34,
       "readiness": "ready",
       "state": "active",
       "track": "internal kb rag",
@@ -3905,7 +3879,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 58,
+      "priority_rank": 57,
       "readiness": "blocked",
       "state": "active",
       "track": "glm52 reviewer capability gates"
@@ -3937,7 +3911,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 48,
+      "priority_rank": 47,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer escalation and human gate policy"
@@ -3967,7 +3941,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 45,
+      "priority_rank": 44,
       "readiness": "ready",
       "state": "active",
       "track": "reviewer latency and sampling budget",
@@ -4028,7 +4002,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 39,
+      "priority_rank": 38,
       "readiness": "blocked",
       "state": "active",
       "track": "reviewer model ablations"
@@ -4061,7 +4035,7 @@
           "RTG-55"
         ]
       },
-      "priority_rank": 31,
+      "priority_rank": 30,
       "readiness": "ready",
       "state": "active",
       "track": "autopilot continuous optimization",
@@ -4203,7 +4177,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 49,
+      "priority_rank": 48,
       "readiness": "blocked",
       "state": "active",
       "track": "contention model device and load axes rider"
@@ -4233,7 +4207,7 @@
         "unblocks": 1,
         "unblocks_rows": []
       },
-      "priority_rank": 43,
+      "priority_rank": 42,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -4346,7 +4320,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 54,
+      "priority_rank": 53,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -4450,7 +4424,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 15,
+      "priority_rank": 14,
       "readiness": "ready",
       "state": "active",
       "track": "non inference backlog",
@@ -4547,7 +4521,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 52,
+      "priority_rank": 51,
       "readiness": "blocked",
       "state": "active",
       "track": "routing intelligence"
@@ -4582,7 +4556,7 @@
           "RTG-52"
         ]
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "ready",
       "state": "active",
       "track": "session bus thin dispatcher",
@@ -4662,7 +4636,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 55,
+      "priority_rank": 54,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -4772,7 +4746,7 @@
           "RTG-52"
         ]
       },
-      "priority_rank": 46,
+      "priority_rank": 45,
       "readiness": "blocked",
       "state": "active",
       "track": "coordinator role failure modes"
@@ -4805,7 +4779,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 47,
+      "priority_rank": 46,
       "readiness": "blocked",
       "state": "active",
       "track": "loop owned fleet implementation",
@@ -4855,7 +4829,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
       "closed": 237,
@@ -4864,7 +4838,7 @@
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "open": 131,
       "priority": 1.0,
@@ -4933,7 +4907,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 46,
+      "closed": 47,
       "dispatchable": 6,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -4942,13 +4916,13 @@
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
       "open": 6,
-      "priority": 0.0203,
+      "priority": 0.0195,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 59,
+      "priority_rank": 58,
       "readiness": "ready",
       "state": "active",
       "track": "backlog refactor 2026-11"
@@ -5111,7 +5085,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 56,
+      "priority_rank": 55,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -5146,7 +5120,7 @@
           "RTG-30"
         ]
       },
-      "priority_rank": 18,
+      "priority_rank": 17,
       "readiness": "blocked",
       "state": "active",
       "track": "agentic serving harness fixes"
@@ -5206,6 +5180,7 @@
       "INF-41",
       "INF-42",
       "INF-43",
+      "INF-44",
       "INF-46",
       "INF-51",
       "INF-52",
@@ -5281,7 +5256,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 58,
+      "file": 57,
       "heuristic": 1,
       "override": 0
     },
@@ -5297,7 +5272,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 30,
+    "blocked": 29,
     "no_open": 0,
     "ready": 29
   },

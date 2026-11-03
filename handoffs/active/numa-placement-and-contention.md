@@ -2819,7 +2819,7 @@ attention-matching P2
 | Static pre-warm is sufficient | Keep DS-6 as design-only; spend effort on DS-7 profile hygiene and monitoring. |
 | QuarterScheduler is triggered | Implement drain-first reassignment; no mid-request evictions except as retry-compatible defense-in-depth. |
 | KVCOMM q4_0 quality gate fails | Defer Phase F; keep AM compaction as the primary KV-size lever. |
-| Disaggregated serving appears attractive | Compare against [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md); prefer Sarathi-style chunked prefill before NUMA KV transfer unless measurements prove otherwise. |
+| Disaggregated serving appears attractive | Compare against [`numa-prefill-decode-disaggregation.md`](mi210-serving-program.md#track-numa-prefill-decode-disaggregation); prefer Sarathi-style chunked prefill before NUMA KV transfer unless measurements prove otherwise. |
 
 #### Key Files
 

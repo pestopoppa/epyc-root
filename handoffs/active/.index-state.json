@@ -2,8 +2,8 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 57,
-      "handoffs": 27,
-      "oldest_advance": "2026-07-29",
+      "handoffs": 26,
+      "oldest_advance": "2026-09-16",
       "open": 1019
     },
     "pipeline-integration-index.md": {
@@ -453,7 +453,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 46,
+      "closed": 47,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -465,7 +465,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 52
+      "total": 53
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1418,7 +1418,7 @@
       "blocked": 3,
       "closed": 237,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-11-03",
       "open": 128,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1592,7 +1592,7 @@
       "closed": 180,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 60,
+      "open": 61,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1601,16 +1601,16 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 243,
+      "total": 244,
       "tracks": [
         {
           "blocked": 0,
           "closed": 92,
-          "gates": null,
+          "gates": [],
           "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
+          "line": 23,
+          "markers": 1,
+          "name": "mi210-serving-program",
           "open": 34
         },
         {
@@ -1618,7 +1618,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 614,
+          "line": 621,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 2
@@ -1628,7 +1628,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 973,
+          "line": 980,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 3
@@ -1638,7 +1638,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1250,
+          "line": 1257,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 7
@@ -1648,7 +1648,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 1,
-          "line": 1885,
+          "line": 1892,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 11
@@ -1658,10 +1658,27 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2179,
+          "line": 2186,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [
+            "INF-22#mi210-serving-program",
+            "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
+            "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
+            "INF-22#gpu-acceleration-path",
+            "INF-22#mi210-big-model-and-acceleration-roadmap",
+            "INF-22#qwen38-27b-replace-qwen36"
+          ],
+          "guarded": 0,
+          "line": 2795,
+          "markers": 1,
+          "name": "numa-prefill-decode-disaggregation",
+          "open": 1
         }
       ]
     },
@@ -2074,22 +2091,6 @@
           "open": 5
         }
       ]
-    },
-    "numa-prefill-decode-disaggregation.md": {
-      "blocked": 0,
-      "closed": 0,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-44",
-      "state": "active",
-      "total": 1
     },
     "paw-compiled-specialists.md": {
       "blocked": 0,
@@ -2865,23 +2866,12 @@
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
-    "INF-44": {
-      "deps": [
-        "INF-22"
-      ],
-      "handoff": "numa-prefill-decode-disaggregation.md",
-      "id": "INF-44",
-      "index": "inference-research-index.md",
-      "line": 32,
-      "next_action": "Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch",
-      "track": "numa prefill decode disaggregation"
-    },
     "INF-45": {
       "deps": [],
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 33,
+      "line": 32,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2892,7 +2882,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 34,
+      "line": 33,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2901,7 +2891,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 35,
+      "line": 34,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2)",
       "track": "sarathi serve cpu evaluation"
     },
@@ -2910,7 +2900,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 36,
+      "line": 35,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2921,7 +2911,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 37,
+      "line": 36,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },
@@ -2932,7 +2922,7 @@
       "handoff": "gpu-candidates-surface-qwen38-update.md",
       "id": "INF-61",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna",
       "track": "model evaluation queue (INF-60-gated)"
     },
@@ -3006,7 +2996,7 @@
       "handoff": "autokernel-unified-surface-program.md",
       "id": "INF-73",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "LIVE GPU leg (serving-owner grant, ws58)",
       "track": "autokernel unified surface"
     },
@@ -3017,7 +3007,7 @@
       "handoff": "autokernel-concurrent-target-coordination.md",
       "id": "INF-74",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
@@ -3028,7 +3018,7 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },

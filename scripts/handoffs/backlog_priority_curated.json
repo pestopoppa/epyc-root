@@ -50,7 +50,6 @@
   "RTG-52": 0.2,
   "INF-76": 0.15,
   "RTG-08": 0.15,
-  "INF-44": 0.1,
   "INF-49": 0.1,
   "RTG-50": 0.1,
   "EVL-41": 0.1,
@@ -170,7 +169,8 @@
   "INF-65#autokernel-cross-workload-keep-gate": 0.55,
   "INF-65#autokernel-all-devices-all-dimensions": 0.6,
   "RTG-58#heterogeneous-slot-fabric-residency": 0.45,
-  "RTG-58#kv-unified-stack-rollout": 0.8
+  "RTG-58#kv-unified-stack-rollout": 0.8,
+  "INF-22#numa-prefill-decode-disaggregation": 0.1
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -2361,7 +2361,7 @@
   },
   {
    "filler": "refactor-01a16fc3-inf34-pf1-initial-20261027",
-   "row": "INF-44",
+   "row": "INF-22",
    "map": "filler-id alias /(^|-)(inf34|pf1)-|-inf34-pf1-/",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2558,7 +2558,7 @@
   "_doc": "inference-prep mapping fallback (ws58 2026-10-28): regex on the FILLERS filler-id -> index row, used only when the row text names no handoff file or row id. Only prefixes whose row is unambiguous are listed; the rest stay unmapped.",
   "(^|-)inf75-": "INF-65",
   "(^|-)inf50-": "INF-50",
-  "(^|-)(inf34|pf1)-|-inf34-pf1-": "INF-44",
+  "(^|-)(inf34|pf1)-|-inf34-pf1-": "INF-22",
   "(^|-)kpf(18|64)-": "RTG-58",
   "(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-": "UFH-08",
   "(^|-)m4-": "INF-22",
@@ -2583,12 +2583,6 @@
    }
   ],
   "INF-72>INF-22": [
-   {
-    "track": "mi210-big-model-and-acceleration-roadmap",
-    "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
-   }
-  ],
-  "INF-44>INF-22": [
    {
     "track": "mi210-big-model-and-acceleration-roadmap",
     "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
@@ -2686,6 +2680,12 @@
    {
     "track": "kv-unified-stack-rollout",
     "next_action": "Follow the 2026-11-02 execution contract: reconcile capacity evidence and prepare remaining candidate gates; preserve HPR exposure"
+   }
+  ],
+  "INF-22>INF-22": [
+   {
+    "track": "mi210-big-model-and-acceleration-roadmap",
+    "next_action": "PF1 — measure the CPU-vs-MI210 prefill crossover on the served Qwen3.8-Flash-Next UD-IQ4_XS (DR-3e retired 2026-10-28, 122B deprecated)"
    }
   ]
  }

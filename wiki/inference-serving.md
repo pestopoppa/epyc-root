@@ -2060,7 +2060,7 @@ Current examples:
 ### Sources (2026-05-27)
 
 - [`handoffs/completed/handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — second-pass audit correction and outstanding domain-scoped dereferences
-- [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
+- [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
 - [`handoffs/completed/launcher-numa-mode-gating.md`](../handoffs/completed/launcher-numa-mode-gating.md) — partial status and default-decision gate
 - [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
 ## 2026-05-28 — Dynamic-stack active gate clarified
@@ -2671,7 +2671,7 @@ This supersedes the example above that keeps the stub "active only for the Phase
 
 ### Source References
 
-- [NUMA prefill/decode disaggregation](../handoffs/active/numa-prefill-decode-disaggregation.md) — correction note, re-scoped Phase 0, NPD-1 reopen trigger.
+- [NUMA prefill/decode disaggregation](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) — correction note, re-scoped Phase 0, NPD-1 reopen trigger.
 - [MI210 big-model and acceleration roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — PF1, the 2026-09-26 research-intake section.
 
 **Confidence:** verified (documentation state of the owning handoffs).

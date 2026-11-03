@@ -6250,7 +6250,7 @@ This corrects the "related trap" paragraph in the 2026-08-03 Compiled Update abo
 
 ### Source References
 
-- [NUMA prefill/decode disaggregation](../handoffs/active/numa-prefill-decode-disaggregation.md) — the 2026-09-26 correction note and re-scoped objective.
+- [NUMA prefill/decode disaggregation](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) — the 2026-09-26 correction note and re-scoped objective.
 - [Sarathi-Serve CPU evaluation](../handoffs/active/sarathi-serve-cpu-evaluation.md) — the 2026-09-26 single-socket notes.
 - [GPU acceleration path](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the H2D/D2H receipt (`epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`).
 - `/mnt/raid0/llm/tmp/dive-intake-1810/sources/host_lscpu_20260926.txt` — `Socket(s): 1`, `NUMA node(s): 4`.
@@ -6307,7 +6307,7 @@ That makes `-ub` a first-class knob of the rule. The published 4K switch point i
 - [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — post-BIOS supersession note (`epyc-inference-research/data/bios-postreboot-20260921/`).
 - [MI210 big-model and acceleration roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the computed prior and PF1.
 - [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — the prefill placement rule and the measured H2D figure.
-- [NUMA prefill/decode disaggregation](../handoffs/active/numa-prefill-decode-disaggregation.md) — the NPD-1 reopen trigger and the Dynamo decline.
+- [NUMA prefill/decode disaggregation](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) — the NPD-1 reopen trigger and the Dynamo decline.
 
 
 ## Compiled Update — 2026-09-27: gfx90a MMQ sits at its register ceiling, and removing the spills cost 9–13%

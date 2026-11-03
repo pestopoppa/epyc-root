@@ -349,6 +349,10 @@
    "target": "numa-placement-and-contention.md",
    "track": "numa-placement-defect-20260730"
   },
+  "numa-prefill-decode-disaggregation.md": {
+   "target": "mi210-serving-program.md",
+   "track": "numa-prefill-decode-disaggregation"
+  },
   "numa-topology-cutover-resume-20260730.md": {
    "target": "numa-placement-and-contention.md",
    "track": null
@@ -739,6 +743,10 @@
   "INF-43": {
    "target": "INF-45",
    "track": "numa-placement-defect-20260730"
+  },
+  "INF-44": {
+   "target": "INF-22",
+   "track": "numa-prefill-decode-disaggregation"
   },
   "INF-46": {
    "target": "EVL-02",
