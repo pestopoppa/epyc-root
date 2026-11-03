@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T11:34:40Z",
+  "generated_at": "2026-11-03T13:03:59Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1572,14 +1572,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 180,
-      "dispatchable": 61,
+      "dispatchable": 62,
       "domain": "inference-research",
       "guarded": 1,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-02",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 64,
+      "open": 65,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1660,7 +1660,7 @@
             "INF-22#mi210-serving-program",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1671,7 +1671,7 @@
           ],
           "line": 2796,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 1,
+          "open": 2,
           "readiness": "blocked"
         }
       ]
@@ -3597,15 +3597,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 63,
-      "dispatchable": 4,
+      "closed": 64,
+      "dispatchable": 3,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "backlog-refactor-2026-11.md",
       "id": "RTG-63",
       "last_advanced": "2026-11-03",
       "next_action": "BRF-T1-0: reconcile the fold plan against origin/main and commit the ordered route-1a fold list",
-      "open": 4,
+      "open": 3,
       "priority": 0.0142,
       "priority_basis": {
         "campaign": 0,

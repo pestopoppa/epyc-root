@@ -4,7 +4,7 @@
       "blocked": 57,
       "handoffs": 12,
       "oldest_advance": "2026-10-30",
-      "open": 1024
+      "open": 1025
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 9,
       "oldest_advance": "2026-11-02",
-      "open": 735
+      "open": 734
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -344,10 +344,10 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 63,
+      "closed": 64,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 4,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1512,7 +1512,7 @@
       "closed": 180,
       "guarded": 1,
       "last_advanced": "2026-11-02",
-      "open": 61,
+      "open": 62,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1521,7 +1521,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 244,
+      "total": 245,
       "tracks": [
         {
           "blocked": 0,
@@ -1598,7 +1598,7 @@
           "line": 2796,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 1
+          "open": 2
         }
       ]
     },

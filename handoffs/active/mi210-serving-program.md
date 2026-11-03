@@ -2876,3 +2876,5 @@ Phase 0 is the CPU-vs-MI210 prefill crossover, owned by mi210-big-model-and-acce
 #### Progress checklist
 
 - [ ] BLOCKED on mi210-big-model-and-acceleration-roadmap.md PF1 (CPU-vs-MI210 prefill crossover); the xGMI falsifier is void on a 1-socket host (2026-09-26); then NPD-1 per the reopen trigger, or close the GPU branch
+
+- [ ] **PF1-EXP04-PLACEMENT** [inference] Fix the EXP-04 GPU-arm NUMA placement proof (r4: node 0 held 42.5%/40.9% vs the 40% cap on A1/A1-disabled; A2 captured no in-window placement sample), then re-run the PF1 prefill-crossover screen (`/mnt/raid0/llm/tmp/brf-exp04/`). Stop rule: the pilot's own futility/answer looks. Done when: a run with all GPU cells placement-valid records a screen verdict in PF1-EXP04.
