@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T18:07:49Z",
+  "generated_at": "2026-11-03T18:12:07Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3241,14 +3241,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
-      "dispatchable": 48,
+      "dispatchable": 49,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-03",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
-      "open": 48,
+      "open": 49,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3372,7 +3372,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3382,7 +3382,7 @@
           ],
           "line": 5838,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 7,
+          "open": 8,
           "readiness": "blocked"
         }
       ]
