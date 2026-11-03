@@ -35,7 +35,7 @@ class SnapshotFixture(Fixture):
         # an engine copy INSIDE the lane (the host has rows pointing at worktrees/mains/<h>/scripts/coordination/rowflow/)
         self.lane_engine_dir = os.path.join(self.wt, "tools", "rowflow")
         os.makedirs(self.lane_engine_dir)
-        for f in ("filler_run15.sh", "filler_lib.sh", "dryrun_disk_policy.json"):
+        for f in ("filler_run15.sh", "filler_lib.sh"):
             shutil.copy(os.path.join(_RF, f), os.path.join(self.lane_engine_dir, f))
 
     def lane_job(self, rid, engine=None, body=None):

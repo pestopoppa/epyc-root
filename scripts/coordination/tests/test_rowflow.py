@@ -35,7 +35,7 @@ class Fixture:
         os.makedirs(os.path.join(self.flags, "grants"))
         os.makedirs(os.path.join(self.flags, "ready"))
         os.makedirs(os.path.join(self.flags, "bin", "rowflow"))
-        for f in ("filler_run15.sh", "filler_lib.sh", "dryrun_disk_policy.json"):
+        for f in ("filler_run15.sh", "filler_lib.sh"):
             shutil.copy(os.path.join(_RF, f), os.path.join(self.flags, "bin", "rowflow", f))
         self.engine = os.path.join(self.flags, "bin", "rowflow", "filler_run15.sh")
         self.rl = os.path.join(self.root, "region-lock")

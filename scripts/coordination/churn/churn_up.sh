@@ -98,7 +98,6 @@ INSTALL=(
   "bin/rowflow/filler_lib.sh      $RF/filler_lib.sh"
   "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
   "bin/rowflow/publish_row.py     $RF/publish_row.py"
-  "bin/rowflow/dryrun_disk_policy.json $RF/dryrun_disk_policy.json"
 )
 # RETIRED 2026-11-01 evening (allocator): grant-writer templates, grant_ok*.sh, ram_admit.sh, validate_fillers.py, the legacy
 # grant_ok_launcher.py. rowflow.py allocate (keeper v11) is the one actor that writes grants.
@@ -384,7 +383,7 @@ PY
   say "== backlog freshness"
   local f; for f in BACKLOG-codex-gen.md FLOW-SCOREBOARD.md ws58-calendar-keeper.log; do
     [ -e "$F/$f" ] && printf '  %-28s %s\n' "$f" "$(date -u -r "$F/$f" +%FT%TZ)" || printf '  %-28s MISSING\n' "$f"; done
-  say "== disk"; printf '  /mnt/raid0/llm free: %s GiB (floor 150; dryrun policy %s)\n' "$(df -B1G --output=avail /mnt/raid0/llm | tail -1 | tr -d ' ')" "$(tr -d '\n ' < "$F/bin/rowflow/dryrun_disk_policy.json" 2>/dev/null | cut -c1-120)"
+  say "== disk"; printf '  /mnt/raid0/llm free: %s GiB (floor 150 = filler_run15.sh FILLER_DISK_FLOOR_GIB default)\n' "$(df -B1G --output=avail /mnt/raid0/llm | tail -1 | tr -d ' ')"
 }
 manual_steps() {
   cat <<EOF

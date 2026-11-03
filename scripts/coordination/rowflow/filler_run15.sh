@@ -212,7 +212,7 @@ if [ $INNER = 1 ]; then
     flock -w $(( END - $(date -u +%s) - 60 )) 9 || { echo "GPU flock busy"; exit 9; }
     echo "$(ts) mi210_0 flock held"
   fi
-  export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh FILLER_DISK_POLICY=$HERE/dryrun_disk_policy.json
+  export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh
   mkdir -p "$STATE"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
