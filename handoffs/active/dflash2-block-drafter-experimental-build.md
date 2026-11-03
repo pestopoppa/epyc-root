@@ -21,7 +21,7 @@ proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source ch
 > we promote to production, we will adjust the lean registry compiler accordingly."* `--spec-type`
 > binds a server instance, not the kernel, so one kernel carrying both `draft-mtp` and
 > `draft-dflash` is a capability, not a conflict. Program handoff:
-> [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
+> [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 >
 > **IN PRODUCTION 2026-10-03.** The ruling above lived only as prose here and in the aggregate handoff for five
 > weeks; :8083 kept serving `draft-mtp` through the v10 freeze and two relabels. It is now structural: the master
@@ -586,7 +586,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       2026-08-27 checkpoint below. The standalone DF2 candidate build already carries it ON, so no
       DF2 result to date is affected; this task is to make that explicit in the recipe rather than
       inherited by luck. Related: **CH-8** in
-      [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md), where AutoKernel's own
+      [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), where AutoKernel's own
       GPU builder omits it.
       - **Root cause, 2026-10-04** (V11-FA-2 in [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)): the
         pre-#27870 MMA divergent-barrier race on the ROCWMMA-OFF route. The 27B probe fails 6/10 with OFF and
@@ -690,7 +690,7 @@ with the flag passed directly on a successful generation also yielded zero. Caus
 and **never from `ggml_cuda_mul_mat_id`**, so MoE expert matmuls are invisible to it. Therefore the
 `a6b4b5263` attribution question is **not settled by direct evidence**; it is addressed only
 indirectly by the ngram asymmetry above. Tracked as **CH-9** in
-[`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
+[`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 
 ## 2026-08-27 checkpoint — runners landed, grid running, and a build-flag trap
 

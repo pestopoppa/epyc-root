@@ -487,7 +487,7 @@ and is unaffected.
 
 
 #### Laguna S 2.1 intake integration — 2026-07-22
-_Via /research-intake Stage-2 (intake-880); see [laguna-s21-cpu-port.md](fable5-window2-findings-03-portfolio-and-master-queue.md#track-laguna-s21-cpu-port)._
+_Via /research-intake Stage-2 (intake-880); see [laguna-s21-cpu-port.md](kernel-champion-and-promotion.md#track-laguna-s21-cpu-port)._
 - [x] Add Laguna-S-2.1-UD-IQ2_M as the 5th beneficiary model to the B2/B3 gate list. ✅ 2026-07-25 — recorded and operator-scoped to GPU IQ2; it is not a B2 CPU IQK-on/off-tested model. Its routed-expert bulk is IQ2_XXS(51%)+IQ3_XXS(37%)+IQ2_S(1.4%) = the same set the committed `iqk/enable-iquants-v7-20260721` branch already accelerates (89.9% of the model); only 2 IQ4_XS tensors (2.3%) stay uncovered, the same remnant GLM-5.2/Qwen already carry — NO new kernel needed
 
 ---

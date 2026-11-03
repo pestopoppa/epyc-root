@@ -39,7 +39,7 @@
   calibrating), DS41 parked 06:03:08Z with `WATCHDOG3_HOLD` set. Shared schedule
   `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`; :8083 stays parked until the backlog is exhausted (operator's
   final word). Restart plan: DS41-C121.
-- **2026-10-04 all-keeps fold** (fold ledger: [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) →
+- **2026-10-04 all-keeps fold** (fold ledger: [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) →
   *all-keeps fold (candidate "Y")*): the DS41 port and the 7 serving-gated keeps (bundles `a1faab471` +7.113% and COR
   `053c3bd82` +11.18%) are in the global champion, now `b0ba1d427` after three more folds the same day. The 14 held
   keeps failed two bundle gates and stay off it (rebased as Z' `70e7133a1`, DS41-C125). C112 resolved (culprit
@@ -1801,7 +1801,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-005 (intake-2117): monitor: re-open if KPF/KVU prefix-store memory for DS41 sessions exceeds ~10% of host RAM or checkpoint save/restore time shows up in the TTFT budget; the encoder-variant replay (last 128 tokens, global KV untouched) would then be the drop-in fallback, gated by A2.
 - DI-006 (intake-2117): monitor: when the DS41 DSpark gate tuning reopens block size beyond 2 or concurrency>1, measure the verify-cost curve first and implement the survival-times-curve policy per intake-738/2607.05147; no task now because this report adds no numbers.
 - DI-012 (intake-2118): monitor: when DS41 gets an orchestrator registry role (DS41-W swap lands), check that the role config sets max_tokens against the served -c value; no task before then.
-- DI-021 (intake-2120): monitor: A1 result shows GGML_OP_TOP_K above the AutoKernel noise floor of the step, then open an AutoKernel op lane (AKX-ALL) for it; draft line: **AKX-ALL-<next> — GGML_OP_TOP_K CPU single-pass threshold-filter kernel, parity with partial_sort set semantics** @ handoffs/active/autokernel-all-devices-all-dimensions.md
+- DI-021 (intake-2120): monitor: A1 result shows GGML_OP_TOP_K above the AutoKernel noise floor of the step, then open an AutoKernel op lane (AKX-ALL) for it; draft line: **AKX-ALL-<next> — GGML_OP_TOP_K CPU single-pass threshold-filter kernel, parity with partial_sort set semantics** @ handoffs/active/kernel-champion-and-promotion.md
 - DI-022 (intake-2120): monitor: a DSA/DS41 model is scheduled onto MI210 with ncols>1024 per row (op unsupported -> CPU fallback or full argsort)
 - DI-034 (intake-2122): monitor: DS41 weight swap to the 1017 finetune changes projection quantization, or MI210/CPU FP8 emulation shows attention small-op overhead in the DS41-C8 profile
 - DI-042 (intake-2124): monitor: a DS41 or other MXFP4 requantisation step is planned with llama-quantize (then compare NMSE of ceil-pow2 vs floor scale recipes on the same tensor before choosing)

@@ -23,7 +23,7 @@ Sources: [churn-pipeline handoff](../handoffs/active/coordination-and-churn-pipe
 
 ## Compiled Update — 2026-11-01 (qualification output boundaries)
 
-Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/agentic-serving-harness-fixes.md), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/autokernel-cross-workload-keep-gate.md), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
+Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/agentic-serving-harness-fixes.md), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -4844,7 +4844,7 @@ working tree the branch history never saw. The served dashboard tree produced a 
 
 **The mechanism.** The dashboard hub's served `main` was **45 commits behind and 1 ahead** of
 `origin/main`. Because it predates the origin commit that added
-`handoffs/active/autokernel-champion-aggregate.md`, that path existed on the served tree only as an
+`handoffs/active/kernel-champion-and-promotion.md`, that path existed on the served tree only as an
 **untracked, superseded 144-line draft**, while origin/main's tracked version had grown to **465 lines**.
 Git's own status vocabulary offers no way to tell that apart from a session's genuine work-in-progress
 sitting uncommitted at the same path: both render identically as "untracked file present."
@@ -4872,7 +4872,7 @@ happens to sit on.
   144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
 - [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
   filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
   cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
   findings on that page.
 

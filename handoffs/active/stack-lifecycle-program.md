@@ -379,7 +379,7 @@ After each waypoint:
 **Created**: 2026-06-12
 **Priority**: READY FOR W3 ATTESTATION — the implementation prerequisites survived the 2026-08-05 code audit, but promotion remains fail-closed until a shadowed live restart supplies the required attestation. W4 remains downstream of that evidence; this audit does not promote any row.
 **Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
-**Related**: [fable5-findings-04-northstar-portfolio-indices.md](../completed/fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](fable5-window2-findings-03-portfolio-and-master-queue.md#track-moe-spec-cpu-spec-dec-integration) (`moe_spec_budget` evidence source)
+**Related**: [fable5-findings-04-northstar-portfolio-indices.md](../completed/fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](benchmark-suites.md#track-multi-file-coding-completion-capability) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration) (`moe_spec_budget` evidence source)
 
 #### Why
 

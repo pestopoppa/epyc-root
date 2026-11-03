@@ -1,6 +1,6 @@
 # Quantization
 
-**2026-11-02 diagnostic — q4_0 GPU MMVQ:** one seeded C5/C6 case used byte-identical logical inputs and produced matching GPU outputs, yet failed the original FP64 error threshold on both images. Route logging selected MMVQ; a host reconstruction of its offset calculation closely matched the observed error. An isolated q4_0 correction passed that same original GPU case at the unchanged threshold; the full HIP suite and performance gate remain open. A separate q4_K same-input case also reproduced on C5 and C6; an isolated correction passed that original GPU case at the unchanged threshold, with full gates still open. [q4_K summary](../artifacts/compute/inf65-c6-diagnostic-20261102/Q4K-FIX-SUMMARY.json). [Handoff](../handoffs/active/autokernel-champion-aggregate.md) · [diagnostic summary and raw digests](../artifacts/compute/inf65-c6-diagnostic-20261102/SUMMARY.json).
+**2026-11-02 diagnostic — q4_0 GPU MMVQ:** one seeded C5/C6 case used byte-identical logical inputs and produced matching GPU outputs, yet failed the original FP64 error threshold on both images. Route logging selected MMVQ; a host reconstruction of its offset calculation closely matched the observed error. An isolated q4_0 correction passed that same original GPU case at the unchanged threshold; the full HIP suite and performance gate remain open. A separate q4_K same-input case also reproduced on C5 and C6; an isolated correction passed that original GPU case at the unchanged threshold, with full gates still open. [q4_K summary](../artifacts/compute/inf65-c6-diagnostic-20261102/Q4K-FIX-SUMMARY.json). [Handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) · [diagnostic summary and raw digests](../artifacts/compute/inf65-c6-diagnostic-20261102/SUMMARY.json).
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
@@ -101,14 +101,14 @@ Sources: [exl3-cpu-mi210-implementation](../handoffs/active/quantization-and-low
 
 **Confidence: verified** for the ledger and parity numbers as recorded; per-keep AutoKernel percentages are 5-pair screening numbers and are **not additive** (aggregate CH-16: 36 per-commit claims compounding to +171.7% against a measured block effect of +8.524%).
 
-- **Q38FN (UD-IQ4_XS) keeps in C:** `akm-cpu-solo-verify-five-rows` +2.158% (the three-row bound widened to five), `akm-cpu-q8-next-tile-prefetch` +0.054% (noise scale), `akm-cpu-iq3s-grid-gather` +0.593%, plus the q38fn-lane served-shape case set `6ed37bec8`; the ds41-lane variant of that case set is not folded (alternate calibration of the same name). Q38FN greedy, frozen prompts p1-p3, 128 tokens, n_probs 2: IDENTICAL 3/3 to the champion. ([autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
-- **DS41 held keeps (14): 9 applied, 5 subsumed.** Applied: `seed-accum` (+0.373%), `q4k-x4t-zmm-widen` (+0.601%), `bscale-cvtph` (+2.266%), `two-row-tail-tiles` (+1.716%), `zmm-pair-unroll` (+0.706%), `q4k-activation-metadata-reuse` (+0.817%), `q8-rn3-single-pair-loop` (+0.568%), `rmsnorm-eight-double-chains` (+1.258%), `rmsnorm-single-pass-output` (+0.132%). The earlier bundle result that held these out was DS41 -2.51% against a 4.533% floor; the bundle gate on C is staged, not run. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md))
-- **GLM Q4_K/kquant kernel keeps were NOT folded.** Eight keeps plus `d2861045f` rewrite the same `mul_mat_qX_K_q8_2_X4_T` Q4_K kernel that the champion's DS41 keeps already rewrote (`ActivationMetadata` hoist): alternative implementations of one loop, the champion's measured on a served model; `d2861045f` applied textually but did not compile (`d8` undeclared), so it was dropped. ([autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md))
-- **EXL3 CPU backend folded (additive).** `GGML_TYPE_EXL3_1..8` / `EXL3M_1..8`, `ggml-cpu/exl3.cpp` and the GGUF importer (13 commits, new types only); `test-exl3` ALL PASS with scalar = VNNI = VBMI. Model-level windows are still owed. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md))
+- **Q38FN (UD-IQ4_XS) keeps in C:** `akm-cpu-solo-verify-five-rows` +2.158% (the three-row bound widened to five), `akm-cpu-q8-next-tile-prefetch` +0.054% (noise scale), `akm-cpu-iq3s-grid-gather` +0.593%, plus the q38fn-lane served-shape case set `6ed37bec8`; the ds41-lane variant of that case set is not folded (alternate calibration of the same name). Q38FN greedy, frozen prompts p1-p3, 128 tokens, n_probs 2: IDENTICAL 3/3 to the champion. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
+- **DS41 held keeps (14): 9 applied, 5 subsumed.** Applied: `seed-accum` (+0.373%), `q4k-x4t-zmm-widen` (+0.601%), `bscale-cvtph` (+2.266%), `two-row-tail-tiles` (+1.716%), `zmm-pair-unroll` (+0.706%), `q4k-activation-metadata-reuse` (+0.817%), `q8-rn3-single-pair-loop` (+0.568%), `rmsnorm-eight-double-chains` (+1.258%), `rmsnorm-single-pass-output` (+0.132%). The earlier bundle result that held these out was DS41 -2.51% against a 4.533% floor; the bundle gate on C is staged, not run. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **GLM Q4_K/kquant kernel keeps were NOT folded.** Eight keeps plus `d2861045f` rewrite the same `mul_mat_qX_K_q8_2_X4_T` Q4_K kernel that the champion's DS41 keeps already rewrote (`ActivationMetadata` hoist): alternative implementations of one loop, the champion's measured on a served model; `d2861045f` applied textually but did not compile (`d8` undeclared), so it was dropped. ([autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
+- **EXL3 CPU backend folded (additive).** `GGML_TYPE_EXL3_1..8` / `EXL3M_1..8`, `ggml-cpu/exl3.cpp` and the GGUF importer (13 commits, new types only); `test-exl3` ALL PASS with scalar = VNNI = VBMI. Model-level windows are still owed. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate))
 - **EmbeddingGemma 2 quant parity (V11-043).** Against the ST FP32 reference: BF16 min cosine 0.999990 (gate 0.99), Q8_0 0.999323 (gate 0.98), 0 non-finite. The operator ruled 2026-10-20 for BM25 + EG2 @256 (FP16 storage) with RRF; recall evidence only, extension-only. ([llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md))
 - **DS41 chat template side-finding for quantization work:** neither DS41 GGUF in use carries `tokenizer.chat_template`, so any DS41 quality or parity run that omits `--jinja --chat-template-file` silently measures the ChatML fallback (see [chat templates](chat-templates.md)). ([DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md))
 
-**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+**Sources (sweep 3):** [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [llama.cpp v11 release manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md); [DeepSeek-V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 ## Compiled Update — 2026-10-20 (wrap-up sweep 2): DeepSeek-V4.1 moves to the 1017 MXFP4-experts build, which retires the Q4_K keep surface
 
@@ -161,13 +161,13 @@ The contract separates inexpensive per-candidate operator checks from bundle-lev
 
 ### Source References
 
-- [All-device AutoKernel program](../handoffs/active/autokernel-all-devices-all-dimensions.md) — layered contract and cross-lane gate.
+- [All-device AutoKernel program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — layered contract and cross-lane gate.
 - [October 6 DS41 progress](../progress/2026-10/2026-10-06-ak-ds41-main.md) — review defects and executed-versus-open boundaries.
 - [DeepSeek evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — served-artifact calibration and exceptions.
 
 ## Source References
 
-- [All-device AutoKernel program](../handoffs/active/autokernel-all-devices-all-dimensions.md)
+- [All-device AutoKernel program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - [October 6 DS41 progress](../progress/2026-10/2026-10-06-ak-ds41-main.md)
 - [DeepSeek evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)
 
@@ -1055,9 +1055,9 @@ Two smaller records. The TQ3 monitor list gained a LittleBit / LittleBit-2 entry
 ### Source References (2026-10-22 wrap-up sweep 12)
 
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement) — NEW-10 evening note
-- [handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks) — FD-DIV-1 chain, FD-DIV-1a
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks) — FD-DIV-1 chain, FD-DIV-1a
 - [handoffs/active/quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md) — EXL3-EAR1 acceptance
-- [handoffs/active/autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CH-24
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-24
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — sections 17.1 and 17.7
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 15, workspace-58): NEW-10 GSQ-RCO IQ3_XXS fails the strict bars, so the arm is closed

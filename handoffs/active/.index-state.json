@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 59,
-      "handoffs": 30,
+      "handoffs": 28,
       "oldest_advance": "2026-07-29",
-      "open": 1018
+      "open": 1038
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 18,
-      "handoffs": 11,
+      "handoffs": 10,
       "oldest_advance": "2026-10-24",
-      "open": 803
+      "open": 783
     },
     "reviewer-control-plane-index.md": {
       "blocked": 12,
@@ -193,38 +193,6 @@
         }
       ]
     },
-    "autokernel-all-devices-all-dimensions.md": {
-      "blocked": 0,
-      "closed": 56,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 60,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-81",
-      "state": "active",
-      "total": 116
-    },
-    "autokernel-champion-aggregate.md": {
-      "blocked": 1,
-      "closed": 111,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 35,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-65",
-      "state": "active",
-      "total": 147
-    },
     "autokernel-concurrent-target-coordination.md": {
       "blocked": 0,
       "closed": 13,
@@ -240,22 +208,6 @@
       "row_id": "INF-74",
       "state": "active",
       "total": 26
-    },
-    "autokernel-cross-workload-keep-gate.md": {
-      "blocked": 0,
-      "closed": 27,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 13,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-75",
-      "state": "active",
-      "total": 40
     },
     "autokernel-orchestrator-actor-backend.md": {
       "blocked": 0,
@@ -501,7 +453,7 @@
     },
     "backlog-refactor-2026-11.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 45,
       "guarded": 0,
       "last_advanced": "2026-11-03",
       "open": 6,
@@ -513,7 +465,7 @@
       },
       "row_id": "RTG-63",
       "state": "active",
-      "total": 50
+      "total": 51
     },
     "benchmark-suites.md": {
       "blocked": 0,
@@ -1067,74 +1019,6 @@
         }
       ]
     },
-    "fable5-window2-findings-03-portfolio-and-master-queue.md": {
-      "blocked": 0,
-      "closed": 41,
-      "guarded": 0,
-      "last_advanced": "2026-11-02",
-      "open": 20,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-21",
-      "state": "active",
-      "total": 61,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 8,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 10
-        },
-        {
-          "blocked": 0,
-          "closed": 11,
-          "gates": [],
-          "guarded": 0,
-          "line": 120,
-          "markers": 1,
-          "name": "cpu-fused-decoder-blocks",
-          "open": 3
-        },
-        {
-          "blocked": 0,
-          "closed": 11,
-          "gates": [],
-          "guarded": 0,
-          "line": 447,
-          "markers": 1,
-          "name": "laguna-s21-cpu-port",
-          "open": 1
-        },
-        {
-          "blocked": 0,
-          "closed": 4,
-          "gates": [],
-          "guarded": 0,
-          "line": 586,
-          "markers": 1,
-          "name": "moe-spec-cpu-spec-dec-integration",
-          "open": 5
-        },
-        {
-          "blocked": 0,
-          "closed": 7,
-          "gates": [],
-          "guarded": 0,
-          "line": 1139,
-          "markers": 1,
-          "name": "v9-kernel-per-request-speculative-params",
-          "open": 1
-        }
-      ]
-    },
     "frontier-lab-automation.md": {
       "blocked": 0,
       "closed": 75,
@@ -1354,6 +1238,119 @@
       "row_id": "INF-23",
       "state": "active",
       "total": 31
+    },
+    "kernel-champion-and-promotion.md": {
+      "blocked": 1,
+      "closed": 235,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 128,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-65",
+      "state": "active",
+      "total": 364,
+      "tracks": [
+        {
+          "blocked": 1,
+          "closed": 111,
+          "gates": [
+            "INF-06",
+            "INF-62",
+            "INF-02"
+          ],
+          "guarded": 0,
+          "line": 7,
+          "markers": 1,
+          "name": "autokernel-champion-aggregate",
+          "open": 35
+        },
+        {
+          "blocked": 0,
+          "closed": 8,
+          "gates": [],
+          "guarded": 0,
+          "line": 1296,
+          "markers": 1,
+          "name": "fable5-window2-findings-03-portfolio-and-master-queue",
+          "open": 10
+        },
+        {
+          "blocked": 0,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 1420,
+          "markers": 1,
+          "name": "cpu-fused-decoder-blocks",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 11,
+          "gates": [],
+          "guarded": 0,
+          "line": 1747,
+          "markers": 1,
+          "name": "laguna-s21-cpu-port",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 4,
+          "gates": [],
+          "guarded": 0,
+          "line": 1886,
+          "markers": 1,
+          "name": "moe-spec-cpu-spec-dec-integration",
+          "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 7,
+          "gates": [],
+          "guarded": 0,
+          "line": 2439,
+          "markers": 1,
+          "name": "v9-kernel-per-request-speculative-params",
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 27,
+          "gates": [
+            "INF-73",
+            "INF-66",
+            "INF-65#autokernel-champion-aggregate"
+          ],
+          "guarded": 0,
+          "line": 2576,
+          "markers": 1,
+          "name": "autokernel-cross-workload-keep-gate",
+          "open": 13
+        },
+        {
+          "blocked": 0,
+          "closed": 56,
+          "gates": [
+            "INF-73",
+            "INF-65#autokernel-cross-workload-keep-gate",
+            "INF-77",
+            "INF-62",
+            "RTG-57",
+            "RTG-58"
+          ],
+          "guarded": 0,
+          "line": 3418,
+          "markers": 1,
+          "name": "autokernel-all-devices-all-dimensions",
+          "open": 60
+        }
+      ]
     },
     "knowledge-pipelines.md": {
       "blocked": 3,
@@ -2729,21 +2726,12 @@
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "track": "eval tower verification"
     },
-    "EVL-21": {
-      "deps": [],
-      "handoff": "fable5-window2-findings-03-portfolio-and-master-queue.md",
-      "id": "EVL-21",
-      "index": "research-evaluation-index.md",
-      "line": 18,
-      "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
-      "track": "fable5 window2 findings 03 portfolio and mas"
-    },
     "EVL-29": {
       "deps": [],
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
-      "line": 19,
+      "line": 18,
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
       "track": "intake derived work 2026 07 25"
     },
@@ -2752,7 +2740,7 @@
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "index": "research-evaluation-index.md",
-      "line": 20,
+      "line": 19,
       "next_action": "Obtain S4-T1 live seeding proof at its inference-owner boundary; ingest the first granted real Omega capture via VB-S4-OMEGA-FIRST-AB",
       "track": "repl turn efficiency"
     },
@@ -2761,7 +2749,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 21,
+      "line": 20,
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "track": "vidya belief substrate program"
     },
@@ -2774,7 +2762,7 @@
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
       "index": "research-evaluation-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "S-05 \u2014 capture current pool/placement and actual owner window; retain accepted saved-E1 source capture",
       "track": "reboot gated inventory and staging"
     },
@@ -2785,7 +2773,7 @@
       "handoff": "dev-harness-trace-mining.md",
       "id": "EVL-52",
       "index": "research-evaluation-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "DHM-4 operator labels (30-item pilot, private); DHM-5.2 paired turn-1 probe (Codex subagent, opencode); DHM-8 hook proposal",
       "track": "dev harness trace mining"
     },
@@ -2968,7 +2956,7 @@
         "INF-62",
         "INF-02"
       ],
-      "handoff": "autokernel-champion-aggregate.md",
+      "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 19,
@@ -2990,7 +2978,7 @@
     },
     "INF-70": {
       "deps": [
-        "EVL-21"
+        "INF-65"
       ],
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
@@ -3035,19 +3023,6 @@
       "next_action": "Land INF-74-CGROUP-ROOT (root-owned cgroup delegation, Codex script), add escape tests, re-run gate; cutover rejected until then",
       "track": "autokernel concurrent targets"
     },
-    "INF-75": {
-      "deps": [
-        "INF-73",
-        "INF-66",
-        "INF-65"
-      ],
-      "handoff": "autokernel-cross-workload-keep-gate.md",
-      "id": "INF-75",
-      "index": "inference-research-index.md",
-      "line": 42,
-      "next_action": "AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6",
-      "track": "autokernel cross-workload keep gate"
-    },
     "INF-76": {
       "deps": [
         "EVL-08"
@@ -3055,7 +3030,7 @@
       "handoff": "paw-compiled-specialists.md",
       "id": "INF-76",
       "index": "inference-research-index.md",
-      "line": 44,
+      "line": 42,
       "next_action": "PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list",
       "track": "model evaluation queue (EVL-08-gated)"
     },
@@ -3103,22 +3078,6 @@
       "line": 29,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
-    },
-    "INF-81": {
-      "deps": [
-        "INF-73",
-        "INF-75",
-        "INF-77",
-        "INF-62",
-        "RTG-57",
-        "RTG-58"
-      ],
-      "handoff": "autokernel-all-devices-all-dimensions.md",
-      "id": "INF-81",
-      "index": "inference-research-index.md",
-      "line": 43,
-      "next_action": "AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2",
-      "track": "autokernel all devices all dimensions"
     },
     "PIP-04": {
       "deps": [],

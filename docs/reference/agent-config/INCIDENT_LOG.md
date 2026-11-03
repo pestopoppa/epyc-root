@@ -389,7 +389,7 @@ windows. Each check only fails against live state:
   all CPUs.
 
 The :8083 window of 07:05-07:09Z lost the champion GPU A/B three times this way
-(`handoffs/active/autokernel-champion-aggregate.md` V6R-4d). Rules fed:
+(`handoffs/active/kernel-champion-and-promotion.md` V6R-4d). Rules fed:
 - test every check against real artifacts or the live read-only process before spending a window, in
   `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
 - proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
@@ -443,7 +443,7 @@ re-inherited MTP. Fixed by STACKCHG-DFLASH2-20261003 (signed 2026-10-03T04:39:55
   `drafters`, topology `drafter_selection`, compile fails closed) and SCG-RULING-TO-FIELD, both in
   `handoffs/active/stack-lifecycle-program.md`;
 - every kernel freeze re-selects each role's spec-decode recipe: CH-17 in
-  `handoffs/active/autokernel-champion-aggregate.md`;
+  `handoffs/active/kernel-champion-and-promotion.md`;
 - the other roles with legacy drafter fields: DRAFT-SEL-2.
 
 ## INC-20261003-urgent-fix-slowed-by-bundling

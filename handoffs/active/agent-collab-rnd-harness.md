@@ -343,7 +343,7 @@ nobody invokes. The staleness watchdog was correct and simply unreachable on the
 
       **Measured 2026-08-28, and it is worse than "lagging".** The served tree's local `main` stood
       **45 behind / 1 ahead** of origin/main, and carried
-      `handoffs/active/autokernel-champion-aggregate.md` as an **untracked 144-line file where
+      `handoffs/active/kernel-champion-and-promotion.md` as an **untracked 144-line file where
       origin/main has 465 lines** — a superseded draft occupying the authoritative path. It read as
       untracked only because local `main` predates the commit that added it. Every substantive
       passage was verified present in origin/main's version before the stale copy was displaced

@@ -208,4 +208,5 @@ experiment manifest defines it.
 
 - [ ] **BRF-T7-1** [roll-up] Non-dispatchable parent. After BRF-T2-1 lands: one fold commit per 1b fold through the atomic gate
   (readiness diff replaced by per-track readiness equality); add a box per fold before starting it.
+  - [x] **BRF-T7-F1** fold fable5-window2-findings-03-portfolio-and-master-queue, autokernel-cross-workload-keep-gate, autokernel-all-devices-all-dimensions → `kernel-champion-and-promotion.md` (rename of autokernel-champion-aggregate.md, rows EVL-21, INF-75, INF-81 → INF-65; 8 tracks). ✅ 2026-11-03 — readiness-neutral per track, zero lost tasks; records in the commit message. [no-belief: refactor-move]
 - [ ] **BRF-T7-MEQ** Merge the 3 model-evaluation queue files into 1 (D2).

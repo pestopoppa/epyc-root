@@ -243,7 +243,7 @@ Earlier entries below retain their historical evidence and status.
 **Status**: SCOPED UNIFIED-LOOP IMPLEMENTATION COMPLETE · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
 and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
 `autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
-(R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
+(R23 series) and [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
 **Start here (2026-09-27 pointer)**: the first ~500 lines are a dated checkpoint log. The executor entry point is
 *Start here (implementation)* (about line 530): §8.1 → §8.16 → §8.17, then current execution in §9. The GLM subject
@@ -1443,14 +1443,14 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       op-coverage-diff oracle item directly above for the fall-through class. No kernel source patch is
       needed (G4 scheduler-debug probe + HIP route log + coverage build variant). Spec, acceptance
       (732389d6 + sync17-fix2 replay) and compute classes:
-      [`autokernel-cross-workload-keep-gate.md`](autokernel-cross-workload-keep-gate.md) §6–§7, §12 P0–P1.
+      [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) §6–§7, §12 P0–P1.
 - [ ] **AKX-2 — multi-workload non-regression keep gate (design item; spec lives in INF-75).** A keep must
       be decisive on its author target AND non-inferior (one-sided, against each TOUCHED workload's own
       floor, unit- and n-matched via `gate_floor`) on every TOUCHED workload. Refusal carries a
       re-gate-on-a-discriminator remedy, and the re-gated patch re-enters the screen. The FOLD /
       ValidationBatch re-screens the composed candidate on the full workload set. This upgrades the
       existing required-target validation so that `failed` refuses instead of only withholding LOO.
-      [`autokernel-cross-workload-keep-gate.md`](autokernel-cross-workload-keep-gate.md) §8–§9, §12 P2–P3.
+      [`autokernel-cross-workload-keep-gate.md`](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) §8–§9, §12 P2–P3.
 - [ ] Known-good and known-null config patches classify correctly
 
 ### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
@@ -1711,7 +1711,7 @@ calibration refs. Key recipes by target/surface/operating mode, not one global r
 Build variants of one source commit are the sanctioned form of per-model binaries (operator, 2026-09-15:
 specialization only via runtime dispatch on a kernel-visible discriminator, a per-model/per-surface
 recipe, or a CMake/PGO build variant of the same commit — per-model source forks REJECTED; taxonomy in
-[INF-75 §4](autokernel-cross-workload-keep-gate.md)).
+[INF-75 §4](kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)).
 Deduplicate roles only on complete workload-signature equality. A seed creates its own
 candidate target without changing production or inheriting another calibration. If production cannot
 load it, use the first compatible experimental build as exploration baseline, never a fabricated

@@ -188,7 +188,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **A correctness-class job with a cross-arm timing check needs a GPU-idle host.** AKX-LB3.2 scored -5.79% overhead (bar 5%) when co-tenant with GPU host threads, and was marked INVALID rather than adjusted; its records were moved aside, not deleted. A quiet-window gate that fails NOISY is re-run, not regraded (c4-gate-e: 62% and 40.8% pp floors, then a clean 2.12%).
 - **Incident INC-20261024-codex-worker-ungranted-tests-in-quiet-block.** A Codex source worker ran about 90 mock tests plus py_compile with no grant or region claim; the pyc timestamps (18:14:30Z, 18:14:42Z) fall inside the c4-gate-e A/B (18:04-18:33Z). Cross-check: the overlapping arm 10C measured pp 792.0 (normal), and the NOISY floor came from arm 9P, whose overlap with the earlier failed attempts is undetermined. The gate was re-run, not regraded, and passed. Remedy: binding RULES-FROM-WS58.md for Codex (no interpreter or toolchain execution outside a grant; nothing while any HOLD_* exists), passed verbatim into every worker brief.
 
-Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md) · [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [autokernel-all-devices-all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) · [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): two INC-20261024 incidents: verify every fast "complete", and subagents never claim compute
 
@@ -209,7 +209,7 @@ Sources: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026
 - **Read the rule's own gate before the headline.** LB7.1 read `NOT_REPRODUCED` because the ON median gap fell outside 0.5x-2x of the original (`PROBE_PERTURBATION`); an ORACLE_CULPRIT (G10 case 25: FP16 CPU reference 127/128 FAIL, FP32 oracle with the same GPU kernel 22/22 OK) means a long-kv F16-V FA FAIL on v10 needs the FP32-oracle arm before it is read as a backend defect. SPEC-RNG.1.2: DO-NOT-CARRY rests on the N-independent probe (net_gain 0/48); the N=300 cut bounds only the primary test.
 - **Processes: `kill -0` is blind in this sandbox**; use `ps` for liveness.
 
-Sources: [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md), [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
+Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, workspace-f8): five measurement-design lessons from the 10-24 read-outs
 
@@ -278,7 +278,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 - [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md) (LBH-1, LBH-2, LBH-2.1, LBH-3, LBH-3.1)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (INF-70 claim dispositions)
-- [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md) (CH-28, CH-28b)
+- [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-28, CH-28b)
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-18.0d item 3 correction, KPF-18-S1.7g)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -300,7 +300,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 - [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) (KVU-LB1.b run 1 post-mortem, run 2 guard)
 - [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) (DS41-W5 INVALID, C112 re-analysis)
 - [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) (thread-at-depth d0 re-grade)
-- [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md) (CH-28, C2 waiver)
+- [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (CH-28, C2 waiver)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
 
 
@@ -370,7 +370,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 ### Source References (2026-10-22 sweep 7)
 - [docs/design/gpu-cpu-noise-contribution-prereg-20261021.md](../docs/design/gpu-cpu-noise-contribution-prereg-20261021.md)
 - [handoffs/active/autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md)
-- [handoffs/active/autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md)
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
 - [handoffs/active/autokernel-concurrent-target-coordination.md](../handoffs/active/autokernel-concurrent-target-coordination.md)
 - [progress/2026-10/2026-10-21-gpu-cpu-noise-design.md](../progress/2026-10/2026-10-21-gpu-cpu-noise-design.md)
 
@@ -392,7 +392,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 ### Source References (2026-10-20 sweep 2, methodology)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-HR-1/2 gates, census counts, ranked-recall audit.
-- [All-devices program](../handoffs/active/autokernel-all-devices-all-dimensions.md) — frozen-prediction scoring and AKX-ALL-26 halves.
+- [All-devices program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — frozen-prediction scoring and AKX-ALL-26 halves.
 - [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay, sample-size arithmetic, parity contract.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — HIL-2 checklist.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — retrieval eval result table and caveats.
@@ -741,7 +741,7 @@ no `placement.log` against a hand-run sampler that did capture the proof.
   sampler defect and its mechanism), DS41-T6/T6b (observation grade, and what claim grade needs).
 - [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the five-run symptom and the
   in-window placement proof that replaced it.
-- [autokernel-cross-workload-keep-gate](../handoffs/active/autokernel-cross-workload-keep-gate.md) —
+- [autokernel-cross-workload-keep-gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) —
   AKX-P5a: vacuous passes, structural-only admission, and the no-fabricated-row rule.
 
 ## Compiled Update — 2026-09-23: the token cap is PART OF THE CLAIM — a gate that never recorded its own `max_tokens` inverted a promotion verdict
@@ -1518,7 +1518,7 @@ More data made it slightly **wider**. The reflex reading — "n=3 was a small sa
 ### Source References (2026-09-08, evening — the 35B sweep)
 
 - [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
 - [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
@@ -1604,7 +1604,7 @@ trustworthy than a single reading at np = 1.** Anything gated at the serving ope
 ### Source References
 
 - [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-58 verdict block, R23-61 floor arithmetic and the `n ≥ 24` rule
-- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — the bench-vs-serving caution and the retraction of `tg128` as a rate
+- [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the bench-vs-serving caution and the retraction of `tg128` as a rate
 - [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the np sweep, its residency evidence, and the recipe it was measured under
 - [2026-09-08-ak-rebuild-20260828.md](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — session record, including the self-correction
 
@@ -1718,7 +1718,7 @@ Sources: [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild
 
 - [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-55 (floor `unit`), R23-56 (close-out and the confound correction), R23-57 (champion launch-to-launch instability).
 - [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — §3.2 U2 makes headline admissibility a property of the surface track; P2 carries the floor-`unit` refusal and the two new admissibility tasks.
-- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CHAMP-2 (the registered paired sign test and its pre-fixed verdicts), CHAMP-3 (multi-launch headline).
+- [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CHAMP-2 (the registered paired sign test and its pre-fixed verdicts), CHAMP-3 (multi-launch headline).
 - [progress 2026-09-08 (ak-rebuild)](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session record of the spreads, the controls, and the host-state change.
 
 ## Compiled Update — 2026-09-07: cross-model rows are inadmissible without a locked harness — the citation gate, the two-sided aggregation-identity check, and four benchmark-reading rules
@@ -1901,7 +1901,7 @@ that consumes this floor.
 - [Serving-floor noise reduction](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md) — the
   three-metric A/A comparison table and the tg128 calibration blocker.
 - [DFlash2 decode non-transfer and the tg128 pivot](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
-- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the DF2-5
+- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the DF2-5
   np-concurrency grid the per-request median reproduces.
 - [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
@@ -4521,7 +4521,7 @@ instrument, so speed does not weaken the proof boundary.
 ### Source References (2026-08-11)
 
 - [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
-- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md#track-v9-kernel-per-request-speculative-params) — V9-8 implementation/ratification task and request-local speculation contract.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/kernel-champion-and-promotion.md#track-v9-kernel-per-request-speculative-params) — V9-8 implementation/ratification task and request-local speculation contract.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
 
 ## Tuning constants are CALL-SHAPE specific, not machine constants (2026-08-12)
@@ -5171,7 +5171,7 @@ failure mode is bimodality, which a median hides — and flags any arm whose max
 
 ### Source References (2026-08-28)
 
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-6 settlement with both artifacts and the corrected re-run design
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-6 settlement with both artifacts and the corrected re-run design
 - [`autokernel-restart-and-strip.md`](../handoffs/active/agent-collab-rnd-harness.md#track-autokernel-restart-and-strip) — the AK-VIS findings and the vacuous-test record
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the ngram exposure retraction (DF2-6b-bis)
 
@@ -5284,7 +5284,7 @@ touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`,
   commit messages as a marginal effect is a false claim. Where commit messages are immutable, the
   correction has to be placed where a reader lands — the branch tip and the actors' own settled-facts
   document. [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md),
-  [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md)
+  [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
 - **Half a calibrated floor table is a trap, because the uncalibrated half still returns a verdict.**
   Both surfaces share one `decisive` predicate; only one had been recalibrated. Nothing in the
   verdict says which. A floor table that mixes calibrated and superseded rows should refuse on the
@@ -5314,7 +5314,7 @@ touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`,
 ### Source References (2026-08-30, champion-vs-production)
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the champion-vs-production table and its supporting conditions; the per-commit inflation warning; the noise-floor bullet and R18-D; the idle-metric correction and R18-E.
-- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the 2026-08-30 section distinguishing the manual-admission champion from the loop champion, and CH-16 on the per-commit correction.
+- [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the 2026-08-30 section distinguishing the manual-admission champion from the loop champion, and CH-16 on the per-commit correction.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §1 (the measurement and the inflation), §5 (both self-corrections).
 
 ## Compiled Update — 2026-08-31: pre-committed contingency bands, additivity tested against a chain estimate, and a future timestamp correctly refused
@@ -5341,7 +5341,7 @@ The methodology content is in how the decision around that number was structured
   contingency. Composition claims about merged optimization work should always carry this check:
   the merge is one new tree and must earn its own block measurement, but the chain band is what
   tells you whether the parts explain it.
-  [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md)
+  [autokernel-champion-aggregate.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate)
 - **Resolve the baseline live; never pin it.** The standing is against the CURRENT frozen
   production, resolved from the freeze record at measurement time — not against "v9" as a
   remembered constant. Operator, on the distinction: pinning the baseline sha bakes today's
@@ -5359,7 +5359,7 @@ The methodology content is in how the decision around that number was structured
 Sources:
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2 (the merge, the bands, the measurement); R18-D (the prefill floor caveat the pp512 row re-confirms).
-- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled-champion standing block.
+- [`handoffs/active/kernel-champion-and-promotion.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the reconciled-champion standing block.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3 (the reconciliation and the bundle correction).
 
 ---
@@ -5686,7 +5686,7 @@ decode** win. Three workloads, three answers, one build.
    parametric σ/√n bound the floor lookup takes a max against.
 
 **Sources**
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
   champion's standing, now recorded as three measured workloads with evidence paths.
 - [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-29
   (quant gating), R23-31 (the signal), R23-32 (the claim), R23-26 (headline surface).
@@ -6653,7 +6653,7 @@ gemma-4-26B dec-b4 and **−1.414% decisive** on Qwen3.8-27B-Q8_0, with the same
 Today's required-source validation runs after the keep has landed, and a `failed` aggregate only withholds
 LOO. By the gating test on this page, that makes it an annotation, not a gate.
 
-The design in [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/autokernel-cross-workload-keep-gate.md)
+The design in [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
 (INF-75) has four parts:
 
 - **Census (§6).** A per-workload record of the kernels each production workload actually fires, across its
@@ -6730,7 +6730,7 @@ crashes. AutoPilot's AP-66 takes the opposite rules:
 
 ### Source References (2026-09-15, research-intake noninf-20260914)
 
-- [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/autokernel-cross-workload-keep-gate.md) —
+- [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) —
   §2 problem and recorded instances, §5 leak taxonomy, §7 footprint/proof tiers/fail-closed classification,
   §8 non-inferiority gate and multiplicity, §10 compute budget.
 - [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
@@ -6973,7 +6973,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 ### Source References
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C57, DS41-C59 acceptance (floor recalibration and regime labels), keep 2 and the compounded bench.
-- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the CH-6 correction.
+- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the CH-6 correction.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — MMQ-reaching shapes; AK-MMQ-H10, H10a, H10b.
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-85.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — the spin/sleep table.
@@ -7218,7 +7218,7 @@ The final intake correction was published as `d0c2365cf425283ff05cdffc2e7be803a7
 - **How to apply.** Run correctness jobs under a `--role build` claim on the cores they need (one quarter is typical), shard them, and report tok/s from them as informational only; queue only the timing half of a mixed job for a window. Correctness jobs are still load, so they must never overlap someone else's timing measurement. The failure it corrects: full-host windows were requested and AutoKernel lanes paused for hours for runs whose verdict was identity-only, and a one-quarter correctness claim starved full-host timing waiters.
 - **Worked case.** Gate A (identity, 41 requests per arm) was a correctness verdict and did not need the full host; the cap sweep's tok/s deltas (floor 0.12%) were timing and did. The Jet-Long prefill-rate table is informational only for the same reason.
 
-Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [capsweep-summary](../artifacts/copyspec-20261006/capsweep-summary.md), [AutoKernel all-devices handoff](../handoffs/active/autokernel-all-devices-all-dimensions.md).
+Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [capsweep-summary](../artifacts/copyspec-20261006/capsweep-summary.md), [AutoKernel all-devices handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions).
 
 ## Compiled Update — 2026-10-21 (sweep 3): power, exercise and ITT reporting rules from the harness-cluster intake
 
@@ -7374,7 +7374,7 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 - **Launcher/calendar hardening**: filler_run10 (proposed) records per-job estimated wall and regions from the unique FILLERS row for overrun detection; the registration sweep checker (CTC-Q-D) is read-only and proposed, with no scheduler adoption. ([filler-run10](../docs/guides/agent-workflows/filler-run10-overrun.md), [registration sweep](../docs/reference/non-inference/registration-sweep-v1.md), [compute fillers](../docs/guides/agent-workflows/compute-fillers.md))
 - **Accepted desk audits are conclusions, not attestations.** CME-7T: one 2048-token runaway reply (finish_reason=length); keep the cap, candidate bounded-rationale instruction untested. NIB2-TESTDEBT-1 subgroups pass on synthetic cases at named pins. ([CME-7T/INF-64](../docs/reference/cme7t-inf64-accepted-findings-20261025.md), [NIB2 audits](../docs/reference/non-inference/nib2-testdebt-accepted-audits-20261026.md))
 
-Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md), [autokernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [workspace-58 2026-10-26](../progress/2026-10/2026-10-26-workspace-58.md)
+Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md), [autokernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [workspace-58 2026-10-26](../progress/2026-10/2026-10-26-workspace-58.md)
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -7383,7 +7383,7 @@ Sources: [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to
 - **Classify every harvested row as capability, performance, reject, correctness-only or invalid,** and treat source, PF and build rows as non-results. The 10-22..10-25 harvest covered 138 grant rows: 11 conclusions were missing from their owning box and were persisted, and the rest were already recorded. ([2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) projectability notes; [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md))
 - **A process-CV cap voids a baseline even when the ratio stands.** DS41-W5d's MMID ratio is tight (1.783x, CI 1.778-1.789, CV 0.15-0.18%), but its absolute tg128 baseline is INVALID_NOISY: CV 11.87% against a 4.0% cap, drifting 11.75 -> 16.65 t/s across processes with the first process lowest. Check warm-up and page-cache residency before re-running. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-W5d.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **An all-`no_answer` tally is vacuous, not a null.** s5-dripreview1 scored 0/90 with `bad_final` in every cell, every reply 33 tokens, and no replies retained. The fix: retain raw replies, and void a cell when `no_answer` exceeds a predeclared share (suggest 20%). ([repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) D-RI-PREVIEW-1.1; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **Re-check a FAIL's detector before reading it as a regression.** The G2-CONC A4 FAIL was a degeneracy-detector false positive; it is kept on record, and the corrected re-run passed. ([autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
+- **Re-check a FAIL's detector before reading it as a regression.** The G2-CONC A4 FAIL was a degeneracy-detector false positive; it is kept on record, and the corrected re-run passed. ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Exact-set controls can fail on synthetic stress.** FA4's nan-stage case membership differs systematically between ON and OFF (4/228 vs 6/228, intersection 2), so the band comparison has no verdict until the control is redefined (V11-FA-4a). ([kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Capture launch evidence from the ancestor wrapper.** Under Yama `ptrace_scope=1`, `/proc` environ/fd reads of non-ancestor processes return EACCES; that killed HSF PROFILE-3 and FA4 attempt 2. Record EACCES as unavailable evidence, and never change the host setting. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-V11FA rebinds)
 - **Predeclare what a first-request (warmup) token mismatch means** before an A/B; HSF P4 diverged at token 45 with no rule for it. Never exclude or regrade unequal output. ([HSF-5.P findings](../docs/design/hsf-5p-host-kv-mirror-findings-20261027.md))
@@ -7398,7 +7398,7 @@ Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [
 
 Across the 2026-10-27 cut, correctness and preparation evidence must remain distinct from performance verdicts. INF-75’s ABI canary completed 22 graphs / 21,080 nodes, but verbosity suppressed full-shape counters, so full-shape coverage is unknown. C5 r10 was withdrawn after caller-edge omissions; r11 is still pending. KPF R15 returned rc 0 but its verdict is invalid because the seed gate did not prove port ownership. No performance or geometry conclusion follows.
 
-Sources: [INF-75](../handoffs/active/autokernel-cross-workload-keep-gate.md) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [INF-75](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 ## Compiled Update — 2026-10-27 (refactor campaign checkpoint)
 
 **Confidence: verified** for the recorded events and the explicit limits of the observations.
@@ -7419,7 +7419,7 @@ Sources: [campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-
 - **Treat source and control passes as their own boundary.** The XGRAMMAR candidate native tests passed, but no baseline test or performance comparison ran. The GitNexus split proposal is still preparation-only until its parse capsule is produced and reviewed.
 - **Partial corpus runs stay partial.** CT21 slice 2 was recorded at 1,176/2,352 responses with rc75 at the 16:05Z harvest; slice 3 was then running. No final corpus or competence conclusion is present in that receipt. HIL15b's partial pilot likewise supplies no aggregate result.
 
-Sources: [AutoKernel champion handoff](../handoffs/active/autokernel-champion-aggregate.md); [GPU serving handoff](../handoffs/active/mi210-serving-program.md); [INF-75 handoff](../handoffs/active/autokernel-cross-workload-keep-gate.md); [C5 handoff](../handoffs/active/speculative-decoding-mtp-refresh.md); [WS58 results](../progress/2026-10/2026-10-27-workspace-58.md); [refactor checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [backlog prep](../progress/2026-10/2026-10-27-backlog-prep-01a16fc3.md); [CT21 handoff](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation); [HIL handoff](../handoffs/active/harness-improvement-loop.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
+Sources: [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving handoff](../handoffs/active/mi210-serving-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [C5 handoff](../handoffs/active/speculative-decoding-mtp-refresh.md); [WS58 results](../progress/2026-10/2026-10-27-workspace-58.md); [refactor checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [backlog prep](../progress/2026-10/2026-10-27-backlog-prep-01a16fc3.md); [CT21 handoff](../handoffs/active/repl-turn-efficiency.md#track-qwen-chat-template-evaluation); [HIL handoff](../handoffs/active/harness-improvement-loop.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
 
 ## Compiled Update — 2026-10-27 (periodic documentation checkpoint)
 
@@ -7528,7 +7528,7 @@ The EVL historical dependency freeze was recovered with 3,253 non-GGUF hashes ve
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
 - PB-QCOST confirm-q r2 is a harness FAILED-RUN (rc=1): the wrapper emitted a `+00:00` deadline the native parser rejects. Verdict `INCOMPLETE`/`NOT_RUN`, not a q-coefficient result; the fix (Research `ba4a037d`) normalizes to UTC-Z. [gpu-serving](../handoffs/active/mi210-serving-program.md)
-- Namespace lesson from AKX-ALL8 C5 r4 (rc=127): a launcher path valid in the container (`/workspace/repos/...`) was absent in the host namespace, leaving `runs/` empty. [all-devices](../handoffs/active/autokernel-all-devices-all-dimensions.md)
+- Namespace lesson from AKX-ALL8 C5 r4 (rc=127): a launcher path valid in the container (`/workspace/repos/...`) was absent in the host namespace, leaving `runs/` empty. [all-devices](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - SEQ rate-axis era fence: prior rate statistics use the ratified speed-era cutoff and require a typed witness of both cutoffs; historical values are never retrofitted. SEQ-QUALITY-ERA-PROVENANCE records the actual quality cutoff only once a finite statistic is computed. [SEQ](../handoffs/active/autopilot-sequential-allocation.md)
 - UFH14-A6: harness experiments run under Landlock (`sandbox3.py`); a Gemma 1B CPU canary under ABI 6 denied planted live/future reads while keeping its own paths reachable. The full-27B packet stays DRAFT. [UFH](../handoffs/active/agentic-serving-harness-fixes.md)
 - CJ-7a (inverse-mutation edit fixtures, intake-1150#record) and CJ-7c (paired descriptive/lazy Python edit tasks with hidden tests, 12 controls including a reproduced false-pass exploit) are model-free instruments. [CJ](../handoffs/active/benchmark-suites.md)

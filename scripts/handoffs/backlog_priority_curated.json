@@ -9,10 +9,8 @@
   "INF-22": 0.7,
   "INF-73": 0.7,
   "INF-06": 0.62,
-  "INF-81": 0.6,
   "INF-48": 0.55,
   "INF-50": 0.55,
-  "INF-75": 0.55,
   "UFH-14": 0.55,
   "INF-59": 0.5,
   "INF-74": 0.5,
@@ -104,10 +102,6 @@
   "EVL-29#frontier-f2-self-running-lab": 0.2,
   "EVL-29#frontier-f3-data-flywheel": 0.25,
   "EVL-29#stale-open-audit-2026-07-18": 0.35,
-  "EVL-21#cpu-fused-decoder-blocks": 0.6,
-  "EVL-21#laguna-s21-cpu-port": 0.1,
-  "EVL-21#moe-spec-cpu-spec-dec-integration": 0.3,
-  "EVL-21#v9-kernel-per-request-speculative-params": 0.3,
   "INF-22#fable5-window2-findings-02-heterogeneous-gpu": 0.3,
   "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix": 0.4,
   "INF-22#gpu-acceleration-path": 0.3,
@@ -169,7 +163,14 @@
   "EVL-02#meq-carve-document-parser-table-bench": 0.2,
   "EVL-02#meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix": 0.4,
   "EVL-02#meq-carve-reboot-gated-inventory-and-staging": 0.2,
-  "EVL-02#meq-carve-repl-turn-efficiency": 0.5
+  "EVL-02#meq-carve-repl-turn-efficiency": 0.5,
+  "INF-65#fable5-window2-findings-03-portfolio-and-master-queue": 0.2,
+  "INF-65#cpu-fused-decoder-blocks": 0.6,
+  "INF-65#laguna-s21-cpu-port": 0.1,
+  "INF-65#moe-spec-cpu-spec-dec-integration": 0.3,
+  "INF-65#v9-kernel-per-request-speculative-params": 0.3,
+  "INF-65#autokernel-cross-workload-keep-gate": 0.55,
+  "INF-65#autokernel-all-devices-all-dimensions": 0.6
  },
  "holds": {
   "INF-77": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
@@ -179,7 +180,6 @@
   "UFH-13": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "RTG-09": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)",
   "INF-63": "external: upstream PR / artifact / disk reclaim",
-  "EVL-21": "operator decision or approval pending",
   "RTG-36": "operator decision or approval pending",
   "EVL-49": "operator decision or approval pending",
   "INF-45": "operator stack bring-up event (stack is DOWN)",
@@ -197,10 +197,6 @@
   "PIP-04#searxng-search-backend": "external: upstream PR / artifact / disk reclaim",
   "PIP-04#sliders-local-validation": "operator decision or approval pending",
   "EVL-29#agent-file-prose-compression": "operator decision or approval pending",
-  "EVL-21#cpu-fused-decoder-blocks": "",
-  "EVL-21#laguna-s21-cpu-port": "",
-  "EVL-21#moe-spec-cpu-spec-dec-integration": "",
-  "EVL-21#v9-kernel-per-request-speculative-params": "",
   "INF-45#batched-decode-measurement": "",
   "INF-45#dynamic-stack-concurrency": "",
   "INF-45#numa-placement-defect-20260730": "",
@@ -223,7 +219,12 @@
   "EVL-02#meq-carve-glm52-reviewer-capability-gates": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
   "EVL-02#meq-carve-typed-decision-plane": "",
   "EVL-02#meq-carve-routing-intelligence": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)",
-  "EVL-02#meq-carve-reboot-gated-inventory-and-staging": "operator decision or approval pending"
+  "EVL-02#meq-carve-reboot-gated-inventory-and-staging": "operator decision or approval pending",
+  "INF-65#fable5-window2-findings-03-portfolio-and-master-queue": "operator decision or approval pending",
+  "INF-65#cpu-fused-decoder-blocks": "",
+  "INF-65#laguna-s21-cpu-port": "",
+  "INF-65#moe-spec-cpu-spec-dec-integration": "",
+  "INF-65#v9-kernel-per-request-speculative-params": ""
  },
  "park": {
   "INF-06": "MMQ",
@@ -941,7 +942,7 @@
    "before": ""
   },
   {
-   "row": "EVL-21",
+   "row": "INF-65",
    "tok": "FD-DIV-1b",
    "kind": "I",
    "cls": "live",
@@ -956,7 +957,7 @@
    "done": "fd-div-1b-asan row COMPLETE (coordinator fixing the row)"
   },
   {
-   "row": "EVL-21",
+   "row": "INF-65",
    "tok": "FD-DIV-1b",
    "kind": "N",
    "cls": "N",
@@ -971,7 +972,7 @@
    "done": "fd-div-1b-asan row COMPLETE (coordinator fixing the row)"
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AKX-ALL-LB4.9",
    "kind": "N",
    "cls": "N",
@@ -985,7 +986,7 @@
    "before": ""
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AKX-ALL-LB4 ",
    "kind": "N",
    "cls": "N",
@@ -999,7 +1000,7 @@
    "before": ""
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AKX-ALL-LB3.2",
    "kind": "I",
    "cls": "ready",
@@ -1013,7 +1014,7 @@
    "before": ""
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AK-Q38FN-64K-FLOOR",
    "kind": "I",
    "cls": "ready",
@@ -1027,7 +1028,7 @@
    "before": ""
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AKX-ALL-13a",
    "kind": "I",
    "cls": "ready",
@@ -1041,7 +1042,7 @@
    "before": ""
   },
   {
-   "row": "INF-81",
+   "row": "INF-65",
    "tok": "AKX-AUTO-6",
    "kind": "N",
    "cls": "N",
@@ -1979,7 +1980,7 @@
    "filler": "",
    "before": "",
    "size": "no run",
-   "row": "EVL-21",
+   "row": "INF-65",
    "tok": "FD-DIV-2",
    "kind": "I",
    "cls": "hold",
@@ -2225,7 +2226,7 @@
   },
   {
    "filler": "inf75-c5-native-abi-canary-q2",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix",
@@ -2234,7 +2235,7 @@
   },
   {
    "filler": "inf75-c5-w1-gpu-primary-census-r2",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix",
@@ -2243,7 +2244,7 @@
   },
   {
    "filler": "inf75-c5-w1-gpu-primary-census-r3",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix",
@@ -2252,7 +2253,7 @@
   },
   {
    "filler": "inf75-c5-w3-host-excluding-census-v1",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix",
@@ -2261,7 +2262,7 @@
   },
   {
    "filler": "inf75-c5-w3-host-excluding-census-v2",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix (node2 not reclaimable within 120 s while HPR-B/page cache resident)",
@@ -2270,7 +2271,7 @@
   },
   {
    "filler": "inf75-c5-w3-host-excluding-census-v3",
-   "row": "INF-75",
+   "row": "INF-65",
    "map": "filler-id alias /(^|-)inf75-/",
    "owner": "codex-ni source; ROOT review; WS58 calendar",
    "blocker": "harness fix",
@@ -2315,7 +2316,7 @@
   },
   {
    "filler": "lb49-c5-graph-readonly-20261027",
-   "row": "INF-81",
+   "row": "INF-65",
    "map": "handoff autokernel-all-devices-all-dimensions.md",
    "owner": "codex-refactor-01a16fc3",
    "blocker": "harness fix",
@@ -2555,7 +2556,7 @@
  },
  "prep_aliases": {
   "_doc": "inference-prep mapping fallback (ws58 2026-10-28): regex on the FILLERS filler-id -> index row, used only when the row text names no handoff file or row id. Only prefixes whose row is unambiguous are listed; the rest stay unmapped.",
-  "(^|-)inf75-": "INF-75",
+  "(^|-)inf75-": "INF-65",
   "(^|-)inf50-": "INF-50",
   "(^|-)(inf34|pf1)-|-inf34-pf1-": "INF-44",
   "(^|-)kpf(18|64)-": "RTG-58",
@@ -2595,12 +2596,6 @@
    {
     "track": "tool-output-compression",
     "next_action": "TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text"
-   }
-  ],
-  "INF-70>EVL-21": [
-   {
-    "track": "cpu-fused-decoder-blocks",
-    "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106"
    }
   ],
   "INF-72>INF-22": [
@@ -2673,6 +2668,12 @@
    {
     "track": "typed-decision-plane",
     "next_action": "Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates"
+   }
+  ],
+  "INF-70>INF-65": [
+   {
+    "track": "cpu-fused-decoder-blocks",
+    "next_action": "FD-DIV-1b persists on C5: locate and fix the fused-yarn divergence in the champion; FD-OFF-PROD closes at V11-106"
    }
   ]
  }

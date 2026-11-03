@@ -148,7 +148,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     workspace-ec) The per-8K-turn append cost rises ~30× from depth 0 to 351K, and decode falls from 20.4 to 2.9
     tok/s. Hand the measured depth profile (turn cost and decode by depth, from `verdict.json`) to the AutoKernel CPU
     FA route: AKX-ALL-21 (`cpu_fa_schedule` at depth) in
-    [`autokernel-all-devices-all-dimensions.md`](autokernel-all-devices-all-dimensions.md). Done when AKX-ALL-21's
+    [`autokernel-all-devices-all-dimensions.md`](kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions). Done when AKX-ALL-21's
     at-depth profile cites this curve as an input, or a keep-or-refuse verdict on it is recorded.
     *(2026-10-05, ak-ds41-main)* This curve is **Qwen3.6-35B-A3B, dense attention** — an earlier AK inbox note
     wrongly attributed it to Q38FN (QSA sparse attention, a different mechanism entirely); corrected in

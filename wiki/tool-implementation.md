@@ -1900,7 +1900,7 @@ Completeness requires reading the original case dispositions: CJ10's first nativ
 
 A fused MoE up+gate path initially appeared numerically exact because its graph predicate never matched: the gate and up `MUL_MAT_ID` nodes are siblings consumed by SWIGLU, not a linear chain. The zero NMSE therefore compared the unfused path with itself. The corrected predicate checks that sibling topology, shared routing inputs and single-use constraints; per-cell engagement markers now guard the comparison. A barrier also protects the unfused fallback when the IQK kernel fails after writing scratch data. CPU reference checks passed for MUL_MAT_ID (815/815), MUL_MAT_ID_FUSION (13/13) and SWIGLU (24/24), plus 27 switch checks. This establishes tested path engagement and CPU correctness for the recorded cases, not a speedup: the T3 screen remains unrun, and the Qwen3.6 MTP model's gate/up experts are separate, so this fusion applies to the frontdoor.
 
-Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-ch19-fix.md); [CH-19 owner handoff and remaining speed gate](../handoffs/active/autokernel-champion-aggregate.md); [workspace-f8 progress and work boundary](../progress/2026-10/2026-10-21-workspace-f8.md).
+Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-ch19-fix.md); [CH-19 owner handoff and remaining speed gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [workspace-f8 progress and work boundary](../progress/2026-10/2026-10-21-workspace-f8.md).
 
 ### Advisory staged-shell SIGPIPE check
 

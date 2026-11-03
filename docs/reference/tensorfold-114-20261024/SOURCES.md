@@ -70,7 +70,7 @@ All of these are inside the v1.1.3...v1.1.4 range (checked against `dl/compare_s
 | `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-1017-cpu-decode-20261021/store/inbox/30-ds41-1017-mxfp4-seeds-20261021.md` | house style of a seed note, S1-S5 |
 | `/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store/inbox/60-…`, `61-…`, `62-q38fn-structural-falsifier-verdicts-20261004.md` | census: CPY 9.4%, GDN 8.3%, routed-and-shared DROP (0%), sibling pack KEEP |
 | `/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/inbox.py:34`, `loop/run.py:3808`, `loop/actors.py:1569, 2971-2974`, `loop/seed.py`, `loop/seeds/hypotheses/` | the seed-loading mechanism (read through a subagent) |
-| `/workspace/handoffs/active/autokernel-all-devices-all-dimensions.md` | AKX-ALL-19, -24, -25, -29.x, -LB1..LB4; on origin/main `6f2011142` the highest ID is AKX-ALL-29, so AKX-ALL-30 and up are free |
+| `/workspace/handoffs/active/kernel-champion-and-promotion.md` | AKX-ALL-19, -24, -25, -29.x, -LB1..LB4; on origin/main `6f2011142` the highest ID is AKX-ALL-29, so AKX-ALL-30 and up are free |
 | `/workspace/handoffs/active/deepseek-v41-flash-evaluation.md` | L1211-1224 (DS41-C123: the indexer and top-k grow with context), L1748 (DS41-C123.1) |
 | `/workspace/handoffs/active/kv-unified-stack-rollout.md` | KVU-19b (L717-851), KVU-16f/g |
 | `/workspace/research/intake_index.yaml` | unbounded dedup sweep: the URL `https://github.com/ashhart/TensorFold` matches exactly at L246328 (intake-1924#record); TensorFold is also mentioned in intake-1923, -1937, -1951, -1956 and -1959; the last ID on origin/main is intake-2510 |

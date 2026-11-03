@@ -72,7 +72,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-70)
 **Related**:
-- [`cpu-fused-decoder-blocks.md`](fable5-window2-findings-03-portfolio-and-master-queue.md#track-cpu-fused-decoder-blocks) (INF-67) — the fused decoder's design
+- [`cpu-fused-decoder-blocks.md`](kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks) (INF-67) — the fused decoder's design
   record and phase checklist; Axis A here is its live viability task list
 - [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) (INF-10) — the refuted
   fusion arms and the `GGML_PERF`/symbol profile it prescribed (B1 here satisfies it)
@@ -715,7 +715,7 @@ argument, and it costs about a second.
       because it is what made this look ready.
 
       **★ REVERSAL, recorded here 2026-09-07 at the wrap-up sweep (this handoff did not know about it).**
-      `handoffs/active/autokernel-champion-aggregate.md` → **FOLD** carries operator decision **FOLD-OP
+      `handoffs/active/kernel-champion-and-promotion.md` → **FOLD** carries operator decision **FOLD-OP
       2026-09-07**: *the fold IS wanted*, no reversal ceremony needed, and **the trigger is the run-29 /
       reboot boundary** — the operator will stop run 29 to reboot, and that boundary is when the fold
       happens. Plan: [`../../docs/design/inf70-cpu-fold-into-champion-20260907.md`]
@@ -3879,7 +3879,7 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
 - [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
 - [ ] **XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**
   (filed 2026-10-04, ak-ds41-main) Held out of the 2026-10-04 all-keeps fold by operator decision (ledger:
-  [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) → *all-keeps fold*, "Held out").
+  [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) → *all-keeps fold*, "Held out").
   - For: c5 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c5/runs/20261004T103459Z/report.md`, 6 interleaved rounds)
     measured **−40.6%** time [−41.7, −40.4] on the Q38FN IQ4_NL expert-down proxy at **N=256** (a microbench, not
     serving); N=1 and gate/up are flat.

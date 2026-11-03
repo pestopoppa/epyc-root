@@ -20,6 +20,18 @@
    "target": "model-evaluation-queue.md",
    "track": null
   },
+  "autokernel-all-devices-all-dimensions.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-all-devices-all-dimensions"
+  },
+  "autokernel-champion-aggregate.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-champion-aggregate"
+  },
+  "autokernel-cross-workload-keep-gate.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-cross-workload-keep-gate"
+  },
   "autokernel-restart-and-strip.md": {
    "target": "agent-collab-rnd-harness.md",
    "track": "autokernel-restart-and-strip"
@@ -77,7 +89,7 @@
    "track": null
   },
   "cpu-fused-decoder-blocks.md": {
-   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "target": "kernel-champion-and-promotion.md",
    "track": "cpu-fused-decoder-blocks"
   },
   "cpu-prefill-compute-large-models.md": {
@@ -156,6 +168,10 @@
    "target": "mi210-serving-program.md",
    "track": "fable5-window2-findings-02-heterogeneous-gpu"
   },
+  "fable5-window2-findings-03-portfolio-and-master-queue.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "fable5-window2-findings-03-portfolio-and-master-queue"
+  },
   "fable5-window2-findings-05c-mi210-lever-category-matrix.md": {
    "target": "mi210-serving-program.md",
    "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
@@ -221,7 +237,7 @@
    "track": "iqk-iquant-enablement"
   },
   "laguna-s21-cpu-port.md": {
-   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "target": "kernel-champion-and-promotion.md",
    "track": "laguna-s21-cpu-port"
   },
   "large-moe-expert-parallelism.md": {
@@ -298,7 +314,7 @@
    "track": "model-stack-update-pipeline-audit"
   },
   "moe-spec-cpu-spec-dec-integration.md": {
-   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "target": "kernel-champion-and-promotion.md",
    "track": "moe-spec-cpu-spec-dec-integration"
   },
   "multi-file-coding-completion-capability.md": {
@@ -495,7 +511,7 @@
    "track": "unified-trace-memory-service"
   },
   "v9-kernel-per-request-speculative-params.md": {
-   "target": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "target": "kernel-champion-and-promotion.md",
    "track": "v9-kernel-per-request-speculative-params"
   },
   "within-role-placement-state-machine.md": {
@@ -555,6 +571,10 @@
   "EVL-20": {
    "target": "INF-22",
    "track": "fable5-window2-findings-02-heterogeneous-gpu"
+  },
+  "EVL-21": {
+   "target": "INF-65",
+   "track": "fable5-window2-findings-03-portfolio-and-master-queue"
   },
   "EVL-24": {
    "target": "EVL-29",
@@ -665,7 +685,7 @@
    "track": "iqk-iquant-enablement"
   },
   "INF-28": {
-   "target": "EVL-21",
+   "target": "INF-65",
    "track": "laguna-s21-cpu-port"
   },
   "INF-29": {
@@ -689,7 +709,7 @@
    "track": "mi210-q8-dequant-gemv-roofline"
   },
   "INF-40": {
-   "target": "EVL-21",
+   "target": "INF-65",
    "track": "moe-spec-cpu-spec-dec-integration"
   },
   "INF-41": {
@@ -729,7 +749,7 @@
    "track": "triattention-kv-selection"
   },
   "INF-58": {
-   "target": "EVL-21",
+   "target": "INF-65",
    "track": "v9-kernel-per-request-speculative-params"
   },
   "INF-60": {
@@ -741,8 +761,16 @@
    "track": "autokernel-restart-and-strip"
   },
   "INF-67": {
-   "target": "EVL-21",
+   "target": "INF-65",
    "track": "cpu-fused-decoder-blocks"
+  },
+  "INF-75": {
+   "target": "INF-65",
+   "track": "autokernel-cross-workload-keep-gate"
+  },
+  "INF-81": {
+   "target": "INF-65",
+   "track": "autokernel-all-devices-all-dimensions"
   },
   "PIP-01": {
    "target": "PIP-04",

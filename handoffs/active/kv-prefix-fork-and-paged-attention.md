@@ -23,7 +23,7 @@ bus heartbeat since at least 2026-10-08, and the P1 code (KPF-11..16, `experimen
 **Ownership addendum, 2026-10-20 (research intake `intake-hybrid-prefix-cache-20261020`):** the 2026-10-20 operator session owns P1 (KPF-11..19, KPF-17a) and KPF-21/KPF-25, reassigned from workspace-ec; P2 (KPF-22..24, KPF-26, KPF-27) and P3-P5 otherwise stay with workspace-ec unless reassigned. New rows KPF-13.1, KPF-17.1-17.4, KPF-18.1-18.3, KPF-19.1, KPF-26.1 and KPF-DOC-1 come from that intake (hybrid prefix caching in vLLM/SGLang/llama.cpp; the entries and findings are in `research/intake_index.yaml`, not restated here).
 **Depends on**: RTG-57 [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) (KVU-19a/19b and the
 prefill budget), RTG-27 [`prompt-construction-determinism.md`](eval-tower-program.md#track-prompt-construction-determinism) (byte-stable
-prompts, load-bearing for P2), INF-65 [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (the
+prompts, load-bearing for P2), INF-65 [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) (the
 ONE champion and the v11 candidate gate)
 **Related**: INF-05 [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) KV-1/2/3/6 (the
 orchestrator prefix-cache rows), [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md) UFH14-B4
@@ -300,7 +300,7 @@ Tree tags used below, every number verified with `git show <rev>:<path>` on 2026
   launch saves every idle slot to `--cache-ram` and `prompt_clear()`s it. **This runs after
   `launch_slot_with_task`**, so a fork whose source is an idle slot must be taken at launch, before this loop
   (KPF-14).
-- `--cache-reuse` is force-disabled for recurrent memory ([1286-1301 · 1307-1322 · 1361-1376 · 1361-1376]). **Corrected 2026-10-21 (KPF-63):** this premise is wrong for the champion. `llama_memory_hybrid::get_can_shift()` returns true (`llama-memory-hybrid.cpp:133`), so the server does not disable `--cache-reuse` on hybrids; no production role sets the flag; the engine defect is CH-21 (`handoffs/active/autokernel-champion-aggregate.md`; design `/mnt/raid0/llm/tmp/cacheclip-port-20261021/DESIGN.md`). Non-prefix reuse on hybrids is under test in KPF-60, not ruled out.
+- `--cache-reuse` is force-disabled for recurrent memory ([1286-1301 · 1307-1322 · 1361-1376 · 1361-1376]). **Corrected 2026-10-21 (KPF-63):** this premise is wrong for the champion. `llama_memory_hybrid::get_can_shift()` returns true (`llama-memory-hybrid.cpp:133`), so the server does not disable `--cache-reuse` on hybrids; no production role sets the flag; the engine defect is CH-21 (`handoffs/active/kernel-champion-and-promotion.md`; design `/mnt/raid0/llm/tmp/cacheclip-port-20261021/DESIGN.md`). Non-prefix reuse on hybrids is under test in KPF-60, not ruled out.
 - `find_slot` (`src/llama-kv-cache.cpp` [901-1075 · 902-1076 · 977-1151 · 977-1151]) is first-fit from `head` per ubatch (P3).
 - Hybrid ubatch split (`src/llama-memory-hybrid.cpp:80-89` in all four trees): `split_equal(n_ubatch, !unified, n_rs_seq + 1)`. The
   pure-KV path at `llama-kv-cache.cpp` [716 · 717 · 792 · 792] uses `split_simple`. **Survey correction to verify in KPF-40:** survey §2.4
@@ -1065,7 +1065,7 @@ Each item is dormant, not blocked. A reviewed session confirms the trigger and o
 
 - **vLLM/SGLang on the MI210 for this role.** Not a production path (survey §5: gfx90a degraded tier, #25030, no
   FP8, no GGUF path for this hybrid). A ≤1-day reference probe is the operator's call. It is not filed.
-- **CacheBlend / `--cache-reuse` / non-prefix reuse.** ~~Impossible with recurrent state.~~ **Corrected 2026-10-21 (KPF-63):** not impossible. At the champion `llama_memory_hybrid::get_can_shift()` returns true (`llama-memory-hybrid.cpp:133`), so the server does not disable `--cache-reuse` on hybrids; no production role sets the flag; the engine defect is CH-21 (`handoffs/active/autokernel-champion-aggregate.md`; design `/mnt/raid0/llm/tmp/cacheclip-port-20261021/DESIGN.md`); non-prefix reuse on hybrids is under test in KPF-60.
+- **CacheBlend / `--cache-reuse` / non-prefix reuse.** ~~Impossible with recurrent state.~~ **Corrected 2026-10-21 (KPF-63):** not impossible. At the champion `llama_memory_hybrid::get_can_shift()` returns true (`llama-memory-hybrid.cpp:133`), so the server does not disable `--cache-reuse` on hybrids; no production role sets the flag; the engine defect is CH-21 (`handoffs/active/kernel-champion-and-promotion.md`; design `/mnt/raid0/llm/tmp/cacheclip-port-20261021/DESIGN.md`); non-prefix reuse on hybrids is under test in KPF-60.
 - **Per-slot split KV (KVU-16d option c).** Decided "keep shared 393k" in RTG-57. Its reopen trigger lives there.
 - **#28532 `--slot-linger-ms`.** KPF-23's session-continuity pinning covers the same effect from the orchestrator.
   Cherry-pick it only if KPF-26 shows session turns losing their slot.

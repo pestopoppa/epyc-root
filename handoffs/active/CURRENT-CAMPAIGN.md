@@ -150,7 +150,7 @@
 >   **No champion-vs-production ratio exists for this configuration** — production v9 never ran the DFlash2
 >   lane and its frozen binary rejects the drafter GGUF.
 > - **Production stays FROZEN and untouched at v9** (`0db32c06e3e5`, binary `10125`).
-> - Owner: [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) ·
+> - Owner: [autokernel-champion-aggregate.md](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) ·
 >   [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66).
 
 > **STALE (amended 2026-10-28, operator-approved disk reclaim):** the notice below is historical.
