@@ -28,7 +28,7 @@
       "blocked": 13,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 688
+      "open": 624
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -523,7 +523,7 @@
       "closed": 371,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 112,
+      "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -532,7 +532,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 483,
+      "total": 419,
       "tracks": [
         {
           "blocked": 0,
@@ -542,7 +542,7 @@
           "line": 18,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 37
+          "open": 8
         },
         {
           "blocked": 0,
@@ -552,7 +552,7 @@
           "line": 3231,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 24
+          "open": 20
         },
         {
           "blocked": 0,
@@ -562,7 +562,7 @@
           "line": 3353,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
-          "open": 12
+          "open": 6
         },
         {
           "blocked": 0,
@@ -572,7 +572,7 @@
           "line": 3827,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
-          "open": 4
+          "open": 0
         },
         {
           "blocked": 0,
@@ -587,7 +587,7 @@
           "line": 4272,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
-          "open": 12
+          "open": 1
         },
         {
           "blocked": 0,
@@ -603,7 +603,7 @@
           "line": 5785,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
-          "open": 9
+          "open": 2
         },
         {
           "blocked": 0,
@@ -619,7 +619,7 @@
           "line": 6446,
           "markers": 1,
           "name": "fleet-fanout-measurement",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
@@ -635,7 +635,7 @@
           "line": 6634,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 9
+          "open": 7
         }
       ]
     },

@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T16:26:37Z",
+  "generated_at": "2026-11-03T16:28:38Z",
   "nodes": [
     {
       "age_days": 0,
@@ -929,8 +929,7 @@
             "INF-45#within-role-placement-state-machine",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
           "dispatchable": 1,
           "gates": [
@@ -1819,8 +1818,7 @@
             "INF-45#within-role-placement-state-machine",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
           "dispatchable": 15,
           "gates": [
@@ -3246,14 +3244,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 371,
-      "dispatchable": 112,
+      "dispatchable": 48,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-03",
       "next_action": "AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries",
-      "open": 112,
+      "open": 48,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3278,48 +3276,47 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 37,
+          "dispatchable": 8,
           "gates": [],
           "line": 18,
           "name": "coordination-and-churn-pipeline",
-          "open": 37,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 24,
+          "dispatchable": 20,
           "gates": [],
           "line": 3231,
           "name": "churn-pipeline",
-          "open": 24,
+          "open": 20,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 6,
           "gates": [],
           "line": 3353,
           "name": "dashboard-architecture-restructure",
-          "open": 12,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 0,
           "gates": [],
           "line": 3827,
           "name": "handoff-index-and-backlog-graph",
-          "open": 4,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 12,
+          "dispatchable": 1,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3328,7 +3325,7 @@
           ],
           "line": 4272,
           "name": "coordinator-role-failure-modes-and-refactor",
-          "open": 12,
+          "open": 1,
           "readiness": "blocked"
         },
         {
@@ -3336,10 +3333,9 @@
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#coordinator-role-failure-modes-and-refactor",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 9,
+          "dispatchable": 2,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3349,7 +3345,7 @@
           ],
           "line": 5785,
           "name": "loop-owned-fleet-implementation",
-          "open": 9,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -3357,10 +3353,9 @@
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#coordinator-role-failure-modes-and-refactor",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3370,7 +3365,7 @@
           ],
           "line": 6446,
           "name": "fleet-fanout-measurement",
-          "open": 5,
+          "open": 4,
           "readiness": "blocked"
         },
         {
@@ -3378,10 +3373,9 @@
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#coordinator-role-failure-modes-and-refactor",
-            "RTG-34#dashboard-architecture-restructure",
-            "RTG-34#handoff-index-and-backlog-graph"
+            "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 9,
+          "dispatchable": 7,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3391,7 +3385,7 @@
           ],
           "line": 6634,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 9,
+          "open": 7,
           "readiness": "blocked"
         }
       ]

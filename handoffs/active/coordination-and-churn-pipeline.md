@@ -7,7 +7,7 @@
 **Status**: DESIGN-RATIFIED (operator, 2026-07-27, plan-mode Q&A ×2) — build-ready; M1 skeleton is verbatim below. **Nomenclature revised 2026-07-27** (operator) — see §Nomenclature.
 **Created**: 2026-07-27
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` — existing reusable ROOT lane; retain the lane and foreign work.
-**Priority**: HIGH — removes the operator-paste-buffer relay bottleneck measured all week
+**Priority**: MEDIUM — the coordinator-daemon/delivery plane it was filed for is retired; what survives is the churn-pipeline defect list (compute utilization), the fan-out measurement (FM-*) and a few bus/dashboard repairs
 **Effort**: M1–M2 ~half day · M3–M4 ~1–2 days (incl. the 48h M4 soak) · M5 optional, flag-gated
 **Categories**: coordination, governance, automation
 **Parent index**: [master-handoff-index.md](master-handoff-index.md) (★ post-closure pivot block)
@@ -635,7 +635,7 @@ freezes/cutovers, host reboots).
   `none-lane-depth`, `missing-gating`, `roster-orphan`, `co-residency-topology-drift`.
   Verified on a throwaway port; the live hub was never restarted. Rollback: revert the additive
   routes.
-- [ ] **M3 — coordinator-daemon, read-only advisory.** *BUILT ✅ 2026-07-27* —
+- **[declined: ws58 2026-11-03 content-review: superseded — the machine delivery plane (coordinator daemon) was retired by the loop-owned fleet (operator 2026-08-15, Phase 3) and bus_supervisor stays DOWN by operator decision]** **M3 — coordinator-daemon, read-only advisory.** *BUILT ✅ 2026-07-27* —
   `scripts/coordination/session_bus_coordinator.py` (flock singleton, tick loop, heartbeat,
   epoch fencing) and `scripts/coordination/bus_supervisor.sh` (userspace watchdog, health =
   heartbeat mtime, SIGTERM-then-SIGKILL, exponential backoff, `loop|once|status`; no systemd).
@@ -688,11 +688,11 @@ freezes/cutovers, host reboots).
     `LOCK_FILE`/`EPYC_ROOT`/`BUS_ROOT` but the supervisor's `pgrep -f` pattern is global, so a
     stub with the same filename matched production. `DAEMON`/`DAEMON_PATTERN` are now overridable.
     *Isolation is only as strong as its weakest axis.*
-  - [ ] **M3d — the queue must hold real work for the evidence to mean anything.** Seeded
+  - **[declined: ws58 2026-11-03 content-review: superseded with M3 (daemon soak evidence has no consumer)]** **M3d — the queue must hold real work for the evidence to mean anything.** Seeded
     2026-07-27 (19 tasks); before that the advisory stream held 978 records and ZERO
     `would-assign`. Widen per-handoff with `seed_queue.py --list` as the soak proceeds.
   Rollback: stop the daemon; the bus returns to fully-functional M1 manual mode.
-- [ ] **M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*
+- **[declined: ws58 2026-11-03 content-review: superseded — daemon assignment authority was never accepted and the delivery plane is retired (loop-owned fleet Phase 3)]** **M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*
   `apply_assignment()` in `session_bus_coordinator.py`, gated entirely on
   `coordinator_daemon.authority == "assign"`. M3's decision-property criterion—not a file
   count—proves that manual/advisory transport cannot become an assignment path, so flipping
@@ -897,7 +897,7 @@ nobody re-reads:
 >
 > </details>
 
-- [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
+- **[declined: ws58 2026-11-03 content-review: superseded — tmux send-keys/spawn nudging is replaced by SendMessage + flag-file hand-offs (OPERATING_CONSTRAINTS, Token-Efficiency rules)]** **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
   after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
   `scripts/coordination/tmux_adapter.py` (probe/nudge/spawn). Fail-closed; refuses to
   guess a pane; spawns only as a **window in `tmux.live_session`**, never its own session; creates
@@ -960,7 +960,7 @@ nobody re-reads:
   - [x] **Guard self-idiom regression** ✅ 2026-07-28 — `agents_reference_guard.sh` now resolves
     bare nested session-bus references, and the compliant coordinator-agent role file is
     explicitly tested (a guard must not forbid its own idiom). Commit `667ed96f`, 3 passed.
-  - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
+  - **[declined: ws58 2026-11-03 content-review: superseded with M5]** **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
   - [x] **M5b — operator disposition for preserved roster orphans.** ✅ 2026-08-11 — `mainD`,
     commit `060efa27`, on `coordinator-agent`'s approval of a disposition package. **This row's own
@@ -986,7 +986,7 @@ nobody re-reads:
     including the sealed-vector scorer fix `c7f6c7fa`. Recommended action: a roster writer adopts
     the messages with original ids/payloads, then archives both outboxes with the heartbeats. Only
     the operator can authorize this disposition.
-  - [ ] **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
+  - **[declined: ws58 2026-11-03 content-review: superseded — instruction refresh of running sessions is the Phase 5 nudge of the wrap-up division-of-labor plan (this file), not a coordinator-agent chore]** **M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at
     21:43Z left an active agent on its 19:45Z heartbeat. Recorded in `BUS_PROTOCOL.md`; the open
     task is for coordinator-agent to nudge running mains to *re-read* on every such change.
   - [x] **C9 — `cmd_spawn` caps a daily action count, not live concurrency.** ✅ 2026-07-28 —
@@ -1327,7 +1327,7 @@ nobody re-reads:
     commands and it passes) and the guard errs toward refusing, which is the right direction for a
     memory-safety check on a 192-thread box — but it will keep surprising people. Scope the match
     to the pytest invocation.
-  - [ ] **C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone
+  - **[declined: ws58 2026-11-03 content-review: superseded — tmux spawn is no longer the way mains are started (coordinator-agent skill cold start; SendMessage hand-offs)]** **C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone
     creates the `agent` tmux session by hand. THIS IS ON THE REBOOT CRITICAL PATH.** *Verified
     2026-07-29 by running `live_mains` against an absent session.* With no tmux server or no
     `agent` session, `live_mains` returns `None` ("cannot list windows of the live session"), so
@@ -1568,7 +1568,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   `coordinator-agent`'s inbox (drained every task boundary), deduped once per `gate_id` against its
   own durable evidence, naming the concrete repair; `relay_tokens` now carries `gate_id`/`msg_id` as
   FIELDS so the notice never parses prose out of `detail`.
-  - [ ] **OPEN — align the schema with the relay contract so `append` refuses at AUTHORING time.**
+  - **[declined: ws58 2026-11-03 content-review: superseded — relay daemon plane retired; the bus is drained at task boundaries by each agent (CLAUDE.md M1)]** **OPEN — align the schema with the relay contract so `append` refuses at AUTHORING time.**
     Failing at the author is the right place; today a schema-valid gate can be structurally
     unpresentable. **This is a CONTRACT change and is deliberately NOT made here** — it is a
     coordinator/operator call, and tightening it invalidates `mainA`'s existing row, which would
@@ -1686,7 +1686,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   C3 failure, one identity-check short of being fixed. A drain on an unknown id must warn loudly
   (and the deliberate choice between warn and refuse should be recorded, since refusing changes
   behaviour for anyone mid-rename).
-- [ ] **C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a
+- **[declined: ws58 2026-11-03 content-review: superseded — backend-per-roster-row served the tmux spawn path, which is retired]** **C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a
   window that died a second later.** Two halves of one gap — **(b) is DONE, (a) is still open:**
   (a) **The launch command is not roster data.** `cmd_spawn --command` defaults to
   `cd /workspace && claude` (`tmux_adapter.py:931`) and no roster row carries a launch command, so
@@ -1716,7 +1716,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   **Reusable finding: the shared C9 test harness was pinning a false pass.** Its fake tmux answered
   `list-windows` from a fixed string and never showed a window it had just created, so every spawn
   test would have read as "the window died instantly". It now reflects its own `new-window` calls.
-  - [ ] **(a) STILL OPEN — the launch command belongs in the roster row as data.** `cmd_spawn
+  - **[declined: ws58 2026-11-03 content-review: superseded with C30]** **(a) STILL OPEN — the launch command belongs in the roster row as data.** `cmd_spawn
     --command` defaults to `claude` and no roster row carries a launch command, so
     which backend an identity runs on lives only in the head of whoever types the spawn. The
     2026-07-29 rename made roster ids deliberately model-agnostic precisely so a main can move
@@ -1812,8 +1812,8 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   and filed on its own rather than smuggled in here.
 
 - [x] **C36 — liveness is decided by the RUNTIME, not by the agent's self-report.** ✅ 2026-07-29 — `auditor`, commits `33eb7306` (signal + backend identification) and `dd9e61d2` (probe wiring). **Codex mains are decided by the runtime; Claude mains fall back and `probe` says so.** Both directions act and both report: runtime ACTIVE blocks whatever the heartbeat says — a protection the pre-C36 guard did not have at all, since a main whose heartbeat wrongly read `idle` mid-generation was nudged without hesitation; runtime IDLE clears both the `working` heartbeat AND its staleness, because once the runtime has spoken a self-report is not evidence about anything. UNAVAILABLE changes nothing and never becomes `idle`. Every other guard stands (pinned by its own test). The PREMISE is asserted as a live test against the real corpus (120/120 tails parse, 118/120 terminal), so a CLI format change fails loudly instead of silently reporting every settled agent as ACTIVE. 18 tests, mutation-verified on five separate mutants incl. the fail-open. Live end-to-end: 4 Codex decided by runtime, 3 Claude falling back explicitly.
-  - [ ] **OPEN — the Claude source is an operator/coordinator call.** Escalated: my subagent obtained part of its evidence by decompiling the shipped bundle, which the design doc §7 rules out as a basis. Recommended option is the vendor's documented `claude agents --json` (filtered to `kind == interactive` — it is currently emitting a stale 2026-07-23 background record) with per-pass caching for its ~2s cost. Until answered, Claude mains stay on the heartbeat chain and `probe` reports them as UNAVAILABLE rather than pretending coverage.
-- [ ] **C36 residual (superseded framing kept for history)** *Operator-approved
+  - **[declined: ws58 2026-11-03 content-review: superseded — a liveness source for the pane-based control surface, which the three-state liveness rule (SESSION_LIFECYCLE) replaced]** **OPEN — the Claude source is an operator/coordinator call.** Escalated: my subagent obtained part of its evidence by decompiling the shipped bundle, which the design doc §7 rules out as a basis. Recommended option is the vendor's documented `claude agents --json` (filtered to `kind == interactive` — it is currently emitting a stale 2026-07-23 background record) with per-pass caching for its ~2s cost. Until answered, Claude mains stay on the heartbeat chain and `probe` reports them as UNAVAILABLE rather than pretending coverage.
+- **[declined: ws58 2026-11-03 content-review: superseded — pane-signal liveness ranking; the canonical rule is three states, hardware wins, pane text never clears a main]** **C36 residual (superseded framing kept for history)** *Operator-approved
   Option B, 2026-07-29; assigned to `auditor`. Evidence base:
   [`docs/design/agent-session-control-surface.md`](../../docs/design/agent-session-control-surface.md),
   which ranks 14 candidate signals with measurements and disproves several plausible ones.*
@@ -1863,7 +1863,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     then report unknown and fail closed. The property the signal rests on does hold:
     `task_complete` is a **stable resting tail**, only ever followed by `task_started` or
     `thread_settings_applied`, never by the frequent mid-turn `token_count`.
-  - [ ] **BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and
+  - **[declined: ws58 2026-11-03 content-review: superseded with C36]** **BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and
     C30(a) — still open — is exactly *"the backend a main runs on is invisible to the bus"*. The
     2026-07-29 model-agnostic rename made backend a runtime property that nothing records. Escalated
     with options; the default if unanswered is single-backend scope with an explicit fallback and
@@ -1905,7 +1905,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     that is really a silence. The check is duplicated rather than imported from the coordinator
     module on purpose — a check that imports the thing it is checking on fails exactly when it is
     needed. Silent when healthy. 5 tests.
-  - [ ] **OPERATOR (still open, now a belt-and-braces item rather than the only line of defence) —
+  - **[declined: ws58 2026-11-03 content-review: moot — the daemon is retired and bus_supervisor stays DOWN by operator decision]** **OPERATOR (still open, now a belt-and-braces item rather than the only line of defence) —
     nothing AUTOMATICALLY RESTARTS the daemon.**
     The report was correct-once-asked and pull-only, and **the supervisor was dead too**, so "the
     supervisor will catch it" is not an answer — nothing watched the watcher. `status` now takes
@@ -1981,7 +1981,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     only such row. A "looks already signed" row rendered as "was never presented" would send the
     coordinator chasing a gate that is sitting in the queue. Selection and dedupe are both keyed on
     the check name now, so a third check cannot inherit the second one's wording. Pinned by a test.
-  - [ ] **DEPLOY — the running daemon is executing the old code.** `pid 496387` started
+  - **[declined: ws58 2026-11-03 content-review: moot — daemon retired]** **DEPLOY — the running daemon is executing the old code.** `pid 496387` started
     2026-08-11 08:48:00, before this landed, and Python loaded the module then. The fix is verified
     by direct invocation but **is not live until the daemon restarts**, which is the coordinator's
     call, not mine — process lifecycle is outside C-OWN's lane. Until then `token-queue.md` keeps
@@ -2508,13 +2508,13 @@ one-live-instance assumption. If that task gets its own handoff, move these five
     change that deleted the distinction another test existed to check. Declaration is now per-caller.
     Mutation-verified both directions: restore the old inference → 2 fail; silence `token-request` →
     the compliant-path test fails. 315 pass.
-  - [ ] **The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired
+  - **[declined: ws58 2026-11-03 content-review: superseded — routing intent is structural (corr_id + target) per the bus protocol; the relay daemon that mis-fired on predicates is retired]** **The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired
     by exclusion: `action_required` over-fires and the kind-set under-fires, so a sender who needs the
     operator has no way to say so. Add an explicit sender-set field (the `needs_routing_to` /
     structural-intent idiom already in use), make the escalation key on **that alone**, and make an
     item claiming operator attention without it a schema warning — so the marker's absence is
     detectable rather than silent.
-- [ ] **C50 — the picker serves a STALE READY set, and this is DISTINCT from the authority gag.**
+- **[declined: ws58 2026-11-03 content-review: superseded — the backlog picker is replaced by the churn dispatcher and generated backlog-priority.json]** **C50 — the picker serves a STALE READY set, and this is DISTINCT from the authority gag.**
   FILED 2026-08-12 by `coordinator-agent` from `mainB`'s screening, **unfixed**. Six dispatched picks
   screened with `backlog_row_check.py --ref`: **1 of 6 dispatchable**; four (`:463`, `:511`, `:513`,
   `:628`) had been `- [x]` since **2026-07-29**, closed fourteen days before the daemon named them,
@@ -2544,7 +2544,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
     The dereference now *detects* rot; it does not remove the dependency on line numbers. Six of
     seven anchors checked pointed at a tree-diagram branch, a `###` heading or a prose bullet, and
     the task_id's two halves disagree (`--013-` vs `L534`: box #13 is at line 59). Both were computed
-    at seed time from a file since rewritten and neither is re-derived.
+    at seed time from a file since rewritten and neither is re-derived. [check: does the churn dispatcher (rowflow / handoff_sessions.py) still key any pick on file:line? If yes keep and name the call site; if the task TEXT is already the identity everywhere, retire]
 - [x] **Reporting-unit rule for any scheduler/backlog figure — write it into the shared
   constraints.** ✅ 2026-08-12 — landed as `## Reporting Units` in `agents/shared/OPERATING_CONSTRAINTS.md`, with the C50 origin and the N/M/K decomposition stated as binding form.** Derived from the C50 retraction: the "4,602 pending picks" headline counted
   **records, not work**. Standing form: *"N records resolving to M distinct rows, of which K were
@@ -2650,7 +2650,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   but weak checks on their own; the suite's aggregate result (and specifically checks 1/4/5) is what
   catches the regression, and the suite as a whole correctly reports `fail=3` and exits 1 under the
   mutation.
-- [ ] **Worktree isolation phase 2 — the cutover.**
+- **[declined: ws58 2026-11-03 content-review: no content beyond a title; lane worktrees are the practice already]** **Worktree isolation phase 2 — the cutover.**
 
   - [x] **Re-register the 3 worktrees still holding RELATIVE gitdir pointers.** Measured ✅ 2026-10-29 (audit: verified 2026-10-29: all 351 /workspace/.git/worktrees/*/gitdir files hold absolute paths (zero relative); config useRelativePaths=false per text) [no-belief: audit-reconciliation]
         2026-08-12 (`mainA`): `/workspace/.git` and `/mnt/raid0/llm/epyc-root/.git` are ONE repo
@@ -2700,7 +2700,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
         a stale one. One fixed, human-recognisable spelling is the property worth having here;
         derivability is not. Do not "fix" this to match the other five call sites.
 
-- [ ] **Per-agent shards for the concurrently-appended log files.** Option 2 from the
+- **[declined: ws58 2026-11-03 content-review: no measured need — untracking removed the merge tax; nothing reads the git copy]** **Per-agent shards for the concurrently-appended log files.** Option 2 from the
   `agent_audit.log` adjudication, which untracking deliberately did not implement. Untracking removed
   the merge tax at the cost of the git copy; per-agent files remove it while keeping tracking, and the
   same shape applies to any other all-writers-one-file artifact on this plane. Decide it as a policy
@@ -2725,7 +2725,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   reboot** — OP-16 was declined by the operator, so this is queued, not gated. Its own task id
   (`guard-universe-and-worktree-isolation`) still has no handoff of its own; give it one at cutover
   or fold it here permanently.
-- [ ] **"This main is working serially" must become an observable condition, not something the
+- **[declined: ws58 2026-11-03 content-review: merged into FM-8 — the main-thread dispatch audit hook is the detector]** **"This main is working serially" must become an observable condition, not something the
   operator has to notice.** The fan-out default is now durable
   (`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*, operator 2026-08-12), but
   nothing on this plane distinguishes a main that dispatched five concurrent subagents from one that
@@ -2739,7 +2739,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   a window, exposed where `probe`/`rebuild` already report liveness. The defect signal is sustained
   zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
   not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
-- [ ] **Adopt "serial collapse" as the name for the condition above, and build the detector ourselves.**
+- **[declined: ws58 2026-11-03 content-review: merged into FM-8 (same detector; the name is adopted there)]** **Adopt "serial collapse" as the name for the condition above, and build the detector ourselves.**
   The term is Moonshot's (intake-1106, arXiv:2602.02276v2, dive-verified) and the source supplies a
   DEFINITION ONLY — it occurs exactly once in the paper, in the sentence defining it, with no rate, no
   threshold and no detection method. Cite it for the name, never for a measurement. The per-subagent
@@ -2795,7 +2795,7 @@ Residuals observed in the same window; later dispositions are recorded on the in
   DP-5's actual-helper PTY and mutation controls (`8f4410d0a86297111ec761173f36f534391a9513`) pin
   the submit sequence. The fixture is synthetic, not a fresh live-pane measurement. DP-2's separate
   live Claude clear calibration remains open. [no-belief: source and deterministic fixture reconciliation]
-- [ ] **DP-2** (HIGH): **`clear` and `submit` do not work on Claude panes.** The C54 verbs were
+- **[declined: ws58 2026-11-03 content-review: superseded — Claude-pane clear/submit verbs served tmux nudging, replaced by SendMessage + flag files]** **DP-2** (HIGH): **`clear` and `submit` do not work on Claude panes.** The C54 verbs were
   calibrated against a disposable Codex session; against the five Claude mains neither verb takes
   effect. Same backend asymmetry C53 names — faint SGR 2 carries opposite senses on the two TUIs — and
   it means the remedy half of the detector is live for exactly one of the six roster members. Until
@@ -2923,7 +2923,7 @@ from that seat.
     this later: the original misroute of this finding was caused by a **colliding OBS-11/OBS-12
     series** at `non-inference-backlog.md:251-252`; this file's OBS-11 is the correct owner.
     `intake-1325#record`, `intake-1335#record`.
-- [ ] **FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**
+- **[declined: ws58 2026-11-03 content-review: superseded — pane-composer heuristics cannot clear or condemn a main under the three-state liveness rule; calibrating them further is dead weight]** **FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**
   An empty Codex composer *renders text* — a greyed placeholder (`› Write tests for @filename`).
   Measured 2026-08-12, neither available discriminator separates it from real queued input: the
   placeholder carries the same dim SGR (`ESC[2m`) that Claude uses for genuinely queued text, and
@@ -2935,7 +2935,7 @@ from that seat.
   into a live pane, which this seat must not do. Fix: get an authoritative empty-composer signal for
   Codex (the rollout/TUI state, not the rendered row), or enumerate the placeholder set from an
   expendable pane and pin it with a fixture.
-- [ ] **FW-2** (MED): **five of the six mains have NO runtime liveness signal, so `IDLE-CANDIDATE`
+- **[declined: ws58 2026-11-03 content-review: superseded — same rule: pane text is never a liveness signal; the instrument is hardware (process/KFD/CPU), not the composer]** **FW-2** (MED): **five of the six mains have NO runtime liveness signal, so `IDLE-CANDIDATE`
   is a heuristic for them.** `runtime_liveness()` implements the rollout check for Codex only;
   measured across the live roster 2026-08-12, `inference` returns `active`, while `auditor`, `mainA`,
   `mainB`, `mainC` and `mainD` all return `None` with *"backend 'claude': no runtime signal
@@ -3039,7 +3039,7 @@ from that seat.
   `inspect-pane` reports the exact endpoint, runtime, task, unread count, triage count, worktree,
   and durable checkpoint. `instantiate` requires `fresh` or `adopt`. Adoption requires an explicit
   role-context reset confirmation. No model, provider, or effort value is inspected.
-- [ ] **AIR-6 — deploy and canary live audit plus CPU lease enforcement.** `coordinator-agent`, as
+- **[declined: ws58 2026-11-03 content-review: superseded — compute leases are the compute-calendar grant protocol (inference-backlog-scheduling skill, 2026-10); the dedicated-inference-role daemon deploy has no consumer]** **AIR-6 — deploy and canary live audit plus CPU lease enforcement.** `coordinator-agent`, as
   live daemon owner, deploys `d7b83ddf93776a56869aee7326c8770602262bc0`, replays the live bus,
   and preserves the exact audit and CPU lifecycle artifacts specified in **Current executor start
   here**. It may promote selected audits `shadow` → `required` and resource admission `observe` →
@@ -3057,7 +3057,7 @@ from that seat.
   equivalent guard), then mutation-canary an untyped ordinary `lane:none` row and require a refusal
   before any `shadow`/`observe` promotion. `compute_advice` has HIGH upstream reach across four
   assignment/coordinator flows; no audit-lane code patch or daemon reload was attempted.
-- [ ] **AIR-7 — enable delegated GPU leases only after a general physical-claim provider exists.**
+- **[declined: ws58 2026-11-03 content-review: superseded — GPU grants go through the calendar's grant writers, not delegated bus leases]** **AIR-7 — enable delegated GPU leases only after a general physical-claim provider exists.**
   Select and configure one provider under `resource_claims.gpu`, add provider-qualified open/close
   receipt validation and contention tests, then canary a delegated GPU lease separately. Until all
   three land, `enabled: false` is the required fail-closed state; Inference may still run its own GPU
@@ -3069,7 +3069,7 @@ from that seat.
   without `next`, and an otherwise valid request with a misspelled payload key. Focused upstream
   tests pass (`133 passed, 215 deselected`), confirming implementation consistency rather than the
   fail-closed Rule-11 authority contract.
-- [ ] **AIR-9 — fail-close Rule-11 compute-dialogue authority, routing, and payload shape.** Enforce
+- **[declined: ws58 2026-11-03 content-review: superseded — compute-request/grant authority is the calendar grant protocol]** **AIR-9 — fail-close Rule-11 compute-dialogue authority, routing, and payload shape.** Enforce
   `compute-request` routing to `inference`; restrict `compute-grant` and `compute-deny` authorship to
   `inference` and correlate/address the requester; require non-empty grant `boundaries` and deny
   `next`; reject unknown compute payload keys while explicitly retaining intended generic payload
@@ -3170,7 +3170,7 @@ something else, which is exactly how 3 of them became uncountable.
   row (parked verdicts previously died in the outbox). Schema validated under both validators;
   live-bus validate: 0 new failures. 3 red-first tests.
 
-- [ ] **Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.
+- [ ] **Decide the fate of the two daemon-written TRACKED bus files — untrack them.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are perpetually dirty (they show in every git status today). Fix: `git rm --cached` both, add them to `.gitignore`, keep a committed `*.example` if a reader needs the shape. Done when `git status` is clean with the bus tooling running.
 
 #### Lost-wake backstop and the wake spike (research-intake 2026-09-07)
 
@@ -3185,7 +3185,7 @@ gate on WS-2**; **WS-4 is independent of the other three.**_
   [`coordinator-role-failure-modes-and-refactor.md`](coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
   → the F-33(a) evidence note. `intake-1331#record`.
   - Implementation `11e75b83b39c01a3857dd3e339911d40e4ca0d91`, fairness and terminal-disposition repair `516ea39b198a68b55ef07f14dfbf6149741e5ca5`: coordinator non-peek drain reads native worker-checkpoint journals independently of bus delivery, flushes a byte-capped notice before writing its receipt, and requires an explicit terminal disposition to suppress a notice. 36 focused controls pass, including the reproduced scan-cap starvation case, legacy-receipt migration, nonterminal status and malformed records. Unknown/truncated coverage remains unknown; arbitrary unresolved prefixes do not carry a future-drain coverage guarantee. No processed watermark, store-before-deliver change, live process restart or inference.
-- [ ] **WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in
+- **[declined: ws58 2026-11-03 content-review: bus-internal optimization with no measured failure; lost wakes are covered by drain-at-boundary]** **WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in
   the **owner-write-only** `cursors/<agent>.json`, advanced **only** by a sequence-naming disposition
   — replacing the O(history) `routed_view` recomputation. **Unlike WS-1, this one creates a standing
   obligation**, so it carries a hard precondition, recorded here so it cannot be skipped: any
@@ -3193,7 +3193,7 @@ gate on WS-2**; **WS-4 is independent of the other three.**_
   never suppress"* polarity (`:1937-1946`), and must satisfy C49's ruling that *"an escalation that
   fires on a well-run night trains everyone to ignore it"* (`:2463`). The external precedent is safe
   only because its backstop is **one-shot and byte-capped**; ours would not be. `intake-1331#record`.
-- [ ] **WS-3 — RAISE AS AN EXPLICIT DECISION, not an implementation detail: store-before-deliver.**
+- **[declined: ws58 2026-11-03 content-review: a design decision for the retired relay daemon's save ordering]** **WS-3 — RAISE AS AN EXPLICIT DECISION, not an implementation detail: store-before-deliver.**
   Store-before-deliver **inverts the deliberate house ordering** at
   `session_bus_coordinator.py:1626` (*"the save happens AFTER the relay pass, so a crash loses at
   most one tick of ledger updates, never a delivery"*) and the fail-safe cursor default at
@@ -3300,7 +3300,7 @@ writes everything but `wrapped_sha`; `wrapup.py` fills it after the push._
 - [x] **Land the MIN_RESUME_GAP_S fix** ✅ 2026-11-02 superseded by dispatcher rewrite ROOT `9612fb48d` [no-belief: tooling]
 - [x] **Inventory-target dispatcher change** ✅ 2026-11-02 replaced by operator-loop dispatcher (next = non-inference/inference/blocked/done; yield/cooldown/stuck/park/inventory gates deleted) ROOT `9612fb48d` [no-belief: tooling]
 - [ ] **CAF burn measurement**: tokens per completed task before/after CAF-1..7 via `churn/tokens_per_task.py`.
-- [ ] **Net line count must go down**: `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` grew this day; find deletions (guardrail unmet).
+- **[declined: ws58 2026-11-03 content-review: self-referential guardrail with no behaviour change]** **Net line count must go down**: `handoff_sessions.py`, `backlog_gen.py`, `rowflow/`, `churn/` grew this day; find deletions (guardrail unmet).
 - [x] **Hotfixes landed** ✅ 2026-11-01 ROOT `139d9cf7a` `ddf791068` `0fec383f5` `a57b57239` [no-belief: tooling-repair; no measurement]
 - [x] **Keeper v11 single allocator** ✅ 2026-11-01 ROOT `1a9186e11` [no-belief: build/landing]
 - [x] **churn_up.sh persistence runbook** ✅ 2026-11-01 ROOT `d095b4a4d` [no-belief: build/landing]
@@ -3312,7 +3312,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **SA-1** [S] Merged into the in-progress sticky-slot change (`54c23474e`, `sticky()`/auto-start gate in `handoff_sessions.py`): auto-start admits only a handoff with a ready row or an operator pin, adds a per-slug start cooldown and a global starts/hour cap, logs `AUTO-START-THROTTLED`; fixtures for rows=[] and just-done. Evidence: 61/63 AUTO-STARTs with `rows=-` on 2026-11-01/02 (intake-2615#record). removes: fresh-session bootstrap per freed slot, the done-then-restart loop, `restarted_from_done` re-admission without a ready row.
 - [ ] **SA-2** [S] Zero-token watchdog inside the existing keeper pass (no new daemon): count AUTO-START/DONE per hour against ready rows unclaimed and alarm on starts over cap with no effect. removes: operator log-grepping to spot thrash.
 - [ ] **SA-3** [S] Run-end and awaited events carry related ids (row, run, handoff) into the resume `delta()`, so a resumed worker gets a chain-of-recall delta (intake-2615#record). removes: the worker's cold re-read of handoff and row files on each resume.
-- [ ] **JEV-3** [M] REPLACE the regex failure classifier (`rowflow/publish_row.py:82-104`, `UNKNOWN-FAILURE-CLASS`) and `handoff_sessions.work_state` regexes with the local native `src/typed_decisions/` path (TD-29: 18/18) returning a named label plus named park/stop reasons; replay of saved `dryrun/*/FAIL-*.json` is a regression check only, no new accuracy study (intake-2604#record). removes: `_UNIT_RE`/`ADV_RX`/`OWN_TASK_RX` regex classification, the UNKNOWN-FAILURE-CLASS fall-through, unnamed MAX_FAILS parking.
+- [ ] **JEV-3** [M] REPLACE the regex failure classifier (`rowflow/publish_row.py:82-104`, `UNKNOWN-FAILURE-CLASS`) and `handoff_sessions.work_state` regexes with the local native `src/typed_decisions/` path (TD-29: 18/18) returning a named label plus named park/stop reasons; replay of saved `dryrun/*/FAIL-*.json` is a regression check only, no new accuracy study (intake-2604#record). removes: `_UNIT_RE`/`ADV_RX`/`OWN_TASK_RX` regex classification, the UNKNOWN-FAILURE-CLASS fall-through, unnamed MAX_FAILS parking. Status 2026-11-02 (absorbs the deferral note): replacement commit 7b2b40b42 is kept but uncalled; the 1.5B native replay was unusable (constant answers, confidence 1.0) — re-run the replay with the served worker model before wiring the call.
 - [x] **SA-4** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: a long-lived worker per task with code pass-through of its thread's events; fresh start only on a ready row; a watch for unproductive loops (intake-2615#record). removes: per-event fresh-session dispatch as an accepted loop shape.
 - [x] **JEV-6** ✅ 2026-11-02 ROOT `1579bd509` [no-belief: doc rule; no measurement] [S] `docs/guides/agent-workflows/agent-loop-design.md`: typed judgments carry label probabilities and a confidence with two thresholds set from held-out real outcomes; unavailable is never an answer; a worker claim is never a result (intake-2604#record, intake-2605#record, intake-2608#record). removes: free-text agent decisions as an accepted loop shape.
 
@@ -3322,9 +3322,9 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [x] **Sparse lanes keep artifacts/operator/*.sh** ✅ ROOT `ac7e2e1fc` [no-belief: tooling]
 - [x] **wrapup.py resolves generated-index conflicts; report.json on every exit** ✅ ROOT `c9eb9e2b8` `005a7fbf5` [no-belief: tooling]
 - [x] **Hub pipeline section / backlog graph** ✅ ROOT `28b23bf37` `1c869a310` `60ec225af` `100cb18ba` `8fe3693e9` `4693451cb` [no-belief: dashboard]
-- [ ] **JEV-3 deferred**: replace commit `7b2b40b42` kept, uncalled; 1.5B native replay unusable (constant answers, confidence 1.0), `/mnt/raid0/llm/tmp/ws58-csh/jev3-replay-1p5b-20261102.json`.
+- **[declined: ws58 2026-11-03 content-review: merged into JEV-3 as its status]** **JEV-3 deferred**: replace commit `7b2b40b42` kept, uncalled; 1.5B native replay unusable (constant answers, confidence 1.0), `/mnt/raid0/llm/tmp/ws58-csh/jev3-replay-1p5b-20261102.json`.
 - [ ] **Measure row publication** after the 10:41Z fixes.
-- [ ] **Sessions over-prepare instead of publishing**: find and cut.
+- [ ] **Sessions over-prepare instead of publishing**: measure per session over 48 h the rows PUBLISHED vs preparation artifacts written (packets, PREDECLARATION.md, dry-runs); any preparation step that produced no published row in 7 days is cut from the dispatcher's path. Done when the ratio is reported and at least one step is removed or justified.
 - [ ] **Dashboard readied-waiting count is 0**: row/handoff linking bug.
 - [ ] **RTG-18 graph checkbox-parse bug**: graph shows open=0, file has 12 open boxes.
 - [x] **Turn-end rules, light worker persist, central index_regen.py; box id per turn, steps-since-tick, push lock 15 min** ✅ 2026-11-02 ROOT `30b2ed75c` `262de5c98` [no-belief: tooling]
@@ -3346,9 +3346,9 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Dirty/unlanded trees under `tmp/` and `autokernel/` never processed** by the reclaim.
 - [ ] **Dangling references to deleted data**: `artifacts/compute/codex3-*` cite `data/stt-cs8-public-20261030`; `memento-block-reasoning-compression.md` cites openmementos; about 10 files cite `backups/episodic-leak-20260917` (`ratify_v10_episodic_repin_20260917*`, `promptforge-mutation-safety-contract.md`, `wiki/safety.md`, orchestrator `purge_eval_leak_memories_20260917.*`).
 - [ ] **rowflow test `test_complete_in_smoke_is_filed_not_queued` fails on main.**
-- [ ] **Pipeline restart is operator-gated** (all grants revoked to `tmp/ws58-csh/revoked-grants-20261102/`; dispatcher, keepers, watchdogs, filler_run13 launchers stopped).
+- **[declined: ws58 2026-11-03 content-review: a state note, not a task; the restart is the operator's call and is recorded in the runbook]** **Pipeline restart is operator-gated** (all grants revoked to `tmp/ws58-csh/revoked-grants-20261102/`; dispatcher, keepers, watchdogs, filler_run13 launchers stopped).
 - [ ] **Registry graveyard row for Qwen2.5-Coder-32B-Instruct-Q4_K_M** (operator deleted the file): commit was blocked by the orchestrator pre-commit contention-matrix freshness hook (matrix stale, cannot refresh with the stack stopped). Patch at `tmp/ws58-csh/registry-graveyard-q4km-20261102.patch`. Also `server_mode.qwen25_coder_32b_q4km` still resolves to the deleted file; needs a stack-change deprecation.
-- [ ] **Fable backlog-refactor audit** in progress; output `tmp/ws58-csh/backlog-refactor-proposal-20261102.md`.
+- **[declined: ws58 2026-11-03 content-review: done — the backlog refactor 2026-11 completed (1127924c8) and its proposal was consumed]** **Fable backlog-refactor audit** in progress; output `tmp/ws58-csh/backlog-refactor-proposal-20261102.md`.
 
 ## Track: dashboard-architecture-restructure
 <!-- gate: none -->
@@ -3709,21 +3709,21 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 ##### Phase 1b — deprecation (operator-triggered, after new-page parity is confirmed)
 
 - [ ] Operator runs old + new in parallel and confirms `/machine` + `/autopilot` cover the
-      live-view usage.
-- [ ] `:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)
+      live-view usage. Then, in one cutover (absorbs the three rows below): `:8000/dashboard` redirects to `:8100/autopilot` and `dashboard.html` is deleted (all `/dashboard/api/*` and `/dashboard/events/*` data routes stay; :8000 becomes data-plane-only); the legacy page's registry entry is removed and `dashboard/README.md` restated as the plane rule; orchestrator `dashboard_panels.py` survives as the data-plane registry.
+- **[declined: ws58 2026-11-03 content-review: merged into the Phase 1b cutover row]** `:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)
       deleted wholesale. **All `/dashboard/api/*` + `/dashboard/events/*` data routes stay** —
       :8000 becomes data-plane-only.
-- [ ] Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary [too-big: operator parity confirmation and legacy redirect precede registry removal]
+- **[declined: ws58 2026-11-03 content-review: merged into the Phase 1b cutover row]** Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary [too-big: operator parity confirmation and legacy redirect precede registry removal]
       rewritten to the plane rule (with Phase 3's codification).
-- [ ] Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards
+- **[declined: ws58 2026-11-03 content-review: merged into the Phase 1b cutover row (a non-goal statement)]** Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards
       endpoints/producers, not page rendering) — nothing drops out of the fold.
 
 ##### Phase 2 — hardening (per D3; do only with evidence)
 
-- [ ] Machine-truth derivation: realized-state (manifest/`/proc`)-first for `stack_numa_mode` /
+- **[declined: ws58 2026-11-03 content-review: duplicate — owned by RTG-03 C1 fix; the row itself says "no duplicate work here"]** Machine-truth derivation: realized-state (manifest/`/proc`)-first for `stack_numa_mode` /
       `expected` flags — **owned by RTG-03 C1 fix**; this plan only inherits it onto the right
       page. No duplicate work here.
-- [ ] (If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.
+- **[declined: ws58 2026-11-03 content-review: unbounded conditional on a deferred decision (D3)]** (If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.
 - [ ] Freshness-grammar harmonization at the seam: one envelope vocabulary
       (hub's four-state + `reporting`/`content`) adopted by both registries' *wire format*;
       internal code stays separate.
@@ -3756,7 +3756,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       top layer is undecided. **`backlog_row_check.py --ref` returns DISPATCHABLE for this row**,
       because the dependency lives in prose rather than in a child box — the same screener blind
       spot as an `OPERATOR:` prefix. Worth a generator signal.*
-- [ ] H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
+- **[declined: ws58 2026-11-03 content-review: duplicate — owned by RTG-03]** H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
       `/machine`; REL-1 eval error-rate → autopilot page. [too-big: multi-worker data contracts and cross-page feeds belong to RTG-03]
 - [x] **D-1 (HIGH) — the production-kernel panel is absence-tolerant, QUIETLY.** ✅ 2026-08-12 — FIXED by `inference`, verified by `mainC` **from the ref, not the working tree**. `origin/main`'s `kernel.html` now renders the unavailable branch as a `headline fail` reading **ATTESTATION UNAVAILABLE**, plus a `detail fail` sentence — *"Production identity is unasserted; do not infer freeze or checkout state."* That is the absence_means sentence the defect asked for, at the same visual weight as the healthy headline; the `muted` line is gone. **Cosmetic residual, not reopening:** `_production_kernel_summary` still returns `error: None` for a merely-absent file, so the third line falls back to a generic "attestation not found" rather than naming the path the way `_read_kernel_contract` synthesises one. The alarm is loud, which was the defect; the reason is still unnamed, which is a nicety. Filed 2026-08-12 by
       `mainC` from the Kernel-R&D operational-truth audit
@@ -3971,7 +3971,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   markdown links; only 1 `dep` edge is hand-authored. A heuristic sweep found 253 candidates and was
   rejected — the phrasing cannot disambiguate direction ("X gates Y" vs "gated by X"), so importing
   them would draw authoritative arrows pointing the wrong way. Fill them in as work reveals them.
-- [ ] **Graph layout reads as a lattice.** At the spacing that makes nodes distinguishable, the grid
+- **[declined: ws58 2026-11-03 content-review: cosmetic, by its own text]** **Graph layout reads as a lattice.** At the spacing that makes nodes distinguishable, the grid
   seed shows through. Loosening the relax convergence threshold would reintroduce irregularity at
   some cost to the clean separation. Cosmetic; only worth doing if the regularity actually misleads.
   - [x] **Seed de-latticed; visual verdict still open.** 2026-09-16 — `sub-rtg46-layout`, commit
@@ -4040,7 +4040,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     board live again (170 active / 6 blocked / 181 completed / 103 archived). The `handoff_graph`
     panel's "index_state.py has never run" absence was collateral of the same root cause. Record:
     `progress/2026-08/2026-08-24.md`.
-  - [ ] **Cwd-guard hardening was attempted and REVERTED — do not reintroduce without a different
+  - **[declined: ws58 2026-11-03 content-review: a do-not-reintroduce note, not a task; stays readable here]** **Cwd-guard hardening was attempted and REVERTED — do not reintroduce without a different
     probe.** A `readlink -f /proc/<pid>/cwd` vs `$EPYC_ROOT` check added 2026-08-24 false-positived
     in this containerized environment (a hub launched with `cd ${EPYC_ROOT}` resolved to a different
     inode than the path — namespace artifact), producing a ~15 s restart loop. Reverted; the script
@@ -4262,12 +4262,12 @@ the suite parses that file's JavaScript.
 - [x] JS parse guard (`tests/test_dashboard_static_js.py`) ✅ 2026-08-10
 - [x] `hermes-agent` → `user-facing-harness` rename ✅ 2026-08-10
 - [x] Repair 42 active-handoff links left pointing at the two retired inference indices ✅ 2026-08-10
-- [ ] Residual decisions above
+- **[declined: ws58 2026-11-03 content-review: an empty pointer box]** Residual decisions above
 - [x] **Graph dep edges rendered as thick white bands** ✅ 2026-10-24 — 2-user-unit strokes scaled with the viewBox and zoom; now 1.2px non-scaling at 0.35 rest opacity (root 97268ec0f).
 - [x] **Daily open-box stock chart** ✅ 2026-10-24 — `daily_flow` (open stock net of rewording/removals, ticked, new, born-ticked, removed, closed-by-completion) as the primary trend chart (root 74be76b31).
 - [x] **Ring colour = priority gradient, liveness to tooltip** ✅ 2026-10-24 — derived priority in `index_state.py derive_priority` (root 214754d96).
 - [x] **BACKLOG-PRIORITY — land the operator-method total order (filed 2026-10-24, workspace-58).** The inference backlog is ranked with the inference-backlog-scheduling skill; unblocked non-inference first (those blocking inference highest); blockers inherit; tiers T1-T7. Ranking + wiring prepared (`/mnt/raid0/llm/tmp/ws58-backlog-priority-20261024/`, worktree `ws58-prio2-20261024`): tracked `handoffs/active/backlog-priority.json` + operator override file, generator moving to `scripts/handoffs/`. Land, then regenerate at each wrap-up. ✅ 2026-10-29 (audit: handoffs/active/backlog-priority.json + backlog-priority.override.json tracked; regenerated in a4250eaeb, f23d86c25, 36fa26ae9) [no-belief: audit-reconciliation]
-- [ ] **BACKLOG-PRIORITY-SKILL — operator idea (2026-10-24): if the ranking proves good, turn it into a skill built on inference-backlog-scheduling and tied into the coordinator-agent skill** (whole-backlog ordering, plus dispatch-now non-inference briefs for subagents). Decide after one week of use.
+- **[declined: ws58 2026-11-03 content-review: realized — the inference-backlog-scheduling skill plus generated backlog-priority.json (calendar derives from it) are this idea]** **BACKLOG-PRIORITY-SKILL — operator idea (2026-10-24): if the ranking proves good, turn it into a skill built on inference-backlog-scheduling and tied into the coordinator-agent skill** (whole-backlog ordering, plus dispatch-now non-inference briefs for subagents). Decide after one week of use.
 
 ## Track: coordinator-role-failure-modes-and-refactor
 <!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
@@ -4838,13 +4838,13 @@ Nothing is checked off without a commit hash or a receipt path.
 - [x] **R-6 — Amend the wrap-up.** Five failures in this table are absent from
       `progress/2026-08/2026-08-12.md:3510-3541`, which was committed at 10:07:18Z and never updated —
       F-22's catch happened 43 minutes later. Closes F-32.
-- [ ] **R-7 — Renumber the second `C49`.** Second same-day collision after `C45`. The C-series is
+- **[declined: ws58 2026-11-03 content-review: bookkeeping with no behaviour change]** **R-7 — Renumber the second `C49`.** Second same-day collision after `C45`. The C-series is
       `mainD`'s namespace — route it. Closes F-31.
-- [ ] **R-25 — Disambiguate the F-33/F-34/F-35/F-36 dual-numbering at every current citation site; do not renumber.** The original event rows are `(a)` (`:117-120`) and delivery-plane rows are `(b)` (`:999-1002`). Preserve both stable IDs/source history; repair citations only where the referent is one of these rows. Current consumers include this ledger, delivery-plane discussions, the loop-owned-fleet design, adapter/worker comments, and targeted adapter/audit test comments. `intake-1325#record`'s doorbell relevance is F-35(a). Generic collision-set discussion must explicitly name both versions. Keep dated progress and audit snapshots immutable; the alias map below resolves historical bare IDs by row/description. `intake-1331#record`.
+- **[declined: ws58 2026-11-03 content-review: bookkeeping with no behaviour change]** **R-25 — Disambiguate the F-33/F-34/F-35/F-36 dual-numbering at every current citation site; do not renumber.** The original event rows are `(a)` (`:117-120`) and delivery-plane rows are `(b)` (`:999-1002`). Preserve both stable IDs/source history; repair citations only where the referent is one of these rows. Current consumers include this ledger, delivery-plane discussions, the loop-owned-fleet design, adapter/worker comments, and targeted adapter/audit test comments. `intake-1325#record`'s doorbell relevance is F-35(a). Generic collision-set discussion must explicitly name both versions. Keep dated progress and audit snapshots immutable; the alias map below resolves historical bare IDs by row/description. `intake-1331#record`.
 
 ##### Authority
 
-- [ ] **R-8 — An authority guard for auto-loaded instruction surfaces.** `CLAUDE.md`,
+- **[declined: ws58 2026-11-03 content-review: merged into AUD-15 (same gate, same files)]** **R-8 — An authority guard for auto-loaded instruction surfaces.** `CLAUDE.md`,
       `agents/AGENT_INSTRUCTIONS.md`, `AGENTS.md`, `agents/shared/*` load at every session start;
       `CLAUDE.md` already requires explicit operator approval for sub-agent edits, and **nothing
       enforces it**. Registered hooks check shape only, and `agents_reference_guard.sh:15` does not
@@ -4871,7 +4871,7 @@ Nothing is checked off without a commit hash or a receipt path.
       **Proposal for A-4's delete-lens:** one rule — *name the instrument, and state why it can
       distinguish the hypotheses, or quote no number* — replacing six candidate rules.
       ✅ 2026-08-12 — superseded by AUD-1 (`d5c0848c`): the role no longer reads instruments, so the six instrument rules it would have had to remember collapse to one deletion.
-- [ ] **R-13 — Verification methods get a positive control.** F-09 burned three methods; the
+- **[declined: ws58 2026-11-03 content-review: standing rule (vacuous verification), already in the project memory and OPERATING_CONSTRAINTS; not a task]** **R-13 — Verification methods get a positive control.** F-09 burned three methods; the
       102,881-vs-1,210 failure was silent because stderr went to `/dev/null`. A verification that
       cannot fail on a known-bad input is not a verification. Closes F-09.
 - [x] **R-14 — Never report a peer's measurement as wrong without a sample that could have
@@ -4914,14 +4914,14 @@ Nothing is checked off without a commit hash or a receipt path.
       ✅ 2026-08-12 — answered with evidence, not opinion: the durable ledger was TRIED and failed (out of contract in 48 minutes, referenced from nothing on any startup path). Superseded by AUD-4 — corrections are typed bus rows and the wrap-up section is GENERATED from them, so an omitted correction is a missing row rather than a silent gap. Another file was not the fix.
 ##### Verification
 
-- [ ] **R-21 — Fill the remaining ⏳ cells** (F-14 extent, F-16, F-17, F-18, F-19, F-20, F-30). Until
+- **[declined: ws58 2026-11-03 content-review: historical audit bookkeeping of the 2026-08-12 failure ledger]** **R-21 — Fill the remaining ⏳ cells** (F-14 extent, F-16, F-17, F-18, F-19, F-20, F-30). Until
       then they are the absence of a claim. F-18 may be permanently unrecoverable — it pre-dates the
       08:20Z bus wipe; if so, record that rather than leaving it open.
-- [ ] **R-22 — Re-resolve every hash and line reference here** when the auditor picks it up. Line
+- **[declined: ws58 2026-11-03 content-review: historical audit bookkeeping]** **R-22 — Re-resolve every hash and line reference here** when the auditor picks it up. Line
       numbers in `progress/2026-08/2026-08-12.md` were moved by other lanes' edits the same day —
       **this file cites them anyway, which is F-22's own error class.** It does so knowingly, with the
       quoted text alongside every citation: **when the pointer and the text disagree, the text wins.**
-- [ ] **R-23 — Test R-17's premise; do not reopen R-17.** R-17 is closed by DISSOLUTION, not
+- **[declined: ws58 2026-11-03 content-review: an audit of a closed audit; no behaviour change]** **R-23 — Test R-17's premise; do not reopen R-17.** R-17 is closed by DISSOLUTION, not
       verification: its closure asserts that "AUD-5/D6 route agent-infrastructure authorship out of the
       role", and that premise is tested nowhere in this file. Two cheap checks. (a) Does authorship
       actually route out — sample recent agent-infrastructure commits and attribute them. (b) Is A-9's
@@ -4931,7 +4931,7 @@ Nothing is checked off without a commit hash or a receipt path.
       `scripts/coordination/tmux_adapter.py:1376-1441` already parses both and discards the timing. If
       (b) resolves YES, R-17's dissolution rests on a premise the world has since falsified — the
       operator's call, not this file's. Do not flip R-17's box.
-- [ ] **R-24 — Cross-walk MAST's 14 failure modes against the F-series.** intake-1110#00 (arXiv:2503.13657v3,
+- **[declined: ws58 2026-11-03 content-review: merged into FM-2 — AdaMAST grading uses the MAST taxonomy directly]** **R-24 — Cross-walk MAST's 14 failure modes against the F-series.** intake-1110#00 (arXiv:2503.13657v3,
       NeurIPS 2025 D&B, dive-overturned) supplies an external vocabulary for modes this ledger found
       independently. Transfers: disobey-task-spec, step-repetition, loss-of-history, unaware-of-
       termination, action-reasoning mismatch, premature termination, no/incomplete verification,
@@ -5028,7 +5028,7 @@ not memory decay — which reprices the whole refactor away from durability and 
       discovery rule finds it… yet it decides whether six mains are alive, which is exactly this
       census's subject."* Same class as F-24, one level up.
       ✅ 2026-08-12 — `fleet_watch.sh` sources `env.sh` for its canonical root and lock path (`fb8f5ed2`); the supervisor pattern and the never-prune rule are documented, and the coordinator skill now spawns it at bring-up. Its `flock` singleton makes unconditional respawn safe.
-- [ ] **AUD-10 — Correct the record on `03e17111` → `3d8800e6`, and decide whether to re-land its
+- **[declined: ws58 2026-11-03 content-review: historical record correction with no behaviour change]** **AUD-10 — Correct the record on `03e17111` → `3d8800e6`, and decide whether to re-land its
       `clean` branch.** RC-1(b) and A-4 cite it as *"the standing proof that a well-built guard can
       still be the wrong trade"*; `progress/…-12.md:2105` says it was reverted **as defective** —
       *"mainD's review found two HIGHs my 12 tests missed"* — not as a bad trade. The delete-lens
@@ -5038,7 +5038,7 @@ not memory decay — which reprices the whole refactor away from durability and 
       branch was not among the two HIGHs. **Operator decision** (narrow single-branch guard, owned by
       `mainD`). Honest limit: it models agent-typed Bash only, and who ran the 08:20Z clean is
       unrecoverable. The genuine "mechanisms cost something" datum is `e08fe836`, not this.
-- [ ] **AUD-11 — Re-grade the `Mech` column against the audit (`A-1`).** Two of six *"rules that
+- **[declined: ws58 2026-11-03 content-review: historical record re-grading with no behaviour change]** **AUD-11 — Re-grade the `Mech` column against the audit (`A-1`).** Two of six *"rules that
       held"* are as claimed. Row 4 (composer guard) is **refuted and is itself an RC-2 error** — the
       glyph mismatch made it refuse 100% of rings, so *"refused a nudge that should not have been
       sent"* is a probe with no discriminating power. Row 6 (`34a17894`) is **vacuous**: deleting the
@@ -5098,7 +5098,7 @@ unknown.
       `check_trust_boundary_edit.sh` already reads. Recommended **yes** — a wrong premise there
       becomes five sessions' truth (F-21's amplifier). Cost: every policy edit needs a signature;
       `22c4aff5` would have been gated. Default if unanswered: the gap stays open. *The gate list is
-      human-amendment-only; the audit did not touch it.*
+      human-amendment-only; the audit did not touch it.* Absorbs R-8: CLAUDE.md already requires explicit operator approval for sub-agent edits of these surfaces and nothing enforces it; the gate in check_trust_boundary_edit.sh is the enforcement.
 - [x] **AUD-16 — Record what will NOT be mechanised, and say so plainly rather than inventing a
       control.** **F-30** (decision delivered as prose) — the operator is not on the bus (0 of 839
       rows), no hook sees a tmux pane, and no predicate knows an unlabelled paragraph was a decision
@@ -5778,7 +5778,7 @@ Investigation on pickup (13:08Z, this session) found:
 
 **2026-10-08 protected comment correction boundary:** the two cadence comment changes were reviewed and applied privately, then MAIN restored our two owned files to the published preimages before committing this checkpoint. Existing D9 requires operator acknowledgement for any `scripts/coordination/**` merge, including comments. The accepted A-8 historical-source audit is complete; the separate factual source correction remains proposed and does not close by prose.
 
-- [ ] **RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 acknowledgement.** [Decision package](../../artifacts/operator/decisions/D9-RTG48-COMMENTS-20261008/README.md), exact patch SHA-256 `9c191746a397e3bd2bbbc47f37adf6cd661390836fce56ff6847527bd86e345f`. Only supervisor/test comments change; executable behavior is identical. No tests, activation or runtime work.
+- **[declined: ws58 2026-11-03 content-review: a two-file code-comment correction awaiting a D9 ack for a month; no behaviour change]** **RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 acknowledgement.** [Decision package](../../artifacts/operator/decisions/D9-RTG48-COMMENTS-20261008/README.md), exact patch SHA-256 `9c191746a397e3bd2bbbc47f37adf6cd661390836fce56ff6847527bd86e345f`. Only supervisor/test comments change; executable behavior is identical. No tests, activation or runtime work.
 
 **R-6 complete, 2026-10-08:** MAIN filed the additive five-finding amendment to the August12 progress report, preserving every prior byte and its original nine-correction cutoff. The later timestamped findings do not retrospectively become knowable at10:07Z. Existing source audit limits remain unchanged. ✅ 2026-10-08
 
@@ -6072,12 +6072,12 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 
 #### Pulled by need (NOT scheduled — do not start without a measured consumer)
 
-- [ ] PN-1 Liveness / escalation classifiers — only if interactive-session volume returns.
+- **[declined: ws58 2026-11-03 content-review: explicitly unscheduled with no measured consumer]** PN-1 Liveness / escalation classifiers — only if interactive-session volume returns.
       Shadow-first beside the existing predicate; fixtures re-labeled from primary artifacts
       (`label_provenance`); promotion metric = precision WITH a recall floor (silence must not score).
-- [ ] PN-2 Wrap-up generation from bus records — after the completion-report format stabilizes
+- **[declined: ws58 2026-11-03 content-review: explicitly unscheduled with no measured consumer]** PN-2 Wrap-up generation from bus records — after the completion-report format stabilizes
       (RTG-51 holds the policy).
-- [ ] PN-3 Eval CI runner — when the first classifier promotion needs it (fixtures exist from P0-9).
+- **[declined: ws58 2026-11-03 content-review: explicitly unscheduled with no measured consumer]** PN-3 Eval CI runner — when the first classifier promotion needs it (fixtures exist from P0-9).
 
 #### Phase 4 — Role shrink (week 2; falls out of Phases 1–3, no new build)
 
@@ -6098,13 +6098,13 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       (`coordination/session-bus/human_only_paths.yaml`, enforced by
       `scripts/hooks/check_trust_boundary_edit.sh` + the `.sha256` pin) and is filed here as an
       **operator token-request**, never an agent edit.
-- [ ] **P5-2 The NL-only rule lands in `coordination/evals/examples/` beside C23, NOT in
+- **[declined: ws58 2026-11-03 content-review: bookkeeping — appending an eval fixture example for a prose rule; no behaviour change]** **P5-2 The NL-only rule lands in `coordination/evals/examples/` beside C23, NOT in
       `BUS_PROTOCOL`.** This file's standing constraint is verbatim in force: *"prose-rule moratorium
       — from Phase 0 onward, a new incident appends a labeled example to the eval fixtures, never a
       new rule/conjunct to BUS_PROTOCOL or agent files"*, and P0-9 (which declared it) is ticked
       above. A new BUS_PROTOCOL rule would violate the moratorium this file declared, so the rule
       ships as a labeled fixture example instead. `intake-1325#03`. Zero compute.
-- [ ] **P5-3 Per-turn PURPOSE LABEL at write time** — add a purpose label to bus rows, delegated-task
+- **[declined: ws58 2026-11-03 content-review: its only consumer (DCP-9b coordination-share accounting) was retired as agent-fleet bookkeeping]** **P5-3 Per-turn PURPOSE LABEL at write time** — add a purpose label to bus rows, delegated-task
       envelopes and orchestrator turn telemetry, so the Eq.-2 split (system / replayed history / tool
       schemas / retrieval / coordination) becomes computable. **Do not attempt post-hoc
       classification of transcripts**: a 32-author team with full trace-shim control published no
@@ -6226,7 +6226,7 @@ none is an "open item" restated as a question.
   pre-existing + 3/3 new mutations caught, real-probe tests against throwaway repos. First live run
   found and led to porting 19 stranded patches (`10ff9bdf`); lane/mainC + lane/mainD worktrees and
   branches then removed by explicit path (D7 pattern), so the guard comes up quiet.
-- [ ] **Find out what removed `repos/`.** The likeliest cause is the live `git clean` that
+- **[declined: ws58 2026-11-03 content-review: stale forensic from 2026-08-16; repos/ symlinks are repaired by scripts/clone-repos.sh]** **Find out what removed `repos/`.** The likeliest cause is the live `git clean` that
   destroyed `retirements/` earlier today (see P0-7/P3-7 above), which would mean the same
   event cost two things and only one was noticed. Cheap to check against the shell history and
   the reflog; worth knowing, because the repair is idempotent but the *cause* is not fixed.
@@ -6441,7 +6441,7 @@ binding. Master-index OP-19 row amended to say so.
 
 #### Newly executable bounded source proposal
 
-- [ ] **RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source controls after the exact D9 acknowledgement.** Private tip `33df263031234d78272baafd096ef1dee5c946fb`, full six-file footprint: `headless_audit.py`, `session_bus_coordinator.py`, `worker_runner.py`, and coordination tests `test_fleet_gate.py`, `test_headless_audit.py`, `test_worker_runner.py`. Strict supported grammar abstains on ambiguity/negation; task text is sent as bounded exact UTF-8 JSON stdin without clipping. Fake captured-child cleanup is bounded and refuses unconfirmed exit. Native proof is VB-RTG52-D9-CONFORMANCE, not semantic/assignment correctness authority. Protected merge remains operator-gated by D9; no host activation or dispatch. Previously accepted hygiene ancestor is not new RTG52 work.
+- **[declined: ws58 2026-11-03 content-review: integrates controls into the retired daemon plane (session_bus_coordinator.py, headless_audit.py)]** **RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source controls after the exact D9 acknowledgement.** Private tip `33df263031234d78272baafd096ef1dee5c946fb`, full six-file footprint: `headless_audit.py`, `session_bus_coordinator.py`, `worker_runner.py`, and coordination tests `test_fleet_gate.py`, `test_headless_audit.py`, `test_worker_runner.py`. Strict supported grammar abstains on ambiguity/negation; task text is sent as bounded exact UTF-8 JSON stdin without clipping. Fake captured-child cleanup is bounded and refuses unconfirmed exit. Native proof is VB-RTG52-D9-CONFORMANCE, not semantic/assignment correctness authority. Protected merge remains operator-gated by D9; no host activation or dispatch. Previously accepted hygiene ancestor is not new RTG52 work.
 
 ## Track: fleet-fanout-measurement
 <!-- gate: RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph, RTG-34#coordinator-role-failure-modes-and-refactor -->
@@ -6606,8 +6606,8 @@ work, not width — which is what FM-5 measures.
   across six domains for independently induced taxonomies) argues an imported 7-framework taxonomy
   should not be expected to fit our traces as well as one induced on them. Do not trust the repo's
   built-in agreement gate (four personas of one model, Fleiss κ, no human) as validation; build a small
-  human-graded set if a faithfulness number is ever needed.
-- [ ] **FM-3 — Breadth-vs-synthesis diagnostic.** Apply the four-bucket split from intake-1109 Appendix
+  human-graded set if a faithfulness number is ever needed. Cross-walk (absorbs R-24): map the MAST 14 failure modes onto the F-series ledger as part of the taxonomy file, so graded traces and the coordinator failure ledger share one vocabulary.
+- **[declined: ws58 2026-11-03 content-review: unbounded — needs paired serial/fan-out task pairs that no row produces]** **FM-3 — Breadth-vs-synthesis diagnostic.** Apply the four-bucket split from intake-1109 Appendix
   B (fan-out-right/single-right, single-right/fan-out-wrong, both-right, both-wrong) to FM-1's output
   once paired serial/fan-out task pairs exist, to answer: does fan-out win by surfacing more candidates,
   or lose at the integration/synthesis step?
@@ -6616,7 +6616,7 @@ work, not width — which is what FM-5 measures.
   neither corpus carries one today.
 
 - [x] **FM-7 — Delegation accounting over Claude Code journals (zero inference; intake-2535, intake-2541).** Extend `scripts/coordination/fanout_timing.py` with a `delegation_accounting` report: per main session and per subagent, usage by field (input, cache_creation, cache_read, output), subagent model and effort, first-request input tokens (fixed overhead), final-report output tokens, and every Read `toolUseResult.file` (numLines, startLine, totalLines, chars). Frozen sha256 manifest of `~/.claude/projects/-workspace/**/*.jsonl` at a stated cutoff; all sessions in the denominator, unparsable files counted. Decision rule fixed now: A = Σ(chars/4 of main-thread full reads of files >350 lines × requests remaining in that session) ÷ Σ(main-thread input + cache_creation + cache_read tokens); A ≥ 10% in both the pre- and post-2026-10-15 windows fires M1 in Notes, A < 3% in both closes it, otherwise re-measure in 30 days. Acceptance: tests with paired mutations, the report artifact path, the A value per window, the decision line, and a belief tick (extend `scripts/vidya/adapters/fanout_outcome.py` or `[no-belief: <reason>]`). ✅ 2026-10-31 — commit `8a1ca9227`; test `tests/coordination/test_delegation_accounting.py` (34 paired-mutation tests; FM-5/FM-6 `report` byte-identical vs origin/main); artifact `data/fanout_timing/delegation_accounting_report.v1.json` + rows `delegation_accounting.v1.jsonl` over manifest `delegation_manifest.v1.json` (5,829 files, 13.43 GB, cutoff 2026-10-31T13:03:52Z, all sha256-verified, 0 unparsable lines). **A pre-2026-10-15 = 1.57%, post = 0.007% → decision: M1 declined** (both < 3%; compaction-bounded 0.10% / 0.007%; Bash-inclusive proxy 2.28% / 0.80%, also both < 3%). M2 trigger: higher-tier re-dispatch 0.37% of cheap dispatches over the last 30 days (5/1,343; Codex 1/788) → does not fire. Codex covered: A not computable (no structured read event); proxy, overhead, tier spend in the report. [belief: cc]
-- [ ] **FM-8 — Declarative project subagent types and a main-thread dispatch audit hook (intake-2540, intake-2537, intake-2538).** Add `.claude/agents/explorer.md` (haiku, effort low, tools Read/Grep/Glob, omitClaudeMd true, maxTurns 8, returns only `path:start-end — reason` lines, max 20), `.claude/agents/runner.md` (sonnet, effort medium, Bash/Read/Grep, keeps CLAUDE.md, returns one block per command: command, exit status, pass/fail counts, key error excerpt) and `.claude/agents/clerk.md` (haiku, effort low, docs/logs/handoff text); add `scripts/hooks/check_agent_dispatch.py` on PreToolUse `Agent|Task`, main thread only (no `agent_id`), WARN mode (exit 0, stderr note, JSONL line to `logs/agent_dispatch_audit.jsonl` with hook sha) for a dispatch with no `model` that is not a project type, and for a `fork` given a cheaper `model`. Acceptance: fixture tests with paired mutations (incl. malformed input allows and logs), `/agents` lists the three types, one live dispatch of each type with its model confirmed in `/tasks`, settings diff reviewed.
+- [ ] **FM-8 — Declarative project subagent types and a main-thread dispatch audit hook (intake-2540, intake-2537, intake-2538).** Add `.claude/agents/explorer.md` (haiku, effort low, tools Read/Grep/Glob, omitClaudeMd true, maxTurns 8, returns only `path:start-end — reason` lines, max 20), `.claude/agents/runner.md` (sonnet, effort medium, Bash/Read/Grep, keeps CLAUDE.md, returns one block per command: command, exit status, pass/fail counts, key error excerpt) and `.claude/agents/clerk.md` (haiku, effort low, docs/logs/handoff text); add `scripts/hooks/check_agent_dispatch.py` on PreToolUse `Agent|Task`, main thread only (no `agent_id`), WARN mode (exit 0, stderr note, JSONL line to `logs/agent_dispatch_audit.jsonl` with hook sha) for a dispatch with no `model` that is not a project type, and for a `fork` given a cheaper `model`. Acceptance: fixture tests with paired mutations (incl. malformed input allows and logs), `/agents` lists the three types, one live dispatch of each type with its model confirmed in `/tasks`, settings diff reviewed. The dispatch audit hook is also the serial-collapse detector (absorbs the two "this main is working serially" rows): it records per main the fan-out width per task boundary and flags a main that completes >= 3 consecutive tasks with zero subagent dispatches.
 - [ ] **FM-9 — Apply the delegation-contract amendment (intake-2535 Stage-3 plan).** **Scope extended by operator 2026-10-31:** once FM-7 verdicts are in, the policy change must also cover Codex worker sessions (agent:2-4), including their sub-delegation and model/effort routing, the Codex delegation contract in `OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon Throughput*, and token accounting. FM-7 must therefore also measure Codex session logs where they exist on disk. Apply the approved `agents/README.md` Model Routing diff (subagent types, Haiku-points rule, effort-before-tier escalation, when a cheaper tier pays, four-field brief, per-command and evidence-only return contracts, path:start-end edit input, main+subagent+total accounting); hand the approved `agents/shared/OPERATING_CONSTRAINTS.md` hunk to the operator as one ratify-script command (human-only path). Acceptance: README diff landed, agents_reference_guard and agents_schema_guard pass, `scripts/vidya/cli.py cite-check` exits 0 on the edited files, ratify command delivered and its receipt recorded once the operator runs it.
 #### Notes
 
@@ -7027,7 +7027,7 @@ commit, or push cannot produce an accepted receipt; a repeated `boundary_id` pro
       self-hash + deterministic-replay `check`). Daemon integration tests appended to
       `tests/coordination/test_compute_ready.py`.
 - [ ] Encode the authority split in Coordinator and Inference role files.
-- [ ] Leave `inference-batch-loop.md`, its manifest, and its `/loop` single-writer protocol
+- **[declined: ws58 2026-11-03 content-review: a non-task ("leave unchanged")]** Leave `inference-batch-loop.md`, its manifest, and its `/loop` single-writer protocol
       unchanged except for an explanatory cross-reference if useful.
 
 Phase gate: small-model, keep-hot, full-idle, expired, wrong-weight, insufficient-VRAM, and missing
@@ -7071,7 +7071,7 @@ reproducible wrap packet with no lost generated contribution.
 - [ ] After merge, Coordinator sends each live session a correlated instruction-refresh nudge naming
       the merged SHA and exact files. Each agent rereads its common and role files and acknowledges
       from its own outbox before enforcement.
-- [ ] Restart the session-bus daemon at its owner's boundary and prove process start time is newer
+- **[declined: ws58 2026-11-03 content-review: moot — the bus daemon is retired and bus_supervisor stays DOWN by operator decision]** Restart the session-bus daemon at its owner's boundary and prove process start time is newer
       than every changed runtime file.
 
 ##### Phase 6 — canary, enforce, and retire the old path
