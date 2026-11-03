@@ -102,7 +102,7 @@ warning, validation failure, lease action, revocation, or reprovisioning.
   > against `compute_policy.yaml`** (region free ∧ policy allows), per BUS_PROTOCOL rule 11
   > as amended. The `resource-lease-*` vocabulary survives unchanged for PHYSICAL CLAIMS
   > (region-lock / device claim open-close receipts) — `inference` remains the sole grantor
-  > and expirer of those, and the sole emitter of graded `compute-window` events (RTG-51
+  > and expirer of those, and the sole emitter of graded `compute-window` events (RTG-34
   > contract). Nothing about the physical-claim, residency-evidence, or drain-at-boundary
   > requirements changed.
   > **AS RUN SINCE 2026-09-23 (operator ruling: daemon and `bus_supervisor` stay down).** With no
