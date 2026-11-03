@@ -57,8 +57,13 @@ def _grant(path: Path, expected_region: str, deadline: float, *, require_host_ho
         if keys != required | {'holds'}:
             raise ValueError('live v3 grant must include host and GPU holds')
         holds = values['holds'].split(',')
-        if len(holds) != 5 or set(holds) != {'q0', 'q1', 'q2', 'q3', 'gpu-quiet'}:
-            raise ValueError('full host and GPU-quiet holds required')
+        host = {'q0', 'q1', 'q2', 'q3'}
+        # Operator co-residency policy 2026-10-22: a lease taken with --gpu-quiet shared (set by lease_owner) may run
+        # on a full-host grant WITHOUT gpu-quiet (host shared with a GPU job; the caller labels it). Without the
+        # shared lease the strict full host + gpu-quiet holds stay required.
+        shared_ok = os.environ.get('M4_GPU_QUIET_MODE') == 'shared' and len(holds) == 4 and set(holds) == host
+        if not shared_ok and (len(holds) != 5 or set(holds) != host | {'gpu-quiet'}):
+            raise ValueError('full host and GPU-quiet holds required (or full host holds under a shared GPU-quiet lease)')
     elif keys in (required | {'holds', 'schema', 'id', 'kind'}, required | {'holds', 'schema', 'id', 'kind', 'admission_class'}):
         if (not allow_dryrun or os.environ.get('FILLER_DRYRUN') != '1'
                 or values['schema'] != 'epyc.rowflow.dryrun-grant.v1'

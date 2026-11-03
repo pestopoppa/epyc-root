@@ -54,9 +54,22 @@ def qualification_worker() -> int:
             or result.parent.parent != dd/'native-attempts' or not result.parent.name.startswith('attempt-')
             or result.parent.resolve(strict=True) != result.parent):
         raise ValueError('invalid qualification nonce path')
+    # Exercise the REAL ownership spawn path with the exact wrapper shape of a cell's server_argv
+    # (env assignments -> numactl -> taskset -> absolute binary), so an argv the gate refuses fails the smoke, not the
+    # full-host run (inf22 r1, 2026-11-03: 'unbound bare executable' only surfaced 7 s into the real run).
+    import owned as m4_owned, subprocess
+    cpus=os.environ['FILLER_CPUS']
+    argv=['env','LD_LIBRARY_PATH='+str(dd),'GGML_FA_SPLIT_KV=0','GGML_FUSED_DECODE_OFF=1','GGML_NOHUGEPAGE_PROCESS=1',
+          'GGML_IQK=1','ROCR_VISIBLE_DEVICES=-1','HIP_VISIBLE_DEVICES=-1','CUDA_VISIBLE_DEVICES=','OMP_NUM_THREADS=1',
+          'numactl','--interleave=all','--','taskset','-c',cpus,sys.executable,'-B','-c','pass']
+    child,fd,_birth=m4_owned.spawn(argv,env=os.environ.copy(),stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    try:
+        if child.wait(timeout=60)!=0: raise ValueError('wrapped spawn smoke exited non-zero')
+    finally:
+        os.close(fd)
     with result.open('x') as f:
         json.dump({'schema':'epyc.m4.cpu.recipe.qualification.v1','qualification_only':True,
-                   'measurement':False},f);f.write('\n');f.flush();os.fsync(f.fileno())
+                   'measurement':False,'spawn_path_exercised':True},f);f.write('\n');f.flush();os.fsync(f.fileno())
     while True: time.sleep(.1)
 
 
@@ -137,7 +150,11 @@ def main() -> int:
         if int(mem['MemAvailable'].split()[0])*1024 < needed+reserve: raise ValueError('insufficient available RAM')
         if shutil.disk_usage('/mnt/raid0/llm').free-output_bytes < 150*1024**3: raise ValueError('insufficient disk headroom')
         if a.deadline-time.time()<minimum: raise ValueError('insufficient remaining grant')
-        if os.environ.get('M4_GPU_QUIET_MODE')!='exclusive': raise ValueError('exclusive GPU quiet required')
+        # Operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK
+        # keep windows. This descriptive diagnostic may share the host with a GPU job (lease 'shared'); the mode and
+        # the grant's holds are recorded in HOST-COTENANCY.json beside the capture, never assumed.
+        quiet_mode=os.environ.get('M4_GPU_QUIET_MODE')
+        if quiet_mode not in ('shared','exclusive'): raise ValueError('GPU-quiet lease mode missing or invalid')
         if sorted(os.sched_getaffinity(0))!=list(range(96)): raise ValueError('full physical-host affinity required')
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         original=_sha(a.grant)
@@ -151,12 +168,21 @@ def main() -> int:
                 if (target.st_dev,target.st_ino)!=(actual.st_dev,actual.st_ino): raise ValueError('lease inode changed')
                 found[path.name]=fd
         if set(found)!=expected: raise ValueError('full exclusive lease descriptors missing')
-        for fd in found.values(): fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        for name,fd in found.items():
+            operation=fcntl.LOCK_SH if name=='gpu_quiet.lock' and quiet_mode=='shared' else fcntl.LOCK_EX
+            fcntl.flock(fd,operation|fcntl.LOCK_NB)
         if time.time()>=a.deadline: raise ValueError('deadline expired')
         env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',
                  M4_OUTER_OWNER_PID=str(a.owner_pid),M4_OUTER_OWNER_BIRTH=str(a.owner_birth))
         command=[sys.executable,'-B',str(ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py'),
                  '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),'--execute']
+        holds=dict(f.split('=',1) for f in a.grant.read_text().split()).get('holds','').split(',')
+        gpu_quiet_held=quiet_mode=='exclusive' and 'gpu-quiet' in holds
+        with (a.output/'HOST-COTENANCY.json').open('x') as f:
+            json.dump({'schema':'epyc.m4.q38.host-cotenancy.v1','gpu_quiet_lease':quiet_mode,'grant_holds':sorted(holds),
+                       'gpu_quiet_held':gpu_quiet_held,'evidence_grade':'gpu-quiet held (still descriptive only)' if gpu_quiet_held else
+                       'indicative: shares host with GPU job (operator co-residency policy 2026-10-22)'},f,sort_keys=True)
+            f.write('\n');f.flush();os.fsync(f.fileno())
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)
         entry._grant(a.grant,'0-95',a.deadline,require_host_holds=True)
         if reader._trusted_config_for(a.output/'capture'/'future'/'process-captures'/'future.json') != reader_config:

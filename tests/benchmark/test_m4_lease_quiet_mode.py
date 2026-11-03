@@ -30,3 +30,37 @@ def test_exclusive_gpu_quiet_is_not_downgraded(tmp_path, monkeypatch):
         finally: competitor.close()
     finally:
         for handle in handles: handle.close()
+
+
+# Operator co-residency policy 2026-10-22: a shared GPU-quiet lease may run on a full-host grant without gpu-quiet;
+# every other host-hold check stays strict.
+def _host_grant(tmp_path, holds):
+    import time
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)
+    grant = tmp_path/'row.grant'
+    grant.write_text('regions=0-95 start=' + (now-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')
+                     + ' end=' + (now+timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%MZ') + ' holds=' + holds)
+    return grant, time.time() + 60
+
+
+@pytest.mark.parametrize('mode,holds,ok', [
+    ('shared', 'q0,q1,q2,q3', True),
+    ('shared', 'q0,q1,q2,q3,gpu-quiet', True),
+    ('exclusive', 'q0,q1,q2,q3,gpu-quiet', True),
+    (None, 'q0,q1,q2,q3,gpu-quiet', True),
+    ('exclusive', 'q0,q1,q2,q3', False),
+    (None, 'q0,q1,q2,q3', False),
+    ('shared', 'q0,q1,q2', False),
+    ('shared', 'q0,q1,q2,q3,q3', False),
+])
+def test_host_holds_relaxed_only_under_shared_lease(tmp_path, monkeypatch, mode, holds, ok):
+    import entry
+    if mode is None: monkeypatch.delenv('M4_GPU_QUIET_MODE', raising=False)
+    else: monkeypatch.setenv('M4_GPU_QUIET_MODE', mode)
+    grant, deadline = _host_grant(tmp_path, holds)
+    if ok:
+        entry._grant(grant, '0-95', deadline, require_host_holds=True)
+    else:
+        with pytest.raises(ValueError, match='holds'):
+            entry._grant(grant, '0-95', deadline, require_host_holds=True)
