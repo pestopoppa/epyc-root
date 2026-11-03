@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T17:57:06Z",
+  "generated_at": "2026-11-03T18:00:24Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2457,15 +2457,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 65,
-      "dispatchable": 28,
+      "closed": 66,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-03",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 28,
+      "open": 27,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2503,11 +2503,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 647,
           "name": "tq3-quantization-evaluation",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         }
       ]

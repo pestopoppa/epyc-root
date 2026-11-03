@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 680
+      "open": 679
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -2093,10 +2093,10 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 0,
-      "closed": 65,
+      "closed": 66,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 28,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2129,13 +2129,13 @@
         },
         {
           "blocked": 0,
-          "closed": 18,
+          "closed": 19,
           "gates": [],
           "guarded": 0,
           "line": 647,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
-          "open": 4
+          "open": 3
         }
       ]
     },

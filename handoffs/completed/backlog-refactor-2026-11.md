@@ -233,3 +233,5 @@ experiment manifest defines it.
   - [x] **BRF-T7-F16** fold routing-intelligence → `routing-program.md` (rows RTG-30 → RTG-09; 9 tracks). ✅ 2026-11-03 — readiness-neutral per track, zero lost tasks; records in the commit message. [no-belief: refactor-move]
   - [x] **BRF-T7-F17** fold engram-conditional-memory → `model-architecture-readiness.md` (rename of log-linear-gated-deltanet-readiness.md, rows INF-13 → INF-33; 2 tracks). ✅ 2026-11-03 — readiness-neutral per track, zero lost tasks; records in the commit message. [no-belief: refactor-move]
 - [x] **BRF-T7-MEQ** Merge the 3 model-evaluation queue files into 1 (D2). ✅ 2026-11-03 `08298a109` (BRF-T7-F8) [no-belief: tooling]
+
+> **2026-11-03 update (post-close):** EXP-01 harness fixed and measured; valid screen result EXPAND (IQ4_KT arm), recorded in `quantization-and-low-bit.md` EXP01-PILOT. Supersedes the REVISE (harness) close of BRF-T4-EXP01.
