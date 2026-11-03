@@ -10,6 +10,8 @@
 > The part below down to the first `## Track:` is the former architect-model-selection-bench handoff; it inherits the
 > row's Deps. Each `## Track:` section is a folded handoff; its `<!-- gate: -->` marker reproduces the former row's Deps.
 
+**Priority**: MEDIUM — T6 inference-ready (rank 36), 112 open across 30 candidate-model tracks, only 4 blocked; routine bake-off queue that fills compute gaps.
+
 ## Track: model-evaluation-queue
 <!-- gate: none -->
 

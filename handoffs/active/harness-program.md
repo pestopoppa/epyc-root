@@ -11,6 +11,8 @@ Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retir
 **Related (down)**: [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) (Hermes candidate eval — closed 2026-09-16, not selected; findings in [`hermes-evaluation-20260916.md`](../../docs/reference/harness-candidates/hermes-evaluation-20260916.md)), [`client-surface-audit.md`](../../docs/reference/harness-candidates/client-surface-audit.md) (the reusable audit instrument; HS-4 P0.3 re-ran it on OpenCode — [`opencode-p03-audit-20260916.md`](../../docs/reference/harness-candidates/opencode-p03-audit-20260916.md)), [`user-facing-harness-index.md`](user-facing-harness-index.md) (dispatch index), [`tool-output-compression.md`](context-and-token-economy.md#track-tool-output-compression) (context-collision surface), [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) (RLM harness self-improvement lineage)
 **Related (precedent)**: [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) (backend-side session/compaction boundary), [`../archived/claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md) (archived ACP-as-Path-B precedent)
 
+**Priority**: HIGH — T0 inference-prep (rank 15), 111 open with 7 live tracks; the user-facing harness is what the thesis experiment (UFH-13) measures.
+
 ## Track: harness-selection-and-integration
 <!-- gate: RTG-09#routing-program, RTG-09#internal-interaction-lifecycle, RTG-09#learned-routing-controller, RTG-09#model-capability-descriptors, RTG-09#retrain-routing-models, RTG-09#tri-role-coordinator-architecture, RTG-09#typed-decision-plane, RTG-09#x-mas-text-routing -->
 

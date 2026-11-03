@@ -21,7 +21,7 @@ https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
   frontdoor scout-stage claim sample, taken at the next frontdoor scout stage. ARCHSWAP-4 is done (2026-10-01:
   `:8074` relaunched under `architect_general`, 0 drift). ARCHSWAP-5 is done (2026-09-29).
 
-**Priority:** active (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked)). The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
+**Priority**: HIGH — active (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked)). The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
 (operator, 2026-09-28): until the second GPU is in, the working direction is infrastructure and design work with the
 operator (see `CURRENT-CAMPAIGN.md`, 2026-09-28). The freeze list at the end still binds INFERENCE-bearing steps; the
 design and documentation work of a frozen item may proceed.

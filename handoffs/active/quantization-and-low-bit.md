@@ -12,6 +12,8 @@
 **Historical predecessor**: [completed EXL3 CPU study](../completed/exl3-trellis-cpu-kernel.md) — retain its Qwen-specific CPU no-go; this program covers the broader CPU/gfx90a architecture gap
 **Related infrastructure**: [agentic ROCm kernel authoring](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring), [ROCm verify/profile backend](rocm-kernel-authoring.md#track-rocm-verify-profile-backend), [CPU roofline program](cpu-decode-roofline-program.md), [Vidya belief substrate](vidya-belief-substrate-program.md)
 
+**Priority**: MEDIUM — T6 inference-ready (rank 33), 43 open; low-bit work is scoped to the DS41/Q38FN lanes only, so routine rather than campaign-critical.
+
 ## Objective
 
 Implement EXL3 as a project-owned experimental quantization path on EPYC 9655 and MI210/gfx90a. Build native kernels where required: optimized CPU decode, wave64 GPU decode, and MFMA GPU prefill. Deliver reproducible standalone operators first, then one llama.cpp experimental operator, mixed-K MoE dispatch, and measured hybrid CPU/GPU execution.

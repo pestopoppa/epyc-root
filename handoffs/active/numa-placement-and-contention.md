@@ -32,6 +32,8 @@ suspension banner) · [`shape-keyed-contention-gating.md`](numa-placement-and-co
 
 ---
 
+**Priority**: LOW — T7 (rank 161): 97 open but no ready compute item; 15 are reboot-gated inventory and the rest is topology follow-up.
+
 ## Track: numa-placement-and-contention
 <!-- gate: none -->
 

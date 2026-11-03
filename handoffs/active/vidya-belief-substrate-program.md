@@ -12,6 +12,8 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
 **Audit record**: [`research/deep-dives/vidya-belief-substrate-audit.md`](../../research/deep-dives/vidya-belief-substrate-audit.md) (37 dive-verified sources, intake-1031..1067)
 **v1 draft**: `tmp/vidya-epyc-governance-pilot-handoff.md` (2,682 lines; superseded as a plan by this handoff + the audit; retained as the source text for V2.1)
 
+**Priority**: HIGH — T5 inference-ready (rank 25), 414 open, advanced 2026-11-02; the write-side wiring that lets measurements gate decisions (belief-kernel rule).
+
 ## Objective
 
 Build the claim-level epistemic substrate the audit verified as EPYC's genuine gap: typed

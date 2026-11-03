@@ -18,6 +18,8 @@
 
 ---
 
+**Priority**: LOW — T6 but rank 63 of 174; best open item is a decline of the TRL bridge, tracks are coordination plus MI210-gated training (W3).
+
 ## P0 — Live defect (verified on disk, this session)
 
 - [x] **ID-1 — GEPA reflective mutation is a guaranteed no-op, and has been since at least 2026-06-04.** ✅ 2026-07-25 FIXED (all four items; blacklist lifted; mechanism-validated; live run pending AP-19b supervised window — see `autopilot-continuous-optimization.md` § 2026-07-25). Cold-start gate findings that emerged from validation are filed in `esc8-stack-restart-landmine-audit-2026-07-22.md` § 2026-07-25. `epyc-orchestrator/scripts/autopilot/species/gepa_optimizer.py:192-194` defines `propose_new_texts()` that unconditionally raises `NotImplementedError("Use GEPA's built-in proposer")`. GEPA's proposer dispatches on **presence, not None-ness** (`gepa/proposer/reflective_mutation/reflective_mutation.py:66-67`: `if self.adapter.propose_new_texts is not None`) — a bound method is never `None`, so **every** reflection step raises **before any LM call**.

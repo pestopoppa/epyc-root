@@ -65,6 +65,8 @@
 **Related / ownership boundary**: **infra tasks (download/sha256/load-smoke/CPU-bench/expert-routing-skew profile) live in [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)** (parallel-session-owned) — this handoff holds ONLY the reviewer-specific capability gates and must not duplicate that work. Kernel-side blockers live in [`gemma-challenge-kernel-techniques-v7.md`](rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7); GLM cache/runtime reconciliation is closed by K23 / experimental-v7 `3dee86a5a`, sparse final-attention remains kernel work, and current-source 32K needle/coherence currently fails with malformed `peg-native` output.
 **Repo**: `epyc-orchestrator` + `epyc-inference-research`
 
+**Priority**: LOW — T7 (rank 163): 12 of 25 open items blocked; reviewer gates wait on the DeepSeek-V4.1-Flash retarget and approved claims.
+
 ## Track: glm52-reviewer-capability-gates
 <!-- gate: INF-77 -->
 

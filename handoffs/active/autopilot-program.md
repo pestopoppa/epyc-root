@@ -14,6 +14,8 @@
 **Updated**: 2026-09-25
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
+**Priority**: MEDIUM — T6 inference-ready (rank 58), 110 open but autopilot is intentionally stopped and restart is a separate operator action.
+
 ## Track: autopilot-program
 <!-- gate: none -->
 

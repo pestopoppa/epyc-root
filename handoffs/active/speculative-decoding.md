@@ -8,6 +8,8 @@
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`llama-cpp-dsa-contribution.md`](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution), [`summary-token-attention-readiness.md`](model-evaluation-queue.md#track-summary-token-attention-readiness); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
 
+**Priority**: HIGH — T0 inference-prep (rank 7), 49 open, one blocked; DFlash2/MTP drafters are the main decode-throughput lever on the frozen kernel.
+
 ## Track: speculative-decoding-mtp-refresh
 <!-- gate: none -->
 

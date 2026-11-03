@@ -4,6 +4,8 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-c6-mmqfix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-remain-q4k-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-combined-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-q4k-fix-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-fp64-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-route-probe-20261102/` · `/mnt/raid0/llm/tmp/codex-c6-mmvq-fix-20261102/` · `/mnt/raid0/llm/tmp/ch33-private-20261102-v7g1tu/` · `/mnt/raid0/llm/tmp/codex-ch27-custody-20261102/` · `/mnt/raid0/llm/tmp/codex-ch31-server-20261102/` · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-pair-20261101/` (live paired route diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/` (live CH-31 diagnostic; keeper reaps after filing) · `/mnt/raid0/llm/tmp/akagg-ch26b-20261101/` (live CH-26b row; keeper reaps only after filing receipt) · `/mnt/raid0/llm/tmp/codex-ni-nemo-accepted-wrap-20261031/` · retained evidence: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/` · C6 fold: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` · C6 build evidence: `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/` · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-01a16fc3/full-wrapup-20261031/`, `/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/`, `/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r3-20261031/`
 
+**Priority**: HIGH — T0 inference-prep on the graph (rank 1, unblocks INF-66/73/74/75/78/81), 128 open and advancing daily; the champion/v11 promotion is the gating compute path.
+
 ## Track: autokernel-champion-aggregate
 <!-- gate: INF-06#autokernel-research-loop, INF-50#dflash2-block-drafter-experimental-build, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
