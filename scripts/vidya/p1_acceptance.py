@@ -17,7 +17,8 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
        floor 0.81%, n=10) and 2 mechanisms refused by the correctness gate ("MUL_MAT failed on
        ROCm0").
   AC5  (amended 2026-10-21, after the rehearsal backfill) the five CPU models' usable sets are
-       PAIRWISE distinct; Qwen3-VL-30B has target tier 0 with the banner; Qwen3.6-35B-A3B's
+       PAIRWISE distinct; a cpu model DERIVED from the ledger (2026-11-03; was pinned Qwen3-VL-30B) with
+       0 model-scoped claims has target tier 0 with the banner; Qwen3.6-35B-A3B's
        target-tier claims, if any, all come from sources scoped to that model (their model_file
        is the target's) -- their source kinds are reported. The original "35B target tier 0"
        predated the KPF-18 35B CPU item-7 claims (lane K), which are real 35B beliefs.
@@ -273,14 +274,39 @@ def ac4(r: Reader) -> dict[str, Any]:
                              f"{r.quant_note('27B')}")
 
 
+def _zero_claim_cpu_target(r: Reader, skip_names: tuple[str, ...]
+                           ) -> tuple[str, lb.Target, dict] | None:
+    """AC5 target, derived from THIS ledger: the first cpu entry of TARGETS (not in `skip_names`)
+    with NO beliefs at all: target tier 0, no collected target row, no row scoped to its model
+    file, the empty-target banner, and an empty usable set (a lineage member that inherits sibling
+    claims is not a zero-belief model; that is AC2's case). A model that gains claims stops
+    qualifying. Returns (label, target, evaluation)."""
+    for name in TARGETS:
+        if TARGETS[name]["backend"] != "cpu" or name in skip_names:
+            continue
+        target = r.target(name)
+        ev, col = r.read(name)
+        scoped = [x for x in col["rows"] if x["model_file"] == target.model_file]
+        banner = bool(ev["banner"]) and (ev["section"] == "" or ev["banner"] in ev["section"])
+        if (ev["tiers"]["target"] == 0 and not _tier_rows(col) and not scoped and banner
+                and not ev["claim_ids"]):
+            return name, target, ev
+    return None
+
+
 def ac5(r: Reader) -> dict[str, Any]:
+    """Intent (DESIGN 'AC5'): a model with no claims of its own gets target tier 0 + the banner, so
+    the five CPU models no longer share identical usable sets. The zero-claim model is derived at
+    run time (no pinned name); with none available the check cannot be proven here."""
     details, ok = [], True
-    ev, _ = r.read("Qwen3-VL-30B")
-    banner = bool(ev["banner"]) and (ev["section"] == "" or ev["banner"] in ev["section"])
-    vl_ok = ev["tiers"]["target"] == 0 and banner
-    ok &= vl_ok
-    details.append(f"Qwen3-VL-30B: target {ev['tiers']['target']} (need 0), banner {banner}, "
-                   f"usable {len(ev['claim_ids'])}")
+    found = _zero_claim_cpu_target(r, skip_names=("Qwen3.6-35B",))
+    if found is None:
+        return _check("AC5", False, "no cpu model with 0 model-scoped claims and the empty-target "
+                                    "banner exists in this ledger; AC5 cannot be proven here (not "
+                                    "weakened: add a synthetic-target test)")
+    zlabel, _target, ev = found
+    details.append(f"{zlabel} (derived: 0 model-scoped claims): target {ev['tiers']['target']} "
+                   f"(need 0), banner True, usable {len(ev['claim_ids'])}")
     ev, col = r.read("Qwen3.6-35B")
     model = r.target("Qwen3.6-35B").model_file
     rows = _tier_rows(col)
@@ -294,10 +320,10 @@ def ac5(r: Reader) -> dict[str, Any]:
                    + f"; source kinds {dict(sorted(kinds.items())) or '{}'}; usable "
                    f"{len(ev['claim_ids'])}")
     usable = {name: frozenset(r.read(name)[0]["claim_ids"]) for name in CPU_FIVE}
-    names = list(CPU_FIVE)
+    names = list(usable)
     same = [(a, b) for i, a in enumerate(names) for b in names[i + 1:] if usable[a] == usable[b]]
     ok &= not same
-    details.append(f"usable sets pairwise distinct across the five CPU models {not same}"
+    details.append(f"usable sets pairwise distinct across the {len(names)} CPU models {not same}"
                    + (f" (identical: {same})" if same else ""))
     return _check("AC5", ok, "; ".join(details))
 

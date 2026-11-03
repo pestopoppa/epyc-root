@@ -1125,53 +1125,74 @@ def test_claim_without_device_matches_gpu_target_and_is_never_host(tmp_path, ala
     assert lb.tier_of(scope, lb.Target.from_mapping({**ARCHITECT_T, "backend": "cpu"})) is None
 
 
-class _StubReader:
-    """Just enough of p1_acceptance.Reader for ac5: per-target (evaluation, collection)."""
-
-    def __init__(self, evs, rows35):
-        self.evs, self.rows35 = evs, rows35
-
-    def read(self, name, quant=None):
-        rows = self.rows35 if name == "Qwen3.6-35B" else []
-        return self.evs[name], {"rows": rows, "flagged": {b: [] for b in lb.FLAG_BUCKETS}}
-
-    def target(self, name, quant=None):
-        import p1_acceptance as acc
-        return lb.Target.from_mapping(acc.TARGETS[name])
+Q35 = "Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+VL = "Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf"
 
 
-def _ac5_inputs(*, vl_target=0, vl_banner="No beliefs are scoped to Qwen3-VL-30B.",
-                model35="Qwen3.6-35B-A3B-MTP-Q8_0.gguf", same_sets=False):
+def _ac5_ledger(tmp_path, *, vl=0, q35=3, name="ac5.jsonl"):
+    parts = [*_q38_claims(Q38_UD, 12, "ud"), *_q38_claims(DS41_Q4, 12, "q4"),
+             *_q38_claims(DS41_1017, 12, "d17"),
+             *_q38_claims(Q35, q35, "q35"), *_q38_claims(VL, vl, "vl")]
+    return _write(tmp_path, *parts, name=name)
+
+
+def test_ac5_derives_a_zero_claim_cpu_model_from_the_ledger(tmp_path):
+    """AC5 intent: a model with no claims of its own has target tier 0 + banner and the CPU models'
+    usable sets are pairwise distinct. The zero-claim model is derived, not pinned to Qwen3-VL."""
     import p1_acceptance as acc
-    evs = {}
-    for i, name in enumerate(acc.CPU_FIVE):
-        ids = ["clm_shared"] if same_sets and name in ("DS41-Q4", "Q38FN") else [f"clm_{i}"]
-        evs[name] = {"tiers": {"target": 0}, "banner": "", "section": "x", "claim_ids": ids}
-    evs["Qwen3-VL-30B"].update(tiers={"target": vl_target}, banner=vl_banner,
-                               section=f"{vl_banner}\nmore")
-    rows35 = [{"claim_id": f"clm_kpf{i}", "tier": "target", "model_file": model35,
-               "source_kind": "kv-prefix-fork-measurement"} for i in range(3)]
-    return evs, rows35
-
-
-def test_ac5_amended_passes_when_35b_target_claims_are_scoped_to_the_35b():
-    import p1_acceptance as acc
-    result = acc.ac5(_StubReader(*_ac5_inputs()))
+    r = acc.Reader(_ac5_ledger(tmp_path), AS_OF, {})
+    result = acc.ac5(r)
     assert result["pass"], result["detail"]
-    assert "kv-prefix-fork-measurement': 3" in result["detail"]
-    assert "pairwise distinct across the five CPU models True" in result["detail"]
+    assert "Qwen3-VL-30B (derived: 0 model-scoped claims)" in result["detail"]
+    # once Qwen3-VL gains claims it stops qualifying: another zero-belief cpu model, or none
+    r = acc.Reader(_ac5_ledger(tmp_path, vl=3, name="vl.jsonl"), AS_OF, {})
+    result = acc.ac5(r)
+    assert "Qwen3-VL-30B (derived" not in result["detail"]
+    assert "DS41-1017 (derived" in result["detail"] or "cannot be proven" in result["detail"]
 
 
-@pytest.mark.parametrize("kw,why", [
-    ({"vl_target": 2}, "Qwen3-VL-30B: target 2"),
-    ({"vl_banner": ""}, "banner False"),
-    ({"model35": "Qwen3.8-27B-Q8_0.gguf"}, "foreign"),
-    ({"same_sets": True}, "identical: [('DS41-Q4', 'Q38FN')]"),
-])
-def test_ac5_amended_fails_on_each_leg(kw, why):
+def test_ac5_cannot_be_proven_when_every_cpu_model_has_claims(tmp_path):
     import p1_acceptance as acc
-    result = acc.ac5(_StubReader(*_ac5_inputs(**kw)))
-    assert not result["pass"] and why in result["detail"], result["detail"]
+    path = _write(tmp_path, *_q38_claims(VL, 3, "vl"), *_q38_claims(Q35, 3, "q35"),
+                  *_q38_claims(Q38_UD, 3, "ud"), *_q38_claims(Q38_UNI, 3, "uni"),
+                  *_q38_claims(DS41_Q4, 3, "q4"), *_q38_claims(DS41_1017, 3, "d17"),
+                  name="all.jsonl")
+    res = acc.ac5(acc.Reader(path, AS_OF, {}))
+    assert not res["pass"] and "cannot be proven" in res["detail"]
+
+
+def test_ac5_still_fails_on_foreign_35b_claims_and_identical_usable_sets(tmp_path):
+    import p1_acceptance as acc
+    r = acc.Reader(_ac5_ledger(tmp_path), AS_OF, {})
+    real_collect = acc.lb.collect
+
+    def foreign(frames, targets, **kw):                 # a 35B target row scoped to another model
+        col = real_collect(frames, targets, **kw)
+        if targets[0].model_file == Q35:
+            for row in col["rows"]:
+                row["model_file"] = "Qwen3.8-27B-Q8_0.gguf"
+        return col
+    acc.lb.collect = foreign
+    try:
+        res = acc.ac5(r)
+    finally:
+        acc.lb.collect = real_collect
+    assert not res["pass"] and "foreign" in res["detail"], res["detail"]
+    # identical usable sets: two models reading the same claim ids fails distinctness
+    real_eval = acc.lb.evaluate_frames
+
+    def same(frames, targets, **kw):
+        ev = real_eval(frames, targets, **kw)
+        if targets[0].model_file in (Q38_UD, DS41_Q4):
+            ev = {**ev, "claim_ids": ["clm_shared"]}
+        return ev
+    r2 = acc.Reader(_ac5_ledger(tmp_path, name="same.jsonl"), AS_OF, {})
+    acc.lb.evaluate_frames = same
+    try:
+        res = acc.ac5(r2)
+    finally:
+        acc.lb.evaluate_frames = real_eval
+    assert not res["pass"] and "identical" in res["detail"], res["detail"]
 
 
 def test_device_scope_group_renders_below_model_claims_and_is_not_target_evidence(tmp_path, alarm):
