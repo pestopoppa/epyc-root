@@ -42,7 +42,7 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
   ✅ 2026-11-02 `030991943` — [`fold-list-1a.json`](../../docs/design/backlog-refactor-2026-11/fold-list-1a.json)
   + PLAN.md appendix: 26 folds / 4 batches, 176 → 77 handoffs (75 after RET), readiness diff ∅ by the real
   `derive_readiness`; reconciliation: 0 ticked since pin, 6 kv-prefix boxes re-identified, RTG-63 carried new. [no-belief: tooling]
-- [ ] **BRF-T1-1** [roll-up] One fold commit per entry of the BRF-T1-0 list, each through the atomic gate.
+- [x] **BRF-T1-1** [roll-up] One fold commit per entry of the BRF-T1-0 list, each through the atomic gate.
   Per fold, add a box `BRF-T1-<n> fold <sources> → <target>` here before starting it and tick it in the fold
   commit itself. Non-dispatchable parent.
   - [x] **BRF-T1-F1** fold multimodal-pipeline → `speech-and-multimodal.md` (rename of conversation-stack.md, rows INF-41 → INF-79). ✅ 2026-11-02 — readiness-neutral, zero lost tasks; records in the commit message. [no-belief: refactor-move]
@@ -71,6 +71,7 @@ this handoff, do not push; two consecutive reds on the same fold → stop T1 and
   - [x] **BRF-T1-F24** fold repl-session-memory-maturity, unified-trace-memory-service → `memory-program.md` (rename of episodic-memory-integrity.md, rows EVL-36, RTG-41 → EVL-10). ✅ 2026-11-02 — readiness-neutral, zero lost tasks; records in the commit message. [no-belief: refactor-move]
   - [x] **BRF-T1-F25** fold reviewer-calibration-accounting, reviewer-typed-artifacts → `reviewer-latency-and-sampling-budget.md` (rows REV-03, REV-09 → REV-06). ✅ 2026-11-02 — readiness-neutral, zero lost tasks; records in the commit message. [no-belief: refactor-move]
   - [x] **BRF-T1-F26** fold internal-interaction-lifecycle, learned-routing-controller, model-capability-descriptors, retrain-routing-models, tri-role-coordinator-architecture, typed-decision-plane, x-mas-text-routing → `routing-program.md` (rename of decision-aware-routing.md, rows RTG-14, RTG-15, RTG-17, RTG-29, RTG-40, RTG-56, RTG-45 → RTG-09). ✅ 2026-11-02 — readiness-neutral, zero lost tasks; records in the commit message. [no-belief: refactor-move]
+  - 2026-11-03: all 26 route-1a folds landed (BRF-T1-F1..F26; batches 1-4, last 9740bdb35); 176 -> 64 handoffs, readiness-neutral, 0 tasks lost. [no-belief: tooling]
 - [ ] **BRF-T1-MEQ** [non-inference] Split the model-evaluation queue into 3 gate-homogeneous files (D2), through the atomic gate.
   - 2026-11-02 partial: `9d63885bd` consolidated the 14 queue files into 3 (`model-evaluation-queue.md` EVL-02, plus INF-61 and INF-76 tracks); 206 tasks before/after, readiness-neutral. Residual: the 39 carved boxes from 18 files (`fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ), 7 of whose sources are batch-1 folds; they move after batch 1 lands.
 - [x] **BRF-T1-RET** Retire `swarm` and `model-stack-change-standardization-audit` (D4): move to
@@ -139,8 +140,9 @@ The 16 other packages stay provisional until owner-reviewed pilot results exist.
 
 - [x] **BRF-T5-1** [non-inference] Write the 158 per-handoff option sheets (options + tradeoffs + recommendation) from the task manifest, in fold order. Done when: all 158 sheets are committed under `docs/design/backlog-refactor-2026-11/`.
   ✅ 2026-11-02 `4d6ea0b3d`: all 158 accounted for in `decision-packages/` (26 destination packages + `index.json`, fold-list-1a order): 119 delivered; 39 excluded with reasons (26 decided/issued authorization, 11 merged, 2 not an operator choice). [no-belief: tooling]
-- [ ] **BRF-T5-2** [roll-up] Non-dispatchable parent. Deliver each package via the decision tool at its fold; record the answer in the
+- [x] **BRF-T5-2** [roll-up] Non-dispatchable parent. Deliver each package via the decision tool at its fold; record the answer in the
   owning handoff. A dismissed question pauses only its own item.
+  - 2026-11-03: all 119 choices delivered via the decision tool and recorded (decisions-batch1-20261102.json, decisions-batch2-4-20261102.json, 722e84092); ratify bundle shelved by operator (172ba99ed). [no-belief: operator decisions recorded]
 
 ## T6 — staged lint enforcement (D6)
 
