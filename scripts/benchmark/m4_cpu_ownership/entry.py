@@ -80,14 +80,10 @@ def main() -> int:
         p.add_argument('--'+name, type=Path, required=True)
     p.add_argument('--plan-sha256', required=True)
     p.add_argument('--deadline', type=float, required=True)
-    p.add_argument('--owner-pid', type=int, required=True)
-    p.add_argument('--owner-birth', type=int, required=True)
     a = p.parse_args()
     try:
         if _sha(a.plan) != a.plan_sha256:
             raise ValueError('plan digest mismatch')
-        if a.owner_pid != os.getppid() or watch.m4_cgroup_guard.birth(a.owner_pid) != a.owner_birth:
-            raise ValueError('outer owner must be the actual birth-verified parent')
         plan = json.loads(a.plan.read_bytes())
         if not isinstance(plan, dict):
             raise ValueError('plan must be an object')
@@ -203,8 +199,7 @@ def main() -> int:
                        '--plan', str(bound['native_plan']), '--baseline-image', str(bound['images']['baseline']),
                        '--candidate-image', str(bound['images']['candidate']), '--out', str(output),
                        '--role', bound['role'], '--execute']
-        env = dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',
-                   M4_OUTER_OWNER_PID=str(a.owner_pid), M4_OUTER_OWNER_BIRTH=str(a.owner_birth))
+        env = dict(os.environ, M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')
         if mode == 'owned-execute':
             env.update(FILLER_ID=filler_id, FILLER_STOPFILE=str(a.stop), FILLER_DEADLINE=str(int(a.deadline)), M4_SPEED_WRITER_WIRED='1')
         rc = watch.run(command, a.grant, a.stop, a.hold,

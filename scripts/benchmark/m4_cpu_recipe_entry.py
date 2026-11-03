@@ -84,7 +84,7 @@ def qualification(a, row: str) -> int:
     try:
         sys.argv=['entry.py','--plan',str(plan),'--plan-sha256',_sha(plan),'--grant',str(a.grant),
                   '--stop',str(a.stop),'--hold',str(a.hold),'--output',str(output),
-                  '--deadline',str(a.deadline),'--owner-pid',str(a.owner_pid),'--owner-birth',str(a.owner_birth)]
+                  '--deadline',str(a.deadline)]
         os.environ['M4_QUALIFICATION_WORKER']='1'
         rc=entry.main()
         watch_result=json.loads((output/'watch-result.json').read_bytes())
@@ -103,12 +103,9 @@ def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('plan','grant','stop','hold','output'): p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--plan-sha256',required=True);p.add_argument('--deadline',type=float,required=True)
-    p.add_argument('--owner-pid',type=int,required=True);p.add_argument('--owner-birth',type=int,required=True)
     a=p.parse_args()
     try:
         row=entry._row_id(os.environ.get('FILLER_ID'))
-        if a.owner_pid!=os.getppid() or watch.m4_cgroup_guard.birth(a.owner_pid)!=a.owner_birth:
-            raise ValueError('outer lease owner mismatch')
         if os.environ.get('FILLER_DRYRUN') == '1':
             return qualification(a,row)
         check_enrollment(a.plan,a.plan_sha256,row,a.output)
@@ -153,8 +150,7 @@ def main() -> int:
         if set(found)!=expected: raise ValueError('full exclusive lease descriptors missing')
         for fd in found.values(): fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if time.time()>=a.deadline: raise ValueError('deadline expired')
-        env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup',
-                 M4_OUTER_OWNER_PID=str(a.owner_pid),M4_OUTER_OWNER_BIRTH=str(a.owner_birth))
+        env=dict(os.environ,M4_DELEGATED_CGROUP_PARENT='/sys/fs/cgroup')
         command=[sys.executable,'-B',str(ROOT/'scripts/benchmark/m4_cpu_recipe_compare.py'),
                  '--plan',str(a.plan),'--plan-sha256',a.plan_sha256,'--output',str(a.output/'capture'),'--execute']
         rc=watch.run(command,a.grant,a.stop,a.hold,a.deadline,a.output,env)

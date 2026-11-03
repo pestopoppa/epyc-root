@@ -87,7 +87,7 @@ def test_qualification_runs_owned_fixture_and_stops_cleanly(tmp_path,monkeypatch
                 'FILLER_STOPFILE':str(stop),'FILLER_CPUS':'0-3','FILLER_DEADLINE':str(deadline)}.items():monkeypatch.setenv(k,v)
     monkeypatch.setattr(q,'check_enrollment',lambda *args:None)
     a=argparse.Namespace(plan=tmp_path/'plan',plan_sha256='ignored',grant=grant,stop=stop,hold=flags,
-        deadline=deadline,owner_pid=os.getppid(),owner_birth=q.watch.m4_cgroup_guard.birth(os.getppid()))
+        deadline=deadline)
     def stop_after_unit():
         end=time.monotonic()+10
         while not result.exists() and time.monotonic()<end:time.sleep(.02)

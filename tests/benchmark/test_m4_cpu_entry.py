@@ -28,7 +28,7 @@ def setup_entry(tmp_path, mode='fixture', sleep=0.1):
     stop=tmp_path/'stop'; hold=tmp_path/'hold'; hold.mkdir()
     args=[sys.executable,str(DIRECTORY/'entry.py'),'--plan',str(plan),'--plan-sha256',hashlib.sha256(plan.read_bytes()).hexdigest(),
           '--grant',str(grant),'--stop',str(stop),'--hold',str(hold),'--deadline',str(time.time()+90),
-          '--owner-pid',str(os.getpid()),'--owner-birth',str(guard.birth(os.getpid())),'--output',str(output)]
+          '--output',str(output)]
     return args, output, marker, grant, stop, hold
 
 
