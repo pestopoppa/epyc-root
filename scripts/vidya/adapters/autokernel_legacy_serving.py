@@ -420,6 +420,90 @@ def project_v2(native):
                       observation=dict(native["observation"]))
 
 
+# --- INF-62 SL-2 (VB-SL2-STEPS): estimated target sample steps/s, labelled with its estimator ------
+#
+# The producer (`loop/serving.py`) emits `comparison["target_sample_steps_est"]` inside the native
+# body, so `native_sha256` already binds it. It is an ESTIMATE (`predicted_n - draft_n_accepted`
+# unless a server exports the counter), never the server's `n_draft_verif_steps` by assumption, so
+# it is projected only with its estimator string: a block that states a value without a known
+# estimator is refused, not projected unlabelled. Same strict reader, same Judged/Located ladder.
+
+ADAPTER_ID_STEPS = "vidya.adapters.autokernel_legacy_serving/v1-steps"
+SOURCE_KIND_STEPS = "autokernel-legacy-serving-steps"
+STEPS_SCHEMA = "epyc.autokernel.serving_target_sample_steps_est.v1"
+STEPS_METRIC = "aggregate_target_sample_steps_s_est"
+STEPS_ESTIMATORS = frozenset({"server_n_draft_verif_steps", "predicted_n_minus_draft_n_accepted",
+                              "predicted_n_no_speculation"})
+
+
+def _steps_rows(source, rows):
+    block = source["comparison"].get("target_sample_steps_est")
+    if block is None:
+        return []
+    if (not isinstance(block, dict) or block.get("schema") != STEPS_SCHEMA
+            or block.get("metric") != STEPS_METRIC):
+        raise ProjectionError("target_sample_steps_est block schema/metric differs")
+    out = []
+    for base in rows:
+        arm = base["extra"]["arm"]
+        side = block.get(arm)
+        if not isinstance(side, dict):
+            raise ProjectionError(f"target_sample_steps_est has no {arm} summary")
+        if side.get("status") != "ok":
+            continue  # the producer stated no value for this arm; nothing to project
+        median_ = side.get("median")
+        if type(median_) not in (int, float) or not math.isfinite(median_) or median_ <= 0:
+            raise ProjectionError("target_sample_steps_est median is not a positive finite number")
+        estimators = side.get("estimators")
+        if (not isinstance(estimators, list) or not estimators
+                or any(not isinstance(e, str) or e not in STEPS_ESTIMATORS for e in estimators)):
+            raise ProjectionError("target_sample_steps_est refused: estimator string missing or unknown")
+        label = "+".join(sorted(set(estimators)))
+        exact = label == "server_n_draft_verif_steps"
+        claim = (f"{arm} median aggregate target sample steps/s, ESTIMATE via {label}"
+                 + ("" if exact else " (not the server's n_draft_verif_steps)")
+                 + "; reporting only, no gate; protocol unqualified")
+        out.append({**base, "measurement_id": base["measurement_id"].replace(
+                        "legacy-serving:", "legacy-serving-steps:", 1),
+                    "metric": STEPS_METRIC, "value": float(median_), "unit": "steps/s",
+                    "claim": claim,
+                    "extra": {**base["extra"], "estimator": label, "estimators": sorted(set(estimators)),
+                              "estimator_label": f"estimate:{label}",
+                              "tok_s_measurement_id": base["measurement_id"],
+                              "role": "reporting_only_not_gate"}})
+    return out
+
+
+def native_rows_steps(receipt, *, receipt_locator, receipt_sha256, attestation_present=True):
+    """Estimated-steps/s rows (zero, one or two) from a capture whose body carries the block."""
+    if not isinstance(receipt, dict) or receipt.get("schema") != RECEIPT_SCHEMA:
+        return []
+    try:
+        source = _source(receipt, receipt_locator)
+        rows = _rows(source, receipt)
+        steps = _steps_rows(source, rows)
+        scopes = [_applicability(source, row) for row in steps]
+    except (OSError, ValueError, KeyError, TypeError, OverflowError, RecursionError) as exc:
+        raise ProjectionError(f"legacy serving steps source refused: {exc}") from exc
+    return [{"receipt": receipt, "receipt_locator": receipt_locator,
+             "receipt_sha256": receipt_sha256, "attestation_present": attestation_present,
+             "claim": row, "applicability": scope} for row, scope in zip(steps, scopes)]
+
+
+@register(SOURCE_KIND_STEPS)
+def project_steps(native):
+    rows = native_rows_steps(native["receipt"], receipt_locator=native["receipt_locator"],
+                             receipt_sha256=native["receipt_sha256"],
+                             attestation_present=native["attestation_present"])
+    if native not in rows:
+        raise ProjectionError("legacy serving steps projected row differs")
+    return ClaimTuple(**native["claim"], source_kind=SOURCE_KIND_STEPS,
+                      attestation_locator=native["receipt_locator"],
+                      attestation_sha256=native["receipt_sha256"],
+                      attestation_present=native["attestation_present"],
+                      applicability=dict(native["applicability"]))
+
+
 class PlannerFeedback:
     """One loop's bounded observation recall, not scientific admission or ranking.
 
