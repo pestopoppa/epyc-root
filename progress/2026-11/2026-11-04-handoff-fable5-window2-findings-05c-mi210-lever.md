@@ -115,3 +115,7 @@ KVU-16g: the TTFT row was already filed and acknowledged. First-prompt residual 
 ## 16:02Z — Consumed six historical preparation and qualification notifications; their successors and constraints are already recorded.
 
 Consumed six fired notices: chain r1 and PF1 r4 are historical; CPU r4 was invalid and r5 qualification is pending; P12 r1 is superseded by qualified r2; PF1 r6 must not duplicate active r5; old M4 generic fold bind does not resolve native-entry or treatment authority gaps.
+
+## 16:14Z — Filed PF1 r5 and P12 r2 inconclusive; submitted corrected PF1 r6 for native qualification.
+
+PF1-EXPAND-2: filed r5 rc75 disk-floor, 36/48 cells and control 0.87455 at L256, no crossover verdict; preserved native partial and submitted r6 canonical native qualification. P12-NEXT-4: filed r2 rc1 after clean-runtime preflight found another llama server; no request, placement, cache or occupancy evidence. Both remain open.

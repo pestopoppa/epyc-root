@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/worktrees/research-pin-p12-rerun-20261103/scripts/benchmark/server_numa_np_sweep.py", line 3511, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/mnt/raid0/llm/worktrees/research-pin-p12-rerun-20261103/scripts/benchmark/server_numa_np_sweep.py", line 3506, in main
+    return cmd_sweep(args)
+           ^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/worktrees/research-pin-p12-rerun-20261103/scripts/benchmark/server_numa_np_sweep.py", line 2221, in cmd_sweep
+    ensure_clean_runtime_allowing(
+  File "/mnt/raid0/llm/worktrees/research-pin-p12-rerun-20261103/scripts/benchmark/server_numa_np_sweep.py", line 1023, in ensure_clean_runtime_allowing
+    ensure_clean_runtime()
+  File "/mnt/raid0/llm/worktrees/research-pin-p12-rerun-20261103/scripts/benchmark/server_np_sweep.py", line 382, in ensure_clean_runtime
+    raise RuntimeError(f"existing llama processes would contaminate P-BENCH-3:\n{formatted}")
+RuntimeError: existing llama processes would contaminate P-BENCH-3:
+  3888676 /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --port 18429 --host 127.0.0.1 -t 4 -c 16384 -np 1 --jinja --chat-template-file /mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja --cache-type-k q8_0 --cache-type-v q8_0 --temp 0 --no-warmup

@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=1: first cell failed before server/request because native P-BENCH clean-runtime preflight saw an existing unrelated llama-server. No requests, busy overlap, placement samples or cache-drop witness; no throughput observation. Non-gating scout; do not kill or bypass other process.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T16:13:53+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-04T16:10:25Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T16:13:53+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P12-NEXT-4",
+ "id": "p12-slots-followup-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/p12-slots-followup-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/p12-slots-followup-r2-20261104/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "h-fable5-window2-findings-05c-mi210-lever",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1: first cell failed before server/request because native P-BENCH clean-runtime preflight saw an existing unrelated llama-server. No requests, busy overlap, placement samples or cache-drop witness; no throughput observation. Non-gating scout; do not kill or bypass other process.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/p12-slots-followup-r2-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "p12-slots-followup-r2-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "SCOUT ONLY / NON-GATING: descriptive C1 np1/2/4 only. A cell is complete only with harness rc0, performed successful drop_caches and cold_cache_guaranteed=true, two passing in-window placement samples, and same-port /slots busy GET fully overlapping a successful same-cell request. The run stops immediately at first incomplete or failed native cell. Host-health warning override is intentional and forces decision_grade=false; even a complete scout is never decision-grade and cannot support a formal speed claim. Missing occupancy is incomplete evidence, not absence. Native smoke is qualification only.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d6435992d40c71e4c183ba3828b36c2cf05c4f0bd8d45678cefc92c138c8aee0",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}
