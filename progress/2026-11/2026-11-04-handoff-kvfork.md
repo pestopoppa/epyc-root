@@ -227,3 +227,7 @@ KPF-30.PHASE-IMPACT: published kpf30-impact-8952-20261104-r8 after its four-CPU 
 ## 23:13Z — Publish the clock-instrumented profiler build successor
 
 KVU-19b-gap: published kvu19b-profiler-clock-build-20261104-r5 after its four-CPU smoke passed. The full source-bound build remains pending; the prior r4 full attempt stopped at the disk floor. Smoke does not establish clock calibration, model inference or attribution.
+
+## 23:18Z — Publish the isolated HIP build successor
+
+KVU-11c: published kvu11c-hip-build-r2-20261104 after a four-CPU ggml-base smoke passed. The first smoke built the library but its full-build-only completion predicate refused the isolated smoke result; the repaired predicate validates that result and artifact while preserving the full-build requirement. The source-bound HIP build remains pending under the 150 GiB disk floor; no GPU execution or promotion is claimed. KPF-50 clock r6 remains queued for GPU smoke.
