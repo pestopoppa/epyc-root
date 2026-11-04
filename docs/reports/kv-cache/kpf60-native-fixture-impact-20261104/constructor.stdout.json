@@ -1,0 +1,20 @@
+{
+  "target": {
+    "id": "Method:src/llama-kv-cache.cpp:llama_kv_cache#17",
+    "name": "llama_kv_cache",
+    "type": "Method",
+    "filePath": "src/llama-kv-cache.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 0,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {},
+  "affected_processes": [],
+  "affected_modules": []
+}
