@@ -137,13 +137,15 @@ def test_cli_bind_run_status_resume(world, capsys, monkeypatch):
     assert fg.main(['bind', '--spec', str(t / 'spec.json'), '--out', str(t / 'plan')]) == 2  # write-once
     plan = str(t / 'plan/FOLD-PLAN.json')
     assert fg.main(['run', '--plan', plan]) == 0
-    assert (t / 'results/architect_general.candidate/ok').read_text() == 'architect_general.candidate'
+    assert (t / 'results/architect_general.p1.candidate/ok').read_text() == 'architect_general.p1.candidate'
     capsys.readouterr()
     fg.main(['status', '--plan', plan])
     out = capsys.readouterr().out.splitlines()
     assert out[0].startswith('M4-FOLD status=BOUND ')
-    assert out[1:] == ['CELL architect_general.baseline COMPLETE rc=0',
-                       'CELL architect_general.candidate COMPLETE rc=0']
+    assert out[1:] == ['CELL architect_general.p0.baseline COMPLETE rc=0',
+                       'CELL architect_general.p0.candidate COMPLETE rc=0',
+                       'CELL architect_general.p1.candidate COMPLETE rc=0',
+                       'CELL architect_general.p1.baseline COMPLETE rc=0']
     assert fg.main(['run', '--plan', plan]) == 0  # resumable no-op
 
 
@@ -161,5 +163,42 @@ def test_run_refuses_descriptive_and_retains_failure(world, capsys):
     (t / 'spec2.json').write_text(json.dumps(s))
     assert fg.main(['bind', '--spec', str(t / 'spec2.json'), '--out', str(t2)]) == 0
     assert fg.main(['run', '--plan', str(t2 / 'FOLD-PLAN.json')]) == 1
-    r = json.loads((t2 / 'results/architect_general.baseline/RESULT.json').read_text())
+    r = json.loads((t2 / 'results/architect_general.p0.baseline/RESULT.json').read_text())
     assert r['rc'] == 7
+
+
+def test_abba_default_two_pairs_alternate_launch_order(world):
+    _, s = world
+    p = bound(s)
+    assert p['status'] == 'BOUND' and p['pairs'] == 2 and p['arm_order'] == 'ABBA'
+    assert [c['arm'] for c in p['cells']] == ['baseline', 'candidate', 'candidate', 'baseline']
+    assert [(c['pair'], c['position']) for c in p['cells']] == [(0, 0), (0, 1), (1, 0), (1, 1)]
+    assert len({c['id'] for c in p['cells']}) == 4
+
+
+def test_abba_four_pairs_balance_positions(world):
+    _, s = world
+    s['pairs'] = 4
+    p = bound(s)
+    assert p['status'] == 'BOUND' and len(p['cells']) == 8
+    first = [c['arm'] for c in p['cells'] if c['position'] == 0]
+    assert first.count('baseline') == first.count('candidate') == 2
+
+
+@pytest.mark.parametrize('bad', [1, 3, 0, -2, 'two', True, 2.0])
+def test_abba_rejects_odd_or_invalid_pairs(world, bad):
+    _, s = world
+    s['pairs'] = bad
+    p = bound(s)
+    assert p['status'] == 'REFUSED' and any('pairs' in e for e in p['errors'])
+
+
+def test_abba_run_executes_cells_in_plan_order(world, tmp_path):
+    t, s = world
+    p = bound(s)
+    plan = t / 'FOLD-PLAN.json'
+    plan.write_text(json.dumps(p))
+    assert fg.run(plan, p) == 0
+    done = sorted((Path(s['result_root']) / c['id'] / 'RESULT.json').stat().st_mtime_ns for c in p['cells'])
+    order = [c['id'] for c in sorted(p['cells'], key=lambda c: (Path(s['result_root']) / c['id'] / 'RESULT.json').stat().st_mtime_ns)]
+    assert order == [c['id'] for c in p['cells']] and len(done) == 4

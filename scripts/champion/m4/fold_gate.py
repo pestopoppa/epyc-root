@@ -186,6 +186,10 @@ def bind(spec: dict, model_digest=sha_file, env=None) -> dict:
             images[f'{b}.{arm}'] = sealed
     if not roles:
         errors.append('roles: empty scope')
+    pairs = spec.get('pairs', 2)
+    if not isinstance(pairs, int) or isinstance(pairs, bool) or pairs < 2 or pairs % 2:
+        errors.append('pairs: must be an even integer >= 2 (ABBA cancels launch-order bias)')
+        pairs = 2
     seen, cells, models = set(), [], {}
     for r in roles:
         rid = r.get('role')
@@ -214,12 +218,18 @@ def bind(spec: dict, model_digest=sha_file, env=None) -> dict:
             want = r.get('model_sha256') if key == 'model' else (r.get('aux_sha256') or {}).get(path)
             if models[str(p)] != want:
                 errors.append(f'role {rid}: model digest mismatch for {p}')
-        for arm in ('baseline', 'candidate'):
-            cells.append({'id': f'{rid}.{arm}', 'role': rid, 'backend': r['backend'], 'arm': arm,
-                          'image': f'{r["backend"]}.{arm}',
-                          'server_args': argv + (M4_ON if arm == 'candidate' else []),
-                          'env': r.get('env', {}), 'placement': r.get('placement'),
-                          'entry': spec.get('entries', {}).get(r['backend'])})
+        # ABBA (operator 2026-11-04, M4-FOLD-RULE option 2): the A/A noise run showed the
+        # second-launched arm ~3 % slow, so launch order alternates per pair (AB, BA, AB, ...)
+        # and an even pair count cancels the order bias. Cell list order IS launch order.
+        for k in range(pairs):
+            order = ('baseline', 'candidate') if k % 2 == 0 else ('candidate', 'baseline')
+            for pos, arm in enumerate(order):
+                cells.append({'id': f'{rid}.p{k}.{arm}', 'role': rid, 'backend': r['backend'],
+                              'arm': arm, 'pair': k, 'position': pos,
+                              'image': f'{r["backend"]}.{arm}',
+                              'server_args': argv + (M4_ON if arm == 'candidate' else []),
+                              'env': r.get('env', {}), 'placement': r.get('placement'),
+                              'entry': spec.get('entries', {}).get(r['backend'])})
     for c in cells:
         if not isinstance(c['entry'], list) or not c['entry']:
             needs.append(f'entries.{c["backend"]}: no launch entry argv bound')
@@ -234,7 +244,8 @@ def bind(spec: dict, model_digest=sha_file, env=None) -> dict:
             'champion': champion, 'candidate': candidate, 'champion_ref': spec.get('champion_ref'),
             'llama_tree': tree, 'images': images, 'models': models, 'cells': cells,
             'prompt_pool': {'path': str(pp) if pp else None, 'sha256': pool.get('sha256')},
-            'limits': spec.get('limits', {}), 'decision_rule': rule,
+            'limits': spec.get('limits', {}), 'decision_rule': rule, 'pairs': pairs,
+            'arm_order': 'ABBA',
             'result_root': spec.get('result_root'), 'knob_probe': probe,
             'spec_sha256': hashlib.sha256(canon(spec)).hexdigest()}
 
