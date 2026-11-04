@@ -131,3 +131,7 @@ Q38P-4: filed q38p-window-probe rc0 PASS for ROCm 10.1 dispatch on the in-kernel
 ## 20:06Z — Filed NPD step 2 incomplete ABBA result and preserved native evidence.
 
 NPD1-STEP2: filed rc75 disk-floor inconclusive; current grant stopped after p1 A0 both lengths and p1 A1 8k, with 32k and second pair missing. Results JSONL also includes earlier attempts, retained but not pooled. A fresh isolated-output packet is being prepared for review; no adopt/reject verdict.
+
+## 23:50Z — Filed Q38P stage 1 inconclusive and prepared bounded teardown repair.
+
+Q38P-3: filed rc0/inconclusive: all 15 units invalid, zero valid blocks. The first benchmark observed its serving process as foreign KFD and later units refused the occupied port; no performance or keep/no-go conclusion. Raw packet preserved; a fresh, isolated successor with captured-PID teardown is being prepared for review.
