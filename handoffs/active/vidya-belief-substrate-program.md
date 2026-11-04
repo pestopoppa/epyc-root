@@ -4286,6 +4286,7 @@ Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/kn
 ### D-LSA research intake — approved 2026-11-03
 
 - [ ] **LSA-EVIDENCE-1 — Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**
+  2026-11-04: The original CPU unit verifier receipt ingests with refused=0 but remains outside model-target planning context; `artifacts/lsa-screen-20261103/code_context.py` supplies a separate exact producer-declared code-revision and named-case consumer. It makes no historical checkout-path or model claim.
   2026-11-03: register the pilot terminal timing envelope and prospective native unit JUnit wrapper in the source table; retain original unit runs as committed conclusions only; require prospective producer→strict reader→planning-context canaries and refused=0 before declaring each loop wired.
 
 
