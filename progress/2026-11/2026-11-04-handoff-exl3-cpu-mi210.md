@@ -27,3 +27,7 @@ Filed isolated r3 inconclusive (rc=0): all 12 speed launches used 24 threads in 
 ## 07:37Z — Acknowledge superseded EXP01 build-r4 event
 
 Duplicate build-r4 receipt acknowledged; its existing inconclusive verdict remains unchanged. EXP01-PILOT was completed and filed at cc76988485246dbfaf9757dcc7b1cdc195dfe02d. T2/T3 stay open; no port trigger or extended compute authorization follows from the bounded pilot. The concrete extension decision package remains docs/findings/exp01-trellis-proxy-pilot-20261104.md.
+
+## 15:24Z — Acknowledge already-filed EXP01 pilot-r3 event
+
+Duplicate pilot-r3 event acknowledged; existing inconclusive verdict and completed bounded pilot remain unchanged. IQ4KT/Q4KM 0.9630 [0.9436,0.9824]; the port trigger and futility rule were not met. The concrete follow-up decision package remains in docs/findings/exp01-trellis-proxy-pilot-20261104.md.
