@@ -215,3 +215,7 @@ Filed kpf-rs1-impact-8952-20261104 and kpf30-impact-8952-20261104-r4 INCONCLUSIV
 ## 19:29Z — Publish safe KPF-RS-1 and KPF-30 source-impact successors after disk-floor refusals.
 
 Published kpf-rs1-impact-8952-20261104-r2 and kpf30-impact-8952-20261104-r5 after four-CPU publisher smoke PASS, preserving exact source, source-bound target rules, skipped-file reporting and 150 GiB floor. Both smoke results are first progress only; full impacts and source-edit clearance remain open.
+
+## 19:36Z — Implement and test conservative refusal of unbound multi-ubatch layout associations.
+
+Completed KPF-17.4d multi-ubatch safety control: source review and a planted counterexample show the initial candidate can select a non-target layout. A separate conservative candidate rejects any target-prefill batch with multiple layouts before matching; five model-free tests pass. It can reject valid traces and is not a live adapter or paired result. The retained attempt remains INVALID; the one-off read-only diagnostic replay is disclosed.
