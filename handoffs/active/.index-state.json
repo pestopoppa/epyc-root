@@ -1361,7 +1361,7 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 77,
+      "closed": 83,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 110,
+      "total": 116,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,7 +1419,7 @@
         },
         {
           "blocked": 0,
-          "closed": 2,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 1708,
