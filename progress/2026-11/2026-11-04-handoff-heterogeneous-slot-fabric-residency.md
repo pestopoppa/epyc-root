@@ -47,3 +47,7 @@ Acknowledged the previously filed v2 rc75 INCONCLUSIVE result: 79 samples withou
 ## 15:23Z — File partial P5 champion result and preserve exposed rows
 
 Acknowledged previously filed P3 lifecycle r2 rc1 INCONCLUSIVE (neighbour occupancy failed after four drafted rows). Filed champion P5 A1 r2 INCONCLUSIVE after rc75 disk-floor: official run preserved 10 drafted and 9 no-draft rows, and the missing no-draft L0-after repetition 2 was already started; no final result exists, no-draft draft counters are UNKNOWN, and no recovery class is supported. Preserved native arm data, server logs, VRAM samples, manifest and end event, with no redraw of exposed units. Requested exposure-aware continuation and KVU-12.5 successor repairs.
+
+## 15:31Z — Acknowledge the incomplete CODE-off event and reconcile its successor status
+
+The original CODE-off diagnostic was already filed INCONCLUSIVE: full rc1, no declared result JSONL and three cancelled scouts with no completion under the short native and aggregate caps. Acknowledged its receipt and kept the original failure separate from the later full r2 off/on descriptive diagnostics. Corrected stale handoff prose claiming those r2 full results were still pending. Source-grounded outcome review is in preparation; the P2 gate and predeclared windows remain open.
