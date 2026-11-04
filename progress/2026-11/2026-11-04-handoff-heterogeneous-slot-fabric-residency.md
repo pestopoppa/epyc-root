@@ -199,3 +199,7 @@ Filed kvfork174d-witness-r5-20261104 as INVALID, rc=1: no final RESULT, partial 
 ## 19:11Z — Integrated and validated the model-free R9 SSE STOP composition and diagnosed the already-exposed KPF-17.4d parser ambiguity.
 
 The model-free R9 SSE capture/rowflow STOP composition passed 2/2 in a portable evidence package. It does not test SeedControl, real HTTP, native release, admission, model or GPU. Diagnosed the already-exposed KPF-17.4d invalid witness: two prefix-containing snapshots appeared, one at the fork boundary and one after additional prompt positions. A candidate parser selected the former in the retained trace and two synthetic tests; independent trace-writer review is required before adoption. No rerun or change to the invalid verdict.
+
+## 19:15Z — Review the native trace boundary for the KPF-17.4d parser candidate.
+
+Reviewed experimental source for the retained KPF-17.4d parser candidate: ITEM4 rows are emitted once around llama_decode, while cache layout is emitted inside find_slot per ubatch before allocation. A batch with multiple layouts therefore needs a proved ubatch binding or a fail-closed ambiguity check; the candidate is not adopted and the exposed run remains INVALID.
