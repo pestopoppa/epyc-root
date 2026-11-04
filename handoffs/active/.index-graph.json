@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T16:51:02Z",
+  "generated_at": "2026-11-04T17:02:47Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1354,15 +1354,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 350,
-      "dispatchable": 95,
+      "closed": 351,
+      "dispatchable": 94,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 97,
+      "open": 96,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1562,14 +1562,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 200,
-      "dispatchable": 36,
+      "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 38,
+      "open": 37,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1600,25 +1600,25 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 679,
+          "line": 680,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
-          "line": 1038,
+          "line": 1039,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1315,
+          "line": 1317,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1950,
+          "line": 1952,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2252,
+          "line": 2254,
           "name": "qwen38-27b-replace-qwen36",
           "open": 2,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2861,
+          "line": 2864,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1,
           "readiness": "blocked"
@@ -2915,7 +2915,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 145,
+      "closed": 146,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3507,7 +3507,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 249,
+      "closed": 250,
       "dispatchable": 90,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3556,7 +3556,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1371,
+          "line": 1377,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3571,7 +3571,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1753,
+          "line": 1759,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
