@@ -1,0 +1,41 @@
+{
+ "decision_rule": "Complete only after admitted root index at pinned f58d0bf7668147b5aa142ade921b7b86ece35ec0 and context plus upstream impact receipts for ShadowSink, validate_shadow_stream, ingest and cmd_ingest; unresolved or partial is not an impact pass. HIGH or CRITICAL stops edits and requires warning.",
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/filler_run15.sh",
+  "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+ },
+ "estimate_s": 2400,
+ "gib": 48,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3",
+ "id": "codex-ufh12-shadow-gnx-v1-20261102",
+ "keep": [
+  "out/**",
+  "source/.gitnexus/**",
+  "job.py",
+  "launch.sh",
+  "filler_run15.sh",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/launch.sh",
+  "sha256": "a843d90f23077b707e1d17da9e0cb720ec4f7a85620eb212d145dd810e0e63f5"
+ },
+ "min_window_s": 300,
+ "notes": "Smoke captures a real source scan only, on four CPUs, and exits before indexing. Official run requires four-quadrant build admission; source checkout is pinned and clean.",
+ "owner": "handoff-repl-embedding-retrieval",
+ "ports": [],
+ "priority_rank": 18.0,
+ "published_at": "2026-11-02T11:17:42Z",
+ "published_from": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/STOP",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow"
+}

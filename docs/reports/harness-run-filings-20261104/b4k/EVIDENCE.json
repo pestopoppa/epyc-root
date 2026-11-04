@@ -1,0 +1,44 @@
+[
+  {
+    "source": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/calls.jsonl",
+    "file": "calls.jsonl",
+    "bytes": 30334,
+    "sha256": "a7f85b75a7482e336b9723c950e2b57e8f4e6260bec0c9729f738aa21c2f3e02"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/SUMMARY.json",
+    "file": "SUMMARY.json",
+    "bytes": 520,
+    "sha256": "ea0b575d07b5a4ea38d4c8f08c7dbe264e4fd4dbcec66a170cb26dcaeb38e3d8"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/REPORT.json",
+    "file": "REPORT.json",
+    "bytes": 1210,
+    "sha256": "6eb5929d0ce2af648def5a65fa46a16dccab5c84fad0ab531bcc65091f129044"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/argv.json",
+    "file": "argv.json",
+    "bytes": 1198,
+    "sha256": "3d3514ae396463539b9e9fa55b8a8196d2f3b9844b1852e1e414046bf83ee74a"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/residency-proof.json",
+    "file": "residency-proof.json",
+    "bytes": 2017,
+    "sha256": "7024fab52867f77fed508134b6f3ebbe208e02bafd15e10510236b0b5d3b5057"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-b4a-window-8083-20261102.json",
+    "file": "ufh14-b4a-window-8083-20261102.json",
+    "bytes": 2084,
+    "sha256": "5b90d12f5ad03fe78563fb9fc77d0514896113a5fc31c59de0a80e6b8e37ece2"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/grants/ufh14-b4a-window-8083-20261102.ended",
+    "file": "ufh14-b4a-window-8083-20261102.ended",
+    "bytes": 202,
+    "sha256": "b49808f7c22f4e11493a0fa5a155d80788213e951b2ee4dc15a04b9bc882e757"
+  }
+]
