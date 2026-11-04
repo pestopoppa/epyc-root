@@ -1,0 +1,10 @@
+{
+  "schema": "kvu126.grant-path-repair.checks.v1",
+  "offline_unittest_passed": 8,
+  "failed": 0,
+  "bash_n": "pass",
+  "input_manifest": "pass",
+  "model_inference": false,
+  "publisher_smoke": "not run",
+  "published": false
+}

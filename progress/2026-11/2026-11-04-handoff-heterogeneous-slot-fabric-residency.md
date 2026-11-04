@@ -27,3 +27,7 @@ KPF-17 partial-v2 was INVALID (rc64 before Test 6); the existing integrated CPU 
 ## 14:54Z — File completed KPF-17 custody run and publish corrected gauge successor
 
 KPF-17a GPU row had already been filed PASS and its box closed; acknowledged the repeated event. Filed KPF-17.CUSTODY rc0 PASS with both n_rs_seq=0/8 and in-test mapping evidence, preserving the native records; the uncorrected test mutation marker remains limited and the parent stays open. Filed KPF-17.4d custody build INCONCLUSIVE on rc75 disk-floor with no full build/custody result. Published KVU-12.6 gauge r2 with four-CPU smoke PASS; source review found the executable accepts inclusive request-window boundaries, so its full result must be checked for strict inequality at filing. The original build-time binary attestation is unavailable and not invented.
+
+## 14:58Z — File the VKQ calibration and unique-cell gauge capability results
+
+Acknowledged the previously filed CPU-FA-VKQ-3 calibration: both target arms accepted 96 of 121 drafts and emitted identical 128-token IDs, with verified cleanup. Filed KVU-12.6 gauge r2 rc0 PASS as a one-request capability observation: 0 to 45 unique cells, one generated token, process and mapping custody, strict request-window timestamp inequality and verified cleanup. This does not explain np8 collapse and does not invent an original build-time attestation. Preserved native outputs and the corrected, checksummed r2 preparation packet; a fresh KPF-17.4d build successor is being prepared independently.
