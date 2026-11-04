@@ -19,3 +19,7 @@ Preserved the C6 modified candidate binaries, source patch and custody evidence 
 ## 14:23Z — File the previously decided C6 combined build and record the smoke-passing CH31 explicit-target successor.
 
 C6 combined build rc0 and COMPLETE_BUILD_ONLY; exact-case receipt digests are recorded and GPU qualification remains open. CH31 explicit-target successor akagg-ch31-instrument-build-fixture-v2-20261104 passed the separate stub smoke on CPUs 0-3 and is running; its full native controls and defect verdict remain outstanding.
+
+## 14:26Z — File the C6 q4_K exact-case result and complete the CH31 model-free instrument fixture.
+
+Acknowledged previously filed q4_K exact-case result, with its original input and single-case scope. CH31 v2 rc0 built C5 instrumentation with OpenMP on and off, and ran three real synthetic ggml controls per build. Retained result, patch, logs and metadata with digests before acknowledging the row. The model defect, broader GPU correctness and promotion remain open.
