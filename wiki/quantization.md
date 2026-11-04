@@ -1229,3 +1229,12 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - [EXL3 CPU and MI210 handoff](../handoffs/active/quantization-and-low-bit.md)
 - [IQK i-quant handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
 - [INF-70 node-trace and stale-binary audit](../progress/2026-09/2026-09-03-inf70-audit.md)
+
+## Compiled update — 2026-11-04: EXP01 trellis proxy pilot (inconclusive)
+
+- **Setup.** Qwen3.6-35B-A3B proxy requantized from one Q8_0 source with a shared imatrix on four arms, measured with ik_llama.cpp `c04881fc` as a reference instrument; not evidence for Q38FN/DS41 or a production kernel.
+- **Speed (tg128, higher is better).** IQ4_KT/Q4_K_M = 0.9630 (band 0.9436-0.9824); IQ2_KT/IQ2_XXS = 0.9610 (band 0.9392-0.9828). Neither declared stop condition was reached at the three-launch-per-arm cap; bands are exploratory, not a T3 gate.
+- **Quality.** 14/24 vs 12/24 (2 IQ4_KT-only, 0 Q4_K_M-only), exact paired p = 0.5: no established win.
+- **Disposition.** No port triggered; T2/T3 stay open. An earlier r2 ratio was invalid (a 4-thread smoke sample mixed into 24-thread official samples) and was replaced by the isolated r3. Optional extension (needs operator authorization): IQ4_KT vs Q4_K_M to 8 launches per arm, at most 10 minutes.
+
+Sources: [EXP01 findings](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [EXL3 CPU/MI210 session record](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md)

@@ -6989,3 +6989,12 @@ A retained-trace analyzer reproduced the earlier motif diagnostic within 0.2%: 9
 - **Model load.** Champion `llama-server --load-threads 96` loads 87 GiB in ~25 s (single-threaded load took minutes); champion `llama-bench` only gained the flag in `181483cfc-lbt` (manifest V11-120).
 
 Sources: [INF-22 handoff](../handoffs/active/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
+## Compiled update — 2026-11-04: GPU host-lane claim and prepared INF-22 rows
+
+- **GPU host lane does not displace q3.** The production GPU lane (`184-191`) takes no CPU region claim under the current topology, so the historical all-q3 displacement premise no longer holds; the physical-core overlap with CPU architect/frontdoor roles remains a separate contention question (single q3-free snapshots are not evidence of absence).
+- **Prepared, not run.** PF1-EXPAND (L 128-2048, champion candidate `181483cfc-lbt`) and YARN-E1-MEM-CHAIN (one 128k to 500k chain; window raised to 6800 s) are published with stop rules; smoke/execution awaits a free GPU gap. No result exists for either.
+- **CPU-FA-VKQ-2.** 20 fresh processes, 5 per arm per depth: effects +1.84 % (16k) and +2.11 % (64k) fall within noise floors of 36.39 % and 4.11 %; no promotion.
+- **Build prerequisites.** The sync17 coverage build (435 compile entries, source `2516c980`, own-library linkage PASS) is a build result only; replay validity and execution custody are not established. The repaired GDN HIP successor has only static preparation checks (six tests, syntax-only compile and gfx90a object compile pending the publisher).
+
+Sources: [claim-path design](../docs/design/gpu-serving-p25g-claim-path-20261104.md) · [INF-22 unblock](../progress/2026-11/2026-11-04-inf22-unblock.md) · [slot-fabric residency](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [GDN static checks](../docs/reference/autokernel/gdn-hip-build-failure-20261104/successor/STATIC-CHECKS.md) · [champion handoff](../handoffs/active/kernel-champion-and-promotion.md)

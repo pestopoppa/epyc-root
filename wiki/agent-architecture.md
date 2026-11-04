@@ -5747,3 +5747,13 @@ The NI D1 legacy-conflict fix is published but awaits the keeper owner installat
 - Prepared, unapproved task lines JEV-1..6 and SA-1..4: [ws58 jev README](../research/deep-dives/ws58-jev-20261102/README.md).
 
 Sources: [Jev dive](../research/deep-dives/ws58-jev-20261102/intake-2604-jev-harness-engineering.md) · [selective prediction](../research/deep-dives/ws58-jev-20261102/selective-prediction-wave1-dives.md) · [GUI survey](../research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md) · [wave 2](../research/deep-dives/ws58-jev-20261102/wave2-dives.md) · [Super-agent essay](../research/deep-dives/ws58-jev-20261102/intake-2615-superagent-essay.md) · [digest 2604-2614](../research/deep-dives/intake-digests/2026-11-02-ids-2604-2614.md) · [digest 2615-2616](../research/deep-dives/intake-digests/2026-11-02-ids-2615-2616.md)
+
+## Compiled Update — 2026-11-04 (REPL harness filings)
+
+- **S4 Omega arm differs from baseline by a turn floor and mandated procedure**: a 10-round hard limit with an aim of 5-7, a gather, expand, verify, answer sequence, same-block causality (never `FINAL()` in a block whose tool result is needed), one block and no comments. Default-OFF via `PROMPT_VARIANT__root_lm_system=s4_omega`; adopted from the SkyRL multipaper child prompt.
+- **S4-OMEGA-PILOT-V2 filed FUTILITY**: 1/16 complete pairs, 7 incomplete, 8 not_run, tool liveness not met. It is not an A/B result on the arm.
+- **RTE-PFX2-QN-V3**: 15 complete arm-trials; no sibling reached the 90% hit threshold (one 4504/6542 partial hit per hold-first-end trial).
+- **Bounded G-S private rehearsal passed** (64,514 episodic and 1,428 strategy rows, min cosine 1.0 over 16 samples per store) without closing full G-S.
+- **A launcher script may start a dispatcher as a side effect**: `churn_up.sh` did so on 2026-11-04 and resumed 11 sessions nobody asked for (CHURN-UP-NO-DISPATCHER).
+
+Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-20261104/s4/) · [harness-program](../handoffs/active/harness-program.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)

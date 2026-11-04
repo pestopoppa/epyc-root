@@ -1591,3 +1591,18 @@ On the integrated 27B/DFlash2 GPU item 1, all 32 requested forks were witnessed.
 - **KVU-12.5:** The earlier full-host `SPLIT_BETTER` verdict was rejected because it used 96 rather than the required 24 threads and omitted a wave-range term. The later quarter-run comparison remains incomplete; its verdict is unknown. See the handoff for the distinct historical measurements.
 
 Sources: [KV unified rollout and evidence](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [KVU-19a trace analysis](../progress/2026-11/2026-11-02-handoff-kvu.md), [KVU-16a load reconciliation](../progress/evidence/kvu16a-load-result-20261102/RECONCILIATION.md).
+
+## KPF-17a GPU closure and KVU-19a-2 reuse decision — 2026-11-04
+
+- **KPF-17a:** Both retained GPU rows were filed PASS. The shared suite had 111 cases (89 supported bitwise-equal, 22 declared unsupported; all 25 shared-trunk cases supported). The preservation suite had 86 cases (64 supported bitwise-equal under each skip setting, 22 declared unsupported). With the earlier CPU 86/111 PASS, KPF-17a is complete; parent KPF-17 keeps its other clauses.
+- **KVU-19a-2:** No new GPU repeat was run. The existing source-bound 20-run comparison (`f8878bf14`) and the negative barrier diagnostic (`7a8a2d8fa`) already show five identical baseline outputs versus five distinct candidate outputs per case for cases 78 and 80, with matched input bytes. Case 79 is not covered. A concrete upstream ISSUE-DRAFT (historical TILE flash-attention repeatability, MI210 D512/D576, local experimental patch, mechanism unknown, no fix) was prepared but not posted; posting needs explicit operator authorization.
+- **K35 lifecycle:** Filed pass (rc0, distinct PIDs, 16 tokens per arm, verified cleanup). The P3 lifecycle row passed four-CPU qualification, but its full twenty-row benchmark remains unrun.
+- **Filing tooling:** A tested but unapplied `handoff_path()` patch fixes result filing for basename task tokens (5/5 targeted tests); deployment under `scripts/coordination` needs operator acknowledgment.
+- **KPF-26 rubric:** Three prospective source-scout tasks are scored PASS/FAIL/UNKNOWN per arm and window; the rubric makes no representativeness claim and sets no KPF-26 gate.
+
+### Source references
+
+- [KPF-17a GPU filing](../progress/2026-11/2026-11-04-handoff-kvfork.md)
+- [K35/P3 lifecycle and KVU-19a-2 reuse](../progress/2026-11/2026-11-04-handoff-kvu.md)
+- [Reuse decision](../progress/evidence/kvu19a2-upstream-20261104/REUSE-DECISION.md) and [issue draft](../progress/evidence/kvu19a2-upstream-20261104/ISSUE-DRAFT.md)
+- [File-result path correction](../docs/reports/kv-cache/file-result-path-20261104.md) and [KPF-26 outcome rubric](../docs/reports/kv-cache/kpf26-code-requal-v1-20261104/OUTCOME-RUBRIC.md)
