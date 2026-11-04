@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc0 native build receipt binds pinned v10, exact target patch and corrected candidate/bridge, compiled MTP load/rollback/draft-rewind markers, artifact hashes and local linkage. Build only; native rollback/fault/numerical controls and CAFE-4 completion remain unproven.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T14:26:59+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:24:51Z reason=complete",
+ "filed_at": "2026-11-04T14:26:59+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-rollback-rewind-build-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-mtp-rollback-rewind-build-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0 native build receipt binds pinned v10, exact target patch and corrected candidate/bridge, compiled MTP load/rollback/draft-rewind markers, artifact hashes and local linkage. Build only; native rollback/fault/numerical controls and CAFE-4 completion remain unproven.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-mtp-rollback-rewind-build-20261104",
+ "row_verdict": "pass",
+ "rule": "Build-only: accept pinned v10 and exact target-bound CAFE4 patch plus corrected real-MTP draft-context rewind candidate/bridge; require full CPU executable, compiled CAFE4_MTP_LOAD_ENABLED, CAFE4_MTP_ROLLBACK and CAFE4_DRAFT_REWIND_V4 markers, source/artifact digests and local library linkage. No native rollback/fault or performance verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "14b273ce80b88835ea593aae0ff8057adec087f27ad96b398175248533177771",
+  "result": "pass",
+  "status": "filed"
+ }
+}
