@@ -1,0 +1,44 @@
+{
+  "schema": "epyc.independent-packet-review.v1",
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v3",
+  "row": "ufh14-repl-emb23a-parse-v3-20261104",
+  "disposition": "CHANGES REQUIRED; no smoke outcome asserted",
+  "blocking_findings": [
+    {
+      "id": "V3-PATH",
+      "evidence": "launch.sh sets D=/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v3-successor (absent); spec, pilot.py, closure.py use /shadow-pilot-v3. Its checksum of $D/pilot.py fails before launcher or smoke. Spec and producer paths must agree."
+    },
+    {
+      "id": "V3-GRANT",
+      "evidence": "runtime_guard.grant_context only checks that grant start/end strings exist, not that now falls within the grant or deadline corresponds to its end. A no-inference unit fixture accepted a grant from 2000 with a future FILLER_DEADLINE. STOP path only checked absolute, not exact bound row/phase. Normal filler launcher itself guards a real grant but direct native guard does not prove it."
+    },
+    {
+      "id": "V3-LIBMTMD",
+      "evidence": "release_store/mapped_kernel_libraries only include paths beginning libggml or libllama; they exclude libmtmd, although it is linked by server and present in production SHA256SUMS. Also executable venv/bin/python symlink is not itself in closure FILES; python real binary is recorded, so substitution of the used symlink is not independently detected."
+    }
+  ],
+  "validated": [
+    {
+      "item": "terminal selection",
+      "evidence": "11 direct cases passed: stop=true, stop_type eos or word, truncated=false required; absent/limit/truncated rejected, nested/repeated/unclosed think rejected, zero explicit, out-of-range and leading zero rejected. These fields and values match frozen llama.cpp server-task.cpp."
+    },
+    {
+      "item": "actual open",
+      "evidence": "pilot gets selected BGE bundle span, validates bytes against immutable source section, then calls ShadowBridge.opened; hidden arm remains counterfactual."
+    },
+    {
+      "item": "closure and runtime",
+      "evidence": "closure.json enumerates 26,786 files over source, venv site packages, interpreter stdlib and local scripts; launch binds pilot and closure manifest digest. The guard verifies mapped ggml/llama against production SHA256SUMS; caveats above and source path mismatch remain."
+    },
+    {
+      "item": "result isolation and cleanup",
+      "evidence": "spec result glob out/run/*/results.jsonl excludes smoke, which uses FILLER_DRYRUN_RESULT_PATH. Official finally terminates/waits owned processes with kill escalation; STOP checked during readiness and between queries; frontdoor HTTP bounded to remaining time."
+    }
+  ],
+  "limitations": [
+    "No publisher smoke or inference run by this reviewer; existing unrelated v2 smoke is not v3 evidence.",
+    "Dead parse_selection helper remains in pilot.py but actual code uses stricter selection.select.",
+    "During bundle indexing and other synchronous operations STOP is not checked until the current operation returns; engine hard deadline remains outer bound.",
+    "Code may change concurrently in the shared scratch directory; review binds files as observed on 2026-11-04, not a later successor."
+  ]
+}

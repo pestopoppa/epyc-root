@@ -1,0 +1,53 @@
+{
+  "schema": "epyc.independent-packet-review.v1",
+  "row": "ufh14-repl-emb23a-parse-v4-20261104",
+  "reviewed_source": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v4",
+  "disposition": "prior three v3 defects fixed; runtime closure not fully bound",
+  "source_fingerprints": {
+    "launch.sh": "c8ededa21c44eef4f6d463fbd3f92291ec581ae1bd7bb47b4b44f5986d2dea4d",
+    "spec.json": "2d64333cf82218e139725aedb4e356ea67b4e0fae56507457af77d9fb7e17c16",
+    "pilot.py": "542d74a743761957318c2b47a77cc3d01a72eea87b1e3d183f4a302ddc4781e5",
+    "runtime_guard.py": "471ecbba1f549e675d63c4959a2982cc6454524295f1c4497608603b3c1f40a4",
+    "selection.py": "32bb91e014860eb62f64230c60f47f54720cf73a27ba65605ec98b154b57c796",
+    "closure.py": "faee19ceb49b79c8b445b5660ad8721a82e499fe62e991f84d4759b31a6f5dbe",
+    "closure.json": "15296acf9deb7f1a110bc8105917252580a10753d1d4db6be6cd3b2665067003"
+  },
+  "verified": [
+    {
+      "item": "native completion",
+      "evidence": "11 independent cases passed: stop=true, stop_type eos/word and truncated=false required; length/limit, missing stop, nested/repeated/unclosed envelopes, multi-digit and out-of-range refused."
+    },
+    {
+      "item": "grant, identity and STOP",
+      "evidence": "runtime_guard.check_grant parses UTC minute timestamps; requires start<=now<end and now+150<deadline<=end, exact grant pathname/row ID, expected STOP path, contiguous quarter CPU affinity. Two tests passed covering inactive/expired/wrong-path/wrong-affinity/STOP/malformed cases and mismatched deadlines."
+    },
+    {
+      "item": "mapped production libraries",
+      "evidence": "PREFIXES includes libggml, libllama and libmtmd; release_store rehashes content against production SHA256SUMS; verify_maps rejects unpinned mapped libraries and requires CPU backend. Fixture tests refuse omitted/modified mtmd and missing CPU library."
+    },
+    {
+      "item": "official result and cleanup",
+      "evidence": "result glob out/run/* excludes native smoke path; three servers are owned listener checked, terminate/wait with kill fallback, and success requires 3 parsed rows plus >=1 actual get-before-open, validated sink and drain."
+    },
+    {
+      "item": "v3 path defect",
+      "evidence": "launch D, pilot P, closure P, spec paths all point to shadow-pilot-v4; pilot and closure.json hashes match launcher."
+    }
+  ],
+  "remaining_findings": [
+    {
+      "severity": "high",
+      "finding": "Full interpreter/dependency closure not established: closure.json seals the real Python binary and site-packages but excludes the actual executable .venv/bin/python symlink and .venv/pyvenv.cfg; a changed symlink or config could redirect interpreter/module resolution while pinned original real binary remains unchanged. Verify executable symlink realpath and pyvenv.cfg against closure or invoke and bind approved real interpreter with equivalent environment."
+    },
+    {
+      "severity": "medium",
+      "finding": "Externally executed /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh is not listed in closure.json. It affects whether the run passes linkage validation, so bind its bytes or use a sealed copy."
+    },
+    {
+      "severity": "limitation",
+      "finding": "STOP checked during server readiness and between queries, but no additional check during synchronous index construction/embedding calls until they return; outer engine enforces hard end. Native BGE-only publisher smoke cannot establish frontdoor/Granite/open path."
+    }
+  ],
+  "tests": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_runtime_guard.py: 2 PASS; standalone selection 11 PASS. No live compute, no changes to packet, no polling of publisher or qualification.",
+  "scope": "Review binds only the file hashes above; no assertion about current publisher state or other authors subsequent edits."
+}
