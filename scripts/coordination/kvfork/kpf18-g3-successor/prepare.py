@@ -14,6 +14,7 @@ sys.path.insert(0, str(TOOLS))
 from rebind_manifest import read_regular
 from verify_manifest import verify
 from prepare_r9_validation import PINS as R9_PINS, R9 as R9_ROOT
+from rowflow_entry import command as rowflow_command
 
 SOURCE = Path('/mnt/raid0/llm/tmp/kpf18-g3-repair-successor-20261029/candidate')
 CUSTODY = Path('/mnt/raid0/llm/tmp/kvfork/g3-integrated-prep-20261104')
@@ -22,6 +23,10 @@ RUNTIME_PIN = '04c0d3922939496fb100b0a7b0a0efe228ee7f3611ad025cc6d47d3c8bb684f7'
 WITNESS_PIN = '8b598901b6d4d5edd1ca1e9cf5844b7ca22e4f3ede2817a1df72edb104f2478c'
 PROVIDER_PIN = '75d470545c780089bb4bf2e5492e3036b77ea51a8cb12ed50fb6f311011932ab'
 LAUNCH_PIN = 'b6c5f22784322e8784c39712d77bcd723ab00bd7f0559f5dc0bfaedc6fce5a6c'
+ROWFLOW_PINS = {
+    'filler_run15.sh': '492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c',
+    'filler_lib.sh': '241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c',
+}
 
 
 R9_RECEIPT = Path('/mnt/raid0/llm/tmp/kvfork/g3-r9-validation-complete-20261104/RESULT.json')
@@ -135,6 +140,8 @@ def prepare(output):
     if custody.returncode:
         raise ValueError('predecessor custody refused: '+custody.stderr)
     validation_raw, validation_paths = validation_closure(R9_RECEIPT, R9_RECEIPT_PIN)
+    rowflow = {name: pinned(ROOT/'scripts/coordination/rowflow'/name, digest)
+               for name, digest in ROWFLOW_PINS.items()}
     output.mkdir()
     (output/'INCOMPLETE').write_text('Never dispatch runtime; preparation incomplete.\n')
     (output/'INDEPENDENT-R9-RESULT.json').write_bytes(validation_raw)
@@ -151,8 +158,43 @@ def prepare(output):
     (runtime/'current_lock.py').write_bytes(witness)
     (runtime/'provider-sources.json').write_bytes(source_seal)
     (runtime/'lock_witness.py').write_text(ADAPTER)
+    (runtime/'rowflow_entry.py').write_bytes(read_regular(HERE/'rowflow_entry.py'))
+    for name, data in rowflow.items():
+        (runtime/name).write_bytes(data)
+    (runtime/'rowflow-command.json').write_text(json.dumps(rowflow_command(runtime), indent=2)+'\n')
+    # Reviewable wiring only: none of these predicates may dispatch or complete a row.
+    for name in ('rowflow-launch.sh', 'precondition.sh', 'complete.sh'):
+        (runtime/name).write_text('#!/bin/bash\nset -euo pipefail\n'
+                                 'echo "REFUSED: G3 rowflow runtime unqualified" >&2\nexit 78\n')
+    (runtime/'publisher_smoke.py').write_bytes(read_regular(HERE/'publisher_smoke.py'))
+    # Modify only the copied, pinned predecessor; retained NI bytes are immutable.
+    admission=(runtime/'gpu_smoke_admission.py').read_text()
+    for expected in ('import lock_witness', " if os.sched_getaffinity(0)!={184,185}:raise RuntimeError('GPU smoke requires host CPUs 184-185')", 'start>=now+300', 'if int(m.group(1))<=185 and int(m.group(2) or m.group(1))>=184:'):
+        if admission.count(expected)!=1:raise ValueError('unexpected historical smoke admission')
+    admission=admission.replace('import lock_witness', 'import lock_witness, publisher_smoke')
+    admission=admission.replace(" if os.sched_getaffinity(0)!={184,185}:raise RuntimeError('GPU smoke requires host CPUs 184-185')",
+                                ' cpus,deadline=publisher_smoke.context(Path(__file__).resolve().parent)')
+    admission=admission.replace('start>=now+300', 'start>=deadline')
+    admission=admission.replace("if int(m.group(1))<=185 and int(m.group(2) or m.group(1))>=184:",
+                                "if cpus.intersection(range(int(m.group(1)),int(m.group(2) or m.group(1))+1)):")
+    (runtime/'gpu_smoke_admission.py').write_text(admission)
+    supervisor=(runtime/'supervisor.py').read_text()
+    supervisor=supervisor.replace('import guard,owned_drain,lock_witness,gpu_smoke_admission,ram_admission',
+                                  'import guard,owned_drain,lock_witness,gpu_smoke_admission,ram_admission,publisher_smoke')
+    old="  os.environ.update(KPF_SMOKE='1',FILLER_CPUS='184-185',FILLER_ID='kpf18-g3-diagnostic-smoke',FILLER_END=str(int(time.time())+300),FILLER_DEADLINE=str(int(time.time())+240),FILLER_STOPFILE=str(D/'STOP-smoke'))"
+    if supervisor.count(old)!=1:raise ValueError('unexpected historical smoke setup')
+    supervisor=supervisor.replace(old,"  publisher_smoke.context(D)\n  os.environ['KPF_SMOKE']='1'")
+    if supervisor.count("cpus='184-191' if mode=='official' else '184-185'")!=1:raise ValueError('unexpected historical smoke CPU dispatch')
+    supervisor=supervisor.replace("cpus='184-191' if mode=='official' else '184-185'", "cpus='184-191' if mode=='official' else os.environ['FILLER_CPUS']")
+    (runtime/'supervisor.py').write_text(supervisor)
     guard=(runtime/'guard.py').read_text().replace("ID='kpf18-g3-diagnostic-v1-20261029'",'ID='+repr(ROW))
     guard=guard.replace('def boundary():\n','def boundary():\n    import lock_witness\n    lock_witness.boundary()\n')
+    # Keep the independently integrated smoke branch, replace retired normal parsing.
+    start=guard.index("    if list(flags.glob('HOLD_*'))", guard.index('def boundary():'))
+    end=guard.index('\nclass ContextBoundary:', start)
+    guard=guard[:start]+'''    import rowflow_entry
+    return rowflow_entry.boundary()
+''' + guard[end:]
     (runtime/'guard.py').write_text(guard)
     # Runtime launcher has its own unconditional barrier; no historical dispatch tail.
     (runtime/'launch.sh').write_text('#!/bin/bash\nset -euo pipefail\necho "REFUSED: G3 runtime remains unqualified" >&2\nexit 78\n')
@@ -162,12 +204,14 @@ def prepare(output):
              'predecessor_runtime_manifest_sha256':RUNTIME_PIN,'provider_sources_sha256':PROVIDER_PIN,
              'independent_r9_receipt_sha256':R9_RECEIPT_PIN,
              'independent_r9_custody':'verified 29+14+22; custody only, no R9 test rerun',
-             'scope':'source-integrated preparation; no rowflow enrollment or live provider witness',
-             'outstanding':['official rowflow entry/grant and terminal lifecycle integration',
+             'scope':'disabled current-rowflow command and lifecycle integration; no enrollment or live provider witness',
+             'rowflow_engine_pins':ROWFLOW_PINS,
+             'rowflow_entry':'candidate/rowflow-launch.sh always rc78; command is review-only JSON',
+             'outstanding':['official rowflow enrollment and qualification of entry/completion predicates',
                             '214 GiB disk admission',
                             'native cancellation/task release qualification','whole-attempt cleanup/overshoot qualification',
                             'remaining historical launcher/config paths and grant semantics','own-process KFD/VRAM residency and actual GPU binding (retained supervisor uses card2)',
-                            'four-CPU current rowflow smoke integration (retained admission requires 184-185)',
+                            'four-CPU publisher smoke runtime qualification (source integration only)',
                             'GPU qualification']}
     (output/'PREPARATION.json').write_text(json.dumps(receipt,indent=2)+'\n')
     # Complete source inventory includes copied runtime, provider, patch and external native inventory.

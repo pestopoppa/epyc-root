@@ -59,3 +59,7 @@ Filed lsa-phase-cpu-build-20261104 inconclusive: rc=75 disk-floor after configur
 ## 17:14Z — Preserve and classify N10 qualification exposure with insufficient GPU custody
 
 N10 qualification ended rc=75 after a full response: all 2,269 observation attempts were unbracketed, including 2,267 slot timeouts, so the at-least-two owned GPU samples rule failed. Preserved the exposure, server log, identity and qualification failure in docs/evidence/yarn-e1-a2-n10-gpu-20261104/. N10 remains unscorable and its no-replay rule forbids re-running this witness. The prior API-real-ready event was superseded by the already filed corrected API qualification.
+
+## 18:33Z — File failed recall unit import and submit PyTorch environment successor
+
+Filed lsa-recall-unit-24c8a8f-20261104 fail: system Python could not import torch and the four tests never ran. Evidence in docs/evidence/lsa-recall-unit-24c8a8f-20261104/. Prepared successor bound to the existing research environment, verified PyTorch 2.13.0+cu130 available, and submitted smoke; no test result or publication success claimed yet.

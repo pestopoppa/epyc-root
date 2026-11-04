@@ -1,0 +1,28 @@
+{
+  "id": "lsa-recall-unit-24c8a8f-torch-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-torch-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 4,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "smoke_timeout_s": 60,
+  "dryrun_native_result": true,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-torch-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "On committed 24c8a8f2 recall source, run the four model-free Python unit tests with the preverified research PyTorch environment on one owned CPU quarter; require exit 0 and output <= 1 MiB. Stop at completion, failure, STOP, deadline or 120 seconds. Smoke checks source/test and PyTorch binding only; no model or GPU work.",
+  "handoff_task": "long-context-program.md:LSA-RECALL-UNIT",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-torch-20261104",
+  "keep": [
+    "code",
+    "job.py",
+    "launch.sh",
+    "complete.py",
+    "spec.json",
+    "unit-tests.log",
+    "RESULT.json",
+    "results.jsonl"
+  ]
+}

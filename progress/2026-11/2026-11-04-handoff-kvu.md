@@ -35,3 +35,7 @@ KPF-18.0d: two model-free tests passed for the pinned successor output-reserve g
 ## 18:15Z — Tested actual owned-process stop and drain for the KPF-18 successor.
 
 KPF-18.0d: extended the [supervision qualification](../evidence/kpf18-supervisor-qualification-20261104/README.md) with an actual synthetic child and adopted descendant, both ignoring SIGTERM; the pinned supervisor and drain escalated and reaped both. Three tests pass. This does not qualify the GPU workload. A model-receipt component is in `/mnt/raid0/llm/tmp/kvu/kpf18-model-receipt/`, but remains unintegrated and needs source sealing and a preparation/runtime split before publication. KVU-19b-gap GPU smoke remained queued; no new row readiness is claimed.
+
+## 18:31Z — Consumed the KVU-19b-gap GPU smoke PASS and confirmed its clean comparison row is grantable.
+
+`handoff-kvu19b-gap-clean-20261104` native GPU smoke passed rc 0 in 36 s, with two native units and observed peak 3,910,692,864 bytes VRAM; the full six-pair comparison has not run. The row is grantable and the keeper owns scheduling. Qualification does not close KVU-19b-gap or establish a timing verdict. Independently, the [model receipt component](../evidence/kpf18-model-receipt-20261104/README.md) passed six model-free tests and two historical native files were recovered by exact hash. No integrated KPF-18 row is qualified; remaining source and admission controls are required.

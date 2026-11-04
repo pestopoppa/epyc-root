@@ -1,0 +1,5 @@
+# KPF-18 model receipt component
+
+This unsealed component separates the one-time, pre-grant GGUF metadata and weight hashing in `prepare.py` from `model_receipt.py`, which verifies the pinned receipt and model file identity without reading the weights. `driver.patch` shows its intended integration against the retained native-control successor. Six model-free tests pass with `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s progress/evidence/kpf18-model-receipt-20261104 -p 'test_*.py' -v`; they include changed file, receipt, path, symlink and overwrite refusals.
+
+No actual model receipt or inference was generated. The patch is not deployed: the launcher must bind a prepared receipt and digest, source manifests must be resealed, and historical native inputs, construction, task binding, admission and termination must be qualified. File-stat identity cannot exclude same-UID mutation and restoration. An isolated two-file native source recovery is retained at `/mnt/raid0/llm/tmp/kvu/kpf18-native-recovery-20261104/RECOVERED.json`; remaining missing and mismatched inputs prevent treating it as complete.
