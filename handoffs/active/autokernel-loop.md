@@ -13452,7 +13452,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       best-so-far AUC and valid-step ratio. The requested critic cohort comparison is explicitly
       unavailable—not zero—because historical rows do not persist pass-1 lineage; this records the
       evidence gap rather than inventing an association.
-- [ ] **S3-AKU-11 — costed design (no launch) for a strategy-only ablation on one frozen champion.** Arm A:
+- [x] **S3-AKU-11 — costed design (no launch) for a strategy-only ablation on one frozen champion.** Arm A: ✅ 2026-11-04 [belief: cc]
       production planner+critic. Arm B: same planner with an accept-all Critic. Optional arm C: a catalog
       Planner.propose drawing uniformly from do_not_repeat mechanism tokens not yet measured on the target.
       Build/oracle/A-B tail identical; keeps recorded as candidates. Preregister the primary metric and N
