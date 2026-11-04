@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2-correction",
+  "rationale": "Corrects original SCIENCE-VERDICT/fail classification: native state UNKNOWN with one completed arm, rc1 and missing/ambiguous per-request speculation statistics; manifest says incomplete/failed evidence is UNKNOWN. No paired speed ratio, reject/keep or route decision. Original verdict and FILED preserved alongside native evidence. SR-8 predeclared no-adaptive-extension futility remains binding.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T14:37:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-04T11:35:03Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T14:37:58+00:00",
+ "filed_by": "handoff-df2-correction",
+ "handoff_task": "handoffs/active/speculative-decoding.md:SR-8",
+ "id": "sr8-bep-lookup-gpu-sealed-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/sr8-bep-lookup-gpu-sealed-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/live/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "Corrects original SCIENCE-VERDICT/fail classification: native state UNKNOWN with one completed arm, rc1 and missing/ambiguous per-request speculation statistics; manifest says incomplete/failed evidence is UNKNOWN. No paired speed ratio, reject/keep or route decision. Original verdict and FILED preserved alongside native evidence. SR-8 predeclared no-adaptive-extension futility remains binding.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/live/RESULT.json",
+ "root_cause_family": null,
+ "row": "sr8-bep-lookup-gpu-sealed-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Five predeclared interleaved BEP edit pairs, three arms each, one fresh private server per request, greedy sampling. Require canonical fixed BEP verifier PASS, full native counts and two in-request per-PID KFD/loaded HIP samples for each arm. Paired geometric mean prompt-lookup / DFlash2 decode speed >=1.5 is a bounded candidate signal; otherwise no signal. Missing/incomplete/failed evidence is UNKNOWN. NP4 server with one active request; no concurrency throughput or automatic routing proof. Exact native pre-rendered prompt bytes and target-tokenizer repeated-5gram metrics are frozen before publication; no in-grant model hashing or prep. No claim of a 1.5 threshold above a statistical noise floor, only bounded candidate signal.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "aacfb7ac75f639f15890189fbe4e62cd10e05f00c5d7b0548b8052f4bb290f7f",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}
