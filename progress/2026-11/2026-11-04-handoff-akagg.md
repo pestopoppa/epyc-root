@@ -15,3 +15,7 @@ Removed both operator-named checkout copies. Filed AUTO10 Q4_K M2048 diagnostic 
 ## 14:22Z — Acknowledge the previously filed C6 build and preserve its candidate artifacts for the targeted GPU test.
 
 Preserved the C6 modified candidate binaries, source patch and custody evidence before scratch reclamation. The already-filed build is CPU-only; the n=5 GPU test and full suite remain outstanding. The named YARN and RTG57 prerequisite row identities could not be established from retained coordination records.
+
+## 14:23Z — File the previously decided C6 combined build and record the smoke-passing CH31 explicit-target successor.
+
+C6 combined build rc0 and COMPLETE_BUILD_ONLY; exact-case receipt digests are recorded and GPU qualification remains open. CH31 explicit-target successor akagg-ch31-instrument-build-fixture-v2-20261104 passed the separate stub smoke on CPUs 0-3 and is running; its full native controls and defect verdict remain outstanding.
