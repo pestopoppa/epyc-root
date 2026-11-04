@@ -47,3 +47,7 @@ Analyzed the preserved PF1 refinement: A0 falls block 0 to 1 from 229.657 to 207
 ## 14:30Z — Submit guarded PF1 refinement retry
 
 Prepared a fresh PF1 r3 three-block retry under the original model/source pins, strict A0 placement, HIP residency, complete capture, and control 0.90–1.10 guards. The job removes the prior answer-based early exit, preserving futility and safety stops. No prior r2 observations are dropped or pooled; unresolved A0 drift is not claimed fixed. Static checks and pre-publication identity verification passed. Submitted the native publisher smoke; readiness remains pending PASS. Packet archived in data/mi210/pf1-expand-r3-20261104.
+
+## 14:34Z — Prepare standalone CPU quality capture replay
+
+Prepared a standalone quality consistency auditor and its synthetic source controls for independent replay; fixed the relocated test to load its adjacent auditor, 12 tests pass. This is not a quality measurement, owner-loss qualification, or role binding. Current role/model/image/recipe source pins, reviewed plan, owner-loss proof and paired captures remain necessary. The P12 prior C1 np1/2/4 placement capture exists; the request-overlapping /slots busy observer remains missing, so a focused runnable follow-up is being prepared. Historical Q38 recipe r3 was already filed inconclusive.
