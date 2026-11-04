@@ -19,9 +19,10 @@ class RebindTest(unittest.TestCase):
         self.copy.write_bytes(b'original')
         self.manifest = self.d / 'source.sha256'
         self.manifest.write_text(f'{hashlib.sha256(b"original").hexdigest()}  {self.original}\n')
+        self.manifest_digest = hashlib.sha256(self.manifest.read_bytes()).hexdigest()
         self.out = self.d / 'out.sha256'
     def test_matching_replacement(self):
-        rebind(self.manifest, {str(self.original): str(self.copy)}, self.out)
+        rebind(self.manifest, {str(self.original): str(self.copy)}, self.out, self.manifest_digest)
         self.assertIn(str(self.copy), self.out.read_text())
         self.assertIn(str(self.original), self.manifest.read_text())
     def test_wrong_and_missing_refuse_without_output(self):
@@ -55,6 +56,30 @@ class RebindTest(unittest.TestCase):
     def test_missing_unmapped_refused(self):
         self.original.unlink()
         with self.assertRaises((ValueError, OSError)): rebind(self.manifest, {}, self.out)
+        self.assertFalse(self.out.exists())
+
+    def test_manifest_digest_is_pinned(self):
+        with self.assertRaisesRegex(ValueError, 'manifest digest mismatch'):
+            rebind(self.manifest, {}, self.out, '0' * 64)
+        self.assertFalse(self.out.exists())
+
+    def test_cli_accepts_pinned_manifest(self):
+        import subprocess, sys
+        mapping = self.d / 'mapping.json'
+        mapping.write_text('{}')
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('rebind_manifest.py')),
+                                 str(self.manifest), str(mapping), str(self.out), self.manifest_digest],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(self.out.exists())
+
+    def test_duplicate_destinations_refused(self):
+        other = self.d / 'other'
+        other.write_bytes(b'original')
+        second = self.d / 'second-manifest'
+        second.write_text(self.manifest.read_text() + f'{hashlib.sha256(b"original").hexdigest()}  {other}\n')
+        with self.assertRaisesRegex(ValueError, 'duplicate destination'):
+            rebind(second, {str(self.original): str(self.copy), str(other): str(self.copy)}, self.out)
         self.assertFalse(self.out.exists())
 
 if __name__ == '__main__': unittest.main()

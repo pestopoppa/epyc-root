@@ -45,13 +45,20 @@ def read_regular(path):
         os.close(parent)
 
 
-def rebind(manifest: Path, mapping: dict[str, str], output: Path):
+def rebind(manifest: Path, mapping: dict[str, str], output: Path, expected_manifest_sha256: str | None = None):
     if not isinstance(mapping, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in mapping.items()):
         raise ValueError('mapping must contain string paths')
-    lines = read_regular(manifest).decode('utf-8').splitlines()
+    manifest_bytes = read_regular(manifest)
+    if expected_manifest_sha256 is not None:
+        if not re.fullmatch(r'[0-9a-f]{64}', expected_manifest_sha256):
+            raise ValueError('expected manifest digest must be lowercase SHA-256')
+        if hashlib.sha256(manifest_bytes).hexdigest() != expected_manifest_sha256:
+            raise ValueError('manifest digest mismatch')
+    lines = manifest_bytes.decode('utf-8').splitlines()
     if not lines:
         raise ValueError('empty manifest')
     seen = set()
+    destinations = set()
     result = []
     for line in lines:
         match = LINE.fullmatch(line)
@@ -62,6 +69,9 @@ def rebind(manifest: Path, mapping: dict[str, str], output: Path):
             raise ValueError('duplicate path')
         seen.add(old)
         selected = mapping.get(old, old)
+        if selected in destinations:
+            raise ValueError(f'duplicate destination: {selected}')
+        destinations.add(selected)
         if hashlib.sha256(read_regular(selected)).hexdigest() != digest:
             raise ValueError(f'digest mismatch: {selected}')
         result.append(f'{digest}  {selected}')
@@ -82,10 +92,10 @@ def rebind(manifest: Path, mapping: dict[str, str], output: Path):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) != 4:
-        raise SystemExit('usage: rebind_manifest.py manifest mapping.json output')
+    if len(sys.argv) != 5:
+        raise SystemExit('usage: rebind_manifest.py manifest mapping.json output expected-manifest-sha256')
     try:
         mapping = json.loads(read_regular(sys.argv[2]))
-        rebind(Path(sys.argv[1]), mapping, Path(sys.argv[3]))
+        rebind(Path(sys.argv[1]), mapping, Path(sys.argv[3]), sys.argv[4])
     except (OSError, ValueError, TypeError) as exc:
         raise SystemExit(f'REFUSED: {exc}')

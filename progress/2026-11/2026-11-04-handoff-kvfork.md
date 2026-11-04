@@ -67,3 +67,11 @@ KPF-RS-1: documented the candidate-bound snapshot capture, provenance, controls 
 ## 18:03Z — Publish source-bound impact prerequisite for hybrid attention byte accounting
 
 KPF-60.GPU-X: `kpf60-gpux-impact-8952-20261104` passed its four-CPU partial source-reference smoke and was published; the full impact scan, implementation and native byte measurement remain pending. KPF-18 group 3: an isolated 52-entry diagnostic manifest matches pinned bytes including historical lock/helper and adapter sources; it is not wired into the disabled launcher and does not establish current live lock semantics or qualification. V11-FA-8 capture validation is model-free preparation; no target GPU observation or overflow verdict follows. V11-FA-8 provisional reader has six fixture tests for coverage and missing/nonfinite distinction; its schema is not produced by a kernel and no source impact or inference follows. GitNexus is unindexed; the isolated reader has no existing callers but its blast radius is not graph-verified.
+
+## 18:06Z — Harden the KPF-18 group-3 offline manifest rebinder
+
+KPF-18 item 3: the offline manifest rebinder now pins the original manifest digest and rejects duplicate destination mappings; ten tests pass, including CLI execution. The disabled launcher is not wired or qualified: independent validation-manifest custody, current lock semantics, cancellation and whole-attempt supervision remain open. No inference or verdict. Root GitNexus is unindexed; graph-based impact was unavailable.
+
+## 18:09Z — Harden the KPF-18 group-3 offline manifest rebinder
+
+KPF-18 item 3: the offline manifest rebinder now pins the original manifest digest and rejects duplicate destination mappings; ten tests pass, including CLI execution. The disabled launcher is not wired or qualified: independent validation-manifest custody, current lock semantics, cancellation and whole-attempt supervision remain open. No inference or verdict. Root GitNexus is unindexed; graph-based impact was unavailable.
