@@ -63,3 +63,7 @@ Filed `lsa-ward-author-fixture-20261104` as PASS via file_result.py and wrote it
 ## 16:30Z — Acknowledge filed P5 Sphinx control
 
 Wrote the FILED receipt for `codex-gpu-serving-p5-sphinx-gold-r2-20261104` using its existing PASS verdict. The owning handoff already records P5-2c complete, with source-bound gold/no-op reports in `docs/reports/p5-sphinx-controls-20261104/`. Native result SHA-256 `83c8b9dd45abdfb2d27db4ad361d13f6434c78a90d6feab54b7aec0b12c01e01`. This is one Sphinx scorer control; broader P5-2 remains open and no checkbox was reticked.
+
+## 16:36Z — Acknowledge filed LSA capacity calculation
+
+Wrote the FILED receipt for `lsa-native-capacity-9216-20261104` using its existing PASS verdict. The filed calculation reports valid host admission for 16 layers and 9,216 keys, with calculated aggregate device memory 326,772,064 bytes under the 2 GiB limit. Native result SHA-256 `8444d6eb4c03825710ba29357f9bbd6ea6a906a71c386efb560c3abbb17c212f`. This is a capacity calculation, not GPU allocation, inference, quality or speed evidence. The owner already checked the capacity subtask; no checkbox was reticked.
