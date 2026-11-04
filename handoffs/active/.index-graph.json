@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T16:31:37Z",
+  "generated_at": "2026-11-04T16:42:05Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1561,15 +1561,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 199,
-      "dispatchable": 45,
+      "closed": 200,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 47,
+      "open": 45,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1600,7 +1600,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 677,
+          "line": 678,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1036,
+          "line": 1037,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1313,
+          "line": 1314,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1948,
+          "line": 1949,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2250,
+          "line": 2251,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1650,7 +1650,7 @@
             "INF-22#mi210-serving-program",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1659,9 +1659,9 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2859,
+          "line": 2860,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 3,
+          "open": 1,
           "readiness": "blocked"
         }
       ]
@@ -2047,7 +2047,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 93,
+      "closed": 94,
       "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
@@ -3556,7 +3556,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1368,
+          "line": 1370,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3571,7 +3571,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1750,
+          "line": 1752,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
