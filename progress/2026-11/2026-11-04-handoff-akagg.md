@@ -303,3 +303,7 @@ The P1b MoE-Spec CPU build was already filed as a bounded build pass. Filed CH-2
 ## 22:06Z — Filed disk-floor interruptions and published independent floor and GPU successors.
 
 The targeted C6 n=5 GPU diagnostic and CH-26 compact observer r2 had already been filed. Filed floor v22 and paired C6 GPU r16 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent successors after their publisher smokes; full results remain pending. Published independent floor v23 and paired GPU diagnostic r17 after publisher smokes passed; full results remain pending.
+
+## 22:09Z — Filed interrupted paired GPU diagnostic, published independent successor, and investigated P1b historical custody.
+
+The P1b 9e18 HIP coverage build was already filed as a bounded build pass. Filed paired C6 GPU r17 as inconclusive rc75 disk-floor stop with terminal packet retained. Published paired GPU r18 after publisher smoke PASS; full diagnostic pending. W4 custody search found July 20 two-instance argv but no historical model content digests or complete replay-era environment/affinity/input bindings; context 16384 differs from the registry value 262144, so replay remains unqualified.
