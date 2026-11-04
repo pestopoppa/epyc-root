@@ -123,3 +123,7 @@ Acknowledged the previously filed KPF-17.4d custody r3 rc75 disk-floor incomplet
 ## 16:49Z — File two disk-floor stops and prepare the sampling custody fix
 
 Acknowledged the already-filed initial KPF-30 impact rc75 event. Filed the r2 candidate impact and r4 KPF-17.4d build attempts INCONCLUSIVE after both full grants stopped rc75 disk-floor in one second; native impact/coverage and full build/custody receipts are absent and both smoke results are qualification only. Prepared an unapplied KVU-12.6 reducer timing patch: two synthetic tests expose the original request-start gap and pass with the in-memory fix, with 26 existing controls passing. Source-bound impact is UNKNOWN and source application, native execution, build receipt and scientific admission remain open. Fresh successors retain the existing floor.
+
+## 16:53Z — Published candidate-bound KPF-30 impact successor with native smoke PASS; prior r2 disk-floor result remains inconclusive.
+
+Published `kpf30-impact-8952-20261104-r3` (native smoke PASS) for six source-bound impacts and skipped-file coverage at candidate 8952a0f; full run remains pending, with disk floor unchanged. R2 was already filed INCONCLUSIVE after rc75 disk-floor.
