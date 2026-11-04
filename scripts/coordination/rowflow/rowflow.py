@@ -1193,6 +1193,53 @@ def _fits(c, free, ram, gpu_grant_open):
     return opts
 
 
+def own_block(h, free, ram, gpu_grant_open, ports):
+    """Why better-ranked row h cannot be placed this tick when the cause is its OWN constraint (arming failures, a held
+    port, RAM, the timing-row q3 rule), or None when it is blocked only because some of its regions are busy."""
+    if int(h.get("arm_fails") or 0) > 0:
+        return f"failing to arm (arm_fails={int(h.get('arm_fails') or 0)})"
+    clash = ports & {int(x) for x in (h.get("ports") or [])}
+    if clash:
+        return f"port {','.join(map(str, sorted(clash)))} held"
+    if ram - float(h.get("gib") or 0) < RAM_MARGIN_GIB:
+        return f"RAM: {h.get('gib')} GiB would leave {ram - float(h.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin"
+    if any(o and o <= free for o in h["options"]):
+        return "timing row keeps off q3 while a GPU grant is open"   # fits on regions, filtered only by the bench rule
+    if row_busy(h) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row takes only regions that are free anyway
+        return f"busy_fraction {row_busy(h):g} < {DRAIN_MIN_BUSY:g}: runs only when its regions are free"
+    return None
+
+
+def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain):
+    """ws58 2026-11-04 (rank inversion): the regions c may NOT take because a strictly better-ranked pending row that
+    cannot be placed yet needs them and is blocked only by busy regions that free within DRAIN_MAX_WAIT_S (T = latest
+    running-grant end); c may still take them when it ends by T. Returns (reserved regions, [(h, T)], [(h, reason)]) -
+    the holds that bind c, and the better rows that bind nothing because they are blocked by their own constraint."""
+    reserved, holds, skips = set(), [], []
+    later = [float(e) for e in grant_ends if float(e) > now]
+    dur = float(c.get("estimate_s") or c.get("window_s") or 0)
+    for h in pending:
+        if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
+            continue
+        need = set().union(*h["options"]) if h["options"] else set()
+        if not any(o & need for o in c["options"]):
+            continue
+        why = own_block(h, free, ram, gpu_grant_open, ports)
+        if why is None:
+            if not later:
+                why = "needs busy regions with no grant end (foreign hold)"
+            elif max(later) - now > DRAIN_MAX_WAIT_S:
+                why = f"needs busy regions until {dt.datetime.fromtimestamp(max(later), dt.timezone.utc):%H:%MZ} (> {DRAIN_MAX_WAIT_S}s)"
+        if why is not None:
+            skips.append((h, why))
+            continue
+        T = max(later)
+        if now + dur > T:
+            reserved |= need
+            holds.append((h, T))
+    return reserved, holds, skips
+
+
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
@@ -1228,6 +1275,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     drain, T = None, None
     plan.drain_held = []
     plan.drain_lowbusy = []
+    plan.rank_holds = []   # [(lower row, better row, T)]: the lower row was kept off the better row's regions
+    plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
@@ -1263,6 +1312,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 opts = [o for o in opts if not (o & need_r)]
             if ports & {int(x) for x in (c.get("ports") or [])}:
                 continue  # its port is held by a running grant: it waits
+            if opts:   # ws58 2026-11-04: never hand a lower-ranked row regions a better-ranked row is waiting for
+                reserved, holds, skips = rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain)
+                kept = [o for o in opts if not (o & reserved)]
+                if len(kept) < len(opts):
+                    plan.rank_holds += [(c, h, T) for h, T in holds if (c, h, T) not in plan.rank_holds]
+                opts = kept
+                if opts:
+                    plan.rank_skips += [(c, h, why) for h, why in skips]
             if not opts:
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
@@ -2324,6 +2381,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"NO-DRAIN {lc['id']} ({lc.get('shape')}): busy_fraction {row_busy(lc):g} < {DRAIN_MIN_BUSY:g}, so it never books a "
                 f"quiet/whole host and runs only when its regions are free; fix (if it really keeps its claim busy): set "
                 f"busy_fraction >= {DRAIN_MIN_BUSY:g} in its spec and republish with publish_row.py")
+        for lc, hc, T in plan.rank_holds:
+            log(f"RANK-HOLD {lc['id']} (rank {lc['rank']:g}): better-ranked {hc['id']} (rank {hc['rank']:g}) waits for its "
+                f"regions until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}; only rows ending by then may take them")
+        for lc, hc, why in plan.rank_skips:
+            log(f"RANK-SKIP {hc['id']} (rank {hc['rank']:g}) blocked by its own constraint: {why}; lower-ranked {lc['id']} "
+                f"(rank {lc['rank']:g}) may take its regions")
         if plan.last_drain:
             dc, T = plan.last_drain
             log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
