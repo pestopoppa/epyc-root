@@ -435,3 +435,7 @@ HSF-3 r2 was already filed inconclusive. Filed kvu-kpf17-map-revalidation-r2-202
 ## 23:03Z — Analyze retained KPF-61 qualification probability mismatch
 
 The KPF-17 isolated mapping interruption was already filed inconclusive. Reanalyzed hash-bound retained 0.8B KPF-61 third-smoke responses without rerunning: 32/32 output token IDs and selected token IDs match, selected-token logprobs differ in 32/32 rows with absolute differences 0.00015679–0.04168844, and 25/32 top-32 candidate ID sets differ. Captured aggregate script, hashes and source provenance; this is not a tolerance-based/full-logit result, root cause, 35B result or full gate verdict. The three-failure lineage remains parked.
+
+## 23:06Z — File interrupted KPF-27d and KPF-64 impact runs
+
+Clock qualification r4 was already filed inconclusive. Filed kpf27d-impact-326f-20261104 and kpf64-impact-4f4f-20261104-r2 inconclusive after rc75 disk-floor stopped each before native impact and coverage output; preserved grant ends. No impact severity, source-edit clearance, shadow-window or KPF-64 gate result follows. KPF-61 three-failure lineage remains parked.
