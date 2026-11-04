@@ -1,0 +1,27 @@
+{
+  "build": "NOT_RUN",
+  "disk_floor_gib": 150,
+  "id": "kvu-kpf174-custody-r3-20261104",
+  "parent_source": "84d0a31603d495377dee24e1159bbbf02f1e2f21",
+  "prepared_sha256": "d4359ae6251738917dea7db2e0a4a3f94ebd4601675c3a92fde90d1317e40703",
+  "prior_failure": "r1 rc75 disk-floor",
+  "publication": "NOT_RUN",
+  "publisher_spec_changes": "Owner restored original 48 GiB reservation and explicit lineage/supersedes before publication; initial spec_sha256 is retained as preparation history.",
+  "publisher_spec_sha256": "70678ebc7794fb78572612b1674f8b54cd15129323b4104147fa8b25d18c8488",
+  "qualification": "NOT_RUN",
+  "runtime_sha256": "5d985ebe4482dfb7b0eba94b156ec2dbf8401ca86e5aef2c92a0959c4e38e678",
+  "schema": "epyc.kpf174d.preparation.v1",
+  "scope": "fresh successor preparation only; no inference, grants, publication, historical equivalence or correctness verdict",
+  "source_commit": "6ec877068936588b6d63dbba5842bbd540b92031",
+  "source_files_verified": 3304,
+  "spec_sha256": "cfe85ee422928e959d1e6e24ea2ddca87607056a7f9a864f9dc7a5f7db425965",
+  "static_checks": [
+    "python-ast",
+    "bash-syntax",
+    "source-byte-inventory",
+    "input-byte-pins",
+    "detached-source-identity",
+    "integrity",
+    "runtime-sha256"
+  ]
+}
