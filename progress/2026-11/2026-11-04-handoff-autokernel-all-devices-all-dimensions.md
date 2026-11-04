@@ -193,3 +193,7 @@ AKX-ALL-31.GDN: published akx-gdn-bf16-sentinel-build-r15-20261104 after four-CP
 ## 21:11Z — Publish C5 floor calibration successor
 
 AKX-ALL-8-FLOOR: published akxall8-c5-declared-floor-v11-20261104 after four-CPU publisher smoke PASS. New independent packet is sealed, model metadata continuity was verified without rehashing weights, and the original full-host 24-pair main/longctx predicates remain. Packet: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/akxall8-floor-v11-20261104/. No calibration result follows from smoke; the runner disk floor is 150 GiB and 148 GiB was available at preparation.
+
+## 21:14Z — File admission failures and publish BF16 CPU oracle successor
+
+AKX-ALL-31.GDN: published akx-gdn-onehot-cpu-bf16-fixed-r10-20261104 after four-CPU publisher smoke PASS, using the corrected retained C5 image and unchanged exact baseline plus two-mutant oracle rule; full verdict pending. Filed akx-gdn-bf16-sentinel-build-r15-20261104 and akxall8-c5-declared-floor-v11-20261104 inconclusive: each stopped rc75 at disk-floor admission one second after START and neither produced a full native result. Prepared but did not publish f32 successor packet /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-cpu-f32-successor-r10-20261104/spec.json.
