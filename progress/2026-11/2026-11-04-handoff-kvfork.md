@@ -171,3 +171,7 @@ KPF-61: prepared two synthetic 35B CPU permutation fixtures, preverified the mod
 ## 22:32Z — Repair KPF-61 source custody and start the third qualification smoke
 
 KPF-61: removed superseded scratch attempts, reducing scratch from ~11 GiB to 6 GiB before the new private worktree. Repaired output isolation, request-window mapping, implementation-library marker and response completeness checks; model-free controls passed. Created a private source worktree and matched all 3,363 sealed source files. Third publisher smoke is running on the previous external source; its PASS or FAIL event is registered. If PASS, bind the verified private source and smoke the final packet; if FAIL, park the three-failure lineage. No 35B result or KPF-61 gate verdict.
+
+## 22:37Z — Park the KPF-61 failed qualification lineage and ready the KPF-50 clock witness successor
+
+KPF-61: third publisher smoke returned rc75 with a native tiny-model FAIL: 32/32 token IDs matched, probability rows differed from token 0, and planner prefix increased 32 to 224. The three-failure lineage is parked; no 35B or parent gate result follows. KPF-50.CLOCK-QUAL: the separate r3 model-free GPU clock witness passed publisher smoke and was published; the unchanged 150 GiB full-run floor remains in force. Prior r1 and r2 full attempts stopped at that floor; smoke does not qualify the full witness or expose target profiling windows.
