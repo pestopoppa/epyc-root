@@ -195,3 +195,7 @@ KPF-50.CLOCK-QUAL: prepared a fresh r4 successor with isolated paths, regenerate
 ## 22:51Z — Ready KPF-50 clock witness successor
 
 KPF-50.CLOCK-QUAL: published the same-lineage r4 clock-witness successor after publisher smoke PASS with separate output and the unchanged 150 GiB full-run disk floor. The prior full attempt ended at that floor before producing its native result; no target profiling windows were exposed and no qualification or profile verdict follows.
+
+## 22:54Z — Ready V11-FA-8 source-impact successor and file the KPF-50 clock interruption
+
+V11-FA-8: published v11-fa8-impact-5026470-20261104-r5 after its four-CPU source-reference smoke PASS. The detached candidate and source/input seals are bound to 5026470c6c5882042aa543ae54fe5410357b41ae; the original single impact query, native coverage rule and 150 GiB full-run floor remain unchanged. Smoke does not provide impact risk, edit clearance or an overflow finding. KPF-50.CLOCK-QUAL r4 ended rc75 at the disk floor before native result and was filed INCONCLUSIVE; no target window was exposed.
