@@ -1,0 +1,3 @@
+# KVU-19 P5 A1 r2 partial run
+
+The full row ended rc75 disk-floor without a final result.json. Native arm files retain 10 drafted rows and 9 no-draft rows; the latter lacks a completed L0_after repetition 2 (its server log records it started), and its draft-count observations are recorded UNKNOWN. Full 20-row, cleanup and all declared gates must hold for a class: this partial record is INCONCLUSIVE and establishes no recovery class, no production claim, and no permission to redraw previously exposed units. The native arm records, sampled residency streams, server logs, row manifest and end event are preserved.

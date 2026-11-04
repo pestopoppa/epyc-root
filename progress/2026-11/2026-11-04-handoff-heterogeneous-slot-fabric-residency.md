@@ -43,3 +43,7 @@ The repeated KVU-12.5 quarter-r2 event was already filed INCONCLUSIVE and is ack
 ## 15:06Z — Preserve the inconclusive KVU-16a v2 native result and repair handoff placement
 
 Acknowledged the previously filed v2 rc75 INCONCLUSIVE result: 79 samples without qualified coverage or logged target KV and dry-run PID-file provenance; no subtraction or registry claim. Preserved its native result, sample stream, server log and filed verdict. Corrected the prior KVU-12.5 precondition note that was accidentally inserted under KVU-16a, and restored the interrupted dispatch sentence around the distinct later r3 post-health checkpoint. KVU-16a remains open for stack-change reconciliation; successor preparation remains pending.
+
+## 15:23Z — File partial P5 champion result and preserve exposed rows
+
+Acknowledged previously filed P3 lifecycle r2 rc1 INCONCLUSIVE (neighbour occupancy failed after four drafted rows). Filed champion P5 A1 r2 INCONCLUSIVE after rc75 disk-floor: official run preserved 10 drafted and 9 no-draft rows, and the missing no-draft L0-after repetition 2 was already started; no final result exists, no-draft draft counters are UNKNOWN, and no recovery class is supported. Preserved native arm data, server logs, VRAM samples, manifest and end event, with no redraw of exposed units. Requested exposure-aware continuation and KVU-12.5 successor repairs.
