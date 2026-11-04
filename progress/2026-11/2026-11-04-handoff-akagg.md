@@ -119,3 +119,7 @@ Acknowledged previously filed v7 rc2 REFUSED/floor_claim=null, with duplicate R1
 ## 16:16Z — Acknowledge the already-filed CH31 fixture and update stale instrumentation documentation.
 
 Acknowledged previously filed CH31 v2 rc0 fixture with ON/OFF OpenMP and six model-free graph controls. Corrected the instrumentation README, which still incorrectly described the patch as unbuilt, to cite the retained bounded fixture and its limits. Model-backed localization remains open.
+
+## 16:28Z — Integrate GDN controls, P1b identity and v7 floor retention; declare the GDN build stopping conditions.
+
+Consumed GDN control review, P1b identity preflight and floor v7 retention outcomes. Added the existing GDN build prerequisite stop conditions without changing oracle or promotion criteria. Source-bound four-core SMT-safe successor and P1b historical recipe evidence are being prepared; no new row or model identity is claimed.
