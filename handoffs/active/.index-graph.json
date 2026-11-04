@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T20:28:40Z",
+  "generated_at": "2026-11-04T20:38:53Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1351,
+          "line": 1355,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1475,
+          "line": 1479,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1802,
+          "line": 1806,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1941,
+          "line": 1945,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2494,
+          "line": 2498,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2631,
+          "line": 2635,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3505,
+          "line": 3509,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3560,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1438,
+          "line": 1441,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1821,
+          "line": 1824,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
