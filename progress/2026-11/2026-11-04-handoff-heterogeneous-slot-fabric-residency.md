@@ -179,3 +179,11 @@ On explicit instruction removed the KPF-41 private repo checkout after recreatin
 ## 18:50Z — Filed the completed KPF-50, KPF-17 oracle, KPF-17.4d custody, and KPF-62 G3 build results; preserved build evidence and KPF-50 exposure recovery.
 
 Filed rc=0 build-only PASS for kvfork50-hip-build-20261104, kvfork17-oracle-build-20261104, kvu-kpf174-custody-r5-20261104, and kvfork62-g3-build-20261104; the parent inference boxes remain open. Preserved source, build, linkage and test evidence in docs/reports/kv-cache. Audited the four KPF-50 interrupted waiters against predecessor completion times: their predeclared diagnostic windows remain unexposed. Registered prospective KPF-50 belief-source wiring without inventing a measurement warrant.
+
+## 18:55Z — Validated the patched G3 scoring invocation with complete, interrupted and exhausted paired synthetic records and completed the continuation implementation task.
+
+Completed KPF-62-G3-OUTCOME-CONTINUATION using the linked build, C++ bounded-generation checks and 13 G3 tests, plus a model-free four-request CLI fixture: complete pairs scored with their segment digest, interrupted and exhausted ledgers were refused. The test passed (1 passed in 0.16 s). A model-scoring successor remains separately unauthorized.
+
+## 18:56Z — Validated the patched G3 scoring invocation with complete, interrupted and exhausted paired synthetic records and completed the continuation implementation task. Submitted KPF-17.4d witness qualification; GPU-busy smoke queued.
+
+The KPF-62 continuation implementation and model-free scoring-entry checks are complete; the separate authorization boundary for a successor remains in force. Witness row kvfork174d-witness-r5-20261104 is queued for publisher smoke because the GPU is busy; it is not yet qualified or published.
