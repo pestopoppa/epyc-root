@@ -155,3 +155,7 @@ CH-26b: ch26-hostscope-abi-r3-20261104 stopped rc75 at disk-floor admission with
 ## 21:03Z — File C6 b4 correction build admission and ready a successor
 
 C6-Q4-MMVQ-FIX: c6-n4-b4-qsum-build-20261104 stopped rc75 at disk-floor admission without a build result; filed inconclusive after preserving source and packet. The specialized correction still needs a completed build, linkage verification and GPU correctness evidence. Published c6-n4-b4-qsum-build-r2-20261104 after custody smoke PASS, with a fresh detached worktree and source-bound candidate patches. Independent integer reference passed 1,000 randomized cases and signed extremes; it does not test floating-point behavior or GPU correctness. Predecessor evidence: /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-n4-b4-qsum-build-retained-20261104/.
+
+## 21:06Z — File second C6 correction build admission and ready final permitted successor
+
+C6-Q4-MMVQ-FIX: c6-n4-b4-qsum-build-r2-20261104 stopped rc75 at disk-floor admission without a build result; filed inconclusive after preserving the source packet. Candidate compilation, linkage and GPU correctness remain unproved. Preserved r2 packet and smoke under /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-n4-b4-qsum-build-r2-retained-20261104/; published c6-n4-b4-qsum-build-r3-20261104 after custody-only smoke PASS, with fresh detached source and sealed patches. This is the third attempt; park lineage if it also fails admission.
