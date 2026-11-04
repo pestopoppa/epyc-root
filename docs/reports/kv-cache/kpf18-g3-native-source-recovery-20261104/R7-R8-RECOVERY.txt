@@ -1,0 +1,13 @@
+KPF-18 G3 R7/R8 exact-source recovery report
+
+Requested report was absent at inspection time.
+
+Expected exact source pins:
+- format-r7 `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r7/evidence_view.py`: SHA-256 `431c6341b1926efa38a5ec2c41770e230aa89dc222ec3be8d41a6621342d71f8`
+- format-r8 `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r8/evidence_view.py`: SHA-256 `e75a6977c1cfe1c882cdb253f668972ea23d02d0dfe6c1a3b4302ed915c15352`
+
+Recovery result: neither exact byte sequence was found among retained `evidence_view.py` files under `/mnt/raid0/llm/tmp`, `/mnt/raid0/llm/worktrees`, and `/workspace`. The R7 and R8 original paths are absent. The current working repository's reachable Git object listing contains no `evidence_view.py` object. No substitute was staged as either version.
+
+Existing nearby files are distinct versions: R5/R6 copies checked have SHA-256 `366e48a00e177428fa018c084453ef4d784b0580b20fdf75275c9eb4b6956890`; the retained R9 and later copies checked have SHA-256 `434f97561317bd0a5f75f2bcee2c7ea56b362278958ff77959c7008085422212`. Neither digest matches the requested R7/R8 pins.
+
+The existing `g3-native-custody/validation_native_relocations.json` and its manifest pins were not changed. Existing source-verification gates were not run or bypassed; production integration therefore remains fail-closed for these two missing inputs. No model, build, GPU, benchmark, or publication work was performed.

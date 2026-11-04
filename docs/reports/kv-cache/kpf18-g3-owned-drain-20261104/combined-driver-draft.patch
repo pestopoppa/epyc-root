@@ -1,0 +1,73 @@
+diff --git a/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-qualification/candidate/driver.py b/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-driver-merged/driver.py
+index d81661f1e..334995ccd 100644
+--- a/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-qualification/candidate/driver.py
++++ b/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-driver-merged/driver.py
+@@ -8,6 +8,7 @@ import os
+ from pathlib import Path
+ import sys
+ from copy import deepcopy
++from functools import partial
+ import time
+ import subprocess
+ 
+@@ -16,20 +17,19 @@ DATA=Path('/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-normalization-r13/data')
+ sys.path[:0]=[str(BASE),str(DATA),str(BASE/'vendor'),str(BASE/'research/scripts/benchmark/kpf18')]
+ import guard
+ from ledger import Ledger,file_sha
+-from gguf_identity import metadata,draft_shape
++from preload_integration import load_preload_models, unchanged_models as _unchanged_models
+ from controller import run
+ import native_group3 as g
+ import pipeline
+ import kpf18_gate as gate
++from driver_boundary import EntryRefused,RowflowContext,abort_terminal_refusal,run_with_rowflow_boundary
+ 
+ OUT=guard.attempt_root()
+ PRELOAD_MODELS=None
++RETAINED_PRELOAD_RECEIPT=Path('/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-control-r15/out/PRELOAD-MODEL-IDENTITY.json')
+ 
+ def unchanged_models():
+-    for role in ('target','drafter'):
+-        item=PRELOAD_MODELS[role];stat=Path(item['path']).stat()
+-        if [stat.st_dev,stat.st_ino,stat.st_size,stat.st_mtime_ns,stat.st_ctime_ns]!=item['stat_identity']:
+-            raise ValueError('model file identity changed across actual model load/capture')
++    _unchanged_models(PRELOAD_MODELS)
+ 
+ def setup(ctx,srv,state):
+     guard.boundary();guard.sources();guard.tests_and_enrollment()
+@@ -128,8 +128,15 @@ def item3(ctx):
+     steps.append(gate.Step('capture actual sealed identity before original group3 diagnostic',120,lambda:setup(ctx,srv,state)))
+     def cell():
+         state['block_vram_start']=srv.sampler.n_own_nonzero if srv.sampler else 0
+-        try:run(gate,guard.ContextBoundary(ctx),state['R'],srv,state['record'],state['identity'],state['ledger'])
++        entry_ctx=RowflowContext(guard.ContextBoundary(ctx),os.environ,time.time)
++        try:
++            run_with_rowflow_boundary(partial(run,gate),entry_ctx,state['R'],srv,
++                state['record'],state['identity'],state['ledger'],env=os.environ,now_fn=time.time)
++        except EntryRefused as error:
++            abort_terminal_refusal(entry_ctx,error,state['record'],state['ledger'],gate.Abort)
+         except Exception as error:
++            if entry_ctx.terminal_refusal is not None:
++                abort_terminal_refusal(entry_ctx,error,state['record'],state['ledger'],gate.Abort)
+             state['record']['diagnostic_error']=type(error).__name__+': '+str(error)
+             state['ledger'].json('DIAGNOSTIC-REFUSAL.json',state['record']['diagnostic_error'])
+     steps.append(gate.Step('X1 C1 X2 C2 C3; max3 exactT constructions/control; preserve every refusal',6400,cell))
+@@ -161,15 +168,9 @@ def main():
+     guard.sources()
+     if not dry:
+         guard.boundary();guard.tests_and_enrollment()
+-        argv,_=gate.parse_argv_file(Path('/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt'))
+-        PRELOAD_MODELS={'target':metadata(Path(gate.flag_val(argv,('-m','--model')))),
+-                        'drafter':metadata(Path(gate.flag_val(argv,('-md','--model-draft'))))}
+-        original_models=json.loads((BASE/'ORIGINAL-MODELS.json').read_text())
+-        for role in ('target','drafter'):
+-            if any(PRELOAD_MODELS[role][key]!=original_models[role][key] for key in ('path','sha256')):
+-                raise ValueError('original model bytes changed: '+role)
+-        (OUT/'PRELOAD-MODEL-IDENTITY.json').write_text(json.dumps(PRELOAD_MODELS,sort_keys=True)+'\n')
+-        PRELOAD_MODELS['draft_cache_shape']=draft_shape(PRELOAD_MODELS['drafter'])
++        PRELOAD_MODELS=load_preload_models(RETAINED_PRELOAD_RECEIPT,BASE/'ORIGINAL-MODELS.json')
++        (OUT/'PRELOAD-MODEL-IDENTITY.json').write_text(json.dumps(
++            {role:PRELOAD_MODELS[role] for role in ('target','drafter')},sort_keys=True)+'\n')
+         unchanged_models();guard.boundary()
+     # Recipe DATA change only. Existing Server.build_env/start/stop unchanged.
+     gate.PROD_ENV['LLAMA_KV_CACHE_DEBUG']='3'
