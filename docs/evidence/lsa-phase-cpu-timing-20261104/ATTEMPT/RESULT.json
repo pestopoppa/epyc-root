@@ -1,0 +1,29 @@
+{
+  "schema": "lsa-candidate-timing-v1",
+  "status": "invalid",
+  "reason": "TimeoutError('total request cap exceeded')",
+  "arm": "pca-native-light-cpu",
+  "item": {
+    "id": "dev-document_qa-00-original-8192-pca-native-light",
+    "split": "dev"
+  },
+  "timings": null,
+  "mapped_dsos": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libggml-base.so.0.16.0": "5d0be9e604137632d82eb6c0e17668fdaa140cb098a2d991b7f3d2745400e39e",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libggml-cpu.so.0.16.0": "16734d08f4a384cef98799b24dac618080bff3c1516b561151bd40d8f679ae2e",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libggml.so.0.16.0": "e90069c0c2918dfc6a4de5d92be683b3a9f1eadde319919a1d0fc6a10de465eb",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libllama-common.so.0.0.10427": "77b2fb8082d962b8818cbb4a8a59f639e6ec3ce69c0cb31fc05e4b4deb37f12c",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libllama-server-impl.so": "8a6c54acb1b25ad347b8b2c6c369980b025f69a04765d0c5ff5ac2d9dc8db4aa",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/out/bin/libllama.so.0.0.10427": "7d74a69fcda5a0cf96e434b510a9cbf5751c872acb6d426fa3b0ade774bb3ac0"
+  },
+  "server_pid": 635793,
+  "server_dead": true,
+  "time_utc": "2026-11-04T18:35:57.125196+00:00",
+  "binding": {
+    "source_commit": "2aceed42bf1e3273e1a8feef12fa91dfe57d2e6b",
+    "source_parent": "69aaf507afe82b06bb16dec01f443c392441c9ad",
+    "server_sha256": "1c2ebfc54573624b8bd120769b34e51bad84b462ca120a485aef23c7d9d19ac4"
+  },
+  "scope": "One exact-ID CPU candidate timing against one retained C5 dense control; descriptive operational comparison only.",
+  "manifest_sha256": "399cf5474e3371e55935856d8253f802467f84e4867f2f55f40612928ac66189"
+}

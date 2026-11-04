@@ -71,3 +71,7 @@ Filed lsa-recall-unit-24c8a8f-v2-20261104 pass: four model-free tests passed wit
 ## 18:36Z — File model-free recall reference build proof
 
 Filed lsa-recall-reference-build-24c8a8f-20261104 pass: source 24c8a8f2, 174 reused objects, changed Qwen object, linked recall marker, server and HIP library identities preserved; launcher completed proof verification. Evidence docs/evidence/lsa-recall-reference-build-24c8a8f-20261104/. Build only; no model, GPU, recall or quality claim.
+
+## 18:37Z — File recall unit and phase CPU timing outcomes
+
+Filed recall-unit Torch successor pass: four model-free tests rc=0, evidence docs/evidence/lsa-recall-unit-24c8a8f-torch-20261104/. Filed phase CPU timing inconclusive: request hit 360s cap and has no completed timing or trace validation, no retry; evidence docs/evidence/lsa-phase-cpu-timing-20261104/.
