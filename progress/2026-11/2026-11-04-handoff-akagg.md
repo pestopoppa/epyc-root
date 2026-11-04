@@ -67,3 +67,7 @@ Acknowledged the prior v4 result: rc2, REFUSED because root cgroup memory.max wa
 ## 14:52Z — File and retain the grouped-GQA route2 distinct-sinks correctness family.
 
 Filed native route2 distinct-sinks diagnostic: OFF and nth 1,16,32,64,96 passed, each route2 exactly once and bitwise identical; NMSE 1.68623571e-9, independent oracle 6.08579447e-14. Retained native result, harness, historical manifest and three exact ELF hashes. Historical TRACE source commit remains unknown; other attention paths and parent remain open.
+
+## 14:54Z — File the C6 fused-ON watched-directory smoke and preserve native evidence.
+
+C6 default versus fused-ON smoke rc0: arms completed and died, ON environment matched, watched directory had no events or changes and latency ratio 17.69 met indirect-engagement criterion. Both prompts diverged at token 2; no correctness or performance claim. Retained result and logs; CH24 parent stays open for operator promotion determination.
