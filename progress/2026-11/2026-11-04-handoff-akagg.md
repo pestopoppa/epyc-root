@@ -251,3 +251,7 @@ The specified stale checkout had already been removed. The P1b 732 CPU coverage 
 ## 21:19Z — Filed disk-floor interruptions, repaired floor source custody, and published CPU, GPU and floor successors.
 
 The db18 CPU build was already filed as a bounded coverage-build pass. Filed GDN CPU f32 r10, C6 build r7 and C6 paired diagnostic r5 as inconclusive disk-floor stops, preserving terminal packets. Published C6 build r8 after publisher custody smoke. Floor v12 was repaired with an independent detached research worktree and the reviewed serving delta; all 905 snapshot hashes match. Published paired GPU diagnostic r6 and floor v12 after their publisher smokes passed; both full results remain pending.
+
+## 21:22Z — Filed interrupted C6 build, published successor and prepared CH-LB1 fold provenance.
+
+The CH-LB1.1 CPU gates had already been filed as passed; fold CAS remains open. Filed C6 cuBLAS build r8 as inconclusive rc75 disk-floor stop with terminal evidence retained. Published C6 build r9 after four-CPU custody smoke PASS; full build remains pending. CH-LB1 fold prep verified the tested tree on C5; no commit with that tree exists in local refs, and the experimental-kernel owner must finalize immutable source before store builds and CAS gates.
