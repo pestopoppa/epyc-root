@@ -107,3 +107,7 @@ Acknowledged previously filed KPF-17.CUSTODY full rc0 scoped PASS. Filed KPF-17.
 ## 16:32Z — Publish the candidate-bound KPF-30 impact row
 
 Acknowledged the previously filed KVU-12.6 gauge r2 capability PASS (0 to 45, one HTTP200 token, strict within-request mapping times and verified cleanup). Repaired the separate KPF-30 static impact row to reject untracked source inputs, checked its detached identity and seals, and published it after four-CPU partial-reference smoke PASS. Full candidate-bound indexing and six risks remain pending; HIGH/CRITICAL must stop source edits and warn. Preserved the launcher and source-custody packet.
+
+## 16:34Z — File the failed candidate-bound impact attempt
+
+Acknowledged the previously filed P5 r2 rc75 partial run, preserving 19 completed rows and the exposed incomplete no-draft repetition; no recovery class was established. Filed KPF-30 integrated-candidate impact attempt INCONCLUSIVE: full grant rc75 disk-floor, native impact JSONL absent and no graph risk/coverage or scan_complete. The four-CPU smoke contained only preliminary references, not source-edit clearance. Preserved end, manifest and smoke receipt. A fresh same-lineage successor is being prepared with the unchanged disk floor.
