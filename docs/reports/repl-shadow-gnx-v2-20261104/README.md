@@ -47,3 +47,5 @@ The APP query-capture impact run ended rc=1 after the lookup returned a markdown
 The [corrected impact run](gs-app-impact-v2/results.jsonl) produced seven LOW retriever-method impacts, then stopped on **CRITICAL** for `TaskEmbedder._generate_embedding`: 37 indexed upstream nodes, six direct, eight modules and one process. `StrategyStore.retrieve` was not reached. The rc=0 signals the prescribed risk stop, not a nine-target pass. Do not edit the critical target on this result.
 
 The [second frozen-query impact run](gs-index-v2/results.jsonl) completed at the pinned source with exact context and LOW upstream impact for all four targets, at most three indexed callers. This is an impact finding, not a G-S result.
+
+After the v2 fixture-declaration change, seven [isolated uncertainty controls](gs-v2-uncertainty-controls.json) passed: the retained v1 native context is refused without rewriting it, invalid declarations cannot emit new attestations, and a synthetic fixture remains excluded from model-scoped targets because it lacks model applicability. This does not prove corpus-aware matching or a positive real-data canary.
