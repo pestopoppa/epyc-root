@@ -171,3 +171,7 @@ C6 n5 granted case passed rc0 with matched inputs, MMQ route, residual 0.0039209
 ## 19:10Z — File CH-LB1 CPU gates, CH31 metadata fixture and P1b coverage builds
 
 Filed CH-LB1 trial CPU guard/corpus/linkage/strings pass with 38/38 and BF16 refusal; fold CAS remains open. Filed CH31 cap4096 model-free ON/OFF synthetic fixture pass; model behavior remains open. Filed six P1b CPU/HIP coverage build passes with retained verified artifacts. The 7d2 HIP build refused nine dirty-marker plan differences before compilation, inconclusive; replay remains open.
+
+## 19:18Z — Register C6 MMQ diagnostic belief-source wiring while preparing full suite
+
+Registered C6 MMQ n5/full-op native diagnostic as a prospective seeded-operation source and added VB-C6-MMQ-FULL-WIRE using the existing shared ladder. The completed n5 remains a committed conclusion; no retrospective measurement warrant. Full-suite packet is being repaired to validate inputs before publication and avoid grant-time GGUF hashing and reaperable predecessor paths.
