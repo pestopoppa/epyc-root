@@ -1,0 +1,33 @@
+--- a/driver.py
++++ b/driver.py
+@@ -8,6 +8,7 @@
+ from pathlib import Path
+ import sys
+ from copy import deepcopy
++from functools import partial
+ import time
+ import subprocess
+ 
+@@ -21,6 +22,7 @@
+ import native_group3 as g
+ import pipeline
+ import kpf18_gate as gate
++from driver_boundary import EntryRefused,run_with_rowflow_boundary
+ 
+ OUT=guard.attempt_root()
+ PRELOAD_MODELS=None
+@@ -128,7 +130,13 @@
+     steps.append(gate.Step('capture actual sealed identity before original group3 diagnostic',120,lambda:setup(ctx,srv,state)))
+     def cell():
+         state['block_vram_start']=srv.sampler.n_own_nonzero if srv.sampler else 0
+-        try:run(gate,guard.ContextBoundary(ctx),state['R'],srv,state['record'],state['identity'],state['ledger'])
++        try:
++            run_with_rowflow_boundary(partial(run,gate),guard.ContextBoundary(ctx),state['R'],srv,
++                state['record'],state['identity'],state['ledger'],env=os.environ,now_fn=time.time)
++        except EntryRefused as error:
++            state['record']['diagnostic_error']=type(error).__name__+': '+str(error)
++            state['ledger'].json('DIAGNOSTIC-REFUSAL.json',state['record']['diagnostic_error'])
++            raise gate.Abort('rowflow/guard boundary refusal: '+str(error)) from error
+         except Exception as error:
+             state['record']['diagnostic_error']=type(error).__name__+': '+str(error)
+             state['ledger'].json('DIAGNOSTIC-REFUSAL.json',state['record']['diagnostic_error'])

@@ -1,0 +1,61 @@
+{
+  "schema": "kpf18-native-relocations-v1",
+  "manifest_sha256": "50e1499b9a82fc83a7cdcb1415d543598915217cb9aef1798ce3270815763f4e",
+  "relocations": [
+    {
+      "original_path": "/workspace/repos/epyc-orchestrator/src/runtime/region_lock_cli.py",
+      "sha256": "58c2ea675db751f7403222ebbb3d6e52a4ce151ade86035e00fddda411b69940",
+      "relocated_path": "relocated/external/region_lock_cli.py"
+    },
+    {
+      "original_path": "/workspace/repos/epyc-orchestrator/src/runtime/cpu_region_lock.py",
+      "sha256": "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881d68ae81ece56c",
+      "relocated_path": "relocated/external/cpu_region_lock.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/gate/filler_run12.sh",
+      "sha256": "5602e0de1c49ccdb4b5ea82adb8d45b16dc32ebb4111bed9ccdf2c55ec7d8306",
+      "relocated_path": "relocated/gate/filler_run12.sh"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/gate/dryrun_check.py",
+      "sha256": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+      "relocated_path": "relocated/gate/dryrun_check.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/gate/dryrun_disk_policy.json",
+      "sha256": "b38c9804952017e9b158cf1d5310c8987ab2753132dcb5ec77fb2534502b66ab",
+      "relocated_path": "relocated/gate/dryrun_disk_policy.json"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/grant_ok.sh",
+      "sha256": "6a2467d67da413bf12a702a731b0b11f5715e01a5143584dc6df47761788ebba",
+      "relocated_path": "relocated/external/grant_ok.sh"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/grant_ok_launcher.py",
+      "sha256": "ba15f29581e75d74926d0ba687a9b798b1cb4527633aef1a03810268b16d3b5d",
+      "relocated_path": "relocated/external/grant_ok_launcher.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/canonical-export-root/scripts/vidya/adapters/kv_prefix_fork.py",
+      "sha256": "e6ead7b654defc820abefb71b997c12b93b49bc1dc0ac036e2b5e72b50b4895d",
+      "relocated_path": "relocated/canonical-export-root/scripts/vidya/adapters/kv_prefix_fork.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/canonical-export-root/scripts/vidya/claim_tuple.py",
+      "sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "relocated_path": "relocated/canonical-export-root/scripts/vidya/claim_tuple.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/canonical-export-root/scripts/vidya/canonical.py",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "relocated_path": "relocated/canonical-export-root/scripts/vidya/canonical.py"
+    },
+    {
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-r15-repair/successor/canonical-export-root/scripts/vidya/adapters/README.md",
+      "sha256": "a5fd06aacbe0853784fe2201a337b5d626e9021960800c573ce6815518ae6453",
+      "relocated_path": "relocated/canonical-export-root/scripts/vidya/adapters/README.md"
+    }
+  ]
+}

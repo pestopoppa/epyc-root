@@ -1,0 +1,22 @@
+G3 model receipt driver patch review report
+
+Reviewable patch (prepared only; not applied):
+/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-model-driver.patch
+Patch SHA-256: 75e4650be3ddcff1a9dd36cd6b4b1be0e47d0918fd84ba337aed350d19416d12
+
+The patch replaces candidate driver.py's in-grant gguf_identity.metadata() calls with load_preload_models() from a new local preload_integration.py. The integration reads the retained receipt at /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-control-r15/out/PRELOAD-MODEL-IDENTITY.json and compares it to candidate ORIGINAL-MODELS.json. The CLI/runtime receipt digest is pinned to 4a44cf4a80377a9ea03b19ae8a0e73b0777a61ed9392025678b6a4f39db41052 with no override. It retains PRELOAD_MODELS target/drafter entry keys (path, sha256, tensor_count, metadata, stat_identity) and draft_cache_shape semantics (draft_base_layers=0, draft_swa_layers=5, full verified metadata). Stat identity is checked during verification, after entry materialization, and at the driver's existing subsequent unchanged_models() call.
+
+The patch also adds strict verifier and fake-only tests, updates SOURCES.sha256, and updates launch.sh's hardcoded checksum of SOURCES.sha256. Proposed source hashes:
+- driver.py: ad0e62266bc379a4eab538ec604dd75bf8bee3aebec92f8ed09380f769ac8a24
+- verify_receipt.py: 2f820a5a215a36aa822dee4fb43cec4eb8fddb57b94b2434a85dfa63857eb506
+- preload_integration.py: a7958fc86664381b287c589e14f21972473336cd3df58b4f3087e375e4a4b88d
+- test_model_receipt.py: 4c2e871dae0a754d61df4065752170d657d01079754d525389f5a2e6e5839d87
+- test_preload_integration.py: 38df19e398d18437e97ff9f319a75eb5f19a7301e891491a34ec3ba0e0c3f8ab
+- SOURCES.sha256: b73dac3ccb21cd6bde266f55f446e0a928ddf9e928b985679910f2696075899b
+- launch.sh: 672450ebdf909bbfe100f699fc05c1822d5efc129cde892ffcad6f00c29028db
+
+Base identity at preparation time: candidate driver.py SHA-256 917445e3ff39475690be391376015c02a5b37fc107844941e5277b4dd4bff903; candidate SOURCES.sha256 SHA-256 04c0d3922939496fb100b0a7b0a0efe228ee7f3611ad025cc6d47d3c8bb684f7. The patch's manifest entries and proposed launch bootstrap hash were checked against the staged proposed files.
+
+Validation: 17/17 strict verifier and fake-file integration tests passed in the staged proposed directory. No actual candidate driver was run. Fake files are placeholders and not GGUFs.
+
+Limits and scope: model SHA strings are compared between receipt and ORIGINAL-MODELS.json; no current model content is hashed or read. Matching stat tuples detect tuple drift but are not a fresh content hash. The patch is review material only: candidate and manifest were not edited, and no model, build, GPU, or publication action occurred.
