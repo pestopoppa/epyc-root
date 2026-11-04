@@ -28,6 +28,37 @@ def judge(log,witness,rc):
       and [x['mode'] for x in witness.get('entries',[])]==[0,8] and points==expected)
     return {'status':'PASS' if valid else 'INVALID','mutation_mechanisms':modes,'test_rc':rc}
 
+def validate_runtime_custody(witness, config):
+    """Independently recheck every retained in-test mapping against sealed inputs."""
+    import hashlib
+    pid=witness['pid']; birth=witness['birth_ticks']
+    if not isinstance(pid,int) or pid<=0 or not isinstance(birth,int) or birth<=0:
+        raise ValueError('missing inferior identity')
+    expected={(n,p) for n in (0,8) for p in ('decode_entry','restore_dst_1','restore_dst_2')}
+    samples=witness['samples']
+    if len(samples)!=len(expected) or {(s['mode'],s['point']) for s in samples}!=expected:
+        raise ValueError('missing or duplicate mapping samples')
+    for sample in samples:
+        if (sample['pid'],sample['birth_ticks'])!=(pid,birth): raise ValueError('sample identity mismatch')
+        for key in ('source_commit','patch_sha256','receipt_sha256','model_sha256'):
+            if sample[key]!=config[key]: raise ValueError('sample binding mismatch: '+key)
+        raw=sample['maps_text']
+        if hashlib.sha256(raw.encode()).hexdigest()!=sample['maps_sha256']: raise ValueError('maps digest mismatch')
+        libraries=custody.validate_maps(raw.splitlines(),config['libraries'])
+        if libraries!=sample['libraries']: raise ValueError('reported library mappings mismatch')
+        if not any(Path(p).name.startswith('libllama-common.so') for p in libraries):
+            raise ValueError('missing mapped libllama-common')
+        model=Path(config['model_path']).resolve(strict=True); st=model.stat()
+        matches=[]
+        for line in raw.splitlines():
+            fields=line.split(None,5)
+            if len(fields)==6 and fields[5]==str(model): matches.append(fields)
+        if not matches: raise ValueError('model mapping absent')
+        for fields in matches:
+            major,minor=(int(x,16) for x in fields[3].split(':'))
+            if (major,minor,int(fields[4]))!=(os.major(st.st_dev),os.minor(st.st_dev),st.st_ino):
+                raise ValueError('model mapping inode mismatch')
+
 def safe_cleanup(witness, cleanup_fn=cleanup.cleanup):
     """An unverifiable inferior is INVALID; never claim it was terminated."""
     try:
@@ -80,6 +111,10 @@ def main():
     try:witness=json.loads((attempt/'witness.json').read_text())
     except (OSError,ValueError):witness={'error':'missing native in-test witness'}
     verdict=judge((attempt/'test.log').read_text(errors='replace'),witness,proc.returncode)
+    try:
+        validate_runtime_custody(witness,config)
+    except (OSError,ValueError,KeyError,TypeError) as exc:
+        verdict['status']='INVALID'; verdict['runtime_custody_error']=type(exc).__name__+': '+str(exc)
     # A survivor is an invalid execution, even if cleanup succeeds.
     inferior=apply_cleanup(verdict,witness,interrupted)
     try:
