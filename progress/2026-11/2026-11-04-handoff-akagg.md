@@ -295,3 +295,7 @@ The P1b db18 HIP build was already filed as a bounded build pass. Filed floor v1
 ## 21:58Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
 
 The CH-31 fixture event was already filed as a synthetic-control pass. Filed floor v20, paired C6 GPU r14 and NEMO marker build r9 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent NEMO marker r10, floor v21 and paired GPU diagnostic r15 after publisher smokes passed; full results remain pending.
+
+## 22:01Z — Filed interrupted observer, floor and GPU rows and published independent successors.
+
+The P1b MoE-Spec CPU build was already filed as a bounded build pass. Filed CH-26b compact observer, floor v21 and paired C6 GPU r15 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent CH-26b synthetic observer r2, floor v22 and paired GPU r16 after publisher smokes passed; full results remain pending.
