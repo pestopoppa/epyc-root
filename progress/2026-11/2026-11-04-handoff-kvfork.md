@@ -99,3 +99,7 @@ KPF-17 prospective mutation oracle now independently validates every retained in
 ## 20:30Z — Harden KPF-17 completion evidence after r3 invalid interruption
 
 KPF-17 r3 completion hardening requires PASS, bound identities, verified cleanup and all three same-attempt evidence files with matching hashes; five model-free tests pass. The existing rowflow wrapper checks completion after a disk-floor or deadline stop, so a coincident PASS can still mask that stop; the guard was not altered and the candidate is not integrated. RAID available space observed 146 GiB against the 150 GiB floor, so a publisher smoke would be stopped by the unchanged guard. No row was published or model inference run; historical r3 signal cause remains unproven.
+
+## 21:17Z — Attempt KPF-17 row readiness under unchanged disk and completion guards
+
+KPF-17 successor was not published: the current completion predicate cannot observe the rowflow guard stop reason, and changing the guard is outside this lane authority. Available RAID space fell below the required 150 GiB floor; inspection found no authorized sufficiently large scratch to reclaim, and keeper-owned row scratch was left to its reaper. No smoke or model run was started. KPF-60 observer attempts also previously stopped at the floor. Further readiness needs free space above the floor and a qualified way to distinguish guard stops without changing the guard.
