@@ -147,3 +147,7 @@ CH-26b: ch26-hostscope-abi-20261104 stopped at disk-floor admission rc75 without
 ## 20:53Z — File second failed host-scope admission and publish third attempt
 
 CH-26b: ch26-hostscope-abi-r2-20261104 stopped rc75 at disk-floor admission without RESULT.json. Retained original packet and raw smoke evidence at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-hostscope-abi-r2-retained-20261104/ and filed inconclusive. Published ch26-hostscope-abi-r3-20261104 after one-capture smoke PASS; the six-window functional diagnostic is not a coverage, placement, contention or floor result. This is the third attempt in the lineage; park it if admission fails again.
+
+## 20:56Z — Prepare source-bound C6 n4 b4 correction build
+
+CH-26b: ch26-hostscope-abi-r3-20261104 stopped rc75 at disk-floor admission without RESULT.json. Its packet and smoke evidence were retained at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-hostscope-abi-r3-retained-20261104/ and filed inconclusive. Three consecutive admission failures park the host-scope lineage; no coverage or floor conclusion follows. C6-Q4-MMVQ-FIX: published c6-n4-b4-qsum-build-20261104 after custody-only smoke PASS. Detached source on 729599d69 applies sealed combined MMVQ/MMQ candidate and proposed specialized n=4 quantized-sum correction. Full build pending; linkage verification and GPU correctness remain required.
