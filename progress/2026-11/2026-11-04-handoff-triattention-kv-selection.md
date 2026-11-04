@@ -27,3 +27,7 @@ Filed final HIP compile PASS, rc=0, preserving pinned build evidence; the mislea
 ## 16:30Z — File GitNexus enum validation and corrected recency builds; submit isolated real-cache API validation
 
 Filed GitNexus enum validation PASS: 48 enum matches, graph fixtures passed and the targeted ops worker completed in 3.428 s. Filed the superseded safety build inconclusive after its disk-floor stop; filed the float-corrected V2 build PASS with source and artifact identities. Prepared and submitted a bounded isolated CPU API diagnostic; publication smoke is pending. No KV continuity, performance, or quality claim.
+
+## 16:33Z — File final CPU graph and projection test cases
+
+LSA final CPU cases passed rc=0: all five graph cases, native and runtime units, and random/PCA/distilled projection fixtures completed with original assertions and mapped CPU library witnesses preserved in docs/evidence/lsa-final-cpu-cases-20261104/. This does not establish GPU behavior, model quality or performance. The API smoke encountered a prompt-fixture error; a separate bounded repair is in progress.

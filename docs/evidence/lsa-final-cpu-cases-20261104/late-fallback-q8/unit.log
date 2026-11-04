@@ -1,0 +1,1 @@
+case=late-fallback-q8 backend=cpu op=LSA_NATIVE original_flash_calls=2 publication_count=0 callbacks=1 equal=1

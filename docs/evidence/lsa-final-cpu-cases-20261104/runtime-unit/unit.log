@@ -1,0 +1,65 @@
+PASS validated maps/options create isolated CPU request
+PASS real native attention executes bounded32-query chunks
+PASS all new logical keys append once across query chunks
+PASS successful host lease publishes after complete execution
+PASS physical zero QK produces independent causal uniform-V mean
+PASS forged lease shape rejected before publication
+PASS publication element count checked
+PASS decode appends one new key without old logical K input
+PASS next execute invalidates prior output lease
+PASS different runtime cannot publish another instance's lease
+PASS different slot has independent request ownership
+PASS cross-slot mutation invalidates old lease without destination writes
+PASS slot indexes remain isolated
+PASS layers keep separate index histories
+PASS suffix rollback truncates every existing layer
+PASS replacement suffix appends after explicit truncation
+PASS request epoch must increase on slot reuse
+PASS stale request epoch returns original-dense reason
+PASS clear/copy/restore/shift/reuse requires explicit fresh epoch
+PASS restored nonzero history never reconstructed from physical quant KV
+PASS failed nonzero restart remains dense even if same epoch later sends zero
+PASS clear/copy/restore/shift/reuse requires explicit fresh epoch
+PASS restored nonzero history never reconstructed from physical quant KV
+PASS failed nonzero restart remains dense even if same epoch later sends zero
+PASS clear/copy/restore/shift/reuse requires explicit fresh epoch
+PASS restored nonzero history never reconstructed from physical quant KV
+PASS failed nonzero restart remains dense even if same epoch later sends zero
+PASS clear/copy/restore/shift/reuse requires explicit fresh epoch
+PASS restored nonzero history never reconstructed from physical quant KV
+PASS failed nonzero restart remains dense even if same epoch later sends zero
+PASS clear/copy/restore/shift/reuse requires explicit fresh epoch
+PASS restored nonzero history never reconstructed from physical quant KV
+PASS failed nonzero restart remains dense even if same epoch later sends zero
+PASS late chunk failure exposes no partial output
+PASS failed publication leaves graph destination untouched
+PASS caller chooses original dense callback explicitly on fallback
+PASS failure poisons appended layer and prevents double append/retry
+PASS explicit newer epoch permits fresh retry
+PASS fresh zero epoch recovers after failed transaction
+PASS validated map replacement accepted
+PASS map replacement invalidates existing request history
+PASS stale graph map identity rejected
+PASS fresh zero epoch can bind replacement map identity
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS unsupported request/mask/physical-prefix guard returns dense
+PASS noncontiguous physical new slot rejected
+PASS noncontiguous causal position rejected
+PASS logical new K count differs from Q rejected
+PASS overlapping physical KV stride rejected
+PASS overflowing append position refused before allocation
+PASS uncovered global layer cannot select sparse attention
+PASS undersized host admission rejected before execution
+PASS query chunk above32 rejected
+PASS feature is explicitly disabled by default
+PASS bundle per-layer geometry mismatch rejected
+PASS first CPU layer fits aggregate admission
+PASS second live CPU cache denied by aggregate cap before allocation
+PASS configured request limit bounds metadata ownership
+PASS map replacement cannot change bound model identity
+PASS visible ambiguous Ward cluster returns original dense without publishing earlier chunks
+RESULT runtime failures=0

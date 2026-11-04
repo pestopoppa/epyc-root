@@ -1,0 +1,53 @@
+{
+  "reviewed": true,
+  "source_commit": "fd25848a11cb165bddf49673a534e83d117a1c50",
+  "pins": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/job.sh": "a18968282b465a653334ecdf98c2555d52e4fa5a4eaf402c0e6dd3aed374d751",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/launch.sh": "0b324bb0ff9cf6e7424874c3c2fccc910a18ed1faabd203375809049f09dd1f0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/run_case.py": "d12e7c8bfcc12b1de4b6ac81a9f39687400718728103178762137d9a24cb9d8c",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/native-case.py": "b638272684d6ac5b9b3ac4b99428ff0eac171a4833a1496a5ccb3f38d92f5c90",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/load-witness.c": "4a80ba6cdd49fadd1351842f8bdf844d3bc27b3d02bcb7c2eab3889484ecb649",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/cases.json": "6f8c493f63ef4bd4d83384fb4dd9f32a21b9d8eb180649279aa460ba7e0edfe5",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/spec.json": "a256da2c93b3735153522f8cbc92708a82a25078a3af9b266e0ad67aec175f33",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/test-lsa-graph-integration": "efb05afe1929a18454b02ce1ffe28e8bfe430c6fc582a96c3f942806fadd5862",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/test-lsa-native-live": "48b7156ed16b835921fab452457f0bc52229fe9b88dae6f36ecc0b46f5203913",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/test-lsa-runtime-live": "e6ba7f929138d8b2c680422625301f8c4f93b89f9b230c58410c49c266bd34cd",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml.so.0.16.0": "b9846910fb8eb6c984d33c34fb214aa97f29e14815b4b8c5baad1065b0e31515",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-cpu.so.0.16.0": "d7e59b78ba58d64af568240b7d62d55eb1b9eeb8c6a1426c0b553ebca73f3f34",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-base.so.0.16.0": "2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libllama.so.0.0.0": "f839111629209470bf528dbb41afaa7ac888b702b739308abd7793e99bc3d5fa",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/random27b.lsapro": "051003621a3d2c5497ac258cc1c66569061d480f608a28b7c820ebc600c2c543",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/released27b-pca-layer3.lsapro": "fff3c289f94835690ec6433cbfc72b4e1ede81c354db5957633d3c85b29837b3",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/released27b-distilled-layer3.lsapro": "0a02d4729e87fceb3287c54cb03db4279dc1451a8eb5e6e42b539515cdbf9f06",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104/source-manifest.json": "380305bcaaaec4377274267aa9c6ce8e8aa92c6b9121dcee5bb3f1afbc8ff82e",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/build-manifest.json": "7334775c6d86b33eb7bfe0c84e642a198878a021566a62ea69e4afdde272a9bb",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/artifact-sha256.txt": "ed3a6dd5a3311555cf8b01d76ae45438e4f772b91a190c8c288fad4cbd4905b0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/CMakeCache.txt": "156f570e4b6d5ab23e17a910f1c7f121670134154e739240770577ab849e07af",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/exec-guard.so": "38ef81405e9ca529f0369dbd6b146d6ba29d7b197861d320ec49fb47a041a037",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+  },
+  "artifacts": [
+    {
+      "role": "ggml_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml.so.0.16.0",
+      "sha256": "b9846910fb8eb6c984d33c34fb214aa97f29e14815b4b8c5baad1065b0e31515"
+    },
+    {
+      "role": "ggml_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-cpu.so.0.16.0",
+      "sha256": "d7e59b78ba58d64af568240b7d62d55eb1b9eeb8c6a1426c0b553ebca73f3f34"
+    },
+    {
+      "role": "ggml_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-base.so.0.16.0",
+      "sha256": "2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082"
+    },
+    {
+      "role": "llama_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libllama.so.0.0.0",
+      "sha256": "f839111629209470bf528dbb41afaa7ac888b702b739308abd7793e99bc3d5fa"
+    }
+  ],
+  "exec_guard": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/exec-guard.so"
+}

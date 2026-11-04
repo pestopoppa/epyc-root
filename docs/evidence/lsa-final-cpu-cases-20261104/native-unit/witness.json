@@ -1,0 +1,13 @@
+{
+  "pid": 334089,
+  "rc": 0,
+  "mapped_dsos_sha256": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-cpu.so.0.16.0": "d7e59b78ba58d64af568240b7d62d55eb1b9eeb8c6a1426c0b553ebca73f3f34",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml.so.0.16.0": "b9846910fb8eb6c984d33c34fb214aa97f29e14815b4b8c5baad1065b0e31515",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libggml-base.so.0.16.0": "2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/libllama.so.0.0.0": "f839111629209470bf528dbb41afaa7ac888b702b739308abd7793e99bc3d5fa"
+  },
+  "argv": [
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu/out/bin/test-lsa-native-live"
+  ]
+}
