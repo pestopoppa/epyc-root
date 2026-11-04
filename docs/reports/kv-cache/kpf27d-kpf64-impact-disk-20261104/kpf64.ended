@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T23:00:17Z reason=disk-floor
+job_id=kpf64-impact-4f4f-20261104-r2
+owner=h-kvfork
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T23:00:16Z
+regions=0-95
