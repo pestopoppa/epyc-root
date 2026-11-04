@@ -71,3 +71,7 @@ Wrote the FILED receipt for `lsa-native-capacity-9216-20261104` using its existi
 ## 16:37Z — Acknowledge filed TriAttention recency validation
 
 Wrote the FILED receipt for `triattention-s8c-recency-unit-20261104` using its existing fail verdict. Nine of eleven mock-memory cases passed; gapped occupancy and failed sequence removal each over-reported removals. Native result SHA-256 `e99738f8a7668e9a973dcf998afeb562d100b02472948ec4a65f8a545327c8d0`; retained evidence is `docs/evidence/triattention-s8c-recency-unit-20261104/`. The owning S8-C-VALIDATION checkbox was already ticked for the completed test set; this is mock evidence, not real-server behavior, and no checkbox was reticked.
+
+## 16:38Z — Acknowledge filed TriAttention planner oracles
+
+Wrote the FILED receipt for `triattention-s8c-plan-oracles-20261104` using its existing PASS verdict. All 26 synthetic planner cases passed on the pinned source and safety patch. Native result SHA-256 `719dd33e3dfd192529dad24ad16f437abd81b7b26be4c4973f4d7f7fc673e622`; exact source and case receipts are retained in `docs/evidence/triattention-s8c-plan-oracles-20261104/`. The owner already ticked the planner-oracle task. This is not evidence of actual eviction, server, model, GPU, speed or quality behavior.
