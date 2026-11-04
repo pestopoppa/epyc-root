@@ -127,3 +127,7 @@ Consumed GDN control review, P1b identity preflight and floor v7 retention outco
 ## 17:17Z — File the GDN affinity build disk-floor stop and repair CH-LB1.1 smoke qualification
 
 The affinity build row stopped rc75 at the disk floor before native build; RESULT.json is absent and the pre-existing filing is inconclusive. AKX-ALL-31.GDN remains open. CH-LB1.1 successor smoke failed on an unset dry-run result variable; packet repair is in progress.
+
+## 18:21Z — File 732 HIP coverage configure and repair CH-LB1.1 qualification
+
+Filed inf75-p1b-732-hip-configure-20261104 pass for configure only: 572 compile entries, 141 HIP coverage entries; retained and verified cache, plan, log, preflight and source manifest. The P1b replay remains open. CH-LB1.1 successor publisher smoke is in progress after repair.

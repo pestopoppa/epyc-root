@@ -3261,6 +3261,7 @@ Global constraints:
     detects the required historical Q4_K, HIP/CDNA2/shape and default-ON knob discriminators. The focused
     footprint/surface suite passed 223 tests plus 52 subtests.
 - [ ] **AKX-P1b — replay 732389d6 (THE acceptance test).** Second replay case (absorbs AKX-P1c): sync17-fix2.
+  - 2026-11-04: `inf75-p1b-732-hip-configure-20261104` passed its configure-only rule, rc0, for source `732389d6d9d08338fe2ad2457bf8f44205914a7f`: 572 compile entries, including 141 HIP coverage entries. The retained cache, compile plan, configure log, preflight and source manifest match their recorded hashes at `/mnt/raid0/llm/tmp/akagg/p1b-732-configure-retained-20261104/`. No build, workload, replay, recipe-equivalence or complete compiler-custody result follows. [belief: cc]
   - Workloads: W1 (27B Q8_0 ROCm0), W2 (VL-30B Q4_K_M ROCm0), W4 (gemma Q4_K_M, **both** its production CPU recipe and the recorded GPU dec-b4 surface).
   - Screen each keep in `0db32c06e..732389d6` against its parent, and the whole range against production v9 source built in an experimental checkout.
   - **Pass criteria:**
