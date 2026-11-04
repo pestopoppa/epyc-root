@@ -123,3 +123,7 @@ KPF-50: implemented a prospective raw JSONL validator requiring four distinct ch
 ## 21:44Z — Bind KPF-50 child records and bracket host clock samples
 
 KPF-50: prospective child evidence now binds raw JSONL digest and native run identity to the item-7 Run.finish record and requires four successful fork checks; standalone CLI and six model-free tests pass. A separate host-monotonic clock validator binds the native capture hashes and producer lifetime and rejects non-bracketing or overlapping samples; six model-free tests pass. Both are structural checks, not a completed window, authenticated step trace, profiler calibration, GPU residency or scientific result. A draft durable rowflow stop marker was not retained after review found shared-grant and smoke-isolation defects. No inference row was published or model run. Full rows still encounter the unchanged 150 GiB disk floor.
+
+## 21:46Z — Attempt to ready the KPF-17 mutation oracle
+
+KPF-17 mutation oracle could not be readied: the filesystem has approximately 132 GiB available against the unchanged 150 GiB full-run admission floor, and the shared rowflow stop-precedence defect remains unresolved. No new row was published or model run. The KPF-30 impact lineage has three disk-floor failures and remains parked. KPF-18 group 3 requires additional lifecycle and custody qualification and a 214 GiB admission floor.
