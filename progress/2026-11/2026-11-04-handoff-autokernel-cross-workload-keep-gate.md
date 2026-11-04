@@ -171,3 +171,7 @@ NEMO-PROF-MARKER-BUILD: published nemo-server-marker-build-20261104 after four-C
 ## 21:32Z — File the C6 diagnostic build r12 disk-floor stop and assess independently runnable successor preparations
 
 C6-Q4-MMVQ-FIX: filed akx-c6-n4-cublas-build-r12-20261104 inconclusive (rc75 disk-floor immediately after START, no RESULT.json); retained its end record and manifest under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/akx-c6-n4-cublas-build-r12-20261104/. No build or GPU verdict. Repeated disk-floor stops in this lineage preclude another retry under the three-failure rule. NEMO-PROF-MARKER-BUILD has the same disk-floor constraint (139 GiB available against 150 GiB). CH-26b draft lacks validated request-bound placement and contention capture; its integration remains work. No new row published. [no-belief: incomplete build and preparation only]
+
+## 21:34Z — Publish the source-pinned NeMo marker build successor
+
+NEMO-PROF-MARKER-BUILD: published nemo-server-marker-build-r2-20261104 after the four-CPU publisher smoke passed. It succeeds the single prior disk-floor stop, preserves the disk admission guard, and builds the C3 source-bound instrumented server and marker fixture only; full result remains pending at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/nemo-server-marker-build-r2-20261104/out/RESULT.json. This prospective build cannot establish missing historical token boundaries. [no-belief: publication and smoke only]
