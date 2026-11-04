@@ -51,3 +51,15 @@ Published `kvu-kpf17-map-revalidation-r2-20261104`; publisher smoke PASS, with n
 ## 23:10Z — Published a fresh isolated mapping-revalidation successor after the prior full attempt stopped before starting at the disk floor.
 
 Published `kvu-kpf17-map-revalidation-r3-20261104`; publisher smoke PASS, isolated from the full-result path. Smoke outer rc75 partial-native-incomplete is not a qualification result. Prior r2 ended rc75 disk-floor without a full case or result and was already filed inconclusive. Disk recovered above the existing 150 GiB floor; the floor remains unchanged. Separately prepared a conservative synthetic request/batch binding fixture (6 tests) for KPF-13.1, and tested STOP propagation through a source-bound patched KPF-18 driver cell (4 tests). Neither is integrated or qualifies historical layout, GPU admission, or native cleanup. GitNexus was unindexed; these are new files with no existing symbols edited.
+
+## 23:21Z — Published the seven-symbol source-bound recurrent-state impact successor after the prior disk-floor interruption.
+
+Published `kpf-rs1-impact-8952-20261104-r6` after r4 ended at the disk floor without native results; publisher smoke PASS records only partial source references, not impact or edit clearance. The r5 smoke precondition failed with a truncated traceback; direct reruns passed, root cause unproven, and r6 adds stderr capture. Its original source, coverage and full-run disk-floor conditions remain in force. KPF-17.MAP-REVALIDATION r3 is grantable with no full result; it must not be duplicated or ticked. Static inspection of the old find_slot image checked 14 instruction sites; six model-free tests passed, but live layout, request binding and historical custody remain unproved. A disabled GPU candidate integrated preload and terminal-boundary drafts in scratch; 17 model-identity and four integrated-cell synthetic tests passed, while the entry remains disabled with its existing manifest stale. GitNexus in this lane is unindexed; additions are new files only.
+
+## 23:22Z — Complete the recurrent-impact successor wrap-up
+
+The first wrap-up was rejected by the test collectability hook; the inherited unittest suite now has a direct runner and passes all four cases. The preceding entry records the published row and preparation.
+
+## 23:23Z — Complete the recurrent-impact successor wrap-up
+
+The first wrap-up was rejected by the test collectability hook; the inherited unittest suite now has a direct runner and passes all four cases. The preceding entry records the published row and preparation.
