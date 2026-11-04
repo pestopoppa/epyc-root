@@ -1,0 +1,6 @@
+{
+  "verdict": "pass",
+  "rationale": "Independent target calibration meets rule: both full target arms completed HTTP200, each accepted 96/121 native drafts (79.3388429752%), delta hybrid-minus-legacy 0 percentage points; generated token ID sequences identical (first divergence none); both owned servers drained with rc0 and server-log digests match cleanup receipts. 70814-token enrolled prompt, fixed 128 generated-token target. No generalization, quality, performance or promotion claim. No qualification control used.",
+  "tick_text": "**CPU-FA-VKQ-3 (optional) \u2014 MTP acceptance at > 64k on the architect, fix vs legacy.** (filed 2026-10-04,",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

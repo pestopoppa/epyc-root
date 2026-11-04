@@ -1,0 +1,12 @@
+{
+ "schema": "epyc.vb.akwire.result.v1",
+ "matrix_rc": 0,
+ "final_sha256": "efe1d67cc1dd2beb551a3ad9d2af5643b13bb413a758b85b1af00286bd348f94",
+ "final_status": "PASS",
+ "attempted": 15,
+ "expected": 15,
+ "abort": null,
+ "producer_commit": "ec9307280129940c7c85493df622427a4e287f88",
+ "evidence_dir": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/evidence",
+ "measurement": false
+}

@@ -1,0 +1,51 @@
+{
+ "decision_rule": "Independent calibration only. Ignore qualification controls. Compare actual native drafted/accepted counts and generated-token divergence only after both target arms complete with HTTP 200, valid counts and token IDs, and verified cleanup. Otherwise UNKNOWN; no redraw of an exposed prompt.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 14400,
+ "gib": 256,
+ "handoff_task": "handoffs/active/kv-cache-program.md:CPU-FA-VKQ-3",
+ "id": "handoff-kvu-vkq3-mtp-bound-20261102",
+ "keep": [
+  "preflight-receipt.json",
+  "exposure-audit.json",
+  "binary-knob-proof.json",
+  "linkage-proof.txt",
+  "launcher/**/*.json",
+  "launcher/**/*.jsonl",
+  "launcher/**/*.py",
+  "launcher/**/*.sh",
+  "launcher/**/*.sha256",
+  "launcher/**/server.log",
+  "launcher/SOURCE-SHA256SUMS",
+  "launcher/REGION-LOCK-INPUTS.sha256",
+  "launcher/REGION-LOCK-PYTHON-ALLOW.txt",
+  "launcher/region-lock",
+  "kvu-vkq3-guard-review-20261102/guard.py",
+  "launcher/events.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/vkq3-row/launcher/launch.sh",
+  "sha256": "c8e7c50a8b377c448102f468e55fadb53089d4ab51729e94ed1c4b68209b66c8"
+ },
+ "min_window_s": 9000,
+ "owner": "handoff-kvu",
+ "ports": [],
+ "priority_rank": 30.0,
+ "published_at": "2026-11-02T19:18:18Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/vkq3-row/SPEC.draft.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/vkq3-row/launcher/events.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/vkq3-row",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/vkq3-row/launcher/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/vkq3-row/launcher"
+}

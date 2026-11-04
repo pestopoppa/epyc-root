@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=75; only 140 dispatched calls, below required 200 despite fp_coverage 1.0. 4 calls ok, 136 failed. missed_prefill_share 0.0252 and hit_tok 0.9278 are descriptive, no valid baseline/cache-ram decision. B4k/B4a remain open; repair failure capture and workload before successor. Evidence docs/reports/harness-run-filings-20261104/b4k.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:16:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-02T22:56:46Z reason=partial-native-incomplete",
+ "filed_at": "2026-11-04T07:16:58+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:UFH14-B4k",
+ "id": "ufh14-b4a-window-8083-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-b4a-window-8083-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/*/calls.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc=75; only 140 dispatched calls, below required 200 despite fp_coverage 1.0. 4 calls ok, 136 failed. missed_prefill_share 0.0252 and hit_tok 0.9278 are descriptive, no valid baseline/cache-ram decision. B4k/B4a remain open; repair failure capture and workload before successor. Evidence docs/reports/harness-run-filings-20261104/b4k.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/*/calls.jsonl",
+ "root_cause_family": null,
+ "row": "ufh14-b4a-window-8083-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "UFH14-B4k/B4a: VALID window = >=200 dispatched calls on the production :8083 argv replica (port 18183) carrying prefix_fp (fp_coverage >= 0.95); its prefix_cache_report per-port missed_prefill_share (lower better), hit_tok, cold_large_share, concurrent_dupes and server-log eviction count are the B4a baseline that unblocks the PFX-SEL-1 package. missed_prefill_share > 5% (concurrent_dupes removed) with evictions logged counts as window 1 of 2 for the :8083 cache-ram 65536->102400 rule (design 4.3). <200 calls = INCOMPLETE, re-run. Synthetic agentic workload on a replica, not organic traffic.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a7f85b75a7482e336b9723c950e2b57e8f4e6260bec0c9729f738aa21c2f3e02",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

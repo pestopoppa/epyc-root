@@ -1,0 +1,10 @@
+Canary B missing-keep diagnosis
+
+The scheduled run remains FAIL under its published rule. Do not relabel it as PASS.
+The reference expectation is obsolete: actual native folded trial 1472 is `keep_revert_decision=excluded`, not keep. Native source `orchestration/autopilot_journal_1.jsonl:474` carries learning_exclusion.by=reproduction_confirmed: within-noise confirmation of an existing gain, not new improvement. Pinned orchestrator 326f5027 experiment_journal.py:214 explicitly excludes such rows from learning. Generated STM and structured insights correctly omit it. Strategy store has no row bound to source_trial_id=1472 (a UUID substring match is unrelated); healthy FAISS cannot retrieve a missing eligible keep.
+
+Additional independent scope mismatch: trial timestamp 2026-08-04T17:05:46Z is before operator-ratified quality/Pareto boundary 2026-08-10T16:23:03.880697Z. Summary shows newest journal entry Aug 9, no post-rebase native trials, and T1/T2/T3 frontier counts 0. Folded native keeps end at trial 1048 (June 28), also before current era. There is no eligible current-era native keep to substitute automatically. Do not choose another historical keep or inject trial 1472 into the prompt; both defeat the canary meaning.
+
+Concrete safe proposal: attached exact patch adds a native-reference preflight and UNKNOWN diagnostic for future invalid-reference runs; the existing 1472 + 2.025 + ingest_triviality_guard context predicate and frontier requirement remain unchanged, and no new PASS route exists. This patch improves diagnosis, not completion. A genuine current-era producer-authored eligible keep must exist and be adopted as the explicitly pinned semantic sentinel (trial id, native decision, objective-era/scope and payload) before a new acceptance run can establish native learning reaches the planner. No inference is authorized or performed here. Historical run remains FAIL; its failure is reference-selection drift, not demonstrated embedder/ranking failure.
+
+No tracked edits, filing or commits. Proposed patch only; no claim of a passing canary.

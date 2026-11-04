@@ -1,0 +1,13 @@
+{
+  "row_id": "ufh14-b4k-nothink-successor-20261104",
+  "status": "republished_gpu_smoke_queued_diagnostic_only",
+  "spec": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-successor/spec.json",
+  "predecessor": "ufh14-b4a-window-8083-20261102",
+  "root_cause_evidence": "Pinned backend records empty_generation when non-tool-call response content is blank after 30s, irrespective of reasoning_content collected separately. Prior records report 136/140 empty_generation with output tokens, but do not retain raw deltas or reasoning content; whether model emitted only reasoning, parser omitted content, or another content issue remains unproven.",
+  "changes": "Explicit chat_template_kwargs enable_thinking=false, 128-token output cap, collect reasoning length and failure/completion reason, advance sessions only on success; require at least 200 successful calls and >=95% fingerprint coverage, 10800s min window, host/GPU unchanged.",
+  "verification": "python compile; InferenceRequest override test; source/corpus comparison; republished through publisher. No inference or handoff edits.",
+  "limitations": "Thinking mode and output cap differ from predecessor: diagnostic only, not a B4a baseline or B4k closure. GPU smoke queued. Independent pinned source worktree is used; shared runtime venv is mutable and qualification must validate it.",
+  "comparability": "enable_thinking=false and output cap 128 modify prompt/template, output length and cache behavior. Result is diagnostic only; cannot close B4k or be called a B4a production baseline until comparability is demonstrated.",
+  "independent_source": "Detached git worktree /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-successor-orch at 77ba24efe7f27783a3a98be5474bace26c753f12. Compared 745 predecessor Python files: 0 missing, 0 changed; >4000-byte Python corpus file sets match.",
+  "runtime": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python; core imports, InferenceRequest, role registry and thinking override checked offline. Publisher warns shared venv is mutable; keeper smoke will test it. No dependency on predecessor scratch for source/venv."
+}

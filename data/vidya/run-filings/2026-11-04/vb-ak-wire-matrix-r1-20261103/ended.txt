@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:04:12Z reason=complete
+job_id=vb-ak-wire-matrix-r1-20261103
+owner=vidya-fanout
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T07:02:45Z
+regions=48-71

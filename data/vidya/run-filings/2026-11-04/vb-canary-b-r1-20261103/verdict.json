@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Native RESULT.json satisfies the pinned source identities and records live_embedder=true, probe_dim=1024, two embed calls with no embed errors, no assembly errors, unchanged baseline/canonical ledger/telemetry, and verified embedder teardown. The frontier section is assembled with the intended post-rebase T1 count 0. However observed_1472_keep_with_numbers=false and canary_exit=1: the required trial-1472 keep with 2.025 and ingest_triviality_guard is absent. The ready-row decision rule therefore yields FAIL, not UNKNOWN or PASS. VB-CANARY-B-LIVE-EMBEDDER is complete only on exit 0, so its exact checkbox and both parent gates must remain open; route the missing-keep finding without an in-run retry.",
+  "tick_text": null,
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T07:18:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:03:04Z reason=complete",
+ "filed_at": "2026-11-04T07:18:47+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-CANARY-B-LIVE-EMBEDDER",
+ "id": "vb-canary-b-r1-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-canary-b-r1-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Native RESULT.json satisfies the pinned source identities and records live_embedder=true, probe_dim=1024, two embed calls with no embed errors, no assembly errors, unchanged baseline/canonical ledger/telemetry, and verified embedder teardown. The frontier section is assembled with the intended post-rebase T1 count 0. However observed_1472_keep_with_numbers=false and canary_exit=1: the required trial-1472 keep with 2.025 and ingest_triviality_guard is absent. The ready-row decision rule therefore yields FAIL, not UNKNOWN or PASS. VB-CANARY-B-LIVE-EMBEDDER is complete only on exit 0, so its exact checkbox and both parent gates must remain open; route the missing-keep finding without an in-run retry.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-canary-b-r1-20261103",
+ "row_verdict": "fail",
+ "rule": "Canary B verdict with live BGE-large embedder: PASS iff the assembled planner context holds trial 1472's keep with 2.025 and ingest_triviality_guard AND the frontier section is assembled (T1 count recorded; 0 is the intended post-rebase state); code 452b5884, orchestrator 326f5027; FAIL if the keep or frontier section is absent; UNKNOWN on embedder/assembly/state-hash failure. Not a measurement; no timing claim. Stop at first verdict; no retry in-run.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "f8a0a347dc258742204d8cf14c3cba24f979937c7b3753e583ce3845051a864a",
+  "result": "fail",
+  "status": "filed"
+ }
+}

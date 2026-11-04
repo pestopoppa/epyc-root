@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T07:16:02Z",
+  "generated_at": "2026-11-04T07:26:44Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1354,15 +1354,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 344,
-      "dispatchable": 84,
+      "closed": 346,
+      "dispatchable": 83,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 86,
+      "open": 85,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 102,
+      "closed": 103,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 660,
+          "line": 669,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2125,16 +2125,16 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 235,
+      "closed": 237,
       "dispatchable": 100,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
       "open": 102,
       "priority": 0.9075,
@@ -2186,7 +2186,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1298,
+          "line": 1301,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1422,
+          "line": 1425,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2204,7 +2204,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1749,
+          "line": 1752,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2213,7 +2213,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1888,
+          "line": 1891,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2222,7 +2222,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2441,
+          "line": 2444,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2239,7 +2239,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2578,
+          "line": 2581,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2262,7 +2262,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3420,
+          "line": 3428,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -2454,16 +2454,16 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 66,
+      "closed": 67,
       "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "open": 27,
       "priority": 0.8382,
@@ -2505,7 +2505,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 647,
+          "line": 648,
           "name": "tq3-quantization-evaluation",
           "open": 3,
           "readiness": "ready"
@@ -3507,7 +3507,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 239,
+      "closed": 240,
       "dispatchable": 90,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3541,7 +3541,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 44,
+          "dispatchable": 45,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3549,14 +3549,14 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 45,
+          "open": 46,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1345,
+          "line": 1348,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3566,31 +3566,31 @@
             "INF-79",
             "RTG-36"
           ],
-          "dispatchable": 38,
+          "dispatchable": 37,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
-          "line": 1727,
+          "line": 1730,
           "name": "kv-unified-stack-rollout",
-          "open": 38,
+          "open": 37,
           "readiness": "blocked"
         }
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
-      "closed": 221,
-      "dispatchable": 79,
+      "closed": 223,
+      "dispatchable": 77,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 94,
+      "open": 92,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3642,11 +3642,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 6,
           "gates": [],
           "line": 390,
           "name": "repl-turn-efficiency",
-          "open": 8,
+          "open": 6,
           "readiness": "ready"
         },
         {
@@ -3715,7 +3715,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2681,
+          "line": 2683,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

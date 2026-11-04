@@ -1,0 +1,15 @@
+{
+  "before": {
+    "Dockerfile": "2066d6a5800a1010ed1949ff89b39e2774389a345c01460730ae5f20f631d2ff",
+    "requirements.txt": "924171a456d09bd4368d86692ff1fff9706de088dfb767a150ccddc2c73b9d58",
+    "WHEELHOUSE.sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba"
+  },
+  "after": {
+    "Dockerfile": "2066d6a5800a1010ed1949ff89b39e2774389a345c01460730ae5f20f631d2ff",
+    "requirements.txt": "924171a456d09bd4368d86692ff1fff9706de088dfb767a150ccddc2c73b9d58",
+    "WHEELHOUSE.sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba"
+  },
+  "seal_sha256": "4becb58802aaa44d792030e83090dede6f97251c0bb692428d76bf643360063e",
+  "image_id": "sha256:e3cb199d0e50c97db515de04b01be65e1d7fd6390b047a00da90655ed9b6002e",
+  "build_log_sha256": "c8e85113399a5c9472db181cedf813166bf4d6d9ee2ef17bc512fc399c9790da"
+}
