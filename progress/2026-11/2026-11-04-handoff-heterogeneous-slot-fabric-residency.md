@@ -131,3 +131,7 @@ Published `kpf30-impact-8952-20261104-r3` (native smoke PASS) for six source-bou
 ## 16:55Z — Prepare fresh custody build successor and correct the offline exposure replay safety boundary.
 
 Consumed the KPF-17.4d r4 and KVU-12.6 occupancy preparation reports: r4 subsequently failed at disk floor and the occupancy patch remains unapplied pending source-bound impact. Preparing a fresh sealed build row and a fail-closed offline exposure replay correction; results registered for asynchronous continuation.
+
+## 16:56Z — Prepared sealed r5 custody build successor and attempted publisher smoke; host disk floor prevented qualification.
+
+Prepared fresh `kvu-kpf174-custody-r5-20261104` source and sealed inputs; publisher returned smoke WAIT because free disk was below the 150 GiB floor, with no failure or publication. Retry the same spec after disk recovers; no full custody-build verdict.
