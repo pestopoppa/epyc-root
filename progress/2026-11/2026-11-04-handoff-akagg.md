@@ -163,3 +163,7 @@ Published akagg-ch-lb1-c5-ansi-r2-20261104 after four-CPU publisher smoke PASS u
 ## 18:58Z — Investigate v9 floor claim loss and prepare W5s status repair
 
 Investigated v9 claim-loss evidence: 6863 successful lock samples through 18:17:32.317Z, followed 0.5 seconds later by absent ancestry after 48 units. Existing monitor already stops and joins before its final lock proof; no evidence establishes whether ancestry disappeared before workload completion, so no claim-loss rule was weakened. W5s successor status and ownership controls are being repaired; no publisher PASS yet.
+
+## 19:05Z — File C6 MMQ n5 GPU case and P1b build results
+
+C6 n5 granted case passed rc0 with matched inputs, MMQ route, residual 0.0039209109105864245 below unchanged 0.005948093131031932, 306 positive VRAM samples and clean drain; full suite remains open. Filed 7d2 CPU coverage build pass with 431 reviewed entries and 292 coverage notes. Filed 732 HIP build inconclusive: fresh plan contained nine dirty-marker changes and failed exact comparison before compiling; clean-source successor preparation is underway.
