@@ -31,3 +31,7 @@ Diagnosed r4 rc1 from the original job log: the full-job path attempted to mkdir
 ## 14:20Z — File partial PF1 refinement and prepare control-bias follow-up
 
 Filed pf1-expand-r2-20261104 inconclusive, rc75 disk-floor after 2/3 blocks: 32 valid units, 1.0 capture completeness, A0 node share 25%; A1-disabled/A0 controls 0.8975, 0.8820, 0.8597, 0.9004 at L384/448/512/768, so first three fail the 0.90–1.10 guard. Preserved native results, capture proofs, manifest and end in data/mi210/pf1-expand-r2-20261104. No crossover or NPD claim; the box remains open. Delegated diagnosis of the control bias and preparation of a successor under the existing rule. YARN r4 was already filed inconclusive; later continuous-chain evidence closes its parent.
+
+## 14:23Z — Prepare M4 fold scope binding and Q38 launch regression
+
+PF1 pilot r4 had already been filed inconclusive; r6 later completed the bounded pilot screen. Q38 recipe r5 preparation continues with its source and plan re-seal; commissioned an independent no-model full-job directory regression check and M4 current-role fold specification binding. File-triggered handoffs registered. No new measurement or completed gate is asserted.
