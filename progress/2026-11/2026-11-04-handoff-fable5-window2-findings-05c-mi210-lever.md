@@ -51,3 +51,7 @@ Prepared a fresh PF1 r3 three-block retry under the original model/source pins, 
 ## 14:34Z — Prepare standalone CPU quality capture replay
 
 Prepared a standalone quality consistency auditor and its synthetic source controls for independent replay; fixed the relocated test to load its adjacent auditor, 12 tests pass. This is not a quality measurement, owner-loss qualification, or role binding. Current role/model/image/recipe source pins, reviewed plan, owner-loss proof and paired captures remain necessary. The P12 prior C1 np1/2/4 placement capture exists; the request-overlapping /slots busy observer remains missing, so a focused runnable follow-up is being prepared. Historical Q38 recipe r3 was already filed inconclusive.
+
+## 14:35Z — Resolve M4 current-source scope and identify missing backend bindings
+
+Recompiled current orchestrator priors into an isolated scope, including a pre-existing dirty registry, with 13 logical roles resolving to four physical primaries and no resolver errors. The full-NUMA independent guard passes; default guard rejects eight alias/port mappings. Existing candidate FOLD-SPEC covers the derived scope but its generic adapter bypasses the explicitly required enrolled GPU V2 and CPU recipe entries, so historical BOUND does not complete the box or authorize a fold. Archived source-bound scope and validation evidence; commissioned scoped backend binding implementation. No inference or live-lineup conclusion.
