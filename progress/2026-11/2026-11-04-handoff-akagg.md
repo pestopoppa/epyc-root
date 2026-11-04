@@ -291,3 +291,7 @@ The P1b DFlash CPU build was already filed as a bounded build pass. Filed NEMO m
 ## 21:54Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
 
 The P1b db18 HIP build was already filed as a bounded build pass. Filed floor v19, paired C6 GPU r13 and NEMO marker build r8 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent floor v20, NEMO marker r9 and paired GPU diagnostic r14 after publisher smokes passed; full results remain pending.
+
+## 21:58Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
+
+The CH-31 fixture event was already filed as a synthetic-control pass. Filed floor v20, paired C6 GPU r14 and NEMO marker build r9 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent NEMO marker r10, floor v21 and paired GPU diagnostic r15 after publisher smokes passed; full results remain pending.
