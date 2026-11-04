@@ -1,0 +1,35 @@
+{
+  "target": {
+    "id": "Class:src/llama-kv-cache.h:llama_kv_cache",
+    "name": "llama_kv_cache",
+    "type": "Class",
+    "filePath": "src/llama-kv-cache.h"
+  },
+  "direction": "upstream",
+  "impactedCount": 31,
+  "risk": "HIGH",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 17,
+    "processes_affected": 0,
+    "modules_affected": 2
+  },
+  "byDepthCounts": {
+    "1": 17,
+    "2": 11,
+    "3": 3
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Cluster_1172",
+      "hits": 1,
+      "impact": "direct"
+    },
+    {
+      "name": "Llama_",
+      "hits": 1,
+      "impact": "direct"
+    }
+  ]
+}
