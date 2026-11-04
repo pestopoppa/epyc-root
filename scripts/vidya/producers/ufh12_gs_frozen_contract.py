@@ -24,7 +24,7 @@ def validate(record,context_bytes):
     if r.get('context_sha256') != digest(context_bytes):
         raise ValueError('context digest mismatch')
     ctx=json.loads(context_bytes)
-    if ctx.get('schema')!='epyc.gs-frozen-query-native-context.v1' or r.get('cohort_sha256')!=ctx.get('cohort_sha256'):
+    if ctx.get('schema')!='epyc.gs-frozen-query-native-context.v2' or type(ctx.get('synthetic')) is not bool or r.get('cohort_sha256')!=ctx.get('cohort_sha256'):
         raise ValueError('context scope mismatch')
     if r.get('phase')!=ctx.get('phase') or not r.get('captured_at'):
         raise ValueError('phase or timestamp mismatch')

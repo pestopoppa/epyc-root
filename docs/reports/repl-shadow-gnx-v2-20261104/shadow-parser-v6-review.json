@@ -1,0 +1,41 @@
+{
+  "schema": "epyc.independent-packet-review.v1",
+  "row": "ufh14-repl-emb23a-parse-v6-20261104",
+  "reviewed_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v6",
+  "disposition": "v5 grant-wait bootstrap defect addressed; no new material static defect identified in requested scope",
+  "source_fingerprints": {
+    "launch.sh": "e058f7ba36eb4e6d17f07978d2fc29ec2995c950b9c445479684b6413271a210",
+    "spec.json": "2ddb0abe1a6507f98546bd1b4d809005bca715b9d0f8b6f2efba4550808048f8",
+    "pilot.py": "0706e7a5ed578ff939ae8b494093b2ff6d29c1e01fd89794341506b1dd760d53",
+    "runtime_guard.py": "96bae9edd4b01addb24ee21e6e4ddba120a0c3f462e91da2847a3761fd39c4b3",
+    "selection.py": "32bb91e014860eb62f64230c60f47f54720cf73a27ba65605ec98b154b57c796",
+    "closure.py": "c47791b531d2374ec65f04e0bd1df01389c147fa835df8d922e76df850ab5196",
+    "closure.json": "468697a4f31fdfd219a8d942026fa6caaeaa5075a28e488823fd2df773b6de50",
+    "bootstrap_guard.sh": "00c1e4634de33a184e9806c1229fda54979cb1bfc4302e97390c9eda240ade5a",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+    "inner_command.py": "d89035ff1b154e8e9951aa0bb02efac2a627d510e8811355cd4b790550358dbf"
+  },
+  "findings": [
+    {
+      "item": "grant-time recheck",
+      "detail": "filler --cmd begins with literal bootstrap_guard.sh SHA-256 check, then runs bootstrap guard binding the executable symlink/realpath/python bytes, venv config, closure.py, linkage verifier and closure.json; only afterward invokes Python closure verify then exec pilot. The same guard also runs before filler startup."
+    },
+    {
+      "item": "negative tests",
+      "detail": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_bootstrap.py test_runtime_guard.py test_inner_command.py: 4 PASS. Inner test mutates guard, config, closure, verifier, manifest or interpreter symlink after the first check; Python execution marker remains absent."
+    },
+    {
+      "item": "prior controls",
+      "detail": "Native selection requires stop=true, stop_type eos/word, truncated=false and strict in-range single digit; grant guard checks active UTC window, deadline, row path, STOP path and CPU affinity. Mapped ggml/llama/mtmd checked against production manifest; copied linkage checker included in closure."
+    },
+    {
+      "item": "results and cleanup",
+      "detail": "Spec official glob out/run/* excludes native dryrun result, actual ContextBundle.get and byte check precede open, and success requires 3 valid selections, actual open, validated stream and owned-server termination/wait."
+    }
+  ],
+  "limitations": [
+    "Checks reduce the grant-wait tamper gap but source/dependencies remain mutable after verification; no immutable execution snapshot is established.",
+    "STOP is checked between synchronous operations; outer engine enforces hard deadline.",
+    "Review is static with offline fixture tests only: no inference, no publisher/status polling, no claim of smoke or official success."
+  ]
+}

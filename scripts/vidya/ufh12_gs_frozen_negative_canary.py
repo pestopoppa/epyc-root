@@ -36,7 +36,7 @@ def run(sidecar: Path, output: Path):
     output.mkdir(parents=True)
     mod = ingest_sources.SOURCES[SOURCE].load()
     native, = mod.native_rows(sidecar)
-    if native['row'].get('schema') != 'epyc.vidya.ufh12_gs_frozen_coverage.v1':
+    if native['row'].get('schema') != 'epyc.vidya.ufh12_gs_frozen_coverage.v2':
         raise ValueError('not frozen-query coverage')
     claim = mod.project(native)
     if claim.applicability != {'backend':'cpu'} or claim.protocol_id or claim_tuple.grade(claim)[:2] != ('Judged','Located'):

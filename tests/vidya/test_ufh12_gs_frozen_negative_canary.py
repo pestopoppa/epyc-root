@@ -6,14 +6,14 @@ from adapters import ufh12_gs_coverage as adapter
 import ufh12_gs_frozen_negative_canary as canary
 
 
-def make_capture(path, *, synthetic=None):
+def make_capture(path, *, synthetic=True, context_schema='epyc.gs-frozen-query-native-context.v2'):
     fc = adapter._frozen
     gc = fc.v
     rows = [{'id':str(i), 'text':'q'+str(i), 'stratum':'fixture',
              'answer_named_verbatim':False, 'code_intent':False} for i in range(500)]
     cohort = {'n':500, 'rows':rows, 'scope':'synthetic fixture'}
     (path/'cohort.json').write_text(json.dumps(cohort))
-    context = {'schema':'epyc.gs-frozen-query-native-context.v1',
+    context = {'schema':context_schema,
         'cohort_sha256':gc.digest((path/'cohort.json').read_bytes()), 'phase':'run',
         'scope':'synthetic fixture', 'filler_id':'fixture'}
     if synthetic is not None:
@@ -77,9 +77,9 @@ def test_planner_positive_control_for_explicit_synthetic_target(tmp_path):
                for c in answer.get('evidence',{}).get('claims',[]))
 
 
-@pytest.mark.xfail(strict=True, reason="producer ignores explicit synthetic fixture declaration")
 def test_declared_synthetic_fixture_is_labeled_as_synthetic(tmp_path):
     source = tmp_path/'input'; source.mkdir()
     sidecar = make_capture(source, synthetic=True)
     emitted = json.loads(sidecar.read_text())
     assert emitted['extra']['synthetic'] is True
+    assert emitted['extra']['synthetic_scope'] == 'producer-declared'

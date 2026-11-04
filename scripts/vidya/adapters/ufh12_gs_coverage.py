@@ -15,7 +15,7 @@ _frozen = importlib.util.module_from_spec(_fspec)
 _fspec.loader.exec_module(_frozen)
 
 def _validate(row):
-    return _frozen.validate(row) if row.get('schema') == _frozen.SCHEMA else _producer.validate(row)
+    return _frozen.validate(row) if row.get('schema') in {_frozen.SCHEMA, _frozen.LEGACY_SCHEMA} else _producer.validate(row)
 
 def native_rows(path):
     path = Path(path).resolve()

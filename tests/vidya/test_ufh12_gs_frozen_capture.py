@@ -9,7 +9,7 @@ class CaptureTest(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);rows=[{'id':str(i),'text':'q'+str(i),'stratum':'fixture','answer_named_verbatim':False,'code_intent':False} for i in range(500)]
    cohort={'n':500,'rows':rows,'scope':'synthetic fixture'};(p/'cohort.json').write_text(json.dumps(cohort))
-   context={'schema':'epyc.gs-frozen-query-native-context.v1','cohort_sha256':gc.digest((p/'cohort.json').read_bytes()),'phase':'run','scope':'synthetic fixture','filler_id':'fixture'}
+   context={'schema':'epyc.gs-frozen-query-native-context.v2','cohort_sha256':gc.digest((p/'cohort.json').read_bytes()),'phase':'run','scope':'synthetic fixture','filler_id':'fixture','synthetic':True}
    (p/'run-context.json').write_text(json.dumps(context));ctx=(p/'run-context.json').read_bytes()
    lane=[{'id':str(i),'cosine':1-i/100} for i in range(10)]
    r=gc.seal({'id':'0','query_sha256':gc.digest(b'q0'),'cohort_sha256':context['cohort_sha256'],'phase':'run','stratum':'fixture','answer_named_verbatim':False,'code_intent':False,'token_count_eg2':4,'context_sha256':gc.digest(ctx),'captured_at':'now','stores':{'episodic':{'bge':lane,'eg2':lane},'strategy':{'bge':lane,'eg2':lane}}})
