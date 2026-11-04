@@ -223,3 +223,7 @@ Completed KPF-17.4d multi-ubatch safety control: source review and a planted cou
 ## 19:45Z — Validate captured-inferior adoption and cleanup in a model-free actual-GDB fixture.
 
 A model-free actual-GDB starti regression passed: after the inferior was captured but before its GDB receipt, the verified subreaper adopted and reaped it when the captured debugger was stopped and killed; no false COMPLETE appeared. The fixture does not establish cleanup discovery of an entirely unknown orphan or qualify the oracle packet. Corrected stale build qualification prose.
+
+## 19:48Z — Exercise post-debugger discovery and captured-PID cleanup of an initially unrecorded inferior.
+
+KPF-17 model-free actual-GDB regression expanded to 4/4 passing: a previously unrecorded inferior was discovered only after debugger death and subreaper adoption, then PID/birth/pidfd captured before termination and reaped without false COMPLETE. The modeled pre-spawn STOP does not validate the production entry; multilevel descendants and oracle packet integration remain open.
