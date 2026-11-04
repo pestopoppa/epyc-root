@@ -1,0 +1,30 @@
+--- a/kpf26-granted-code-20261102/job.sh
++++ b/kpf26-granted-code-20261102/job.sh
+@@ -8,6 +8,12 @@
+ server_pid= api_pid=
+ cleanup(){ for p in "$api_pid" "$server_pid"; do if [[ -n "$p" ]] && kill -0 "$p" 2>/dev/null; then kill -TERM "$p" 2>/dev/null || :; for _ in {1..30}; do kill -0 "$p" 2>/dev/null || break; sleep 1; done; if kill -0 "$p" 2>/dev/null; then kill -KILL "$p" 2>/dev/null || :; fi; wait "$p" 2>/dev/null || :; fi; done; }
+ trap cleanup EXIT INT TERM
++# KPF-26 source/binary freshness is checked before any server is started.
++EXPECTED_ORCH_COMMIT=868275acb64ef3d490ecac6952518ae187fe74d3
++[[ "$(git -C "$ORCH" rev-parse HEAD)" == "$EXPECTED_ORCH_COMMIT" ]] || { echo "KPF26 preflight: source pin mismatch" >&2; exit 2; }
++[[ -z "$(git -C "$ORCH" status --porcelain --untracked-files=normal)" ]] || { echo "KPF26 preflight: source tree is dirty" >&2; exit 2; }
++(cd "$D/bin" && sha256sum --check "$D/BINARIES.sha256")
++LD_LIBRARY_PATH="$D/bin" bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh "$D/bin/llama-server" "$D/bin"
+ run=$(mktemp -d "$D/${arm}.XXXXXX"); mkdir -m 700 "$run/trace" "$run/slots"
+ cd "$ORCH"
+ LD_LIBRARY_PATH="$D/bin" taskset -c "$FILLER_CPUS" "$D/bin/llama-server" -m "$MODEL" --host 127.0.0.1 --port "$PORT" -np 4 -c 98304 -t 8 -tb 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-fork-min-tokens 1024 --metrics --slot-save-path "$run/slots" >"$run/server.log" 2>&1 & server_pid=$!
+--- a/kpf26-granted-scout-20261102/job.sh
++++ b/kpf26-granted-scout-20261102/job.sh
+@@ -8,6 +8,12 @@
+ server_pid= api_pid=
+ cleanup(){ for p in "$api_pid" "$server_pid"; do if [[ -n "$p" ]] && kill -0 "$p" 2>/dev/null; then kill -TERM "$p" 2>/dev/null || :; for _ in {1..30}; do kill -0 "$p" 2>/dev/null || break; sleep 1; done; if kill -0 "$p" 2>/dev/null; then kill -KILL "$p" 2>/dev/null || :; fi; wait "$p" 2>/dev/null || :; fi; done; }
+ trap cleanup EXIT INT TERM
++# KPF-26 source/binary freshness is checked before any server is started.
++EXPECTED_ORCH_COMMIT=868275acb64ef3d490ecac6952518ae187fe74d3
++[[ "$(git -C "$ORCH" rev-parse HEAD)" == "$EXPECTED_ORCH_COMMIT" ]] || { echo "KPF26 preflight: source pin mismatch" >&2; exit 2; }
++[[ -z "$(git -C "$ORCH" status --porcelain --untracked-files=normal)" ]] || { echo "KPF26 preflight: source tree is dirty" >&2; exit 2; }
++(cd "$D/bin" && sha256sum --check "$D/BINARIES.sha256")
++LD_LIBRARY_PATH="$D/bin" bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh "$D/bin/llama-server" "$D/bin"
+ run=$(mktemp -d "$D/${arm}.XXXXXX"); mkdir -m 700 "$run/trace" "$run/slots"
+ cd "$ORCH"
+ LD_LIBRARY_PATH="$D/bin" taskset -c "$FILLER_CPUS" "$D/bin/llama-server" -m "$MODEL" --host 127.0.0.1 --port "$PORT" -np 4 -c 98304 -t 8 -tb 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-fork-min-tokens 1024 --metrics --slot-save-path "$run/slots" >"$run/server.log" 2>&1 & server_pid=$!

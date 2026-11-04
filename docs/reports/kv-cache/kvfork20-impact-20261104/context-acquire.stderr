@@ -1,0 +1,11 @@
+file:///usr/local/share/npm-global/lib/node_modules/gitnexus/dist/mcp/local/local-backend.js:643
+        throw new Error(`Multiple repositories indexed. Specify which one with the "repo" parameter. Available: ${labels.join(', ')}`);
+              ^
+
+Error: Multiple repositories indexed. Specify which one with the "repo" parameter. Available: epyc-inference-research (/mnt/raid0/llm/epyc-inference-research), epyc-orchestrator (/mnt/raid0/llm/epyc-orchestrator), llama.cpp (/mnt/raid0/llm/llama.cpp), llama.cpp (/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925), workspace, fa4-r13-native-repair-20261030, codex-ni-fa4-exact-set-successor-r14-20261030, codex-ni-yarn-128k-mi210-r5-20261030, epyc-root (/mnt/raid0/llm/tmp/dashboard-v26-telemetry-integrity-20260821), epyc-orchestrator (/mnt/raid0/llm/tmp/kvfork/kpf20-v3/source), oab31-private-fixture-q2-20261029, h-repl-embedding-retrieval, root-index-miniature-fixture-20261029, epyc-inference-research (/mnt/raid0/llm/worktrees/mains/akx-p2c-live-ordering-20260915), epyc-root (/mnt/raid0/llm/worktrees/mains/autokernel-hardening-20260915), epyc-root (/mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908), epyc-inference-research (/mnt/raid0/llm/worktrees/mains/autokernel-unified-research-20260908), epyc-inference-research (/mnt/raid0/llm/worktrees/mains/autokernel-v27-integration-20260821), epyc-root (/mnt/raid0/llm/worktrees/mains/codex-inf42-takeover), epyc-inference-research (/mnt/raid0/llm/worktrees/mains/codex-ni-research-code), epyc-root (/mnt/raid0/llm/worktrees/mains/h-speculative-decoding-mtp), epyc-inference-research (/mnt/raid0/llm/worktrees/mains/refactor-research-code-01a16fc3), epyc-root (/workspace)
+    at LocalBackend.resolveRepo (file:///usr/local/share/npm-global/lib/node_modules/gitnexus/dist/mcp/local/local-backend.js:643:15)
+    at async LocalBackend.callTool (file:///usr/local/share/npm-global/lib/node_modules/gitnexus/dist/mcp/local/local-backend.js:1069:22)
+    at async contextCommand (file:///usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli/tool.js:87:20)
+    at async Command.<anonymous> (file:///usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli/lazy-action.js:33:9)
+
+Node.js v22.23.4

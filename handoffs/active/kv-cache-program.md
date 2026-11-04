@@ -823,6 +823,7 @@ KPF-22..24 and KPF-26 need P1 live.
   `parallel_step_executor.compute_waves`, `typed_decisions/fanout_policy.py` and `routes/delegate.py`. Add grep for
   member-call paths. Report the risks.
   - *(2026-11-02, KPF-20 row `kvfork20-p2-impact-20261102`.)* Three publication smokes failed: the first two could not acquire the busy q0 lock, and the third refused its precondition because the retained launcher still pinned an older job SHA. The retained launcher was synchronized with the reviewed v3 source. Three failures trigger the lineage rule; the dispatcher subsequently reported this row qualified and armed. Do not republish or create a new ID to evade the limit; inspect its resulting evidence when it ends. No GitNexus impact or completed KPF-20 result is claimed. [no-belief: failed qualification only]
+  - *(2026-11-04, run-end filing `kvfork20-p2-impact-20261102`.)* **INCONCLUSIVE**, rc1 at 2026-11-02T22:54:10Z. The index completed at pinned `488b31c96c6c148768508b3dcaefcb6c4c297664`, but the first context query omitted the repository selector and GitNexus refused multiple registered repositories (`out/context-acquire.stderr`). `out/results.jsonl` contains only the partial member-call scan: 0/14 contexts and 0/14 impacts, so no risk clearance or KPF-22 completion follows. Filed through `file_result.py`; the filing receipt acknowledges this end event. Prepare the explicit-repository correction under the existing lineage restriction; do not evade it with a new ID. [no-belief: incomplete software impact scan]
 - [x] **KPF-21: trunk-first fan-out.** Wherever N children share a trunk (scouting `scout_stage.py`, HS-19 ✅ 2026-11-02 [belief: cc]
   scheduled dispatch, `parallel_step_executor` waves, `routes/delegate.py`), issue the trunk once: either the parent
   turn itself, or a prefill-only request with `max_tokens: 0` and `checkpoint_at: [len(trunk)]` once KPF-15 exists.
@@ -835,6 +836,7 @@ KPF-22..24 and KPF-26 need P1 live.
   per waiter, FCFS no-starvation kept) using KVU-15c's `fp_history` match length.
   - **This is KVU-6's second bullet and INF-05 KV-3's lever.** Implement it here once. KVU-6's and KV-3's owners
     record the overlap and close their items; this session never ticks their boxes.
+  - [x] **KPF-22 scan-driver repair: bind context and impact queries to an explicit repository and reject partial results.** Offline repair artifact `docs/reports/kv-cache/kpf20-impact-repair-20261104/`; three tests pass. This closes only the captured argument defect; the current-source impact pass and LPM parent stay open. ✅ 2026-11-04 [no-belief: software repair and incomplete scans; no measurement pass]
 - [ ] **KPF-23: reconcile with `PrefixRouter`.**
   - Prefix affinity no longer needs `id_slot`: the server picks the fork source by LCP across all slots. Keep
     pinning only for **session continuity** (same session → its own slot), only when that slot is idle, and never
