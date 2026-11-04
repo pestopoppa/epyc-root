@@ -143,3 +143,7 @@ C6-Q4-MMVQ-FIX: c6-n4-shared-harness-r2-20261104 stopped rc75 at disk-floor admi
 ## 20:51Z — File host-scope admission failure and publish sealed successor
 
 CH-26b: ch26-hostscope-abi-20261104 stopped at disk-floor admission rc75 without RESULT.json; original packet and smoke evidence retained at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-hostscope-abi-retained-20261104/ and filed inconclusive. Published ch26-hostscope-abi-r2-20261104 after smoke PASS with unchanged six-window functional-only rule. No continuous coverage, contention, placement or floor conclusion follows. C6 source inspection found a plausible n=4 correction inconsistency in the specialized MMVQ path; it remains unvalidated.
+
+## 20:53Z — File second failed host-scope admission and publish third attempt
+
+CH-26b: ch26-hostscope-abi-r2-20261104 stopped rc75 at disk-floor admission without RESULT.json. Retained original packet and raw smoke evidence at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-hostscope-abi-r2-retained-20261104/ and filed inconclusive. Published ch26-hostscope-abi-r3-20261104 after one-capture smoke PASS; the six-window functional diagnostic is not a coverage, placement, contention or floor result. This is the third attempt in the lineage; park it if admission fails again.
