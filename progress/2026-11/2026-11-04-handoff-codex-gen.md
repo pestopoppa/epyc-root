@@ -83,3 +83,7 @@ Wrote the FILED receipt for `triattention-s8c-plan-property-20261104` using its 
 ## 16:41Z — Acknowledge filed TriAttention planner property V2
 
 Wrote the FILED receipt for `triattention-s8c-plan-property-v2-20261104` using its existing inconclusive verdict. Four size groups were recorded, but the n=2 gap-nonmutation fixture was invalid and the 65-group suite did not complete; this is not evidence of a candidate defect. Native result SHA-256 `9a8103593e0eb74fcd53a3c565992d8b0cffaf3d1cbbe2343f816fea4127ce7c`. The owner separately records the corrected successor as passing and has already ticked S8-C-PLAN-PROPERTY-V2; no checkbox was reticked.
+
+## 16:42Z — Acknowledge filed TriAttention corrected planner test
+
+Wrote the FILED receipt for `triattention-s8c-plan-property-v3-20261104` using its existing PASS verdict. All 65 size groups and 3,112,886 deterministic synthetic checks passed, including the 0.7f legacy boundary. Native result SHA-256 `106e2b00ba6988e268e6fb2a9aa9e2ef362c5671dc873a8da753d8a952561ef3`; source and case evidence is retained in `docs/evidence/triattention-s8c-plan-property-v3-20261104/`. The owning S8-C-PLAN-PROPERTY-V2 box was already ticked. This is a synthetic planner test, not a real cache, server, model, quality or performance result.
