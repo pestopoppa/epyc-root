@@ -91,3 +91,7 @@ Acknowledged the previously filed original P5 A1 rc75 disk-floor outcome: target
 ## 16:11Z — Prepare and verify a native KPF-30 position-field patch
 
 Acknowledged the previously filed KPF-17.4d custody r1 rc75 disk-floor result: full build and custody manifest absent; one-object qualification is not full build acceptance. Prepared an unapplied patch against integrated source 8952a0f69 that emits token position in the native KPF-30 row, so it can match the strict reader. Four compiled-format/parser contract tests and five existing phase-reader tests pass; source apply-check passes. The P3 reference impact LOW is not candidate-bound clearance; phase brackets, runner integration, linked runtime and two-window measurement remain open.
+
+## 16:18Z — Reconcile original gauge failure with the completed successor
+
+Acknowledged the already-filed original gauge rc1 INCONCLUSIVE: the grant filename check failed before a server/model request; the full output is preserved and no gauge value came from it. Corrected two stale preparation notes to state that the separate r2 full capability observation subsequently completed, including its strictly interior mapping timestamps; the one-request result does not answer the np8 collapse. Preparing the next occupancy study without inventing a historical build-time attestation or changing the approved measurement authority.
