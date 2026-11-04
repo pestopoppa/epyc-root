@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Build-only accepted iff full prospective 6ec877068 build, parent 84d0a316, reference options and source integrity match, all ggml DSOs are included in build receipt and custody manifest, pinned linkage helper passes, compiled knobs pass, and completion reopens files and compiler hashes. First-object 4-CPU smoke proves progress only. No inference, historical equivalence or correctness verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+ "id": "kvu-kpf174-custody-r4-20261104",
+ "keep": [
+  "RESULT.json",
+  "CUSTODY.json",
+  "runs/**",
+  "input/**",
+  "v3/**",
+  "source/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/launch.sh",
+  "sha256": "3fa11eff80e92d098d16fa25ebc66c5d2c37b0bdc935b122fdd122522f522b5d"
+ },
+ "lineage": "kvu-kpf174-custody",
+ "min_window_s": 2400,
+ "notes": "Fresh-ID build-only successor after r3 rc75 disk-floor. No prior completion or qualification inherited. Original 150 GiB floor remains enforced; reservation remains 48 GiB. Dedicated reusable detached source worktree /mnt/raid0/llm/worktrees/kpf174-custody-r4-source-20261104 was freshly materialized by git worktree, never copied from production. Exact source commit, parent, tracked cleanliness, 3304 source bytes and inputs reverified; stat inventories regenerated. Model weights never read or hashed. First-object 4-CPU publisher smoke proves progress only and has NOT RUN for this successor. Full prospective HIP build is allocated CPU work. All custody, all seven ggml/shared-library receipt hashes, pinned linkage helper, compiled knobs, completion file reopening and host compiler digests retained. Witness successor must pin validated receipt+custody hashes before GPU publication.",
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-04T16:46:25Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/STOP",
+ "supersedes": "kvu-kpf174-custody-r3-20261104",
+ "unit_key": "files",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3"
+}
