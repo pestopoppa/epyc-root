@@ -347,3 +347,7 @@ Filed akx-c6-q4k-n4-paired-seed-diagnostic-r26-20261104 inconclusive after rc75 
 ## 22:45Z — Ready BF16 sentinel build and independent floor successor
 
 Filed akxall8-c5-declared-floor-v31-20261104 inconclusive after rc75 disk-floor with no full result; retained terminal evidence under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published akx-gdn-bf16-sentinel-build-r16-20261104 and akxall8-c5-declared-floor-v32-20261104 after publisher smoke PASS. Full BF16 build and floor calibration remain pending. The reported v9 HIP event was already filed.
+
+## 22:48Z — File interrupted build and floor, prepare independent successors
+
+Filed akxall8-c5-declared-floor-v32-20261104 and akx-gdn-bf16-sentinel-build-r16-20261104 inconclusive after rc75 disk-floor, with no complete results; retained terminal evidence under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published independent akx-gdn-bf16-sentinel-build-r17-20261104 and akxall8-c5-declared-floor-v33-20261104 after publisher smoke PASS; full build and floor calibration remain pending. The reported MoE-Spec event was already filed.
