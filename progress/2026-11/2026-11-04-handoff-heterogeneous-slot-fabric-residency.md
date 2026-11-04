@@ -147,3 +147,7 @@ Removed the clean superseded KPF-17.4d r4 detached source worktree after its res
 ## 17:02Z — The already-consumed r5 preparation is still awaiting host disk recovery before publisher qualification.
 
 The r5 preparation event was already consumed; free space is approximately 137 GiB, below the unchanged 150 GiB smoke floor. No row published and no full build verdict.
+
+## 17:19Z — Retry custody build qualification under the unchanged disk floor
+
+Retried publisher qualification for `kvu-kpf174-custody-r5-20261104`; the four-CPU smoke started, with its outcome pending at handoff. Earlier attempts returned WAIT at the 150 GiB disk floor. No row publication or full custody verdict is asserted. The KPF-18 layout-matched control still needs native construction and custody qualification; the KPF-26 API successor is unnecessary because both original scoped diagnostics were filed.
