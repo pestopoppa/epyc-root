@@ -39,3 +39,7 @@ Wrote the FILED receipt for `lsa-27b-packet-mocks-20261104` using its existing P
 ## 15:43Z — Acknowledge filed LSA native normalization diagnostic
 
 Wrote the FILED receipt for `lsa-native-norm-row1185-20261104` using its existing PASS verdict. The filed one-row result reports native norm 7.362187385559082 and zero exact-row mismatches against the frozen row 1185 fixture. Native result SHA-256 `f2aa56caa63532f9e84726731e61cd37cda6be4b1e867236a61b6737265877fa`. This is a bounded normalization diagnostic; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
+
+## 15:45Z — Acknowledge filed Vidya source-capture control
+
+Wrote the FILED receipt for `vidya-exp01-proxy-wire-20261104` using its existing PASS verdict. The bounded source-capture and projection control completed its six native launches with measurement=false. Native result SHA-256 `a5ea662e20bee1923117a3ae3e114c050655b3c338799a4847597fb5b3694d62`. This control yields no speed, pilot, port, futility or formal-gate verdict. The filed result leaves canonical source registration and planning-context integration open; no parent checkbox was ticked.
