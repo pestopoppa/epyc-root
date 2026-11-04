@@ -159,3 +159,7 @@ Filed 1f7 HIP coverage build pass: 572 compile entries, 141 HIP objects, 292 GNU
 ## 18:47Z — Publish ANSI-safe CH-LB1.1 successor and file 732 CPU coverage build
 
 Published akagg-ch-lb1-c5-ansi-r2-20261104 after four-CPU publisher smoke PASS using the hash-verified source-bound prior smoke build and a real state-guard test; nine parser controls passed. Full test gates and CAS remain open. Filed 732 CPU coverage build rc0 with 431 reviewed entries, 292 coverage notes and 307 verified artifacts retained; no workload or replay conclusion.
+
+## 18:58Z — Investigate v9 floor claim loss and prepare W5s status repair
+
+Investigated v9 claim-loss evidence: 6863 successful lock samples through 18:17:32.317Z, followed 0.5 seconds later by absent ancestry after 48 units. Existing monitor already stops and joins before its final lock proof; no evidence establishes whether ancestry disappeared before workload completion, so no claim-loss rule was weakened. W5s successor status and ownership controls are being repaired; no publisher PASS yet.
