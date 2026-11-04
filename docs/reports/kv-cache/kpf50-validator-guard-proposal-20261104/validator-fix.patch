@@ -1,0 +1,85 @@
+--- a/docs/reports/kv-cache/kpf50-child-evidence-20261104/child_evidence.py
++++ b/docs/reports/kv-cache/kpf50-child-evidence-20261104/child_evidence.py
+@@ -65,6 +65,22 @@
+     }
+ 
+ 
++def write_evidence(source: Path, output: Path, rendered: str) -> None:
++    """Write evidence only when the destination is a distinct file."""
++    source = Path(source)
++    output = Path(output)
++    try:
++        aliases = source.resolve() == output.resolve()
++        if not aliases and output.exists():
++            aliases = source.samefile(output)
++    except OSError as exc:
++        raise EvidenceError(f"cannot verify output path is distinct from source: {exc}") from exc
++    if aliases:
++        raise EvidenceError("output path aliases source JSONL; refusing to overwrite raw evidence")
++    output.parent.mkdir(parents=True, exist_ok=True)
++    output.write_text(rendered)
++
++
+ def main() -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("jsonl", type=Path)
+@@ -77,8 +93,10 @@
+         parser.error(str(exc))
+     rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
+     if args.out:
+-        args.out.parent.mkdir(parents=True, exist_ok=True)
+-        args.out.write_text(rendered)
++        try:
++            write_evidence(args.jsonl, args.out, rendered)
++        except (OSError, EvidenceError) as exc:
++            parser.error(str(exc))
+     else:
+         print(rendered, end="")
+     return 0
+--- a/docs/reports/kv-cache/kpf50-child-evidence-20261104/test_child_evidence.py
++++ b/docs/reports/kv-cache/kpf50-child-evidence-20261104/test_child_evidence.py
+@@ -3,7 +3,7 @@
+ import tempfile
+ import unittest
+ from pathlib import Path
+-from child_evidence import EvidenceError, validate
++from child_evidence import EvidenceError, validate, write_evidence
+ 
+ RUN = "kpf18-20261104T120000Z-7"
+ def row(suffix, *, run_id=RUN, http=200, error=None, count=60000):
+@@ -46,6 +46,35 @@
+         for raw in ('{bad json}\n', '[]\n'):
+             self.path.write_text(raw)
+             with self.subTest(raw=raw), self.assertRaises(EvidenceError): validate(self.path, RUN)
++    def test_rejects_same_path_and_symlink_output_without_changing_source(self):
++        self.write([row(i) for i in range(4)])
++        original = self.path.read_bytes()
++        symlink = Path(self.tmp.name) / "rows-link.jsonl"
++        symlink.symlink_to(self.path)
++        for alias in (self.path, symlink):
++            with self.subTest(alias=alias), self.assertRaisesRegex(EvidenceError, "aliases source"):
++                write_evidence(self.path, alias, "must not be written")
++            self.assertEqual(self.path.read_bytes(), original)
++
++    def test_rejects_hard_link_output_without_changing_source(self):
++        self.write([row(i) for i in range(4)])
++        original = self.path.read_bytes()
++        hardlink = Path(self.tmp.name) / "rows-hardlink.jsonl"
++        hardlink.hardlink_to(self.path)
++        with self.assertRaisesRegex(EvidenceError, "aliases source"):
++            write_evidence(self.path, hardlink, "must not be written")
++        self.assertEqual(self.path.read_bytes(), original)
++        self.assertEqual(hardlink.read_bytes(), original)
++
++    def test_writes_to_distinct_output_and_creates_parent(self):
++        self.write([row(i) for i in range(4)])
++        original = self.path.read_bytes()
++        output = Path(self.tmp.name) / "nested" / "evidence.json"
++        rendered = "{\"status\": \"partial\"}\n"
++        write_evidence(self.path, output, rendered)
++        self.assertEqual(output.read_text(), rendered)
++        self.assertEqual(self.path.read_bytes(), original)
++
+     def test_rejects_foreign_non_child_row(self):
+         self.write([{"run_id": "other", "role": "trunk_first"}] + [row(i) for i in range(4)])
+         with self.assertRaises(EvidenceError): validate(self.path, RUN)
