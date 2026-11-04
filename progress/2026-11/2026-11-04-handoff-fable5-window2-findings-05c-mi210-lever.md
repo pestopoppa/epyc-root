@@ -123,3 +123,7 @@ PF1-EXPAND-2: filed r5 rc75 disk-floor, 36/48 cells and control 0.87455 at L256,
 ## 16:36Z — Prepared P12 retry boundary after prior conflicting process exited.
 
 P12-NEXT-4: r1 and r2 remain inconclusive. The exact process named by r2 clean-runtime refusal has exited. A bounded agent is preparing a fresh C1 retry preserving all guards; completion file registered. C1b busy-probe evidence remains a separate requirement within the same open box.
+
+## 19:22Z — Filed Q38P compatibility probe and preserved scoped parity evidence.
+
+Q38P-4: filed q38p-window-probe rc0 PASS for ROCm 10.1 dispatch on the in-kernel driver and vLLM 4B generation with in-window own-PID KFD/VRAM evidence. Three first-100-character prefixes match; later prompt 3 output diverges. No timing or full-output parity claim. Native packet preserved and prospective belief wiring enrolled; comparator remains open.

@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc0: S1a/S1b gfx90a vadd PASS with own-PID KFD VRAM 4.26/4.38 GiB; S2 torch dispatch MI210 sum 2097152 with own KFD; S3 vLLM generated 3 prompts with 32.08 GiB own KFD; all S4 C5 runs rc0 with 8.85 GiB own KFD; no foreign KFD. Parity report-only: first 100 characters match for all 3, common prefixes 302/172/228 chars, third differs later. Compatibility only, no timing claim. Full Q38P-4 comparator remains open.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T19:22:09+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T19:19:59Z reason=complete",
+ "filed_at": "2026-11-04T19:22:09+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:Q38P-4",
+ "id": "q38p-window-probe-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/q38p-window-probe-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/q38p-window-probe-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "workspace-ec",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc0: S1a/S1b gfx90a vadd PASS with own-PID KFD VRAM 4.26/4.38 GiB; S2 torch dispatch MI210 sum 2097152 with own KFD; S3 vLLM generated 3 prompts with 32.08 GiB own KFD; all S4 C5 runs rc0 with 8.85 GiB own KFD; no foreign KFD. Parity report-only: first 100 characters match for all 3, common prefixes 302/172/228 chars, third differs later. Compatibility only, no timing claim. Full Q38P-4 comparator remains open.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/q38p-window-probe-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "q38p-window-probe-20261104",
+ "row_verdict": "pass",
+ "rule": "Q38P window probe (correctness/compatibility only, no timing claim). Question: does ROCm 10.x userspace dispatch on the live in-kernel amdgpu (host kernel 6.14.0-37) on the MI210, and does vLLM load and generate there? Stages, each with VRAM and KFD pids sampled DURING the step and our own pid/container's KFD VRAM recorded: S1a vadd-6.2 (/opt/rocm 6.2) and S1b vadd-10.1 (isolated TheRock 10.1.0 gfx90a tarball, /mnt/raid0/llm/rocm-10.1.0-q38p/install) must print PASS gfx90a; S2 vllm/vllm-openai-rocm@sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba (vLLM 0.33.0, torch 2.13.0+rocm10.0.0) torch dispatch must report MI210 and sum 2097152; S3 vLLM offline greedy generate Qwen3-4B-Instruct-2507 bf16 (3 raw prompts x 64 tokens, enforce_eager, max_model_len 4096); S4 llama.cpp champion c72ec82f5 C5 store (ROCm 6.2) llama-completion on the same weights as a bf16 GGUF, greedy. RESULT.json verdict PASS iff S1a, S1b, S2, S3 each rc 0 with expected output, own KFD residency proven (own pid or container pid on KFD; own VRAM >= 2 GiB for S3/S4) and no foreign KFD pid, and every S4 run rc 0; else FAIL with the failing stage named. Greedy parity S3 vs S4 (common prefix, first 100 chars) is REPORTED as parity_ok and never gates PASS. A FAIL at S1b answers Q38P-3 stage 1 (10.1 userspace does not run on the in-kernel driver; packaged amdgpu needed in the v11 window); a FAIL at S2/S3 only declines the Q38P-4 engine comparison. Stop rule: single pass of the 5 stages, no repeats; stop at the STOP file or window deadline (verdict STOPPED, rerun from scratch); a stage failure does not stop later stages. q38p3-stage1-20261104 refuses to run unless this RESULT.json verdict is PASS.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "4bb20ec7dafa31d705987f64c3f19e8aa3a6750bab6113d90ceebc2290baf789",
+  "result": "pass",
+  "status": "filed"
+ }
+}
