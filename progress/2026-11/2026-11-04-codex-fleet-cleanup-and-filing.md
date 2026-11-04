@@ -42,3 +42,21 @@ Key results:
 - Tool gap: file_result.py rejects verdict "invalid"; no-result runs filed as `fail` with "INVALID RUN" rationale.
 
 [no-belief: session-cleanup progress note; the filed verdicts are carried by filing-done receipts]
+
+## Later the same day
+- Verdict recording: 5 boxes newly ticked (LSA-SCREEN-1-CPU-WINDOW, EXP01-EXT, PF1-EXPAND-LOADTHREADS,
+  KPF-32.IMPACT, REPL-EMB-2.11-QUERY); ~32 boxes got dated partial/fail checkpoints with next steps
+  (main `080d14f02`, `8433e2e38`, `981ef5ba9`). No tick on umbrella or failed boxes (no closure inflation).
+- Follow-up rows published READY (smoke PASS):
+  - `pf1-expand-r2-20261104` — PF1-EXPAND-2 crossover at L=384/448/512/768, 5 reps (box `ca5246d1a`, `9b3053853`).
+  - `handoff-kvu19-p5-champion-a1-20261104` — KVU-19-P5A1: does the champion masked-block skip remove the
+    58-61% L3 decode tax (box `0b45d7d0a`). Split-per-slot NOT re-opened: operator decided "keep shared 393k"
+    on 2026-10-03 on the same trigger; re-ask only if this row returns NO-RECOVERY.
+  - `cafe4-v10-mtp-rollback-build-v3-20261104` — rollback examples/CMakeLists linked nonexistent target
+    `common` (-> bare -lcommon); fixed to `llama-common`. Link only verified when the full row runs.
+- Dispatcher restarted by operator with max_live=4 (hs-dispatcher window); first pass resumed 5 sessions on
+  pending run-end events (kvu, akagg, fable5-window2, agentic-serving-harness-fixes, df2).
+- Dispatcher window behaviour: windows close on DONE/pause only; "continue" sessions keep a pane-status window
+  until resumed (handoff_sessions.py ~1340-1356). Not changed.
+- Shared clone /workspace holds an unpushed local duplicate of the morning progress commit (`d29de8d4b`,
+  same content as main `3ccf46e8c`); drop it at next clone sync, do not push it.

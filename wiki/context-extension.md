@@ -386,3 +386,10 @@ Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) �
 The historical E1 (9a3f1392a) vs W (b0ba1d427) replay on the 27B Q8 found own-PID VRAM flat at every stage and identical between images: A0 (262k) 37.13 GiB, A1 (YaRN 524k) 47.63 GiB through 500k. The ~10.5 GiB A1−A0 gap is load-time KV sizing, not prefill growth. Caveat: the replay reset the server between the 128k/240k and 400k/500k groups, while the original E1 ran one unbroken chain, so cross-chain growth is still open (YARN-E1-MEM-CHAIN). Indicative np1 decode: ~33 tok/s at 3k, 17.2 at 128k, 12.3 at 240k, 8.3 at 400k, 7.0 at 500k.
 
 Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/active/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): YARN E1-MEM chain
+
+- The single-server 128k→500k chain (r2) COMPLETED with a peak of 47.6 GiB, under the 55 GiB budget. The r1/r2 rows shared one RESULT path (an infra defect the owner must fix).
+- The Jet-Long 2048-token short-framing diagnostic was filed DIAGNOSTIC-RESULT/pass: exactly 2,048 evaluated tokens, zero cached, no truncation.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [long-context program](../handoffs/active/long-context-program.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)

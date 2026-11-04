@@ -1606,3 +1606,11 @@ Sources: [KV unified rollout and evidence](../handoffs/active/kv-cache-program.m
 - [K35/P3 lifecycle and KVU-19a-2 reuse](../progress/2026-11/2026-11-04-handoff-kvu.md)
 - [Reuse decision](../progress/evidence/kvu19a2-upstream-20261104/REUSE-DECISION.md) and [issue draft](../progress/evidence/kvu19a2-upstream-20261104/ISSUE-DRAFT.md)
 - [File-result path correction](../docs/reports/kv-cache/file-result-path-20261104.md) and [KPF-26 outcome rubric](../docs/reports/kv-cache/kpf26-code-requal-v1-20261104/OUTCOME-RUBRIC.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): KVU-16 results
+
+- **KVU-16h:** L3 decode loss of 58-61 % under the unified KV meets the P5 and split-per-slot triggers. Split-per-slot is not re-opened (operator kept shared 393k on 2026-10-03 on the same trigger); KVU-19-P5A1 tests whether the champion masked-block skip removes the tax, and only a NO-RECOVERY result re-asks.
+- **KVU-16g:** no first-prompt TTFT tax. **KVU-16a:** 35 GiB non-KV VRAM for 27B Q8.
+- kvu upstream issue filed: ggml-org/llama.cpp#31654.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [KV program](../handoffs/active/kv-cache-program.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)

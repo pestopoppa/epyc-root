@@ -1238,3 +1238,10 @@ Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-e
 - **Disposition.** No port triggered; T2/T3 stay open. An earlier r2 ratio was invalid (a 4-thread smoke sample mixed into 24-thread official samples) and was replaced by the isolated r3. Optional extension (needs operator authorization): IQ4_KT vs Q4_K_M to 8 launches per arm, at most 10 minutes.
 
 Sources: [EXP01 findings](../docs/findings/exp01-trellis-proxy-pilot-20261104.md) · [EXL3 CPU/MI210 session record](../progress/2026-11/2026-11-04-handoff-exl3-cpu-mi210.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): EXL3/trellis EXP01
+
+- EXP01-EXT: IQ4_KT/Q4_K_M tg128 = 0.953 [0.937, 0.969]. The result is inconclusive and makes no speed case.
+- The EXP01 pilot r2 is invalid as a ratio: one 4-thread smoke sample was mixed into 11 official 24-thread samples. The post-hoc exclusion was withdrawn, and an isolated r3 rerun decides port/futility.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)
