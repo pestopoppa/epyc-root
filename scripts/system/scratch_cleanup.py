@@ -58,6 +58,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import worktree_gate as wg  # noqa: E402
+import scratch_lease  # noqa: E402
 
 REPO_ROOT = HERE.parent.parent
 GUARDED_RM = REPO_ROOT / "scripts" / "safety" / "guarded_rm.sh"
@@ -145,9 +146,10 @@ def _keep_marker(path: str) -> str | None:
         for m in wg.KEEP_MARKERS:
             mp = os.path.join(path, m)
             if os.path.exists(mp):
-                return mp
+                # scratch-lease Phase 1: an expired lease releases the marker; no lease = legacy keep
+                return mp if scratch_lease.marker_blocks(path) else None
     side = path.rstrip("/") + ".epyc-keep"
-    return side if os.path.exists(side) else None
+    return side if os.path.exists(side) and scratch_lease.marker_blocks(path) else None
 
 
 def _evidence(path: str) -> tuple[list[str], bool]:

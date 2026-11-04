@@ -71,6 +71,9 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import scratch_lease  # noqa: E402  (KEEP-marker lease: an expired lease releases the marker)
+
 SCHEMA = "epyc.worktree_gate.report.v1"
 LLM = "/mnt/raid0/llm"
 DEFAULT_REPOS = [
@@ -390,7 +393,9 @@ def _protected_reason(wt: Worktree, canonical_roots: list[str]) -> str | None:
         return "read-only view"
     for m in KEEP_MARKERS:
         if os.path.exists(os.path.join(wt.path, m)):
-            return f"keep marker {m}"
+            if scratch_lease.marker_blocks(wt.path):   # no lease (legacy) or unexpired lease
+                return f"keep marker {m}"
+            break                                      # expired lease: the marker no longer protects
     gd = _gitdir(wt.path)
     if gd is not None and (gd / "epyc-keep").exists():
         return f"keep marker {gd / 'epyc-keep'}"

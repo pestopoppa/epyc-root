@@ -73,12 +73,19 @@ allocate_tick() {
 # disk-audit-20261028/destructive-scratch-keeper-v5.patch).
 REAP_DAYS=${REAP_DAYS:-1}
 REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE=${REAP_IDLE:-1}; REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-1}
+# SCRATCH LEASE (operator-directed scratch-leak structural fix 2026-11-04, Phase 1): a KEEP marker with an EXPIRED lease
+# (scripts/system/scratch_lease.py; leases in tmp/.scratch-leases/) no longer blocks; a marker WITHOUT a lease keeps the old
+# never-auto behaviour; lease module unloadable => every marker blocks (fail closed).
+# REAP_WORKTREES=1 (default 0 = OFF) extends the idle rule to /mnt/raid0/llm/worktrees/* linked worktrees, acted on ONLY through
+# scripts/system/worktree_gate.py: its `check` must say REMOVABLE (landed + clean + unreferenced + idle), removal is its own
+# `remove` (git worktree remove, never --force, never prune).
+REAP_WORKTREES=${REAP_WORKTREES:-0}
 reap_filed() {   # called only by --reap-now / --reap-dry-run / --backfill-report (never by the loop); the janitor owns the cadence
   local mode=live ln
   if [ $DRY = 1 ]; then mode=dry; else
     touch "${S}reap-last"; mkdir -p "${S}reap"   # disk_janitor.sh reads this stamp so a manual --reap-now and its own pass never double up
   fi
-  REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
+  REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_WORKTREES=$REAP_WORKTREES REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
   python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
 import os, sys, re, json, glob, time, hashlib, tarfile, subprocess, fnmatch, shutil, datetime as dt
 E = os.environ; MODE = E['REAP_MODE']; LEGACY = E['REAP_LEGACY'] == '1'; DAYS = float(E['REAP_DAYS'])
@@ -208,9 +215,21 @@ def other_refs(root, ids):
         if rid in ids or os.path.exists(G + rid + '.complete'): continue
         if root in json.dumps(m): b.append('ready-manifest:' + rid)
     return sorted(set(b))
+SYSDIR = E.get('SCRATCH_LEASE_SYSDIR', '/workspace/scripts/system')
+try:
+    import importlib.util as _ilu
+    _sp = _ilu.spec_from_file_location('scratch_lease', os.path.join(SYSDIR, 'scratch_lease.py'))
+    LEASE = _ilu.module_from_spec(_sp); _sp.loader.exec_module(LEASE)
+except Exception as _e:
+    LEASE = None; out('LEASE-ERR', 'all', 'scratch_lease unloadable (%r); every KEEP marker blocks' % (_e,))
 def keepmarkers(root):
+    '''markers that still BLOCK. Legacy (no lease) => every marker blocks; an EXPIRED lease releases them; any error blocks.'''
     f = [m for m in MARKERS if os.path.exists(os.path.join(root, m))]
     if os.path.exists(root + '.epyc-keep'): f.append('sibling .epyc-keep')
+    if f and LEASE is not None:
+        try:
+            if not LEASE.marker_blocks(root, now): out('LEASE-EXPIRED', os.path.basename(root), 'KEEP marker released by expired lease'); return []
+        except Exception: pass
     return f
 # ---- keep set ----
 def keepset(root, globs):
@@ -480,6 +499,25 @@ if IDLE or LEGACY:
         except Exception as e:
             tally('SKIP-ERR', 0); out('SKIP-ERR', tag, 'guard/plan error %r; item skipped' % (e,))
     for c, (n, b) in sorted(cnt.items()): out('IDLE-SUMMARY', c, '%d dirs, %s' % (n, gib(b)))
+# ---- WORKTREE IDLE RULE (REAP_WORKTREES=1 only; default OFF): worktree_gate REMOVABLE trees only, removed only by its `remove` ----
+if E.get('REAP_WORKTREES', '0') == '1':
+    WTROOT = E.get('REAP_WORKTREE_ROOT', '/mnt/raid0/llm/worktrees'); WG = os.path.join(SYSDIR, 'worktree_gate.py')
+    for d in (sorted(os.scandir(WTROOT), key=lambda e: e.name) if os.path.isdir(WTROOT) else []):
+        p = d.path; tag = d.name + '[worktree]'
+        try:
+            if not d.is_dir(follow_symlinks=False) or d.name in ('mains', 'pool') or d.name.startswith('.'): continue
+            if not os.path.isfile(os.path.join(p, '.git')): continue   # linked worktrees only; nested dirs are never walked
+            if keepmarkers(p): out('KEEP', tag, 'KEEP marker; never auto-reaped'); continue
+            if GUARD_ERR: out('SKIP-ERR', tag, GUARD_ERR); continue
+            ck = subprocess.run(['python3', WG, 'check', '--min-idle-days', str(IDLE_DAYS), p], capture_output=True, text=True, timeout=1800)
+            verdict = (ck.stdout.strip().split('\t') + ['', ''])[1]
+            if ck.returncode != 0 or verdict != 'REMOVABLE': out('WT-KEEP', tag, (ck.stdout.strip() or ck.stderr.strip())[:200]); continue
+            if not take_budget(tag, 0): continue
+            if MODE == 'dry': out('WOULD-REMOVE-WT', tag, ck.stdout.strip()[:200]); continue
+            rm = subprocess.run(['python3', WG, 'remove', '--min-idle-days', str(IDLE_DAYS), p], capture_output=True, text=True, timeout=3600)
+            out('REMOVED-WT' if rm.returncode == 0 else 'WT-REFUSED', tag, (rm.stdout.strip() or rm.stderr.strip())[:200])
+        except Exception as e:
+            out('SKIP-ERR', tag, 'worktree guard error %r; item skipped' % (e,))
 out('PASS-SUMMARY', MODE, 'reaped-or-would %d dirs, %s (caps %d dirs / %s)' % (budget['n'], gib(budget['b']), MAXDIRS, gib(MAXB)))
 if MODE == 'live' and os.path.isdir(TRASH):
     r = subprocess.run(['bash', '/workspace/scripts/safety/trash-sweep.sh', '--older-than', '1'], env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
