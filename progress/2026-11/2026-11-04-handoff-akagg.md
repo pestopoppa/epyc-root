@@ -103,3 +103,7 @@ Consumed 28 completed bounded reports. CH26 owned capture, CH27 global custody, 
 ## 15:12Z — Acknowledge GDN HIP build affinity refusal and prepare a safe successor.
 
 Filed already-judged GDN build refusal: rc1 before compilation because the grant affinity contained four cores and their SMT siblings while the job required exactly four logical CPUs. No full-build or native-op result. Preserved native RESULT sha 1c930529313016708a48ca82db8f76b608548732a8e6b1157fc1f0dd2f35f3bc; successor repair and independent controls are in progress.
+
+## 15:22Z — Acknowledge the filed P1b build experiment and advance replay custody prerequisites.
+
+Acknowledged previously filed source-pinned sync17 build rc0 with 435 planned compile entries, 295 coverage notes, server and CLI linkage; retained artifacts already exist. Exact recipe parity, full compiler/source custody, model identity and replay remain unproven; concrete successor work delegated.
