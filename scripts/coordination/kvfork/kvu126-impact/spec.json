@@ -1,0 +1,22 @@
+{
+  "id": "kvu126-impact-beb7-20261104",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached research source beb7b859c55e8b8c720a77ac442eec6a5b0393bf capture native upstream impacts for wave_observation and analyze_prospective and full verbose skipped-file coverage. Stop on answer: both native source-bound impacts and nonpartial scan completion. Stop on futility: HIGH/CRITICAL, source drift, missing graph binding, ambiguity, parser failure, STOP or deadline. Interim gate is futility-only. Smoke source references are partial progress only; skipped files have no edit-safety claim.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-12.6",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104",
+  "keep": ["out/**", "identity.json", "job.py", "source_integrity.py", "test_source_integrity.py", "launch.sh", "spec.json", "README.md", "gitnexus-guard.py"],
+  "lineage": "kvu126-impact-beb7",
+  "kind": "compute",
+  "notes": "Model-free static index and impact. 150 GiB disk floor unchanged. Does not authorize target inference or imply source edit safety."
+}
