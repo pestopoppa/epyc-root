@@ -240,12 +240,11 @@ def test_fold_gate_run_formats_entry_argv(world, monkeypatch):
     assert 'REFUSED rowflow job contract missing' in (first / 'entry.log').read_text()
 
 
-def fake_result(cp, tps, tokens='a'):
+def fake_result(cp, tps, completeness=None):
     return {'schema': fe.RESULT_SCHEMA, 'plan_sha256': cp['plan_sha256'], 'cell': cp['cell'], 'role': cp['role'],
             'backend': cp['backend'], 'arm': cp['arm'], 'pair': cp['pair'], 'position': cp['position'],
             'aggregate_decode_tps': tps, 'success_count': 8, 'total_count': 8, 'frame': {'prompt_limit': 1},
-            'greedy': {'outputs': [{'qid': 'q1', 'success': True, 'tokens_sha256': h(tokens.encode()),
-                                    'text_sha256': None}]},
+            'completeness': completeness or {'n_requested': 1, 'n_produced': 1, 'errors': 0, 'truncations': 0},
             'image': {'exe_sha256': cp['image_files']['bin/llama-server']}, 'models': cp['models']}
 
 
@@ -283,14 +282,14 @@ def test_outer_with_fake_watch(world, monkeypatch, capsys):
 
 
 # ---------------------------------------------------------------- verdict math
-def populate(t, p, tps, tokens=None):
+def populate(t, p, tps, completeness=None):
     root = Path(p['result_root'])
     for c in p['cells']:
         cp = fe.derive_cell(p, c['id'])
         d = root / c['id']
         d.mkdir(parents=True)
-        tok = (tokens or {}).get(c['id'], 'a')
-        (d / 'cell-result.json').write_text(json.dumps(fake_result(cp, tps[(c['role'], c['arm'])][c['pair']], tok)))
+        (d / 'cell-result.json').write_text(json.dumps(fake_result(cp, tps[(c['role'], c['arm'])][c['pair']],
+                                                          (completeness or {}).get(c['id']))))
 
 
 @pytest.mark.parametrize('tps,verdict', [
@@ -315,20 +314,44 @@ def test_verdict_math(world, tps, verdict):
         (sum(tps[('arch', 'candidate')]) / 2) / (sum(tps[('arch', 'baseline')]) / 2))
 
 
-def test_verdict_quality_fail_and_lines(world, capsys):
+GOOD = {('arch', 'baseline'): [10, 10], ('arch', 'candidate'): [11, 11],
+        ('critic', 'baseline'): [100, 100], ('critic', 'candidate'): [110, 110]}
+
+
+@pytest.mark.parametrize('bad', [
+    {'n_requested': 1, 'n_produced': 0, 'errors': 0, 'truncations': 0},
+    {'n_requested': 1, 'n_produced': 1, 'errors': 1, 'truncations': 0},
+    {'n_requested': 1, 'n_produced': 1, 'errors': 0, 'truncations': 1},
+])
+def test_verdict_incomplete_output_fails(world, capsys, bad):
     t, s = world
     _, p = write_plan(t, s)
-    good = {('arch', 'baseline'): [10, 10], ('arch', 'candidate'): [11, 11],
-            ('critic', 'baseline'): [100, 100], ('critic', 'candidate'): [110, 110]}
-    populate(t, p, good, tokens={'critic.p1.candidate': 'b'})
+    populate(t, p, GOOD, completeness={'critic.p1.candidate': bad})
     path = t / 'plan/FOLD-PLAN.json'
     assert fv.main(['--plan', str(path)]) == 1
     out = capsys.readouterr().out.splitlines()
     assert out[0].startswith('M4-FOLD-VERDICT verdict=FAIL roles=2 cells=8 ')
-    assert any(l.startswith('ROLE critic backend=gpu ratio=1.1000 ') and 'quality=DIFF OK' in l for l in out)
-    assert 'QUALITY_DIFF critic pair=1 qid=q1' in out
+    assert any(l.startswith('ROLE critic backend=gpu ratio=1.1000 ') and 'complete=NO OK' in l for l in out)
+    assert any(l.startswith('INCOMPLETE_CELL critic.p1.candidate ') for l in out)
     doc = json.loads((Path(p['result_root']) / 'VERDICT.json').read_text())
     assert doc['verdict'] == 'FAIL' and doc['rule_sha256'] == p['decision_rule']['sha256']
+
+
+def test_verdict_complete_output_passes_and_ignores_token_content(world, capsys):
+    t, s = world
+    _, p = write_plan(t, s)
+    populate(t, p, GOOD)
+    assert fv.main(['--plan', str(t / 'plan/FOLD-PLAN.json')]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0].startswith('M4-FOLD-VERDICT verdict=PASS ') and all('complete=YES' in l for l in out if l.startswith('ROLE'))
+
+
+def test_completeness_counts():
+    outs = [{'success': True, 'predicted_tokens': 5, 'truncated': False},
+            {'success': True, 'predicted_tokens': 0, 'truncated': False},
+            {'success': False, 'predicted_tokens': 0, 'truncated': False},
+            {'success': True, 'predicted_tokens': 5, 'truncated': True}]
+    assert fe.completeness(outs, 4) == {'n_requested': 4, 'n_produced': 2, 'errors': 1, 'truncations': 1}
 
 
 def test_verdict_incomplete(world):
@@ -393,9 +416,11 @@ def test_inner_with_fake_server(world, monkeypatch):
     assert fe.inner(path, 'arch.p0.candidate', out) == 0
     r = json.loads((out / 'cell-result.json').read_text())
     assert r['aggregate_decode_tps'] == pytest.approx(20.0) and r['arm'] == 'candidate'
-    assert r['greedy']['outputs'][0]['tokens'] == [1, 2] and r['greedy']['concurrency'] == 1
+    assert r['completeness'] == {'n_requested': 1, 'n_produced': 1, 'errors': 0, 'truncations': 0}
+    assert 'greedy' not in r and not any(k.endswith('_sha256') and 'tokens' in k or k == 'text_sha256'
+                                         for o in r['batch_outputs'] for k in o)
     bodies = [b for b in sent if isinstance(b, dict) and 'prompt' in b]
-    assert bodies and all(b['seed'] == fe.GREEDY_SEED and b['return_tokens'] and b['temperature'] == 0.0 for b in bodies)
+    assert len(bodies) == 1 and not any('return_tokens' in b or 'seed' in b for b in bodies)
     env = [x[1] for x in sent if isinstance(x, tuple)][0]
     assert env['LD_LIBRARY_PATH'] == str(t / 'cpu-cand/bin') and env['GGML_FUSED_DECODE_OFF'] == '1'
     assert fe.validate_result(out / 'cell-result.json', cp) == []

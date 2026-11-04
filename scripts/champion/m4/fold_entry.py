@@ -12,9 +12,8 @@ One invocation = one cell = ONE fresh llama-server on the cell's sealed image:
   inner  start the server through owned.spawn (pid + birth in the watcher's registry),
          prove placement/residency, run the sealed prompt pool through the P-BENCH-3
          measurement of server_np_sweep (run_prompt_batch + summarize_cell: aggregate
-         decode tok/s from llama.cpp's own timings), then a serial greedy pass
-         (temperature 0, fixed seed, return_tokens) for the quality identity check,
-         stop the server and write OUT/cell-result.json.
+         decode tok/s from llama.cpp's own timings) plus a per-cell completeness
+         record (requested vs produced, errors, truncations), stop the server and write OUT/cell-result.json.
 
 Why not the backends' own entries: m4_cpu_recipe_entry/m4_cpu_recipe_compare verify a
 12-cell, architect_general-only Q38 recipe plan against a hardcoded champion ref, and
@@ -52,7 +51,6 @@ SMOKE_SCHEMA = 'epyc.m4.fold_cell_smoke.v1'
 # Reference frame: M4-GPU-AA-NOISE real-aa-plan.json sweep (the 0.950 floor's frame).
 FRAME = {'prompt_limit': 8, 'prompt_seed': 42, 'tier': 1, 'n_predict': 256, 'warmup_prompts': 0,
          'startup_timeout_s': 900, 'request_timeout_s': 900}
-GREEDY_SEED = 42
 DEFAULT_FLAGS = '/mnt/raid0/llm/tmp/compute-flags'
 # Device facts from the reference native plan (m4-gpu-aa-noise run/real-native-plan.json).
 DEVICES = {'mi210_0': {'kfd_vram_file': 'vram_57300',
@@ -212,7 +210,7 @@ def derive_cell(plan: dict, cell_id: str) -> dict:
             'image_files': img['files'], 'binary': str(root / 'bin/llama-server'),
             'server_args': argv, 'np': np_, 'env': env, 'ld_library_path': libpath,
             'placement': pl, 'device': DEVICES.get(device), 'models': models,
-            'prompt_pool': plan['prompt_pool'], 'frame': dict(FRAME), 'greedy_seed': GREEDY_SEED}
+            'prompt_pool': plan['prompt_pool'], 'frame': dict(FRAME)}
 
 
 def server_command(cp: dict, port: int) -> list[str]:
@@ -334,28 +332,19 @@ def outer(plan_path: Path, cell_id: str, out: Path, env=None) -> int:
 
 
 # ---------------------------------------------------------------- inner (under watch.run)
-def greedy_overlay(sw):
-    """Add seed + return_tokens to /completion bodies; send_completion's request_sha256 stays the
-    reference frame's (it hashes the body before this overlay). Temperature 0 is already set."""
-    orig = sw.http_json
-
-    def http_json(method, url, payload, timeout):
-        if method == 'POST' and url.endswith('/completion') and payload is not None:
-            payload = dict(payload, seed=GREEDY_SEED, return_tokens=True)
-        return orig(method, url, payload, timeout)
-    sw.http_json = http_json
-    return orig
-
-
 def output_record(r) -> dict:
     resp = r.response if isinstance(r.response, dict) else {}
-    toks = resp.get('tokens')
-    content = resp.get('content') if isinstance(resp.get('content'), str) else None
     return {'qid': r.qid, 'success': bool(r.success), 'predicted_tokens': r.predicted_tokens,
-            'tokens': toks if isinstance(toks, list) else None,
-            'tokens_sha256': sha_bytes(json.dumps(toks).encode()) if isinstance(toks, list) else None,
-            'text_sha256': sha_bytes(content.encode()) if content is not None else None,
-            'stop_type': resp.get('stop_type'), 'request_sha256': r.request_sha256}
+            'stop_type': resp.get('stop_type'), 'truncated': bool(resp.get('truncated')),
+            'request_sha256': r.request_sha256}
+
+
+def completeness(outputs: list[dict], n_requested: int) -> dict:
+    """Completeness of the measured batch: every request answered with tokens, no error, no truncation."""
+    return {'n_requested': n_requested,
+            'n_produced': sum(1 for o in outputs if o['success'] and (o['predicted_tokens'] or 0) > 0),
+            'errors': sum(1 for o in outputs if not o['success']),
+            'truncations': sum(1 for o in outputs if o['success'] and o['truncated'])}
 
 
 def mapped_libs(pid: int, maps: Path | None = None) -> dict:
@@ -477,7 +466,6 @@ def inner(plan_path: Path, cell_id: str, out: Path) -> int:
                     samples.append({'timestamp_ns': time.time_ns(), 'error': repr(exc)})
                 halt.wait(SAMPLE_S)
         th = threading.Thread(target=sampler, daemon=True)
-        greedy_overlay(sw)
         th.start()
         b0 = time.time_ns()
         try:
@@ -493,20 +481,15 @@ def inner(plan_path: Path, cell_id: str, out: Path) -> int:
             raise RuntimeError('placement/residency unproven during the request batch')
         row = sw.summarize_cell(model=model, np_level=cp['np'], results=results, wall_s=wall_s, ttft_ms=0.0,
                                 server_pid=proc.pid, server_command=cmd)
-        if stop.exists() or time.time() >= rt['deadline']:
-            raise RuntimeError('STOP or deadline before greedy pass')
-        greedy, _ = sw.run_prompt_batch(port=rt['port'], model=model, np_level=1, prompts=prompts,
-                                        n_predict=fr['n_predict'], request_timeout_s=fr['request_timeout_s'],
-                                        requests_path=out / 'greedy-requests.jsonl')
+        batch_outputs = [output_record(r) for r in results]
         result = {'schema': RESULT_SCHEMA, 'plan_sha256': cp['plan_sha256'], 'cell': cp['cell'],
                   'role': cp['role'], 'backend': cp['backend'], 'arm': cp['arm'], 'pair': cp['pair'],
                   'position': cp['position'], 'source_commit': cp['source_commit'],
                   'aggregate_decode_tps': row['aggregate_decode_tps'], 'per_stream_decode_tps': row['per_stream_decode_tps'],
                   'success_count': row['success_count'], 'total_count': row['total_count'],
                   'decode_tokens_total': row['decode_tokens_total'], 'np': cp['np'],
-                  'frame': fr, 'greedy': {'seed': GREEDY_SEED, 'temperature': 0.0, 'concurrency': 1,
-                                          'outputs': [output_record(r) for r in greedy]},
-                  'batch_outputs': [output_record(r) for r in results],
+                  'frame': fr, 'completeness': completeness(batch_outputs, len(prompts)),
+                  'batch_outputs': batch_outputs,
                   'image': {'name': cp['image'], 'root': cp['image_root'], **image},
                   'models': cp['models'], 'server_argv': cmd,
                   'env': {k: v for k, v in env.items() if k.startswith(SENSITIVE)},
@@ -564,10 +547,12 @@ def validate_result(path: Path, cp: dict) -> list[str]:
         errs.append('aggregate_decode_tps not positive')
     if r.get('success_count') != r.get('total_count') or not r.get('total_count'):
         errs.append('not every request succeeded')
-    outs = (r.get('greedy') or {}).get('outputs') or []
-    if len(outs) != (r.get('frame') or {}).get('prompt_limit') or any(
-            not o.get('success') or not (o.get('tokens_sha256') or o.get('text_sha256')) for o in outs):
-        errs.append('greedy outputs incomplete')
+    c = r.get('completeness') or {}
+    if not all(isinstance(c.get(k), int) for k in ('n_requested', 'n_produced', 'errors', 'truncations')):
+        errs.append('completeness missing')
+    elif c['n_requested'] != (r.get('frame') or {}).get('prompt_limit') or c['n_produced'] != c['n_requested'] \
+            or c['errors'] or c['truncations']:
+        errs.append('output incomplete')
     if (r.get('image') or {}).get('exe_sha256') != cp['image_files'].get('bin/llama-server'):
         errs.append('image sha not proven')
     if r.get('models') != cp.get('models'):

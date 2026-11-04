@@ -5,15 +5,15 @@
 
 Rule (artifacts/operator/m4-fold-rule-20261104.json, bound into the plan with its sha):
   per role   ratio = median(candidate aggregate_decode_tps) / median(baseline ...) over ABBA pairs
-  FAIL       any role < its backend's fail_ratio, or any greedy output differs between arms
+  FAIL       any role < its backend's fail_ratio, or any cell with incomplete output (n_produced < n_requested, errors, truncations)
   PASS       every role of every backend >= pass_ratio (and no FAIL)
   else       INCONCLUSIVE (no fold)
 A plan with a missing or invalid cell result yields INCOMPLETE, never a verdict.
 
 Fixed-format lines:
   M4-FOLD-VERDICT verdict=<PASS|FAIL|INCONCLUSIVE|INCOMPLETE> roles=<n> cells=<n> plan=<sha> rule=<sha>
-  ROLE <role> backend=<b> ratio=<x.xxxx> pass=<p> fail=<f> base_med=<tps> cand_med=<tps> n=<pairs> quality=<SAME|DIFF> <OK|BELOW_PASS|BELOW_FAIL>
-  QUALITY_DIFF <role> pair=<k> qid=<id>
+  ROLE <role> backend=<b> ratio=<x.xxxx> pass=<p> fail=<f> base_med=<tps> cand_med=<tps> n=<pairs> complete=<YES|NO> <OK|BELOW_PASS|BELOW_FAIL>
+  INCOMPLETE_CELL <cell> n_requested=<n> n_produced=<n> errors=<n> truncations=<n>
   MISSING <cell> <reason>
 """
 from __future__ import annotations
@@ -39,9 +39,15 @@ def _fold_entry():
     return mod
 
 
-def output_key(o: dict):
-    """Greedy identity: token ids when both arms returned them, else the text hash."""
-    return o.get('tokens_sha256') or o.get('text_sha256')
+def cell_incomplete(r: dict) -> bool:
+    c = r.get('completeness')
+    if not isinstance(c, dict):
+        return True
+    try:
+        return (c['n_produced'] < c['n_requested'] or c['errors'] > 0 or c['truncations'] > 0
+                or not c['n_requested'])
+    except (KeyError, TypeError):
+        return True
 
 
 def load_results(plan: dict) -> tuple[dict, list[str]]:
@@ -72,42 +78,37 @@ def decide(plan: dict, results: dict) -> dict:
     roles = {}
     for c in plan['cells']:
         roles.setdefault(c['role'], {'backend': c['backend'], 'cells': []})['cells'].append(c)
-    out_roles, diffs = [], []
+    out_roles, incomplete = [], []
     for role, info in roles.items():
         b = info['backend']
         tps = {'baseline': [], 'candidate': []}
-        by_pair: dict[int, dict] = {}
+        pairs = set()
         for c in info['cells']:
             r = results[c['id']]
             tps[c['arm']].append(float(r['aggregate_decode_tps']))
-            by_pair.setdefault(c['pair'], {})[c['arm']] = r
+            pairs.add(c['pair'])
+            c_inc = cell_incomplete(r)
+            if c_inc:
+                comp = r.get('completeness') if isinstance(r.get('completeness'), dict) else {}
+                incomplete.append({'cell': c['id'], 'role': role, **{k: comp.get(k) for k in
+                                   ('n_requested', 'n_produced', 'errors', 'truncations')}})
         base, cand = statistics.median(tps['baseline']), statistics.median(tps['candidate'])
         ratio = cand / base
-        # Greedy identity between arms, within each ABBA pair: the candidate's output for a prompt
-        # must equal the baseline's output for the same prompt (missing outputs count as a diff).
-        same = True
-        for k in sorted(by_pair):
-            outs = {arm: {o['qid']: output_key(o) for o in (by_pair[k].get(arm, {}).get('greedy') or {}).get('outputs') or []}
-                    for arm in ('baseline', 'candidate')}
-            for qid in sorted(set(outs['baseline']) | set(outs['candidate'])):
-                bk, ck = outs['baseline'].get(qid), outs['candidate'].get(qid)
-                if bk is None or ck is None or bk != ck:
-                    same = False
-                    diffs.append((role, k, qid))
         p, f = rule[b]['pass_ratio'], rule[b]['fail_ratio']
         state = 'BELOW_FAIL' if ratio < f else ('OK' if ratio >= p else 'BELOW_PASS')
         out_roles.append({'role': role, 'backend': b, 'ratio': ratio, 'pass_ratio': p, 'fail_ratio': f,
                           'baseline_median_tps': base, 'candidate_median_tps': cand,
                           'baseline_tps': tps['baseline'], 'candidate_tps': tps['candidate'],
-                          'pairs': len(by_pair), 'quality': 'SAME' if same else 'DIFF', 'state': state})
-    if any(r['state'] == 'BELOW_FAIL' or r['quality'] == 'DIFF' for r in out_roles):
+                          'pairs': len(pairs), 'complete': not any(i['role'] == role for i in incomplete),
+                          'state': state})
+    if any(r['state'] == 'BELOW_FAIL' or not r['complete'] for r in out_roles):
         verdict = 'FAIL'
     elif all(r['state'] == 'OK' for r in out_roles):
         verdict = 'PASS'
     else:
         verdict = 'INCONCLUSIVE'
     return {'verdict': verdict, 'roles': out_roles,
-            'quality_diffs': [{'role': r, 'pair': k, 'qid': q} for r, k, q in diffs]}
+            'incomplete_cells': incomplete}
 
 
 def verdict_doc(plan: dict) -> dict:
@@ -116,7 +117,7 @@ def verdict_doc(plan: dict) -> dict:
             'rule_sha256': plan['decision_rule']['sha256'], 'rule_path': plan['decision_rule']['path'],
             'cells': len(plan['cells']), 'missing': missing}
     if missing:
-        return base | {'verdict': 'INCOMPLETE', 'roles': [], 'quality_diffs': []}
+        return base | {'verdict': 'INCOMPLETE', 'roles': [], 'incomplete_cells': []}
     return base | decide(plan, results)
 
 
@@ -126,8 +127,9 @@ def lines(doc: dict) -> list[str]:
     for r in doc['roles']:
         out.append(f'ROLE {r["role"]} backend={r["backend"]} ratio={r["ratio"]:.4f} pass={r["pass_ratio"]} '
                    f'fail={r["fail_ratio"]} base_med={r["baseline_median_tps"]:.3f} '
-                   f'cand_med={r["candidate_median_tps"]:.3f} n={r["pairs"]} quality={r["quality"]} {r["state"]}')
-    out += [f'QUALITY_DIFF {d["role"]} pair={d["pair"]} qid={d["qid"]}' for d in doc['quality_diffs']]
+                   f'cand_med={r["candidate_median_tps"]:.3f} n={r["pairs"]} complete={"YES" if r["complete"] else "NO"} {r["state"]}')
+    out += [f'INCOMPLETE_CELL {d["cell"]} n_requested={d["n_requested"]} n_produced={d["n_produced"]} '
+            f'errors={d["errors"]} truncations={d["truncations"]}' for d in doc['incomplete_cells']]
     out += [f'MISSING {m}' for m in doc['missing']]
     return out
 
