@@ -3617,6 +3617,7 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   flag to qwentts.cpp on an `experimental` branch and promote it as the next speech kernel version; then drop the
   shim and `SHIM_NPROCS` from the launch manifest.
   - HIP build prerequisite: use detached qwentts source `aca703283192f892f1e85636fbc48832c4d5560a` and its detached ggml `b86f660238dcc1a83b7cbf5a72d355a965de9245` to build `tts-server` for gfx90a with `GGML_HIP=ON`. Model: none; CPU build quarter; estimate 3600 s. Stop-on-answer when a source-bound linked build, own-library linkage, thread-option marker and binary/library digests are recorded; stop-on-futility on source drift, configure/build/linkage error, STOP, deadline or disk floor. Gate-class = futility-only at interim looks. This is a build prerequisite, not GPU execution or promotion evidence.
+  - `kvu11c-hip-build-20261104` ended rc75 at the disk floor without its full build receipt or linked-server checks. [Grant end](../../docs/reports/kv-cache/kvu11c-hip-build-disk-20261104/grant-ended.txt). No GPU validation, promotion or runtime claim follows. [no-belief: interrupted build]
   - [x] **KVU-11c experimental thread option** — qwentts fork `codex/kvu11c-threads-20261102`
     at `aca7032` adds `tts-server --threads N`, keeps the old default when omitted and preserves
     the public C ABI. CPU build, four model-free CLI controls, C ABI smoke and ggml linkage pass.

@@ -367,3 +367,7 @@ The KPF-60 checked-fixture r8 result was already filed. Filed kpf50-child-eviden
 ## 22:00Z — File interrupted KPF-64 impact row
 
 KPF-60 checked-fixture r9 was already filed inconclusive. Filed kpf64-impact-4f4f-20261104 inconclusive: rc75 disk-floor before native impact and coverage output. Preserved grant end; no risk or edit clearance follows. HSF-3 residual source census preparation remains incomplete and has a registered output event.
+
+## 22:02Z — File interrupted KVU-11c HIP build
+
+The KPF-60 extended fixture was already filed inconclusive. Filed kvu11c-hip-build-20261104 inconclusive: rc75 disk-floor before full server build, linkage and digest receipt; preserved the grant end and partial base log. No GPU validation or promotion follows. HSF-3 census preparation remains incomplete; its completion event is registered.
