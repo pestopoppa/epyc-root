@@ -111,3 +111,7 @@ PF1-EXPAND: original row had already been filed inconclusive: L=512 A1-disabled/
 ## 16:00Z — Consumed duplicate already-filed TTFT run event.
 
 KVU-16g: the TTFT row was already filed and acknowledged. First-prompt residual tax was -0.063 s, below the prescribed threshold; the filed recommendation keeps current behavior.
+
+## 16:02Z — Consumed six historical preparation and qualification notifications; their successors and constraints are already recorded.
+
+Consumed six fired notices: chain r1 and PF1 r4 are historical; CPU r4 was invalid and r5 qualification is pending; P12 r1 is superseded by qualified r2; PF1 r6 must not duplicate active r5; old M4 generic fold bind does not resolve native-entry or treatment authority gaps.
