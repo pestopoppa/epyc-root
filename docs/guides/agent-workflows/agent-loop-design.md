@@ -69,7 +69,7 @@ this week.
 
 This is the AutoKernel discovery loop, and it is **normative**: if an implementation
 and this block disagree, the block wins until it is deliberately amended in
-[`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md).
+[`handoffs/active/autokernel-loop.md`](../../../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program).
 
 ```
 when the champion changes (at most weekly otherwise):
@@ -559,7 +559,7 @@ The operator directed these three techniques to be built on the opencode seat as
 orchestrator wiring below. They were built on research lanes `ce5800cb`, `0bf2d7c2` and `f4a5d240`, merged to
 research main `30631761` (2026-09-25), and the context placement was A/B'd (INF-78 OAB-9, below). The full
 write-up and its mapping to OAB-7/OAB-4/R4/S4-T1 are in
-`handoffs/active/autokernel-orchestrator-actor-backend.md` → *Techniques learned in the opencode seat*.
+`handoffs/active/autokernel-loop.md` → *Techniques learned in the opencode seat*.
 
 **A/B result: context as files LOST on the 27B plain seat** (2 pairs, research `605e8301`,
 `artifacts/autokernel_ctx_ab_20260925/`):
@@ -659,8 +659,28 @@ What to build instead:
   precursor lost the 2026-09-25 A/B on the 27B plain seat, so the orchestrator version must add what the seat
   lacked: exact pull accounting with a byte cap (OAB-12) and scouts that pull for the model (OAB-8).
 
+**Parallel tool-call width is an experimental scheduling policy.** When testing a native
+parallel-tool-call loop, let the orchestrator choose a phase-dependent cap rather than asking the
+actor to choose its own width. A candidate schedule is 3 calls during initial exploration, 2
+while narrowing evidence, and 1 during synthesis. Define the phase transitions before the run;
+compare it with fixed-width and actor-selected arms on the same task set and budget, recording
+accuracy, elapsed time, total tokens and realized calls per turn. Treat the schedule as a
+hypothesis, not a production default: intake-1125#02 and intake-1125#03 report a descending
+schedule outperforming the compared constant and automatic schedules in a single-context tool-call
+experiment, but that experiment did not measure independent subagents. It does not validate a
+3–5-subagent width, change the existing fan-out doctrine, or establish a win for our models and
+workloads.
+
+**RLM-shaped fan-out has a prefill-to-decode cost risk.** An RLM may spend most of its work writing
+code to solve a task and then writing code again to emit the answer. In the cited
+Needle-in-a-Haystack comparison, the plain model's tokens were mostly prefill while the RLM's were
+largely decode, and the RLM took longer in all four tested environments (intake-803). Treat this
+as a workload-specific warning when evaluating REPL or sub-LLM fan-out: report prefill and decode
+separately where available, and include wall-clock time. Do not infer a universal slowdown for our
+workloads without measuring them.
+
 Long term, the loop calls the orchestrator as a single `Backend`, and the orchestrator owns model choice
-(`handoffs/active/autokernel-orchestrator-actor-backend.md`, INF-78).
+(`handoffs/active/autokernel-loop.md`, INF-78).
 
 ## Bringing up a new actor model or backend
 
@@ -836,7 +856,7 @@ Origin: on 2026-11-01/02, 61 of 63 `AUTO-START` lines in `handoff-sessions.log` 
 
 ## Related
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md) — the program this convention came out of, with the five verified causes.
+- [`handoffs/active/autokernel-loop.md`](../../../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — the program this convention came out of, with the five verified causes.
 - [AutoKernel local-actor bring-up retrospective (2026-09-26)](../../design/autokernel-local-actor-bringup-retro-20260926.md) — the 57.5 h bring-up behind the new-actor checklist above.
 - [`docs/reference/kernel-freeze-runbook.md`](../../reference/kernel-freeze-runbook.md) — where the custody belongs: the promotion boundary, seven steps, and it shipped v7, v8 and v9.
 - `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* — the other place this project writes down a working shape rather than describing it.

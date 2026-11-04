@@ -241,6 +241,149 @@ def _absorbed_ids(entries: list[dict]) -> set[str]:
     return out
 
 
+class _HandoffReferences:
+    """Resolve current files and the committed 1a/1b folds, never guessed stems.
+
+    A fold's member tracks are lifted intact by later folds. Keep the first
+    track encountered while following file redirects, rather than replacing it
+    with the intermediate owner's track. Historical completed stubs do not
+    establish that the final owner or that lifted track still exists.
+    """
+
+    def __init__(self, root: Path, directories: list[Path]):
+        self.root = root
+        self.directories = directories
+        self.redirects: dict[str, set[tuple[str, str | None]]] = {}
+        self.body_tracks: dict[str, set[str]] = {}
+        self.tracks: dict[Path, list[str]] = {}
+        self.mapping_error: str | None = None
+        try:
+            meq_sources = set()
+            for route in ("1a", "1b"):
+                path = root / "docs/design/backlog-refactor-2026-11" / f"fold-list-{route}.json"
+                if not path.exists():
+                    continue
+                data = json.loads(path.read_text(), object_pairs_hook=_unique_json_object)
+                if data.get("schema") != f"brf-fold-list-{route}.v1":
+                    raise ValueError(f"unsupported fold schema in {path.name}")
+                if route == "1a":
+                    meq_sources.update(data.get("excluded", {}).get(
+                        "model_evaluation_queue_BRF-T1-MEQ", []))
+                for fold in data["folds"]:
+                    destination = fold["destination"]
+                    dest_path = Path(destination)
+                    if (dest_path.parts[:2] != ("handoffs", "active")
+                            or len(dest_path.parts) != 3 or dest_path.suffix != ".md"):
+                        raise ValueError(f"invalid fold destination {destination!r}")
+                    for source, target in fold["redirects"]["files"].items():
+                        target_file, track = self._split(target)
+                        if (Path(source).name != source or not source.endswith(".md")
+                                or target_file != dest_path.name):
+                            raise ValueError(f"invalid fold redirect {source!r} -> {target!r}")
+                        self.redirects.setdefault(source, set()).add((destination, track))
+                    for body in fold.get("tracks", []):
+                        if (body.get("kind") == "anchor body -> track"
+                                and body["from_file"] == dest_path.name):
+                            track = body["track"]
+                            if not isinstance(track, str) or not track.strip():
+                                raise ValueError("invalid anchor body track")
+                            self.body_tracks.setdefault(dest_path.name, set()).add(track)
+            # BRF-T1-MEQ ran separately from the 1a folds. Its anchor rename
+            # and member folds are recorded in the committed fold registry.
+            # Only consume the sources explicitly carved out of the 1a list.
+            registry = root / "handoffs/active/.folded.json"
+            if meq_sources and registry.exists():
+                files = json.loads(registry.read_text(), object_pairs_hook=_unique_json_object)["files"]
+                for source in meq_sources:
+                    if source not in files:
+                        continue
+                    target, track = files[source]["target"], files[source]["track"]
+                    if (Path(source).name != source or not source.endswith(".md")
+                            or not isinstance(target, str) or Path(target).name != target
+                            or not target.endswith(".md")
+                            or (track is not None and (not isinstance(track, str) or not track.strip()))):
+                        raise ValueError(f"invalid MEQ fold redirect for {source!r}")
+                    self.redirects.setdefault(source, set()).add((f"handoffs/active/{target}", track))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+            self.mapping_error = f"invalid committed fold mapping: {exc}"
+
+    @staticmethod
+    def _split(ref: str) -> tuple[str, str | None]:
+        if not isinstance(ref, str) or not ref:
+            raise ValueError("handoff reference must be non-empty text")
+        filename, sep, fragment = ref.partition("#")
+        if sep and (not fragment.startswith(("track:", "track-")) or not fragment[6:].strip()):
+            raise ValueError("handoff fragment must name '#track:<name>' or '#track-<name>'")
+        return filename, fragment[6:] if sep else None
+
+    def resolve(self, ref: str) -> tuple[Path, str | None]:
+        if self.mapping_error:
+            raise ValueError(self.mapping_error)
+        filename, track = self._split(ref)
+        path = Path(filename)
+        statuses = {"active", "completed", "archived", "blocked"}
+        if (path.is_absolute() or ".." in path.parts or path.suffix != ".md"
+                or not (len(path.parts) == 1
+                        or (len(path.parts) == 2 and path.parts[0] in statuses)
+                        or (len(path.parts) == 3 and path.parts[0] == "handoffs"
+                            and path.parts[1] in statuses))):
+            raise ValueError("not found (unsupported handoff path)")
+        visited = set()
+        mapped = False
+        while path.name in self.redirects:
+            if path.name in visited:
+                raise ValueError("cyclic committed fold mapping")
+            visited.add(path.name)
+            targets = self.redirects[path.name]
+            if len(targets) != 1:
+                raise ValueError("ambiguous committed fold mapping")
+            destination, inherited_track = next(iter(targets))
+            path = Path(destination)
+            track = track or inherited_track
+            mapped = True
+        if mapped and track is None and path.name in self.body_tracks:
+            tracks = self.body_tracks[path.name]
+            if len(tracks) != 1:
+                raise ValueError("ambiguous committed anchor body track")
+            track = next(iter(tracks))
+        if mapped or len(path.parts) == 3:
+            candidates = [self.root / path]
+        elif len(path.parts) == 2:
+            candidates = [self.root / "handoffs" / path]
+        else:
+            candidates = [directory / path for directory in self.directories]
+        found = {candidate.resolve() for candidate in candidates if candidate.is_file()}
+        if not found:
+            raise ValueError("not found" + (" (dangling committed fold target)" if mapped else ""))
+        if len(found) != 1:
+            raise ValueError("ambiguous handoff basename")
+        owner = found.pop()
+        if track is not None:
+            if owner not in self.tracks:
+                headings = []
+                fence = None
+                for line in owner.read_text().splitlines():
+                    marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+                    if marker:
+                        run = marker.group(1)
+                        if fence is None:
+                            fence = run
+                        elif (run[0] == fence[0] and len(run) >= len(fence)
+                              and not marker.group(2).strip()):
+                            fence = None
+                        continue
+                    if fence is None:
+                        heading = re.fullmatch(r"##\s+Track:\s*(.+?)\s*#*\s*", line)
+                        if heading:
+                            headings.append(heading.group(1))
+                self.tracks[owner] = headings
+            count = self.tracks[owner].count(track)
+            if count != 1:
+                reason = "missing" if count == 0 else "ambiguous"
+                raise ValueError(f"{reason} '## Track: {track}' in {owner.name}")
+        return owner, track
+
+
 def validate_index(entries: list[dict], valid_categories: set[str],
                    crossref_dirs: dict | None = None) -> list[str]:
     errors = []
@@ -248,6 +391,7 @@ def validate_index(entries: list[dict], valid_categories: set[str],
     seen_arxiv = set()
     prev_num = 0
     absorbed_ids = _absorbed_ids(entries)
+    handoff_refs = _HandoffReferences(ROOT, crossref_dirs.get("handoffs", [])) if crossref_dirs else None
 
     for i, entry in enumerate(entries):
         eid = entry.get("id", f"<missing at index {i}>")
@@ -469,7 +613,7 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                     if ci is not None and not isinstance(ci, int):
                         errors.append(f"{eid}: depends_on[{j}].claim_index must be an integer")
 
-        # Cross-reference file existence (warn, don't error)
+        # Cross-reference files, including historical folds and their lifted tracks.
         xrefs = entry.get("cross_references", {})
         if isinstance(xrefs, dict) and crossref_dirs:
             for ref_type, ref_list in xrefs.items():
@@ -481,11 +625,10 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                         if not path.exists():
                             errors.append(f"{eid}: cross-ref chapter '{ref_file}' not found")
                     elif ref_type == "handoffs" and "handoffs" in crossref_dirs:
-                        found = any(
-                            (d / ref_file).exists() for d in crossref_dirs["handoffs"]
-                        )
-                        if not found:
-                            errors.append(f"{eid}: cross-ref handoff '{ref_file}' not found")
+                        try:
+                            handoff_refs.resolve(ref_file)
+                        except ValueError as exc:
+                            errors.append(f"{eid}: cross-ref handoff '{ref_file}' {exc}")
                     elif ref_type == "experiments" and "experiments" in crossref_dirs:
                         path = crossref_dirs["experiments"] / ref_file
                         if not path.exists():
@@ -628,8 +771,8 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
 
     Only Category-to-File Mapping rows are inspected.  The File Locations section
     is documentation about directories, not a source of references.  The map has
-    historically used both bare handoff names and ``completed/name.md`` forms, so
-    both are resolved against the configured handoff roots.
+    historically used bare names and ``completed/name.md`` forms. Both use the
+    same strict file/fold/track resolver as intake-index cross-references.
     """
     if not map_path.exists():
         return [f"cross-reference-map: not found at {map_path}"]
@@ -638,7 +781,8 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
     row_pattern = re.compile(
         r"^\s*-\s+\*\*(Chapters|Handoffs|Experiments)\*\*:\s*(.*)$"
     )
-    reference_pattern = re.compile(r"`([^`]+\.md)`")
+    reference_pattern = re.compile(r"`([^`]+\.md(?:#[^`]+)?)`")
+    handoff_refs = _HandoffReferences(ROOT, crossref_dirs["handoffs"])
 
     in_category_mapping = False
     for line in map_path.read_text().splitlines():
@@ -659,14 +803,11 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
             elif ref_type == "Experiments":
                 found = (crossref_dirs["experiments"] / ref).is_file()
             else:
-                ref_path = Path(ref)
-                if ref_path.parts and ref_path.parts[0] in {
-                    "active", "completed", "archived"
-                }:
-                    found = (ROOT / "handoffs" / ref_path).is_file()
-                else:
-                    found = any((directory / ref_path).is_file()
-                                for directory in crossref_dirs["handoffs"])
+                try:
+                    handoff_refs.resolve(ref)
+                except ValueError as exc:
+                    errors.append(f"cross-reference-map: handoffs '{ref}' {exc}")
+                continue
             if not found:
                 errors.append(
                     f"cross-reference-map: {ref_type.lower()} '{ref}' not found"

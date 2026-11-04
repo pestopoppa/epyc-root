@@ -1,0 +1,6 @@
+# 2026-11-02 — ws58: measurement-sufficiency principle made project-wide
+
+- Concluded (operator principle, RTG-58 evidence): every measurement states its question, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility rules; it reuses valid evidence first, saves incremental results, and stops when the scoped question is answered, never running to completion for its own sake; formal-gate cells (promotion/ratification) stay futility-only at interim looks until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN. [belief: cc]
+- Evidence: RTG-58 cut two planned 4–5 h measurements to one long and two short runs with an unambiguous answer (`a9f44ef56`, `fd06fb064`; [case study](../../docs/reference/measurement-sufficiency/rtg58-case-study-20261102.md)).
+- Pointers added: research-intake skill (sufficiency block), inference-backlog-scheduling skill (stop rule for READY rows), handoff-index-authoring (`Stop rule:` field), canonical guide (futility-only caveat), wiki/benchmark-methodology.md.
+- CLAUDE.md/AGENTS.md (symlink) and agents/shared/MEASUREMENT_POLICY.md are human-only: proposed diffs in `/mnt/raid0/llm/tmp/ws58-csh/sufficiency-human-only-proposals.md` for the operator.

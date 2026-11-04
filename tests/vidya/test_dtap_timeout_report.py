@@ -16,6 +16,14 @@ from claim_tuple import ProjectionError, grade, to_frames
 import cli
 
 
+def test_reviewed_producer_sets_do_not_allow_mixed_revisions():
+    old, new = adapter.PRODUCER_SETS
+    assert old != new
+    mixed = dict(old)
+    mixed["endpoint.py"] = new["endpoint.py"]
+    assert mixed not in adapter.PRODUCER_SETS
+
+
 @pytest.fixture
 def producer():
     source = os.environ.get("NI37_APP_ROOT")

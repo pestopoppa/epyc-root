@@ -1398,6 +1398,40 @@ def _rocm_diagnostics_summary(root: Path) -> dict:
     }
 
 
+def _hip_e_process_crossing(blocks, threshold):
+    """First block (1-based) where the sign-martingale (predictable lambda, init 0.1,
+    cap 0.5, tie = loss) crosses `threshold`, re-derived from per-block speedups; None
+    if it never crosses or the transcript is malformed.  Local copy (no dashboard to
+    adapter import); mirrors scripts/vidya/adapters/autokernel_aux_receipt.py."""
+    if not isinstance(blocks, list) or not blocks or isinstance(threshold, bool) \
+            or not isinstance(threshold, (int, float)) or not threshold > 1.0:
+        return None
+    log_threshold = math.log(threshold)
+    log_w, count, total, total_sq = 0.0, 0, 0.0, 0.0
+    for block in blocks:
+        if not isinstance(block, dict):
+            return None
+        cand, anchor = block.get("candidate_ns"), block.get("anchor_ns")
+        if any(isinstance(v, bool) or not isinstance(v, (int, float))
+               or not math.isfinite(v) or v <= 0 for v in (cand, anchor)):
+            return None
+        if count <= 0:
+            lam = 0.1
+        else:
+            mean = total / count
+            denom = max(total_sq / count - mean * mean, 0.0) + mean * mean
+            lam = (0.5 if mean > 0.0 else 0.0) if denom <= 0.0 else mean / denom
+            lam = min(max(lam, 0.0), 0.5)
+        sign = 1.0 if anchor / cand > 1.0 else -1.0
+        log_w += math.log1p(lam * sign)
+        count += 1
+        total += sign
+        total_sq += 1.0
+        if log_w >= log_threshold:
+            return count
+    return None
+
+
 def _hip_decision_grade_summary(root: Path) -> dict:
     """Project the exact terminal raw-HIP r6 receipt without widening authority.
 
@@ -1454,8 +1488,15 @@ def _hip_decision_grade_summary(root: Path) -> dict:
     median_speedup = timing.get("median_speedup") if isinstance(timing, dict) else None
     if isinstance(median_speedup, bool) or not isinstance(median_speedup, (int, float)):
         invalid.append("median speedup is absent or non-numeric")
-    if not isinstance(e_process, dict) or e_process.get("first_crossing_block") != 9:
-        invalid.append("e-process does not carry the r6 block-9 crossing")
+    if not isinstance(e_process, dict):
+        invalid.append("e-process is absent")
+    else:
+        derived_crossing = _hip_e_process_crossing(
+            timing.get("blocks"), e_process.get("threshold", 20.0))
+        if derived_crossing is None:
+            invalid.append("e-process never crosses its threshold on the block transcript")
+        elif e_process.get("first_crossing_block") != derived_crossing:
+            invalid.append("e-process crossing block does not rederive from the block transcript")
     if not isinstance(timing, dict) or \
             (timing.get("provider") or {}).get("provider_id") != "torch_rocm_compile":
         invalid.append("timing does not name the exact Torch-ROCm-compile provider")

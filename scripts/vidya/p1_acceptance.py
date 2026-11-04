@@ -9,14 +9,16 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
 
   AC1  DS41-Q4 cpu: >=20 target-tier claims with value+unit+n; >=5 negative outcomes
        (regressed/null/refused) with mechanism ids; tried index >=60 mechanisms.
-  AC2  DS41-1017 cpu: target tier 0 with the empty-target banner; >=8 sibling-tier DS41-Q4 lines
-       labelled "transfer unproven"; <=3 host lines.
+  AC2  (retargeted 2026-11-03: DS41-1017 gained 151 real claims) a cpu MODEL_LINEAGE member DERIVED
+       from the ledger that has 0 model-scoped claims: target tier 0 with the empty-target banner;
+       >=8 sibling-tier lines labelled "transfer unproven"; <=3 host lines.
   AC3  Q38FN UD-IQ4_XS cpu: >=15 target-tier value-bearing claims; tried index >=35 mechanisms.
   AC4  Qwen3.8-27B-Q8_0 gpu: >=3 target-tier claims, including the serving floor (81.1 t/s,
        floor 0.81%, n=10) and 2 mechanisms refused by the correctness gate ("MUL_MAT failed on
        ROCm0").
   AC5  (amended 2026-10-21, after the rehearsal backfill) the five CPU models' usable sets are
-       PAIRWISE distinct; Qwen3-VL-30B has target tier 0 with the banner; Qwen3.6-35B-A3B's
+       PAIRWISE distinct; a cpu model DERIVED from the ledger (2026-11-03; was pinned Qwen3-VL-30B) with
+       0 model-scoped claims has target tier 0 with the banner; Qwen3.6-35B-A3B's
        target-tier claims, if any, all come from sources scoped to that model (their model_file
        is the target's) -- their source kinds are reported. The original "35B target tier 0"
        predated the KPF-18 35B CPU item-7 claims (lane K), which are real 35B beliefs.
@@ -139,7 +141,7 @@ def _host_lines(ev: dict[str, Any]) -> int:
     count = 0
     for line in lines:
         if line.startswith("### "):
-            inside = line.startswith("### Host tier")
+            inside = line.startswith("### Device-scope claims")
             continue
         if inside and line.startswith("- "):
             count += 1
@@ -199,19 +201,47 @@ def ac1(r: Reader) -> dict[str, Any]:
                              f"{ev['section_bytes']} B{r.quant_note('DS41-Q4')}")
 
 
+def _empty_lineage_target(r: Reader) -> tuple[lb.Target, dict, dict] | None:
+    """Derive, from THIS ledger, a declared-lineage member (cpu) that has NO model-scoped claims
+    but whose lineage siblings do. No target name is pinned: a member that gains claims simply
+    stops qualifying and the next one is used. Returns (target, evaluation, collection)."""
+    for family in sorted(lb.MODEL_LINEAGE):
+        for model_file in sorted(lb.MODEL_LINEAGE[family].members):
+            target = lb.Target.from_mapping({"model_file": model_file, "quant": "",
+                                             "backend": "cpu"})
+            ev = lb.evaluate_frames(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+            col = lb.collect(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+            if ev["tiers"]["target"] == 0 and not _tier_rows(col) and ev["tiers"]["sibling"] > 0:
+                return target, ev, col
+    return None
+
+
 def ac2(r: Reader) -> dict[str, Any]:
-    ev, _ = r.read("DS41-1017")
-    q4 = r.target("DS41-Q4").model_file
+    """Intent (DESIGN 'AC2'): a target with NO model-scoped claims renders the empty-target
+    banner first, shows >=8 lineage-sibling lines labelled 'transfer unproven', <=3 host lines,
+    and counts 0 target-tier claims. The target is derived at run time (see above) and proven
+    empty three ways (tier count, collected target rows, no row scoped to its model file)."""
+    found = _empty_lineage_target(r)
+    if found is None:
+        return _check("AC2", False, "no declared-lineage cpu model with 0 model-scoped claims "
+                                    "and sibling claims exists in this ledger; AC2 cannot be "
+                                    "proven here (not weakened: add a synthetic-target test)")
+    target, ev, col = found
+    family = lb._FAMILY_OF[target.model_file]
+    sibs = [f for f in family.members if f != target.model_file]
+    scoped = [x for x in col["rows"] if x["model_file"] == target.model_file]
     lines = _section_lines(ev)
     banner_first = (len(lines) > 1 and lines[0] == lb.SECTION_HEADER and bool(ev["banner"])
                     and lines[1] == ev["banner"])
     sibling = [ln for ln in lines if ln.startswith("- ") and "transfer unproven" in ln
-               and f"measured on {q4}" in ln]
+               and any(f"measured on {f}" in ln for f in sibs)]
     hosts = _host_lines(ev)
-    ok = ev["tiers"]["target"] == 0 and banner_first and len(sibling) >= 8 and hosts <= 3
-    return _check("AC2", ok, f"DS41-1017 target tier {ev['tiers']['target']} (need 0); banner "
-                             f"first {banner_first}; sibling DS41-Q4 lines {len(sibling)} (need 8)"
-                             f"; host lines {hosts} (max 3); section {ev['section_bytes']} B")
+    ok = (ev["tiers"]["target"] == 0 and not scoped and banner_first and len(sibling) >= 8
+          and hosts <= 3)
+    return _check("AC2", ok, f"{lb.model_label(target.model_file)} (derived: 0 model-scoped "
+                             f"claims) target tier {ev['tiers']['target']} (need 0); banner "
+                             f"first {banner_first}; sibling lines {len(sibling)} (need 8); "
+                             f"host lines {hosts} (max 3); section {ev['section_bytes']} B")
 
 
 def ac3(r: Reader) -> dict[str, Any]:
@@ -244,14 +274,39 @@ def ac4(r: Reader) -> dict[str, Any]:
                              f"{r.quant_note('27B')}")
 
 
+def _zero_claim_cpu_target(r: Reader, skip_names: tuple[str, ...]
+                           ) -> tuple[str, lb.Target, dict] | None:
+    """AC5 target, derived from THIS ledger: the first cpu entry of TARGETS (not in `skip_names`)
+    with NO beliefs at all: target tier 0, no collected target row, no row scoped to its model
+    file, the empty-target banner, and an empty usable set (a lineage member that inherits sibling
+    claims is not a zero-belief model; that is AC2's case). A model that gains claims stops
+    qualifying. Returns (label, target, evaluation)."""
+    for name in TARGETS:
+        if TARGETS[name]["backend"] != "cpu" or name in skip_names:
+            continue
+        target = r.target(name)
+        ev, col = r.read(name)
+        scoped = [x for x in col["rows"] if x["model_file"] == target.model_file]
+        banner = bool(ev["banner"]) and (ev["section"] == "" or ev["banner"] in ev["section"])
+        if (ev["tiers"]["target"] == 0 and not _tier_rows(col) and not scoped and banner
+                and not ev["claim_ids"]):
+            return name, target, ev
+    return None
+
+
 def ac5(r: Reader) -> dict[str, Any]:
+    """Intent (DESIGN 'AC5'): a model with no claims of its own gets target tier 0 + the banner, so
+    the five CPU models no longer share identical usable sets. The zero-claim model is derived at
+    run time (no pinned name); with none available the check cannot be proven here."""
     details, ok = [], True
-    ev, _ = r.read("Qwen3-VL-30B")
-    banner = bool(ev["banner"]) and (ev["section"] == "" or ev["banner"] in ev["section"])
-    vl_ok = ev["tiers"]["target"] == 0 and banner
-    ok &= vl_ok
-    details.append(f"Qwen3-VL-30B: target {ev['tiers']['target']} (need 0), banner {banner}, "
-                   f"usable {len(ev['claim_ids'])}")
+    found = _zero_claim_cpu_target(r, skip_names=("Qwen3.6-35B",))
+    if found is None:
+        return _check("AC5", False, "no cpu model with 0 model-scoped claims and the empty-target "
+                                    "banner exists in this ledger; AC5 cannot be proven here (not "
+                                    "weakened: add a synthetic-target test)")
+    zlabel, _target, ev = found
+    details.append(f"{zlabel} (derived: 0 model-scoped claims): target {ev['tiers']['target']} "
+                   f"(need 0), banner True, usable {len(ev['claim_ids'])}")
     ev, col = r.read("Qwen3.6-35B")
     model = r.target("Qwen3.6-35B").model_file
     rows = _tier_rows(col)
@@ -265,10 +320,10 @@ def ac5(r: Reader) -> dict[str, Any]:
                    + f"; source kinds {dict(sorted(kinds.items())) or '{}'}; usable "
                    f"{len(ev['claim_ids'])}")
     usable = {name: frozenset(r.read(name)[0]["claim_ids"]) for name in CPU_FIVE}
-    names = list(CPU_FIVE)
+    names = list(usable)
     same = [(a, b) for i, a in enumerate(names) for b in names[i + 1:] if usable[a] == usable[b]]
     ok &= not same
-    details.append(f"usable sets pairwise distinct across the five CPU models {not same}"
+    details.append(f"usable sets pairwise distinct across the {len(names)} CPU models {not same}"
                    + (f" (identical: {same})" if same else ""))
     return _check("AC5", ok, "; ".join(details))
 

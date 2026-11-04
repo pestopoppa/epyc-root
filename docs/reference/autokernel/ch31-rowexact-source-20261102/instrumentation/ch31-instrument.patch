@@ -1,0 +1,105 @@
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -1436,6 +1436,8 @@
+     return !params->disable_rowexact && ne11 > 1 && ne11 <= ggml_cpu_rowexact_n();
+ }
+ 
++#include "ch31_trace.h"
++
+ void ggml_compute_forward_mul_mat(
+         const struct ggml_compute_params * params,
+               struct ggml_tensor * dst) {
+@@ -1467,6 +1469,14 @@
+     GGML_ASSERT(ne1 == ne11);
+     GGML_ASSERT(ne2 == ne12);
+     GGML_ASSERT(ne3 == ne13);
++
++    char ch31_stem[4096];
++    int ch31_enabled = 0;
++    if (ch31_requested(dst)) {
++        ggml_barrier(params->threadpool);
++        ch31_enabled = ch31_capture(params, dst, ch31_stem, sizeof ch31_stem);
++        ggml_barrier(params->threadpool);
++    }
+ 
+     // we don't support permuted src0 or src1
+     GGML_ASSERT(nb00 == ggml_type_size(src0->type));
+@@ -1490,6 +1500,7 @@
+     // Runtime-gated by env GGML_IQK=1; returns false (falls through) otherwise or
+     // for unsupported types/dims. Handles its own src1 quantization + barrier.
+     if (ggml_iqk_try_mul_mat(params, dst)) {
++        ch31_path(ch31_enabled, ch31_stem, "iqk");
+         return;
+     }
+ #endif
+@@ -1535,6 +1546,7 @@
+                                      src1->type,
+                                      dst->type))
+                     goto UseGgmlGemm1;
++        ch31_path(ch31_enabled, ch31_stem, "tinyblas-original");
+         return;
+     }
+ UseGgmlGemm1:;
+@@ -1645,10 +1657,13 @@
+                                      vec_dot_type,
+                                      dst->type))
+                     goto UseGgmlGemm2;
++        ch31_path(ch31_enabled, ch31_stem, "tinyblas-converted");
+         return;
+     }
+ UseGgmlGemm2:;
+ #endif
++
++    ch31_path(ch31_enabled, ch31_stem, "generic-vecdot");
+ 
+     // This is the size of the first dimension of the result, so we can iterate that way. (see the ASSERT above, these are the same numbers)
+     const int64_t nr0 = ne0;
+--- /dev/null
++++ b/ggml/src/ggml-cpu/ch31_trace.h
+@@ -0,0 +1,46 @@
++// CH31 diagnostic; Linux only. Set CH31_TRACE_DIR to an exclusive scratch dir.
++// This is an intrusive diagnostic, not a timing instrument.
++#if defined(__linux__)
++#include <unistd.h>
++static int ch31_hex256(const char *s) {
++    if (!s || strlen(s)!=64) return 0;
++    for (int i=0;i<64;i++) if (!((s[i]>='0' && s[i]<='9') || (s[i]>='a' && s[i]<='f'))) return 0;
++    return 1;
++}
++static int ch31_requested(const struct ggml_tensor * dst) {
++    const char * d=getenv("CH31_TRACE_DIR");
++    return d && *d && strcmp(dst->name,"node_13")==0 && dst->op==GGML_OP_MUL_MAT;
++}
++static int ch31_capture(const struct ggml_compute_params * params, const struct ggml_tensor * dst, char * stem, size_t cap) {
++    const char * dir = getenv("CH31_TRACE_DIR");
++    if (!dir || !*dir || params->ith != 0 || strcmp(dst->name, "node_13") != 0 || dst->op != GGML_OP_MUL_MAT) return 0;
++    static atomic_uint count = 0;
++    unsigned event = atomic_fetch_add(&count, 1);
++    if (event >= 64) { fprintf(stderr, "CH31 capture cap reached\n"); abort(); }
++    const char * model_sha=getenv("CH31_MODEL_SHA256"), * receipt_sha=getenv("CH31_PREGRANT_RECEIPT_SHA256"), * patch_sha=getenv("CH31_PATCH_SHA256");
++    if (dir[0] != '/' || !ch31_hex256(model_sha) || !ch31_hex256(receipt_sha) || !ch31_hex256(patch_sha)) { fprintf(stderr,"CH31 missing pregrant identity\n"); abort(); }
++    const struct ggml_tensor * a = dst->src[0], * b = dst->src[1];
++    if (!a || !b) { fprintf(stderr,"CH31 tensor metadata unavailable\n"); abort(); }
++    int n=snprintf(stem,cap,"%s/ch31-%ld-%04u",dir,(long)getpid(),event);
++    if (n<0 || (size_t)n+12>=cap) abort();
++    char path[4096];
++    snprintf(path, sizeof path, "%s-meta.txt", stem);
++    FILE * f = fopen(path, "wx"); if (!f) abort();
++    fprintf(f,"node=%s\nbase_source_commit=c72ec82f5417bb2937310326120f149b665e8400\ninstrumentation_patch_sha256=%s\nmodel_sha256=%s\npregrant_receipt_sha256=%s\nrowexact_n=%d\ndisable_rowexact=%d\nactivation_capture=UNAVAILABLE\n",dst->name,patch_sha,model_sha,receipt_sha,ggml_cpu_rowexact_n(),params->disable_rowexact);
++    for (int i=0; i<2; ++i) {
++        const struct ggml_tensor * t=i ? b : a;
++        fprintf(f,"src%d name=%s type=%s ne=%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 " nb=%zu,%zu,%zu,%zu bytes=%zu contiguous=%d\n",i,t->name,ggml_type_name(t->type),t->ne[0],t->ne[1],t->ne[2],t->ne[3],t->nb[0],t->nb[1],t->nb[2],t->nb[3],ggml_nbytes(t),ggml_is_contiguous(t));
++    }
++    if (fclose(f)) abort(); return 1;
++}
++static void ch31_path(int enabled, const char * stem, const char * route) {
++    if (!enabled) return;
++    char path[4096]; if (snprintf(path,sizeof path,"%s-route.txt",stem) >= (int)sizeof path) abort();
++    FILE * f=fopen(path,"wx"); if (!f) abort();
++    if (fprintf(f,"%s\n",route)<0 || fclose(f)) abort();
++}
++#else
++static int ch31_requested(const struct ggml_tensor * t) { (void)t; return 0; }
++static int ch31_capture(const struct ggml_compute_params * p, const struct ggml_tensor * t, char * s, size_t n) { (void)p;(void)t;(void)s;(void)n;return 0; }
++static void ch31_path(int e, const char * s, const char * r) { (void)e;(void)s;(void)r; }
++#endif

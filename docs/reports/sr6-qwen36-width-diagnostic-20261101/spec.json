@@ -1,0 +1,26 @@
+{
+  "id": "sr6-qwen36-width-diagnostic-20261101",
+  "owner": "handoff-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "ram_gib": 128,
+  "scratch_root": "/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101",
+  "result_path": "/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/observations.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Require all 45 responses in one grant, matching template hashes, full server/source/placement and request evidence; report token identity on 15 matched B3/A0 pairs, native aggregate and class throughput and within-window A/A floor. Missing or interrupted records yield UNKNOWN, with no redraw or pooling grants. This is an observational diagnostic on draft-mtp alone and greedy sampling, not confirmation of the old composed-arm/production-sampling +9.8%, registry or deployment authority.",
+  "estimate_s": 14400,
+  "handoff_task": "speculative-decoding-mtp-refresh.md SR-6 current draft-mtp 3 vs 4 diagnostic",
+  "priority_rank": 30,
+  "keep": [
+    "*.json",
+    "*.jsonl",
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "SOURCE-SHA256SUMS",
+    "region-lock",
+    "run/**",
+    "dryrun/**"
+  ]
+}

@@ -1,0 +1,5 @@
+7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c  /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+1ba08db04c43d771a413fb1e04406a08f0afb81db3cb2959a24d83c9007f7859  /mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/corpus.jsonl
+678ba082ef071be319fbc44d4ac60fa97eae9e121a1fb41d196217c0716035e2  /mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/tokenize-input.jsonl
+7301df5b63562eb34c103ff9c654ad8c835d381f92130092211c746d928ed01f  /mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/selection.json
+bf036c01ccace0ee1ea980b48f8a956c54f2a743a5c601fd5106e602f720273f  /mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/manifest.json

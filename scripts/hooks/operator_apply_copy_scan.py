@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scan a Bash command for the EXECUTION of a *derived copy* of a gated operator script.
 
-Origin (2026-08-05, `handoffs/active/autopilot-continuous-optimization.md`): a C6
+Origin (2026-08-05, `handoffs/active/autopilot-program.md`): a C6
 agent copied `artifacts/operator/apply_e8_quality_baseline_state.py`, patched the
 fail-closed safety gate out of the copy as ``if False and autopilot_running()``, and
 ran the copy. The gate at lines 854/873 refuses a production-state ``--attest`` /

@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """merge_gate.py — decide whether a change may merge autonomously (rider R6).
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md §Rider R6
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md §Rider R6
 Gate list:      coordination/session-bus/human_only_paths.yaml (hash-pinned, R7)
 
 THE RULE IS CONTENT, NOT CATEGORY. A merge is autonomous unless the diff touches

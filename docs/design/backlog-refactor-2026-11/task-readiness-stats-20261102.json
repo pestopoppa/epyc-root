@@ -1,0 +1,341 @@
+{
+ "stats": {
+  "open": 2808,
+  "class:non-inference": 1978,
+  "fail:d": 629,
+  "executable": 913,
+  "class:inference": 761,
+  "fail:c": 627,
+  "fail:a": 686,
+  "fail:e": 531,
+  "fail:f": 239,
+  "fail:h": 158,
+  "class:operator-decision": 67,
+  "fail:b": 133,
+  "class:blocked-external": 2
+ },
+ "decision_kinds": {
+  "historical-ruling": 32,
+  "pending-choice": 158,
+  "issued-authorization": 120,
+  "standing-constraint": 28
+ },
+ "by_domain": {
+  "autokernel-loop": {
+   "open": 222,
+   "fail:d": 59,
+   "executable": 71,
+   "fail:c": 46,
+   "fail:a": 66,
+   "fail:e": 34,
+   "fail:b": 6,
+   "fail:f": 9,
+   "fail:h": 14
+  },
+  "frontier-lab-automation": {
+   "open": 28,
+   "fail:c": 6,
+   "fail:f": 6,
+   "executable": 5,
+   "fail:e": 12,
+   "fail:d": 10,
+   "fail:a": 5,
+   "fail:b": 1,
+   "fail:h": 4
+  },
+  "benchmark-suites": {
+   "open": 69,
+   "fail:a": 35,
+   "fail:c": 17,
+   "fail:e": 5,
+   "fail:f": 2,
+   "executable": 21,
+   "fail:h": 2,
+   "fail:d": 3
+  },
+  "rocm-kernel-authoring": {
+   "open": 100,
+   "fail:c": 18,
+   "fail:e": 16,
+   "fail:a": 16,
+   "fail:d": 21,
+   "executable": 45,
+   "fail:b": 3,
+   "fail:f": 3,
+   "fail:h": 1
+  },
+  "harness-program": {
+   "open": 123,
+   "fail:c": 36,
+   "fail:d": 33,
+   "executable": 34,
+   "fail:e": 37,
+   "fail:f": 20,
+   "fail:h": 10,
+   "fail:a": 16,
+   "fail:b": 7
+  },
+  "engineering-hygiene-backlog": {
+   "open": 131,
+   "executable": 40,
+   "fail:a": 59,
+   "fail:c": 8,
+   "fail:h": 11,
+   "fail:e": 8,
+   "fail:f": 5,
+   "fail:d": 19,
+   "fail:b": 2
+  },
+  "model-evaluation-queue": {
+   "open": 123,
+   "fail:a": 57,
+   "fail:h": 9,
+   "fail:c": 43,
+   "fail:d": 24,
+   "executable": 21,
+   "fail:e": 18,
+   "fail:b": 8,
+   "fail:f": 5
+  },
+  "long-context-program": {
+   "open": 56,
+   "fail:a": 12,
+   "executable": 22,
+   "fail:c": 18,
+   "fail:b": 1,
+   "fail:d": 10,
+   "fail:e": 9,
+   "fail:f": 2
+  },
+  "kernel-champion-and-promotion": {
+   "open": 126,
+   "fail:a": 21,
+   "executable": 29,
+   "fail:c": 42,
+   "fail:d": 31,
+   "fail:e": 45,
+   "fail:f": 22,
+   "fail:h": 7,
+   "fail:b": 6
+  },
+  "autopilot-program": {
+   "open": 112,
+   "fail:a": 35,
+   "fail:c": 13,
+   "executable": 38,
+   "fail:f": 5,
+   "fail:d": 29,
+   "fail:e": 19,
+   "fail:h": 14,
+   "fail:b": 2
+  },
+  "numa-placement-and-contention": {
+   "open": 100,
+   "fail:b": 1,
+   "fail:c": 24,
+   "fail:e": 16,
+   "fail:d": 24,
+   "executable": 26,
+   "fail:a": 39,
+   "fail:f": 8,
+   "fail:h": 4
+  },
+  "eval-tower-program": {
+   "open": 74,
+   "fail:b": 5,
+   "fail:c": 15,
+   "fail:e": 9,
+   "fail:a": 32,
+   "executable": 21,
+   "fail:h": 9,
+   "fail:d": 9,
+   "fail:f": 3
+  },
+  "stack-lifecycle-program": {
+   "open": 40,
+   "fail:e": 10,
+   "fail:d": 14,
+   "executable": 10,
+   "fail:c": 11,
+   "fail:h": 2,
+   "fail:a": 9,
+   "fail:f": 3
+  },
+  "coordination-and-churn-pipeline": {
+   "open": 111,
+   "fail:a": 29,
+   "fail:f": 6,
+   "fail:c": 5,
+   "executable": 44,
+   "fail:d": 30,
+   "fail:h": 12,
+   "fail:e": 15
+  },
+  "knowledge-pipelines": {
+   "open": 77,
+   "fail:d": 20,
+   "fail:a": 37,
+   "fail:c": 15,
+   "fail:e": 9,
+   "fail:f": 9,
+   "executable": 15,
+   "fail:h": 3,
+   "fail:b": 4
+  },
+  "context-and-token-economy": {
+   "open": 73,
+   "executable": 22,
+   "fail:a": 25,
+   "fail:d": 18,
+   "fail:c": 20,
+   "fail:e": 9,
+   "fail:f": 3,
+   "fail:b": 4,
+   "fail:h": 2
+  },
+  "speech-and-multimodal": {
+   "open": 77,
+   "executable": 27,
+   "fail:a": 15,
+   "fail:c": 13,
+   "fail:d": 14,
+   "fail:h": 3,
+   "fail:b": 11,
+   "fail:e": 15,
+   "fail:f": 4
+  },
+  "cpu-decode-roofline-program": {
+   "open": 70,
+   "fail:a": 20,
+   "fail:c": 22,
+   "executable": 16,
+   "fail:d": 17,
+   "fail:e": 10,
+   "fail:f": 7,
+   "fail:h": 2,
+   "fail:b": 2
+  },
+  "routing-program": {
+   "open": 116,
+   "fail:a": 32,
+   "executable": 42,
+   "fail:c": 25,
+   "fail:d": 13,
+   "fail:h": 4,
+   "fail:e": 20,
+   "fail:b": 6,
+   "fail:f": 12
+  },
+  "deepseek-v41-flash-evaluation": {
+   "open": 139,
+   "fail:a": 25,
+   "fail:f": 27,
+   "fail:c": 46,
+   "fail:d": 34,
+   "executable": 27,
+   "fail:e": 21,
+   "fail:h": 7,
+   "fail:b": 9
+  },
+  "memory-program": {
+   "open": 55,
+   "fail:d": 14,
+   "fail:e": 12,
+   "fail:h": 7,
+   "fail:c": 13,
+   "executable": 21,
+   "fail:a": 5,
+   "fail:b": 2
+  },
+  "speculative-decoding": {
+   "open": 51,
+   "fail:c": 17,
+   "fail:d": 18,
+   "fail:e": 18,
+   "fail:f": 3,
+   "executable": 10,
+   "fail:a": 5,
+   "fail:b": 4
+  },
+  "model-architecture-readiness": {
+   "open": 24,
+   "fail:a": 10,
+   "executable": 7,
+   "fail:c": 7,
+   "fail:d": 3,
+   "fail:e": 3,
+   "fail:f": 2,
+   "fail:h": 1
+  },
+  "quantization-and-low-bit": {
+   "open": 42,
+   "fail:d": 16,
+   "fail:e": 13,
+   "fail:c": 16,
+   "executable": 7,
+   "fail:h": 6,
+   "fail:f": 5,
+   "fail:a": 11,
+   "fail:b": 3
+  },
+  "mi210-serving-program": {
+   "open": 64,
+   "fail:a": 14,
+   "fail:e": 19,
+   "fail:f": 10,
+   "fail:c": 22,
+   "fail:h": 5,
+   "executable": 13,
+   "fail:b": 8,
+   "fail:d": 15
+  },
+  "reviewer-control-plane": {
+   "open": 37,
+   "executable": 12,
+   "fail:a": 18,
+   "fail:d": 4,
+   "fail:h": 5,
+   "fail:c": 10,
+   "fail:e": 2,
+   "fail:b": 1
+  },
+  "kv-cache-program": {
+   "open": 130,
+   "fail:d": 44,
+   "fail:a": 13,
+   "fail:c": 44,
+   "fail:e": 65,
+   "fail:f": 21,
+   "executable": 26,
+   "fail:h": 7,
+   "fail:b": 8
+  },
+  "docs/guides/agent-workflows/stack-change-checklist": {
+   "open": 11,
+   "fail:a": 8,
+   "fail:c": 1,
+   "executable": 1,
+   "fail:d": 2
+  },
+  "thesis-experiment-orchestrator-vs-strongest-model": {
+   "open": 9,
+   "executable": 3,
+   "fail:d": 3,
+   "fail:f": 1,
+   "fail:a": 2,
+   "fail:c": 2,
+   "fail:e": 1
+  },
+  "vidya-belief-substrate-program": {
+   "open": 418,
+   "fail:d": 78,
+   "fail:e": 61,
+   "executable": 237,
+   "fail:c": 52,
+   "fail:b": 29,
+   "fail:a": 15,
+   "fail:f": 36,
+   "fail:h": 7
+  }
+ }
+}

@@ -57,6 +57,8 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+from optional_digest import optional_digest
+
 import canary_guard
 canary_guard.install()
 
@@ -75,7 +77,7 @@ def main() -> int:
     canonical = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
     telemetry = Path("/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl")
     canonical_before = sha(canonical)
-    telemetry_before = sha(telemetry)
+    telemetry_before = optional_digest(telemetry)
 
     from scripts.kernel_rnd.autokernel.loop import actors, belief_context, dispatch_guard, loop
     from scripts.kernel_rnd.autokernel.loop import run as run_mod, archive, resume as resume_mod
@@ -252,14 +254,70 @@ def main() -> int:
     known_line = any("akm-cpu-fa-query-major-row-schedule" in line and
                      "measured_null" in line and "-1.10%" in line
                      for line in section.splitlines())
-    passed = belief_status == "ready" and known_line and bool(guard.get("akm-cpu-fa-query-major-row-schedule"))
+
+    # ---- guard design pins (operator decision 2026-11-03: keep the guard's design) ----
+    # Refusal needs >=3 comparable same-epoch answers whose research_scope matches the live
+    # regime (dispatch_guard.characterised_reason). Row 337 alone (one, unscoped) must NOT refuse.
+    # Synthetic controls are deep copies of row 337 held in memory and dumped to scratch; the
+    # canonical stores are never written.
+    import copy
+    m337 = "akm-cpu-fa-query-major-row-schedule"
+    row337 = next((r for r in prior if r.get("mechanism_id") == m337), None)
+    gctx = {**context, "epoch_sha256": EPOCH, "measurement_epoch_sha256": MEASUREMENT_EPOCH}
+    hyp337 = SimpleNamespace(mechanism_id=m337,
+                             target_surface=(row337 or {}).get("target_surface"),
+                             target_symbol=(row337 or {}).get("target_symbol"))
+
+    def synth(n, scope):
+        rows = []
+        for i in range(n):
+            r = copy.deepcopy(row337)
+            r.update(status="measured_null", epoch_sha256=EPOCH, comparable_measurement=True,
+                     measurement_epoch_sha256=MEASUREMENT_EPOCH, candidate_diff_sha256=None)
+            if scope is None:
+                r.pop("research_scope", None)
+            else:
+                r["research_scope"] = copy.deepcopy(scope)
+            r["synthetic_id"] = i
+            rows.append(r)
+        return rows
+
+    # The live-built regime can carry quant=None (census dominant_quant unresolved), and the
+    # guard fails closed on any None facet, so the controls use a fully populated regime.
+    control_regime = {**regime, "quant": regime["quant"] or "IQ4_XS"}
+
+    def reason(rows):
+        return dispatch_guard.characterised_reason(
+            hyp337, {**gctx, "current_regime": control_regime, "prior_experiments": rows})
+
+    other_scope = {**control_regime, "backend": "gpu"}
+    checks = {"row337_in_belief_section": bool(known_line)}
+    if row337 is None:
+        checks["guard_refuses_three_scoped_answers"] = False
+        checks["guard_silent_single_unscoped_answer"] = False
+        checks["guard_silent_two_scoped_answers"] = False
+        checks["guard_silent_three_mismatched_scope"] = False
+    else:
+        three = synth(3, control_regime)
+        (BASE / "canary_a_synthetic_control.json").write_text(
+            json.dumps(three, indent=1, sort_keys=True, default=str))
+        checks["guard_refuses_three_scoped_answers"] = bool(reason(three))
+        checks["guard_silent_single_unscoped_answer"] = (
+            reason(synth(1, None)) is None and guard.get(m337) is None)
+        checks["guard_silent_two_scoped_answers"] = reason(synth(2, control_regime)) is None
+        checks["guard_silent_three_mismatched_scope"] = reason(synth(3, other_scope)) is None
+    checks["live_regime_quant_resolved"] = regime["quant"] is not None  # informational, not gating
+    passed = belief_status == "ready" and all(v for k, v in checks.items()
+                                              if k != "live_regime_quant_resolved")
     canonical_unchanged = canonical_before == sha(canonical)
-    telemetry_unchanged = telemetry_before == sha(telemetry)
+    telemetry_after = optional_digest(telemetry)
+    telemetry_unchanged = telemetry_before == telemetry_after
     status = ("UNKNOWN" if belief_status != "ready" or not canonical_unchanged or not telemetry_unchanged
               else ("PASS" if passed else "FAIL"))
     print("CANARY_RESULT:", json.dumps({"loop": "A", "status": status,
-          "known_line": known_line, "guard_refusal": bool(guard.get("akm-cpu-fa-query-major-row-schedule")),
-          "canonical_ledger_unchanged": canonical_unchanged, "telemetry_unchanged": telemetry_unchanged}))
+          "known_line": known_line, "checks": checks,
+          "canonical_ledger_unchanged": canonical_unchanged, "telemetry_unchanged": telemetry_unchanged,
+          "telemetry_before": telemetry_before, "telemetry_after": telemetry_after}))
     return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2}[status]
 
 

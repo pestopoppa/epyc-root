@@ -41,6 +41,13 @@ def captured_sidecar():
         path = Path(json.loads(pointer.read_text())["result"]).with_name("beliefs.jsonl")
     if not path.is_file():
         pytest.skip("prospective native smoke sidecar absent")
+    try:
+        adapter.native_rows(path)
+    except ProjectionError as exc:
+        # The sidecar's retained custody lives under a reclaimable /mnt/raid0/llm/tmp tree; a
+        # vanished member is an absent capture, not a reader defect. Any other refusal still fails.
+        if "No such file or directory" in str(exc):
+            pytest.skip(f"prospective native smoke custody reclaimed: {exc}")
     return path
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Hook: PreToolUse → Bash. Commit hygiene on the shared repos.
 
-Rider R7a (handoffs/active/session-bus-thin-dispatcher.md §Rider) — the two
+Rider R7a (handoffs/active/coordination-and-churn-pipeline.md §Rider) — the two
 checks the coordinator-daemon's audit explicitly CANNOT make.
 
 WHY THIS LAYER EXISTS. R7's audit established that "wholesale `git add`" and

@@ -1,0 +1,22 @@
+{
+  "id": "kvfork17a-gpu-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork17a-gpu-20261102/launcher.sh",
+  "lane": "gpu",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork17a-gpu-20261102/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "All 111 complete paired case receipts, declared 22 ROCm0 unsupported only, 25 shared cases supported, strict bitwise comparator passes; each supported arm has >=2 DURING-process own-HIP mapping + positive per-PID KFD VRAM samples. No speed or adoption claim.",
+  "estimate_s": 1800,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17a",
+  "regions": "mi210_0,184-191",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork17a-gpu-20261102",
+  "keep": [
+    "*",
+    "ggml/include/*",
+    "out/**",
+    "out/results.jsonl"
+  ],
+  "priority_rank": 100.0,
+  "smoke_timeout_s": 1500,
+  "dryrun_timeout_s": 1500
+}

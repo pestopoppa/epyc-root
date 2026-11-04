@@ -43,3 +43,39 @@ Previous wrap-up failed at observer census because the sparse lane omitted track
 ## 03:48Z — Review speech bench plan and build successor
 
 Consumed CS6 plan and CS8 build draft. CS6 has an ordered run list, measurands, exit criteria and explicitly provisional booking ranges; independent review requested before integration. CS8 journal passed three model-free tests but remains unpublishable due to STOP race, child drain, source/launcher seals and cutover; bounded implementations dispatched in scratch. Completion event files registered. Prior wrap-up push failed and subsequent commit failed because merge reapplied sparse patterns; lane sparse configuration now includes the tracked observer hook input, and observer census passes. No compute or row published. [no-belief: preparation and operational checks]
+
+## 09:26Z — File second GPU bench plan
+
+Filed reviewed CS-6 prospective bench-window plan with gate ordering, measurands, exits and provisional per-cell bookings; corrected arm A to 7–15 cells and 3.5–15 hours, and clarified CS-3 and controlled co-tenants. No measurement or ratification is claimed. CS8 build successor, Ultra rowflow migration and CS5 preparation continue in bounded scratch tasks with registered completion events. Prior wrap-up 876b3830c281 pushed and verified. GitNexus impact lookup for documentation failed because this lane lacks an index; blast radius is a new document and its handoff link. [no-belief: prospective run plan]
+
+## 09:28Z — Advance speech build and restore CS6 wrap
+
+CS6 prospective plan and checkbox were prepared in the prior boundary, but wrap failed on stale master rollup; index regeneration initiated. CS8 scratch supervisor now has ten model-free passing tests; escaped descendants, spawn race, actual namespace cutoff, source seals, lock and disk floor remain to resolve. Ultra diagnostic found 75 rc0 arm records but only 14 verdicts; nine comparator shape errors and two absent comparison files make it inconclusive. CS5 request-manifest validator has four model-free tests but requires real runners, verified inputs and CS3 integration. No compute or row publication. [no-belief: preparation and diagnostics]
+
+## 09:31Z — Advance speech launcher safeguards
+
+CS6 plan wrap passed index checks and created commit 1ef9c6e36794, but concurrent main advances rejected the push; a lock-held fetch/merge/push was initiated to land it. CS8 source seal and writer lock, CS8 disk-floor guard, and Ultra comparison-only repair are delegated to bounded scratch jobs; completion events registered. No compute or row was launched. [no-belief: preparation and operational state]
+
+## 09:33Z — Review build source seal prototype
+
+Reviewed source-seals6 prototype: seven model-free tests cover catalog/packet tamper, source identity and cooperative writer contention. It holds flock across units and rechecks source around each child; a cooperating lock and before/after hashes do not prevent transient mutations or arbitrary writers. Real restored source and complete dependency catalog remain unbound, so it is not publishable. Dispatched bounded seal integration, actual namespace STOP fixture, and CS5 manifest review with completion events. Prior progress wrap 6e665448c0a2 pushed successfully. No compute or new row. [no-belief: model-free prototype]
+
+## 09:34Z — Advance speech row qualification
+
+Previous boundary wrapped and pushed as 6db0e3f6954f. CS6 was ticked and pushed in 1ef9c6e36794; current dispatcher STATE is stale for that item. Source-seal successor still requires containment and immutability proof, so no unsafe row was published. Bounded build integration, Ultra comparison-only preparation and search for independently completable work are dispatched, with completion events registered. [no-belief: operational progress]
+
+## 09:35Z — Advance remaining speech work
+
+Backlog has one blocked HIP build row, two parked rows, no needs-filing rows; CS6 is already complete despite stale backlog. Build repair and Ultra comparison-only successor remain unqualified, so no row was published and no incomplete checkbox was ticked. Delegated bounded integration and task audit, with completion events registered. Previous wrap de21e2d722c9 reached origin/main. [no-belief: operational state]
+
+## 09:36Z — Continue speech launcher repair
+
+Previous progress commit 0ace433df432 was created but its push raced origin/main and was rejected. No new completed task or qualification-ready row is supported by available evidence. Build integration, no-redraw Ultra comparator and task audit have bounded scratch jobs registered for completion events; no compute launched. [no-belief: operational state]
+
+## 09:37Z — Review executable seal gap
+
+Reviewed audit10: no defensible completed unticked task; the CS8 prototype checks listed catalog entries but does not bind argv or all transitive executable dependencies, and cooperative flock does not exclude arbitrary writers. Delegated targeted command binding, process containment and Ultra comparison-only preparation in scratch; registered completion events. Previous wrap push raced main; lock-held retry initiated. No compute or row published. [no-belief: prototype audit]
+
+## 09:40Z — Advance speech launcher integration
+
+The previous wrap created commit 5da26c2925b4 but its push raced main; lock-held fetch and push initiated. CS8 successor integration, Ultra comparison-only preparation, and CS5 harness work are delegated with completion events. No independently qualified row or completed checkbox has been established; no compute launched. [no-belief: operational preparation]

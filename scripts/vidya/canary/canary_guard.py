@@ -51,6 +51,17 @@ _TRUSTED_GIT = os.path.realpath(shutil.which("git") or "")
 _TRUSTED_PYTHON = os.path.realpath(sys.executable)
 
 
+def _is_embed_endpoint(args) -> bool:
+    """Allow ONE loopback port: the canary-owned embedding server (CANARY_EMBED_URL), nothing else."""
+    url = os.environ.get("CANARY_EMBED_URL")
+    if not url:
+        return False
+    u = urlsplit(url)
+    addr = args[1] if len(args) > 1 else None
+    return (u.hostname == "127.0.0.1" and isinstance(addr, tuple) and len(addr) >= 2
+            and addr[0] == "127.0.0.1" and addr[1] == u.port and (u.port or 0) >= 10000)
+
+
 def _under(path: str, roots=ALLOWED_WRITE_ROOTS) -> bool:
     try:
         rp = os.path.realpath(path)
@@ -122,6 +133,8 @@ def _hook(event: str, args) -> None:
         if not _under(p) and not os.path.exists(p):
             _block(event, p)
     elif event in ("socket.connect", "socket.sendto", "socket.sendmsg"):
+        if event == "socket.connect" and _is_embed_endpoint(args):
+            return
         _block(event, f"{args[1:] if len(args) > 1 else args}")
     elif event == "subprocess.Popen":
         executable, argv, cwd, env = args

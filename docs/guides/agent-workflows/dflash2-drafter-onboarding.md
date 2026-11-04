@@ -2,7 +2,7 @@
 
 Prepared 2026-11-01 for the open **DF2-DRAFTER-CAPABILITY** task. This is an implementation and evidence checklist; it does not establish a working reusable training pipeline or close that task. No capture, training, conversion, inference or deployment was performed to prepare this guide.
 
-The controlling task and pilot are in the [DFlash2 handoff](../../../handoffs/active/dflash2-block-drafter-experimental-build.md), under DF2-DRAFTER-CAPABILITY and DF2-FT-1. That handoff owns their status and decision rules. The references below were checked against local root `origin/main` at `2689038d77c5220f78f1061ba237e0b459fd275c`. This guide introduces no measurement grading rule or replacement gate.
+The controlling task and pilot are in the [DFlash2 handoff](../../../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build), under DF2-DRAFTER-CAPABILITY and DF2-FT-1. That handoff owns their status and decision rules. The references below were checked against local root `origin/main` at `2689038d77c5220f78f1061ba237e0b459fd275c`. This guide introduces no measurement grading rule or replacement gate.
 
 ## Evidence and remaining implementation
 
@@ -73,7 +73,7 @@ The existing FT-2 trigger, contingent on FT-1 PROMOTE, scales to 3–5M on-polic
 
 After the applicable keep verdict, prepare adoption through the existing [stack-change skill](../../../.claude/skills/stack-change/SKILL.md) and [derivation graph](../../../.claude/skills/stack-change/DERIVATION.md). Draft the complete multi-repo change and preflight in scratch; one operator signature precedes applying the serving change. The source master is research `orchestration/model_registry.yaml`; DRAFT-SEL-1 lists acceptable `roles.<model_role>.drafters`, while orchestrator `orchestration/stack_topology.yaml` selects the drafter for each server. Repoint the appropriate `drafters.dflash2.draft_model` only through that package; retain the incumbent file as rollback. Do not hand-edit the generated lean registry, priors, launch projection or production argv.
 
-The [stack-change handoff](../../../handoffs/active/stack-change-governance-pipeline.md) owns compile/projection, capacity, runtime attestation and promotion checks. Complete its serving proof after signed apply; use actual kernel-store binary and loaded-library identity plus a real completion. Documentation or a green process-health response cannot substitute for serving proof.
+The [stack-change handoff](../../../handoffs/active/stack-lifecycle-program.md) owns compile/projection, capacity, runtime attestation and promotion checks. Complete its serving proof after signed apply; use actual kernel-store binary and loaded-library identity plus a real completion. Documentation or a green process-health response cannot substitute for serving proof.
 
 ## Review and delivery packet
 

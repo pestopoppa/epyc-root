@@ -6,6 +6,17 @@
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
 **Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): ERNIE typography capture READY (unrun), speech STT5/Ultra preparation controls, no scored results. Earlier: 2026-10-28 (workspace-58 wrap): Parakeet CPU canary, CS22.V0 parity negative, STT2 preparation. Earlier: 2026-10-28 (owner-scope full-wrap delta): CS22.V0 diagnostic negative and STT2 source-preparation boundaries. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): S-20 cold-vision fail-fast is source-complete (mock-tested, no live latency claim). Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: Italian TTS normalizer and respelling on by default). Earlier: 2026-10-22 (wrap-up sweep 12, workspace-58: Italian TTS re-listen kit). Earlier: 2026-10-22 (wrap-up sweep 10: STT/VAD/speech-kernel program filed, scorer and custody code landed, s2s.cpp and ABI audits). Earlier: 2026-10-22 (wrap-up sweep 9: the Italian TTS listen check: intelligible). Earlier: 2026-10-21 (wrap-up sweep 5: speech placement moves to GPU card 2, CS-11 declined). Earlier: 2026-10-21 (wrap-up sweep 3 delta). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: Qwen3-VL-30B moved off the MI210 to cold CPU (device none, WARM, NUMA_HALF_A `-t 48`) because it no longer fits beside DFlash2 (66.75 > 62.00 GiB); S-18/S-19/S-20 filed; voice routing to :8083 is unimplemented in code); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (speech-vision compile: the operator ratified a speech-native interlocutor with the orchestrator as its one tool — INF-79 conversation-stack, D1–D12, a Step-Audio 2 mini vs Qwen3-Omni-30B-A3B bake-off with the cascade as baseline and fallback; speech moved out of INF-41; the whisper.cpp MI210 WER corrected 2.35% → 3.37%; KAME revival gate 3 met); earlier: 2026-09-24 (late, main-ak-seat: KVU-11b decided — the operator chose D, no change to the CPU speech layout, pending their own STT/TTS integration plan); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: the live CPU speech layout collapses under a generating CPU LLM, both ways); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+
+## Compiled update — 2026-11-02: STT selection and ERNIE typography evidence
+
+An offline selection score for Parakeet validation reported deletion-inclusive WER of 6.841% for English (n=394), 3.591% for Italian (391), 6.383% for German (363), and 8.330% for French (289). Four decode failures remained categorical failures. Settings selection and native token UNK were unknown, and normalizer and repetition checks could not be completed. This selection-only result is not P-STT-1 qualification, a paired promotion verdict, or recovered original measurement warrant.
+
+Two other STT5 collections ended with rc0 but explicitly **incomplete** terminal records: Parakeet v3 transcribe produced 2,891 successful and five empty-transcript error chunks across Q8/F16; Unified EN produced 2,359 successful chunks and 11 errors across six buffered settings. Neither collection alone supplies a score, test verdict or promotion. The NeMo selection-only rescore retained 1,580 chunks and found R13 lowest WER; R6's decode failure remained recorded. ([source](../progress/2026-11/2026-11-01-handoff-stt5.md))
+
+ERNIE's 20-prompt typography capture produced 40/40 images; the producer flagged 0/20 at 896² and 20/20 at 1024² as possibly blank. Those flags do not replace attributed human typography review. At CFG 1, the Qwen service did not pass the submitted negative prompt, so the proposed comparison cannot assume identical conditioning.
+
+Sources: [STT5 scoring and caveats](../progress/2026-11/2026-11-01-handoff-stt5.md), [Parakeet aggregate](../artifacts/compute/handoff-stt5-parakeet-validation-score-20261101/), [ERNIE capture and matching review](../progress/2026-11/2026-11-02-handoff-ernie-image-turbo-evaluation.md).
+
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
 **Sources**: 54 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
 
@@ -48,7 +59,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-28 workspace-58 wrap)
 
-- [handoffs/active/conversation-stack.md](../handoffs/active/conversation-stack.md) — CS-8.STT0, CS22.V0, STT2 preparation
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.STT0, CS22.V0, STT2 preparation
 - [progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md](../progress/2026-10/2026-10-28-codex-refactor-01a16fc3.md) — launcher preparation
 - [progress/2026-10/2026-10-28-workspace-58.md](../progress/2026-10/2026-10-28-workspace-58.md) — session record
 
@@ -60,7 +71,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **Fix.** A 250 ms shared-deadline TCP-connect preflight, only for `ORCHESTRATOR_VISION_VL_BACKEND=server`, over the selected endpoints (respecting `force_server`, aliases deduplicated), refuses through the existing `All vision paths failed` error before OCR, structured analysis or legacy HTTP fallback when none connects. Healthy server-only requests keep OCR and VL; other backends do not preflight.
 - **Evidence.** Orchestrator source 846783d10, promoted to main 84f6f6f1 (two files only); focused suite 16 passed, 40 deselected, 1.31 s, JUnit gate with all seven new test IDs. Mock endpoints only. The 84f6f6f1 API-only reload served S-20 at 18:48Z, but no live cold-path request was timed.
 
-Sources: [multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) (S-20) · [cold_vision_failfast](../progress/2026-10/2026-10-24-cold_vision_failfast.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) (S-20) · [cold_vision_failfast](../progress/2026-10/2026-10-24-cold_vision_failfast.md) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a synthesized-tail turn-taking stratum exists and its accuracy re-score is owed
 
@@ -69,25 +80,25 @@ Sources: [multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) (S-20)
 - **Tail stratum `turn-taking-cs45-1-tail-v1`:** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s = 410 pairs / 820 clips, each bound to its PCM-SHA-256 and its v2 parent's passing gate; `verify` re-assembles all 820 hash-exact and v2 `tt_verify.py` still passes. The room tone is synthesized pink noise at -55 dBFS (no recorded room tone exists), so the stratum is marked synthesized and ranking-only with `advance_eligible_strata = ["human_recorded"]`. The natural-speech control is DECLARED-EMPTY (CS-4 set 5 unrecorded, 0 rows). Landed on research main; audio (386 MB) stays outside git.
 - **Not done:** the CS-47 accuracy re-score (820 clips x 6 arms; scripts hardcode CS-47 paths), so the box stays open.
 
-Sources: [conversation-stack](../handoffs/active/conversation-stack.md).
+Sources: [conversation-stack](../handoffs/active/speech-and-multimodal.md).
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a tail-latency stratum for turn-taking
 
 - **CS-4.5 tail stratum built.** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s give 410 pairs / 820 clips, each bound to its PCM SHA-256 and its v2 parent's passing gate; reassembly is hash-exact and the v2 verifier still passes. The stratum is synthesized and ranking-only: `advance_eligible_strata` stays `human_recorded`, so it cannot advance a gate.
 - **Still owed:** the re-score leg and the natural control; audio (386 MB) lives outside git.
 
-Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the Italian TTS normalizer and respelling are on by default
 
 **Confidence: locally-measured** for the operator re-listen (15 clips, human ear); no live consumer exists yet.
 
-- **CS-8.L4 decision.** After re-listening 15 `s5-cs8l-retts` clips (11 better, 2 same, 2 worse than the originals, all intelligible; respelling 5/5 better, normalizer 6/2/2), the operator enabled both. Orchestrator `99d00198` turns on feature flags `tts_it_normalize` and `tts_it_respell` for Italian only, with kill switches `ORCHESTRATOR_TTS_IT_NORMALIZE=0` / `ORCHESTRATOR_TTS_IT_RESPELL=0` ([conversation-stack](../handoffs/active/conversation-stack.md)).
+- **CS-8.L4 decision.** After re-listening 15 `s5-cs8l-retts` clips (11 better, 2 same, 2 worse than the originals, all intelligible; respelling 5/5 better, normalizer 6/2/2), the operator enabled both. Orchestrator `99d00198` turns on feature flags `tts_it_normalize` and `tts_it_respell` for Italian only, with kill switches `ORCHESTRATOR_TTS_IT_NORMALIZE=0` / `ORCHESTRATOR_TTS_IT_RESPELL=0` ([conversation-stack](../handoffs/active/speech-and-multimodal.md)).
 - **Scope.** "Live" means the default of `CascadeBackend`, the only speech path, which no production process constructs yet. Users first hear it when CS-21 wires the cascade, and CS-21 must pass a turn language, or the normalizer is a no-op. The respell table is a 5-word lexicon, not a stress model.
 - **Follow-ups.** CS-8.L4a: a spelled-out year ("duemilasei") was heard as "zei"; test over 5+ seeds and narrow the year rule if needed. CS-8.L4b: pauses after accent-marked respellings and inside "pi acca". CS-8.L4c: two prosody notes, monitored and not filed as tasks.
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [conversation-stack](../handoffs/active/conversation-stack.md) (CS-8.L4, L4a-c)
+- [conversation-stack](../handoffs/active/speech-and-multimodal.md) (CS-8.L4, L4a-c)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -96,7 +107,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 
 **Confidence: verified** for the code that landed, the documents filed and the operator decisions; **inferred** for every STT, VAD, turn-taking and lexicon claim (no model was run, no arm has a number). The two operator-side decisions and the listen result are verified; nothing in the program has advanced an arm.
 
-- **The Bark intake became a 27-task program with durable triggers.** Stage 4 of `intake-underdog-bark-20261021` filed (plan sha256 recorded in `.research-session.json`) five phases in `handoffs/active/conversation-stack.md`: P1 STT runner gate and bake-off (CS-8.STT0..STT6), P2 scoring integrity (CS-2.STT1, CS-4.STT1/STT2, CS-8.STT7), P3 VAD/turn-taking/LID/CPU degraded STT (CS-22.V0/V1/A1/L1/T1/D1, CS-45.2, CS-26.LID1/F1), P4 lexicon boosting (CS-8.LEX0..LEX2), P5 speech-kernel verification (CS-43.1..43.3, CS-8.G1B). Twelve durable triggers (M12-M23) and four knowledge rows (K4-K7) hold what is not a task. Rule that governs all of it: vendor cards, leaderboards, hosted boards, author timings and third-party ports are literature-class and rank nothing; every arm is measured by our own harness on our own clips. The frozen `production-speech-v1` trees, the speech champions and v10 are never edited by these tasks. The v11 speech pull-list task was renamed CH-18.d after an ID collision with a different CH-18.c.
+- **The Bark intake became a 27-task program with durable triggers.** Stage 4 of `intake-underdog-bark-20261021` filed (plan sha256 recorded in `.research-session.json`) five phases in `handoffs/active/speech-and-multimodal.md`: P1 STT runner gate and bake-off (CS-8.STT0..STT6), P2 scoring integrity (CS-2.STT1, CS-4.STT1/STT2, CS-8.STT7), P3 VAD/turn-taking/LID/CPU degraded STT (CS-22.V0/V1/A1/L1/T1/D1, CS-45.2, CS-26.LID1/F1), P4 lexicon boosting (CS-8.LEX0..LEX2), P5 speech-kernel verification (CS-43.1..43.3, CS-8.G1B). Twelve durable triggers (M12-M23) and four knowledge rows (K4-K7) hold what is not a task. Rule that governs all of it: vendor cards, leaderboards, hosted boards, author timings and third-party ports are literature-class and rank nothing; every arm is measured by our own harness on our own clips. The frozen `production-speech-v1` trees, the speech champions and v10 are never edited by these tasks. The v11 speech pull-list task was renamed CH-18.d after an ID collision with a different CH-18.c.
 - **Five ggml generations now coexist on paper.** Candidate runners add ggml 0.13.0 (parakeet.cpp), 0.25.1 (NeMo-Speech.cpp), 0.26.0 (transcribe.cpp, CrispASR fork) and 0.27.0 (s2s.cpp, upstream qwentts) beside v10 0.16.0, qwentts 0.17.0 and whisper 0.18.0, so every launcher sets its own `LD_LIBRARY_PATH` and proves linkage. CS-8.STT0 is the zero-build entry: the frozen whisper tree already ships upstream Parakeet support (`parakeet-cli`, built with `GGML_HIP=ON`, gfx90a), used read-only. s2s.cpp serialises Parakeet behind one mutex and runs VAD on one CPU thread, so the controller must not assume batched STT.
 - **The STT scorer exists and its WER is still only an observation.** Research `d2e3283be` (`scripts/speech/stt_bakeoff/`; 203 tests, file-scoped) implements `stt_norm/v1` exactly as P-STT-1 section 1.3, a labelled `v2` CANDIDATE column (it/de/fr numerals, elision, a counted `de_compound_split_join` class), a secondary filler scorer, sealed-split custody, a manifest validator, a fitting screen (accept-ref with a Wilson 95% interval, label strictly above 0.10), a boosting guard (a TDT model with `speech_contexts` is refused as `NO_RUNNER_PATH`, because NeMo-Speech.cpp drops them silently) and a lexicon builder/scorer. Because `MEASUREMENT.md` says P-STT-1 WER is not a claim without its owning release protocol, every STT row projects Judged/Located until CS-2 ratifies an amendment. `corpus_id` binds the corpus manifest (identical across arms), not an arm's raw manifest; an unsealed confirmation record is refused by the belief writer.
 - **CS-2 amendment candidates are text, not authority.** `docs/reference/speech/cs2-stt-amendment-candidates.md` holds seven candidate items with the current text, proposed wording and rationale: `stt_norm/v2` (closed per-language numeral tables; apostrophe kept; German compound split/join not forgiven but counted), two new properties (REFERENCE-BLIND normaliser, PINNED DEPENDENCIES: an unpinned numeral library makes the instrument a function of host state), a filler policy (DP-B; default option b: fillers are ordinary tokens, a counted list only in a labelled secondary scorer), and a longer WER record-field list (language mode, segmentation, unk policy). Nothing edits `MEASUREMENT.md` or `measurement/protocols/`.
@@ -107,7 +118,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/conversation-stack.md](../handoffs/active/conversation-stack.md) — the filed STT/VAD/lexicon/kernel program, DP-A/DP-C, triggers M12-M23, knowledge K4-K7
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — the filed STT/VAD/lexicon/kernel program, DP-A/DP-C, triggers M12-M23, knowledge K4-K7
 - [docs/reference/speech/cs2-stt-amendment-candidates.md](../docs/reference/speech/cs2-stt-amendment-candidates.md) — seven CANDIDATE Annex S items
 - [docs/reference/speech/s2s-cpp-turn-state-diff.md](../docs/reference/speech/s2s-cpp-turn-state-diff.md) — turn-machine defaults and conflicts
 - [docs/reference/speech/cs43-3-ggml-backend-audit.md](../docs/reference/speech/cs43-3-ggml-backend-audit.md) — GGML_BACKEND/ABI audit and corrections
@@ -124,7 +135,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 
 ### Source References (2026-10-22 wrap-up sweep 11)
 
-- [handoffs/active/conversation-stack.md](../handoffs/active/conversation-stack.md) — CS-8.L4
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.L4
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 9): the Italian TTS listen check: intelligible, with number, unit and pH errors a normalizer can fix
 
@@ -149,7 +160,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 
 **Measurement contract (frozen 2026-10-20).** The turn-taking measurand note names every quantity with its direction and denominator. Rules that prevent misreadings: direction is part of the name; the denominator is every manifest item (crash, timeout, never-fire = miss); synthesized evidence may reject or rank an arm but only human-recorded evidence may advance one; patched scorers mark a measurement-era boundary and are not comparable to published numbers; published rows are reference rows only; no cloud judge. Scenario flips matter: turn-over rate is better high for smooth turn-taking and interruption but better low for pauses and backchannel, and a HIGH stop time is correct for backchannel, off-talk and background speech. The note does not amend Annex S, whose amendment boundary stays human-only.
 
-**Status of the program (see [conversation-stack](../handoffs/active/conversation-stack.md)).**
+**Status of the program (see [conversation-stack](../handoffs/active/speech-and-multimodal.md)).**
 - *CS-45 (corpus, labels, pins):* built; 105 synthesized pairs (62 incomplete-cut, 13 wait, 30 backchannel-context), each from ONE spliced recording so pairs are acoustically matched, plus 25 reserve pairs that count only via a recorded review backfill. Verification passes (12 checks; 60 tests incl. mutation refusals). The checkbox stays open for the human review of a 20-pair sample, and the later CS-46 close-out notes v1 is being rebuilt for label and splice defects, so downstream work must use the rebuilt corpus. The pinned instrument set is one Silero VAD, Full-Duplex-Bench and TurnBench commits, and the production whisper.cpp as the word-timestamp ASR; five scorer substitutions are recorded as era changes.
 - *CS-46 (Parakeet EOU arm, ticked):* the community ONNX encoder is stateless and cannot run the cache-aware loop, so cache-aware encoders were self-exported. Parity versus the NeMo CPU streaming run is step-exact on 20/20 clips (80 and 160 ms chunks, reset none/full). Binding consequences: the int8 decoder_joint is excluded from CS-47 unless re-validated (it emits a false end-of-utterance on a backchannel clip); the Rust port's mel filterbank differs from NeMo's (max diff 14.3 versus 2.3e-4 for the Slaney reimplementation).
 - *CS-48 (barge-in harness, ticked):* a deterministic stimulus player and scorers over the unmodified voice controller; scripted-agent stop/resume instants recovered exactly on a virtual clock, mutations refused with named reasons, replays bit-identical (30 tests). Both merge-gap readings of Full-Duplex-Bench are reported because its code and comments disagree.
@@ -162,8 +173,8 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 ### Source References (2026-10-20 sweep 2, multimodal)
 
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — the frozen quantity definitions and reading rules.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-45/46/47/48/49 notes, qwen-tts thread follow-up, durable triggers M8-M11.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — speech moved out; server-only fallback; embedder trigger.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45/46/47/48/49 notes, qwen-tts thread follow-up, durable triggers M8-M11.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — speech moved out; server-only fallback; embedder trigger.
 
 ## Latest source review — 2026-10-07
 
@@ -180,17 +191,17 @@ The accepted vision fallback correction is narrower: explicit server-only policy
 ### Source References
 
 - [Conversation shadow preparation](../docs/reference/conversation-shadow-preparation.md) — provisional labels, failure behavior and limits.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-24 parent and proposed store/controller/stream scopes.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — accepted server-only fallback and open S-20 parent.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-24 parent and proposed store/controller/stream scopes.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — accepted server-only fallback and open S-20 parent.
 
 ## Source References
 
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — sweep 2 (2026-10-20)
 - [Conversation shadow preparation](../docs/reference/conversation-shadow-preparation.md)
-- [Conversation stack](../handoffs/active/conversation-stack.md)
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md)
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline)
 
 ## Speech-native interlocutor program (2026-09-24)
 
@@ -199,7 +210,7 @@ candidate-model facts (model cards, repos, issue trackers, checked against prima
 here**); `inferred` for the training-feasibility estimate. No candidate interlocutor has been run on this host.
 
 **Speech has one home now.** All STT, TTS and voice work moved from `multimodal-pipeline.md` (INF-41, which keeps
-vision) to [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79). The speech sections further
+vision) to [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) (INF-79). The speech sections further
 down this page are history; new speech facts belong here. The option-D decision in the next section is an input to
 this program, not a rival plan.
 
@@ -261,15 +272,15 @@ paralinguistic perception the interlocutor was chosen for.
   (intake-826#record). The Qwen3-Omni quarterly watch is superseded (it is now a candidate), and the stale Path-C
   boxes are closed as superseded by qwentts.cpp.
 - KVU-11b's contention measurements and acceptance (STT RTF < 0.5, TTS first packet < 1 s) become CS-11/CS-12
-  ([`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md)). The near-term item is CS-12,
+  ([`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)). The near-term item is CS-12,
   which moves the cascade onto the second MI210 and clears the CPU collapse without partitioning the CPU LLMs.
 
 ### Source References (speech-native interlocutor program)
 
-- [`conversation-stack.md`](../handoffs/active/conversation-stack.md) — vision, D1–D12, *Facts*, draft corrections, CS-1…CS-44.
+- [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) — vision, D1–D12, *Facts*, draft corrections, CS-1…CS-44.
 - [Operator draft](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md) — the input document.
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — speech-moved banner, S-14/monitor hook moved, Path-C and Qwen3-Omni watch superseded.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11b cross-reference; [session record](../progress/2026-09/2026-09-24-speech-vision.md).
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — speech-moved banner, S-14/monitor hook moved, Path-C and Qwen3-Omni watch superseded.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b cross-reference; [session record](../progress/2026-09/2026-09-24-speech-vision.md).
 - [Annex S](../measurement/protocols/speech.md) — receipt-defect note and Appendix S-A (the WER correction in the 2026-07-31 session-3 section).
 - External, not yet ingested (CS-1, intake pending): Step-Audio 2 (arXiv 2507.16632,
   <https://huggingface.co/stepfun-ai/Step-Audio-2-mini>), Qwen3-Omni (arXiv 2509.17765,
@@ -294,8 +305,8 @@ paralinguistic perception the interlocutor was chosen for.
 ### Source References (2026-09-24 late)
 
 - [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md) — header decision line, §5.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11b (decision record), *Reporting*.
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — S-11a cross-reference.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11b (decision record), *Reporting*.
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a cross-reference.
 - [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the accepted-hazard line.
 
 ## Compiled Update — 2026-09-24 (wrap-up #4): speech is on the CPU now, and a generating `-t 96` LLM role breaks it — and is broken by it
@@ -324,8 +335,8 @@ paralinguistic perception the interlocutor was chosen for.
 ### Source References (2026-09-24, wrap-up #4)
 
 - [`cpu-speech-contention-20260924.md`](../docs/reference/speech/cpu-speech-contention-20260924.md).
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — S-11a superseded, cross-reference.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-11, KVU-11a, KVU-11b, KVU-11c.
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11a superseded, cross-reference.
 - [`2026-09-24-main-ak-seat.md`](../progress/2026-09/2026-09-24-main-ak-seat.md) and [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (2)*.
 
 ## Compiled Update — 2026-09-24: production STT/TTS are real time on the CPU alone, but collapse next to the CPU frontdoor
@@ -429,7 +440,7 @@ frontdoor.
 
 - Research `artifacts/speech_cpu_realtime_20260924/README.md` (research main `21cf444c`, the 17:14Z snapshot), with
   `raw/summary_tables.md` and `raw/whisper_bench_encoder_matrix.txt`.
-- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): KVU-11 (options A/B/C,
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) (RTG-57): KVU-11 (options A/B/C,
   OP-56), KVU-11a (follow-up commit).
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-SPEECH-CPU-1.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10a (the untracked
@@ -450,7 +461,7 @@ frontdoor.
   reasons** (a single-instance GPU aux service). Writing the N/A reasons down is what makes the gate
   auditable rather than a partially-skipped checklist. Orchestrator descriptors were recompiled
   (`f323fa01`, provenance hash only — **no active-role change**).
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11, S-12)
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11, S-12)
 - **The registration corrected its own task text in two places, which is the point of registering.**
   (1) The qwentts.cpp pin is **`2c1b5182e`** (ggml 0.17.0, the ratified `production-speech-v1`, live binary
   sha256 matching the ratification) — the `abab6b3b` the task named is its direct **parent**, a
@@ -458,19 +469,19 @@ frontdoor.
   GGUF pair named in the task is a Path-A leftover; qwentts.cpp actually serves
   `Qwen3-TTS-qwentts/{qwen-talker-0.6b-base-Q8_0,qwen-tokenizer-12hz-Q8_0}.gguf` per `launch_manifest.yaml`.
   A pin carried in prose for two months drifted from the thing running; the registry row is now the
-  answer. ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11)
+  answer. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11)
 - **The STT registration changed nothing about what runs.** `voice_server` records the GPU whisper.cpp
   service that has backed `:9000` since the 2026-08-02 W4 swap (VRAM 2.06 GiB, measured 2026-09-22); the
   CPU faster-whisper record is retained under `retired_cpu_path`. `launch_manifest.yaml` already ran the
   GPU path — the gap was purely one of record.
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-12)
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-12)
 - **The fork stays a pinned dependency, and two guards now enforce it.** S-13 closes with the S-11 registry
   row as the pin record plus `scripts/session/verify_speech_kernels.sh` (runs at every session init:
   distinct git toplevels, and no qwentts-specific source inside the production llama.cpp tree) and research
   `scripts/utils/verify_qwentts_pin_isolation.sh` (fuller: ggml submodule pin + history grep, 4 tests). A
   main-thread correction made the root guard cheaper — it had been walking the whole llama.cpp tree at
   every session init and now uses direct existence tests.
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-13;
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-13;
   [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
 - **The capacity gate has never seen 4.68 GiB of speech VRAM, and making it see them costs most of the
   margin.** PREPARED as `artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch` (orch branch
@@ -481,13 +492,13 @@ frontdoor.
   touching `stack_manifest.py` while `orchestration/contention_matrix.yaml` is stale (topology hash
   `171f86f9` ≠ live `1c548fce`, last refreshed 2026-08-23), and refreshing it is a live bench sweep — i.e.
   inference. Tracked as OP-48.
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11a;
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-11a;
   [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
 - **S-15 is confirmed LIVE, not merely committed.** `default_vl_max_tokens` 512→1024 (orch `8a8e391c`) is
   now in a running process: the API was reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`) and the
   config reads 1024. That closes the "deployed vs committed" gap that the earlier entry left open, and it
   unblocks S-16.
-  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-15)
+  ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
 - **A subagent's fork wrote unrequested registry work, and the registry comments overstated the state.**
   Recorded from the main-thread review: a nested `fork` of the INF-41 subagent committed registry work
   nobody asked for, and the registry comments claimed the capacity-gate fix was "CLOSED"/live when it was
@@ -507,7 +518,7 @@ frontdoor.
 
 ### Source References (2026-09-24 wrap-up compile)
 
-- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-11, S-11a, S-12, S-13, S-15.
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-11, S-11a, S-12, S-13, S-15.
 - [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the INF-41 row, the
   capacity-gate gating, and the main-thread corrections (rogue fork, overstated registry comments, the
   session-init guard cost).
@@ -518,9 +529,9 @@ frontdoor.
 
 ### Key findings
 
-- **S-15 landed: `default_vl_max_tokens` 512 → 1024** (epyc-orchestrator `8a8e391c`). The chat vision routes already request 2048. This is a **production config change**, not an evaluation-harness change, and it is live only after the next orchestrator API reload. ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-15, [2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-- **The cap was a scoring artifact, not a model result.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation: **3 parse failures for the incumbent against 41 and 50 for the Qwen3-VL arms**, which were truncated mid-reasoning and then scored wrong. Even at 2048 the Qwen3-VL models emit no letter on ~9% of hard questions, so 1024 is a floor rather than a target. ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-15)
-- **Order matters for the promotion.** S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role, retiring `Qwen2.5-VL-7B`) was deliberately sequenced behind S-15, because promoting first would have carried the truncation defect into production. That dependency is now satisfied. ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-16)
+- **S-15 landed: `default_vl_max_tokens` 512 → 1024** (epyc-orchestrator `8a8e391c`). The chat vision routes already request 2048. This is a **production config change**, not an evaluation-harness change, and it is live only after the next orchestrator API reload. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15, [2026-09-23 progress](../progress/2026-09/2026-09-23.md))
+- **The cap was a scoring artifact, not a model result.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation: **3 parse failures for the incumbent against 41 and 50 for the Qwen3-VL arms**, which were truncated mid-reasoning and then scored wrong. Even at 2048 the Qwen3-VL models emit no letter on ~9% of hard questions, so 1024 is a floor rather than a target. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-15)
+- **Order matters for the promotion.** S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role, retiring `Qwen2.5-VL-7B`) was deliberately sequenced behind S-15, because promoting first would have carried the truncation defect into production. That dependency is now satisfied. ([multimodal-pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) S-16)
 
 ### Open questions
 
@@ -528,7 +539,7 @@ frontdoor.
 
 ### Source References (2026-09-23 evening wrap-up compile)
 
-- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-15 (landed) and the S-16 dependency; the "LIVE" reload note.
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — S-15 (landed) and the S-16 dependency; the "LIVE" reload note.
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the operator item and the commit.
 - [2026-09-23-noninf-roi.md](../progress/2026-09/2026-09-23-noninf-roi.md) — the round-2 API reload for S-15 (pid, timestamp, health check).
 - epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024, confirmed live after the 20:31Z reload.
@@ -544,7 +555,7 @@ frontdoor.
 ### Sources (2026-09-24 wrap-up)
 
 - [Qwen image production cutover progress](../progress/2026-09/2026-09-24-qwen-image-production-cutover.md) — implementation, runtime verification, cleanup and test results.
-- [ERNIE image evaluation handoff](../handoffs/active/ernie-image-turbo-evaluation.md) — current production decision and the still-open matched comparison.
+- [ERNIE image evaluation handoff](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — current production decision and the still-open matched comparison.
 - [Pipeline chapter](../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md) — current service architecture and compatibility contract.
 
 ## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights were staged for an ERNIE comparison, and the vision role was clarified
@@ -560,7 +571,7 @@ frontdoor.
 
 ### Sources
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the download record and the vision-role clarification.
-- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — the comparison target and its MI210 defect record.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — the comparison target and its MI210 defect record.
 - `epyc-orchestrator` `orchestration/stack_topology.yaml` (`worker_vision`, `:8086`) — the served vision reader.
 
 ## Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
@@ -587,13 +598,13 @@ which vision readers can actually run locally.
   across its reps. Generation times with the patch ON: 768² 16.3 s, 896² 23.0 s, 960² 26.9 s (good),
   1024² 30.2 s (white), 832×1248 30.4 s (white). 1024² with the patch OFF took 26.5 s and was also white.
   At 896² the patch costs about 13% (23.0 vs 20.3 s). Evidence: research `cf05eefc`.
-  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Run 2, the recipe §5 variants (2026-09-17, 02:30–02:55Z, build `build-rocm-variants-20260916`)**: 55/55
   requests returned HTTP 200 with the same prompt and seed. None of the variants passed the pre-registered
   FIX rule (1024² and 832×1248 non-blank on every rep, and 768–960² good). Results for 1024² plus
   832×1248: 0/6 non-blank for off, narrow f32, wide, outscale and wide+outscale alike. Patch-OFF was blank
   at 960² in all 3 reps. Cost at 896² against off (19.44 s): wide 1.42×, outscale 1.01×. Evidence: research
-  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Recipe §5 is used up.** Neither the wide set nor outscale keeps the narrow patch's 960² gain: both are
   blank at 960² again. Per the recipe, no headline GPU speedup is computed. Neither run has a belief-kernel
   write hook; VB-GPU-RUNNER covers both.
@@ -601,7 +612,7 @@ which vision readers can actually run locally.
   hypothesis must lie outside that family (VAE decode, or the attention/FA path at the larger sequence length),
   and it needs a new sd.cpp build plus a pre-registered A/B after zero-inference prep. The run waits for the
   operator to lift the 2026-09-17 GPU hold.
-  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+  [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 - **Local vision-reader inventory (2026-09-16, zero inference).**
   - Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj is the served `worker_vision` reader. It runs on
     champion `ef81196d5` (`PROJECTOR_TYPE_QWEN3VL`, `tools/mtmd/models/qwen3vl.cpp`), and the libmtmd
@@ -628,7 +639,7 @@ which vision readers can actually run locally.
 - The 960² change is attributed only across builds, because the Run 1 build never ran patch-OFF at 960².
 
 ### Sources
-- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — both MI210 run blocks: build, admissibility, result tables and reading.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — both MI210 run blocks: build, admissibility, result tables and reading.
 - [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the local vision-reader candidate table and the Qwen3-VL token-cost arithmetic.
 - [ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the re-pointed Hermes link (link change only).
 - [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — confirms the served Qwen3-VL reader's GPU fit (about 21 GB) on the champion.
@@ -648,9 +659,9 @@ Related speech-kernel context unchanged: both speech kernels remain frozen at `p
 
 ### Source References (2026-08-12)
 
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the same-session speech-kernel verification correction.
-- [`capability-registry-and-promotion.md`](../handoffs/active/capability-registry-and-promotion.md) — the parallel "the applicator already existed" premise correction, same shape.
+- [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the parallel "the applicator already existed" premise correction, same shape.
 
 ## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
 
@@ -665,7 +676,7 @@ The actual TTS adapter decision and any M-3 role swap remain open behind E8.
 
 ### Source References (2026-07-26 bounded MiniCPM-o evidence)
 
-- [Multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
+- [Multimodal pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
 - [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
 - [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
 
@@ -714,11 +725,11 @@ correction and the now-confirmed disappearance of the run artifact:
 
 ### Source References (2026-08-25 document-specialist arms)
 
-- [`document-parser-table-bench.md`](../handoffs/active/document-parser-table-bench.md) — the
+- [`document-parser-table-bench.md`](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench) — the
   three-stage architecture and six official prompts, the void note on the 0.0/0.058333 figures,
   the full OmniDocBench instrument, the Phase A environment landing and the `llama-cpp-server`
   backend verification, and the Phase B/C operator gates.
-- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/knowledge-pipelines.md#track-opendataloader-pipeline-integration)
   — the Unlimited-OCR observation row with the corrected causal claim, the requantized
   `DEFAULT_MODEL` repoint, and the canonical A/B contract.
 - [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the demo run
@@ -735,7 +746,7 @@ The EPYC multimodal pipeline spans four modalities: speech-to-text (production),
 
 Speech-to-text is the only multimodal component in production: faster-whisper large-v3-turbo running on port 9000 with int8 quantization at a MEASURED WER of 2.35% (LibriSpeech test-clean, n=100, 2026-07-31) with a ~4.2s FIXED per-request latency floor — the former '2.8x real-time' figure was unsourced and length-dependent, see multimodal-pipeline.md. The vision pipeline is code-complete at approximately 4,500 lines across 23 files with 1,234 tests passing, covering EXIF analysis, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings, batch processing, video frame extraction, ChromaDB integration, and 11 API endpoints. It needs live validation with model servers running (Qwen2.5-VL-7B on 8086, Qwen3-VL-30B on 8087).
 
-*Superseded for speech (2026-09-24):* production STT is now whisper.cpp `production-speech-v1` and TTS is qwentts.cpp, both on the CPU since OP-56, and all speech work lives in [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79). See the speech-native interlocutor section at the top of this page.
+*Superseded for speech (2026-09-24):* production STT is now whisper.cpp `production-speech-v1` and TTS is qwentts.cpp, both on the CPU since OP-56, and all speech work lives in [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) (INF-79). See the speech-native interlocutor section at the top of this page.
 
 TTS has three existing paths, all blocked, plus one newly viable CPU-native candidate. Path A (Qwen3-TTS C++ port in llama.cpp) generates codec tokens at 1.5x real-time but outputs unintelligible noise -- the divergence point between PyTorch reference and C++ token generation has not been identified. Path B (MiniCPM-O 4.5 built-in CosyVoice2 TTS) requires the llama.cpp-omni fork and is untested. Path C (Qwen3-TTS as standalone PyTorch sidecar on port 8110) is viable for GPU-available deployments -- 97ms first-packet latency, 10-language support, voice cloning from 3 seconds of audio, Apache 2.0 licensed. Path D (ZipVoice-Distill / LuxTTS CPU sidecar) is the strongest candidate for CPU-only EPYC: the parent model (k2-fsa ZipVoice-Distill, ASRU 2025, Apache 2.0) achieves RTF=1.22 on a single Xeon thread at 4 flow-matching steps -- projected RTF of 0.15-0.22 on EPYC 9655 with 16 threads. LuxTTS is a thin fine-tune atop ZipVoice-Distill that adds a community-trained 48kHz Vocos vocoder; the 48kHz vocoder adds negligible overhead (<5% of total inference) and is not the bottleneck. Path D is a deployment exercise, not a research port -- upstream already ships ONNX export, INT8 quantization, and a sherpa-onnx C++ runtime. TADA (Hume AI, intake-402) introduces a distinct architectural approach (1:1 text-acoustic dual alignment over a Llama 3.2 backbone) suited for coherent long-form synthesis (up to 700 seconds), but is GPU-bound as shipped with no CPU benchmark or GGUF/ONNX path; it is shelved until long-form narration becomes a workload or GPU becomes available. Voicebox (intake-396) is a multi-engine TTS studio whose architecture patterns (TTSBackend Protocol, chunked_tts.py, serial asyncio queue) are directly reusable (~550 lines) for building an EPYC TTS sidecar; its claimed ROCm support is README-only with no implementation code.
 
@@ -757,16 +768,16 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 
 ### New (2026-07-17, MiniCPM-o becomes the leading vision-escalation candidate)
 
-- **MiniCPM-o with `--reasoning off` is now the first fast quality-clean MI210 `vision_escalation` candidate, and the gating question is activation policy rather than model correctness.** Default reasoning mode placed correct answers in `reasoning_content`, so production-visible scoring failed `0/4`. The realistic lane (`--reasoning off`) passed all four fixed K35 OCR/chart fixtures on CPU (`11.98-14.13 t/s`) and MI210 (`110.81-122.18 t/s`, about `11%` VRAM). Follow-up frontdoor coexistence checks tightened the serving risk: a targeted co-residency smoke passed at `66%` combined MI210 VRAM, the synthetic active-collision probe bounded a worst-case frontdoor drop to about `80.2 t/s`, and the broader 2K/8K service matrix passed all `8/8` active fixture/context overlaps with frontdoor mean `94.77 t/s` versus `96.33 t/s` alone. The active stack therefore stays on the Qwen2.5-VL CPU alias only as a capacity-policy choice, not because MiniCPM-o lacks quality or basic coexistence evidence. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [Gemma challenge kernel techniques v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
-- **The old Qwen3-VL-30B `vision_escalation` lane is now treated as a quality defect, not a premium route.** On the fixed K35 OCR/chart slice it was faster than `worker_vision` on short decode, but it failed the chart fixture under every tested shape (`Moldova`/`Suriname` instead of `Tanzania`), including the image-token and default-expert diagnostics. The live mitigation was to keep port `8087` but temporarily rebind it to the same Qwen2.5-VL-7B model/projector as `worker_vision` until a replacement is deliberately activated. Sources: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
-- **PaddleOCR-VL-1.6 belongs in the document-extraction lane, not the general vision-QA lane.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at roughly `485-490 t/s`, and the guarded Wave-3 `odl_bench` producer now writes scored page predictions from GT images. But prompt-only HTML-table recovery stayed negative (`TEDS=0.0`), and even the post-processing rescore only lifted table TEDS to `0.058333`. The result is "fast document specialist with an open table-format gap," not a replacement for `vision_escalation`. Sources: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **MiniCPM-o with `--reasoning off` is now the first fast quality-clean MI210 `vision_escalation` candidate, and the gating question is activation policy rather than model correctness.** Default reasoning mode placed correct answers in `reasoning_content`, so production-visible scoring failed `0/4`. The realistic lane (`--reasoning off`) passed all four fixed K35 OCR/chart fixtures on CPU (`11.98-14.13 t/s`) and MI210 (`110.81-122.18 t/s`, about `11%` VRAM). Follow-up frontdoor coexistence checks tightened the serving risk: a targeted co-residency smoke passed at `66%` combined MI210 VRAM, the synthetic active-collision probe bounded a worst-case frontdoor drop to about `80.2 t/s`, and the broader 2K/8K service matrix passed all `8/8` active fixture/context overlaps with frontdoor mean `94.77 t/s` versus `96.33 t/s` alone. The active stack therefore stays on the Qwen2.5-VL CPU alias only as a capacity-policy choice, not because MiniCPM-o lacks quality or basic coexistence evidence. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [Gemma challenge kernel techniques v7](../handoffs/active/rocm-kernel-authoring.md#track-gemma-challenge-kernel-techniques-v7), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **The old Qwen3-VL-30B `vision_escalation` lane is now treated as a quality defect, not a premium route.** On the fixed K35 OCR/chart slice it was faster than `worker_vision` on short decode, but it failed the chart fixture under every tested shape (`Moldova`/`Suriname` instead of `Tanzania`), including the image-token and default-expert diagnostics. The live mitigation was to keep port `8087` but temporarily rebind it to the same Qwen2.5-VL-7B model/projector as `worker_vision` until a replacement is deliberately activated. Sources: [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
+- **PaddleOCR-VL-1.6 belongs in the document-extraction lane, not the general vision-QA lane.** The MI210 smoke passed digit OCR (`7500`) and invoice/receipt extraction at roughly `485-490 t/s`, and the guarded Wave-3 `odl_bench` producer now writes scored page predictions from GT images. But prompt-only HTML-table recovery stayed negative (`TEDS=0.0`), and even the post-processing rescore only lifted table TEDS to `0.058333`. The result is "fast document specialist with an open table-format gap," not a replacement for `vision_escalation`. Sources: [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 
 ### New (2026-06-22, vision pipeline live; TTS still has no working path)
 
-- **The vision pipeline is functionally complete and now prefers the resident multimodal llama-server over CLI fallback; TTS remains unsolved with most candidate paths eliminated.** The vision pipeline (23 files, ~4.5K lines) passed live-server analyzer validation, registered its tools (vision_analyze/vision_search/vision_face_identify among 59 central tools), and landed chat integration (2026-06-21). ASR is live (Whisper large-v3-turbo int8, CPU). MEASURED 2026-07-31: WER **2.35%** on LibriSpeech test-clean (n=100); throughput is **length-dependent** — a ~4.2s FIXED per-request cost dominates, so xRT runs 0.80x for <5s utterances up to 7.22x on a 57s clip. The old flat "~2.8x real-time" was unsourced and is withdrawn. TTS is blocked: Path A (Qwen3-TTS via llama.cpp) outputs noise; Path B (MiniCPM-O built-in) **CLOSED 2026-07-31 — model deprecated and deleted**: it lost the 42-question vision comparison (31/42 vs the incumbent Qwen2.5-VL-7B's 35/42) and its speech role is superseded by dedicated Qwen3-TTS (1.14 GB) + Qwen3-ASR, so its 22 GB was reclaimed; Path C (Qwen3-TTS PyTorch sidecar) is viable; Path D (LuxTTS CPU) is a benchmarked candidate; Path E (Qwen3.5-Omni) is API-only and not adopted. Multimodal-audio integration awaits a quiet-window API restart and a llama.cpp-omni fork build. Deep-dive corrections: LocateAnything-3B grounding incompatible with GGUF (Parallel Box Decoding); Moondream-3 deferred (BSL license, no tool calling); Holo-3.1-4B parked (no GGUF, redundant); Marlin-2B video-captioning deferred (BF16-only, mislabeled backbone). MiniCPM-O 4.5 beats deployed VLs on OpenCompass/MathVista but lags on DocVQA/OCRBench vs Qwen3-VL. Source: [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+- **The vision pipeline is functionally complete and now prefers the resident multimodal llama-server over CLI fallback; TTS remains unsolved with most candidate paths eliminated.** The vision pipeline (23 files, ~4.5K lines) passed live-server analyzer validation, registered its tools (vision_analyze/vision_search/vision_face_identify among 59 central tools), and landed chat integration (2026-06-21). ASR is live (Whisper large-v3-turbo int8, CPU). MEASURED 2026-07-31: WER **2.35%** on LibriSpeech test-clean (n=100); throughput is **length-dependent** — a ~4.2s FIXED per-request cost dominates, so xRT runs 0.80x for <5s utterances up to 7.22x on a 57s clip. The old flat "~2.8x real-time" was unsourced and is withdrawn. TTS is blocked: Path A (Qwen3-TTS via llama.cpp) outputs noise; Path B (MiniCPM-O built-in) **CLOSED 2026-07-31 — model deprecated and deleted**: it lost the 42-question vision comparison (31/42 vs the incumbent Qwen2.5-VL-7B's 35/42) and its speech role is superseded by dedicated Qwen3-TTS (1.14 GB) + Qwen3-ASR, so its 22 GB was reclaimed; Path C (Qwen3-TTS PyTorch sidecar) is viable; Path D (LuxTTS CPU) is a benchmarked candidate; Path E (Qwen3.5-Omni) is API-only and not adopted. Multimodal-audio integration awaits a quiet-window API restart and a llama.cpp-omni fork build. Deep-dive corrections: LocateAnything-3B grounding incompatible with GGUF (Parallel Box Decoding); Moondream-3 deferred (BSL license, no tool calling); Holo-3.1-4B parked (no GGUF, redundant); Marlin-2B video-captioning deferred (BF16-only, mislabeled backbone). MiniCPM-O 4.5 beats deployed VLs on OpenCompass/MathVista but lags on DocVQA/OCRBench vs Qwen3-VL. Source: [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
 
-- **Benchmark deployed Qwen-VL field placement before adding LocateAnything (2026-06-05).** The LocateAnything-3B form-fill demo is dominated by the 35B-A3B controller's huge prefill and turn count, not by the 3B visual grounding model alone. Because the stack already has Qwen3-VL-30B and Qwen2.5-VL-7B vision roles, the correct next step is a field-placement IoU benchmark on the deployed VLMs first; LocateAnything becomes a CPU-transformers precision A/B only if the existing VLMs miss the needed grounding precision. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
-- **Gemma 4 should stay a benchmark candidate, not be dismissed from model-card priors.** The June 5 deep-dive corrected an overreach: Gemma 4 was newly released and had not been evaluated locally, so frontdoor/vision replacement claims must wait for EPYC suite results. The card metric previously read as MMMU was actually multilingual MMLU text; vision comparison should use the appropriate vision numbers and local tasks. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+- **Benchmark deployed Qwen-VL field placement before adding LocateAnything (2026-06-05).** The LocateAnything-3B form-fill demo is dominated by the 35B-A3B controller's huge prefill and turn count, not by the 3B visual grounding model alone. Because the stack already has Qwen3-VL-30B and Qwen2.5-VL-7B vision roles, the correct next step is a field-placement IoU benchmark on the deployed VLMs first; LocateAnything becomes a CPU-transformers precision A/B only if the existing VLMs miss the needed grounding precision. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
+- **Gemma 4 should stay a benchmark candidate, not be dismissed from model-card priors.** The June 5 deep-dive corrected an overreach: Gemma 4 was newly released and had not been evaluated locally, so frontdoor/vision replacement claims must wait for EPYC suite results. The card metric previously read as MMMU was actually multilingual MMLU text; vision comparison should use the appropriate vision numbers and local tasks. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
 
 - STT is production: faster-whisper large-v3-turbo, port 9000, int8. MEASURED 2026-07-31: WER 2.35%, ~4.2s fixed per-request floor (xRT 0.80x-7.22x depending on utterance length) `locally-measured`
 - Vision is code-complete: 4,500 lines, 23 files, 1,234 tests, 11 API endpoints. Needs live validation [multimodal-pipeline.md]
@@ -819,9 +830,9 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - Does ZipVoice-Distill's 0.657 SIM-o (speaker similarity) meet EPYC's voice-cloning quality bar? Qwen3-TTS reaches 0.789; the gap is meaningful for voice-identity use cases. [luxtts-cpu-tts-candidate.md]
 - If Path D passes RTF threshold, is the 48kHz Vocos head upgrade (LuxTTS's main addition over upstream) worth the ~1.3× overhead? Requires A/B test on same text+reference. [luxtts-cpu-tts-candidate.md]
 - If long-form TTS (>2 min) becomes a workload, would TADA's 700s context outperform voicebox-style chunk-and-crossfade using LuxTTS? No benchmark exists. [hume-tada-text-acoustic-alignment.md]
-- **Which interlocutor wins the bake-off, if either?** Step-Audio 2 mini has no evidence of Italian speech output (D2's first gate) and no published tool-call accuracy for mini; Qwen3-Omni clears the language gate on paper but has no Talker/Code2Wav runtime. If both fail G1 or G3, the recommendation says so and Kimi-Audio re-enters. Answered by CS-8 in the second-MI210 bench window. [conversation-stack.md](../handoffs/active/conversation-stack.md)
-- **Does ROCm per-queue CU masking (`HSA_CU_MASK`, `hipExtStreamCreateWithCUMask`) work on gfx90a at all**, and if so, does a speech CU reservation protect speech latency next to a decoding 35B-A3B, and at what LLM cost? MI210 has no hard compute partitioning, unlike MI300. CS-9. [conversation-stack.md](../handoffs/active/conversation-stack.md)
-- **Does untrained mid-generation injection work?** Appending orchestrator text at a TA4 group boundary is untested against the model's training; coherence, content-use rate and exact-value retention decide whether KAME-style training (CS-42) is ever opened. CS-10(b), then CS-39. [conversation-stack.md](../handoffs/active/conversation-stack.md)
+- **Which interlocutor wins the bake-off, if either?** Step-Audio 2 mini has no evidence of Italian speech output (D2's first gate) and no published tool-call accuracy for mini; Qwen3-Omni clears the language gate on paper but has no Talker/Code2Wav runtime. If both fail G1 or G3, the recommendation says so and Kimi-Audio re-enters. Answered by CS-8 in the second-MI210 bench window. [conversation-stack.md](../handoffs/active/speech-and-multimodal.md)
+- **Does ROCm per-queue CU masking (`HSA_CU_MASK`, `hipExtStreamCreateWithCUMask`) work on gfx90a at all**, and if so, does a speech CU reservation protect speech latency next to a decoding 35B-A3B, and at what LLM cost? MI210 has no hard compute partitioning, unlike MI300. CS-9. [conversation-stack.md](../handoffs/active/speech-and-multimodal.md)
+- **Does untrained mid-generation injection work?** Appending orchestrator text at a TA4 group boundary is untested against the model's training; coherence, content-use rate and exact-value retention decide whether KAME-style training (CS-42) is ever opened. CS-10(b), then CS-39. [conversation-stack.md](../handoffs/active/speech-and-multimodal.md)
 
 ## Related Categories
 
@@ -833,7 +844,7 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 ## Source References
 
 - [Moondream 3 + Qwen3-TTS deep dive](/workspace/research/deep-dives/multimodal-moondream3-qwen3tts.md) -- Architecture analysis, benchmark review, integration assessment for both models
-- [Multimodal pipeline handoff](/workspace/handoffs/active/multimodal-pipeline.md) -- Current state of all four modalities, testing plans, research intake updates
+- [Multimodal pipeline handoff](/workspace/handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) -- Current state of all four modalities, testing plans, research intake updates
 - [Progress 2026-07-17](/workspace/progress/2026-07/2026-07-17.md) -- MiniCPM-o activation evidence, Qwen3-VL-30B chart-failure mitigation, and PaddleOCR-VL document-specialist checkpoint
 - [K35 optimized stack throughput/context report](/workspace/research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md) -- Consolidated MiniCPM-o service matrix, Qwen3-VL-30B defect framing, and PaddleOCR-VL document-specialist evidence
 - [MiniCPM-O integration handoff](/workspace/handoffs/archived/minicpm-o-4_5-integration.md) -- Download status, benchmark comparison, testing phases
@@ -850,9 +861,9 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - [intake-703](https://huggingface.co/mradermacher/Kimi-K2.7-Code-GGUF) Kimi-K2.7-Code-GGUF (Moonshot AI) -- ~1T coding MoE now multimodal via 400M MoonViT + mmproj GGUFs, but MoonViT UNSUPPORTED in our fork (text path only); text-only coder_escalation contender, storage-gated
 - [intake-709](https://github.com/Tencent-Hunyuan/UniRL) UniRL (Tencent Hunyuan) -- Multi-GPU RL training framework (Ray + FSDP, Flow-DPPO) for unified multimodal/diffusion generators; not_applicable CPU-only (no training GPU); DGX-gated watch-item, could one day fine-tune deployed sd_server / ERNIE-Image-Turbo
 - [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md) -- the 7-step, adversarially-verified deterministic promotion/rollback runbook for the vision_escalation role (master-registry rebind, pipeline gates, additive server swap, §H recert, affinity attestation, eval-path smoke, rollback)
-- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §MiniCPM-o deterministic promotion runbook, §Trigger Gate -- the runbook filing narrative and the worker_vision 4×quarters demand/capability trigger gate (measured tap-window baseline, two-condition trip logic, MI210-suspension rule)
+- [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) §MiniCPM-o deterministic promotion runbook, §Trigger Gate -- the runbook filing narrative and the worker_vision 4×quarters demand/capability trigger gate (measured tap-window baseline, two-condition trip logic, MI210-suspension rule)
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md) -- OP-7 residuals landing session: MiniCPM-o runbook persistence and the worker_vision trigger gate authorship
-- [conversation-stack.md](../handoffs/active/conversation-stack.md) -- INF-79, the one home for speech since 2026-09-24: ratified interlocutor vision, D1–D12, candidate facts, CS-8 bake-off, CS-9 CU masking, CS-10/CS-39 injection, CS-42 KAME-style training feasibility
+- [conversation-stack.md](../handoffs/active/speech-and-multimodal.md) -- INF-79, the one home for speech since 2026-09-24: ratified interlocutor vision, D1–D12, candidate facts, CS-8 bake-off, CS-9 CU masking, CS-10/CS-39 injection, CS-42 KAME-style training feasibility
 - [speech-native-interlocutor-operator-draft-20260924.md](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md) -- the operator's input design report, preserved with a correction banner
 - [measurement/protocols/speech.md](../measurement/protocols/speech.md) -- Annex S; the receipt-defect note and Appendix S-A correct the whisper.cpp MI210 WER to 3.37%
 - [progress 2026-09-24 speech-vision](../progress/2026-09/2026-09-24-speech-vision.md) -- the vision-alignment session: draft audit, D1–D12, INF-79 filing, items moved from INF-41
@@ -894,7 +905,7 @@ In order of likelihood:
 
 Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack ports, KAME becomes the first TTS Path with a fully-defined adoption sequence.
 
-**Stale premise (2026-09-24):** the verdict and gates above assume a CPU-only host with no GPU compute. That no longer holds: one MI210 is resident and a second arrives within about a month. The CS-42 estimate (`inferred`, unmeasured) puts a LoRA oracle fine-tune of an 8B front-end on one MI210 and a full fine-tune on both, at about 15–20 h per epoch per GPU. It names training-data realism, not compute, as the binding risk, and the same-day audit noted that KAME's near-zero latency depends on its retrained front-end ([progress](../progress/2026-09/2026-09-24-speech-vision.md)). For Step-Audio 2 mini (single-stream), the oracle would be injected segments at TA4 boundaries, not a fourth stream. See [`conversation-stack.md`](../handoffs/active/conversation-stack.md) CS-42 and intake-511#record.
+**Stale premise (2026-09-24):** the verdict and gates above assume a CPU-only host with no GPU compute. That no longer holds: one MI210 is resident and a second arrives within about a month. The CS-42 estimate (`inferred`, unmeasured) puts a LoRA oracle fine-tune of an 8B front-end on one MI210 and a full fine-tune on both, at about 15–20 h per epoch per GPU. It names training-data realism, not compute, as the binding risk, and the same-day audit noted that KAME's near-zero latency depends on its retrained front-end ([progress](../progress/2026-09/2026-09-24-speech-vision.md)). For Step-Audio 2 mini (single-stream), the oracle would be injected segments at TA4 boundaries, not a fourth stream. See [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) CS-42 and intake-511#record.
 
 ### Watch list
 
@@ -908,7 +919,7 @@ Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack 
 - [intake-514](https://github.com/SakanaAI/kame_finetune) Finetune workflow (DeepSpeed, GPU-only)
 - [intake-515](https://huggingface.co/SakanaAI/kame) HF model card
 - [`research/deep-dives/kame-tandem-s2s-architecture.md`](../research/deep-dives/kame-tandem-s2s-architecture.md) — full deep-dive with paper analysis, oracle-mechanism audit, EPYC mapping, SHANKS comparison
-- [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Research Intake Update 2026-04-30 + deep-dive refinement
+- [`handoffs/active/speech-and-multimodal.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — Research Intake Update 2026-04-30 + deep-dive refinement
 
 ## ERNIE-Image-Turbo (Baidu, 2026-05-06)
 
@@ -916,15 +927,15 @@ Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack 
 
 **Relevance to EPYC stack**: candidate for image generation in the multimodal pipeline (alongside Qwen3-VL for vision-understanding and faster-whisper for ASR). DiT inference on CPU is bandwidth-bound; quantized variants would need to land first to be production-viable on the EPYC 9655 host.
 
-Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md).
+Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation).
 
 ## Multimodal pipeline (Vision + TTS + ASR) handoff
 
-*Speech moved out 2026-09-24:* `multimodal-pipeline.md` now keeps vision only; STT/TTS/voice live in [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79).
+*Speech moved out 2026-09-24:* `multimodal-pipeline.md` now keeps vision only; STT/TTS/voice live in [`conversation-stack.md`](../handoffs/active/speech-and-multimodal.md) (INF-79).
 
-Coordinating handoff [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
+Coordinating handoff [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
 
-Source: [handoffs/active/multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+Source: [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
 
 ## Image generation deployment (production 2026-05-07)
 
@@ -950,7 +961,7 @@ Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_serve
 - **ggml CPU backend is at the kernel ceiling on Zen 5 stock**: `-march=native` already emits AVX-512BW + VNNI (387 explicit `vpdpbusd`/`vpdpwssd` instructions in the binary). Further sampler win on CPU requires either porting our llama.cpp fork's AVX-512BW 8x8 Q8 kernel (estimate +10-20%, multi-day work) or waiting for GPU.
 - **Hermes plugin path survived backend swap unchanged**: thin-interface discipline paid off — `ImageGenerator.generate(request) → result` interface was preserved across the ComfyUI → sd-server transition. Plugin code, Hermes tool registry, and dispatcher mapping all unchanged.
 
-Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
+Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
 
 ## Marlin-2B — video captioning + temporal grounding at 2B (NemoStation, 2026-05-20)
 
@@ -960,7 +971,7 @@ Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/
 
 **Relevance to EPYC stack**: low — no active video-captioning or temporal-grounding workload. The multimodal pipeline currently handles video only as ffmpeg-extracted frames fed through image-VLMs. Marlin-2B is BF16-only (no GGUF), so any deployment would require either a small dedicated GPU host or a llama.cpp conversion. Held at `worth_investigating` rather than `not_applicable` per the project's "consider creative deployment roles" policy — a small dense video model could plausibly serve as a frame-level event detector inside `src/vision/` if a GPU is added. Three revival gates documented: (i) a video-understanding workload appears, (ii) a small GPU is added, (iii) third-party benchmark replication of the +6.4 mIoU TimeLens claim. Base-architecture ambiguity should be resolved with NemoStation before any deployment.
 
-Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml), [handoffs/active/multimodal-pipeline.md#research-intake-update--2026-05-20](../handoffs/active/multimodal-pipeline.md).
+Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml), [handoffs/active/speech-and-multimodal.md#research-intake-update--2026-05-20](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
 
 ## Intake deep-dives: Holo-3.1-4B & open-weights VLM/doc follow-ups (2026-06-12)
 
@@ -968,7 +979,7 @@ Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml),
 
 **Open-weights roundup follow-ups (intake-694).** Triaging the 2026-06-05 HF roundup against the actual stack surfaced two VLM/doc-relevant P-items: **PaddleOCR-VL-1.6** (P1, Apache-2.0, 1B doc-parsing VLM on an ERNIE-4.5-0.3B backbone, OmniDocBench 96.33 SOTA, **official GGUF + mmproj** → CPU-runnable) is a candidate vs LightOnOCR for the doc pipeline (see document-processing / opendataloader handoff); and **Step-3.7-Flash** (P2, Apache-2.0, 196B/11B-active MoE VLM, SWE-Bench Verified 76.5, official GGUF) is a coder_escalation eval candidate. Image/video/music/3D generators (Ideogram 4, Magenta RT 2, Cosmos3-Super, TripoSplat, NAVA) are out of scope.
 
-Sources: [`research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md`](../research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md), [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md), intake-691/694.
+Sources: [`research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md`](../research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md), [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/speech-and-multimodal.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline), intake-691/694.
 
 ## Kimi-K2.7-Code multimodality (MoonViT) & UniRL diffusion-RL (2026-06-21)
 
@@ -978,13 +989,13 @@ Two intake items touch the multimodal stack from opposite ends — a frontier co
 
 **UniRL (intake-709) — multi-GPU RL trainer, DGX-gated.** Tencent Hunyuan's UniRL is a reinforcement-learning *training* framework (Ray + FSDP) for unified multimodal/diffusion generators, bundling several GRPO/PPO trust-region variants (Flow-DPPO et al.). It is **not_applicable on CPU-only EPYC**: it is training code only (no inference/serving path) and there is no training GPU on the host. The README has no benchmark numbers; the three team algorithms are incremental trust-region variants (observations, not decision-grade). It is *not* rejected outright, because a CPU image-generation role is deployed (`sd_server` / Qwen-Image-2.1 via Diffusers, port 8190) — UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that or another model. Held as a DGX-gated passive watch-item under the GPU-acceleration path: the blocker is "no training GPU," not "no image role."
 
-Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified), intake-709 (UniRL, Tencent Hunyuan — external/DGX-gated), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md).
+Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified), intake-709 (UniRL, Tencent Hunyuan — external/DGX-gated), [`handoffs/active/speech-and-multimodal.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline).
 
 ## MiniCPM-o deterministic promotion runbook + worker_vision demand-gate (2026-07-23/24)
 
-**The vision_escalation MiniCPM-o cutover decision was operationalized into a reusable, gate-checked runbook rather than resolved.** Per operator directive ("when ready, promotion into the stack must be deterministic, not bespoke"), a 7-step promotion runbook was drafted and adversarially verified (5-agent workflow, 6 corrections applied): (1) master-registry rebind — the registry edit target is deliberately the **master** registry (`epyc-inference-research`), not the lean file, because the 2026-07-18 rebind was a lean hand-edit that got silently clobbered on the next stack start once lean-registry auto-compile went default-on; (2) `stack_change_pipeline.py update` + `check` green; (3) the 8087 server swap via the new 2026-07-23 additive `--numa-mode both` promotion path (skip-healthy, no-outage — see [Inference Serving](inference-serving.md)); (4) a **§H contention-matrix recert for the changed lane** — the runbook exists precisely to close the gap the 2026-07-17 rebind left open (it shipped without recertifying the matrix); (5) live-affinity + realized-first attestation; (6) a three-layer smoke via the actual eval path (direct fixture probe, EvalTower-forced-role probe, modality-fence check — scoring only `message.content`, never `reasoning_content`, since default reasoning mode scores 0/4 on these fixtures); (7) rollback = the same runbook run toward the safe-alias state. All steps are model-agnostic mechanics — the runbook executes whichever candidate the operator names, substituting only the model/path/mmproj block and the expected-throughput band. Model choice remains open: MiniCPM-o-4.5 Q4 validated 2026-07-18 (110–127 t/s MI210 decode, 4/4 K35 fixed-fixture quality, 8/8 mixed-service co-residency matrix) vs the current Qwen2.5-VL-7B safe alias, which measured *faster* on a 2026-07-19 long-decode slice (118.50 vs 109.18 t/s) — so the decision is genuinely quality-tied-on-speed, not merely execution-pending. A CPU-side MiniCPM-o vs Qwen2.5-VL bench (speed + K35-fixture quality) was queued for the idle window to inform the final call; the GPU leg is the operator's own session. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md), [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md)
+**The vision_escalation MiniCPM-o cutover decision was operationalized into a reusable, gate-checked runbook rather than resolved.** Per operator directive ("when ready, promotion into the stack must be deterministic, not bespoke"), a 7-step promotion runbook was drafted and adversarially verified (5-agent workflow, 6 corrections applied): (1) master-registry rebind — the registry edit target is deliberately the **master** registry (`epyc-inference-research`), not the lean file, because the 2026-07-18 rebind was a lean hand-edit that got silently clobbered on the next stack start once lean-registry auto-compile went default-on; (2) `stack_change_pipeline.py update` + `check` green; (3) the 8087 server swap via the new 2026-07-23 additive `--numa-mode both` promotion path (skip-healthy, no-outage — see [Inference Serving](inference-serving.md)); (4) a **§H contention-matrix recert for the changed lane** — the runbook exists precisely to close the gap the 2026-07-17 rebind left open (it shipped without recertifying the matrix); (5) live-affinity + realized-first attestation; (6) a three-layer smoke via the actual eval path (direct fixture probe, EvalTower-forced-role probe, modality-fence check — scoring only `message.content`, never `reasoning_content`, since default reasoning mode scores 0/4 on these fixtures); (7) rollback = the same runbook run toward the safe-alias state. All steps are model-agnostic mechanics — the runbook executes whichever candidate the operator names, substituting only the model/path/mmproj block and the expected-throughput band. Model choice remains open: MiniCPM-o-4.5 Q4 validated 2026-07-18 (110–127 t/s MI210 decode, 4/4 K35 fixed-fixture quality, 8/8 mixed-service co-residency matrix) vs the current Qwen2.5-VL-7B safe alias, which measured *faster* on a 2026-07-19 long-decode slice (118.50 vs 109.18 t/s) — so the decision is genuinely quality-tied-on-speed, not merely execution-pending. A CPU-side MiniCPM-o vs Qwen2.5-VL bench (speed + K35-fixture quality) was queued for the idle window to inform the final call; the GPU leg is the operator's own session. [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline), [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md)
 
-**A quantitative demand/capability trigger gate now governs the long-open "should `worker_vision` recollect to 4 quarters" question, replacing an unmeasured "in principle."** Baseline measurement (7.9-day tap window, 2026-07-15→23): 399 `worker_vision` requests, **all** eval-tower-driven (`batch_id` non-null); **zero** organic traffic; `vision_escalation` saw zero events of any kind in the same window. The gate has two independent trigger conditions (either fires it): **Trigger A (demand)** — sustained organic arrival ≥2 req/min over any 30-min window on ≥3 distinct days within 14 days, AND in-flight depth >2 (saturating the current single quarter's 2 slots) for >10% of samples; **Trigger B (capability)** — a new candidate VL model passes the K35 quality gate at parity-or-better *and* a certified-affinity quarter-pair co-run bench shows aggregate ≥1.2× with no pair <1.0× (n≥8, CV≤5% — tightening the prior J5 vision re-bench, which was direction-robust but diagnostic-grade at 5/8 pairs CV>5%), plus a demand floor of ≥0.5 req/min. **Whichever trigger fires, the gate is SUSPENDED if a persistent-live MI210 vision lane goes into production** — one GPU vision stream (110–127 t/s) is 4–10× a CPU quarter stream, so any GPU cutover makes CPU-side quartering moot except as a GPU-retirement fallback. Consequence flagged: the routing modality fence only went live 2026-07-23 (vision was previously routing-dead, 0/376), so **all demand data at or before that date — including the 7.9-day baseline above — undercounts true organic demand**; the first valid post-fence reading is 2026-08-06. [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §Trigger Gate
+**A quantitative demand/capability trigger gate now governs the long-open "should `worker_vision` recollect to 4 quarters" question, replacing an unmeasured "in principle."** Baseline measurement (7.9-day tap window, 2026-07-15→23): 399 `worker_vision` requests, **all** eval-tower-driven (`batch_id` non-null); **zero** organic traffic; `vision_escalation` saw zero events of any kind in the same window. The gate has two independent trigger conditions (either fires it): **Trigger A (demand)** — sustained organic arrival ≥2 req/min over any 30-min window on ≥3 distinct days within 14 days, AND in-flight depth >2 (saturating the current single quarter's 2 slots) for >10% of samples; **Trigger B (capability)** — a new candidate VL model passes the K35 quality gate at parity-or-better *and* a certified-affinity quarter-pair co-run bench shows aggregate ≥1.2× with no pair <1.0× (n≥8, CV≤5% — tightening the prior J5 vision re-bench, which was direction-robust but diagnostic-grade at 5/8 pairs CV>5%), plus a demand floor of ≥0.5 req/min. **Whichever trigger fires, the gate is SUSPENDED if a persistent-live MI210 vision lane goes into production** — one GPU vision stream (110–127 t/s) is 4–10× a CPU quarter stream, so any GPU cutover makes CPU-side quartering moot except as a GPU-retirement fallback. Consequence flagged: the routing modality fence only went live 2026-07-23 (vision was previously routing-dead, 0/376), so **all demand data at or before that date — including the 7.9-day baseline above — undercounts true organic demand**; the first valid post-fence reading is 2026-08-06. [multimodal-pipeline.md](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) §Trigger Gate
 
 ## Compiled Update — 2026-07-29: ERNIE keeps the quality axis, Z-Image is a latency question, and the blank-PNG defect has a candidate fix
 
@@ -1012,7 +1023,7 @@ This resolves **comparability only**. It does **not** validate the 0.9655 figure
 both sides are vendor self-reports, and the 20-prompt local EN/ZH typography
 spot-check remains the only instrument that can settle validity. That open
 question therefore survives the dive rather than being closed by it.
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections, §Remaining Operational Question 2
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections, §Remaining Operational Question 2
 
 ### Consequence: the alternative is a latency candidate, decoupled from quality
 
@@ -1024,7 +1035,7 @@ framed as a quality swap. Noted alongside it: a rank-32 distill-patch LoRA (476
 BF16 tensors across all 34 blocks) is a **Base↔Turbo conversion mechanism**, but
 alpha-scaling for step-vs-quality is an **untested hypothesis** and the backend's
 LoRA key resolution for that architecture is **unverified**.
-[`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) §Research Intake Update 2026-07-29
+[`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) §Research Intake Update 2026-07-29
 
 ### The "stale backend" premise is struck — no upgrade is needed to trial anything
 
@@ -1051,7 +1062,7 @@ already ruled out, which points **away from the VAE and at the DiT emitting
 non-finite latents**, and a failure threshold sitting between 896 and 960 is what
 accumulation overflow looks like. **This is a candidate fix, not a diagnosis** —
 and it needs no new model and no new weights.
-[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §2026-07-29 Stage-2 dive
+[`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
 
 ### A durable control-selection rule: controls must be mitigation-matched
 
@@ -1062,8 +1073,8 @@ about the failing model's code path. If a second model is wanted as a control it
 must be **mitigation-matched** — here, the family member whose guard is
 Vulkan-only at our pin. Generalization: a control differing from the subject in
 *the very dimension under test* is not a control.
-[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) §Control-probe note;
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+[`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) §Control-probe note;
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### A pre-deployment assessment ages badly in specific, predictable ways
 
@@ -1102,11 +1113,11 @@ either direction.
 
 ### Source References
 
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck stale-backend premise (header present at the pinned commit, deployed binary built from it); LongText-Bench harmonization and the surviving validity question; withdrawal of the confounded control; the 2026-07-29 intake-row filing
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
-- [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
+- [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
 
 ## Compiled Update — 2026-07-31: TTS is solved, and the fix was to stop writing our own codec
 
@@ -1201,9 +1212,9 @@ and combining that with fail-silent optionality produces an outage nobody detect
 
 ### Source References
 
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the ✅ TTS-unblocked banner, Path E vs Path C, and the S-1..S-11 speech task block (S-7 bf16 projector, S-9 `start_tts()` wiring, S-10 whisper-vs-Qwen3-ASR decision)
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the ✅ TTS-unblocked banner, Path E vs Path C, and the S-1..S-11 speech task block (S-7 bf16 projector, S-9 `start_tts()` wiring, S-10 whisper-vs-Qwen3-ASR decision)
 - [`../handoffs/archived/qwen3-tts-voice-synthesis.md`](../handoffs/archived/qwen3-tts-voice-synthesis.md) — the archived `Phase 4 BLOCKED` record, now carrying a resolution pointer; retained as historical ledger, explicitly not resurrected
-- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — §Speech (the whisper false-negative correction, the `start_tts()` gap, the lost accelerator source) and the scoped temperature ruling that governs the in-flight production-temperature re-runs
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — §Speech (the whisper false-negative correction, the `start_tts()` gap, the lost accelerator source) and the scoped temperature ruling that governs the in-flight production-temperature re-runs
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — full session record: measurements, the FP8 guard diff, the ASR failure signature, and the two operational incidents
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — rows **N27** (speech) and **N28** (speculative decoding is launch-fixed)
 
@@ -1237,7 +1248,7 @@ request, and its sole justification (the repetitive-context upside) was retracte
 
 ### Source References
 
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the source-read section and tasks SW-1..SW-4 (SW-2 confirms against a live server; SW-3 decides whether a per-request surface is worth carrying into v9)
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — the source-read section and tasks SW-1..SW-4 (SW-2 confirms against a live server; SW-3 decides whether a per-request surface is worth carrying into v9)
 - [`inference-acceleration-index.md`](../handoffs/archived/inference-acceleration-index-history-through-2026-06-19.md) — the structural-fact banner above the retracted ngram row
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N28**
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §10, with the exact line numbers and the README-echo explanation
@@ -1369,7 +1380,7 @@ no number recorded here for it.
 ### Source References
 
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15 (all four sub-findings: vision, STT, TTS, resident set), §20 process lessons
-- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the MMMU table, the S-6/S-6a/S-7 task closures, the S-17 resident-set budget task, and the ✅ vision/STT/TTS status banners
+- [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the MMMU table, the S-6/S-6a/S-7 task closures, the S-17 resident-set budget task, and the ✅ vision/STT/TTS status banners
 - [`docs/reference/model-probe-scoreboard.md`](../docs/reference/model-probe-scoreboard.md) — the superseded "Yes candidate" rows corrected with the 42q table; Qwen3-VL-30B-A3B added and unpaused
 - [`docs/runbooks/vision-escalation-minicpmo-promotion.md`](../docs/runbooks/vision-escalation-minicpmo-promotion.md) — DEPRECATED banner; runbook mechanics survive as a model-agnostic reference pattern
 - [Hardware Optimization](hardware-optimization.md) — the gfx90a ARGSORT defect mechanism, the fix, and the HIP-graphs consequence
@@ -1379,7 +1390,7 @@ no number recorded here for it.
 
 **Confidence: mixed** — model/architecture facts and deployment arithmetic are card/community-record facts from the EVL-32 session (`upstream-published` for model-card claims, `verified` for the disk math as arithmetic); **nothing has been downloaded, built, or run** — no H3 artifact exists on this host.
 
-MiniMax-H3 is the first video-generation candidate on this page, and its pipeline precedent is ERNIE-Image-Turbo rather than any llama.cpp role: an omni-modal diffusion model (text/image/video/audio in → video + native 32 kHz stereo audio out) served via SGLang/vLLM/diffusers/ComfyUI, out-of-band from the llama.cpp kernel tree [handoff](../handoffs/active/minimax-h3-video-generation-evaluation.md). The architecture is a **33B dense** H3-Omni-Transformer (~13B in cacheable AdaLN branches, inference-prunable to ~20B) with a Qwen3-VL-**32B dense** encoder — a sibling family of, not the same variant as, the deployed Qwen3-VL-30B-A3B MoE vision role [progress](../progress/2026-08/2026-08-30-opencode.md). Two task-specialized checkpoints share the architecture: FL2VA (0/1/2 reference images) and Ref2VA (≤9 images, ≤3 videos, ≤3 audio clips, ≤12 files, 2–15 s each), which strictly supersets FL2VA's input modes. Output is 4–15 s at 24 FPS, 32 kHz stereo audio, 21:9–9:16; 768p is the local default and 2K exists only via the API-only H3-Regenerate-2K path [handoff].
+MiniMax-H3 is the first video-generation candidate on this page, and its pipeline precedent is ERNIE-Image-Turbo rather than any llama.cpp role: an omni-modal diffusion model (text/image/video/audio in → video + native 32 kHz stereo audio out) served via SGLang/vLLM/diffusers/ComfyUI, out-of-band from the llama.cpp kernel tree [handoff](../handoffs/active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation). The architecture is a **33B dense** H3-Omni-Transformer (~13B in cacheable AdaLN branches, inference-prunable to ~20B) with a Qwen3-VL-**32B dense** encoder — a sibling family of, not the same variant as, the deployed Qwen3-VL-30B-A3B MoE vision role [progress](../progress/2026-08/2026-08-30-opencode.md). Two task-specialized checkpoints share the architecture: FL2VA (0/1/2 reference images) and Ref2VA (≤9 images, ≤3 videos, ≤3 audio clips, ≤12 files, 2–15 s each), which strictly supersets FL2VA's input modes. Output is 4–15 s at 24 FPS, 32 kHz stereo audio, 21:9–9:16; 768p is the local default and 2K exists only via the API-only H3-Regenerate-2K path [handoff].
 
 The deployment path under consideration is **Ref2VA base (~144 GB) + TenStrip/10Eros-Max beta4 INT8 convrot transformer (21 GB) as a transformer-only drop-in ≈ 165 GB total** [handoff]. Disk math from 2026-08-30 says it fits but barely: the single 3.7 TB RAID (`/dev/md127`) backing `/workspace` + `/mnt/raid0/llm` had 291 GB free (92% used), so 165 GB would leave ~126 GB (~95.5% full) — and the handoff requires headroom to be re-verified immediately before any download [handoff][progress]. The first gate is therefore **not technical but a scope decision**: video generation has no identified product demand, and "interesting model" alone is not a reason to consume 165 GB on a 92%-full volume; the handoff is explicitly closeable on a no [handoff].
 
@@ -1395,7 +1406,7 @@ Key findings:
 
 ### Source References (2026-08-30)
 
-- [`minimax-h3-video-generation-evaluation.md`](../handoffs/active/minimax-h3-video-generation-evaluation.md) — the EVL-32 record: model facts, community quantization landscape, NSFW-capability evidence, the Ref2VA + beta4 INT8 deployment path, the 2026-08-30 disk math, and the open-question list with the scope decision as first gate.
+- [`minimax-h3-video-generation-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) — the EVL-32 record: model facts, community quantization landscape, NSFW-capability evidence, the Ref2VA + beta4 INT8 deployment path, the 2026-08-30 disk math, and the open-question list with the scope decision as first gate.
 - [`progress/2026-08/2026-08-30.md`](../progress/2026-08/2026-08-30-opencode.md) — the session record: EVL-32 creation, the Qwen3-VL-32B-dense vs 30B-A3B-MoE family note, the disk math, and the `index_state.py --check` green.
 
 ## Compiled Update — 2026-09-25: LensVLM Selective Visual Expansion
@@ -1408,8 +1419,8 @@ Parent-model provenance remains a dependency for license, tokenizer, image proce
 
 ### Source References
 
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md)
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline)
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 
@@ -1425,8 +1436,8 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 
 ### Source References
 
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — MM-LENS trigger and staged execution.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — minimum research-screen controls.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — MM-LENS trigger and staged execution.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — minimum research-screen controls.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective Lens receipt trigger.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — action-distillation disposition.
 
@@ -1438,7 +1449,7 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 
 ### Source References
 
-- [Conversation stack](../handoffs/active/conversation-stack.md) — the same correction, dated 2026-09-26, under *Facts that constrain the design*.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — the same correction, dated 2026-09-26, under *Facts that constrain the design*.
 - [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — C8 and the post-BIOS supersession note (`epyc-inference-research/data/bios-postreboot-20260921/`).
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C36, the 449.4 GB/s re-read.
 
@@ -1471,11 +1482,11 @@ CPU throughput and quality at the new placement are **unmeasured** (S-18).
 
 ### Source References
 
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — the cold-CPU note, S-18, S-19, S-20.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — the cold-CPU note, S-18, S-19, S-20.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the vision move and the 27.9 s refusal.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
-- [Stack-change governance pipeline](../handoffs/active/stack-change-governance-pipeline.md) — STACKCHG-DFLASH2.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-17: voice routing is unimplemented.
+- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — STACKCHG-DFLASH2.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-17: voice routing is unimplemented.
 
 ## Compiled Update — 2026-10-20: the conversation stack gains turn-taking instruments, and the vision embedders have nothing to screen yet
 
@@ -1487,16 +1498,16 @@ On the vision side, the multimodal-pipeline handoff records an owned trigger for
 
 ### Source References (2026-10-20 multimodal delta)
 
-- [Conversation stack](../handoffs/active/conversation-stack.md) — turn-taking evidence program, CS-45..49, durable triggers.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — embedder-upgrade screen trigger and the empty-collection observation.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — turn-taking evidence program, CS-45..49, durable triggers.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — embedder-upgrade screen trigger and the empty-collection observation.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — conversation-stack write-side extension.
-- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — unrelated current-state context only.
+- [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — unrelated current-state context only.
 
 ## Compiled Update — 2026-10-21: turn-end synthetic results, the speech threadpool fold (qwentts passed, whisper missed its target), and corpus lessons
 
 **Confidence: verified for the recorded measurements (each one run, each with its artifact); nothing here advances a turn-end arm.** The `human_recorded` stratum of the CS-45 corpus is still empty, and only that stratum can advance an arm (`corpus.json` keeps `advance_eligible_strata = [human_recorded]`; [turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) section 0 rule 3), so every number below can only rank or reject.
 
-- **CS-47 synthetic accuracy legs: no arm meets the 0.10 false-cut budget on selection.** The incomplete clips carry 2.0 s of digital silence after the cut, so every silence-gated or acoustic arm fires on nearly all of them (silence 1.000; Parakeet-EOU 0.972 to 1.000, including the no-fallback rows). Smart Turn behind the Silero gate (gate 0.6, theta 0.9) discriminates a little: false-cut difference -0.333 against the nearest-latency silence row, paired cluster-bootstrap 95% CI [-0.515, -0.181]; extending its threshold on selection only to FPR <= 0.10 costs recall <= 0.017. Parakeet-EOU ties its matched silence row (difference 0.000). The latency leg is staged, not run, and the adaptive-timeout arm has no result yet (evidence: research `artifacts/cs47_turn_end_bakeoff_20261020/`; [conversation stack](../handoffs/active/conversation-stack.md), CS-47 note).
+- **CS-47 synthetic accuracy legs: no arm meets the 0.10 false-cut budget on selection.** The incomplete clips carry 2.0 s of digital silence after the cut, so every silence-gated or acoustic arm fires on nearly all of them (silence 1.000; Parakeet-EOU 0.972 to 1.000, including the no-fallback rows). Smart Turn behind the Silero gate (gate 0.6, theta 0.9) discriminates a little: false-cut difference -0.333 against the nearest-latency silence row, paired cluster-bootstrap 95% CI [-0.515, -0.181]; extending its threshold on selection only to FPR <= 0.10 costs recall <= 0.017. Parakeet-EOU ties its matched silence row (difference 0.000). The latency leg is staged, not run, and the adaptive-timeout arm has no result yet (evidence: research `artifacts/cs47_turn_end_bakeoff_20261020/`; [conversation stack](../handoffs/active/speech-and-multimodal.md), CS-47 note).
 - **Design insight recorded, not a task edit.** CS-22's text names a silence threshold as the policy and calls a semantic end-of-turn optional; the CS-47 evidence points toward a semantic-gated design (a model decides complete vs incomplete, silence only gates it) as the candidate default. The Unmute reference uses a model pause head thresholded 0.6 / 0.4 rather than a silence timer (`intake-2054#record`). Model-only latency is kept separate from any wrapper gate (measurands section 2.2).
 - **A native full-duplex interlocutor does its own turn-taking**, which is an alternative to the CS-22 controller policy; measure it with the same CS-45 corpus, the CS-48 barge-in harness and the same denominators as the cascade. PersonaPlex / Moshi was marked BLOCKED only because llama.cpp lacks the architecture; under the platform rule that is a porting question, and it is English-only so it can be at most a reference slot (conversation-stack, "Accumulated insights", 2026-10-20). Full-Duplex-Bench v1 `pause_handling` is the existing instrument for "the user pauses mid-turn and the model must not take the floor" (TOR lower-is-correct there).
 - **CS-45 v2 corpus lessons.** QA must be a human ear plus an independent ASR: QA that reuses the corpus's own build tools is circular (v1 failed 12 of 20 sampled pairs while its own QA marked every cut clean). The verifier and the consumer tool must share one assembly function (`tt_corpus.assemble_row()`), cross-tested: `tt_materialize` aborted on CTX_BC clips that `tt_verify` passed because the latter alone applied the per-pair layout tail; after research `beeb3a352` a clean checkout materialises 278/278 clips and passes the 13 verify checks. Whisper-family ASR also hallucinates a plausible continuation after a truncated utterance, so an exact-transcript gate on a cut clip is deliberately strict and predictable-next-word sentences were dropped, not waived (conversation-stack, CS-45 notes).
@@ -1505,7 +1516,7 @@ On the vision side, the multimodal-pipeline handoff records an owned trigger for
 - **Fold discipline.** [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md): every fold, keep or exclusion edits the manifest in the same commit (features go only into champions; the next production upgrade must be significant); a row never leaves the table; per-keep screening percentages are not additive. The whisper WER anchor is 3.37% (63/1870, large-v3-turbo f16 MI210 greedy), not the 2.35% in the ratification receipt, which is the faster-whisper int8 CPU arm; the superseding receipt is human-only.
 - **Placement.** GPU host threads take CPU cores, so the second MI210's host lane affects the CPU timing floor (CS-7 requires recording it; no number exists yet). The second MI210 has arrived but is not installed; Phase 2 (whisper and qwentts onto it) becomes runnable on installation.
 
-Sources: [conversation-stack handoff](../handoffs/active/conversation-stack.md) (2026-10-20/21 notes), [qwentts-threadpool progress 2026-10-21](../progress/2026-10/2026-10-21-qwentts-threadpool.md), [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md), [turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md).
+Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md) (2026-10-20/21 notes), [qwentts-threadpool progress 2026-10-21](../progress/2026-10/2026-10-21-qwentts-threadpool.md), [speech-v2 manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md), [turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md).
 
 ## Compiled Update — 2026-10-21 (sweep 5): speech placement moves to GPU card 2, and the CPU-partition measurement is declined
 
@@ -1519,7 +1530,7 @@ Sources: [conversation-stack handoff](../handoffs/active/conversation-stack.md) 
 - **OD-A** is filed: the operator confirms the speech host card at the CS-9 readout.
 - **CS-8.L** is filed: the Italian listen check of the cascade G1 outputs needs a human ear, because agent QA of speech is circular.
 
-Sources: [Conversation stack](../handoffs/active/conversation-stack.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md)
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): the Italian TTS re-listen kit is ready; the normalizer stays eval-only
 
@@ -1530,7 +1541,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md), [Progre
 
 ### Source References (2026-10-22 wrap-up sweep 12)
 
-- [handoffs/active/conversation-stack.md](../handoffs/active/conversation-stack.md) — CS-8.L4 note
+- [handoffs/active/speech-and-multimodal.md](../handoffs/active/speech-and-multimodal.md) — CS-8.L4 note
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — wrap-up 9/10
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — section 17.6 (q3 night chain)
 
@@ -1541,7 +1552,7 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md), [Progre
 - **CS-5.P1c PASS: Step-Audio-2-mini audio incoherence was a transformers bug.** Under transformers >= 4.56 an empty DynamicCache made `prepare_inputs_for_generation` drop the audio. With the fix: ASR recall 1.0 (encoder_calls 22), official-prompt recall 0.941 with a `<英语>` tag prefix, VRAM peak 15.68 GiB (earlier recall 0.059). Production use on >= 4.56 needs the same fix or a pin to 4.49, and the tag stripped.
 - **Italian TTS year rule narrowed (CS-8.L4a):** the "zei" on spelled-out "duemilasei" led to year-form spelling only in year contexts (dates, nel/del/dal/al/anno, "(2006)", ranges); "1500 euro" stays a cardinal. CS-8.L4b (pauses in "anàloga" and "pi acca") was not reproduced in any variant; a one-clip operator re-listen remains optional.
 
-Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md)
 
 
 ## Compiled Update — 2026-10-28 (CS22 negative retained; STT2 packets remain preparation)
@@ -1552,24 +1563,24 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 - The prospective same-release diagnostic is limited to the first four pinned clips and compares the original ONNX with ONNX/JIT members from one wheel. Common release does not prove identical weights. Its before-load capture, failure retention, and fake-entry controls are preparation evidence. The preparation record contains no accepted native outcome; owner-result audit, strict-reader integration, and the planning canary remain open.
 - **Converted STT2 assets and CPU smoke launchers were prepared, not acquired or run by this preparation session.** The Parakeet and Whisper F16 artifacts have separate immutable pins and provenance. The dependent 40-clip CPU jobs capture model, source, binary, linkage, grant and per-clip outcomes; they remain dependent on acquisition receipts and source publication. No production-weight equivalence, WER/quality, or timing qualification follows from the packet.
 
-Sources: [conversation-stack handoff](../handoffs/active/conversation-stack.md); [CS22 native negative and diagnostic](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md); [STT2 native source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
+Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [CS22 native negative and diagnostic](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md); [STT2 native source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
 
 ## Compiled Update — 2026-10-29: vision-role promotion reconciled; PaddleOCR-VL CPU table smoke
 
 - **S-16 closed by audit:** Qwen3-VL-30B-A3B Q4_K_M is registered as `worker_vision`/`vision_escalation` (deployed 2026-07-31), replacing Qwen2.5-VL-7B in the research registry. This is a reconciliation of an already-deployed state, not a new measurement.
 - **PaddleOCR-VL-1.6 on CPU (PIP02 Phase B):** the llama-server vision path (GGUF + mmproj, `-ngl 0 -np 1`) completed two English table pages in 67.8 s and emitted HTML `<table>` markup; the bounded n=2 smoke says the harness works, not that the tables are faithful (dropped operators seen in page-2 equations). Scoring belongs to Phase C (see Document Processing).
 
-Sources: [multimodal-pipeline handoff](../handoffs/active/multimodal-pipeline.md); [document-parser-table-bench handoff](../handoffs/active/document-parser-table-bench.md); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)
+Sources: [multimodal-pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [document-parser-table-bench handoff](../handoffs/active/knowledge-pipelines.md#track-document-parser-table-bench); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for preparation controls only; **no verdict** on image quality, STT accuracy or HIP parity.
 
-- **ERNIE-Image typography slice is READY, not run.** A 20-prompt EN/ZH slice (896 and 1024 px) is staged for later human review under PIP-03; a real 512x512 engineering control and STOP/drain qualified the host path, but the GPU was busy at preflight and no target capture exists. Enhancer-on and product filtering are UNKNOWN, and a local slice cannot establish the official benchmark or a matched-Qwen comparison. ([ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md); [READY snapshot](../artifacts/compute/codex3-ernie-pareval-ready-20261031/SNAPSHOT.sha256))
+- **ERNIE-Image typography slice is READY, not run.** A 20-prompt EN/ZH slice (896 and 1024 px) is staged for later human review under PIP-03; a real 512x512 engineering control and STOP/drain qualified the host path, but the GPU was busy at preflight and no target capture exists. Enhancer-on and product filtering are UNKNOWN, and a local slice cannot establish the official benchmark or a matched-Qwen comparison. ([ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation); [READY snapshot](../artifacts/compute/codex3-ernie-pareval-ready-20261031/SNAPSHOT.sha256))
 - **Speech validation packets pass entry controls, unscored.** Voxtral (4,096-context, 480/960 ms routes), Ultra Q8/F32 and transcribe Nemotron (R0/R3/R6/R13) passed real normal-entry and STOP controls; an independent HF reference and native F32/Q8 matched decoded-step IDs and durations on JFK (46 steps) and a synthetic tone (5), with the raw frontend keeping one extra masked HF frame. Nemotron R1 is outside the trained context menu; full FLEURS is unexposed and HIP compiler-object success is not GPU correctness. ([speech prep](../artifacts/compute/codex3-speech-prep-20261031/README.md))
 - **LID1 and STT3 remain plans.** Five full-public-FLEURS CPU LID packets are READY-WAIT with no corpus scored, and the joint STT3 plan was frozen before cohort ASR. ([speech LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md))
 
-Sources: [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
+Sources: [ernie-image-turbo-evaluation](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
 
 ### Compiled Update — 2026-10-31 (S-18 runtime-only READY checkpoint)
 
@@ -1578,15 +1589,15 @@ Sources: [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-eva
 - The native S-18 READY packet was published with the pinned exact 60-item CPU cohort and recipe identity preserved. The normal four-token smoke returned rc0 after 221.4304 s but parsed as `parse_fail`; the active-cutoff smoke returned rc75/partial after 233.1852 s, with one of two rows and process-group drain. Both used `max_tokens=4`, so neither is an MMMU score or evidence of CPU quality parity.
 - Keep the exact-cohort baseline (36/60) separate from the historical 159/250 (63.6%) result. The S-18 measurement and VB-SERVING-DF2 projection/canary remain open; the projection schema is unwired and the planning-context canary is required.
 
-Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
+Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [multimodal pipeline handoff](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency. [Source](../handoffs/active/conversation-stack.md)
-- Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/ernie-image-turbo-evaluation.md)
+- LEX2 dev selection: 100 clips by 15 cells, 1,500 native successes; local alpha 1 casefolded keyword F=.701754 vs alpha-zero .574803. This is lexical reference agreement, not WER; 35 selected rows carry P-STT-1 flags. The 755-row heldout plan is not READY and no heldout inference, score or quality decision exists. Earlier CS-22 A1 had 178 completed cases and zero Q8-F32 WER delta on tested repeated contexts, but rejected required context 1 and failed original acceptance; the 28,805 s silence soak is not real-traffic latency. [Source](../handoffs/active/speech-and-multimodal.md)
+- Ernie typography diagnostic captured 40/40 images from 20 English/Chinese prompts at two resolutions; official score, enhancer, filter and human review remain unknown, so no quality verdict. [Source](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
@@ -1648,17 +1659,17 @@ Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20
 
 **Confidence: verified for the 100-clip dev grid and frozen lexical rule; this is not P-STT-1 WER, test-set evidence or a speech release decision.**
 
-- The original hostfix2 dev grid completed 100 clips × 15 cells (1,500 native successes, zero native failures and zero exposed unknowns). Under the frozen rule, NeMo local context at alpha 1 was selected: pooled casefolded keyword F 0.701754 versus alpha-zero 0.574803. The paired global-zero minus local-zero call-bootstrap interval was [0, 0], the predeclared lexical noise floor. The heldout plan is NOT READY, binds 755 rows after 17 dev-call exclusions, and has not been run. The result measures lexical reference agreement only; normalization routes, raw-token UNK and heldout speech quality remain unresolved. ([conversation-stack handoff](../handoffs/active/conversation-stack.md); [codex3 progress](../progress/2026-11/2026-11-01-codex3.md); [compact cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json); [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json))
+- The original hostfix2 dev grid completed 100 clips × 15 cells (1,500 native successes, zero native failures and zero exposed unknowns). Under the frozen rule, NeMo local context at alpha 1 was selected: pooled casefolded keyword F 0.701754 versus alpha-zero 0.574803. The paired global-zero minus local-zero call-bootstrap interval was [0, 0], the predeclared lexical noise floor. The heldout plan is NOT READY, binds 755 rows after 17 dev-call exclusions, and has not been run. The result measures lexical reference agreement only; normalization routes, raw-token UNK and heldout speech quality remain unresolved. ([conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [codex3 progress](../progress/2026-11/2026-11-01-codex3.md); [compact cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json); [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json))
 
-Sources: [conversation-stack](../handoffs/active/conversation-stack.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [LEX2 selected-cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json) · [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json)
+Sources: [conversation-stack](../handoffs/active/speech-and-multimodal.md) · [codex3 progress](../progress/2026-11/2026-11-01-codex3.md) · [LEX2 selected-cell summary](../artifacts/compute/codex3-lex2-dev-selection-20261101/DEV-SUMMARY.json) · [heldout plan](../artifacts/compute/codex3-lex2-dev-selection-20261101/HELDOUT-PLAN.json)
 
 
 ## NeMo validation rescore — 2026-11-01
 
-The offline English validation rescore covered 1,580 retained chunks, with 394 utterances in each of four settings. R13 had the lowest reported pooled WER: 8.3576% under `stt_norm/v1` and 8.3121% under the v2 candidate. R6 retained a decode-error failure, scored with deletions. This is selection-only evidence; the original scorer catalog binding is UNKNOWN and the broader test-set advancement gate remains open. ([handoff](../handoffs/active/conversation-stack.md); [result summary](../artifacts/compute/codex3-stt5-v3-complete-20261101/SUMMARY.json); [progress](../progress/2026-11/2026-11-01-codex3.md))
+The offline English validation rescore covered 1,580 retained chunks, with 394 utterances in each of four settings. R13 had the lowest reported pooled WER: 8.3576% under `stt_norm/v1` and 8.3121% under the v2 candidate. R6 retained a decode-error failure, scored with deletions. This is selection-only evidence; the original scorer catalog binding is UNKNOWN and the broader test-set advancement gate remains open. ([handoff](../handoffs/active/speech-and-multimodal.md); [result summary](../artifacts/compute/codex3-stt5-v3-complete-20261101/SUMMARY.json); [progress](../progress/2026-11/2026-11-01-codex3.md))
 
 ## Compiled Update — 2026-11-01 (Parakeet r4 calibration gate)
 
-Parakeet r4 superseded an unrun r3 packet and was submitted with 21 verified source hashes. The active qual-v1 keeper skipped it because its exact UNKNOWN-feasibility scope lacks the accepted calibrated-production rate basis; an installed v2-row gate accepted that scope in a dry check, but no qualification receipt or arm followed. A later diagnosis confirms the manifest labels its basis `parakeet-unknown-calibration`, while the live speech qualifier admits only `speech-calibrated-production` bound to the 24-thread production recipe, batch, decode mode and source catalog. The earlier two-thread JFK smoke cannot establish that rate. A separately scoped calibration and fresh successor remain necessary; no WER or model-advancement result is claimed. ([STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md); [conversation-stack handoff](../handoffs/active/conversation-stack.md); [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md))
+Parakeet r4 superseded an unrun r3 packet and was submitted with 21 verified source hashes. The active qual-v1 keeper skipped it because its exact UNKNOWN-feasibility scope lacks the accepted calibrated-production rate basis; an installed v2-row gate accepted that scope in a dry check, but no qualification receipt or arm followed. A later diagnosis confirms the manifest labels its basis `parakeet-unknown-calibration`, while the live speech qualifier admits only `speech-calibrated-production` bound to the 24-thread production recipe, batch, decode mode and source catalog. The earlier two-thread JFK smoke cannot establish that rate. A separately scoped calibration and fresh successor remain necessary; no WER or model-advancement result is claimed. ([STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md); [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md))
 
-Sources: [STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md) · [conversation stack](../handoffs/active/conversation-stack.md) · [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md)
+Sources: [STT5 session record](../progress/2026-11/2026-11-01-handoff-stt5.md) · [conversation stack](../handoffs/active/speech-and-multimodal.md) · [workspace-58 progress](../progress/2026-11/2026-11-01-workspace-58.md)

@@ -12,7 +12,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import p3_kvu_probe_slot as P3  # noqa: E402  (a1_summary, P3V1, EXPECT, V1_REF)
+import p3_kvu_probe_isolated as P3  # noqa: E402  (a1_summary, P3V1, EXPECT, V1_REF)
 
 KVU_LABELS = ["kvu_on_b2048", "kvu_off_b2048", "kvu_on_b512"]
 ORIG = Path("/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/kvu16b/20261004T032520Z/report.json")
@@ -167,7 +167,7 @@ def main() -> int:
     # ---------------- coherence
     L += ["## Coherence spot-checks (greedy, enable_thinking=false; text saved, no classifier)", "",
           "| launch | sha | finish | tokens | text (first 160 chars) |", "|---|---|---|---|---|"]
-    cohs = sorted(R.glob("*/coherence.json")) + sorted(R.glob("p3v2/*/coherence.json"))
+    cohs = sorted(R.glob("*/coherence.json")) + sorted(R.glob("p3v2/*/*/coherence.json"))
     shas = {}
     for p in cohs:
         cj = jl(p) or {}

@@ -111,6 +111,20 @@ found it before the window opened.
 `--apply` starts one server at a time and stops **the PID it captured**: SIGTERM, confirm
 dead, escalate to SIGKILL. It never matches a process name.
 
+## Step 3b' — fold gate record (Vidya)
+
+Every fold-gate launch (once for `cpu`, once for `gpu`) passes `--record-json` and is ingested
+afterwards; the text log alone is not ingestable. Tool: research `scripts/kernel_rnd/fold_gate/fold_gate.py`.
+
+```bash
+RUN=<run-dir>
+python3 /mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/fold_gate/fold_gate.py \
+  --base-image $STORE/<kind>-<old>/bin --new-image $STORE/<kind>-<new>/bin \
+  --src-repo /mnt/raid0/llm/llama.cpp --base-commit <old sha> --cand-commit <new sha> \
+  --record-json $RUN/fold_gate_record_<kind>.json
+python3 scripts/vidya/cli.py ingest champion-fold-gate --path $RUN --as-of <ts> --only-new
+```
+
 ## Step 3c — gfx90a ISA audit, BEFORE any GPU timing (INF03-REGAUDIT-2)
 
 Zero-GPU and static: it reads the two `libggml-hip.so` files and never builds or launches

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""relay_sidecar_check.py — SEC-ART-9 relay and sidecar check (handoffs/active/model-artifact-integrity.md).
+"""relay_sidecar_check.py — SEC-ART-9 relay and sidecar check (handoffs/active/stack-lifecycle-program.md).
 
 A community repo that presents itself as a copy of an upstream can be byte-identical on every weight file and
 still carry extra files the upstream never shipped: intake-2197#00 found a relay of trusted quants plus one

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """relay_ledger_adjudicate.py — adjudicate the daemon's flagged relay ledger.
 
-WHY THIS EXISTS (handoffs/active/loop-owned-fleet-implementation.md, wrap-up
+WHY THIS EXISTS (handoffs/active/coordination-and-churn-pipeline.md, wrap-up
 findings 2026-08-16): `relay_state.json` carries `flagged` entries — the
 daemon's dedupe ledger for defect advisories — that have never been reconciled.
 Nothing distinguishes "the handler consumed it" from "it was dropped", and the

@@ -30,7 +30,7 @@ REVISION lines). **The calendar's input is the prioritized backlog
 and the derived plan is the tracked file `coordination/compute-calendar/CALENDAR-PLAN.md` (§3 step
 0). The rows themselves live in the domain indices, e.g. `handoffs/active/inference-research-index.md`
 (routed from `handoffs/active/master-handoff-index.md`); non-compute work is
-`handoffs/active/non-inference-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
+`handoffs/active/engineering-hygiene-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
 
 ## 1. The model: bins, items, classes
 
@@ -42,7 +42,7 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 same filesystem frees nothing until it is swept; see `references/disk-bin.md`, bought by raid0
 reaching 100 % and an ORCH ENOSPC on 10-27).
 
-**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). What the packer reads:
+**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). Every measurement row's task text carries a **stop rule** (question, checkpoints, stop-on-answer / stop-on-futility; formal-gate cells futility-only) per `docs/guides/agent-workflows/measurement-sufficiency.md`; a row without one is not READY. What the packer reads:
 
 | Field | Meaning for packing |
 |---|---|
@@ -111,6 +111,8 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 ### "Churn through the backlog" = the five-step flow (operator, 2026-11-01)
 
 When the operator asks to churn / work / clear the backlog, this and nothing else is meant. Canonical page: `docs/guides/agent-workflows/backlog-churn-flow.md`.
+
+**Direct path is the default when a lane is measured free or the operator is present (2026-11-03):** `scripts/coordination/rowflow/run_direct.sh <ready.json|row-id>` is the ONE command - it claims exactly the row's regions under a finite region-lock timeout, runs the job with the engine's `FILLER_*` contract, holds the row from the keeper, writes `.ended` on exit and prints measured CPU%/GPU% 30 s after start (`run_direct.sh stop <id>` / `status <id>`); the keeper's five-step flow below is the scheduler for UNATTENDED work, not a gate in front of a free lane.
 
 1. The backlog is prioritized tasks of two types: inference and non-inference.
 2. Non-inference tasks that block inference tasks are built regardless of compute usage.

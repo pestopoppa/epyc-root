@@ -1,0 +1,60 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "-I",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/compare_symbols.py",
+    "--anchor-build",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-gpu",
+    "--anchor-cpu-build",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-cpu",
+    "--candidate-build",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildgpu",
+    "--candidate-cpu-build",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildcpu"
+  ],
+  "at": "2026-10-31T07:34:15.551811+00:00",
+  "budget": {
+    "rss_GiB": 8,
+    "wall_s": 300
+  },
+  "cpu_affinity": [
+    122,
+    123
+  ],
+  "original_source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "pins": {
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/__init__.py": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/__init__.py": "78741f051d83ea3d84ea60440226630889053d93b49790d12b57d7ab1b099630",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/api.py": "bf7a729fb84c2a4b7a7f44c9872a7647680ee129bc07a74aa28db963c767a956",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/devices.py": "af8ee4813a4a80535f2628604bd53257259ef1aad5173c96863db68b1e990c3b",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/integrity.py": "dfc6dbc719aab525d4ddedd53ca087b00e1e632ed8147967175676884f415f1f",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/surface.py": "a8576e98dc6c0292bab6b4bdc08f3cc22ca6d1e1f9fdb9805d0e3bad775a7cf6",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/schemas.py": "4dd07e2492a534029654b4bad5a2fb1062d66ddf5582bbd3bda8b7f17ea88644",
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/compare_symbols.py": "08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/File/Which.pm": "e317605124d953a950d3d6cc7624d0e5358bb710eeaf20f3ec7889023f19dac0",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/URI/Escape.pm": "0bd8e615325fb77778b03ac7f025b9cc06b7e82410d39a55ebdb2ab18ae93ef6",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-cpu/bin/libggml-cpu.so": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-gpu/bin/libggml-hip.so": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildcpu/bin/libggml-cpu.so.0.16.0": "2fb229482c5555275e6bcf78da715720f9abdd22381e152bf2e036fd7a224679",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildgpu/bin/libggml-hip.so.0.16.0": "4dadf052dc2373b0d19ab6d81e3d52f6430ff6266101e66233661cf0dadaec9f",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/full-result.json": "db9b526568ea970140c439fe34c984c15ac124eb1d141317714d91b8f20b746c",
+    "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/symbol-identity.json": "9392987a1db9180aa0b0b2bb4836584848932343ef8a660becc8f38a77d7521d",
+    "/opt/rocm/bin/roc-obj-ls": "29445392525e6a9bbfccfb323a828ea5ebd47d676b42e2df2ae306bd84c11c08",
+    "/usr/bin/perl": "fa709dd80ec2ddd60b47b1a13964dcbe7c4b96fb08f91778485ae95a78685e4e",
+    "/usr/bin/python3.13": "efb29ce53d36ebaeee80e3aa44fd6c7f9d71bbded5fe1665240b2ed8ecaeee0e"
+  },
+  "rule": "UNCHANGED zero added/removed CPU, HIPhost, gfx90adevice exported symbols; no CUID filtering or normalizing",
+  "scope": "staticELFCPUparse only, no GPUcompute/build/production modification; private copies of versioned immutableanchor, originalindependentimagesunchanged",
+  "source_deps_same_as_r2": [
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/__init__.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/__init__.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/schemas.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/devices.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/api.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/surface.py",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/integrity.py"
+  ]
+}

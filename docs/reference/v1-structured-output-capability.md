@@ -1,6 +1,6 @@
 # Structured output across the kernel and the `/v1` seam
 
-**Promoted 2026-09-17** out of [`handoffs/active/harness-selection-and-integration.md`](../../handoffs/active/harness-selection-and-integration.md)
+**Promoted 2026-09-17** out of [`handoffs/active/harness-program.md`](../../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 (row HS-13, ticked 2026-09-16). It is a capability record for the frozen v9 kernel and the
 orchestrator seam, cited whenever a harness or instrument needs schema-constrained output.
 

@@ -35,7 +35,7 @@ class Fixture:
         os.makedirs(os.path.join(self.flags, "grants"))
         os.makedirs(os.path.join(self.flags, "ready"))
         os.makedirs(os.path.join(self.flags, "bin", "rowflow"))
-        for f in ("filler_run15.sh", "filler_lib.sh", "dryrun_disk_policy.json"):
+        for f in ("filler_run15.sh", "filler_lib.sh"):
             shutil.copy(os.path.join(_RF, f), os.path.join(self.flags, "bin", "rowflow", f))
         self.engine = os.path.join(self.flags, "bin", "rowflow", "filler_run15.sh")
         self.rl = os.path.join(self.root, "region-lock")
@@ -104,7 +104,7 @@ class RowflowTests(unittest.TestCase):
         self.assertGreaterEqual(row["window_s"], 300 + 300)
         self.assertEqual(row["window_s"] % 60, 0)
         self.assertTrue(row["scratch_root"].startswith(fx.root))
-        self.assertIn("out/results.jsonl", row["keep"])
+        self.assertEqual(row["keep"], ["out/results.jsonl"])   # 2026-11-03: empty keep = inputs (reaper rule) + result only
         self.assertEqual(row["launcher"]["sha256"], rf.sha256(os.path.join(d, "launch.sh")))
         self.assertEqual(rf.status(fx.flags, "t-pub-20261101")["state"], "needs-dryrun")
         # spec errors are one refusal each
@@ -130,14 +130,8 @@ class RowflowTests(unittest.TestCase):
         self.assertEqual(rf.status(fx.flags, rid)["state"], "needs-dryrun")
         opts, bench = rf.row_shape(row)
         self.assertEqual(sorted(sorted(o) for o in opts), [["q0"], ["q1"], ["q2"], ["q3"]])
-        dopts, one_q = rf.dryrun_shape(row, opts)
-        c = {"id": rid, "kind": "dryrun", "lane": row["lane"], "rank": row["priority_rank"], "lane_count": 0, "gib": row["gib"],
-             "bench": bench, "options": dopts}
-        assigned, idle, pending = rf.plan({"q0", "q1", "q2", "q3"}, [c], 1000)
-        self.assertEqual([x["id"] for x, _ in assigned], [rid])
-        regions = rf.grant_regions(row, assigned[0][1], one_q)
-        self.assertEqual(regions, "0-23")
-        v, msg = rf.dryrun_run(fx.flags, rid, regions, one_q)
+        regions = "0-3"  # publish_row's smoke: 4 cpus of one quarter, nothing scheduled
+        v, msg = rf.dryrun_run(fx.flags, rid, regions, True)
         self.assertEqual(v, "PASS", msg + "\n" + "\n".join(rf.tail(os.path.join(rf.dry_dir(fx.flags, rid), "launcher.out"), 40)))
         p = json.load(open(rf.pass_path(fx.flags, rid)))
         self.assertGreaterEqual(p["units"], 1)
@@ -148,7 +142,7 @@ class RowflowTests(unittest.TestCase):
         # a grantable row is a "grant" candidate for the allocator; the launcher-side admission is rf.admit (not run here:
         # it parses a LIVE poller's argv, and there is none)
         self.assertTrue(callable(rf.admit))
-        self.assertEqual(rf.grant_regions(row, frozenset({"q3"}), False), "72-95")
+        self.assertEqual(rf.grant_regions(row, frozenset({"q3"})), "72-95")
         # a second dry run of a grantable row is a no-op
         self.assertEqual(rf.dryrun_run(fx.flags, rid, "0-23")[0], "WAIT")
         # the launcher changes -> a new dry run is needed, automatically; the row is a dry-run candidate again, not a grant

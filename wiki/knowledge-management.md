@@ -2,7 +2,33 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-11-02 (ws58 LLM-wiki transparency intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Codex persistent lane checkouts and legacy/worktree retirement, disk-emergency triage, belief-kernel write wiring (LB4.9 wired, PIP-02 TEDS, CAFE-1 source enrolled). Earlier: 2026-10-28 (workspace-58 overnight wrap delta). Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T, CS22 and STT2 source enrollment remains separate from reader/canary completion. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; scoped conclusion capture and no new measurement warrant). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): results-harvest projectability: what can enter the belief ledger now, what needs a write side, and what must project nothing, plus the FA4 nan_A quarantine. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): 267 of 497 cited tmp paths are gone, committed conclusions get a belief path, the first loop canaries run, and seven native ingests append 102 frames. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the P1-PHASE2 served-shape recalibration passes and ingests, gitnexus recovers from a SIGSEGV, Omega and M26 are wired into the belief kernel, and the DS41-1017 ABA files are not native measurements. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: orchestrator code index segfault; llama-bench protocol field enters the belief adapters). Earlier: 2026-10-22 (wrap-up sweep 10: ten write sides and producer emits wired, protocol_id grading bug, dev-harness trace backup coverage and OTel fields). Earlier: 2026-10-22 (wrap-up sweep 9: a pinned source digest goes stale whenever its producer changes). Earlier: 2026-10-22 (wrap-up sweep 7: dev-harness mining, privacy gate and write-side wiring tasks). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: loop belief readers landed, device-scoped claims, new write-side rows). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (scoped: decision-tools filing and three-campaign practical-application review); previous: 2026-10-03 (wrap-up compile: belief-kernel wiring for the new serving producers — VB-SERVING-DF2, VB-SERVE-TIMING-1 (per-call serving records, era ST1); VB-RI18a sidecar gaps; VB-REVIEW-GATE declined with the gate; governance lesson: an operator recipe ruling must land as a registry field plus a compile check); previous: 2026-09-29 (wrap-up compile: handoff compaction moves closed scope to completed siblings without deleting it; VB-UFH12-PLACEMENT-DISC finds the arm sidecars invisible to ingest; operator ruling 2026-09-29 writes compound thaw triggers into frozen write sides; VB-KVQ-V10-DICT heads the KV-quant queue); previous: 2026-09-27 late (wrap-up compile: the freeze convention — a marker, a reason and an unfreeze trigger, and the box stays open; the park convention; ratifiers refuse a defaulted signer and four chat-approved ratifications await countersignature; VB-THESIS-1/2 and VB-DISPATCH-S2 filed, producerless write sides frozen); previous: 2026-09-27 (wrap-up compile: VB-UFH12-PLACEMENT, SC84a and VB-DS41-C57 write sides; a GATED research item is filed durable; HipKittens intake-flow practices); previous: 2026-09-26 (orch prior-art Stage-3 plan: parallel sections with an authoritative reconciliation; `#record` asserts nothing; recommendation vs ruling); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-25 (KV-quant reader and planner receipts); 2026-09-24 (speech-lane wrap-up compile: VB-SPEECH-CONV-1 filed write-side before any conversation-stack run; VB-AK-METRICS-1 grows a closed contract by sibling and needs a root contract module plus an explicit join; VB-AK-CTX-1 offered-not-read; VB-KVU-1/VB-SPEECH-CPU-1 not backfilled); earlier: 2026-09-24 (wrap-up compile: two `open` items had been fixed for weeks and never ticked, and the wrap-up heavy-e2e failure was a TEST defect that reproduced on a pristine HEAD; VB-MFVBS-1 and VB-EVALDISC-1 filed write-side with per-field admissibility cautions; a laneless session landing shared work through a private landing worktree; four of seven subagent results needed main-thread correction); earlier: 2026-09-23 (evening wrap-up compile: the wiki source scanner's mtime blindness and per-worktree watermark are both closed against 0ea91f3e (content-hash selection against the tracked manifest; the lane failure was 919 phantom sources against a true delta of 2), both boxes having stayed unticked for weeks after the fix landed; KB-WM-5 shards the shared agent session file per AGENT_ID; PAW-4 shows a record corrected in two of three fields still misleading from the third); earlier: 2026-09-23 (wrap-up compile: three belief-kernel read-side adapters filed for producers whose write side already exists — VB-KVQ-V10, VB-VRAM-1 (the first 2026-09-22 probe run is INADMISSIBLE), VB-ARCH-CPU-QUAL (instrument_class and truncation must reach the tuple); SSU-F6 closed with a `truncation_audit` sub-gate; HelixDB added as a graph-backend candidate if the graph layer revives); 2026-09-23 (private-index committing protects peers but freezes the SHARED index, and the rot reads as mass deletions any pathspec-less commit would publish; `git diff` cannot see it by construction; `git reset -- <paths>` must run AFTER each commit; a stale `wiki/source_manifest.json` would have rolled the compile watermark back); earlier: 2026-09-22 (incremental: second subject deletion: GLM-5.3 → DeepSeek-V4.1 retarget, subject-deleted rows left unticked, VB-DSV41 filed before first run); earlier: 2026-09-19 (VB-FW-1 GUI fuzzy-workflow and VB-AK-HELDOUT held-out AutoKernel confirmation write-side rows filed before their producers run); earlier 2026-09-17 (doc audit + restructure: the decided-handoff restructure pattern — archive the pre-decision trail, promote standing material to `docs/reference/`, move open boxes up, line-level conservation check, `../active/` link repair; corrections appended to dated shards; approved-but-gated structural moves; the shared-clone backup/reset/restore-live-state procedure; two overturned absence claims in intake); earlier 2026-09-17 (evening: three ticked vidya adapter branches landed and the closure-inflation audit, the `git cherry` landing rule, `speed_axis_reseed` not projected, VB-RUNNER-PATHS-2, SC87-89, KB-WM-3, OBS-12); earlier 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+**Last compiled**: 2026-11-03 (wrap-up compile sweep). Earlier: 2026-11-02 (ws58 LLM-wiki transparency intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Codex persistent lane checkouts and legacy/worktree retirement, disk-emergency triage, belief-kernel write wiring (LB4.9 wired, PIP-02 TEDS, CAFE-1 source enrolled). Earlier: 2026-10-28 (workspace-58 overnight wrap delta). Earlier: 2026-10-28 (owner-scope full-wrap delta): CME7T, CS22 and STT2 source enrollment remains separate from reader/canary completion. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; scoped conclusion capture and no new measurement warrant). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): results-harvest projectability: what can enter the belief ledger now, what needs a write side, and what must project nothing, plus the FA4 nan_A quarantine. Earlier: 2026-10-25 (wrap-up sweep 27, operator /wrap-up workspace-58): 267 of 497 cited tmp paths are gone, committed conclusions get a belief path, the first loop canaries run, and seven native ingests append 102 frames. Earlier: 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): the P1-PHASE2 served-shape recalibration passes and ingests, gitnexus recovers from a SIGSEGV, Omega and M26 are wired into the belief kernel, and the DS41-1017 ABA files are not native measurements. Earlier: 2026-10-24 (wrap-up sweep 25, workspace-58 convergence delta): shared clones are never modified without operator approval. Earlier: 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): belief-kernel wiring for the 10-24 measurement sources, native-harness OTel lineage gap, and the non-inference campaign. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources. Earlier: 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23). Earlier: 2026-10-23 (wrap-up sweep 18, workspace-f8: orchestrator code index segfault; llama-bench protocol field enters the belief adapters). Earlier: 2026-10-22 (wrap-up sweep 10: ten write sides and producer emits wired, protocol_id grading bug, dev-harness trace backup coverage and OTel fields). Earlier: 2026-10-22 (wrap-up sweep 9: a pinned source digest goes stale whenever its producer changes). Earlier: 2026-10-22 (wrap-up sweep 7: dev-harness mining, privacy gate and write-side wiring tasks). Earlier: 2026-10-21 (wrap-up sweep 6, workspace-f8 delta). Earlier: 2026-10-21 (wrap-up sweep 5: loop belief readers landed, device-scoped claims, new write-side rows). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-06 (root final wrap-up; incremental synthesis appended); previous compile record:  (scoped: decision-tools filing and three-campaign practical-application review); previous: 2026-10-03 (wrap-up compile: belief-kernel wiring for the new serving producers — VB-SERVING-DF2, VB-SERVE-TIMING-1 (per-call serving records, era ST1); VB-RI18a sidecar gaps; VB-REVIEW-GATE declined with the gate; governance lesson: an operator recipe ruling must land as a registry field plus a compile check); previous: 2026-09-29 (wrap-up compile: handoff compaction moves closed scope to completed siblings without deleting it; VB-UFH12-PLACEMENT-DISC finds the arm sidecars invisible to ingest; operator ruling 2026-09-29 writes compound thaw triggers into frozen write sides; VB-KVQ-V10-DICT heads the KV-quant queue); previous: 2026-09-27 late (wrap-up compile: the freeze convention — a marker, a reason and an unfreeze trigger, and the box stays open; the park convention; ratifiers refuse a defaulted signer and four chat-approved ratifications await countersignature; VB-THESIS-1/2 and VB-DISPATCH-S2 filed, producerless write sides frozen); previous: 2026-09-27 (wrap-up compile: VB-UFH12-PLACEMENT, SC84a and VB-DS41-C57 write sides; a GATED research item is filed durable; HipKittens intake-flow practices); previous: 2026-09-26 (orch prior-art Stage-3 plan: parallel sections with an authoritative reconciliation; `#record` asserts nothing; recommendation vs ruling); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-25 (KV-quant reader and planner receipts); 2026-09-24 (speech-lane wrap-up compile: VB-SPEECH-CONV-1 filed write-side before any conversation-stack run; VB-AK-METRICS-1 grows a closed contract by sibling and needs a root contract module plus an explicit join; VB-AK-CTX-1 offered-not-read; VB-KVU-1/VB-SPEECH-CPU-1 not backfilled); earlier: 2026-09-24 (wrap-up compile: two `open` items had been fixed for weeks and never ticked, and the wrap-up heavy-e2e failure was a TEST defect that reproduced on a pristine HEAD; VB-MFVBS-1 and VB-EVALDISC-1 filed write-side with per-field admissibility cautions; a laneless session landing shared work through a private landing worktree; four of seven subagent results needed main-thread correction); earlier: 2026-09-23 (evening wrap-up compile: the wiki source scanner's mtime blindness and per-worktree watermark are both closed against 0ea91f3e (content-hash selection against the tracked manifest; the lane failure was 919 phantom sources against a true delta of 2), both boxes having stayed unticked for weeks after the fix landed; KB-WM-5 shards the shared agent session file per AGENT_ID; PAW-4 shows a record corrected in two of three fields still misleading from the third); earlier: 2026-09-23 (wrap-up compile: three belief-kernel read-side adapters filed for producers whose write side already exists — VB-KVQ-V10, VB-VRAM-1 (the first 2026-09-22 probe run is INADMISSIBLE), VB-ARCH-CPU-QUAL (instrument_class and truncation must reach the tuple); SSU-F6 closed with a `truncation_audit` sub-gate; HelixDB added as a graph-backend candidate if the graph layer revives); 2026-09-23 (private-index committing protects peers but freezes the SHARED index, and the rot reads as mass deletions any pathspec-less commit would publish; `git diff` cannot see it by construction; `git reset -- <paths>` must run AFTER each commit; a stale `wiki/source_manifest.json` would have rolled the compile watermark back); earlier: 2026-09-22 (incremental: second subject deletion: GLM-5.3 → DeepSeek-V4.1 retarget, subject-deleted rows left unticked, VB-DSV41 filed before first run); earlier: 2026-09-19 (VB-FW-1 GUI fuzzy-workflow and VB-AK-HELDOUT held-out AutoKernel confirmation write-side rows filed before their producers run); earlier 2026-09-17 (doc audit + restructure: the decided-handoff restructure pattern — archive the pre-decision trail, promote standing material to `docs/reference/`, move open boxes up, line-level conservation check, `../active/` link repair; corrections appended to dated shards; approved-but-gated structural moves; the shared-clone backup/reset/restore-live-state procedure; two overturned absence claims in intake); earlier 2026-09-17 (evening: three ticked vidya adapter branches landed and the closure-inflation audit, the `git cherry` landing rule, `speed_axis_reseed` not projected, VB-RUNNER-PATHS-2, SC87-89, KB-WM-3, OBS-12); earlier 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+
+
+## Compiled Update — 2026-11-03 (evening): belief-substrate adapters and D-LSA filing
+
+**Confidence: verified** (tests and validators named in the progress log).
+
+- **Vidya wiring landed**: INF-66 R23-64 thread-sweep adapter (VB-R2364-SWEEP-WIRE, verdicts carried verbatim, no new grading rule), optional journal fields carried through the existing `autopilot-journal` frame (VB-AP-JOURNAL-CARRY; missing fields stay UNKNOWN), and `reliance_review.py` flagging experiments whose `relies_on_claims` carry a retracted or corrected claim.
+- **SC64 sequential certification (closed 2026-11-03)**: the original DONE WHEN (accept crossing blocks 8 or 10) was impossible: an exhaustive scan shows blocks 8 and 10 are unreachable at threshold 20 with lambda cap 0.5, so the DONE WHEN was corrected rather than the checker (`handoffs/active/vidya-belief-substrate-program.md`, SC64).
+- **Intake validator tolerates handoff folds**: committed lineage now resolves to the surviving owner; unknown, ambiguous, cyclic or dangling references still fail (2,623 entries validated; 53 tests + 16 subtests).
+- **D-LSA (intake-2622..2627#record)**: literature shows Qwen3.8-27B with frozen base and released maps; NVIDIA attention-layer speedups are not EPYC/MI210 whole-model numbers; no local quality or latency claim made.
+- **Backlog refactor outcome**: active handoffs 176 -> 29 with zero lost tasks; the four pilots all returned REVISE with owner fixes filed.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [progress 2026-11-03](../progress/2026-11/2026-11-03.md) · [ws58 progress](../progress/2026-11/2026-11-03-ws58.md)
+
+## Compiled Update — 2026-11-02: prospective source capture and event identity
+
+The R18 independent r4 symbol comparison reported zero differences on all three surfaces, and the v10 reference predicate was set true; that completed result remains a committed conclusion because it preceded the new capture hook. For KVU-19a-2, 20 producer-authored diagnostic rows entered a private ledger, but their original capture lacked device-applicability scope. A later prospective writer requires the relevant source, HIP and in-window device witnesses; it does not backfill the old rows, and a real planning-context canary remains open. Sources: [belief-substrate handoff](../handoffs/active/vidya-belief-substrate-program.md), [R18 source progress](../progress/2026-11/2026-11-02-r18-belief-source.md), [RTG-57 diagnostic checkpoint](../progress/2026-11/2026-11-02-rtg57-readiness-audit.md).
+
+
+A source review found that independent session document, finding and tag inserts do not overwrite distinct keys, but they also do not check the session lease fence; a stale owner can therefore write after lease loss. Foreign-key enforcement was not enabled in the reviewed connection factory, and finding sync used separate transactions. The review recommends in-transaction fence and session checks plus atomic or idempotent sync; it is source analysis, not a live concurrency test or deployed fix. Sources: [session mutation review](../docs/reports/repl-session-lease-append-review-20261102.md), [live verification readiness](../docs/reports/repl-session-memory-snapshot-review-20261102.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md).
+
+
+The read-only knowledge browser links claim, recorded evidence grade and observed run; it reports commit identity only where a frame actually records one. The wiki lint gained orphan, unsourced-bullet, conflicted-citation and contradiction checks; its initial full run reported zero errors and 705 warnings, including section-sourced bullets. The contradiction gate files a pending pair only when both quoted anchors and hashes are independently re-found; it does not adjudicate the conflict. These are implemented controls; the hub session recorded that a restart was still needed before the new routes would load. Sources: [hub implementation](../progress/2026-11/2026-11-02-ws58-hub-pages.md), [wiki and contradiction implementation](../progress/2026-11/2026-11-02-ws58-knowledge.md), [source intake assessment](../progress/2026-11/2026-11-02-ws58-intake-jev-superagent.md).
+
+
+The R18 guarded symbol-comparison writer and adapter preserve source, compiler, comparator, dependency, build and terminal identities; the final producer/planner regression suite passed 69 tests and a claimed CPU launcher smoke passed. The full native successor is prospective, so prior results do not acquire a new native warrant. Separately, the trace-memory preparation found that raw source coordinates alone are not necessarily unique per event; a proposed projection-file/line key would support within-run idempotence while retaining the original coordinates. Sources: [R18 source work](../progress/2026-11/2026-11-02-r18-belief-source.md), [trace-memory preparation](../progress/2026-11/2026-11-02-handoff-unified-trace-memory-service.md), [belief-substrate progress](../progress/2026-11/2026-11-02-handoff-vidya-belief-substrate.md).
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -51,7 +77,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
   - Remaining adapter gaps go to Codex C5: pb-hol single-arm and nested layouts, KPF-18-S1.R4 pre-hook, the AKX-26b CPU run dir and HIP half, and NIB2-GNX-1.
 - **The 2026-10-21 belief-kernel review and redesign are now durable docs.** At the time of the review there was no consumer that changed an outcome, 52 of 72 adapters had never produced a frame, and 89% of the ledger was intake re-projection. The redesign's verdict: the loops already produce the beliefs they need.
 
-Sources: [tmp-loss reconcile](../docs/reference/tmp-loss-reconcile-2026-10-25.md) · [tmp-loss handoff diffs](../docs/reference/tmp-loss-handoff-diffs-proposed-2026-10-25.md) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [loop-state-offraid-backup](../handoffs/active/loop-state-offraid-backup.md) · [committed-conclusions belief capture](../docs/design/committed-conclusions-belief-capture-2026-10-25.md) · [belief-kernel review 2026-10-21](../docs/design/belief-kernel-review-2026-10-21.md) · [belief-storage redesign 2026-10-21](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-NATIVE-INGEST-10-24) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
+Sources: [tmp-loss reconcile](../docs/reference/tmp-loss-reconcile-2026-10-25.md) · [tmp-loss handoff diffs](../docs/reference/tmp-loss-handoff-diffs-proposed-2026-10-25.md) · [loop planning-inputs audit](../docs/reference/loop-planning-inputs-audit-2026-10-25.md) · [loop-state-offraid-backup](../handoffs/active/engineering-hygiene-backlog.md#track-loop-state-offraid-backup) · [committed-conclusions belief capture](../docs/design/committed-conclusions-belief-capture-2026-10-25.md) · [belief-kernel review 2026-10-21](../docs/design/belief-kernel-review-2026-10-21.md) · [belief-storage redesign 2026-10-21](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-NATIVE-INGEST-10-24) · [2026-10-25 workspace-58 progress](../progress/2026-10/2026-10-25-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 26, operator /wrap-up evening): P1-PHASE2 passes and ingests 148 rows, gitnexus SIGSEGV recovery, Omega/M26 belief wiring, and the ABA native-source audit
 
@@ -82,7 +108,7 @@ Sources: [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-works
 - **Native-harness OTel (UTM-LB4.1).** One `claude -p` session (CLI 2.1.308) with content toggles off: `tool_decision` and `tool_result` carry ids, success and sizes but no arguments. No event carries `agent_id` or a parent id; a sub-agent shares the parent's `session.id` and is marked only by `query_source = agent:builtin:general-purpose` on `api_request` and `assistant_response`. Gap: tool events carry no `query_source`, so a sub-agent's tool call is indistinguishable from a parent call except via the `tool_use_id` join to the transcript JSONL. OTel-only fields: `ttft_ms`, per-request and tool `duration_ms`, `tool_decision` source / classifier_verdict.
 - **Non-inference campaign (codex-ni-01a16d6b).** S4-T1.SRC (turns copied into `RoleResult`, orch `7c0f2929`) and M-26 (`distill_skillbank` escalation count wired from native `action_type`, orch `96dc99c9`, fake-record tests only) are accepted at source scope; the first 22+1 test claim was retracted because it ran in the shared checkout rather than the private snapshot. Both parents stay open for live inference proof. The handoff-graph UI fixes (non-scaling dep edges, daily open-box stock chart, priority-gradient rings) are shipped; BACKLOG-PRIORITY (a tiered total order) is prepared.
 
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/handoff-index-and-backlog-graph.md), [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md), [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [episodic-memory-integrity](../handoffs/active/memory-program.md), [repl-turn-efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [ni08 continuation](../docs/reference/ni08-non-inference-continuation.md), [codex-ni checkpoint](../progress/2026-10/2026-10-24-codex-ni-checkpoint.md), [coordination](../progress/2026-10/2026-10-24-codex-ni-01a16d6b-coordination.md), [m26-fix](../progress/2026-10/2026-10-24-codex-ni-m26-fix.md), [s4-turns](../progress/2026-10/2026-10-24-codex-ni-s4-turns.md), [codex-ni-vidya](../progress/2026-10/2026-10-24-codex-ni-vidya.md), [wave1 ingest](../progress/2026-10/2026-10-24-codex-ni-wave1-native-ingest.md), [daily log](../progress/2026-10/2026-10-24.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): producer write-side wiring for six sources, a gitnexus index receipt, and host-housekeeping closures
 
@@ -94,18 +120,18 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 - **Host housekeeping.** Session-backup retention `KEEP=14` to `3` freed ~33 GiB (rotation observed). The invisible space was the Docker root, 250.8 GiB; an operator-approved prune of 40 stopped `sweb.eval.*` containers and 49 `sweb.*` images took it to 224.0 GiB with the running set unchanged. The 8 dangling devcontainer images (~30.5 GB) wait for the operator's next reboot window. The memory sampler is live in cron (~2 lines/min); the pipefail lint is at 0 findings with signed ratify scripts as reviewed exceptions. The HF token file was chmod 600 (contents never read).
 - **Scheduling incidents (workspace-58).** A 3.7 h whole-host idle came from a watcher that re-touched its stamp at every re-arm (fixed: the stamp advances only to the time of the find that fired). Others: a `/proc/$SPID/status` main-thread mask false FAIL, the `SHRD` label unmatched, and an unfixed job re-granted before its fix. All are rows in the inference-backlog-scheduling incident ledger.
 
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [non-inference-backlog](../handoffs/active/non-inference-backlog.md), [workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the orchestrator code index is stale, and llama-bench rows gain a protocol field
 
 **Confidence: verified** (re-index run log; adapter survey in the filed task).
 
-- **NIB2-GNX-1.** The 06:37Z re-index rebuilt epyc-root cleanly (78,127 nodes), but the orchestrator re-index segfaulted during its incremental pass, and gitnexus reports that a stale feature branch, not `main`, owns the orchestrator's flat index slot. That index is about 1,290 commits behind. The repair re-points the slot through the documented gitnexus command (never by deleting `.gitnexus/`) and runs a full re-index ([non-inference-backlog](../handoffs/active/non-inference-backlog.md)).
+- **NIB2-GNX-1.** The 06:37Z re-index rebuilt epyc-root cleanly (78,127 nodes), but the orchestrator re-index segfaulted during its incremental pass, and gitnexus reports that a stale feature branch, not `main`, owns the orchestrator's flat index slot. That index is about 1,290 commits behind. The repair re-points the slot through the documented gitnexus command (never by deleting `.gitnexus/`) and runs a full re-index ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)).
 - **VB-LLAMA-BENCH-HARDEN-PROTOCOL.** None of the four adapters that project llama-bench output into claim tuples reads `autokernel_hardened`. They will carry it as a protocol field and refuse unrequested hardened rows, so a row from the defect window cannot enter the ledger as an ordinary bench number. The source is also listed in the adapter table ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); see benchmark-methodology).
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [non-inference-backlog](../handoffs/active/non-inference-backlog.md) (NIB2-GNX-1)
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (NIB2-GNX-1)
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) (VB-LLAMA-BENCH-HARDEN-PROTOCOL)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -130,7 +156,7 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 - [progress/2026-10/2026-10-22-producer-belief-emits.md](../progress/2026-10/2026-10-22-producer-belief-emits.md) — producer emits, protocol_id bug, YaRN field mismatches
 - [progress/2026-10/2026-10-22-final-producer-emits.md](../progress/2026-10/2026-10-22-final-producer-emits.md) — YaRN, EV-19, RUS-2 emit decisions
 - [progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md](../progress/2026-10/2026-10-22-vb-akrsg-akx-ingest.md) — first live ingests and findings
-- [handoffs/active/unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md) — backup coverage, projector, OTel fields
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — backup coverage, projector, OTel fields
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — KPF read-side void, drop-counter lesson
 - [progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md](../progress/2026-10/2026-10-22-bark-p1p2p4p6-code.md) — speech adapters
 
@@ -163,10 +189,10 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 
 ### Source References (2026-10-22 sweep 7)
 
-- [handoffs/active/unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md)
-- [handoffs/active/frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
+- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
-- [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
 
 ## Compiled Update — 2026-10-21 (wrap-up sweep 6, workspace-f8 delta): belief-kernel readers landed, storage redesign approved and Phase 1 integrated
@@ -202,8 +228,8 @@ Cross-refs: [search-retrieval](search-retrieval.md), [multimodal](multimodal.md)
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-RETR / EMBSPEED build notes, VB-DF2-REPLAY, VB-KVU-CPU, VB-AK-HISTORY (newest sections only; the 421 KB file was not read in full).
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — frozen rules and strata.
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — the run being recorded.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-45 evidence note and review-pending checkbox.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — the run being recorded.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-45 evidence note and review-pending checkbox.
 
 ## Latest source review — 2026-10-07
 
@@ -218,8 +244,8 @@ The NI08 checkpoint records 168 completed scoped tasks (105 existing-task closur
 ### Source References
 
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current scoped total and the accepted/prospective boundaries.
-- [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP2 exact source acceptance and parent gates.
-- [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md) — C-pointer source acceptance and retained original failure.
+- [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP2 exact source acceptance and parent gates.
+- [ROCm verification backend](../handoffs/active/rocm-kernel-authoring.md#track-rocm-verify-profile-backend) — C-pointer source acceptance and retained original failure.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective C106 and generated-writer companions.
 - [NI08 daily progress](../progress/2026-10/2026-10-07.md) — dated source/publication and acceptance limits.
 
@@ -231,8 +257,8 @@ Periodic validation also separates making a red gate visible from fixing its fai
 
 ### Source References
 
-- [Coordinator ledger](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — withdrawn counts, attribution and stable aliases.
-- [Repo readiness](../handoffs/active/repo-readiness-scorer.md) — periodic red gate and reference follow-on.
+- [Coordinator ledger](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — withdrawn counts, attribution and stable aliases.
+- [Repo readiness](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — periodic red gate and reference follow-on.
 - [Agent-file completed ledger](../handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md) — dated investigation versus vendor account, intake-896#record.
 
 ## Compiled Update — 2026-10-07: retained originals distinguish evidence from identity metadata
@@ -258,10 +284,10 @@ A related CI lesson is that dependency checkout paths are evidence boundaries to
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
 - [Turn-taking measurands](../docs/reference/speech/turn-taking-measurands.md) — sweep 2 (2026-10-20)
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
-- [Coordinator ledger](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
-- [Repo readiness](../handoffs/active/repo-readiness-scorer.md)
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
+- [Coordinator ledger](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
+- [Repo readiness](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer)
 - [Agent-file completed ledger](../handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md)
 - [Current source acceptance](../handoffs/active/vidya-belief-substrate-program.md#newly-unlocked-retained-source-numeric-controls)
 - [Analysis writer acceptance](../artifacts/ni08/analysis-report-source-20261006/README.md)
@@ -269,7 +295,7 @@ A related CI lesson is that dependency checkout paths are evidence boundaries to
 - [RAW recipe](../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md)
 - [RAW acceptance](../artifacts/ni08/raw-anchor-source-20261007/README.md)
 - [Hermetic producer contract](../docs/reference/hermetic-research-producer-ci-contract.md)
-- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md), [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md), [`refactoring-multirepo-2026-10.md`](../handoffs/active/refactoring-multirepo-2026-10.md) — 2026-10-28 ledger, idle-compute and enrollment items
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md), [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md), [`refactoring-multirepo-2026-10.md`](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10) — 2026-10-28 ledger, idle-compute and enrollment items
 - [`registration-sweep-v1.md`](../docs/reference/non-inference/registration-sweep-v1.md), [`scratch-reclaim-audit-20261027.md`](../docs/drafts/scratch-reclaim-audit-20261027.md), [`2026-10-27-scratch-reclaim-prep.md`](../progress/2026-10/2026-10-27-scratch-reclaim-prep.md), [`2026-10-28-workspace-58.md`](../progress/2026-10/2026-10-28-workspace-58.md)
 
 ## Compiled Update — 2026-09-25: KV-quant beliefs reach both planners
@@ -297,6 +323,12 @@ post-hook sweep has been ingested, so there is no live KV-quant belief to cite y
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer identity, caution fields, source kind, and reader location.
 
 **Sources**: 209 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
+
+## Compiled Update — 2026-11-03: backlog refactor completed (process note) and a commit-time gate on instruction surfaces
+
+The 2026-11 backlog refactor closed on 2026-11-03: 43 folds (route 1a 26, route 1b 17) took the active backlog from 176 to 29 handoffs, folded handoffs became redirect stubs in `handoffs/completed/`, and every retired ID carries a `Repoint-Reason:` trailer. These are moves, not new findings; plan, decision packages and audits are under `docs/design/backlog-refactor-2026-11/`. Source: [refactor handoff](../handoffs/completed/backlog-refactor-2026-11.md), [PLAN](../docs/design/backlog-refactor-2026-11/PLAN.md).
+
+AUD-15: `CLAUDE.md`, `agents/AGENT_INSTRUCTIONS.md` and `agents/shared/*.md` were human-only but enforced only against the Write/Edit tools, so a shell write or a commit of a peer's edit passed. A commit-msg hook now inspects the exact index git is committing (renames counted on both sides) and lands such a commit only with an `Operator-Ratified: yes` trailer; it is attributable but not tamper-proof (`--no-verify` skips it). Source: commit `49368eaff`, `scripts/hooks/check_instruction_surface_ratified.py`.
 
 ## Compiled Update — 2026-09-24 (speech-lane wrap-up): write side before the first run for the conversation stack, and a closed contract grows by sibling, not by widening
 
@@ -351,7 +383,7 @@ producers projects a tuple yet.
   VB-SPEECH-CONV-1.
 - [scripts/vidya/adapters/README.md](../scripts/vidya/adapters/README.md): the conversation-stack, `actor_call_metrics.v1` and
   `actor_context_bundle.v1` source rows and their cautions.
-- [conversation-stack.md](../handoffs/active/conversation-stack.md): INF-79, the ratified speech vision that produces the new family.
+- [conversation-stack.md](../handoffs/active/speech-and-multimodal.md): INF-79, the ratified speech vision that produces the new family.
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): two "open" items had been fixed for weeks and never ticked, and two new belief-kernel sources were filed write-side first
 
@@ -366,7 +398,7 @@ commit message.
   likewise. Both were re-verified rather than assumed — `test_heavy_wrap.py` 14/14 with the e2e case run
   20/20 times, and 14/14 + 20/20 for RTG-51. The recurrence check in the project's own *Act, Don't Defer*
   rule exists for exactly this shape.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/wrap-up-division-of-labor-policy.md);
+  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy);
   [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
 - **The wrap-up e2e failure was a TEST defect, not a code one — and the distinction was load-bearing.** The
   assertion hard-coded the fixture day `2026-08-23` while `step_6_freshness` stamps the progress shard with
@@ -374,7 +406,7 @@ commit message.
   `progress/*/*-{AGENT}.md`. The earlier diagnosis had located the defect "upstream of `step_7_compile_wiki`"
   and had been proven twice on a pristine HEAD — correct that it reproduced, wrong about what it was.
   A reproduction on a clean checkout establishes that a failure is real, never that the *subject* is at fault.
-  ([wrap-up-division-of-labor-policy](../handoffs/active/wrap-up-division-of-labor-policy.md))
+  ([wrap-up-division-of-labor-policy](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy))
 - **Two new belief-kernel sources filed on the write side, at the moment the producers were built.** Both
   are read-side adapter tasks against producers that already emit deterministic JSON:
   **VB-MFVBS-1** for the verify-before-stop measurement (orch `scripts/analysis/mf_vbs1_verify_before_stop.py`,
@@ -418,7 +450,7 @@ commit message.
 
 ### Source References (2026-09-24 wrap-up compile)
 
-- [wrap-up-division-of-labor-policy.md](../handoffs/active/wrap-up-division-of-labor-policy.md) — the heavy-wrap
+- [wrap-up-division-of-labor-policy.md](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the heavy-wrap
   e2e defect, its true cause and the re-verification.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-MFVBS-1 and
   VB-EVALDISC-1 source rows and their cautions.
@@ -431,10 +463,10 @@ commit message.
 
 ### Key findings
 
-- **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) OBS-13, NIB2-68)
+- **The wiki source scanner no longer selects by filesystem mtime, and its watermark is shared.** OBS-13 and NIB2-68 were both closed on 2026-09-23 against `0ea91f3e` (which had landed 2026-09-08): `compile_sources.py` selects sources by **content hash against the tracked `wiki/source_manifest.json`**, never `st_mtime`, and `--touch` advances that tracked manifest. This removes the lane-worktree failure in which every file's mtime is the checkout time, so a lane scan reported the full-history backlog — measured at **919 phantom "new" sources on 2026-09-01 against a true delta of 2** — and a lane `--touch` would have written a watermark nobody else could see. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) OBS-13, NIB2-68)
 - **A landed fix whose box is never ticked reads as open work for three weeks.** Both boxes above described defects that had already been fixed; the closure on 2026-09-23 was bookkeeping, not engineering. The same session closed four other stale boxes (NI-IO, NIB2-81b, PAW-4, and the reaper item) the same way. The recurrence check in the operating constraints exists for exactly this: an item carried forward unchanged is evidence about the record, not about the work. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
-- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/internal-kb-rag.md) KB-WM-5)
-- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) PAW-4)
+- **KB-WM-5: one session file shared by every agent meant agents logged under each other's ids.** `scripts/utils/agent_log.sh`'s `AGENT_SESSION_FILE` put every writer's session id in the same `LOG_DIR` file, and `agent_session_end` deleted it for everyone. It is now sharded per `AGENT_ID` (`logs/.current_session.<id>`) with the legacy file left inert, plus a 4-test two-writer suite (epyc-root `c8dbb5d4`). Any audit trail spanning the fix boundary must treat pre-fix session attribution as unreliable when agents ran concurrently. ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md) KB-WM-5)
+- **PAW-4: a record corrected in two fields kept misleading from the third.** The intake-811 blocker entry had `contradicting_evidence` and `notes` corrected on 2026-09-17, but `recommended_actions` still carried the stale 2026-07-11 "closed cloud compiler + no downloadable dataset" clause until 2026-09-23. Partial correction of a structured record is a distinct failure mode from an uncorrected one: the entry looks reviewed. ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) PAW-4)
 - **A descriptor "drift" can be a spelling, not a change.** The K4 item declared `-ub 2048` (the effective value was already that) and recompiled the derived chain; the apparent descriptor drift turned out to be **symlink path spelling only**. Worth a check before treating a descriptor mismatch as a state divergence. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 
 ### Open questions
@@ -444,9 +476,9 @@ commit message.
 
 ### Source References (2026-09-23 evening wrap-up compile)
 
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
-- [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-4 record correction.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — OBS-13 and NIB2-68 closure notes against `0ea91f3e`.
+- [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md) — KB-WM-5 and the per-agent shard (epyc-root `c8dbb5d4`).
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-4 record correction.
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: stale boxes closed, K4, and what remains open.
 
 ## Compiled Update — 2026-09-23 (wrap-up compile): three producers already write belief rows, and nothing reads them yet
@@ -467,8 +499,8 @@ commit message.
   - **VB-ARCH-CPU-QUAL: the architect quality gate, CPU live-serving and GPU arms together.** Both forwarders embed producer-authored rows in the run's own `result.json` under one schema. SC32 wired the GPU side on 2026-08-26 and SSU-F2 wired the CPU side on 2026-09-23, but **neither has ever been ingested**. Two cautions are load-bearing:
     - `instrument_class` must reach the tuple. CPU arms are `serving` and GPU arms are an owned bench, and flattening them manufactures the cross-class comparison the constitution forbids.
     - Truncation must be projected next to accuracy. An accuracy alone read an 18.5-point cap artifact as an 8-point regression; see [benchmark-methodology](benchmark-methodology.md).
-- **SSU-F6 closed: the quality gate now records its own cap.** `promotion_gates.yaml gates.quality` records `max_tokens: 64` as what v9 and v10 actually ran. A nested `truncation_audit` sub-gate (`required: true`) carries the measured non-neutrality, the method, and the degeneracy caution. The required-gate set is verified unchanged, because the nesting keeps `package.sh`'s top-level enumeration from seeing a seventh gate. SSU-F7 (two recipe env knobs absent from `:8074`) was root-caused as SSU-F11: nothing reads `recipe.env` (see [inference-serving](inference-serving.md)). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md))
-- **If the Kuzu graph layer is revived, HelixDB joins the backend candidates.** It is Apache-2.0, a Rust graph+vector store on a slatedb LSM, listed beside maintained Kuzu forks. It runs in server mode, not embedded, which works against the locality rationale for Kuzu (intake-1496#record). ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-78c)
+- **SSU-F6 closed: the quality gate now records its own cap.** `promotion_gates.yaml gates.quality` records `max_tokens: 64` as what v9 and v10 actually ran. A nested `truncation_audit` sub-gate (`required: true`) carries the measured non-neutrality, the method, and the degeneracy caution. The required-gate set is verified unchanged, because the nesting keeps `package.sh`'s top-level enumeration from seeing a seventh gate. SSU-F7 (two recipe env knobs absent from `:8074`) was root-caused as SSU-F11: nothing reads `recipe.env` (see [inference-serving](inference-serving.md)). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline))
+- **If the Kuzu graph layer is revived, HelixDB joins the backend candidates.** It is Apache-2.0, a Rust graph+vector store on a slatedb LSM, listed beside maintained Kuzu forks. It runs in server mode, not embedded, which works against the locality rationale for Kuzu (intake-1496#record). ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-78c)
 
 ### Open questions
 
@@ -477,8 +509,8 @@ commit message.
 ### Source References (2026-09-23 wrap-up compile)
 
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-KVQ-V10, VB-VRAM-1, VB-ARCH-CPU-QUAL, SSU-F6, SSU-F7.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — SSU-F2 (the CPU forwarder), SSU-F11 (SSU-F7's root cause).
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-78c HelixDB note.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F2 (the CPU forwarder), SSU-F11 (SSU-F7's root cause).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-78c HelixDB note.
 
 ## Compiled Update — 2026-09-23: private-index committing protects your peers and rots the SHARED index — and the rot reads as mass deletions
 
@@ -546,8 +578,8 @@ sessions in one shared clone, and cleared.
 - In the reviewer gates and the AutoKernel rows, a row whose subject is gone was annotated
   **"[Subject deleted 2026-09-22]"** and left **unticked**. Unrunnable is not done. Model-agnostic
   rows were marked as carrying over
-  ([reviewer gates](../handoffs/active/glm52-reviewer-capability-gates.md),
-  [research loop](../handoffs/active/autokernel-research-loop.md)).
+  ([reviewer gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates),
+  [research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)).
 - **Belief kernel.** VB-GLM53-MTP produces no further records, and its completed evidence stays as
   history to project. **VB-DSV41** was filed to wire the `deepseek41` validation/serving producer at
   write time, **before DS41-T1**, the first measured run. It reuses the VB-GLM53-MTP carrier and adds
@@ -563,7 +595,7 @@ sessions in one shared clone, and cleared.
 - [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — translated gates and not-carried-over list
 - [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — closure banner
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — VB-DSV41
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — disposition gate 2
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — disposition gate 2
 
 ## Compiled Update — 2026-09-19: two write-side rows filed before their producers run — GUI fuzzy workflows and held-out AutoKernel confirmation
 
@@ -605,7 +637,7 @@ The harness-selection handoff had carried a candidate comparison for two months 
 
 ### Key findings
 
-- **A decision ✅ propagates to nothing by itself.** Every summary surface a reader trusts before reading the task list — candidates table, Status line, Objective, dependency graph, Reporting instructions — was still pre-decision. Refreshing them is part of recording the decision, not a follow-up. The same audit found two IDs each naming two tasks (`HS-5`, `HS-6`): the rule applied was **the archived, earlier-born row keeps the ID; the live later-born one is renamed** (`HS-5c`, `HS-15`), and the residual handoff lists every closed ID that no longer appears in it so the archive stays findable by ID. IDs are stable and never reused ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+- **A decision ✅ propagates to nothing by itself.** Every summary surface a reader trusts before reading the task list — candidates table, Status line, Objective, dependency graph, Reporting instructions — was still pre-decision. Refreshing them is part of recording the decision, not a follow-up. The same audit found two IDs each naming two tasks (`HS-5`, `HS-6`): the rule applied was **the archived, earlier-born row keeps the ID; the live later-born one is renamed** (`HS-5c`, `HS-15`), and the residual handoff lists every closed ID that no longer appears in it so the archive stays findable by ID. IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - **Split by kind of content, not by age — and write the destination table into the file that shrinks.** 468 → 153 lines by four moves, each with a stated *why*: the pre-decision candidate comparison (HS-1/HS-2 findings, 2026-07 intake updates, trainability and Stage-4 sections, closed seam defects HS-OD-1/2, 2026-09-14 intake rows) → `handoffs/archived/harness-selection-history-through-2026-09-16.md` (*closed, and written while the selection was still open — not a task list*); the two Harness Cards → `docs/reference/harness-candidates/harness-card.md` (*a consumer outside the handoff*: `HARNESS_RUN_POLICY.md` requires a run report to cite one); HS-7 re-targetability and HS-10 randomization → `harness-doctrine.md` (*standing criteria cited by the feature map and the improvement loop*); the HS-13 structured-output record → `docs/reference/v1-structured-output-capability.md` (*a kernel+seam capability cited by instruments unrelated to selection*); the HS-1g call-verb matrix → `client-surface-audit.md` (*the instrument and its results belong together*). The handoff keeps the decision record, the live task list and the P0–P5 gates.
 - **Open boxes move UP, not out.** Three live tasks (HS-5b freeze-before-tuning, HS-9 open-weight interpreter probe, HS-E1 harness-null-pool evidence) were embedded inside sections that were otherwise closed history. Archiving those sections wholesale would have taken open work dark; the boxes were lifted to top-level rows first, with a one-line pointer to their archived context.
 - **Conservation is checked line by line, and a moved file's relative links break in a predictable direction.** Every substantive line of the original was matched against the six destination files; the only 8 unmatched lines were boxes deliberately re-pointed because their "see below" targets had moved. A file moved from `handoffs/active/` down to `handoffs/archived/` inherits `](sibling.md)` links that now need `../active/` — 4 broken links, all of that shape. Run a relative-link pass over the whole touched set, not only the file edited last.
@@ -624,7 +656,7 @@ The harness-selection handoff had carried a candidate comparison for two months 
 ### Source References (2026-09-17 doc audit + restructure)
 
 - [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — audit findings, Part 2 destination table, conservation and link checks, operator decisions, the clone-reset procedure.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — the residual handoff: post-decision record, "History and promoted material" table, closed-ID list.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the residual handoff: post-decision record, "History and promoted material" table, closed-ID list.
 - [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [v1-structured-output-capability.md](../docs/reference/v1-structured-output-capability.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted material, each with its "Promoted 2026-09-17" provenance header.
 - [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — appended-correction shape.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — overturned absence claims, `#record` conversion, OP-43, write-side-first wiring.
@@ -707,7 +739,7 @@ sub-lane logs.
       (4402 lines).
   - **Follow-ups.** KB-WM-5 (`logs/.current_session` is shared by every agent) and KB-WM-6 (graph freshness
     is unchecked; the recommendation keeps it provenance-only, with a `--check` warning).
-  - [internal-kb-rag](../handoffs/active/internal-kb-rag.md)
+  - [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)
 - **OBS-12 is closed (root `afb9745c`).**
   - **Method.** `python3 -s` reproduces the interpreter left after a rebuild wipes `~/.local`.
   - **Silent config loss.** Under it, `compile_sources` silently ignored `wiki.yaml`, which dropped
@@ -717,7 +749,7 @@ sub-lane logs.
   - **Guard.** 18 cases, 16 of which fail before the fix.
   - **Follow-ups.** OBS-12a covers the CLAUDE.md bus commands, which need PyYAML through a `python3`
     shebang. OBS-12b (dangling `security-review-skill.md` links) was already fixed by the pass-2 compile.
-  - [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+  - [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ### Open questions
 
@@ -730,8 +762,8 @@ sub-lane logs.
 - [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md): OBS-12, KB-WM-3, VB-RUNNER-PATHS-2.
 - [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): the non-projection decision.
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): VB-AP53-RATE, SC83, SC87–89, VB-AK-LINEAGE, VB-RUNNER-PATHS-2/3.
-- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): KB-WM-3/5/6.
-- [non-inference-backlog](../handoffs/active/non-inference-backlog.md): OBS-12/12a/12b.
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): KB-WM-3/5/6.
+- [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md): OBS-12/12a/12b.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the landing audit and the `git cherry` rule.
 
 ## Compiled Update — 2026-09-17 (afternoon): a promotion is a claim only once its commit is seen
@@ -785,7 +817,7 @@ Four items from the belief-kernel and index planes. Two are the same shape one l
 - **SC83: the writer and the reader disagreed about what `stale` meant, and the reader voided the file.** The AP-53/SC83 writer listed **every** stale decoy under `stale`, including `needs_arbitration` decoys that `false_accept_rate` routes to `excluded_for_arbitration`; the reader's `stale <= unscored` check then rejected the file as inconsistent. The fix separates the populations: `stale` holds settled decoys only, a new `stale_excluded` holds the arbitration decoys, and the reader checks it against `excluded_for_arbitration`. Tests exist on both sides, the `fixture-r3` fixture comes from the real writer, and the reviewer's reproduction now projects. Orchestrator `e93edfdb`. The general pattern: **a structural invariant checked across two files needs both sides to share the field's definition, and a voided file is the loud-but-total failure mode.** ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **AP-53: the journal writer now refuses to write over a rewound history.** Before writing, `record_closed_windows` checks each emitted window's recorded journal prefix digests against the current shards — one hashing pass per shard, memoised by inode, with a size check first so in-place truncation is still caught. On a mismatch it renames the file to `*.rewound-<utc>`, logs a warning, and re-arms. Tests cover a rewind followed by a re-run window, and an in-place edit that keeps both size and inode. **Content digests, not mtimes, are what a writer of derived history must key on.** Same review, same commit. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
 - **A source-identity key is a global identifier, not a local name.** The key was renamed `mutation_ledger` → `rejected_mutation_ledger` because the BSV-3 tripwire (`test_mutation_ledger_tripwire.py`) greps tracked files for the whole identifier, and the committed file tripped it. Checks after the review fixes: orchestrator 897 passed across the new and adjacent suites; root `tests/vidya` 1305 passed, 80 skipped. ([sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md))
-- **The hub now serves a deployed read-only origin/main view, and the backlog graph renders readiness.** `:8100` serves `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`), which supersedes the stale lane the hub used to serve. The RTG-46 readiness rendering (blocked = hatch, `no_open` = faded, ready = solid, legend from the producer's `readiness_counts`) is deployed with it, which resolves the "hub deploy pending" open item; the rendered-lattice human verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/handoff-index-and-backlog-graph.md), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md))
+- **The hub now serves a deployed read-only origin/main view, and the backlog graph renders readiness.** `:8100` serves `/mnt/raid0/llm/views/epyc-root-main` (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`), which supersedes the stale lane the hub used to serve. The RTG-46 readiness rendering (blocked = hatch, `no_open` = faded, ready = solid, legend from the producer's `readiness_counts`) is deployed with it, which resolves the "hub deploy pending" open item; the rendered-lattice human verdict remains open. ([handoff-index-and-backlog-graph](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph), [sub-rtg46](../progress/2026-09/2026-09-16-sub-rtg46.md))
 - **Two write-side rows are filed for the belief kernel, and one closes.** SC85 (OCC-1 optical compression) is ticked: the writer/`validate_row` and the strict reader are on origin/main (root `1d5f5314`; research `2f053f61` + `e2c48c13`). VB-RUNNER-PATHS files a portability defect: `scripts/benchmark/review_f1/ev13b_run.py:197` hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")` — as does the unmerged PRB-T4 driver `prb_t4_tale_gpu.py` — and both swallow a capture failure into their log, so the runner must resolve the root from `EPYC_ROOT` (or refuse) and make a failed capture visible, and VB-PRB-T4 cannot close until that driver merges. VB-AP-PROMO-RULE files the projection of `eval_details.promotion_rule` and `eval_details.frontier_admission` into the support frame once the gate-frontier branch is on main — additive, no grade change. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
 - **Citation precision has a fix, a residual and a collision.** The bare run-form citing entries 882–883 (now `intake-882#record`/`intake-883#record`) in `agent-collab-rnd-harness.md` was a provenance note; rewriting it to `#record` for 882–885 turned `cite-check` from exit 3 (an overturned `clm_intake_883_03`) to exit 0 against a fresh ledger — the stale `/workspace/.vidya` ledger does not show the overturn, so a stale ledger under-reports. Separately, `SC76` is allocated twice in `vidya-belief-substrate-program.md` (VB-VGPR-STATIC and the 2026-09-15 wave heading); and the HEAD-4 35B max-perf figures were recomputed from raw JSON, matched, and a README arithmetic error corrected ("+28% from 8 to 12" → +10.45%; +28.05% is the 4→8 step). ([sub-misc](../progress/2026-09/2026-09-16-sub-misc.md))
 
@@ -799,7 +831,7 @@ Four items from the belief-kernel and index planes. Two are the same shape one l
 
 - [2026-09-16-sub-vb-writers.md](../progress/2026-09/2026-09-16-sub-vb-writers.md): the SC83 stale/arbitration split, the AP-53 prefix-digest rewind guard, and the identifier rename.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): SC85 closure, VB-RUNNER-PATHS and VB-AP-PROMO-RULE.
-- [handoff-index-and-backlog-graph.md](../handoffs/active/handoff-index-and-backlog-graph.md): the hub view deployment and the readiness rendering.
+- [handoff-index-and-backlog-graph.md](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph): the hub view deployment and the readiness rendering.
 - [2026-09-16-sub-rtg46.md](../progress/2026-09/2026-09-16-sub-rtg46.md): the readiness deployment record.
 - [2026-09-16-sub-misc.md](../progress/2026-09/2026-09-16-sub-misc.md): the citation-precision fix, the SC76 collision, and the HEAD-4 recompute.
 
@@ -923,13 +955,13 @@ index.
   never showed. Tests: 97/97 across five suites. **This supersedes** the 2026-08 recommendation
   lower on this page (fall back to the tracked manifest when `.last_compile` is absent and emit a
   `last_compile_source` field): that helper is deleted, not extended
-  ([internal-kb-rag](../handoffs/active/internal-kb-rag.md),
+  ([internal-kb-rag](../handoffs/active/knowledge-pipelines.md),
   [sub-kbwm4](../progress/2026-09/2026-09-16-sub-kbwm4.md)).
 - **OP-34 scoped `--touch`** (root `7cfc4846`, merged by `719ac638`). `--touch SCOPE` advances only
   the in-scope manifest entries and records `last_touch`. Out-of-scope deltas stay visible, and a
   scope that matches nothing exits 1. Bare `--touch` behaves as before. Both touches refuse to run
   without a tracked baseline ([sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md),
-  [internal-kb-rag](../handoffs/active/internal-kb-rag.md)).
+  [internal-kb-rag](../handoffs/active/knowledge-pipelines.md)).
 - **Evidence plane W3: segment snapshots are chained, and two fail-open defects are closed**
   (orchestrator `b7a61c02` + `06cf82dc`, merged `753343f5`). The fixes:
   - Prefix replay counted tail-only supersessions, which produced false `archive_prefix_drift`.
@@ -939,7 +971,7 @@ index.
   The live snapshot through trial 1458 is correctly `prefix_invalidated`: its terminalizer payload
   is not a pure fold, so startup stays on full replay. The live chain verifies `ok` (7 events). The
   first automatic segment snapshot lands at the 1999 → 2000 rollover
-  ([evidence plane](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md)).
+  ([evidence plane](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative)).
 
 ### Open questions
 
@@ -955,8 +987,8 @@ index.
 
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC75/VB-WIRE status, VB-GPU-PREP, the PRB-T4 caveat, VB-EVCONF2, VB-MHS, SC82–SC86, VB-NIAH-E1A
 - [vidya-pilot-spec](../docs/design/vidya-pilot-spec.md): one corroboration citation made precise (intake-1300#02)
-- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): the KB-WM-1/2/4 closures, H2, C7
-- [evidence-plane-event-sourcing-and-narrative](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md): W3 segment chaining and the scope fixes
+- [internal-kb-rag](../handoffs/active/knowledge-pipelines.md): the KB-WM-1/2/4 closures, H2, C7
+- [evidence-plane-event-sourcing-and-narrative](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative): W3 segment chaining and the scope fixes
 - [2026-09-16-sub-vidya-wire](../progress/2026-09/2026-09-16-sub-vidya-wire.md): the ingest dispatcher, dry-run counts, the SC renumbering, the prepared intake-1323 amendment
 - [2026-09-16-sub-own](../progress/2026-09/2026-09-16-sub-own.md): the MHS-5 correction as applied, the mis-anchor root cause, the VB-WIRE-2 harness promotion
 - [2026-09-16-sub-vb-writers](../progress/2026-09/2026-09-16-sub-vb-writers.md): the AP-53 and SC83 durable writers and the backfill decision
@@ -986,7 +1018,7 @@ program); **verified** for the publication gates (frontier-f6 upstream publicati
 ### Source References (2026-09-15)
 
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — the carrier contract, the write-side rule, the citation gate, and the mutation audit.
-- [frontier-f6-upstream-publication.md](../handoffs/active/frontier-f6-upstream-publication.md) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
+- [frontier-f6-upstream-publication.md](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the claim-grammar publication gate, the review overlay, and the social-conversation ledger (W5).
 - [docs/publication/social/README.md](../docs/publication/social/README.md) — the append-only social conversation ledger schema and gates.
 
 ## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
@@ -1043,7 +1075,7 @@ write side and read side now agree on one tracked artifact.
 
 ### Source References (2026-09-08 watermark closure)
 
-- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-68 (the
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68 (the
   2026-09-07 addendum: the 942 shared-clone measurement and the withheld `--touch`) and OBS-13
   (both instrument halves) with the `0ea91f3e` closure text.
 - [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the NIB2-68/OBS-13 landing
@@ -1135,7 +1167,7 @@ the frontier is the SC73 post-fix live-ledger smoke (`5d7f14be`).
 
 ### Source References (2026-09-08 index graph)
 
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) —
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
   the INF-06/INF-64 cycle record, the `dep_cycles()` gate, the ready/blocked/no_open derivation
   row with its measured baseline and its regeneration lesson.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
@@ -1225,7 +1257,7 @@ reclaimed in scope. Source: [`progress/2026-08/2026-08-23-disk-reclaim.md`](../p
 - [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the OBS-12
   sweep, the NIB2-60..63 verification record, and the EVL/pointer retirement batch.
 - [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md) — census, per-path changes, preserved set, deferred options.
-- [`handoffs/active/non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — the NIB2-60..67 rows with their tick/verification state.
+- [`handoffs/active/engineering-hygiene-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — the NIB2-60..67 rows with their tick/verification state.
 
 ## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
 
@@ -1246,9 +1278,9 @@ witnesses still exist.
 ### Source References (2026-08-20 DFlash2 claim carrier)
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
-- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — immutable DF2-4 evidence and DF2-5 measurement plan.
+- [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — immutable DF2-4 evidence and DF2-5 measurement plan.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — runtime-campaign receipt chain and no-source-champion authority.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — runtime-campaign receipt chain and no-source-champion authority.
 
 ## Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
 
@@ -1311,7 +1343,7 @@ amount of code provenance.
 
 ### Source References (2026-08-18 KB integrity)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the wrap-up findings: the 151-link rot mechanism, pass 7 with its five mutations, the `repos/`
   repair, and the split-identity pass with its one material case.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
@@ -1469,7 +1501,7 @@ routed to `retired_from_public_claims`. Three transferable design choices:
   projection contract and the dependency-evidence boundary the SC39 call extends
 - [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
   one-ladder-per-class invariant, read for this compile
-- [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md)
+- [`handoffs/active/rocm-kernel-authoring.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication)
   W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
 - [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
   §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
@@ -1492,7 +1524,7 @@ one observation payload. SC19 stays open until that shape emits and round-trips 
 
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
   producer state, locator trap, and first-tuple closure condition.
-- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — local
+- [`shape-keyed-contention-gating.md`](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating) — local
   GateDecision echo landing.
 - [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
   [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — producer
@@ -1658,7 +1690,7 @@ A stalled 129-entry citation-correction backlog looked intractable only because 
 - [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110#record superseded-claim correction (commit `a48e04ba`). *(Narrowed from a bare `intake-110` on 2026-08-12: this line discusses the record, it does not rely on the entry's claims, and the bare form inherits every defect of every claim in the entry — which is how it surfaced as `conflicted` once the correction queue drained.)*
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
-Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
+Per [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
 
 **Reused plumbing from `colbert-reranker-web-research.md`**: GTE-ModernColBERT-v1 ONNX model (already on disk at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`), `onnxruntime` in the orchestrator venv, MaxSim + per-token 128-dim embeddings, EPYC latency measured 180 ms / 10-snippet rerank. The K1 task extracts the encode/MaxSim layer into a shared module that both web_research reranking and internal-KB RAG import — only indexer + storage + query-CLI differ. Sibling cross-references coordinate with `colbert-reranker-web-research.md` S5.
 
@@ -1693,18 +1725,18 @@ The `research-intake` skill is the upstream complement — it ingests new papers
 
 ### Dashboard brief hygiene (2026-07-08)
 
-- **Optimization-brief churn now distinguishes three classes instead of collapsing them into one noisy “ruled out” bucket.** The dashboard brief keeps live critic fences in the main ruled-out list, but it now separates journal-derived malformed-proposal churn from exogenous `bug_corrupted_by` trial rows and surfaces stale critic fences in a dedicated bucket when the rejected signature later appears on a corrupted trial. That preserves the active rejection ledger while preventing crash/reload noise from masquerading as planner health. Sources: [`scripts/autopilot/optimization_brief.py`](../epyc-orchestrator/scripts/autopilot/optimization_brief.py), [`src/api/routes/dashboard.html`](../epyc-orchestrator/src/api/routes/dashboard.html), [`loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [`progress 2026-07-08`](../progress/2026-07/2026-07-08.md).
+- **Optimization-brief churn now distinguishes three classes instead of collapsing them into one noisy “ruled out” bucket.** The dashboard brief keeps live critic fences in the main ruled-out list, but it now separates journal-derived malformed-proposal churn from exogenous `bug_corrupted_by` trial rows and surfaces stale critic fences in a dedicated bucket when the rejected signature later appears on a corrupted trial. That preserves the active rejection ledger while preventing crash/reload noise from masquerading as planner health. Sources: [`scripts/autopilot/optimization_brief.py`](../epyc-orchestrator/scripts/autopilot/optimization_brief.py), [`src/api/routes/dashboard.html`](../epyc-orchestrator/src/api/routes/dashboard.html), [`loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [`progress 2026-07-08`](../progress/2026-07/2026-07-08.md).
 
 ### Append-Only Evidence Freshness (2026-07-08)
 
-The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 This is the same producer/consumer discipline the wiki already uses: operational logs and handoffs stay primary, compiled pages remain derived, and stale-but-useful history is kept readable without letting it re-enter the active decision path.
 
 **2026-10-28 delta (workspace-58 overnight wrap, verified against the cited sources):**
 - **A CLI flag in the wrong position can silently write to the canonical ledger.** `--ledger` placed after the `cli.py ingest` subcommand was ignored; the write went to the canonical ledger and left EVL-47 `fd-div-1b-c5-asan-t1-repair` as duplicate frames (seq 38575-38577 and 38578-38580). Two follow-ups are filed: a supersede record and a guard that refuses a misplaced `--ledger` ([Vidya program](../handoffs/active/vidya-belief-substrate-program.md)).
-- **Source enrollment is not wiring.** Prospective M4 vision, worker and CPU calibration sources and the role-paired GPU quality source were enrolled 2026-10-28 with `[no-belief: prospective source enrollment only]`; each still has an open strict-reader/projection write task (VB-M4-CPU-VISION-CAL-WRITE, VB-M4-CPU-WORKER-CAL-WRITE, VB-M4-CPU-CAL-WRITE, VB-M4-GPU-QUALITY-WRITE, VB-M4-FOLD-TOPOLOGY-CANARY) and no planner-context canary ([refactor campaign](../handoffs/active/refactoring-multirepo-2026-10.md)).
-- **Incidents are disclosed without an invented impact claim.** Ungranted-interpreter incidents (scratch rewrite of `hil15b2_make_tasks.py` ~06:33:35Z, `sp2_finalize.py` mtime 07:05:19Z) are recorded with impact unmeasured; the shared-venv mutation (M4 `scope.sh` `uv run` editable reinstall at 01:54:57Z, which killed HIL15 s1) is attributed to the authorized scope helper by `command.log` ([non-inference backlog](../handoffs/active/non-inference-backlog.md)).
+- **Source enrollment is not wiring.** Prospective M4 vision, worker and CPU calibration sources and the role-paired GPU quality source were enrolled 2026-10-28 with `[no-belief: prospective source enrollment only]`; each still has an open strict-reader/projection write task (VB-M4-CPU-VISION-CAL-WRITE, VB-M4-CPU-WORKER-CAL-WRITE, VB-M4-CPU-CAL-WRITE, VB-M4-GPU-QUALITY-WRITE, VB-M4-FOLD-TOPOLOGY-CANARY) and no planner-context canary ([refactor campaign](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10)).
+- **Incidents are disclosed without an invented impact claim.** Ungranted-interpreter incidents (scratch rewrite of `hil15b2_make_tasks.py` ~06:33:35Z, `sp2_finalize.py` mtime 07:05:19Z) are recorded with impact unmeasured; the shared-venv mutation (M4 `scope.sh` `uv run` editable reinstall at 01:54:57Z, which killed HIL15 s1) is attributed to the authorized scope helper by `command.log` ([non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)).
 - **Custody beats byte-identity.** Three `native/read-038.bin` files (1,350,221,880 bytes, identical SHA-256 `64218c27...dde584`) show identical content, not interchangeable provenance; all three originals stay until custody and references resolve. No audited checkout passed both a clean test and ancestry against a possibly stale local `origin/main` ([scratch audit](../docs/drafts/scratch-reclaim-audit-20261027.md)).
 - **Reclaim is trash-first and staged, not freed.** The candidate `reclaim_filler_scratch.py` requires explicit raw patterns per scratch row, rejects directory-wide KEEP, and reports allocated GB selected, not space freed (same-filesystem staging frees nothing); the same-day trash wording is a human-only draft and the seven-day hold stays in force ([owner packet](../docs/drafts/scratch-reclaim-owner-instructions.md), [ratification draft](../docs/drafts/same-day-trash-ratification-DRAFT.md), [prep progress](../progress/2026-10/2026-10-27-scratch-reclaim-prep.md)).
 - **Registration sweep v1 is read-only and unadopted.** `registration_sweep.py` binds catalog records by content hash (not signed authentication), refuses symlinks/FIFOs/duplicate JSON keys, and keeps `owner_adopted` and `all_producers_bound` false ([registration-sweep-v1](../docs/reference/non-inference/registration-sweep-v1.md)).
@@ -1723,7 +1755,7 @@ The four conventions deliberately **rejected as already-covered** (confidence: v
 
 Three active stubs extend the knowledge-management surface beyond retrieval: AutoWiki-style incremental KB generation, repo-readiness scoring, and security-review skill design. The shared pattern is that these are governance tools first: they should emit reviewable artifacts and explicit contracts before they become autonomous writers over handoffs, wiki pages, or code. For wiki/RAG work specifically, this preserves the current source-of-truth layering: intake and handoffs remain primary records, wiki pages are compiled derivatives, and readiness/security outputs are evidence attached to the relevant handoff rather than hidden state.
 
-Sources: [autowiki-incremental-kb-generator.md](../handoffs/completed/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [security-review-skill.md](../handoffs/completed/security-review-skill.md).
+Sources: [autowiki-incremental-kb-generator.md](../handoffs/completed/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer), [security-review-skill.md](../handoffs/completed/security-review-skill.md).
 ## Active-handoff hygiene rule (2026-05-27)
 
 The 2026-05-27 backlog hygiene pass formalized a governance rule that matters for KB integrity: **active indices are for outstanding work only**. Completed work should be archived to `handoffs/completed/` at wrap-up cadence, and index cells should be trimmed to live TODOs rather than accumulating chronology. That keeps `handoffs/active/` queryable as an action surface instead of a mixed historical dump, and it reduces drift between active indices, wrap-up reports, and compiled wiki pages.
@@ -1757,24 +1789,24 @@ K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query p
 
 The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The certification sweep is complete: 420 rows passed artifact checks, `recency_w0.3_s90` was the zero-miss candidate with recall@10 `0.6167`, and `recency_w0.1_s90_rerank_w0.3` had the best aggregate recall@10 `0.6298` while missing three all-evidence cases. Use the zero-miss candidate for safety-sensitive retrieval defaults unless a later certification explicitly trades that property away.
 
-Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 ## Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)
 
 KB-RAG is no longer pre-deployment: K1–K7 are **CERTIFIED 2026-06-13** and shipped under `epyc-orchestrator/src/retrieval/` (additive `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py`), plus a query CLI, the `post_commit_kb_rag_update.sh` hook, the `kb-search` Skill (the production Explore-subagent integration path — the MCP-tool variant was never needed), and unit tests. Beyond the certified single-pass MaxSim retrieval (with K9 cross-encoder rerank and K10 Gaussian recency as measured-but-conditional blends, and K11 FTS5 lexical landed default-off, measure-first), there is one **parked retrieval-policy idea** worth tracking so it is not re-discovered: a **self-correcting two-pass retrieval** pattern (from agent-oss, intake-610) — when a downstream consumer signals "evidence incomplete," emit gap-queries and re-retrieve at a lower MaxSim threshold before answering. It stays deferred behind a prerequisite that does not exist yet: a consumer (Explore subagent / orchestrator) that actually emits the incompleteness signal.
 
 A 2026-06-20 research intake added a **second independent instance** of that same family: **MRAgent** ([intake-698], "Memory is Reconstructed, Not Retrieved," arXiv:2606.06036) uses a Cue-Tag-Content associative graph with active reconstruction — LLM reasoning interleaved with retrieval, iteratively exploring the graph and *pruning* retrieval paths on intermediate evidence rather than fetching a flat top-k. It approaches the same evidence-conditioned problem from the pruning side, where agent-oss approaches it from the re-retrieval side. It is logged as a **comparative datapoint against the parked note, not a new workstream** — same deferral, no new K-track, no plan delta. Its numbers are observations, not decision-gating: token cost ~118k vs 245k–3.3M for baselines (the genuinely transferable idea, given our token-budget constraints, is the *token-cost discipline* of evidence-pruned traversal), but it is cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with no CPU/local results and it **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)** — so the accuracy headline does not carry. Explicitly NOT routed to `delta-mem-reproduction` (whose open gates are GPU-bound accuracy reproduction, not retrieval token-cost).
 
-Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 ## Governance Tooling Update (2026-06-13)
 
 The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
 
-Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
+Source: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer).
 ## 2026-06-19 Update — K7 Certified, Wiki Compile Refreshed
 
-- **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+- **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/knowledge-pipelines.md).
 - **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
-- **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
+- **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer).
 ## 2026-06-20 Update — OKF Conventions Adopted, KB-RAG Consumer Certified
 
 - **OKF validates our hand-built KB shape as convergent, not idiosyncratic.** An external vendor-neutral spec (OKF v0.1) independently arrives at markdown+frontmatter knowledge atoms, file-path-as-identity, a markdown-link graph, a progressive-disclosure index, and change history — 5 of its 6 conventions were already present in our KB. The finding is design-risk reduction, not a migration mandate. Source: [intake-710], [intake-711].
@@ -1784,9 +1816,9 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - **Self-hosted constraint governs OKF adoption.** OKF's reference enrichment agent and Knowledge Catalog ingest are BigQuery/cloud-coupled, so the verdict is `adopt_patterns` (conventions) not `adopt_component` (tooling) — the schema is portable, the implementation is not. Source: [intake-710], [intake-711].
 ## 2026-06-22 Update — Continuity Backup, Single-Source Stack Governance, Repo-Readiness Scorecard
 
-- **F4 continuity-backup exposed an unresolved existential single-point-of-failure: the entire working set is on one RAID0 device with no off-array copy yet.** Inventory + tiered policy (T0/T1/T2 `MANIFEST.yaml`) and a git-state alerting hook landed; `backup_critical.sh` refuses same-device and overlayfs targets; restore tooling (`verify_restore.sh`, `check_latest_backup.sh`) landed 2026-06-21. But both `/workspace` and `/mnt/raid0/llm` sit on `/dev/md127` (RAID0 striping, no redundancy), and no real off-host/off-array backup has been created and no snapshot restore has been validated. The existential risk stands until an off-array target is approved. Source: [frontier-f4-continuity-backup.md](../handoffs/active/frontier-f4-continuity-backup.md).
-- **Live model/role/serving facts now flow from a single generated source, enforced by stack-change guards across 13 consumer surfaces (27 rules).** Generated model descriptors, stack priors, and operator summaries are authoritative; runtime attestation, q_scorer priors, production launch, AutoPilot preflight, and direct benchmark runtime all gate on them. High-risk consumer migrations completed (admission slot limits, benchmark seeding topology, `/v1/models` ordering, vision-serving role set, WorkerPool primary-port binding, chat-routing fallback candidates, escalation-prewarm endpoint resolution, `launch_maps` auxiliary-role tail). The standardized pipeline is finalized: `stack_change_pipeline.py check --run-promotion-gate` is the canonical command (174 tests pass), guard baseline clean, all surfaces ownership-labeled, no active waivers, W4 swap-CI covers frontdoor/worker/vision/long-context-ingest swaps. Both pipelines are inference-free governance and require no live model runs. Sources: [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md).
-- **A deterministic repo-readiness maturity scorecard (5 levels, 9 pillars, 45 criteria; adapted from Factory.ai) is deployed advisory-only; the portfolio sits at Level 2 (Documented).** epyc-root is Level 4 (Optimized, 77.8% toward L5); epyc-orchestrator/inference-research/llama are Level 2 (next gate L3, 33-56% coverage). Lowest portfolio criteria: L3 security-automation and standard-dev-env (25% coverage), L4 generated-docs/health-automation, L5 auto-eval-gates/self-optimizing-loop. The 49-item remediation queue (13 P0 blockers) is advisory — items require normal handoff ownership and GitNexus impact gates. A passive AutoPilot pickup JSON (2026-06-21, `mode=advisory_only`, `authority_gate=false`) feeds planning context only; the scorer stays deterministic with no LLM judgment per `feedback_observe_before_diagnosing`. Sources: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [progress repo-readiness-2026-06-21](../progress/2026-06/repo-readiness-2026-06-21.md), [progress repo-readiness-remediation-2026-06-21](../progress/2026-06/repo-readiness-remediation-2026-06-21.md).
+- **F4 continuity-backup exposed an unresolved existential single-point-of-failure: the entire working set is on one RAID0 device with no off-array copy yet.** Inventory + tiered policy (T0/T1/T2 `MANIFEST.yaml`) and a git-state alerting hook landed; `backup_critical.sh` refuses same-device and overlayfs targets; restore tooling (`verify_restore.sh`, `check_latest_backup.sh`) landed 2026-06-21. But both `/workspace` and `/mnt/raid0/llm` sit on `/dev/md127` (RAID0 striping, no redundancy), and no real off-host/off-array backup has been created and no snapshot restore has been validated. The existential risk stands until an off-array target is approved. Source: [frontier-f4-continuity-backup.md](../handoffs/active/engineering-hygiene-backlog.md#track-frontier-f4-continuity-backup).
+- **Live model/role/serving facts now flow from a single generated source, enforced by stack-change guards across 13 consumer surfaces (27 rules).** Generated model descriptors, stack priors, and operator summaries are authoritative; runtime attestation, q_scorer priors, production launch, AutoPilot preflight, and direct benchmark runtime all gate on them. High-risk consumer migrations completed (admission slot limits, benchmark seeding topology, `/v1/models` ordering, vision-serving role set, WorkerPool primary-port binding, chat-routing fallback candidates, escalation-prewarm endpoint resolution, `launch_maps` auxiliary-role tail). The standardized pipeline is finalized: `stack_change_pipeline.py check --run-promotion-gate` is the canonical command (174 tests pass), guard baseline clean, all surfaces ownership-labeled, no active waivers, W4 swap-CI covers frontdoor/worker/vision/long-context-ingest swaps. Both pipelines are inference-free governance and require no live model runs. Sources: [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization).
+- **A deterministic repo-readiness maturity scorecard (5 levels, 9 pillars, 45 criteria; adapted from Factory.ai) is deployed advisory-only; the portfolio sits at Level 2 (Documented).** epyc-root is Level 4 (Optimized, 77.8% toward L5); epyc-orchestrator/inference-research/llama are Level 2 (next gate L3, 33-56% coverage). Lowest portfolio criteria: L3 security-automation and standard-dev-env (25% coverage), L4 generated-docs/health-automation, L5 auto-eval-gates/self-optimizing-loop. The 49-item remediation queue (13 P0 blockers) is advisory — items require normal handoff ownership and GitNexus impact gates. A passive AutoPilot pickup JSON (2026-06-21, `mode=advisory_only`, `authority_gate=false`) feeds planning context only; the scorer stays deterministic with no LLM judgment per `feedback_observe_before_diagnosing`. Sources: [repo-readiness-scorer.md](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer), [progress repo-readiness-2026-06-21](../progress/2026-06/repo-readiness-2026-06-21.md), [progress repo-readiness-remediation-2026-06-21](../progress/2026-06/repo-readiness-remediation-2026-06-21.md).
 ## 2026-07-02 Update — Two-Batch Research Intake, Clean-Window Compile Rule, Dedup Discipline
 
 Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `research/intake_index.yaml` past **772 entries** (intake-732…772). Both closed clean under `validate_intake.py` (exit 0). The sessions are knowledge-management-relevant less for their model content than for the intake→distill→compile governance discipline they exercised, which is the upstream feeder of this wiki.
@@ -1819,9 +1851,9 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - [Routing Intelligence](routing-intelligence.md) — KB-RAG integration into Explore-agent routing (K6 work item)
 ## Source References
 
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
-- [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
-- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
+- [`sliders-local-validation.md`](../handoffs/active/knowledge-pipelines.md#track-sliders-local-validation) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
+- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
 - [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision plus later N11/N11a active/archive compaction after completed chronology started burying next actions
@@ -1856,7 +1888,7 @@ Source files keep their existing writers; the new layer at `epyc-orchestrator/sr
 
 **Live ingest (2026-05-06)**: 3477 events ingested (2214 agent_audit + 1260 progress + 3 autopilot source_unavailable markers) in <1s; idempotent re-ingest skipped 3477/3477. CLI: `python -m src.trace.cli {ingest,query,stats}` with date-range, session_id, trial_id, role, category, status, source filters + FTS5 text search.
 
-Sources: [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md), `epyc-orchestrator/src/trace/`.
+Sources: [`handoffs/active/memory-program.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service), `epyc-orchestrator/src/trace/`.
 ## Autopilot dashboard data-source rule (2026-05-28)
 
 The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state-cache-backed. The append-only `orchestration/autopilot_journal.jsonl` is the durable per-trial source that remains useful when autopilot is stopped; `autopilot_state.json` is operational state and can contain a stale `pareto_archive` cache if a writer path saves an older in-memory state after the archive write. The dashboard now reconstructs the current-session frontier and hypervolume from journal rows at or after `autopilot_fleet_started_at`, filters `bug_corrupted_by` rows, and falls back to `autopilot_state.json` only when journal data is unavailable.
@@ -1868,12 +1900,12 @@ Operationally, apparent Pareto plot staleness should be diagnosed by checking th
 
 The append-only journal remains the archive authority even before an archive-bearing trial exists. Empty-journal lifecycle saves should persist ordinary operational state directly and must not recreate a legacy `pareto_archive` cache through `archive.save(state)`. Compatibility save APIs can remain for explicit state-payload tests/tools, but the live AutoPilot save path should not use them as a fallback when the journal fold is unavailable.
 
-Operationally, if a fresh or reset AutoPilot lifecycle save lacks archive-bearing journal rows, treat the missing fold as a reason to skip archive cache writes, not as permission to rehydrate state-cache authority. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 archive-save fallback retirement`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+Operationally, if a fresh or reset AutoPilot lifecycle save lacks archive-bearing journal rows, treat the missing fold as a reason to skip archive cache writes, not as permission to rehydrate state-cache authority. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 archive-save fallback retirement`) and [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative).
 ## Append-only scrub hygiene (2026-06-19)
 
 Evidence-plane correction tools must fail closed if they would rewrite live history or derived memory stores. The retired gate-lock narrative scrubber is the concrete example: an older one-shot script could rewrite `autopilot_journal.jsonl`, generated STM, StrategyStore rows, FTS, and FAISS mirrors in place. It now exits with operator guidance to append supersession events via `scrub_journal.py` and validate with `archive_authority_report.py --strict`.
 
-The durable rule is to keep the journal as the append-only source, express retroactive corrections as policy-versioned events, and regenerate or fold read views instead of editing mirrors directly. That rule also applies to compatibility paths: if a caller supplies a journal or explicit excluded-trial set, StrategyStore promotion helpers must require the journal-aware selector API rather than falling back to raw SQL. Frontier strategy memory follows the same pattern: AutoPilot should append the trial `JournalEntry` first, then project StrategyStore rows from that persisted row with deterministic journal-keyed IDs, so retry/restart projection cannot create duplicates or get ahead of the ledger. The follow-up audit/sync path compares those deterministic rows against the folded journal, inserts only missing safe projections, and fails closed before future writes unless semantic embeddings are available or hash fallback is explicitly allowed. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 W2 gate-lock scrubber retirement`, `A8 W6 legacy strategy quarantine fallback hardening`, `A8 W1/W6 journal-keyed frontier strategy projection`, `A8 W1/W6 strategy projection audit and sync`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+The durable rule is to keep the journal as the append-only source, express retroactive corrections as policy-versioned events, and regenerate or fold read views instead of editing mirrors directly. That rule also applies to compatibility paths: if a caller supplies a journal or explicit excluded-trial set, StrategyStore promotion helpers must require the journal-aware selector API rather than falling back to raw SQL. Frontier strategy memory follows the same pattern: AutoPilot should append the trial `JournalEntry` first, then project StrategyStore rows from that persisted row with deterministic journal-keyed IDs, so retry/restart projection cannot create duplicates or get ahead of the ledger. The follow-up audit/sync path compares those deterministic rows against the folded journal, inserts only missing safe projections, and fails closed before future writes unless semantic embeddings are available or hash fallback is explicitly allowed. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 W2 gate-lock scrubber retirement`, `A8 W6 legacy strategy quarantine fallback hardening`, `A8 W1/W6 journal-keyed frontier strategy projection`, `A8 W1/W6 strategy projection audit and sync`) and [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md#track-evidence-plane-event-sourcing-and-narrative).
 ## Evidence-plane handoff compaction (2026-06-19)
 
 The active evidence-plane ledger was compacted after W4/W7 implementation history began obscuring the live dispatch gate. Completed W1-W7 chronology now lives in [`handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md`](../handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md), while the active handoff starts with the current readiness blocker: `57/120` trusted vectors and `5/30` seq shadow rows. This is the intended wrap-up pattern for large active handoffs: keep the active file as the next-action surface and move validated chronology to a dated sibling.
@@ -1930,7 +1962,7 @@ dive-verified against primary source. **Corollary**: "absent from an index page"
 nonexistence — two sources reported unlocatable both return HTTP 200 (one unlinked from its own
 blog index; one where the sweep queried the benchmark's site rather than the publisher's).
 
-_Sources: `handoffs/active/intake-derived-work-2026-07-25.md` ID-10/10b/10c;
+_Sources: `handoffs/active/frontier-lab-automation.md` ID-10/10b/10c;
 `research/intake_index.yaml` (dive_corrections fields); `progress/2026-07/2026-07-25.md`._
 ## Research-intake protocol: four stages, and why (2026-07-25)
 
@@ -2014,8 +2046,8 @@ mis-scoping live work:
 The generalized rule — never assert "absent" or "identical" from one encoding,
 one key, or one file listing — is the same one that governs architecture
 verification: read the artifact that would have to contain the thing.
-[`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) §Open Question 1 (corrected);
-[`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) §2026-07-29 corrections
+[`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) §Open Question 1 (corrected);
+[`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### Verify architecture from the weight map, not the declaration
 
@@ -2023,7 +2055,7 @@ A config-level check reports a model's draft head "preserved" while the model
 ships **zero** such tensors. Any architecture claim about a fine-tune must be
 settled against `model.safetensors.index.json` or GGUF tensor counts. Full rule
 and evidence: [Speculative Decoding](speculative-decoding.md).
-[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) §2026-07-29 Stage-4
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) §2026-07-29 Stage-4
 
 ### Two intake-pipeline failure modes with named remedies
 
@@ -2047,7 +2079,7 @@ and evidence: [Speculative Decoding](speculative-decoding.md).
 Two distinct hazards surfaced in one batch. First, a paper from the same week
 carries a **near-identical title** to one of the anchors, so anyone re-fetching
 by title lands on the wrong document — cite the arXiv ID.
-[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §Dedup hazard.
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §Dedup hazard.
 Second, a handoff *and* its deep dive both cite an intake ID as their subject's
 entry, and that ID belongs to an entirely different entry; **no row for the
 actual subject exists at all**. A citation that resolves to *something* is not a
@@ -2112,17 +2144,17 @@ post-approval round, so the rest of the plan was authored without their findings
   must flip a checkbox, not narrate.
 
 [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Note on attribution;
-[`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) §2a-iv
+[`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) §2a-iv
 
 ### Source References
 
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — batch outcome (24 entries, 19 dives, 9 overturned), the per-entry overturn table, records corrected, the skill amendment, and the attribution note
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the five-month-stale capability assertion and its live mis-scoping effect
-- [`ernie-image-turbo-evaluation.md`](../handoffs/active/ernie-image-turbo-evaluation.md) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the five-month-stale capability assertion and its live mis-scoping effect
+- [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) — struck "stale backend" premise; the cross-reference defect and its 2026-07-29 resolution (`intake-937`, 4 of the 6 repoints, 3 needing rewording rather than an ID swap)
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the other 2 repoints; a pre-deployment assessment whose premises production later falsified
-- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
-- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — prose-to-checkbox conversion during the same pass
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — weight-map-over-config verification rule
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — near-identical-title dedup hazard; cite by arXiv ID
+- [`scoring-infra-standardization.md`](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) — prose-to-checkbox conversion during the same pass
 ## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled; the index defect and its repair were measured directly against `research/intake_index.yaml` before and after migration on 2026-08-09.
@@ -2131,7 +2163,7 @@ post-approval round, so the rest of the plan was authored without their findings
 
 - **The generalizable failure is that a broken graph does not announce itself — it produces plausible, wrong rankings.** Repair reordered the most-cited list substantially (one entry moved 12 → 27 inbound and became the index's most-cited; another moved 3 → 17; **239 entries gained edges**). A backfill population that had been *scoped by inbound-citation count* was therefore measuring the wrong set and had to be recomputed against the repaired graph. **Any selection rule computed over a reference graph inherits that graph's defects silently**, which is the same class of error as gating on a metric whose scope does not match the measured subset. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [progress 2026-08-09](../progress/2026-08/2026-08-09.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md).
 
-- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
+- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
 
 - **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
 ## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
@@ -2151,7 +2183,7 @@ post-approval round, so the rest of the plan was authored without their findings
   the proposal shrank from "EPYC lacks a substrate" to three verified gaps: claim-level dependency
   edges (wiki dependency tracking existed nowhere as a design), refusal-semantics freshness gating,
   and provenance-gated actuation. Sources:
-  [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md),
+  [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/autopilot-program.md#track-evidence-plane-ledger-and-sequential-verdicts),
   [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md),
   [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md).
 
@@ -2770,7 +2802,7 @@ alone would have converted a wrong ownership claim into a dangling one.
 
 - `scripts/handoffs/index_state.py` — `prune_signal()`, the blocker taxonomy, and the measured incident record; `tests/test_index_state_prune.py` (17 cases, mutation-paired)
 - `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
-- [Wrap-up division of labor](../handoffs/active/wrap-up-division-of-labor-policy.md) — the wrap-up routine this governs
+- [Wrap-up division of labor](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — the wrap-up routine this governs
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to
 
 ## Compiled Update — 2026-08-22: the publication generator scrubs by rewriting, contains protocol evidence to its own row, and demotes what it cannot re-derive to paraphrase
@@ -2821,7 +2853,7 @@ as pool identity travels with a recall number.
 
 ### Source References
 
-- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) —
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) —
   the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
   containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
 - [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)
@@ -2835,7 +2867,7 @@ as pool identity travels with a recall number.
 
 **Confidence: verified** — the SC46 wiring is read from commit `24ab3090` (adapter, reader, 16 tests,
 conformance green) and its handoff rows; the record corrections are read from the 2026-08-21
-Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the latter
+Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md), the latter
 corrected again on 2026-08-22; the intake-wave findings are read from commit `9cb94047` and its
 progress record. Nothing below was re-derived on read — every figure was captured at write time by
 the cited source.
@@ -2927,9 +2959,9 @@ not a record at all.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
   — SC46 wired (commit `24ab3090`), the SC45/SC47/SC48/SC49 pre-run filings, and the EVL-47 row's
   standing SC19 next action.
-- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md)
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation)
   — CT-8, the consumer task the SC46 adapter serves.
-- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the C1/C2/C7 record
+- [`handoffs/active/knowledge-pipelines.md`](../handoffs/active/knowledge-pipelines.md) — the C1/C2/C7 record
   corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
   — Stage-2b wave 2 (commit `9cb94047`): the five corrections, the C6-gate finding with the RVP-C6-20
@@ -2962,9 +2994,9 @@ The 2026-08-22 Stage-2b wave specified compute-gated measurements across three d
 
 ### Source References (2026-08-23 evening)
 
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
+- [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — K1/K2/K3 landing (`4e5e84c0`) with the mutation-test controls, C1/C2 record corrections, H4/H5/H6, H1's measured 40.5% truncation, H2's instrument trap, G11/G12/G13 and B6/B7 with their gates, the 943-file live-index staleness flag
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC50 pre-run filing with the three source classes and the four tuple caveats
-- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
+- [`colbert-reranker-web-research.md`](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research) — the mxbai 32M slot re-point and Table 13 correction (cross-listed with [Search & Retrieval](search-retrieval.md))
 - [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — the wave-2 record: ten of fifteen dives corrected our own records, the two live bugs fixed in-session
 
 ---
@@ -3001,7 +3033,7 @@ the common path), ending the lane-worktree staleness class. The narrow-owner-anc
 
 ### Source References (2026-08-25)
 
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record
 
 ## Compiled Update — 2026-08-25: orphaned staged-rollback resolution — a shared-clone hazard class
@@ -3037,7 +3069,7 @@ Vidya**. The first fully post-hook run is the first eligible belief source.
 ### Source References (2026-08-27)
 
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
-- [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
 
 ## Compiled Update — 2026-08-30: the belief substrate is promoted — all four §4 requirements met, shadow status ends
@@ -3277,7 +3309,7 @@ reader skimming the task list cannot mistake an old measurement for a claim abou
 
 ### Source References (2026-09-01 subject retarget)
 
-- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — the
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates) — the
   RETARGETED header (2026-09-01), its "What transfers" / "What does NOT transfer" split, the voided
   `intake-836` hypothesis on GC-3a, and the GC-4 void note.
 - [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
@@ -3465,10 +3497,10 @@ practices follow, all applied here:
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
   — § *"Operator-queue triage: OP-45 retired as stale, OP-44 deleted as MISFILED"*, with the
   premise-by-premise table and the named defect.
-- [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md)
+- [`handoffs/active/numa-placement-and-contention.md`](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
   — the handoff that owns the two real tasks, annotated with the retirement evidence and
   deliberately left un-ticked.
-- [`handoffs/active/design-backlog-triage-2026-07-23.md`](../handoffs/active/design-backlog-triage-2026-07-23.md)
+- [`handoffs/completed/design-backlog-triage-2026-07-23.md`](../handoffs/completed/design-backlog-triage-2026-07-23.md)
   — the misfiled row's target: a zero-checkbox reference snapshot, still live, still cited.
 - [`handoffs/archived/wp9-wp10-lineup-event-prep.md`](../handoffs/archived/wp9-wp10-lineup-event-prep.md)
   — the archived procedure, carrying its expired premises in the archival banner.
@@ -3486,7 +3518,7 @@ Vidya source registration records where future native artifacts enter the belief
 ### Source References
 
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 - [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
 
@@ -3515,9 +3547,9 @@ benchmark recreation available for claims that later require it.
 ### Source References
 
 - [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — canonical minimum execution contract and consumer map.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — canonical minimum execution contract and consumer map.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — worked compression from paper-specific tasks to one shared screen.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — worked compression from paper-specific tasks to one shared screen.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.
 
 **Confidence:** verified as the installed Claude/Codex research-intake workflow and committed project task structure.
@@ -3559,7 +3591,7 @@ or omission prevalence; missing original transcripts and selected-source coverag
 - [Published Stage-4 progress](../progress/2026-10/2026-10-04-intake-decision-tools-stage4.md) — filing and validation boundaries.
 - [Main-reviewed retrospective](../docs/reviews/research-intake-practical-applications-20261004.md) — exact source/code scope, proposals and limitations.
 - [Wrap-up progress](../progress/2026-10/2026-10-04-codex-intake-wrap.md) — separate review and derived-actionables accounting.
-- [Intake-derived owner](../handoffs/active/intake-derived-work-2026-07-25.md) — completed review and proposed refinement.
+- [Intake-derived owner](../handoffs/active/frontier-lab-automation.md) — completed review and proposed refinement.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — prospective capture versus already-live EXL3 source.
 
 ## Compiled Update — 2026-10-04: practical-outcome checks are implemented, not semantic proof
@@ -3646,7 +3678,7 @@ manufacturing warrant.
 
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BELIEF, producer/adapter mismatch, and applicability gap.
 - [Vidya adapter registry](../scripts/vidya/adapters/README.md) — canonical source and consumer contracts.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — planner consumer boundary.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — planner consumer boundary.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day reader review.
 
 **Confidence:** verified from code review and strict failing fixtures; no historical record is backfilled.
@@ -3697,8 +3729,8 @@ The plan also drafted the exact text for its wiki corrections, and Stage 4 appli
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-UFH12-PLACEMENT, the SC84 producer note, SC84a, VB-DS41-C57.
 - [HipKittens GEMM ladder Stage-3 plan](../docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md) — gating, OD-1, P6, the declines table and the completeness gates.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF03-REGAUDIT-1 and its belief-kernel write side.
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
+- [Agentic ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) — INF03-REGAUDIT-1 and its belief-kernel write side.
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — the GATED seed set, the gate-lifted note, AK-MMQ-H10.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — the intake record (renumbering, filed-task counts).
 
 
@@ -3742,11 +3774,11 @@ The plan also drafted the exact text for its wiki corrections, and Stage 4 appli
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — compaction table, promoted status, VB-UFH12-PLACEMENT-DISC, VB-KVQ-V10-DICT queue order, the 2026-09-29 thaw triggers on VB-TD-ADVICE / VB-SEL-LOADAB.
 - [Vidya completed sibling](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the moved evidence record (pilot build, promotion track, SC-series through 2026-09-27).
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — the orphaned-residual boxing (NIB2-88/89) and the NIB2-86/87 renumbering.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — *Start here* and the standing-rule boxes that must never be ticked.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — the *Completed Scope* table pattern.
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — PAW-5 JSON repair struck (TD-21 owns it).
-- [repl-embedding-retrieval.md](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-B.1 via `/v1`, OP-66 closed.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — the orphaned-residual boxing (NIB2-88/89) and the NIB2-86/87 renumbering.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — *Start here* and the standing-rule boxes that must never be ticked.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the *Completed Scope* table pattern.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — PAW-5 JSON repair struck (TD-21 owns it).
+- [repl-embedding-retrieval.md](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — REPL-EMB-B.1 via `/v1`, OP-66 closed.
 
 
 ## Compiled Update — 2026-10-03: wiring the new serving producers, and rulings that never compiled
@@ -3798,7 +3830,7 @@ written yet; each item is wiring that is owed.
 
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-SERVING-DF2, VB-SERVE-TIMING-1, VB-RI18/VB-RI18a, VB-REVIEW-GATE (declined), VB-DS41-C95.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-dflash2-ruling-never-compiled, INC-20261003-urgent-fix-slowed-by-bundling, INC-20261003-runtime-flag-survived-reboot.
-- [Stack-change governance pipeline](../handoffs/active/stack-change-governance-pipeline.md) — SCG-RULING-TO-FIELD, SCG-FASTPATH.
+- [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — SCG-RULING-TO-FIELD, SCG-FASTPATH.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — lost cross-session messages while idle; the session failures.
 
 ## Compiled Update — 2026-10-06: capture evidence at the write boundary
@@ -3843,7 +3875,7 @@ Sources: [JEV-aware handoff audit](../handoffs/completed/jev-aware-handoff-audit
 
 `index_state.py --check` now warns when the checkout's generated graph is missing, malformed or differs from the current `build_graph(state)` result, ignoring only its generation timestamp. The warning is advisory: existing coverage/schema hard failures keep their return codes, and the independent row screener retains silent absence. Generate state/graph together under the wrap-up lease before relying on freshness; this checks checkout integrity, not model quality or runtime liveness.
 
-The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/internal-kb-rag.md), [belief source enrollment](../scripts/vidya/adapters/README.md).
+The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/knowledge-pipelines.md), [belief source enrollment](../scripts/vidya/adapters/README.md).
 
 ### Intake re-verification final application — 2026-10-06
 
@@ -3909,7 +3941,7 @@ The [belief-source program](../handoffs/active/vidya-belief-substrate-program.md
 
 The [memory/embedding intake checkpoint](../progress/2026-10/2026-10-07-intake-memory-embedding.md) retains five provisional Stage-1 records, awaiting deeper review and approved filing. Publisher mechanisms and benchmarks are reported source content, without independent EPYC reproduction or automatic adoption. Existing wiki/source hashes, per-writer records, cache/model identity separation and episodic recall provide concrete comparison points; candidate vector migration and experimental runtime compatibility remain separate work.
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) now records120 completed bounded scopes, including the corrected voice verifier and the typed response/choice source. This tally does not establish exhaustion of the [non-inference backlog](../handoffs/active/non-inference-backlog.md): actual unchecked task/source adjudication and eligible implementation continue. New verified producers are enrolled prospectively; no missing historical warrant is reconstructed.
+[NI08](../docs/reference/ni08-non-inference-continuation.md) now records120 completed bounded scopes, including the corrected voice verifier and the typed response/choice source. This tally does not establish exhaustion of the [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md): actual unchecked task/source adjudication and eligible implementation continue. New verified producers are enrolled prospectively; no missing historical warrant is reconstructed.
 
 
 ### Lane-root reference checks — 2026-10-07
@@ -3921,18 +3953,18 @@ The [memory/embedding intake checkpoint](../progress/2026-10/2026-10-07-intake-m
 
 The [RTG-51 Phase-4 command contract](../artifacts/ni08/rtg51-phase4-command-source-20261007/README.md) binds accepted request identity, immutable receipt cut, one writer/lease, ordered changes, Coordinator promotion and a completion receipt. Failure/reboot barriers retain partial progress without granting completion. Protected Phase-5 ratification still controls any change to operator-only pruning/wiki authority; the contract grants no runtime activation.
 
-MAIN also accepted the [edited-file Git-root reference hook](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md): five original real-subprocess controls verify lane-relative references against the edited file's own checkout. An empty hosted token queue is an existence fixture, not evidence about the live bus. New [mocked workflow and pin-checker source acceptance](../docs/reference/ni08-non-inference-continuation.md) brings the NI08 scoped tally to129 (72existing task flips +57completed children). The whole [backlog](../handoffs/active/non-inference-backlog.md) remains under source-level adjudication; failed captures and external owner/policy gates stay open.
+MAIN also accepted the [edited-file Git-root reference hook](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md): five original real-subprocess controls verify lane-relative references against the edited file's own checkout. An empty hosted token queue is an existence fixture, not evidence about the live bus. New [mocked workflow and pin-checker source acceptance](../docs/reference/ni08-non-inference-continuation.md) brings the NI08 scoped tally to129 (72existing task flips +57completed children). The whole [backlog](../handoffs/active/engineering-hygiene-backlog.md) remains under source-level adjudication; failed captures and external owner/policy gates stay open.
 
-Source references: [heavy-wrap handoff](../handoffs/active/wrap-up-division-of-labor-policy.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/non-inference-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [heavy-wrap handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 
 ### Bounded source completion and human close-policy signature — 2026-10-07
 
-At the06:42 checkpoint, [NI08](../docs/reference/ni08-non-inference-continuation.md) had133 published scoped completions (76 existing checkbox flips plus57 scoped children). This closes the accepted physical placement/experimental rollback source scopes and their prospective conformance tasks; it does not exhaust the [non-inference backlog](../handoffs/active/non-inference-backlog.md) or close runtime/inference parent gates. Earlier failed/NULL originals remain immutable. Current source work, original-evidence review and complete task eligibility adjudication continue.
+At the06:42 checkpoint, [NI08](../docs/reference/ni08-non-inference-continuation.md) had133 published scoped completions (76 existing checkbox flips plus57 scoped children). This closes the accepted physical placement/experimental rollback source scopes and their prospective conformance tasks; it does not exhaust the [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) or close runtime/inference parent gates. Earlier failed/NULL originals remain immutable. Current source work, original-evidence review and complete task eligibility adjudication continue.
 
 [LR11/LR13's prevalidated human package](../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md) proposes two additive shared-policy rules: close-time exact scratch inventory/retention ownership and brief-level subagent records/scratch lifetime. The dedicated checkout is clean and review-only validation passes. It requires a typed human terminal signature; no protected amendment, signed receipt or cleanup authority is inferred from preparation. Main-owned canonical edits remain separate from private subagent completion records.
 
-The periodic full wrap checks indices, README/wiki structure and source-hash synthesis, retains active evidence/scratch through the canonical gate, and uses normal per-repository commits/pushes. No pruning, archival or compaction is selected. Source references: [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference queue](../handoffs/active/non-inference-backlog.md).
+The periodic full wrap checks indices, README/wiki structure and source-hash synthesis, retains active evidence/scratch through the canonical gate, and uses normal per-repository commits/pushes. No pruning, archival or compaction is selected. Source references: [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference queue](../handoffs/active/engineering-hygiene-backlog.md).
 
 
 ### Original custody, binding corrections and source tally — 2026-10-07 07:38 checkpoint
@@ -3943,24 +3975,24 @@ The [first W6 capture](../artifacts/ni08/w6-first-capture-binding-discrepancy-20
 
 [NI08](../docs/reference/ni08-non-inference-continuation.md) reaches138 completed bounded scopes (79 existing checkbox flips plus59 completed children), including the accepted isolated voice source and original-custody subtask. This is a precise scoped tally, not eligible-backlog exhaustion. The source table and prospective belief tasks preserve producer identities before use; no historical tuples or extra source ladders are introduced. MAIN owns integration, canonical updates and this full wrap-up while private workers continue independent source preparation.
 
-Source references: [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/non-inference-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [producer table](../scripts/vidya/adapters/README.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [producer table](../scripts/vidya/adapters/README.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 ### Accepted scopes and prospective sources — 2026-10-07 08:15 checkpoint
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) now records143 accepted bounded scopes:83 existing task closures plus60 completed children. Since the07:38 cut, MAIN accepted the independently rebound W6 capture, the pin-report source/reader controls, and the complete retained INF64 per-file manifest. This tally closes those scopes only; it does not count whole handoffs as complete or establish exhaustion of the [non-inference backlog](../handoffs/active/non-inference-backlog.md).
+[NI08](../docs/reference/ni08-non-inference-continuation.md) now records143 accepted bounded scopes:83 existing task closures plus60 completed children. Since the07:38 cut, MAIN accepted the independently rebound W6 capture, the pin-report source/reader controls, and the complete retained INF64 per-file manifest. This tally closes those scopes only; it does not count whole handoffs as complete or establish exhaustion of the [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md).
 
 The [source table](../scripts/vidya/adapters/README.md) and [belief program](../handoffs/active/vidya-belief-substrate-program.md) register K11 repeat-summary and PIP02 selected-library controls before future native capture. Both use the existing CI carrier/projector/shared grade. Original FALSE/NULL and the first W6 context mismatch remain durable evidence, without retrospective tuple repair. Pin-report path aliases count as copies rather than distinct originals; archive topology limits remain explicit. Private worker completion logs follow MAIN source/evidence acceptance and publication, while MAIN owns canonical handoffs, indices and full wrap-ups.
 
-Source references: [NI08 tally and source gates](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [non-inference queue](../handoffs/active/non-inference-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [original pin-report custody](../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md).
+Source references: [NI08 tally and source gates](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [non-inference queue](../handoffs/active/engineering-hygiene-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [original pin-report custody](../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md).
 
 ### Periodic source checkpoint preserves failed originals — 2026-10-07
 
-The non-inference continuation now records145 completed bounded scopes (85 existing task closures plus60 completed children); this is not whole-backlog exhaustion. A native NULL remains NULL even when its underlying tests passed, and a workflow failure before jobs/artifacts has no receipt to grade. Original S49 collection failure and K11 subtest-count incompatibility are retained separately from fresh source/recipe captures. MAIN applied ET13 source/VB enrollment before capture and found W6 carry's missing eager source identities before authorizing execution. Prospective fixes and prepared maps add no completion until source and original evidence are accepted. Sources: [current continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference router](../handoffs/active/non-inference-backlog.md), [daily progress](../progress/2026-10/2026-10-07.md), [prospective native wiring](../handoffs/active/vidya-belief-substrate-program.md).
+The non-inference continuation now records145 completed bounded scopes (85 existing task closures plus60 completed children); this is not whole-backlog exhaustion. A native NULL remains NULL even when its underlying tests passed, and a workflow failure before jobs/artifacts has no receipt to grade. Original S49 collection failure and K11 subtest-count incompatibility are retained separately from fresh source/recipe captures. MAIN applied ET13 source/VB enrollment before capture and found W6 carry's missing eager source identities before authorizing execution. Prospective fixes and prepared maps add no completion until source and original evidence are accepted. Sources: [current continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference router](../handoffs/active/engineering-hygiene-backlog.md), [daily progress](../progress/2026-10/2026-10-07.md), [prospective native wiring](../handoffs/active/vidya-belief-substrate-program.md).
 
 
 ### NI08 source checkpoint and current integration review — 2026-10-07
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) has147 accepted bounded tasks:87 existing checkbox closures and60 completed scoped children. The [non-inference backlog](../handoffs/active/non-inference-backlog.md) remains live; this tally does not count whole handoffs or establish backlog exhaustion. S49's two actual source/conformance tasks are checked and publicly committed after MAIN source/original review; [the progress report](../progress/2026-10/2026-10-07.md) records the boundary.
+[NI08](../docs/reference/ni08-non-inference-continuation.md) has147 accepted bounded tasks:87 existing checkbox closures and60 completed scoped children. The [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) remains live; this tally does not count whole handoffs or establish backlog exhaustion. S49's two actual source/conformance tasks are checked and publicly committed after MAIN source/original review; [the progress report](../progress/2026-10/2026-10-07.md) records the boundary.
 
 A successful older-source observation must be checked against current integration before publication. MAIN rejected an older document-parser patch that would have removed current input provenance and raw-byte controls, then reviewed a fresh source child preserving those protections for a new bound hosted observation. A W6 informational carry is prepared as deterministic JSON support text because certified frames continue to refuse raw floats; shared grading and authored producer metadata remain unchanged. Neither pending capture counts as completion.
 
@@ -3969,23 +4001,23 @@ A successful older-source observation must be checked against current integratio
 
 [NI08](../docs/reference/ni08-non-inference-continuation.md) has153 completed bounded scopes:92 existing checkbox flips and61 completed scoped children. Six closures since the09:40 full checkpoint comprise EVL38's previously accepted owning source checkbox, the UFH05 source child, and the two source/native pairs for SCG and PIP02. EVL38's earlier count covered its separate native companion; reconciliation adds the actual source task once. These are task scopes, not153 completed handoffs or whole-backlog exhaustion.
 
-The full review keeps runtime/inference parents and human-policy signature decisions open, updates thin next-action rows for completed source work, and retains original evidence/private recipes. W6's unchanged earlier FALSE observations and later setup failure remain distinct from new captures. ET13 retains its setup failure and native NULL collection failure; neither is source acceptance. Source enrichment uses the existing CI carrier/projector/shared grader and adds no ladder or retrospective tuple. [The running progress report](../progress/2026-10/2026-10-07.md) and [non-inference queue](../handoffs/active/non-inference-backlog.md) carry the remaining eligible work and source-preparation boundaries.
+The full review keeps runtime/inference parents and human-policy signature decisions open, updates thin next-action rows for completed source work, and retains original evidence/private recipes. W6's unchanged earlier FALSE observations and later setup failure remain distinct from new captures. ET13 retains its setup failure and native NULL collection failure; neither is source acceptance. Source enrichment uses the existing CI carrier/projector/shared grader and adds no ladder or retrospective tuple. [The running progress report](../progress/2026-10/2026-10-07.md) and [non-inference queue](../handoffs/active/engineering-hygiene-backlog.md) carry the remaining eligible work and source-preparation boundaries.
 
 No whole handoff became complete at this checkpoint; pruning, archival and compaction are reviewed without selecting changes. The generated six-domain index and wiki content-hash manifest are checked in the publication lane, separately from the peers' shared working clones.
 
 
 ### Six bounded closures and Stage-2 catalog scope — 2026-10-07
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches159 bounded completed scopes:98 existing tasks and61 scoped children. Six closures since the10:25 checkpoint comprise the single W6 diagnostic-carry task, EVL24's source/native pair, INF54's already-present source wiring and ET13's source/native pair. They do not establish completion of their broader runtime parents or exhaustion of the23-card source audit. The [discovery score source task](../handoffs/active/delegation-context-preassembly.md) is prospectively enrolled and remains unchecked; other pending proposals gain no acceptance at this checkpoint.
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches159 bounded completed scopes:98 existing tasks and61 scoped children. Six closures since the10:25 checkpoint comprise the single W6 diagnostic-carry task, EVL24's source/native pair, INF54's already-present source wiring and ET13's source/native pair. They do not establish completion of their broader runtime parents or exhaustion of the23-card source audit. The [discovery score source task](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) is prospectively enrolled and remains unchecked; other pending proposals gain no acceptance at this checkpoint.
 
 The peer's [Stage-2 memory/embedding intake report](../progress/2026-10/2026-10-07-intake-memory-embedding-stage2.md) catalogs14 retained primary sources, intake-1963#record through intake-1976#record, plus four secondary leads awaiting selection. Its memory, EmbeddingGemma2 and VibeMemBench assessments retain source/release/review limitations; no model execution, accepted quality score, semantic maintenance closure or Stage-3 adoption is established. The reviewed recommendation custody preserves distinct outcomes rather than combining them into a new approved action. This paragraph catalogs the existing report, not a new intake claim or decision.
 
-Source references: [bounded continuation](../docs/reference/ni08-non-inference-continuation.md), [current progress](../progress/2026-10/2026-10-07.md), [remaining queue](../handoffs/active/non-inference-backlog.md).
+Source references: [bounded continuation](../docs/reference/ni08-non-inference-continuation.md), [current progress](../progress/2026-10/2026-10-07.md), [remaining queue](../handoffs/active/engineering-hygiene-backlog.md).
 
 
 ### One source closure after the full11:19 boundary — 2026-10-07
 
-[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches160 completed scopes,99 existing tasks and61 completed children, after exactly one SR-5 source/prose closure. The four TOC/pointer enrollment tasks and two new INF50 document-projection tasks remain unchecked. This does not exhaust the ongoing23-card actual-source audit or close runtime parents. Accepted source semantics, pending compiler projection and proposed native controls remain distinct; MAIN retains original failed receipts and publication failures without regrading them. [Current progress](../progress/2026-10/2026-10-07.md) and the [remaining backlog](../handoffs/active/non-inference-backlog.md) retain the boundaries.
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches160 completed scopes,99 existing tasks and61 completed children, after exactly one SR-5 source/prose closure. The four TOC/pointer enrollment tasks and two new INF50 document-projection tasks remain unchecked. This does not exhaust the ongoing23-card actual-source audit or close runtime parents. Accepted source semantics, pending compiler projection and proposed native controls remain distinct; MAIN retains original failed receipts and publication failures without regrading them. [Current progress](../progress/2026-10/2026-10-07.md) and the [remaining backlog](../handoffs/active/engineering-hygiene-backlog.md) retain the boundaries.
 
 ## Operational custody records keep their native warrant — 2026-10-07
 
@@ -4006,7 +4038,7 @@ C104's prospectively enrolled source/native pair is now accepted after original 
 ### Source References
 
 - [MAIN native-record attribution evidence](../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) — exact five-claim entries and original source hashes.
-- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — repaired bounded annotation and retained risk limitations.
+- [Decision-aware routing](../handoffs/active/routing-program.md) — repaired bounded annotation and retained risk limitations.
 - [Canonical intake source](../research/intake_index.yaml) — unchanged entry claims and verification corrections.
 
 
@@ -4016,7 +4048,7 @@ At this earlier checkpoint the corrected citation to intake-1333#01 remained sou
 
 INF50's first native-writer archive omitted hidden cache bytes despite a typed64-byte hash record; it remains an immutable partial diagnostic. The separately approved direct-child upload correction has a new original. MAIN independently reopened all361 members,19 Git inputs,23roles/all47 locked wheel hashes and actual hidden cache0644/64bytes/hash. Native banner and typed YAML match the dry run with only the retired prose scalar changed. The record remains ungraded with receipt/JUnit/ClaimTuple NULL; product publication/task acceptance remain separate.
 
-Source references: [source ownership](../handoffs/active/vidya-belief-substrate-program.md), [bounded NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [MAIN dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [original citation correction](../handoffs/active/decision-aware-routing.md).
+Source references: [source ownership](../handoffs/active/vidya-belief-substrate-program.md), [bounded NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [MAIN dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [original citation correction](../handoffs/active/routing-program.md).
 
 ## Completed document projection and operational custody — 2026-10-07
 
@@ -4024,13 +4056,13 @@ Source references: [source ownership](../handoffs/active/vidya-belief-substrate-
 
 The operator requests periodic full wrap-ups. MAIN owns the wiki synthesis, content-hash watermark, canonical indices and publication; workers prepare isolated source/evidence and proposed edits. The latest seven-document delta combines the two completed source/custody boundaries with the separately published AutoKernel owner checkpoint. C26 cancellation, UFH spill-budget native acceptance and literature coverage remain explicit work in progress; prospective enrollment does not establish capture or grade.
 
-Source references: [NI08 tally and limits](../docs/reference/ni08-non-inference-continuation.md), [live non-inference queue](../handoffs/active/non-inference-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md), [MAIN progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+Source references: [NI08 tally and limits](../docs/reference/ni08-non-inference-continuation.md), [live non-inference queue](../handoffs/active/engineering-hygiene-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md), [MAIN progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
 
 ## One-entry native literature coverage completed — 2026-10-07
 
 **Confidence: verified for the original ledger extension and fold only.** MAIN accepted exactly13 native frames for intake-1333#record through the existing literature adapter and owned-inode write lease. The complete before-prefix, exact frame objects and full fold retain five new Verified/Located beliefs and zero changes to existing beliefs. Claim04 remains review-required; missing retained source-artifact anchors stay UNKNOWN and support remains Located. The source record, fourteen governance modules and shared grading are unchanged. [Original command/frame/fold custody](../artifacts/ni08/intake1333-literature-coverage-20261007/README.md).
 
-NI08 reaches175 completed scoped tasks:110 existing checkbox closures and65 completed children. The accepted three-source-view custody is an operational child; C26 and UFH source/native acceptance remain pending. MAIN owns the incremental wiki and source watermark in each operator-requested full wrap-up. [Current tally and limits](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [live queue](../handoffs/active/non-inference-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md).
+NI08 reaches175 completed scoped tasks:110 existing checkbox closures and65 completed children. The accepted three-source-view custody is an operational child; C26 and UFH source/native acceptance remain pending. MAIN owns the incremental wiki and source watermark in each operator-requested full wrap-up. [Current tally and limits](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [live queue](../handoffs/active/engineering-hygiene-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 ## Reviewed source tasks and preserved failed originals — 2026-10-07
 
@@ -4045,11 +4077,11 @@ Source references: [RTG-39 source/publication](../artifacts/ni08/rtg39-source-co
 
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence
 
-UFH12's existing spill-summary context-budget companion now has accepted original and product evidence: the exact two-file APP product was published, and the original 15-case mocked-worker/spill-control run passed with MAIN-accepted typed source/result/fixture custody through the existing CI projection and shared grader. This establishes the bounded request-size/source-conformance contract only. It does not establish summary correctness, quote fidelity, evidence retention, inference, runtime behavior, performance, or deployment; the two earlier NULL captures remain NULL. [Source handoff](../handoffs/active/tool-output-compression.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Vidya companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
+UFH12's existing spill-summary context-budget companion now has accepted original and product evidence: the exact two-file APP product was published, and the original 15-case mocked-worker/spill-control run passed with MAIN-accepted typed source/result/fixture custody through the existing CI projection and shared grader. This establishes the bounded request-size/source-conformance contract only. It does not establish summary correctness, quote fidelity, evidence retention, inference, runtime behavior, performance, or deployment; the two earlier NULL captures remain NULL. [Source handoff](../handoffs/active/context-and-token-economy.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Vidya companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
 
 ### Prospective source controls — 2026-10-07 FULL review
 
-The [typed-decision handoff](../handoffs/active/typed-decision-plane.md) now files TD-29.M0a.S0 and its [belief companion](../handoffs/active/vidya-belief-substrate-program.md) before any hosted capture. Their three complete unit modules contain 119 AST test definitions at proposal time; the original JUnit will determine executed case counts. Raw server prefill counts and duration preserve missing values as unknown. The source proposal remains private, and the three-arm sidecar/runtime parent remains open. C26's accepted original cancellation control run failed 10 GPU fixture cases, with 36 passing; the existing shared grade records FALSE while the workflow-final result is NULL. Its one-file ownership-preflight fixture correction is private and has no new native result at this review cut. The [FULL custody](../artifacts/ni08/periodic-full-wrapup-20261007-1930/README.md) preserves that distinction.
+The [typed-decision handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) now files TD-29.M0a.S0 and its [belief companion](../handoffs/active/vidya-belief-substrate-program.md) before any hosted capture. Their three complete unit modules contain 119 AST test definitions at proposal time; the original JUnit will determine executed case counts. Raw server prefill counts and duration preserve missing values as unknown. The source proposal remains private, and the three-arm sidecar/runtime parent remains open. C26's accepted original cancellation control run failed 10 GPU fixture cases, with 36 passing; the existing shared grade records FALSE while the workflow-final result is NULL. Its one-file ownership-preflight fixture correction is private and has no new native result at this review cut. The [FULL custody](../artifacts/ni08/periodic-full-wrapup-20261007-1930/README.md) preserves that distinction.
 
 ### EVL180 and C26 accepted source checkpoints — 2026-10-07
 
@@ -4082,7 +4114,7 @@ Sources: [source enrollment](../scripts/vidya/adapters/README.md), [SC55 tasks](
 
 The bounded 2026-05-27 BEP corpus contains62 real trajectories. Tasks t2–t5 account for47 terminal outcomes:44 harness turn-cap stops and3 errors, with no voluntary stops. These categories describe how the harness ended; they do not explain loop-guard, read-thrash, edit-failure or error causation. Repeated-open, write, loop-halt and repeat-count fields are observations. The legacy bytes do not bind their producer revision, and missing native completion metadata and clipped outputs remain unknown. This is a descriptive finding for the captured roles/models/tasks/arms/date, not a live inference or model-quality result. MAIN independently rebound all72 inputs and recomputed the aggregate from retained originals.
 
-Sources: [diagnostic custody](../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md), [MF-FS-1 scope](../handoffs/active/multi-file-coding-completion-capability.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [source-table boundary](../scripts/vidya/adapters/README.md).
+Sources: [diagnostic custody](../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md), [MF-FS-1 scope](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [source-table boundary](../scripts/vidya/adapters/README.md).
 
 
 ### Prospective MF turn scalars and loaded-source limits — 2026-10-08
@@ -4091,7 +4123,7 @@ The MF-FS-1 historical47 t2–t5 outcomes remain44 harness turn-cap stops and3 e
 
 VB-MF-TURN-WRITE is newly enrolled and open. Its source-only candidate and prepared synthetic controls do not supply a runtime trace, efficacy result or new grading ladder. MAIN accepted HG5’s original87 source controls; its canonical source-task closure and publication follow that review. The original MF rate/behavior parents stay open.
 
-Sources: [MF scope and historical limits](../handoffs/active/multi-file-coding-completion-capability.md), [prospective source enrollment](../scripts/vidya/adapters/README.md), [source task](../handoffs/active/vidya-belief-substrate-program.md), [dated source review](../progress/2026-10/2026-10-08-codex-ni-main.md).
+Sources: [MF scope and historical limits](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability), [prospective source enrollment](../scripts/vidya/adapters/README.md), [source task](../handoffs/active/vidya-belief-substrate-program.md), [dated source review](../progress/2026-10/2026-10-08-codex-ni-main.md).
 
 
 ### HG5 original87 source controls and dashboard counting — 2026-10-08
@@ -4100,7 +4132,7 @@ MAIN accepted original push run37721932296, attempt1, at source e54175d: all87 e
 
 Dashboard completion means checked tasks, not every card’s generic done scalar. The latest retained response contains6324 checked tasks of9811 (64.5%), with active/blocked3700 of6109 (60.6%). Another180 done scalars are prose✅marker chips on39 completed/archived cards with total0. Adding them yields6504 but does not create more completed tasks. The previous FULL186 raw6500/9810 sum likewise mixed6320 checked tasks with180 markers; its acceptance originals are preserved. Use the checkbox-filtered ratio in future summaries and retain markers separately. These dashboard counts include inference/gated work and are distinct from the scoped NI08 tally.
 
-Sources: [reviewer source-control task](../handoffs/active/reviewer-escalation-and-human-gate-policy.md), [MAIN task integration and scope](../handoffs/active/non-inference-backlog.md), [dated original-results review](../progress/2026-10/2026-10-08-codex-ni-main.md), [checkbox counting axiom](../agents/shared/SESSION_LIFECYCLE.md#two-axioms-canonical-statements--cite-dont-restate).
+Sources: [reviewer source-control task](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy), [MAIN task integration and scope](../handoffs/active/engineering-hygiene-backlog.md), [dated original-results review](../progress/2026-10/2026-10-08-codex-ni-main.md), [checkbox counting axiom](../agents/shared/SESSION_LIFECYCLE.md#two-axioms-canonical-statements--cite-dont-restate).
 
 ### SC54 and ingestion contract enrollment — 2026-10-08
 
@@ -4110,13 +4142,13 @@ MAIN separately accepted a narrowed prospective HG5 request-event source contrac
 
 The accepted dashboard snapshot at 2026-10-08 04:30 UTC reports 6,325/9,812 checked tasks (64.5%) and 3,701/6,110 active-plus-blocked checked (60.6%). Its 180 prose marker chips remain separate from checkboxes. These fleet counts include inference and gated work and do not establish non-inference backlog exhaustion.
 
-Sources: [SC54 and ingestion enrollment](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../handoffs/active/non-inference-backlog.md), [adapter source registry](../scripts/vidya/adapters/README.md), [MAIN checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md).
+Sources: [SC54 and ingestion enrollment](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../handoffs/active/engineering-hygiene-backlog.md), [adapter source registry](../scripts/vidya/adapters/README.md), [MAIN checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md).
 
 ### TD-29 current-source controls and scope tally — 2026-10-08
 
 MAIN accepted the original ROOT `11f1b00` source recipe and hosted run `37729628899` attempt 1: all 209 cases passed across seven whole mocked modules, including TD122 plus the unchanged HG87 controls. The paired TD-29.M0a.S0 and VB source rows close as one bounded source child, bringing NI08 to 189 scoped completions (118 existing checkbox closures plus 71 completed scoped children); the two checkbox transitions are not two task completions, and 209 test cases are not task completions. TD-29.M0a, TD-29.M4, and the inference/three-arm sidecar gates remain open. The accepted result does not establish runtime behavior, model quality, inference or performance.
 
-Sources: [original acceptance and custody](../artifacts/ni08/td29-current-source209-acceptance-20261008/README.md) · [TD-29 source task](../handoffs/active/typed-decision-plane.md) · [belief companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 scope record](../handoffs/active/non-inference-backlog.md) · [current progress record](../progress/2026-10/2026-10-08-codex-ni-main.md).
+Sources: [original acceptance and custody](../artifacts/ni08/td29-current-source209-acceptance-20261008/README.md) · [TD-29 source task](../handoffs/active/routing-program.md#track-typed-decision-plane) · [belief companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 scope record](../handoffs/active/engineering-hygiene-backlog.md) · [current progress record](../progress/2026-10/2026-10-08-codex-ni-main.md).
 
 ### RTG-48 source adjudications and prospective M-12h custody — 2026-10-08
 
@@ -4149,15 +4181,15 @@ The Vidya program and adapter source table gained or rewrote four write-side ite
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-DS41-1017-WIRE, VB-Q38FN-SERVED-SWEEP-WIRE, VB-AK-HISTORY.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — VB-DSV41 row extension for the MXFP4-direct plan.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — the W5/W6 gates the records bind.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS-47 and CS-49 outputs.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS-47 and CS-49 outputs.
 
 ## Compiled Update — 2026-10-21 (sweep 3): harness-cluster Stage 4 filing and new write-side obligations
 
 - Stage 4 of the harness-cluster intake applied the approved plan on 2026-10-21: 30 checkbox tasks across 13 owner handoffs, HIL-2 items 7-22 and the HIL-4/HIL-6 notes, 16 monitor and 8 knowledge records, 3 belief-kernel source rows, 5 master-queue rows, 53 index dispositions and 20 dive_corrections lines; no compute. DP-F was decided by the operator (dive the remaining nine benched intakes; filed as M13, dives in flight). ([stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md))
 - Belief-kernel write-side rows added: VB-TOC-AB-WRITE (self-hashed per-run sidecar with arm identity, terminal_state, rolling input tokens, prefix-cache invalidations, compressor wall time; strict reader projects to ClaimTuple, `claim_tuple.grade()` decides, no retrospective tuples), VB-SKILLBANK-AB-WRITE (one record per role+model-pin cell, negative cells stay rows, no pooled mean) and VB-HIL-WRITE-FIELDS (tool-surface digest, served window, compaction-policy digest, budgets, selection rule: write-side fields unrecoverable on read). The first KVU timing producers exist (`np_context_kvu_cpu_study_20261020/w2_20261021`) and project through the existing np-ctx-kvu adapter with HTTP-400 rows in the denominator; VB-KVU-PF.1 and VB-DS41-1017-WIRE are recorded ticked. ([vidya program](../handoffs/active/vidya-belief-substrate-program.md))
-- Discovered defects reported to owners and not fixed in the intake (K8): duplicate IDs M-17c/d/e, SEQ-4 duplicated, stale anchors; K6 lists external claims not to be cited. Lesson: a source's prose existing is not a citation licence, so use `#record` forms. ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md))
+- Discovered defects reported to owners and not fixed in the intake (K8): duplicate IDs M-17c/d/e, SEQ-4 duplicated, stale anchors; K6 lists external claims not to be cited. Lesson: a source's prose existing is not a citation licence, so use `#record` forms. ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop))
 
-Sources: [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md).
+Sources: [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md); [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop).
 
 ## Compiled Update — 2026-10-21 (sweep 4): one canonical belief ledger, prospective write-side carriers, and guards against silent handoff loss
 
@@ -4169,7 +4201,7 @@ Sources: [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4
 - **Rules codified into project docs.** Missing software, plumbing, platform or license is a build cost, never a blocker or a decline reason (`ce88ce175`, `1dee73c5e`, `9075c7a93`); the quiet host is for baselines only; a GPU-only job claims only its own quarter; the subagent read and write rule for the shared clone.
 - **Process lessons.** A queue blackout predicate must be date-correct across midnight; `strings | grep -q` produces SIGPIPE false negatives; a health probe must prove our PID owns the port. The corpus retrieval path was retired deliberately on 2026-07-04 (index deleted after CPL-4/5 found no benefit); the registry flag-off is operator-approved and its ratifier waits for the operator to run it.
 
-Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md), [Progress noninf-vidya](../progress/2026-10/2026-10-21-noninf-vidya.md), [Progress ds41-w5](../progress/2026-10/2026-10-21-ds41-w5.md), [Progress handoff-guard](../progress/2026-10/2026-10-21-handoff-guard.md), [Progress codify-rules](../progress/2026-10/2026-10-21-codify-rules.md), [Progress corpus-flagoff-ratify](../progress/2026-10/2026-10-21-corpus-flagoff-ratify.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
+Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Progress noninf-vidya](../progress/2026-10/2026-10-21-noninf-vidya.md), [Progress ds41-w5](../progress/2026-10/2026-10-21-ds41-w5.md), [Progress handoff-guard](../progress/2026-10/2026-10-21-handoff-guard.md), [Progress codify-rules](../progress/2026-10/2026-10-21-codify-rules.md), [Progress corpus-flagoff-ratify](../progress/2026-10/2026-10-21-corpus-flagoff-ratify.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md)
 
 ## Compiled Update — 2026-10-21 (sweep 5): both loops read the belief ledger before planning, but the reads are not model-specific yet
 
@@ -4191,7 +4223,7 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
   - The shared orchestrator clone must be fast-forwarded in the same step as the start.
 - **Lint capture accepted.** The staged-shell SIGPIPE checker passed 11/11 controls in run `39617059382` at source `56b782eb...`. The scoped closure tally is now 222 = 220 + 2. Test cases are not tasks. The CLI and M12i replay custody items stay open.
 
-Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress hygiene-3c4ca599](../progress/2026-10/2026-10-21-hygiene-3c4ca599.md), [Progress codex-ni-main](../progress/2026-10/2026-10-21-codex-ni-main.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md)
+Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Progress workspace-f8](../progress/2026-10/2026-10-21-workspace-f8.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress hygiene-3c4ca599](../progress/2026-10/2026-10-21-hygiene-3c4ca599.md), [Progress codex-ni-main](../progress/2026-10/2026-10-21-codex-ni-main.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -4203,12 +4235,12 @@ Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substr
 - **New write sides wired:** KPF-26.1f outcome records (2 rows / 6 frames), GPU-LEAK-1/1d probes (8 rows / 24 frames), V11-086 FP32-oracle rerun, DS41-W5d, KPF-64 chunk-kv (8 rows / 24 frames). The hooks look for adapters under `EPYC_ROOT_REPO` or `/workspace` and print a warning if absent.
 - **No real data means no claim.** For KPF-26.1g there were 0 real planner step actions in any log; the proxy of 254 reviewer-patch steps had TERSE 0/254 (Wilson 95% CI 0.0-1.5%), so the verdict is provisional and a write-side capture (KPF-26.1h) comes first.
 
-Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md)
+Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md)
 
 ## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
 
 - **Belief-substrate write-side wiring continues**: fold-gate records, HPR prefix capture and AK native records each project into the existing claim ladders rather than adding grading rules; filed wiring tasks include VB-R2364-SWEEP-WIRE and VB-AK-NATIVE-WIRE-WRITE. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md))
-- **Conversational/episodic memory eval** instruments (BEAM + Tulving adapters) and REPL embedding retrieval are tracked as active handoffs. ([conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md))
+- **Conversational/episodic memory eval** instruments (BEAM + Tulving adapters) and REPL embedding retrieval are tracked as active handoffs. ([conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md), [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval))
 - **Governance**: RATIFY-WS58-RETENTION-LESSONS-20261025 signed (calendar lessons, MEASUREMENT.md section 5 evidence retention, destructive-ops hook). Handoff-index authoring contract and agent-loop design guides were refreshed. ([workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md), [handoff-index-authoring](../docs/guides/agent-workflows/handoff-index-authoring.md), [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md))
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
@@ -4218,10 +4250,10 @@ Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substr
 - **Already projectable through existing adapters:** KPF-64 replay A-D and arm E (chunk_kv), KPF-17/18/62 fork rows (kv_prefix_fork), inf72 RT-1/RT-9 (moe-routing), ds41-w5d, spec-rng-1-2, yarn native and extension arms (VB-YARN-AGG), pb-qcost confirms, new10-q38fn, CME-7S (clbench-cache-hit), GPU-LEAK-1 probes, and s5-rtepfx2. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) projectability notes; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Needs a write side (VB-HARVEST-1022.a-e):** llama-bench ABA timing (v11-050/051/052, q38fn arm P/P2 speed, hsf-5p microbench, c5-gate-b, kvu19b-p3); fold-gate verdicts (depends on VB-FOLDGATE-WRITE); a kpf62-g0 stage1 parser; a cluster-bootstrap capability row for ufh14-lb3-4; and source rows for inf48-g10, inf42-g1, fd-div-1b, speech-d1, kpf60-p0-gpu and m27-live-recall. Several runs emitted `belief_measurements.jsonl` (KVU-16b, kpf174d) but stay unprojected until an adapter and a planning-context canary exist; CH-26a emitted none. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
 - **Must project nothing:** s5-dripreview1 (vacuous), akx-lb3-2-attribution, hpr-b-64k-holdout, ufh14-lb7-1, and HSF PROFILE-1..5 (INVALID or report-only). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **Quarantine is the rule for runs whose self-description is wrong.** The failed FA4 `nan_A` run emitted 228 rows and 228 tuples with an erroneous `partial=false` and zero own-process residency proofs. They must never be ingested; nothing was ingested because the v11fa read side is not applied. Producer seals were rebound (4e309975 -> 97810628 -> 3a28f55e), and old receipts stay historical. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-V11FA; [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md))
-- **The refactor program gets a conformance source (VB-REFACTOR-CONFORMANCE):** controlled behavioural-regression verdicts are captured prospectively through the existing native CI verifier and shared grade. Manual branch reviews remain supporting findings, not runtime proof, with no retrofit and no new ladder. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md))
+- **Quarantine is the rule for runs whose self-description is wrong.** The failed FA4 `nan_A` run emitted 228 rows and 228 tuples with an erroneous `partial=false` and zero own-process residency proofs. They must never be ingested; nothing was ingested because the v11fa read side is not applied. Producer seals were rebound (4e309975 -> 97810628 -> 3a28f55e), and old receipts stay historical. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-V11FA; [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
+- **The refactor program gets a conformance source (VB-REFACTOR-CONFORMANCE):** controlled behavioural-regression verdicts are captured prospectively through the existing native CI verifier and shared grade. Manual branch reviews remain supporting findings, not runtime proof, with no retrofit and no new ladder. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10))
 
-Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
@@ -4235,7 +4267,7 @@ Sources: [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-prog
 
 The post-cut checkpoint adds a scoped C5 GitNexus caller audit to the existing committed-conclusion path: the accepted handoff records one `[belief: cc]` result tick and files the prospective `VB-GNX-C5-CALLER-AUDIT-1` source task. That observation concerns the tool's audited caller graph; it is not a measurement tuple, kernel-source application, global graph qualification, or fold decision. The INF-75 host-excluding preflight remains preparation evidence with `[no-belief]`, because no census ran. META-ASSERT-1, XGRAMMAR-A2, and M4 GPU records remain build/parser/load-only or candidate-only evidence. No wrap-up ingest was run; ledger synchronization is a read-only freshness check.
 
-Sources: [C5 accepted checkpoint](../handoffs/active/speculative-decoding-mtp-refresh.md); [Vidya program](../handoffs/active/vidya-belief-substrate-program.md); [INF-75 handoff](../handoffs/active/autokernel-cross-workload-keep-gate.md); [AutoKernel champion handoff](../handoffs/active/autokernel-champion-aggregate.md); [WS58 result harvest](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
+Sources: [C5 accepted checkpoint](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh); [Vidya program](../handoffs/active/vidya-belief-substrate-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [WS58 result harvest](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
 
 
 ## Compiled Update — 2026-10-28 (CME7T, CS22 and STT2 sources are enrolled ahead of reader use)
@@ -4246,7 +4278,7 @@ The source tables now extend existing CME7T, CS22 and speech-conversation famili
 - **CS22:** the original negative remains a committed diagnostic conclusion; prospective same-release capture retains the unproved-weight-identity caveat. Strict projection and planning-context canary remain open; historical records are not backfilled.
 - **STT2:** the converted Parakeet/Whisper assets and per-clip CPU smoke source are bound before acquisition/execution. The source family still needs strict native-record reading and a planning-context canary before it can be called wired.
 
-Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/conversation-stack.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
+Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/completed/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/speech-and-multimodal.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
 
 ## Compiled Update — 2026-10-29 (wrap-up sweep)
 
@@ -4256,19 +4288,19 @@ Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substr
 - **Backlog hygiene:** the 2026-10-29 audit closed duplicate/superseded boxes (colbert A/B duplicate, DAR-3, UTM-P1b) with the target line cited; two duplicate 122B obligations (DR-3, DR-3e) were retired under the standing operator directive and counted as administrative retirements, not delivered tasks.
 - **Open:** planning-context canaries for new native record families (PROFILE-6 trace, TOC A/B) remain unproved; none is called wired.
 
-Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/tool-output-compression.md); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md).
+Sources: [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the custody and retirement records (gate receipts, archive refs, path absence); **not wired** for any belief source whose planning-context canary has not passed.
 
-- **Disk emergency traced to worktree sprawl.** Free space fell to the 150 GiB floor on 10-29/30; 561 git worktrees held 471 GiB (refactor 60 / 42 GiB, NI 35 / 23.5, other 318 / 264). Removing 4 trees, promoting 4 docs-only branches, a 1-day-idle gate pass (66 clean+landed trees) and retiring 61 obsolete launchers took free space from 151 to 371 GiB; about 67 content-safe trees stay blocked by stale `.env`/`.bash` references (LOOP-39/41). Follow-ups are scoreboard worktree size, tmux-based Codex nudges and backup retention. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md); [refactor cleanup](../artifacts/compute/refactor-worktree-cleanup-20261030.json))
+- **Disk emergency traced to worktree sprawl.** Free space fell to the 150 GiB floor on 10-29/30; 561 git worktrees held 471 GiB (refactor 60 / 42 GiB, NI 35 / 23.5, other 318 / 264). Removing 4 trees, promoting 4 docs-only branches, a 1-day-idle gate pass (66 clean+landed trees) and retiring 61 obsolete launchers took free space from 151 to 371 GiB; about 67 content-safe trees stay blocked by stale `.env`/`.bash` references (LOOP-39/41). Follow-ups are scoreboard worktree size, tmux-based Codex nudges and backup retention. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md); [refactor cleanup](../artifacts/compute/refactor-worktree-cleanup-20261030.json))
 - **One reusable checkout per lane, no per-task worktrees.** Operator rule 2026-10-30: Codex3 uses persistent lanes (root, research, orchestrator, NEMO and KPF experimental kernel sources) with serialized push leases keyed to the canonical repo, and removes temporary trees through `worktree_gate.py` (never force, prune or gc). NI/ROOT/APP retired 68 + 11 root, 37 Orchestrator/Research and 10 further task trees, each with archive refs, preserved patches and retained branches; the reusable lanes are one per repo. ([codex3 lane checkouts](../docs/guides/agent-workflows/codex3-lane-checkouts.md); [root retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md); [repo retirement](../progress/2026-10/2026-10-30-codex-ni-repo-legacy-retirement.md))
 - **Legacy T1 dry-run admission is off by default.** About six self-refusals in a week prompted the canonical `filler_run13.sh` template to skip it (`FILLER_LEGACY_T1=1` restores it); the real smoke plus the keeper-validated READY manifest replace the check. ([workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md))
-- **Multirepo refactor advances through private packages.** K1/K2 fixes (typed-recoverable errors, fingerprinting existing oracle sources, declaration validation, process-group ownership) landed on research main with test counts but no measurement verdicts; K2 C4-05, K3 prune and D10 stay open, and the CI baseline rerun awaits an API-health fixture fix after the tripwire stopped the first full baseline. ([refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md))
+- **Multirepo refactor advances through private packages.** K1/K2 fixes (typed-recoverable errors, fingerprinting existing oracle sources, declaration validation, process-group ownership) landed on research main with test counts but no measurement verdicts; K2 C4-05, K3 prune and D10 stay open, and the CI baseline rerun awaits an API-health fixture fix after the tripwire stopped the first full baseline. ([refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10))
 - **Belief-kernel write wiring.** The combined LB4.9 op-case/teacher-forced diagnostic and the KPF plan-steps capture (52 actions over 23 plans) are wired, the latter via a real planner canary; the PIP-02 incremental TEDS writer landed (research `cbd7ee026`, root `ebc48f2d7`). CAFE-1 frontdoor MTP p-min, AK serving profile, speech LEX2/META and G11-G13 retrieval fidelity are enrolled as sources, writer/reader and canary still open, so none is called wired. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [CAFE source](../progress/2026-10/2026-10-31-codex3-cafe-source-pip.md))
 
-Sources: [non-inference-backlog](../handoffs/active/non-inference-backlog.md) · [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [codex3 lane checkouts](../docs/guides/agent-workflows/codex3-lane-checkouts.md) · [ROOT lane reclassification](../progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md)
+Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) · [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [codex3 lane checkouts](../docs/guides/agent-workflows/codex3-lane-checkouts.md) · [ROOT lane reclassification](../progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
@@ -4290,15 +4322,15 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 
 **Confidence: scoped to cited native records and source controls.**
 
-- A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/internal-kb-rag.md))
-- Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool compression](../handoffs/active/tool-output-compression.md))
+- A frozen qd-v1 census of 35,280 rows found 46.040% over the 256-token cap and 51.274% model-input-token retention; this is recipe replay, not proof of the historical tokenizer, qd-v2, retrieval quality or G13 adoption. ([RAG](../handoffs/active/knowledge-pipelines.md))
+- Prospective source enrollment preserves native identity, unknowns and original write-side warrant; synthetic adapters or canaries do not prove live wiring, and previously unrecorded warrant is not invented. Existing grades remain shared. ([belief program](../handoffs/active/vidya-belief-substrate-program.md); [REPL retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/active/intake-derived-work-2026-07-25.md)
+- ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/active/frontier-lab-automation.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
@@ -4308,7 +4340,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - CS-22.V0 strict native reader: exact receipt replay rederived three FALSE propositions, but the actual planning reader omitted all three and its freshness stub was CONTROL_ONLY, so the semantic planning canary stays OPEN. [progress](../progress/2026-11/2026-11-01-codex3.md)
 - VB-KVQ-V10-RECONSIDER (APP `6eb94e95`): a read-only snapshot CLI flags archived AutoPilot decisions whose claims were later corrected or retracted; it never reverses or writes the ledger.
 - Newly enrolled prospective write-side wiring tasks (all open): host attestation, AutoKernel GFX counters, AP-70 rotation reads, TOC episode usage, CJ-7a/7c edit records, SSU-F11 findings, STT5 raw records, DF2-12.1 parity, HARD qualification receipts, ODL intrinsic projection, AK custody. Each reuses the existing carrier and `claim_tuple.grade()`.
-- Host-evidence checkpoint (Research `f311e004`): a partial host observation is embedded after claim admission; cache drop, re-warm and THP are NOT attested, and the warning boundary (> one week) differs from Annex B (>= one week). S-11 awaits the measurement-protocol owner. [reboot-gated](../handoffs/active/reboot-gated-inventory-and-staging.md)
+- Host-evidence checkpoint (Research `f311e004`): a partial host observation is embedded after claim admission; cache drop, re-warm and THP are NOT attested, and the warning boundary (> one week) differs from Annex B (>= one week). S-11 awaits the measurement-protocol owner. [reboot-gated](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging)
 - ETV-T2 bounded search: 454 question rows, 186 groups, zero eligible `tool_use` rows, so divergence is UNKNOWN, not zero. [progress](../progress/2026-11/2026-11-01.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)

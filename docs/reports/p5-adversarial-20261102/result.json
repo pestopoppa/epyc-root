@@ -1,0 +1,30 @@
+{
+  "schema": "p5.adversarial-qualification.v1",
+  "verdict": "PASS",
+  "image_id": "sha256:9b1cabf7bcd83a28469f67e3852d8e2207e90d45aa71f436bb7e600bdee8bae2",
+  "runner_sha256": "e9c110f9d6076eab90b5b787f14e63d6de09bc7a810865f076961d3d7c62fcb0",
+  "sandbox_sha256": {
+    "exec_sandbox.py": "ac58801481af23b1d8a07a00974164e5f0145c7ef9eeb482412ed8027c0fbe12",
+    "fence_kernel.py": "fc1acd0b0820be72aedee63e3c88ae5be6b109e94addd733e36016bfc04e8352",
+    "_fence_rules.py": "238416a6fd3515717cde09dd8fc71197d8afaa66e374ae5b07b09525ffb45752",
+    "_fence_kernel_shim.py": "3b27589c7ad633156376183ff3d8e1ea784833089d507b9bbdc451bb48358b54"
+  },
+  "syscalls": {
+    "foreign_proc_denied": true,
+    "io_uring": 13,
+    "machine": "x86_64",
+    "ptrace": 13,
+    "socket_inet": 13,
+    "socket_unix": 13,
+    "unshare": 13
+  },
+  "checks": [
+    "syscall_denials",
+    "foreign_proc_denied",
+    "positive_file",
+    "traversal_symlink_refused",
+    "host_paths_and_source_guard",
+    "container_cleanup"
+  ],
+  "scope": "bounded controls on one image; not complete isolation or scorer qualification"
+}

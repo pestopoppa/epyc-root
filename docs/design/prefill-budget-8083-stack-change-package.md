@@ -1,7 +1,7 @@
 # Stack-change package component (DRAFT): enable the decode-aware prefill budget on :8083
 
 **Status:** DRAFT 2026-10-24. A component of the one v11 stack-change signature (no piecemeal reload). Not signable until the gates in section 4 pass. Nothing was applied, no server was started, no registry/topology yaml was edited. This is the KVU-16g-2 package edit; it is not a deploy.
-**Owner task:** `KVU-16g-2` in [`kv-unified-stack-rollout.md`](../../handoffs/active/kv-unified-stack-rollout.md). Sibling component: [`eg2-embedder-adoption-stack-change-package.md`](eg2-embedder-adoption-stack-change-package.md). Assembled into the v11 kernel-promotion ratification by the promotion session (`kernel-promotion` step 8 hands to `stack-change`).
+**Owner task:** `KVU-16g-2` in [`kv-unified-stack-rollout.md`](../../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout). Sibling component: [`eg2-embedder-adoption-stack-change-package.md`](eg2-embedder-adoption-stack-change-package.md). Assembled into the v11 kernel-promotion ratification by the promotion session (`kernel-promotion` step 8 hands to `stack-change`).
 **Depends on:** manifest row V11-016 (`65d48a7a0` / champion `7052e26df`, flags default OFF) in [`llama-v11-manifest.md`](../reference/kernel-manifests/llama-v11-manifest.md); `KVU-16g-1` (the row-5c A/B score sheet); `PB-QCOST-1` in `gpu-serving-tie-in-program.md`.
 
 ## 1. Intent (phase 0)

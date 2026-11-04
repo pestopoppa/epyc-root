@@ -1,0 +1,27 @@
+{
+  "case": "^type_a=q4_K,type_b=f32,m=16,n=5,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+  "full_gak_pass": null,
+  "input_bytes_equal": true,
+  "kind": "selected diagnostic summary; raw result retained in scratch",
+  "outputs_equal": true,
+  "raw_result": "/mnt/raid0/llm/tmp/codex-c6-remain-q4k-20261102/RESULT.json",
+  "raw_result_sha256": "af8fb703f6cf8daae8b5c1fe5646cc2ed356ac0706e555d763a5d26fdf8b46ed",
+  "records": {
+    "baseline": {
+      "original_case_index": 7047,
+      "rc": 1,
+      "residual": "0.0086928737870828558",
+      "stdout_sha256": "1f17053682e651be327582d466e61f0cba2ff64136bbeb192c2da5d4cb52149a",
+      "tolerance": "0.0059480931310319316"
+    },
+    "candidate": {
+      "original_case_index": 7047,
+      "rc": 1,
+      "residual": "0.0086928737870828558",
+      "stdout_sha256": "1f17053682e651be327582d466e61f0cba2ff64136bbeb192c2da5d4cb52149a",
+      "tolerance": "0.0059480931310319316"
+    }
+  },
+  "route": "MMQ",
+  "status": "COMPLETE_DIAGNOSTIC_ONLY"
+}

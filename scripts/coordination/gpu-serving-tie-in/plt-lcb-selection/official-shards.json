@@ -1,0 +1,52 @@
+{
+  "dataset": "livecodebench/code_generation_lite",
+  "revision": "28efd4d97f479657d49989f83e30b9d51481ad9e",
+  "config": "release_v6",
+  "files": [
+    {
+      "name": "test-00000-of-00009.parquet",
+      "bytes": 75385387,
+      "sha256": "e4b2a6aaee6ca2a1a8184f5baa204e6e2268578e8d2078aa962f1cca81f53eb0"
+    },
+    {
+      "name": "test-00001-of-00009.parquet",
+      "bytes": 353243448,
+      "sha256": "f9eb539b5e53e4239ef5a21e77222dda5d215b1888b0fc357dfcba97a15f60a0"
+    },
+    {
+      "name": "test-00002-of-00009.parquet",
+      "bytes": 547148226,
+      "sha256": "afad0f12028daf2a2732296fe83b032dbb297a2160c83a64d731fec972d3d23d"
+    },
+    {
+      "name": "test-00003-of-00009.parquet",
+      "bytes": 879660215,
+      "sha256": "c7ff518dfa4a836511f026481cc42bb60cf8efa25ed9aea776277cff2f5710e0"
+    },
+    {
+      "name": "test-00004-of-00009.parquet",
+      "bytes": 635992480,
+      "sha256": "f12e8713eb4c672b8eec0d59fdff39efa08956b96bef1cbc5fa9edaa5248b1b4"
+    },
+    {
+      "name": "test-00005-of-00009.parquet",
+      "bytes": 1159591686,
+      "sha256": "8dd281cf754501824bcaadad5baa3c89f7e2c83cf0d299c27eba6fae67f6ea1d"
+    },
+    {
+      "name": "test-00006-of-00009.parquet",
+      "bytes": 514869763,
+      "sha256": "08f27c58294c3083320c2419bf9f38308231331d252670492793729bf4ed1675"
+    },
+    {
+      "name": "test-00007-of-00009.parquet",
+      "bytes": 78448917,
+      "sha256": "51fb6fe6d044d02b22148ef06af8107a3e20addb270f871de6a624cc25875701"
+    },
+    {
+      "name": "test-00008-of-00009.parquet",
+      "bytes": 90113345,
+      "sha256": "735aaeeaf6d9302faa2cf943dd607f6ab21a637289a6e1e6ff5878c3648d5435"
+    }
+  ]
+}

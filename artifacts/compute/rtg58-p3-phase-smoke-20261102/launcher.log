@@ -1,0 +1,7 @@
+[region-lock] acquiring regions [] as role='bench' (timeout_s=0.0) …
+[region-lock] held sub-quarter cores {q3: [80, 81]}
+/mnt/micron/rtg58-p3-phase-cpu-20261102/bin/llama-server: OK
+/mnt/micron/rtg58-p3-phase-cpu-20261102/bin/libllama.so: OK
+/mnt/micron/rtg58-p3-phase-cpu-20261102/bin/libggml.so: OK
+PASS: live server phase writer; prestart excluded: 2 decode rows: 15
+PASS: shared adapter re-derived native phase and source log; grade: Judged

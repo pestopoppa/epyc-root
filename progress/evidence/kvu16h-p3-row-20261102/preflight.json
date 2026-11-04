@@ -1,0 +1,9 @@
+{
+  "schema": "kvu16h.p3.preflight.v1",
+  "weight_hashing": "reuses KVU16a anchored receipt; only stat rechecked; no new weight reads",
+  "model_receipt_sha256": "42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078",
+  "inputs_prepared_outside_grant": true,
+  "source_origin": "/mnt/raid0/llm/tmp/kvu/p3-successor",
+  "runtime_manifest_origin": "progress/evidence/kvu16a-load-20261102/runtime.sha256",
+  "status": "offline-prepared; keeper native GPU qualification required"
+}

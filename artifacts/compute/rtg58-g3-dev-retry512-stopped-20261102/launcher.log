@@ -1,0 +1,7 @@
+[region-lock] acquiring regions [] as role='bench' (timeout_s=21600.0) …
+[region-lock] held sub-quarter cores {q1: [24, 25, 26, 27, 28, 29, 30, 31]}
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.142.602 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+Terminated

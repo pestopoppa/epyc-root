@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """promote_lane.py — P2-8 merge cadence: one lane onto main, one promotion at a time.
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P2-8)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P2-8)
 Plan of record: docs/design/loop-owned-fleet.html  (red-team finding R17)
 
 WHAT THIS IS

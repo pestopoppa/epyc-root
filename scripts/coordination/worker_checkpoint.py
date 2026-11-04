@@ -40,7 +40,7 @@ FORBIDDEN_EXACT = frozenset({
     "handoffs/active/.index-state.json",
     "handoffs/active/.index-graph.json",
     "handoffs/active/master-handoff-index.md",
-    "handoffs/active/inference-batch-loop.md",
+    "handoffs/active/eval-tower-program.md",
     "data/handoff_timeline.json",
     "wiki/source_manifest.json",
 })

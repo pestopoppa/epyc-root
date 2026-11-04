@@ -253,7 +253,7 @@ roles:
 
 If `none`: do NOT add to `worker_pool` / `escalation_chains` until the source agent file is shortened or a different (smaller) model is chosen.
 
-Per `handoffs/active/agent-file-prose-compression.md` Phase 4 + `.claude/skills/agent-file-compress/SKILL.md`.
+Per `handoffs/active/frontier-lab-automation.md` Phase 4 + `.claude/skills/agent-file-compress/SKILL.md`.
 
 ## Error Handling
 

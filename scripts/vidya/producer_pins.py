@@ -87,6 +87,9 @@ EXEMPT = {
     ("hg5_request_event", "SCHEMA_V2_SHA256"): "schema bytes ship inside each sealed event",
     ("ch19_t3_screen", "PRODUCER_SHA256"): "producer is a /mnt/raid0/llm/tmp script, not a file on a repo main; "
                                            "the adapter re-hashes it live and refuses a different script",
+    **{("dtap_crm_pair", name): "digest of immutable captured custody (producer harness copy, provider, lock, receipt) "
+                              "reopened from the sealed source manifest and the run's own bytes, never main's"
+       for name in ("PRODUCER_SHA256", "PROVIDER_SHA256", "LOCK_SHA256", "RECEIPT_SHA256")},
     ("oolong", "VENDORED_SHA256"): "vendored upstream file, pinned on purpose",
     ("qwen4exp_quality", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
     ("weight_handoff", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",

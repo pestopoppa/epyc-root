@@ -1,0 +1,15 @@
+# P3-5 replacement bake-off arms — operator decision package
+
+**Decision:** Which model tenants should the shadow bake-off compare now that the original Qwen3.6-27B stock and FF artifacts have been deleted? The served Qwen3.8-27B is an incumbent, not by itself an operator selection of the bake-off arms. This package requests arm selection only; it does not authorize activation, production traffic, kernel changes, or a measurement run.
+
+## Options
+
+1. **Recommended: Qwen3.8-27B incumbent versus the existing A4 bridge as a sequential control.** Use the served Qwen3.8-27B Q8 base as the candidate and the previously specified A4 bridge as control, subject to validating the currently available A4 artifact and current serving recipe before a run. This tests a present-day candidate against the handoff's historical control without re-downloading the deleted 27B pair. It is a candidate-versus-control comparison, not a like-for-like stock-versus-FF comparison; a distinct alternative 27B model can be selected later if that question remains valuable. Co-residency was not possible in the original control design, so plan sequential windows and re-check current capacity rather than assuming it changed.
+2. **Restore Qwen3.6 stock and FF as the paired tenant arms.** Re-download and verify the deleted artifacts and compare the originally intended pair, optionally retaining A4 as a separate sequential control. This preserves the historical stock-versus-FF question but consumes storage and download effort and compares older models rather than the current incumbent. The original approval for deletion is not approval to restore the weights.
+3. **Qwen3.8 incumbent baseline only.** Measure and characterize the current tenant first; select a challenger separately. This has the smallest immediate model-preparation scope but cannot produce a comparative tenant winner.
+
+## Evidence and execution consequences
+
+The source handoff is `handoffs/active/mi210-serving-program.md` P3-5; P3-1 through P3-3 were superseded when their arms were deleted. The research registry records the Qwen3.8-27B Q8 as the served GPU incumbent. Its on-disk base file is 29,047,086,048 bytes; the 2,056,414,752-byte DFlash2 draft and 3,164,006,688-byte MTP draft are mode-related artifacts, not independent model-quality challengers. These sizes are inventory, not content-identity or residency proofs. The mode comparison is the separate P3-4 task.
+
+After selection, verify chosen artifact identities and availability before publishing a row, identify the authorized kernel and serving recipe, design and measure fresh tenant/mode/context ceiling rows, and then update the tenancy policy and candidate-model setting in the proper orchestrator worktree. Preserve per-duty coder and co-critic results separately, with their scoring and uncertainty predeclared. Apply the existing shadow-only invariant and obtain the required compute grant; later production sign-off is a separate decision. No old ceiling transfers automatically to the new tenant.

@@ -101,12 +101,15 @@ Audit trail in `logs/agent_audit.log`; analysis via `scripts/utils/agent_log_ana
 
 The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexes in `measurement/protocols/`); use its agent digest, [MEASUREMENT_POLICY.md](agents/shared/MEASUREMENT_POLICY.md), for claim grammar, era handling, codified recipes, deterministic replay, and consolidated ratification. The measurement trust boundary is human-amendment-only.
 
+**Measurement sufficiency:** every measurement states its question, expected effect versus sample-size error, checkpoints, and stop-on-answer / stop-on-futility rules; reuse valid evidence first, save incremental results, and stop when the scoped question is answered. Formal-gate cells stay futility-only at interim looks until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided. Canonical: [`measurement-sufficiency.md`](docs/guides/agent-workflows/measurement-sufficiency.md).
+
 ## Session Management
 
 - `scripts/session/session_init.sh` — discover models, verify llama.cpp
 - `scripts/session/health_check.sh` — system health
 - `scripts/session/verify_llama_cpp.sh` — branch safety
 - `scripts/nightshift/` — autonomous overnight runs
+- **Never stop readying inference tasks** while any un-readied one exists; no gate (park, stuck rule, target, cooldown) may override it — [backlog-churn-flow.md → *The one rule no gate may break*](docs/guides/agent-workflows/backlog-churn-flow.md).
 - **Inference backlog piling up / compute idle while rows are queued?** The packing discipline (bins, derived
   booking class, grant-writer invariants, the operator STATUS/ETA report) is the project skill
   `.claude/skills/inference-backlog-scheduling/` on top of `docs/guides/agent-workflows/compute-fillers.md`;

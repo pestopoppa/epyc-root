@@ -17,7 +17,7 @@
 # THIS FILE closes remedy (a) from that report: a cheap STARTUP check — not
 # the generalised H-4 supervision loop, which is remedy (b) (a registry
 # `runtime:` field + `observer_census.py --live`, tracked separately under
-# NIB2-81 in handoffs/active/non-inference-backlog.md, out of scope here).
+# NIB2-81 in handoffs/active/engineering-hygiene-backlog.md, out of scope here).
 # "A lane may develop a daemon, never run it": `dp_attest` REFUSES to start a
 # daemon whose own script does not resolve under the canonical root, and any
 # daemon that calls it can additionally poll `dp_stale_since_start` once per

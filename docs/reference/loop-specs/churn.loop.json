@@ -96,7 +96,7 @@
     {
      "from": "dryrun-running",
      "to": "needs-dryrun",
-     "on": "disk floor below dryrun_disk_policy.json",
+     "on": "free disk below the engine floor (FILLER_DISK_FLOOR_GIB)",
      "reason": "DISK-WAIT"
     },
     {
@@ -635,7 +635,7 @@
    "id": "DISK-WAIT",
    "kind": "wait",
    "machine": "row",
-   "condition": "disk below dryrun_disk_policy.json floor: a WAIT, never a FAIL",
+   "condition": "free disk below the engine floor (FILLER_DISK_FLOOR_GIB, 150 GiB; 20 GiB in a smoke): a WAIT, never a FAIL",
    "clears_when": "disk recovers"
   },
   {

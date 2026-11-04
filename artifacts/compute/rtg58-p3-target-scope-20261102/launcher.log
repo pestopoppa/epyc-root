@@ -1,0 +1,24 @@
+[region-lock] acquiring regions [] as role='bench' (timeout_s=0.0) …
+[region-lock] held sub-quarter cores {q3: [80, 81]}
+llama-server: OK
+libggml-base.so: OK
+libggml-base.so.0: OK
+libggml-base.so.0.16.0: OK
+libggml-cpu.so: OK
+libggml-cpu.so.0: OK
+libggml-cpu.so.0.16.0: OK
+libggml.so: OK
+libggml.so.0: OK
+libggml.so.0.16.0: OK
+libllama-common.so: OK
+libllama-common.so.0: OK
+libllama-common.so.0.0.10456: OK
+libllama-server-impl.so: OK
+libllama.so: OK
+libllama.so.0: OK
+libllama.so.0.0.10456: OK
+libmtmd.so: OK
+libmtmd.so.0: OK
+libmtmd.so.0.0.10456: OK
+PASS: unscoped draft rows cause refusal
+PASS: target-only draft-simple verify rows: 23 prestart: 0 grade: Judged

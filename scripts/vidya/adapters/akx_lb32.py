@@ -26,6 +26,7 @@ Doctrine: PROJECTION ONLY (``claim_tuple.grade()`` decides; no ladder here).
 from __future__ import annotations
 
 import dataclasses
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -37,6 +38,10 @@ from claim_tuple import ProjectionError, register, to_frames  # noqa: E402
 from adapters import _native_sidecar as ns  # noqa: E402
 
 CAPTURE_SCHEMA = "epyc.vidya.akx_lb32_capture.v1"
+CONTROL_SCHEMA = "epyc.vidya.akx_lb32_capture.v2"
+CONTROL_VERSION = "akx-lb32-same-source-control-v2"
+IDENTITY_KEYS = ("version", "source", "research", "run", "pair", "order", "G", "M", "threads",
+                 "reported_threads", "grant", "champion")
 SIDECAR_NAME = "akx_lb32.beliefs.jsonl"
 ADAPTER_ID = "vidya.adapters.akx_lb32/v1"
 AUTHORITY = "measurement"
@@ -52,8 +57,161 @@ def _share(v: Any) -> bool:
     return ns.finite(v) and 0.0 <= v <= 1.5      # a share; >1 tolerated only as a measured overshoot, never negative
 
 
+def _bound(ref: Any) -> Path:
+    if not isinstance(ref, dict) or not ns.text(ref.get("path")) or not ns.SHA256.fullmatch(str(ref.get("sha256", ""))):
+        raise ValueError("malformed file reference")
+    path = Path(ref["path"])
+    if not path.is_absolute() or not path.is_file() or ns.file_sha256(path) != ref["sha256"]:
+        raise ValueError("missing or changed evidence: " + str(path))
+    return path.resolve()
+
+
+def _json(path: Path) -> dict:
+    value = json.loads(path.read_text())
+    if not isinstance(value, dict):
+        raise ValueError("expected JSON object")
+    return value
+
+
+def _manifest(path: Path) -> dict:
+    fields = {}
+    for line in path.read_text().splitlines():
+        key, sep, value = line.partition("=")
+        if sep and key in IDENTITY_KEYS:
+            if key in fields:
+                raise ValueError("duplicate manifest identity")
+            fields[key] = value
+    if set(fields) != set(IDENTITY_KEYS) or not all(ns.text(v) for v in fields.values()):
+        raise ValueError("incomplete manifest identity")
+    if (fields["version"] != CONTROL_VERSION or fields["source"] != "c72ec82f5417bb2937310326120f149b665e8400"
+            or fields["order"] not in ("GM", "MG") or fields["threads"] != "48" or fields["reported_threads"] != "96"):
+        raise ValueError("unexpected control identity")
+    return fields
+
+
+def _native_verdict(value: dict) -> str:
+    part = value["gating"]
+    cells = part["cells"]
+    if set(cells) != {str(n) for n in NS_ALL}:
+        raise ValueError("native verdict lacks complete cells")
+    for n in (2, 3, 4, 5):
+        cell = cells[str(n)]
+        if (not _share(cell["F_fa_wall_share"]) or not ns.finite(cell["S_depth_share"])
+                or not ns.nonneg_int(cell["reps_used_d64k"]) or cell["reps_used_d64k"] < 8
+                or not ns.finite(cell["overhead_d64k"]) or abs(cell["overhead_d64k"]) > .05
+                or not ns.finite(cell["coverage_defect_d64k"]) or not 0 <= cell["coverage_defect_d64k"] <= .10):
+            raise ValueError("native gating cell is invalid")
+    fm = max(cells[str(n)]["F_fa_wall_share"] for n in (2, 3, 4, 5))
+    sm = max(cells[str(n)]["S_depth_share"] for n in (2, 3, 4, 5))
+    want = "LANE_LARGE" if fm >= THRESH else ("LANE_SMALL" if sm < THRESH else "SPLIT_UNRESOLVED")
+    if (part["max_F_N2to5"] != fm or part["max_S_N2to5"] != sm
+            or part["verdict"] != want or value["verdict"] != want or part.get("why")):
+        raise ValueError("native verdict does not re-derive")
+    return want
+
+
+def _control_problems(row: dict) -> list[str]:
+    """v2 requires retained provenance; v1's absent-attestation behavior is unchanged."""
+    try:
+        e = row["extra"]
+        c = e["control_instrument"]
+        identity = c["identity"]
+        start_path, manifest_path, record_path, pair_path = (_bound(c[k]) for k in
+                                                           ("start", "manifest", "run_record", "pair_result"))
+        root = manifest_path.parent
+        if (start_path != root / "CONTROL_CAPTURE_START.json" or manifest_path != root / "INSTRUMENT.txt"
+                or record_path != root / "RUN_RECORD.json" or Path(row["results_path"]).resolve() != root / "VERDICT.json"):
+            raise ValueError("control files do not belong to this run")
+        if identity != _manifest(manifest_path) or identity["run"] != row["run_id"]:
+            raise ValueError("row/manifest identity mismatch")
+        start = _json(start_path)
+        if (start["schema"] != CONTROL_SCHEMA or start["instrument"] != identity
+                or c["baseline_kind"] != "champion_store_profiler_off"
+                or start["baseline_kind"] != c["baseline_kind"]
+                or not ns.text(c["baseline_claim"]) or c["baseline_claim"] != start["baseline_claim"]):
+            raise ValueError("start/control identity mismatch")
+        for refs in (start["evidence"], c["evidence"]):
+            if not isinstance(refs, list) or not refs:
+                raise ValueError("missing control evidence")
+            paths = [_bound(item) for item in refs]
+            if len(set(paths)) != len(paths):
+                raise ValueError("duplicate evidence")
+        if any(not _bound(item).is_relative_to(root / "out") for item in c["evidence"]):
+            raise ValueError("native evidence escapes run output")
+        start_refs = {str(_bound(item)): item["sha256"] for item in start["evidence"]}
+        if start_refs.get(str(manifest_path)) != c["manifest"]["sha256"]:
+            raise ValueError("start does not bind manifest")
+        pre = _bound({"path": e["predeclaration_path"], "sha256": e["predeclaration_sha256"]})
+        if start_refs.get(str(pre)) != e["predeclaration_sha256"]:
+            raise ValueError("start does not bind predeclaration")
+        rules = pre.parent
+        required = [manifest_path, pre, rules / "AMENDMENT-control-v2.md", rules / "AMENDMENT-control-v2.sha256",
+                    rules / "PAIR-DECLARATION.sh", rules / "AMENDMENT-affinity-v3.md",
+                    rules / "REBASED-INSTRUMENTATION.patch", rules / "pair-state/GRANT.txt"]
+        required += [root / "out" / ("B0." + arm + suffix) for arm in ("G", "M")
+                     for suffix in (".cache-options.txt", ".compiler-identity.txt", ".compiler-executables.txt", ".sha256")]
+        if set(start_refs) != {str(path.resolve()) for path in required} or pair_path != rules / "PAIR_VERDICT.json":
+            raise ValueError("start evidence or pair location differs from declared instrument")
+        pair = _json(pair_path)
+        if (pair["schema"] != "epyc.akx_lb32.pair_verdict.v1" or pair["pair_id"] != identity["pair"]
+                or pair["grant"] != identity["grant"] or pair["one_fixed_pair"] is not True
+                or pair["no_averaging"] is not True or pair["pair_verdict"] not in VERDICTS
+                or pair["GM"] != pair["MG"] or pair["GM"] != pair["pair_verdict"]
+                or not isinstance(pair["runs"], list) or len(pair["runs"]) != 2):
+            raise ValueError("invalid fixed pair")
+        paths = [_bound(item) for item in pair["runs"]]
+        if len(set(paths)) != 2:
+            raise ValueError("pair duplicates a run")
+        current = _bound({"path": row["results_path"], "sha256": row["results_sha256"]})
+        index = 0 if identity["order"] == "GM" else 1
+        if paths[index] != current or pair["runs"][index]["sha256"] != row["results_sha256"]:
+            raise ValueError("current run is not its exact pair member")
+        run_ids = set()
+        for order, path in zip(("GM", "MG"), paths):
+            if path.name != "VERDICT.json":
+                raise ValueError("pair member is not a native verdict")
+            fields = _manifest(path.parent / "INSTRUMENT.txt")
+            for key in ("version", "source", "research", "pair", "grant", "champion", "G", "threads", "reported_threads"):
+                if fields[key] != identity[key]:
+                    raise ValueError("pair crosses instrument identity")
+            if fields["order"] != order:
+                raise ValueError("pair order mismatch")
+            run_ids.add(fields["run"])
+            record = _json(path.parent / "RUN_RECORD.json")
+            expected = dict(schema="epyc.akx_lb32.run_record.v2", instrument=CONTROL_VERSION,
+                            run_id=fields["run"], pair_id=fields["pair"], arm_order=order,
+                            manifest_sha256=ns.file_sha256(path.parent / "INSTRUMENT.txt"),
+                            source_sha=fields["source"], measurement_sha=fields["source"],
+                            research_sha=fields["research"], control_build=fields["G"], measurement_build=fields["M"],
+                            verdict=pair["pair_verdict"])
+            if any(record.get(k) != v for k, v in expected.items()):
+                raise ValueError("run record identity mismatch")
+            if _native_verdict(_json(path)) != pair["pair_verdict"]:
+                raise ValueError("pair native verdict mismatch")
+        if len(run_ids) != 2:
+            raise ValueError("pair run ids are not distinct")
+        native = _json(current)
+        part = native["gating"] if e["threads"] == 48 else native["reported_t96"]
+        if e["kind"] == "cell":
+            source = part["cells"][str(e["n_prompt"])]
+            keys = ("F_fa_wall_share", "S_depth_share", "S_M_depth_share", "overhead_d64k", "overhead_d512",
+                    "coverage_defect_d64k", "reps_used_d64k", "t_ms", "F_cpu_sample_share_G",
+                    "class_share_d64k", "class_depth_delta_share")
+            if part["verdict"] not in VERDICTS or e["run_verdict"] != part["verdict"]:
+                raise ValueError("row/native verdict mismatch")
+        else:
+            source = part
+            keys = ("verdict", "seed_class", "max_F_N2to5", "max_S_N2to5", "mean_depth_delta_share_N2to5", "thresholds")
+        if any(e.get(k) != source.get(k) for k in keys):
+            raise ValueError("row differs from native results")
+        return []
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, IndexError) as exc:
+        return ["invalid v2 control provenance: " + str(exc)]
+
+
 def row_problems(row: Any) -> list[str]:
-    p = ns.common_problems(row, schema=CAPTURE_SCHEMA, optional_text=("protocol_id",))
+    schema = CONTROL_SCHEMA if isinstance(row, dict) and row.get("schema") == CONTROL_SCHEMA else CAPTURE_SCHEMA
+    p = ns.common_problems(row, schema=schema, optional_text=("protocol_id",))
     if not isinstance(row, dict) or not isinstance(row.get("extra"), dict):
         return p
     e = row["extra"]
@@ -110,6 +268,8 @@ def row_problems(row: Any) -> list[str]:
         pre = Path(e["predeclaration_path"])
         if pre.is_file() and ns.file_sha256(pre) != e["predeclaration_sha256"]:
             p.append("the frozen predeclaration no longer hashes to extra.predeclaration_sha256 (rule edited)")
+    if schema == CONTROL_SCHEMA and not p:
+        p += _control_problems(row)
     return p + ns.self_hash_problems(row)
 
 

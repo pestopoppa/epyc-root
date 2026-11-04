@@ -29,7 +29,7 @@ Two files, two roles:
       records_file           bare file name inside the run dir (per-attempt records)
 
 * **Belief sidecar** (``opencode_shell_run.beliefs.jsonl``, schema :data:`CAPTURE_SCHEMA`). This
-  writer emits it. It has one row per HS-14 column (``handoffs/active/harness-selection-and-integration.md``
+  writer emits it. It has one row per HS-14 column (``handoffs/active/harness-program.md``
   HS-14, "Local bake-off requirement"):
 
   ==========================================  ===========================  ==============

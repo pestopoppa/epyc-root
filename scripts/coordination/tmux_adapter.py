@@ -1,8 +1,8 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """tmux_adapter.py — reach the TWO interactive sessions in tmux (M5, grant-gated).
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P3-2)
-Prior owner:    handoffs/active/session-bus-thin-dispatcher.md (M5)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P3-2)
+Prior owner:    handoffs/active/coordination-and-churn-pipeline.md (M5)
 Gate:           OP-SENDKEYS-CODEX — granted by the operator 2026-07-27
 Caps:           flags.codex_sendkeys, caps.max_concurrent_mains (live windows, C9)
 

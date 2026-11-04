@@ -2,7 +2,7 @@
  *
  * THE ONE cross-dashboard nav. Before this, every page hand-copied a `<nav>`;
  * they were written at different times and drifted into a link matrix with holes
- * (audit 1.3 in handoffs/active/dashboard-architecture-restructure.md) — reaching
+ * (audit 1.3 in handoffs/active/coordination-and-churn-pipeline.md) — reaching
  * AutoKernel meant routing through the handoff board, and cross-server URLs were
  * re-derived ad hoc in three places. Links now come from ONE machine-readable
  * registry (`dashboard/registry.json`), inlined ahead of this file by

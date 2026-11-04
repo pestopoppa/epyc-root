@@ -1,0 +1,48 @@
+{
+  "schema": "kvu19a2.gpu-followup-preparation.v1",
+  "status": "capture-source-and-cases-preserved; gpu-row-not-ready",
+  "build_row_id": "handoff-kvu-kvu19a2-build-20261102",
+  "build_result": "/mnt/raid0/llm/tmp/kvu19a2-build-row-20261102/output/RESULT.json",
+  "required_build_status": "built",
+  "required_build_mode": "full",
+  "gpu_backend": "HIP",
+  "gpu_arch": "gfx90a",
+  "repetitions_per_case_per_arm": 5,
+  "processes_per_repetition": 1,
+  "output_capture": "raw output tensor bytes and SHA-256 for every fresh process",
+  "input_policy": "identical pinned fixture bytes and explicit fixed suite seed",
+  "arms": ["base", "candidate"],
+  "historical_case_set": "historical/cases.json",
+  "historical_capture_source": {
+    "path": "historical/fa_harness.cpp",
+    "sha256": "6dd03a07406cfe26dfd4ff52de4a4067fd7229d77ee5191bbd8e2e34956fa823",
+    "seed": 1234,
+    "filter_env": "FA_CASE",
+    "raw_output_env": "FA_DUMP_DIR",
+    "reuse_note": "source only; the precompiled scratch executable is not identity-bound"
+  },
+  "recovered_branch_transition": {
+    "path": "historical/branch-vs-loop-index.patch",
+    "sha256": "4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235",
+    "base_tile_sha256": "878a3640f685e68c6c3d3102c331c43054bfb0bce81f68c3224ad271b8d9d844",
+    "branch_tile_sha256": "3f79373e68603691630c7dc38703411456cdf5fa12348d07812323568cdb1e82",
+    "historical_binary_binding": false
+  },
+  "historical_cross_capture_relation": "base hashes equal skip-on hashes; skip-off hashes differ for cases 78, 79, and 80; not a same-binary repeatability verdict",
+  "required_runtime_proofs": [
+    "verify_ggml_linkage.sh receipt for executable and loaded HIP DSO",
+    "non-zero VRAM sampled during the run",
+    "KFD process residency during the run",
+    "row grant identity and exclusive GPU reservation",
+    "supervised process-tree cleanup and no-replace result publication"
+  ],
+  "blocked_on": [
+    "independent digest check of built CPU-row artifacts and acceptance of same-UID source-custody limitation",
+    "GPU-row build and binding of preserved capture source to its executable and loaded HIP library",
+    "reviewed runtime linkage, residency and supervised cleanup capture",
+    "separately published GPU row and exclusive gfx90a grant"
+  ],
+  "production_kernel_access": false,
+  "publication": false,
+  "measurement_claim": false
+}

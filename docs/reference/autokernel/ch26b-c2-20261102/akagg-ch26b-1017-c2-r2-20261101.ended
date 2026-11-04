@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T07:43:08Z reason=complete
+job_id=akagg-ch26b-1017-c2-r2-20261101
+owner=handoff-akagg
+step=job-run
+estimated_wall_s=9000
+started=2026-11-02T04:56:30Z
+regions=0-95

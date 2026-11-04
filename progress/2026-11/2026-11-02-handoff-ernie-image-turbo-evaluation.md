@@ -29,3 +29,59 @@ Prepared `docs/evidence/ernie-image-evaluation-20261102/typography/` with all 40
 ### ERNIE image evaluation: row preparation
 
 The Qwen diagnostic launcher and worker are prepared in `/mnt/raid0/llm/tmp/ernie-qwen-pip03-20261102/`; input weight digest and an independent readiness audit are pending event receipts, so the row is not published. The GPU flash-attention A/B needs a v15 worker and proof of selected operation because requested flash may fall back; preparation is assigned with an event receipt. The typography and matched review packets are included in this commit under `docs/evidence/ernie-image-evaluation-20261102/`. Earlier wrap-up attempts failed the observer census because sparse checkout excluded a tracked ratifier; the lane sparse rules now include that exact file and the census passes. [no-belief: preparation only]
+
+## 07:41Z — Review GPU attention diagnostic preparation
+
+### GPU diagnostic and Qwen capture preparation
+
+Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` contains a syntax-checked v15 launcher and worker draft. Its source receipt and native capture still need review, and requested flash attention is not proof of the selected graph operation; fallback must be observed before a causal interpretation. An independent bounded GPU review is underway. Qwen candidate audit fixed a dry-run failure that previously could count an invalid PNG as a native unit. Model digest completion receipt remains missing; an independent custody review is underway. No inference, qualification or publication occurred. The prior wrap-up successfully published `cf110dff4875fe23ab90c90cb5a9a2b0cb009016`, including both durable review packets. [no-belief: preparation only]
+
+## 07:41Z — Review GPU attention diagnostic preparation
+
+### GPU diagnostic and Qwen capture preparation
+
+Consumed GPU implementation review: `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/` contains a syntax-checked v15 launcher and worker draft. Its source receipt and native capture still need review, and requested flash attention is not proof of the selected graph operation; fallback must be observed before a causal interpretation. An independent bounded GPU review is underway. Qwen candidate audit fixed a dry-run failure that previously could count an invalid PNG as a native unit. Model digest completion receipt remains missing; an independent custody review is underway. No inference, qualification or publication occurred. The prior wrap-up successfully published `cf110dff4875fe23ab90c90cb5a9a2b0cb009016`, including both durable review packets. [no-belief: preparation only]
+
+## 07:43Z — Consume Qwen model digest and GPU diagnostic review
+
+### ERNIE comparison input custody
+
+Consumed the Qwen input digest receipt: 59 files, manifest `/mnt/raid0/llm/tmp/ernie-qwen-pip03-20261102/MODEL-SHA256SUMS`, manifest SHA-256 `d45112904c7f69c3b015006af03d55bf8ec38c0873258ef20838ad43a116f93d`. Runtime metadata and preparation-time server/source digests are recorded in the adjacent `runtime-custody.json`; 896² memory and timing are unmeasured. Independent launcher completion and resource review are underway with registered event files. GPU review repaired dry-run isolation, grant directory handling, incomplete exit status and source-file digest manifest; selected graph operation remains UNKNOWN, so an operation-trace preparation was assigned. No rows published and no inference run. [no-belief: preparation only]
+
+## 07:45Z — Consume GPU trace and Qwen runtime reviews
+
+### Attention trace and Qwen admission preparation
+
+Consumed the GPU trace review: the unapplied patch at `docs/evidence/ernie-image-evaluation-20261102/gpu/trace-graph-selection.patch` passes `git apply --check` against sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`; it records graph selection, not actual kernel execution, and shared-helper logs need ERNIE DiT attribution. Experimental source/build preparation is assigned. Qwen runtime review found the default 48 GiB reservation unsupported by measurement and recommended provisional 192 GiB; 896² peak RSS and runtime remain unmeasured. A 300 s exposure start margin can leave interrupted fixed prompts UNKNOWN. A bounded owner is correcting admission and deadline handling, with completion registered. No inference, qualification or row publication. [no-belief: preparation only]
+
+## 07:45Z — Review Qwen resource controls and GPU trace recipe
+
+### Qwen row and GPU trace readiness
+
+Consumed Qwen control and trace-build preparation. The Qwen diagnostic row now reserves provisional 192 GiB and retains affinity, elapsed generation and process peak RSS; the initial 896² request has a provisional two-hour admission guard, with later guards based on prior completed durations. Neither RAM nor time is a measured 896² bound. An independent launcher review is underway before publication. GPU trace build recipe `/mnt/raid0/llm/tmp/ernie-fa-ab-20261102/trace-build-recipe.json` pins sd.cpp `f3a7fe957d1e615d8766084f000dc3fabf8d7775`, ggml `404fcb9d7c96989569e68c9e7881ee3465a05c50`, trace patch and the previously dirty HIP FP8 guard; no source tree was modified and no build or inference was run. Build needs keeper scheduling and selected-operation attribution. Independent reviews have event registrations. [no-belief: preparation only]
+
+## 07:46Z — Publish matched Qwen diagnostic and review GPU trace attribution
+
+### Qwen comparison row published
+
+Published `ernie-qwen-pip03-cpu-20261102` with `publish_row.py`: CPU any-quarter, 192 GiB provisional reservation, 7500 s minimum window, 17580 s requested window; keeper qualification is pending. Inputs were hashed outside grant (59-file manifest digest `d45112904c7f69c3b015006af03d55bf8ec38c0873258ef20838ad43a116f93d`). Four prospective Qwen captures match retrospective ERNIE prompts but Qwen CFG 1 ignores the submitted negative prompt; prior ERNIE GPU vs Qwen CPU timing is not comparable, human review remains UNKNOWN, and this is diagnostic capture only. Independent review corrected admission to meet the first-exposure guard and checked the isolated qualification path. No inference run or quality verdict.
+
+The GPU review prepared an alternate source-attributed ERNIE DiT attention graph trace patch (`docs/evidence/ernie-image-evaluation-20261102/gpu/trace-ernie-dit-selection.patch`, SHA-256 `9db46fc2e9d66aac10725a30681466d12f64c958bdc7aeac64e76d0fa6765d4a`) replacing the generic candidate; it is uncompiled and proves graph choice only if validated, not executed kernel. Source/build preparation continues; no GPU row published. [no-belief: preparation and row publication only]
+
+## 07:49Z — Reconcile inference backlog and advance ERNIE diagnostic paths
+
+### Reconcile ERNIE inference tasks
+
+The supplied dispatcher inventory predates published row `ernie-qwen-pip03-cpu-20261102`: its single status inspection returns `needs-dryrun`, with keeper qualification pending; no result to file. The 20-prompt typography job already captured 40 images and needs attributable review rather than duplicate inference. Delegated three independent bounded preparations with event receipts: GPU source-attributed trace build path, typography review workflow, and a separate ERNIE content-filter audit path isolated from Qwen production. The GPU trace recipe now names the ERNIE-specific patch and HIP guard; neither build nor inference has run. No new row or quality conclusion this boundary. [no-belief: preparation only]
+
+## 07:50Z — Prepare ERNIE typography review workflow
+
+### Typography review workflow
+
+Consumed the typography preparation result: `/mnt/raid0/llm/tmp/ernie-typography-human-review-20261102/review.html` and `reviews-template.csv` enumerate all 40 retained originals with prompts, requested text and hashes; review fields are blank and no human verdict is asserted. An independent check and durable-copy task is registered; preserve native PNGs at `/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/` through review. The limited capture cannot validate official 0.9655. GPU and content-filter preparation remain delegated; no inference, new row or checklist completion. [no-belief: preparation only]
+
+## 07:51Z — Integrate verified typography review tools and GPU build review
+
+### Typography review tools and GPU trace prerequisites
+
+The verified `docs/evidence/ernie-image-evaluation-20261102/typography/review.html` and `reviews-template.csv` cover 40 original images; the reviewer fields are blank. Their links require the compute host and the original retained scratch PNGs; no human verdict is asserted. GPU review identified that the current worker is hardcoded to the historical uninstrumented binary: before publishing a GPU run it must bind a source-proven instrumented build and request-scoped trace, retaining UNKNOWN when ambiguous. A bounded keeper-compatible preparation is assigned with its event registered. No build, inference or additional row this turn. [no-belief: preparation only]

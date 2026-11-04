@@ -2,7 +2,7 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
-> **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** and the **belief-capture gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/loop-owned-fleet-implementation.md` P1-3a)
+> **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** and the **belief-capture gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/coordination-and-churn-pipeline.md` P1-3a)
 >
 > **Narrow standing exception (retained from the other merge side, written against the previous
 > MANUAL-TRIGGER-ONLY cadence).** `agents/auditor-main.md` authorizes the audit role to run this
@@ -33,7 +33,7 @@ regen, Step 7's promotion merge). The two operator-cadence rows are *deferred, n
 them for the next operator-invoked `/wrap-up`, and report in your output anything you saw that they
 would have handled.
 
-### Typed heavy-wrap transaction (RTG-51; only from an accepted request)
+### Typed heavy-wrap transaction (RTG-34, track `wrap-up-division-of-labor-policy`; only from an accepted request)
 
 This transaction is separate from the per-task routine above. It adds no timer, hook, scheduled
 invocation, or self-issued wrap request. A heavy wrap starts only after Coordinator validates and
@@ -382,12 +382,17 @@ in a prose block below:
   `native-pending:<VB-task>`.
 
 Design and the result-tick definition: `docs/design/committed-conclusions-belief-capture-2026-10-25.md` §7.
-The checker `scripts/handoffs/belief_capture_check.py` (VB-TICK-CONTRACT) runs advisory once it
-lands. Until then, list your added ticks that carry no marker and give each result tick one:
+The checker `scripts/handoffs/belief_capture_check.py` is ADVISORY in `scripts/hooks/pre-commit.extras`
+(LOOP-50; blocking 2026-11-02, back to advisory by operator decision 2026-11-03): it warns and never
+refuses a commit (`--strict` refuses, manual use only). Every new tick should carry one of the three
+tags on its item, and every dropped open box a re-add, `[moved: <path>]` or
+`[declined: <who> <YYYY-MM-DD> <reason>]`. A fold that moves boxes verbatim passes. The warning names
+each line and the tag it needs; fix them before you commit. To preview the
+lane's committed half before you commit:
 
 ```bash
 # From inside YOUR lane worktree; same scoping as the flip-count gate.
-git diff "$(git merge-base main HEAD)"..HEAD -- handoffs/ | grep -E '^\+\s*[-*] \[[xX]\]' | grep -vE '\[(no-)?belief: [^]]+\]'
+python3 scripts/handoffs/belief_capture_check.py --range "$(git merge-base main HEAD)..HEAD" --no-receipts --report
 ```
 
 Report the count of result ticks as cited / cc / declined in the wrap-up output. A
@@ -410,7 +415,7 @@ subagent running wrap-up on a session's behalf may draft the row text, run
 or re-pointing an index row is **never** a subagent's own write. A `Next action` cell refresh
 prepared by a subagent still lands through the owning session. Explicit operator approval is
 required only to widen that — a subagent writing an index directly. (ruling 2026-08-16,
-`handoffs/active/loop-owned-fleet-implementation.md` P1-3b)
+`handoffs/active/coordination-and-churn-pipeline.md` P1-3b)
 
 **Indices follow the thin-row contract (rewritten 2026-08-10)** — read
 `docs/guides/agent-workflows/handoff-index-authoring.md` before editing one. Rows are

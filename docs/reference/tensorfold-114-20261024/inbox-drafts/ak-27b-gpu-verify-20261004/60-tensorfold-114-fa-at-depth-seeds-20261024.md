@@ -44,17 +44,21 @@ the champion.
   padded to 16. The measured **29 ms** is ~9× the single-read floor and ~1.5× the re-read floor, so it is byte- and
   latency-bound, with the GQA re-read the leading explanation.
 
-**Arbiter first (no build; one GPU window, needs a grant).** Before authoring G1, G2 or G3, run rocprof on the
-champion at 1×80k, N=8, recording per FA dispatch `FETCH_SIZE` and `TCC_HIT`/`TCC_MISS`, and per convert dispatch its
-time.
-- `FETCH_SIZE` ≥ 3× the f16 K+V view bytes: the GQA re-read is real, so G2 and then G1.
-- `FETCH_SIZE` ≈ 1×: the re-read is already absorbed by L2, so G2 is dead and G1 is only a tile-fill or compute change.
-  Re-rank before authoring.
-- Convert ≥ 4 ms at 80k: G3 stands.
+**Arbiter result and authoring order (2026-10-25).** The two C3 champion samples at 1×80k, N=8 measured FA
+`FETCH_SIZE` / f16 K+V view **1.727 and 1.729** (R ≈ 1.73), and convert **7.87 and 7.95 ms/step**. The
+predeclared verdict is PARTIAL_REREAD and G3_STANDS; see [the arbiter verdict](../../arbiter/VERDICT.json) and
+[predeclaration](../../arbiter/PREDECLARATION.md). Author in the order **G3 → G2 → G1**:
+
+- G3 is first because both convert measurements exceed the 4 ms edge. G1 also reuses G3's loader.
+- G2 is next: the 0.73× excess fetch leaves a partial re-read opportunity, but does not prove it is recoverable or
+  predict a speedup. Its smaller, bit-exact grid change is cheaper to test before the new MFMA tile.
+- G1 follows, conditional on its stated falsifiers after G3 and G2. It can improve tile fill or compute even if G2
+  does little, but costs more and changes reduction order. Re-profile the actual candidate at the relevant anchor;
+  the f16-view ratio does not transfer unchanged to G3's q8 staging.
 
 ## Ranked seeds (mechanism ids are new; none exist in this store)
 
-**G2. `akg-fa-gqa-adjacent-grid-order`** (bit-exact; cheapest; rank 1)
+**G2. `akg-fa-gqa-adjacent-grid-order`** (bit-exact; cheapest; rank 2, after G3)
 - **Mechanism.** Reorder the FA grid so the blocks that read the same K/V chunk are dispatched adjacently: the GQA
   query heads of one KV head, and the KV-split chunk index, become the faster axes, and Q tiles and heads-of-different-KV
   the slower ones. Each block's work is unchanged. This is TensorFold #1219's change (grid `(chunks, key heads, rows)`
@@ -62,11 +66,11 @@ time.
   - Do it in `launch_fattn` (`fattn-common.cuh:1176-1178`) by remapping `blockIdx` inside the kernel prologue (a
     linear-id permutation), not by changing what any block computes.
   - The stream-k branch (`blocks_num.x = nblocks_stream_k`) stays as it is.
-- **Expected effect.** If the arbiter shows the 6× re-read: FA 29 ms → ~5-10 ms at 80k (−8…−20% of the 120.5 ms
-  step), growing with depth and nil at ≤8k (TensorFold: 0-3% at 8k, −16% ms/token c=1 and −38% c=4 at 32k, on GB10's
-  24 MB L2; ours is 8 MB, so the crossover is earlier).
+- **Expected effect.** The original 6× re-read hypothesis suggested FA 29 ms → ~5-10 ms at 80k, but the arbiter
+  measured R ≈ 1.73, not 6×. Any benefit from the remaining excess fetch is unproven; measure it on the G3 anchor.
+  TensorFold's 0-3% at 8k and −16% ms/token c=1 / −38% c=4 at 32k are GB10 results, not MI210 predictions.
 - **Falsifier.** On the champion after the reorder, `TCC_HIT` rate on FA dispatches rises by less than 20 points, or FA
-  time drops by less than the window noise floor at 1×80k. Also check `FETCH_SIZE` < 3× the view in the arbiter.
+  time drops by less than the window noise floor at 1×80k. The arbiter's `FETCH_SIZE` was below 3× the view.
 - **Correctness.** Byte-identical FA outputs against the incumbent on `test-backend-ops -o FLASH_ATTN_EXT` (D=256,
   GQA 6, q8_0, padded and unpadded), the DF2-9 reproducer, greedy identity, and the RI gate (row r alone == row r in N).
 - **Port cost.** Low (a few lines plus a contract test). **Risk**: occupancy interaction with `parallel_blocks`
@@ -74,7 +78,7 @@ time.
 - **Source.** TensorFold `a56d0ce2fa` (commit L10, "The grid is now (rows, key heads, chunks); each block's work is
   unchanged, so the bits are too."); PR #1219 body L7 (synthetic 16 rows 7.62 → 4.67 ms, L2 hit 22.6% → ~100%).
 
-**G3. `akg-fa-q8-kv-tile-widen-no-convert`** (bit-exact by construction; rank 2)
+**G3. `akg-fa-q8-kv-tile-widen-no-convert`** (bit-exact by construction; rank 1)
 - **Mechanism.** Remove the whole-view q8_0→f16 conversion before multi-row FA (`fattn-common.cuh:1022-1041`).
   Instead, each K/V tile is widened inside the FA kernel as it is staged into LDS, with the same op sequence the
   convert kernel uses (`float(d)*q` → f16 round), so the f16 values in LDS are bit-identical to today's. This is
@@ -103,9 +107,11 @@ time.
   (`attn_one`/`attn_rows`: "the key head's query heads the lines of one m16 tile"; "the tile is read and widened once
   per round rather than once per row"). In llama.cpp the CUDA MMA kernel already packs GQA (`ncols2`, `fattn.cu:113-150`),
   so the port is "ncols2 GQA packing on the gfx90a MFMA path at D=256", not new design.
-- **Expected effect.** FA bytes fall to q8 once (2.85 GB, 1.7 ms floor at 80k). With G3, that is up to −20…−28% of the
-  80k step (+25…+39% tok/s at 80k), as a ceiling. TensorFold measured 101.9 → 180.4 tok/s decode after a 64k prompt on
-  an RTX 5090 (bf16 KV 96.9 → 221.1).
+- **Expected effect.** Potentially improve tile fill and compute efficiency and alter K/V traffic. The arbiter does not
+  establish a step-time saving for this change (the earlier −20…−28% / +25…+39% tok/s ceiling assumed the 6× re-read,
+  which the arbiter measured at R ≈ 1.73); measure it after G3 and G2. TensorFold's RTX 5090 result (101.9 → 180.4
+  tok/s decode after a 64k prompt; bf16 KV 96.9 → 221.1) is a separate hardware and workload observation, not a
+  prediction for this champion.
 - **Falsifier.** After G2 and G3 have landed, FA at 1×80k is within 1.5× of its q8 single-read floor: nothing is left.
   Or the packed tile needs more than 64 KiB of LDS at D=256 and occupancy collapses.
 - **Correctness.** It changes the reduction order, so it is not bit-exact against the incumbent. It must be

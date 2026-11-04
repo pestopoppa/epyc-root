@@ -26,7 +26,7 @@ What it does around the command:
 It never touches a partial file it did not create in this run (mtime before the start) — those
 belong to a concurrent or earlier download; `--check` lists them.
 
-SEC-ART-1 provenance (handoffs/active/model-artifact-integrity.md). With `--hf-repo ORG/REPO [--revision REF]`
+SEC-ART-1 provenance (handoffs/active/stack-lifecycle-program.md). With `--hf-repo ORG/REPO [--revision REF]`
 the wrapper, BEFORE the command runs, resolves REF (default `main`) to a 40-hex commit sha through the HF API
 and, for `hf|huggingface-cli download ...` commands, appends `--revision <sha>` so the bytes fetched are the
 bytes pinned (no ref-moves-mid-download race). After a successful run it reads the tree at that sha

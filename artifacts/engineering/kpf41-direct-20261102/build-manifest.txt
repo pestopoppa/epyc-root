@@ -1,0 +1,13 @@
+411a7d932bb1e381f05cd5b7aeb22ce0bc70e804
+ggml/src/ggml-cpu/ggml-cpu.cpp
+ggml/src/ggml-cuda/fattn-common.cuh
+ggml/src/ggml-cuda/fattn-mma-f16.cuh
+ggml/src/ggml-cuda/fattn-tile.cuh
+ggml/src/ggml-cuda/fattn-vec.cuh
+ggml/src/ggml-cuda/fattn-wmma-f16.cu
+ggml/src/ggml-cuda/fattn.cu
+tests/CMakeLists.txt
+tests/test-kv-rows-vec-direct.cpp
+37af404da588ab2599062eeb84d7c0bfa8020858f4119bc6c4eac1888aa5e42b  /dev/shm/kpf41-direct-20261102/bin/test-kv-rows-vec-direct
+ed3e87f554c4cfbeafe15a9709a7fd7ac4dafa3b27c11e55feb556aa840eba24  /dev/shm/kpf41-direct-20261102/bin/libggml-hip.so.0.16.0
+cf36674ad57601cd2f4656b89d3ef2fa2043bb5157b91f21c713da97a5e19647  /mnt/raid0/llm/tmp/kv-prefix-fork/kpf41-direct-build-r2.log

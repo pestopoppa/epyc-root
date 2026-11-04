@@ -313,3 +313,125 @@ def test_v2_capture_whose_arms_disagree_on_the_model_declares_no_scope():
                                   "candidate": {"backend": "cpu"}}}}}}
     claim, scope, obs = reader._v2_row(source, rows)
     assert scope == {} and obs["outcome"] == "improved" and claim["value"] == 11.0
+
+
+# --- VB-SL2-STEPS: estimated target steps/s, labelled by its estimator --------------------------
+
+def _steps_block(estimators=("predicted_n_minus_draft_n_accepted",)):
+    def side(median):
+        return {"metric": reader.STEPS_METRIC, "n": 3, "status": "ok", "estimators": list(estimators),
+                "median": median, "samples": [median] * 3}
+    return {"schema": reader.STEPS_SCHEMA, "metric": reader.STEPS_METRIC,
+            "role": "reporting_only_not_gate", "anchor": side(7.5), "candidate": side(9.5),
+            "effect": 9.5 / 7.5 - 1}
+
+
+def _resealed(tmp_path, block):
+    """Copy a real P1 capture, inject the block into the native body, and re-seal every digest the
+    strict reader checks (native_sha256 binds the block, so a mere edit would be refused)."""
+    import shutil
+    src = _p1_receipt("q38fn")
+    dest = tmp_path / "serving-beliefs"
+    shutil.copytree(src.parent, dest)
+    receipt = json.loads((dest / src.name).read_text())
+    old_id = receipt["capture_id"]
+    body = json.loads((dest / "sources" / src.name).read_text())
+    comparison = body["comparison"]
+    old_native = comparison["belief_capture"]["native_sha256"]
+    if block is not None:
+        comparison["target_sample_steps_est"] = block
+    capture = comparison["belief_capture"]
+    native = {k: v for k, v in comparison.items() if k not in {"belief_capture", "surface", "baseline_scope"}}
+    new_native = reader._digest(native)
+    new_id = reader._digest({"native_sha256": new_native, "inputs": capture["inputs"]})
+    text = json.dumps(capture).replace(old_native, new_native).replace(old_id, new_id)
+    capture = json.loads(text)
+    capture["capture_sha256"] = reader._digest({k: v for k, v in capture.items() if k != "capture_sha256"})
+    comparison["belief_capture"] = capture
+    raw = json.dumps(body, indent=2, sort_keys=True).encode()
+    (dest / "sources" / src.name).unlink()
+    (dest / "sources" / f"{new_id}.json").write_bytes(raw)
+    (dest / src.name).unlink()
+    receipt.update(capture_id=new_id, capture_sha256=capture["capture_sha256"],
+                   native_reference={"path": f"sources/{new_id}.json",
+                                     "sha256": hashlib.sha256(raw).hexdigest(), "size": len(raw)})
+    path = dest / f"{new_id}.json"
+    path.write_text(json.dumps(receipt))
+    return path
+
+
+def _steps(path):
+    raw = path.read_bytes()
+    return reader.native_rows_steps(json.loads(raw), receipt_locator=f"autokernel:{path}",
+                                    receipt_sha256=hashlib.sha256(raw).hexdigest())
+
+
+def test_serving_ab_projects_target_steps_with_its_estimator_label(tmp_path):
+    path = _resealed(tmp_path, _steps_block())
+    assert len(_native(path)) == 2  # the tok/s rows still replay under the re-sealed body
+    tuples = [reader.project_steps(n) for n in _steps(path)]
+    assert [t.value for t in tuples] == [7.5, 9.5]
+    assert [t.extra["arm"] for t in tuples] == ["anchor", "candidate"]
+    for t in tuples:
+        assert t.metric == "aggregate_target_sample_steps_s_est" and t.unit == "steps/s"
+        assert t.extra["estimator"] == "predicted_n_minus_draft_n_accepted"
+        assert t.extra["estimator_label"] == "estimate:predicted_n_minus_draft_n_accepted"
+        assert "ESTIMATE via predicted_n_minus_draft_n_accepted" in t.claim
+        assert "not the server's n_draft_verif_steps" in t.claim
+        assert t.measurement_id.startswith("legacy-serving-steps:")
+        assert grade(t)[:2] == ("Judged", "Located")
+
+
+def test_target_steps_block_without_estimator_string_is_refused(tmp_path):
+    for bad in ([], None, [""], ["made_up_estimator"]):
+        block = _steps_block()
+        block["candidate"]["estimators"] = bad
+        if bad is None:
+            del block["candidate"]["estimators"]
+        with pytest.raises(ProjectionError, match="estimator string missing or unknown"):
+            _steps(_resealed(tmp_path / str(len(str(bad))) / str(bad), block))
+
+
+def test_capture_without_a_block_projects_no_steps_rows(tmp_path):
+    assert _steps(_resealed(tmp_path, None)) == []
+
+
+def _ingest(store, tmp_path):
+    from scoped_ingest import ingest_scoped_store
+
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest_scoped_store(ledger, store, as_of=datetime.now(timezone.utc).isoformat())
+    return ledger, report
+
+
+def _source_ids(ledger):
+    return sorted(r.frame["assertion"]["source_id"] for r in ledger.read_all()
+                  if r.frame["frame_type"].endswith("source_observed/v1"))
+
+
+def test_scoped_ingest_adds_steps_rows_beside_the_existing_rows(tmp_path):
+    _resealed(tmp_path / "with", _steps_block())
+    _resealed(tmp_path / "without", None)
+    with_ledger, with_report = _ingest(tmp_path / "with", tmp_path / "w")
+    base_ledger, base_report = _ingest(tmp_path / "without", tmp_path / "b")
+    assert with_report["steps_projected"] == 2 and with_report["refusals"] == []
+    assert with_report["v2_projected"] == 1 and with_report["rows_projected"] == 2
+    steps = [s for s in _source_ids(with_ledger) if s.startswith("src_legacy-serving-steps:")]
+    assert len(steps) == 2 and with_ledger.verify() == []
+    # A capture without the block ingests exactly as before: no steps rows, same row counts.
+    assert base_report["steps_projected"] == 0 and base_report["refusals"] == []
+    assert not [s for s in _source_ids(base_ledger) if "serving-steps" in s]
+    assert len(base_ledger) == len(with_ledger) - 2 * 3
+    assert base_report["rows_projected"] == with_report["rows_projected"]
+    assert base_report["v2_projected"] == with_report["v2_projected"]
+
+
+def test_scoped_ingest_refuses_unlabelled_steps_but_keeps_the_other_rows(tmp_path):
+    block = _steps_block()
+    block["anchor"]["estimators"] = []
+    _resealed(tmp_path / "s", block)
+    ledger, report = _ingest(tmp_path / "s", tmp_path / "l")
+    assert report["steps_projected"] == 0
+    assert any("estimator string missing" in r["reason"] for r in report["refusals"])
+    assert report["rows_projected"] == 2 and report["v2_projected"] == 1
+    assert not [s for s in _source_ids(ledger) if "serving-steps" in s]
