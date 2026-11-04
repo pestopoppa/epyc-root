@@ -1,0 +1,3107 @@
+{
+ "schema": "kvu16g.v1",
+ "build": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt",
+ "argv": [
+  "numactl",
+  "--membind=3",
+  "--",
+  "taskset",
+  "-c",
+  "184-191",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18193",
+  "-np",
+  "4",
+  "-c",
+  "393216",
+  "-t",
+  "8",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--kv-unified",
+  "--no-mmap",
+  "-ngl",
+  "all",
+  "--cache-ram",
+  "65536",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "-md",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "-ngld",
+  "99",
+  "--spec-type",
+  "draft-dflash",
+  "--spec-draft-n-max",
+  "7",
+  "--device",
+  "ROCm0",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/kvu-16g-20261104/out/slots",
+  "--device-draft",
+  "ROCm0",
+  "--load-threads",
+  "8",
+  "--metrics"
+ ],
+ "pid": 3107106,
+ "records": [
+  {
+   "t_first_event_s": 0.023,
+   "t_first_progress_s": 0.023,
+   "ttft_s": 1.729,
+   "progress": [
+    [
+     0.023,
+     {
+      "total": 1074,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     0.459,
+     {
+      "total": 1074,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 439
+     }
+    ],
+    [
+     1.659,
+     {
+      "total": 1074,
+      "cache": 0,
+      "processed": 1070,
+      "time_ms": 1638
+     }
+    ],
+    [
+     1.728,
+     {
+      "total": 1074,
+      "cache": 0,
+      "processed": 1074,
+      "time_ms": 1708
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 1074,
+    "prompt_ms": 1709.336,
+    "prompt_per_token_ms": 1.59156052141527,
+    "prompt_per_second": 628.3141523960181,
+    "predicted_n": 16,
+    "predicted_ms": 465.042,
+    "predicted_per_token_ms": 29.065125,
+    "predicted_per_second": 34.40549455748083,
+    "draft_n": 26,
+    "draft_n_accepted": 10
+   },
+   "finish": "length",
+   "wall_s": 2.195,
+   "prompt_ms": 1709.336,
+   "prompt_n": 1074,
+   "cache_n": 0,
+   "predicted_ms": 465.042,
+   "draft_n": 26,
+   "draft_n_accepted": 10,
+   "nonprompt_ttft_s": 0.02,
+   "log_slice": [
+    "0.03.997.763 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0",
+    "0.06.173.523 I slot print_timing: id  0 | task 0 | prompt eval time =    1709.34 ms /  1074 tokens (    1.59 ms per token,   628.31 tokens per second)",
+    "0.06.173.552 I slot print_timing: id  0 | task 0 |        eval time =     465.04 ms /    16 tokens (   29.07 ms per token,    34.41 tokens per second)",
+    "0.06.173.780 I slot      release: id  0 | task 0 | stop processing: n_tokens = 1089, truncated = 0"
+   ],
+   "own_vram_b": 55445114880,
+   "schema": "kvu16g.req.v1",
+   "phase": "A_1k",
+   "conc": 1,
+   "ctx_tok": 1000,
+   "rep": 1,
+   "idx": 0,
+   "first_ever": true
+  },
+  {
+   "t_first_event_s": 0.082,
+   "t_first_progress_s": 0.082,
+   "ttft_s": 1.569,
+   "progress": [
+    [
+     0.082,
+     {
+      "total": 1285,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 9
+     }
+    ],
+    [
+     1.498,
+     {
+      "total": 1285,
+      "cache": 154,
+      "processed": 1281,
+      "time_ms": 1426
+     }
+    ],
+    [
+     1.568,
+     {
+      "total": 1285,
+      "cache": 154,
+      "processed": 1285,
+      "time_ms": 1496
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 1131,
+    "prompt_ms": 1497.062,
+    "prompt_per_token_ms": 1.3236622458001768,
+    "prompt_per_second": 755.4797329703113,
+    "predicted_n": 16,
+    "predicted_ms": 645.914,
+    "predicted_per_token_ms": 40.369625,
+    "predicted_per_second": 24.77109955814551,
+    "draft_n": 47,
+    "draft_n_accepted": 6
+   },
+   "finish": "length",
+   "wall_s": 2.215,
+   "prompt_ms": 1497.062,
+   "prompt_n": 1131,
+   "cache_n": 154,
+   "predicted_ms": 645.914,
+   "draft_n": 47,
+   "draft_n_accepted": 6,
+   "nonprompt_ttft_s": 0.072,
+   "log_slice": [
+    "0.06.745.419 I slot launch_slot_: id  0 | task 9 | processing task, is_child = 0",
+    "0.08.889.407 I slot print_timing: id  0 | task 9 | prompt eval time =    1497.06 ms /  1131 tokens (    1.32 ms per token,   755.48 tokens per second)",
+    "0.08.889.433 I slot print_timing: id  0 | task 9 |        eval time =     645.91 ms /    16 tokens (   40.37 ms per token,    24.77 tokens per second)",
+    "0.08.889.740 I slot      release: id  0 | task 9 | stop processing: n_tokens = 1300, truncated = 0"
+   ],
+   "own_vram_b": 55505932288,
+   "schema": "kvu16g.req.v1",
+   "phase": "A_1k",
+   "conc": 1,
+   "ctx_tok": 1000,
+   "rep": 2,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.099,
+   "t_first_progress_s": 0.099,
+   "ttft_s": 1.734,
+   "progress": [
+    [
+     0.099,
+     {
+      "total": 1323,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 9
+     }
+    ],
+    [
+     1.663,
+     {
+      "total": 1323,
+      "cache": 154,
+      "processed": 1319,
+      "time_ms": 1574
+     }
+    ],
+    [
+     1.734,
+     {
+      "total": 1323,
+      "cache": 154,
+      "processed": 1323,
+      "time_ms": 1645
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 1169,
+    "prompt_ms": 1645.603,
+    "prompt_per_token_ms": 1.4077014542343884,
+    "prompt_per_second": 710.37789794987,
+    "predicted_n": 16,
+    "predicted_ms": 399.078,
+    "predicted_per_token_ms": 24.942375,
+    "predicted_per_second": 40.09241301199265,
+    "draft_n": 30,
+    "draft_n_accepted": 10
+   },
+   "finish": "length",
+   "wall_s": 2.134,
+   "prompt_ms": 1645.603,
+   "prompt_n": 1169,
+   "cache_n": 154,
+   "predicted_ms": 399.078,
+   "draft_n": 30,
+   "draft_n_accepted": 10,
+   "nonprompt_ttft_s": 0.088,
+   "log_slice": [
+    "0.09.478.065 I slot launch_slot_: id  0 | task 21 | processing task, is_child = 0",
+    "0.11.524.299 I slot print_timing: id  0 | task 21 | prompt eval time =    1645.60 ms /  1169 tokens (    1.41 ms per token,   710.38 tokens per second)",
+    "0.11.524.327 I slot print_timing: id  0 | task 21 |        eval time =     399.08 ms /    16 tokens (   24.94 ms per token,    40.09 tokens per second)",
+    "0.11.524.624 I slot      release: id  0 | task 21 | stop processing: n_tokens = 1338, truncated = 0"
+   ],
+   "own_vram_b": 55505932288,
+   "schema": "kvu16g.req.v1",
+   "phase": "A_1k",
+   "conc": 1,
+   "ctx_tok": 1000,
+   "rep": 3,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.099,
+   "t_first_progress_s": 0.099,
+   "ttft_s": 1.314,
+   "progress": [
+    [
+     0.099,
+     {
+      "total": 1112,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 9
+     }
+    ],
+    [
+     1.244,
+     {
+      "total": 1112,
+      "cache": 154,
+      "processed": 1108,
+      "time_ms": 1154
+     }
+    ],
+    [
+     1.314,
+     {
+      "total": 1112,
+      "cache": 154,
+      "processed": 1112,
+      "time_ms": 1224
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 958,
+    "prompt_ms": 1225.35,
+    "prompt_per_token_ms": 1.2790709812108558,
+    "prompt_per_second": 781.8174399151263,
+    "predicted_n": 16,
+    "predicted_ms": 497.065,
+    "predicted_per_token_ms": 31.0665625,
+    "predicted_per_second": 32.18894913140132,
+    "draft_n": 33,
+    "draft_n_accepted": 8
+   },
+   "finish": "length",
+   "wall_s": 1.812,
+   "prompt_ms": 1225.35,
+   "prompt_n": 958,
+   "cache_n": 154,
+   "predicted_ms": 497.065,
+   "draft_n": 33,
+   "draft_n_accepted": 8,
+   "nonprompt_ttft_s": 0.089,
+   "log_slice": [
+    "0.12.113.038 I slot launch_slot_: id  0 | task 29 | processing task, is_child = 0",
+    "0.13.836.471 I slot print_timing: id  0 | task 29 | prompt eval time =    1225.35 ms /   958 tokens (    1.28 ms per token,   781.82 tokens per second)",
+    "0.13.836.502 I slot print_timing: id  0 | task 29 |        eval time =     497.06 ms /    16 tokens (   31.07 ms per token,    32.19 tokens per second)",
+    "0.13.836.813 I slot      release: id  0 | task 29 | stop processing: n_tokens = 1127, truncated = 0"
+   ],
+   "own_vram_b": 55505932288,
+   "schema": "kvu16g.req.v1",
+   "phase": "A_1k",
+   "conc": 1,
+   "ctx_tok": 1000,
+   "rep": 4,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.102,
+   "t_first_progress_s": 0.102,
+   "ttft_s": 9.168,
+   "progress": [
+    [
+     0.102,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 8
+     }
+    ],
+    [
+     2.507,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 2202,
+      "time_ms": 2414
+     }
+    ],
+    [
+     4.798,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 4250,
+      "time_ms": 4705
+     }
+    ],
+    [
+     6.636,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 5790,
+      "time_ms": 6544
+     }
+    ],
+    [
+     9.089,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 7834,
+      "time_ms": 8996
+     }
+    ],
+    [
+     9.168,
+     {
+      "total": 7838,
+      "cache": 154,
+      "processed": 7838,
+      "time_ms": 9075
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 7684,
+    "prompt_ms": 9076.29,
+    "prompt_per_token_ms": 1.1811933888599688,
+    "prompt_per_second": 846.6014197430887,
+    "predicted_n": 16,
+    "predicted_ms": 323.657,
+    "predicted_per_token_ms": 20.2285625,
+    "predicted_per_second": 49.43505006843665,
+    "draft_n": 22,
+    "draft_n_accepted": 11
+   },
+   "finish": "length",
+   "wall_s": 9.493,
+   "prompt_ms": 9076.29,
+   "prompt_n": 7684,
+   "cache_n": 154,
+   "predicted_ms": 323.657,
+   "draft_n": 22,
+   "draft_n_accepted": 11,
+   "nonprompt_ttft_s": 0.092,
+   "log_slice": [
+    "0.14.428.634 I slot launch_slot_: id  0 | task 39 | processing task, is_child = 0",
+    "0.19.135.381 I slot print_timing: id  0 | task 39 | prompt processing, n_tokens =   4096, progress = 0.54, t =   4.71 s / 870.41 tokens per second",
+    "0.20.973.963 I slot print_timing: id  0 | task 39 | prompt processing, n_tokens =   5636, progress = 0.74, t =   6.54 s / 861.20 tokens per second",
+    "0.23.426.830 I slot print_timing: id  0 | task 39 | prompt processing, n_tokens =   7680, progress = 1.00, t =   9.00 s / 853.59 tokens per second",
+    "0.23.830.007 I slot print_timing: id  0 | task 39 | prompt eval time =    9076.29 ms /  7684 tokens (    1.18 ms per token,   846.60 tokens per second)",
+    "0.23.830.075 I slot print_timing: id  0 | task 39 |        eval time =     323.66 ms /    16 tokens (   20.23 ms per token,    49.44 tokens per second)",
+    "0.23.830.561 I slot      release: id  0 | task 39 | stop processing: n_tokens = 7853, truncated = 0"
+   ],
+   "own_vram_b": 55617658880,
+   "schema": "kvu16g.req.v1",
+   "phase": "B_8k",
+   "conc": 1,
+   "ctx_tok": 8000,
+   "rep": 1,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.149,
+   "t_first_progress_s": 0.149,
+   "ttft_s": 8.292,
+   "progress": [
+    [
+     0.149,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 11
+     }
+    ],
+    [
+     2.383,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 2202,
+      "time_ms": 2248
+     }
+    ],
+    [
+     4.68,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 4250,
+      "time_ms": 4544
+     }
+    ],
+    [
+     5.783,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 5099,
+      "time_ms": 5648
+     }
+    ],
+    [
+     8.213,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 7143,
+      "time_ms": 8078
+     }
+    ],
+    [
+     8.291,
+     {
+      "total": 7147,
+      "cache": 154,
+      "processed": 7147,
+      "time_ms": 8156
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 6993,
+    "prompt_ms": 8157.174,
+    "prompt_per_token_ms": 1.1664770484770486,
+    "prompt_per_second": 857.2821911117748,
+    "predicted_n": 16,
+    "predicted_ms": 423.437,
+    "predicted_per_token_ms": 26.4648125,
+    "predicted_per_second": 37.786022477960124,
+    "draft_n": 31,
+    "draft_n_accepted": 10
+   },
+   "finish": "length",
+   "wall_s": 8.716,
+   "prompt_ms": 8157.174,
+   "prompt_n": 6993,
+   "cache_n": 154,
+   "predicted_ms": 423.437,
+   "draft_n": 31,
+   "draft_n_accepted": 10,
+   "nonprompt_ttft_s": 0.135,
+   "log_slice": [
+    "0.24.464.702 I slot launch_slot_: id  0 | task 49 | processing task, is_child = 0",
+    "0.29.010.950 I slot print_timing: id  0 | task 49 | prompt processing, n_tokens =   4096, progress = 0.59, t =   4.55 s / 901.15 tokens per second",
+    "0.30.114.745 I slot print_timing: id  0 | task 49 | prompt processing, n_tokens =   4945, progress = 0.71, t =   5.65 s / 875.36 tokens per second",
+    "0.32.544.373 I slot print_timing: id  0 | task 49 | prompt processing, n_tokens =   6989, progress = 1.00, t =   8.08 s / 865.11 tokens per second",
+    "0.33.046.847 I slot print_timing: id  0 | task 49 | prompt eval time =    8157.17 ms /  6993 tokens (    1.17 ms per token,   857.28 tokens per second)",
+    "0.33.046.894 I slot print_timing: id  0 | task 49 |        eval time =     423.44 ms /    16 tokens (   26.46 ms per token,    37.79 tokens per second)",
+    "0.33.047.405 I slot      release: id  0 | task 49 | stop processing: n_tokens = 7162, truncated = 0"
+   ],
+   "own_vram_b": 55617658880,
+   "schema": "kvu16g.req.v1",
+   "phase": "B_8k",
+   "conc": 1,
+   "ctx_tok": 8000,
+   "rep": 2,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.163,
+   "t_first_progress_s": 0.163,
+   "ttft_s": 45.34,
+   "progress": [
+    [
+     0.163,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 12
+     }
+    ],
+    [
+     2.445,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 2202,
+      "time_ms": 2296
+     }
+    ],
+    [
+     4.75,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 4250,
+      "time_ms": 4601
+     }
+    ],
+    [
+     7.133,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 6298,
+      "time_ms": 6983
+     }
+    ],
+    [
+     9.594,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 8346,
+      "time_ms": 9444
+     }
+    ],
+    [
+     12.14,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 10394,
+      "time_ms": 11991
+     }
+    ],
+    [
+     14.771,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 12442,
+      "time_ms": 14622
+     }
+    ],
+    [
+     17.483,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 14490,
+      "time_ms": 17334
+     }
+    ],
+    [
+     20.288,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 16538,
+      "time_ms": 20139
+     }
+    ],
+    [
+     23.172,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 18586,
+      "time_ms": 23023
+     }
+    ],
+    [
+     26.141,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 20634,
+      "time_ms": 25992
+     }
+    ],
+    [
+     29.196,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 22682,
+      "time_ms": 29047
+     }
+    ],
+    [
+     32.388,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 24730,
+      "time_ms": 32239
+     }
+    ],
+    [
+     35.611,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 26778,
+      "time_ms": 35461
+     }
+    ],
+    [
+     38.919,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 28826,
+      "time_ms": 38770
+     }
+    ],
+    [
+     41.734,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 30461,
+      "time_ms": 41585
+     }
+    ],
+    [
+     45.247,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 32505,
+      "time_ms": 45098
+     }
+    ],
+    [
+     45.337,
+     {
+      "total": 32509,
+      "cache": 154,
+      "processed": 32509,
+      "time_ms": 45188
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 32355,
+    "prompt_ms": 45189.138,
+    "prompt_per_token_ms": 1.3966662957811775,
+    "prompt_per_second": 715.9906435922721,
+    "predicted_n": 16,
+    "predicted_ms": 548.342,
+    "predicted_per_token_ms": 34.271375,
+    "predicted_per_second": 29.178870121201733,
+    "draft_n": 35,
+    "draft_n_accepted": 9
+   },
+   "finish": "length",
+   "wall_s": 45.888,
+   "prompt_ms": 45189.138,
+   "prompt_n": 32355,
+   "cache_n": 154,
+   "predicted_ms": 548.342,
+   "draft_n": 35,
+   "draft_n_accepted": 9,
+   "nonprompt_ttft_s": 0.151,
+   "log_slice": [
+    "0.33.696.020 I slot launch_slot_: id  0 | task 60 | processing task, is_child = 0",
+    "0.38.298.906 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =   4096, progress = 0.13, t =   4.60 s / 890.06 tokens per second",
+    "0.40.681.120 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =   6144, progress = 0.19, t =   6.98 s / 879.71 tokens per second",
+    "0.43.142.247 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =   8192, progress = 0.26, t =   9.45 s / 867.31 tokens per second",
+    "0.45.688.620 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  10240, progress = 0.32, t =  11.99 s / 853.93 tokens per second",
+    "0.48.319.849 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  12288, progress = 0.38, t =  14.62 s / 840.33 tokens per second",
+    "0.51.031.631 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  14336, progress = 0.45, t =  17.33 s / 827.01 tokens per second",
+    "0.53.836.713 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  16384, progress = 0.51, t =  20.14 s / 813.52 tokens per second",
+    "0.56.721.043 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  18432, progress = 0.57, t =  23.02 s / 800.55 tokens per second",
+    "0.59.689.857 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  20480, progress = 0.63, t =  25.99 s / 787.91 tokens per second",
+    "1.02.744.599 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  22528, progress = 0.70, t =  29.05 s / 775.55 tokens per second",
+    "1.05.936.739 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  24576, progress = 0.76, t =  32.24 s / 762.29 tokens per second",
+    "1.09.159.201 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  26624, progress = 0.82, t =  35.46 s / 750.77 tokens per second",
+    "1.12.467.933 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  28672, progress = 0.89, t =  38.77 s / 739.52 tokens per second",
+    "1.15.282.529 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  30307, progress = 0.94, t =  41.59 s / 728.79 tokens per second",
+    "1.18.796.055 I slot print_timing: id  0 | task 60 | prompt processing, n_tokens =  32351, progress = 1.00, t =  45.10 s / 717.33 tokens per second",
+    "1.19.434.981 I slot print_timing: id  0 | task 60 | prompt eval time =   45189.14 ms / 32355 tokens (    1.40 ms per token,   715.99 tokens per second)",
+    "1.19.435.015 I slot print_timing: id  0 | task 60 |        eval time =     548.34 ms /    16 tokens (   34.27 ms per token,    29.18 tokens per second)",
+    "1.19.436.086 I slot      release: id  0 | task 60 | stop processing: n_tokens = 32524, truncated = 0"
+   ],
+   "own_vram_b": 55617658880,
+   "schema": "kvu16g.req.v1",
+   "phase": "C_32k",
+   "conc": 1,
+   "ctx_tok": 32000,
+   "rep": 1,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.241,
+   "t_first_progress_s": 0.241,
+   "ttft_s": 44.89,
+   "progress": [
+    [
+     0.241,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 12
+     }
+    ],
+    [
+     2.491,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 2202,
+      "time_ms": 2265
+     }
+    ],
+    [
+     4.804,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 4250,
+      "time_ms": 4577
+     }
+    ],
+    [
+     7.195,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 6298,
+      "time_ms": 6968
+     }
+    ],
+    [
+     9.675,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 8346,
+      "time_ms": 9448
+     }
+    ],
+    [
+     12.232,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 10394,
+      "time_ms": 12005
+     }
+    ],
+    [
+     14.875,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 12442,
+      "time_ms": 14648
+     }
+    ],
+    [
+     17.6,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 14490,
+      "time_ms": 17373
+     }
+    ],
+    [
+     20.412,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 16538,
+      "time_ms": 20185
+     }
+    ],
+    [
+     23.307,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 18586,
+      "time_ms": 23080
+     }
+    ],
+    [
+     26.277,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 20634,
+      "time_ms": 26050
+     }
+    ],
+    [
+     29.335,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 22682,
+      "time_ms": 29108
+     }
+    ],
+    [
+     32.486,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 24730,
+      "time_ms": 32259
+     }
+    ],
+    [
+     35.801,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 26778,
+      "time_ms": 35574
+     }
+    ],
+    [
+     39.12,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 28826,
+      "time_ms": 38893
+     }
+    ],
+    [
+     41.303,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 30080,
+      "time_ms": 41076
+     }
+    ],
+    [
+     44.797,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 32124,
+      "time_ms": 44570
+     }
+    ],
+    [
+     44.889,
+     {
+      "total": 32128,
+      "cache": 154,
+      "processed": 32128,
+      "time_ms": 44662
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 31974,
+    "prompt_ms": 44663.364,
+    "prompt_per_token_ms": 1.396865077875774,
+    "prompt_per_second": 715.8887539236856,
+    "predicted_n": 16,
+    "predicted_ms": 641.282,
+    "predicted_per_token_ms": 40.080125,
+    "predicted_per_second": 24.950021987206874,
+    "draft_n": 31,
+    "draft_n_accepted": 7
+   },
+   "finish": "length",
+   "wall_s": 45.532,
+   "prompt_ms": 44663.364,
+   "prompt_n": 31974,
+   "cache_n": 154,
+   "predicted_ms": 641.282,
+   "draft_n": 31,
+   "draft_n_accepted": 7,
+   "nonprompt_ttft_s": 0.227,
+   "log_slice": [
+    "1.20.162.444 I slot launch_slot_: id  0 | task 84 | processing task, is_child = 0",
+    "1.24.741.319 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =   4096, progress = 0.13, t =   4.58 s / 894.74 tokens per second",
+    "1.27.132.018 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =   6144, progress = 0.20, t =   6.97 s / 881.67 tokens per second",
+    "1.29.612.030 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =   8192, progress = 0.26, t =   9.45 s / 867.01 tokens per second",
+    "1.32.169.507 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  10240, progress = 0.32, t =  12.01 s / 852.90 tokens per second",
+    "1.34.811.968 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  12288, progress = 0.39, t =  14.65 s / 838.86 tokens per second",
+    "1.37.537.707 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  14336, progress = 0.45, t =  17.37 s / 825.13 tokens per second",
+    "1.40.349.757 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  16384, progress = 0.51, t =  20.19 s / 811.64 tokens per second",
+    "1.43.244.095 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  18432, progress = 0.58, t =  23.08 s / 798.59 tokens per second",
+    "1.46.214.335 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  20480, progress = 0.64, t =  26.05 s / 786.15 tokens per second",
+    "1.49.272.272 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  22528, progress = 0.71, t =  29.11 s / 773.92 tokens per second",
+    "1.52.423.233 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  24576, progress = 0.77, t =  32.26 s / 761.82 tokens per second",
+    "1.55.738.020 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  26624, progress = 0.83, t =  35.57 s / 748.40 tokens per second",
+    "1.59.057.691 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  28672, progress = 0.90, t =  38.89 s / 737.18 tokens per second",
+    "2.01.240.307 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  29926, progress = 0.94, t =  41.08 s / 728.54 tokens per second",
+    "2.04.734.110 I slot print_timing: id  0 | task 84 | prompt processing, n_tokens =  31970, progress = 1.00, t =  44.57 s / 717.29 tokens per second",
+    "2.05.468.197 I slot print_timing: id  0 | task 84 | prompt eval time =   44663.36 ms / 31974 tokens (    1.40 ms per token,   715.89 tokens per second)",
+    "2.05.468.230 I slot print_timing: id  0 | task 84 |        eval time =     641.28 ms /    16 tokens (   40.08 ms per token,    24.95 tokens per second)",
+    "2.05.469.322 I slot      release: id  0 | task 84 | stop processing: n_tokens = 32143, truncated = 0"
+   ],
+   "own_vram_b": 55617658880,
+   "schema": "kvu16g.req.v1",
+   "phase": "C_32k",
+   "conc": 1,
+   "ctx_tok": 32000,
+   "rep": 2,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.286,
+   "t_first_progress_s": 0.286,
+   "ttft_s": 13.406,
+   "progress": [
+    [
+     0.286,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     1.249,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 963
+     }
+    ],
+    [
+     3.528,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 2202,
+      "time_ms": 3242
+     }
+    ],
+    [
+     5.852,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 4250,
+      "time_ms": 5567
+     }
+    ],
+    [
+     8.449,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 5794,
+      "time_ms": 8164
+     }
+    ],
+    [
+     11.008,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 7838,
+      "time_ms": 10722
+     }
+    ],
+    [
+     13.405,
+     {
+      "total": 7842,
+      "cache": 0,
+      "processed": 7842,
+      "time_ms": 13119
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 7842,
+    "prompt_ms": 13120.311,
+    "prompt_per_token_ms": 1.6730822494261668,
+    "prompt_per_second": 597.6992466108464,
+    "predicted_n": 16,
+    "predicted_ms": 10321.017,
+    "predicted_per_token_ms": 645.0635625,
+    "predicted_per_second": 1.550234826664853,
+    "draft_n": 22,
+    "draft_n_accepted": 11
+   },
+   "finish": "length",
+   "wall_s": 23.727,
+   "prompt_ms": 13120.311,
+   "prompt_n": 7842,
+   "cache_n": 0,
+   "predicted_ms": 10321.017,
+   "draft_n": 22,
+   "draft_n_accepted": 11,
+   "nonprompt_ttft_s": 0.286,
+   "log_slice": [
+    "2.06.058.778 I slot launch_slot_: id  2 | task 110 | processing task, is_child = 0",
+    "2.06.254.558 I slot launch_slot_: id  3 | task 111 | processing task, is_child = 0",
+    "2.06.255.183 I slot launch_slot_: id  0 | task 112 | processing task, is_child = 0",
+    "2.06.255.500 I slot launch_slot_: id  1 | task 113 | processing task, is_child = 0",
+    "2.09.498.282 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   2202, progress = 0.28, t =   3.24 s / 679.05 tokens per second",
+    "2.11.823.168 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   4250, progress = 0.54, t =   5.57 s / 763.34 tokens per second",
+    "2.11.823.489 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    154, progress = 0.02, t =   5.57 s / 27.66 tokens per second",
+    "2.14.420.109 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   5794, progress = 0.74, t =   8.16 s / 709.65 tokens per second",
+    "2.14.440.801 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    658, progress = 0.08, t =   8.18 s / 80.40 tokens per second",
+    "2.16.978.870 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   7838, progress = 1.00, t =  10.72 s / 730.93 tokens per second",
+    "2.16.999.828 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    662, progress = 0.08, t =  10.74 s / 61.62 tokens per second",
+    "2.19.386.390 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   2706, progress = 0.32, t =  13.13 s / 206.09 tokens per second",
+    "2.21.856.690 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   4746, progress = 0.56, t =  15.60 s / 304.22 tokens per second",
+    "2.21.857.035 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    154, progress = 0.02, t =  15.60 s / 9.87 tokens per second",
+    "2.24.615.791 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   6354, progress = 0.76, t =  18.36 s / 346.09 tokens per second",
+    "2.27.268.832 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8394, progress = 1.00, t =  21.01 s / 399.48 tokens per second",
+    "2.27.290.396 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    586, progress = 0.07, t =  21.03 s / 27.86 tokens per second",
+    "2.29.697.286 I slot print_timing: id  0 | task 112 | prompt eval time =   13120.31 ms /  7842 tokens (    1.67 ms per token,   597.70 tokens per second)",
+    "2.29.697.318 I slot print_timing: id  0 | task 112 |        eval time =   10321.02 ms /    16 tokens (  645.06 ms per token,     1.55 tokens per second)",
+    "2.29.697.792 I slot      release: id  0 | task 112 | stop processing: n_tokens = 7857, truncated = 0",
+    "2.29.697.827 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8398, progress = 1.00, t =  23.44 s / 358.25 tokens per second",
+    "2.29.720.431 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   2628, progress = 0.31, t =  23.46 s / 112.00 tokens per second"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "D_8k_x4",
+   "conc": 4,
+   "ctx_tok": 8000,
+   "rep": 1,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.286,
+   "t_first_progress_s": 0.286,
+   "ttft_s": 26.191,
+   "progress": [
+    [
+     0.286,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     1.248,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 962
+     }
+    ],
+    [
+     3.527,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 3241
+     }
+    ],
+    [
+     5.852,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 5566
+     }
+    ],
+    [
+     8.449,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 658,
+      "time_ms": 8163
+     }
+    ],
+    [
+     11.008,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 662,
+      "time_ms": 10722
+     }
+    ],
+    [
+     13.405,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 2706,
+      "time_ms": 13119
+     }
+    ],
+    [
+     15.872,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 4746,
+      "time_ms": 15586
+     }
+    ],
+    [
+     18.633,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 6354,
+      "time_ms": 18346
+     }
+    ],
+    [
+     21.284,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 8394,
+      "time_ms": 20997
+     }
+    ],
+    [
+     23.725,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 8398,
+      "time_ms": 23439
+     }
+    ],
+    [
+     26.191,
+     {
+      "total": 8402,
+      "cache": 0,
+      "processed": 8402,
+      "time_ms": 25904
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 8402,
+    "prompt_ms": 25905.598,
+    "prompt_per_token_ms": 3.083265651035468,
+    "prompt_per_second": 324.3314437288805,
+    "predicted_n": 16,
+    "predicted_ms": 16232.951,
+    "predicted_per_token_ms": 1014.5594375,
+    "predicted_per_second": 0.9856494977407374,
+    "draft_n": 37,
+    "draft_n_accepted": 7
+   },
+   "finish": "length",
+   "wall_s": 42.425,
+   "prompt_ms": 25905.598,
+   "prompt_n": 8402,
+   "cache_n": 0,
+   "predicted_ms": 16232.951,
+   "draft_n": 37,
+   "draft_n_accepted": 7,
+   "nonprompt_ttft_s": 0.285,
+   "log_slice": [
+    "2.06.058.778 I slot launch_slot_: id  2 | task 110 | processing task, is_child = 0",
+    "2.06.254.558 I slot launch_slot_: id  3 | task 111 | processing task, is_child = 0",
+    "2.06.255.183 I slot launch_slot_: id  0 | task 112 | processing task, is_child = 0",
+    "2.06.255.500 I slot launch_slot_: id  1 | task 113 | processing task, is_child = 0",
+    "2.09.498.282 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   2202, progress = 0.28, t =   3.24 s / 679.05 tokens per second",
+    "2.11.823.168 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   4250, progress = 0.54, t =   5.57 s / 763.34 tokens per second",
+    "2.11.823.489 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    154, progress = 0.02, t =   5.57 s / 27.66 tokens per second",
+    "2.14.420.109 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   5794, progress = 0.74, t =   8.16 s / 709.65 tokens per second",
+    "2.14.440.801 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    658, progress = 0.08, t =   8.18 s / 80.40 tokens per second",
+    "2.16.978.870 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   7838, progress = 1.00, t =  10.72 s / 730.93 tokens per second",
+    "2.16.999.828 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    662, progress = 0.08, t =  10.74 s / 61.62 tokens per second",
+    "2.19.386.390 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   2706, progress = 0.32, t =  13.13 s / 206.09 tokens per second",
+    "2.21.856.690 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   4746, progress = 0.56, t =  15.60 s / 304.22 tokens per second",
+    "2.21.857.035 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    154, progress = 0.02, t =  15.60 s / 9.87 tokens per second",
+    "2.24.615.791 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   6354, progress = 0.76, t =  18.36 s / 346.09 tokens per second",
+    "2.27.268.832 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8394, progress = 1.00, t =  21.01 s / 399.48 tokens per second",
+    "2.27.290.396 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    586, progress = 0.07, t =  21.03 s / 27.86 tokens per second",
+    "2.29.697.286 I slot print_timing: id  0 | task 112 | prompt eval time =   13120.31 ms /  7842 tokens (    1.67 ms per token,   597.70 tokens per second)",
+    "2.29.697.318 I slot print_timing: id  0 | task 112 |        eval time =   10321.02 ms /    16 tokens (  645.06 ms per token,     1.55 tokens per second)",
+    "2.29.697.792 I slot      release: id  0 | task 112 | stop processing: n_tokens = 7857, truncated = 0",
+    "2.29.697.827 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8398, progress = 1.00, t =  23.44 s / 358.25 tokens per second",
+    "2.29.720.431 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   2628, progress = 0.31, t =  23.46 s / 112.00 tokens per second",
+    "2.32.173.307 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   4672, progress = 0.56, t =  25.92 s / 180.27 tokens per second",
+    "2.32.173.662 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    154, progress = 0.02, t =  25.92 s / 5.94 tokens per second",
+    "2.34.896.916 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   6307, progress = 0.75, t =  28.64 s / 220.22 tokens per second",
+    "2.37.540.282 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8347, progress = 1.00, t =  31.28 s / 266.82 tokens per second",
+    "2.37.562.404 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    559, progress = 0.06, t =  31.31 s / 17.86 tokens per second",
+    "2.40.018.034 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8351, progress = 1.00, t =  33.76 s / 247.35 tokens per second",
+    "2.40.041.106 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   2595, progress = 0.30, t =  33.78 s / 76.81 tokens per second",
+    "2.42.661.462 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   4631, progress = 0.53, t =  36.40 s / 127.21 tokens per second",
+    "2.45.321.955 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   6612, progress = 0.76, t =  39.06 s / 169.26 tokens per second",
+    "2.48.030.642 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8648, progress = 1.00, t =  41.77 s / 207.02 tokens per second",
+    "2.48.205.240 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8656, progress = 1.00, t =  41.95 s / 206.35 tokens per second",
+    "2.48.395.114 I slot print_timing: id  1 | task 113 | prompt eval time =   25905.60 ms /  8402 tokens (    3.08 ms per token,   324.33 tokens per second)",
+    "2.48.395.144 I slot print_timing: id  1 | task 113 |        eval time =   16232.95 ms /    16 tokens ( 1014.56 ms per token,     0.99 tokens per second)",
+    "2.48.395.678 I slot      release: id  1 | task 113 | stop processing: n_tokens = 8417, truncated = 0",
+    "2.48.397.513 I slot print_timing: id  2 | task 110 | prompt eval time =   36390.33 ms /  8355 tokens (    4.36 ms per token,   229.59 tokens per second)",
+    "2.48.397.523 I slot print_timing: id  2 | task 110 |        eval time =    5749.90 ms /    16 tokens (  359.37 ms per token,     2.78 tokens per second)",
+    "2.48.397.986 I slot      release: id  2 | task 110 | stop processing: n_tokens = 8370, truncated = 0"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "D_8k_x4",
+   "conc": 4,
+   "ctx_tok": 8000,
+   "rep": 1,
+   "idx": 1,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.286,
+   "t_first_progress_s": 0.286,
+   "ttft_s": 36.676,
+   "progress": [
+    [
+     0.286,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     1.248,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 962
+     }
+    ],
+    [
+     3.527,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 3241
+     }
+    ],
+    [
+     5.852,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 5566
+     }
+    ],
+    [
+     8.449,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 8163
+     }
+    ],
+    [
+     11.008,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 10721
+     }
+    ],
+    [
+     13.405,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 13119
+     }
+    ],
+    [
+     15.872,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 15586
+     }
+    ],
+    [
+     18.632,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 586,
+      "time_ms": 18346
+     }
+    ],
+    [
+     21.284,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 586,
+      "time_ms": 20997
+     }
+    ],
+    [
+     23.725,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 2628,
+      "time_ms": 23439
+     }
+    ],
+    [
+     26.191,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 4672,
+      "time_ms": 25905
+     }
+    ],
+    [
+     28.913,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 6307,
+      "time_ms": 28626
+     }
+    ],
+    [
+     31.557,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 8347,
+      "time_ms": 31270
+     }
+    ],
+    [
+     34.033,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 8351,
+      "time_ms": 33747
+     }
+    ],
+    [
+     36.676,
+     {
+      "total": 8355,
+      "cache": 0,
+      "processed": 8355,
+      "time_ms": 36389
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 8355,
+    "prompt_ms": 36390.331,
+    "prompt_per_token_ms": 4.355515380011969,
+    "prompt_per_second": 229.59395450401374,
+    "predicted_n": 16,
+    "predicted_ms": 5749.903,
+    "predicted_per_token_ms": 359.3689375,
+    "predicted_per_second": 2.782655637842934,
+    "draft_n": 26,
+    "draft_n_accepted": 11
+   },
+   "finish": "length",
+   "wall_s": 42.427,
+   "prompt_ms": 36390.331,
+   "prompt_n": 8355,
+   "cache_n": 0,
+   "predicted_ms": 5749.903,
+   "draft_n": 26,
+   "draft_n_accepted": 11,
+   "nonprompt_ttft_s": 0.286,
+   "log_slice": [
+    "2.06.058.778 I slot launch_slot_: id  2 | task 110 | processing task, is_child = 0",
+    "2.06.254.558 I slot launch_slot_: id  3 | task 111 | processing task, is_child = 0",
+    "2.06.255.183 I slot launch_slot_: id  0 | task 112 | processing task, is_child = 0",
+    "2.06.255.500 I slot launch_slot_: id  1 | task 113 | processing task, is_child = 0",
+    "2.09.498.282 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   2202, progress = 0.28, t =   3.24 s / 679.05 tokens per second",
+    "2.11.823.168 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   4250, progress = 0.54, t =   5.57 s / 763.34 tokens per second",
+    "2.11.823.489 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    154, progress = 0.02, t =   5.57 s / 27.66 tokens per second",
+    "2.14.420.109 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   5794, progress = 0.74, t =   8.16 s / 709.65 tokens per second",
+    "2.14.440.801 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    658, progress = 0.08, t =   8.18 s / 80.40 tokens per second",
+    "2.16.978.870 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   7838, progress = 1.00, t =  10.72 s / 730.93 tokens per second",
+    "2.16.999.828 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    662, progress = 0.08, t =  10.74 s / 61.62 tokens per second",
+    "2.19.386.390 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   2706, progress = 0.32, t =  13.13 s / 206.09 tokens per second",
+    "2.21.856.690 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   4746, progress = 0.56, t =  15.60 s / 304.22 tokens per second",
+    "2.21.857.035 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    154, progress = 0.02, t =  15.60 s / 9.87 tokens per second",
+    "2.24.615.791 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   6354, progress = 0.76, t =  18.36 s / 346.09 tokens per second",
+    "2.27.268.832 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8394, progress = 1.00, t =  21.01 s / 399.48 tokens per second",
+    "2.27.290.396 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    586, progress = 0.07, t =  21.03 s / 27.86 tokens per second",
+    "2.29.697.286 I slot print_timing: id  0 | task 112 | prompt eval time =   13120.31 ms /  7842 tokens (    1.67 ms per token,   597.70 tokens per second)",
+    "2.29.697.318 I slot print_timing: id  0 | task 112 |        eval time =   10321.02 ms /    16 tokens (  645.06 ms per token,     1.55 tokens per second)",
+    "2.29.697.792 I slot      release: id  0 | task 112 | stop processing: n_tokens = 7857, truncated = 0",
+    "2.29.697.827 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8398, progress = 1.00, t =  23.44 s / 358.25 tokens per second",
+    "2.29.720.431 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   2628, progress = 0.31, t =  23.46 s / 112.00 tokens per second",
+    "2.32.173.307 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   4672, progress = 0.56, t =  25.92 s / 180.27 tokens per second",
+    "2.32.173.662 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    154, progress = 0.02, t =  25.92 s / 5.94 tokens per second",
+    "2.34.896.916 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   6307, progress = 0.75, t =  28.64 s / 220.22 tokens per second",
+    "2.37.540.282 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8347, progress = 1.00, t =  31.28 s / 266.82 tokens per second",
+    "2.37.562.404 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    559, progress = 0.06, t =  31.31 s / 17.86 tokens per second",
+    "2.40.018.034 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8351, progress = 1.00, t =  33.76 s / 247.35 tokens per second",
+    "2.40.041.106 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   2595, progress = 0.30, t =  33.78 s / 76.81 tokens per second",
+    "2.42.661.462 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   4631, progress = 0.53, t =  36.40 s / 127.21 tokens per second",
+    "2.45.321.955 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   6612, progress = 0.76, t =  39.06 s / 169.26 tokens per second",
+    "2.48.030.642 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8648, progress = 1.00, t =  41.77 s / 207.02 tokens per second",
+    "2.48.205.240 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8656, progress = 1.00, t =  41.95 s / 206.35 tokens per second",
+    "2.48.395.114 I slot print_timing: id  1 | task 113 | prompt eval time =   25905.60 ms /  8402 tokens (    3.08 ms per token,   324.33 tokens per second)",
+    "2.48.395.144 I slot print_timing: id  1 | task 113 |        eval time =   16232.95 ms /    16 tokens ( 1014.56 ms per token,     0.99 tokens per second)",
+    "2.48.395.678 I slot      release: id  1 | task 113 | stop processing: n_tokens = 8417, truncated = 0",
+    "2.48.397.513 I slot print_timing: id  2 | task 110 | prompt eval time =   36390.33 ms /  8355 tokens (    4.36 ms per token,   229.59 tokens per second)",
+    "2.48.397.523 I slot print_timing: id  2 | task 110 |        eval time =    5749.90 ms /    16 tokens (  359.37 ms per token,     2.78 tokens per second)",
+    "2.48.397.986 I slot      release: id  2 | task 110 | stop processing: n_tokens = 8370, truncated = 0"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "D_8k_x4",
+   "conc": 4,
+   "ctx_tok": 8000,
+   "rep": 1,
+   "idx": 2,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.286,
+   "t_first_progress_s": 0.286,
+   "ttft_s": 42.425,
+   "progress": [
+    [
+     0.286,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     1.248,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 961
+     }
+    ],
+    [
+     3.527,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 3240
+     }
+    ],
+    [
+     5.852,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 5565
+     }
+    ],
+    [
+     8.449,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 8162
+     }
+    ],
+    [
+     11.008,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 10721
+     }
+    ],
+    [
+     13.405,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 13118
+     }
+    ],
+    [
+     15.872,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 15585
+     }
+    ],
+    [
+     18.632,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 18346
+     }
+    ],
+    [
+     21.283,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 20997
+     }
+    ],
+    [
+     23.725,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 23439
+     }
+    ],
+    [
+     26.191,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 25904
+     }
+    ],
+    [
+     28.913,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 559,
+      "time_ms": 28626
+     }
+    ],
+    [
+     31.556,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 559,
+      "time_ms": 31270
+     }
+    ],
+    [
+     34.034,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 2595,
+      "time_ms": 33747
+     }
+    ],
+    [
+     36.676,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 4631,
+      "time_ms": 36390
+     }
+    ],
+    [
+     39.335,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 6612,
+      "time_ms": 39048
+     }
+    ],
+    [
+     42.046,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 8648,
+      "time_ms": 41759
+     }
+    ],
+    [
+     42.221,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 8656,
+      "time_ms": 41935
+     }
+    ],
+    [
+     42.425,
+     {
+      "total": 8660,
+      "cache": 0,
+      "processed": 8660,
+      "time_ms": 42138
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 8660,
+    "prompt_ms": 42138.798,
+    "prompt_per_token_ms": 4.865912009237875,
+    "prompt_per_second": 205.51131999541133,
+    "predicted_n": 16,
+    "predicted_ms": 572.184,
+    "predicted_per_token_ms": 35.7615,
+    "predicted_per_second": 27.963032870545142,
+    "draft_n": 43,
+    "draft_n_accepted": 8
+   },
+   "finish": "length",
+   "wall_s": 42.998,
+   "prompt_ms": 42138.798,
+   "prompt_n": 8660,
+   "cache_n": 0,
+   "predicted_ms": 572.184,
+   "draft_n": 43,
+   "draft_n_accepted": 8,
+   "nonprompt_ttft_s": 0.286,
+   "log_slice": [
+    "2.06.058.778 I slot launch_slot_: id  2 | task 110 | processing task, is_child = 0",
+    "2.06.254.558 I slot launch_slot_: id  3 | task 111 | processing task, is_child = 0",
+    "2.06.255.183 I slot launch_slot_: id  0 | task 112 | processing task, is_child = 0",
+    "2.06.255.500 I slot launch_slot_: id  1 | task 113 | processing task, is_child = 0",
+    "2.09.498.282 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   2202, progress = 0.28, t =   3.24 s / 679.05 tokens per second",
+    "2.11.823.168 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   4250, progress = 0.54, t =   5.57 s / 763.34 tokens per second",
+    "2.11.823.489 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    154, progress = 0.02, t =   5.57 s / 27.66 tokens per second",
+    "2.14.420.109 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   5794, progress = 0.74, t =   8.16 s / 709.65 tokens per second",
+    "2.14.440.801 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    658, progress = 0.08, t =   8.18 s / 80.40 tokens per second",
+    "2.16.978.870 I slot print_timing: id  0 | task 112 | prompt processing, n_tokens =   7838, progress = 1.00, t =  10.72 s / 730.93 tokens per second",
+    "2.16.999.828 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =    662, progress = 0.08, t =  10.74 s / 61.62 tokens per second",
+    "2.19.386.390 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   2706, progress = 0.32, t =  13.13 s / 206.09 tokens per second",
+    "2.21.856.690 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   4746, progress = 0.56, t =  15.60 s / 304.22 tokens per second",
+    "2.21.857.035 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    154, progress = 0.02, t =  15.60 s / 9.87 tokens per second",
+    "2.24.615.791 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   6354, progress = 0.76, t =  18.36 s / 346.09 tokens per second",
+    "2.27.268.832 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8394, progress = 1.00, t =  21.01 s / 399.48 tokens per second",
+    "2.27.290.396 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =    586, progress = 0.07, t =  21.03 s / 27.86 tokens per second",
+    "2.29.697.286 I slot print_timing: id  0 | task 112 | prompt eval time =   13120.31 ms /  7842 tokens (    1.67 ms per token,   597.70 tokens per second)",
+    "2.29.697.318 I slot print_timing: id  0 | task 112 |        eval time =   10321.02 ms /    16 tokens (  645.06 ms per token,     1.55 tokens per second)",
+    "2.29.697.792 I slot      release: id  0 | task 112 | stop processing: n_tokens = 7857, truncated = 0",
+    "2.29.697.827 I slot print_timing: id  1 | task 113 | prompt processing, n_tokens =   8398, progress = 1.00, t =  23.44 s / 358.25 tokens per second",
+    "2.29.720.431 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   2628, progress = 0.31, t =  23.46 s / 112.00 tokens per second",
+    "2.32.173.307 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   4672, progress = 0.56, t =  25.92 s / 180.27 tokens per second",
+    "2.32.173.662 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    154, progress = 0.02, t =  25.92 s / 5.94 tokens per second",
+    "2.34.896.916 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   6307, progress = 0.75, t =  28.64 s / 220.22 tokens per second",
+    "2.37.540.282 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8347, progress = 1.00, t =  31.28 s / 266.82 tokens per second",
+    "2.37.562.404 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =    559, progress = 0.06, t =  31.31 s / 17.86 tokens per second",
+    "2.40.018.034 I slot print_timing: id  2 | task 110 | prompt processing, n_tokens =   8351, progress = 1.00, t =  33.76 s / 247.35 tokens per second",
+    "2.40.041.106 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   2595, progress = 0.30, t =  33.78 s / 76.81 tokens per second",
+    "2.42.661.462 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   4631, progress = 0.53, t =  36.40 s / 127.21 tokens per second",
+    "2.45.321.955 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   6612, progress = 0.76, t =  39.06 s / 169.26 tokens per second",
+    "2.48.030.642 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8648, progress = 1.00, t =  41.77 s / 207.02 tokens per second",
+    "2.48.205.240 I slot print_timing: id  3 | task 111 | prompt processing, n_tokens =   8656, progress = 1.00, t =  41.95 s / 206.35 tokens per second",
+    "2.48.395.114 I slot print_timing: id  1 | task 113 | prompt eval time =   25905.60 ms /  8402 tokens (    3.08 ms per token,   324.33 tokens per second)",
+    "2.48.395.144 I slot print_timing: id  1 | task 113 |        eval time =   16232.95 ms /    16 tokens ( 1014.56 ms per token,     0.99 tokens per second)",
+    "2.48.395.678 I slot      release: id  1 | task 113 | stop processing: n_tokens = 8417, truncated = 0",
+    "2.48.397.513 I slot print_timing: id  2 | task 110 | prompt eval time =   36390.33 ms /  8355 tokens (    4.36 ms per token,   229.59 tokens per second)",
+    "2.48.397.523 I slot print_timing: id  2 | task 110 |        eval time =    5749.90 ms /    16 tokens (  359.37 ms per token,     2.78 tokens per second)",
+    "2.48.397.986 I slot      release: id  2 | task 110 | stop processing: n_tokens = 8370, truncated = 0",
+    "2.48.968.711 I slot print_timing: id  3 | task 111 | prompt eval time =   42138.80 ms /  8660 tokens (    4.87 ms per token,   205.51 tokens per second)"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "D_8k_x4",
+   "conc": 4,
+   "ctx_tok": 8000,
+   "rep": 1,
+   "idx": 3,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.729,
+   "t_first_progress_s": 0.729,
+   "ttft_s": 52.014,
+   "progress": [
+    [
+     0.729,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     3.242,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 2513
+     }
+    ],
+    [
+     5.508,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 2202,
+      "time_ms": 4779
+     }
+    ],
+    [
+     7.843,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 4250,
+      "time_ms": 7114
+     }
+    ],
+    [
+     10.252,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 6298,
+      "time_ms": 9522
+     }
+    ],
+    [
+     12.745,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 8346,
+      "time_ms": 12016
+     }
+    ],
+    [
+     15.321,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 10394,
+      "time_ms": 14591
+     }
+    ],
+    [
+     17.981,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 12442,
+      "time_ms": 17252
+     }
+    ],
+    [
+     20.753,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 14490,
+      "time_ms": 20024
+     }
+    ],
+    [
+     23.59,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 16538,
+      "time_ms": 22861
+     }
+    ],
+    [
+     26.504,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 18586,
+      "time_ms": 25774
+     }
+    ],
+    [
+     29.518,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 20634,
+      "time_ms": 28789
+     }
+    ],
+    [
+     32.607,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 22682,
+      "time_ms": 31877
+     }
+    ],
+    [
+     35.782,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 24730,
+      "time_ms": 35052
+     }
+    ],
+    [
+     39.045,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 26778,
+      "time_ms": 38316
+     }
+    ],
+    [
+     42.393,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 28826,
+      "time_ms": 41663
+     }
+    ],
+    [
+     45.881,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 30460,
+      "time_ms": 45152
+     }
+    ],
+    [
+     49.526,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 32504,
+      "time_ms": 48797
+     }
+    ],
+    [
+     52.014,
+     {
+      "total": 32508,
+      "cache": 0,
+      "processed": 32508,
+      "time_ms": 51285
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 32508,
+    "prompt_ms": 51285.719,
+    "prompt_per_token_ms": 1.5776337824535498,
+    "prompt_per_second": 633.8606659682397,
+    "predicted_n": 16,
+    "predicted_ms": 16611.818,
+    "predicted_per_token_ms": 1038.238625,
+    "predicted_per_second": 0.9631697144767659,
+    "draft_n": 35,
+    "draft_n_accepted": 9
+   },
+   "finish": "length",
+   "wall_s": 68.628,
+   "prompt_ms": 51285.719,
+   "prompt_n": 32508,
+   "cache_n": 0,
+   "predicted_ms": 16611.818,
+   "draft_n": 35,
+   "draft_n_accepted": 9,
+   "nonprompt_ttft_s": 0.728,
+   "log_slice": [
+    "2.49.748.763 I slot launch_slot_: id  1 | task 140 | processing task, is_child = 0",
+    "2.50.198.111 I slot launch_slot_: id  3 | task 141 | processing task, is_child = 0",
+    "2.50.198.865 I slot launch_slot_: id  2 | task 142 | processing task, is_child = 0",
+    "2.50.199.263 I slot launch_slot_: id  0 | task 143 | processing task, is_child = 0",
+    "2.54.979.199 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   2202, progress = 0.07, t =   4.78 s / 460.68 tokens per second",
+    "2.57.314.290 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   4250, progress = 0.13, t =   7.12 s / 597.33 tokens per second",
+    "2.59.722.502 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   6298, progress = 0.19, t =   9.52 s / 661.33 tokens per second",
+    "3.02.215.853 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   8346, progress = 0.26, t =  12.02 s / 694.54 tokens per second",
+    "3.04.791.578 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  10394, progress = 0.32, t =  14.59 s / 712.29 tokens per second",
+    "3.07.452.197 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  12442, progress = 0.38, t =  17.25 s / 721.15 tokens per second",
+    "3.10.224.267 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  14490, progress = 0.45, t =  20.02 s / 723.60 tokens per second",
+    "3.13.060.864 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  16538, progress = 0.51, t =  22.86 s / 723.40 tokens per second",
+    "3.15.974.617 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  18586, progress = 0.57, t =  25.78 s / 721.08 tokens per second",
+    "3.18.988.901 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  20634, progress = 0.63, t =  28.79 s / 716.72 tokens per second",
+    "3.22.077.620 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  22682, progress = 0.70, t =  31.88 s / 711.52 tokens per second",
+    "3.25.252.613 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  24730, progress = 0.76, t =  35.05 s / 705.50 tokens per second",
+    "3.28.516.200 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  26778, progress = 0.82, t =  38.32 s / 698.86 tokens per second",
+    "3.31.863.608 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  28826, progress = 0.89, t =  41.66 s / 691.86 tokens per second",
+    "3.31.863.938 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   1894, progress = 0.06, t =  41.66 s / 45.46 tokens per second",
+    "3.35.351.995 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  30460, progress = 0.94, t =  45.15 s / 674.60 tokens per second",
+    "3.35.372.891 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2308, progress = 0.08, t =  45.17 s / 51.09 tokens per second",
+    "3.38.997.094 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  32504, progress = 1.00, t =  48.80 s / 666.10 tokens per second",
+    "3.39.021.186 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2312, progress = 0.08, t =  48.82 s / 47.36 tokens per second",
+    "3.41.495.225 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   4356, progress = 0.14, t =  51.30 s / 84.92 tokens per second",
+    "3.44.049.975 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   6396, progress = 0.20, t =  53.85 s / 118.77 tokens per second",
+    "3.46.690.754 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   8436, progress = 0.26, t =  56.49 s / 149.33 tokens per second",
+    "3.49.416.299 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  10476, progress = 0.32, t =  59.22 s / 176.91 tokens per second",
+    "3.52.222.498 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  12516, progress = 0.39, t =  62.02 s / 201.80 tokens per second",
+    "3.55.125.478 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  14558, progress = 0.45, t =  64.93 s / 224.23 tokens per second",
+    "3.58.097.290 I slot print_timing: id  0 | task 143 | prompt eval time =   51285.72 ms / 32508 tokens (    1.58 ms per token,   633.86 tokens per second)",
+    "3.58.097.320 I slot print_timing: id  0 | task 143 |        eval time =   16611.82 ms /    16 tokens ( 1038.24 ms per token,     0.96 tokens per second)",
+    "3.58.098.401 I slot      release: id  0 | task 143 | stop processing: n_tokens = 32523, truncated = 0",
+    "3.58.098.436 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  16603, progress = 0.51, t =  67.90 s / 244.53 tokens per second"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "E_32k_x4",
+   "conc": 4,
+   "ctx_tok": 32000,
+   "rep": 1,
+   "idx": 0,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 0.741,
+   "t_first_progress_s": 0.741,
+   "ttft_s": 97.455,
+   "progress": [
+    [
+     0.741,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 154,
+      "time_ms": 12
+     }
+    ],
+    [
+     3.241,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 2512
+     }
+    ],
+    [
+     5.508,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 4779
+     }
+    ],
+    [
+     7.843,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 7114
+     }
+    ],
+    [
+     10.251,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 9522
+     }
+    ],
+    [
+     12.744,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 12015
+     }
+    ],
+    [
+     15.32,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 14591
+     }
+    ],
+    [
+     17.981,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 17252
+     }
+    ],
+    [
+     20.753,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 20024
+     }
+    ],
+    [
+     23.589,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 22860
+     }
+    ],
+    [
+     26.503,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 25774
+     }
+    ],
+    [
+     29.517,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 28788
+     }
+    ],
+    [
+     32.606,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 31877
+     }
+    ],
+    [
+     35.781,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 35052
+     }
+    ],
+    [
+     39.045,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 38316
+     }
+    ],
+    [
+     42.392,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2048,
+      "time_ms": 41663
+     }
+    ],
+    [
+     45.881,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2462,
+      "time_ms": 45151
+     }
+    ],
+    [
+     49.526,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 2466,
+      "time_ms": 48796
+     }
+    ],
+    [
+     52.014,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 4510,
+      "time_ms": 51285
+     }
+    ],
+    [
+     54.566,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 6550,
+      "time_ms": 53836
+     }
+    ],
+    [
+     57.208,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 8590,
+      "time_ms": 56479
+     }
+    ],
+    [
+     59.934,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 10630,
+      "time_ms": 59205
+     }
+    ],
+    [
+     62.74,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 12670,
+      "time_ms": 62011
+     }
+    ],
+    [
+     65.643,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 14712,
+      "time_ms": 64914
+     }
+    ],
+    [
+     68.625,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 16757,
+      "time_ms": 67895
+     }
+    ],
+    [
+     71.596,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 18805,
+      "time_ms": 70866
+     }
+    ],
+    [
+     74.653,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 20853,
+      "time_ms": 73923
+     }
+    ],
+    [
+     77.787,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 22901,
+      "time_ms": 77058
+     }
+    ],
+    [
+     81.012,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 24949,
+      "time_ms": 80282
+     }
+    ],
+    [
+     84.328,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 26997,
+      "time_ms": 83598
+     }
+    ],
+    [
+     87.729,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 29045,
+      "time_ms": 86999
+     }
+    ],
+    [
+     91.273,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 30736,
+      "time_ms": 90544
+     }
+    ],
+    [
+     94.994,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 32780,
+      "time_ms": 94265
+     }
+    ],
+    [
+     97.455,
+     {
+      "total": 32784,
+      "cache": 154,
+      "processed": 32784,
+      "time_ms": 96725
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 154,
+    "prompt_n": 32630,
+    "prompt_ms": 96726.622,
+    "prompt_per_token_ms": 2.9643463683726634,
+    "prompt_per_second": 337.3424950165219,
+    "predicted_n": 16,
+    "predicted_ms": 19040.904,
+    "predicted_per_token_ms": 1190.0565,
+    "predicted_per_second": 0.8402962380357571,
+    "draft_n": 35,
+    "draft_n_accepted": 8
+   },
+   "finish": "length",
+   "wall_s": 116.498,
+   "prompt_ms": 96726.622,
+   "prompt_n": 32630,
+   "cache_n": 154,
+   "predicted_ms": 19040.904,
+   "draft_n": 35,
+   "draft_n_accepted": 8,
+   "nonprompt_ttft_s": 0.728,
+   "log_slice": [
+    "2.49.748.763 I slot launch_slot_: id  1 | task 140 | processing task, is_child = 0",
+    "2.50.198.111 I slot launch_slot_: id  3 | task 141 | processing task, is_child = 0",
+    "2.50.198.865 I slot launch_slot_: id  2 | task 142 | processing task, is_child = 0",
+    "2.50.199.263 I slot launch_slot_: id  0 | task 143 | processing task, is_child = 0",
+    "2.54.979.199 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   2202, progress = 0.07, t =   4.78 s / 460.68 tokens per second",
+    "2.57.314.290 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   4250, progress = 0.13, t =   7.12 s / 597.33 tokens per second",
+    "2.59.722.502 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   6298, progress = 0.19, t =   9.52 s / 661.33 tokens per second",
+    "3.02.215.853 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   8346, progress = 0.26, t =  12.02 s / 694.54 tokens per second",
+    "3.04.791.578 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  10394, progress = 0.32, t =  14.59 s / 712.29 tokens per second",
+    "3.07.452.197 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  12442, progress = 0.38, t =  17.25 s / 721.15 tokens per second",
+    "3.10.224.267 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  14490, progress = 0.45, t =  20.02 s / 723.60 tokens per second",
+    "3.13.060.864 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  16538, progress = 0.51, t =  22.86 s / 723.40 tokens per second",
+    "3.15.974.617 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  18586, progress = 0.57, t =  25.78 s / 721.08 tokens per second",
+    "3.18.988.901 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  20634, progress = 0.63, t =  28.79 s / 716.72 tokens per second",
+    "3.22.077.620 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  22682, progress = 0.70, t =  31.88 s / 711.52 tokens per second",
+    "3.25.252.613 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  24730, progress = 0.76, t =  35.05 s / 705.50 tokens per second",
+    "3.28.516.200 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  26778, progress = 0.82, t =  38.32 s / 698.86 tokens per second",
+    "3.31.863.608 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  28826, progress = 0.89, t =  41.66 s / 691.86 tokens per second",
+    "3.31.863.938 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   1894, progress = 0.06, t =  41.66 s / 45.46 tokens per second",
+    "3.35.351.995 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  30460, progress = 0.94, t =  45.15 s / 674.60 tokens per second",
+    "3.35.372.891 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2308, progress = 0.08, t =  45.17 s / 51.09 tokens per second",
+    "3.38.997.094 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  32504, progress = 1.00, t =  48.80 s / 666.10 tokens per second",
+    "3.39.021.186 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2312, progress = 0.08, t =  48.82 s / 47.36 tokens per second",
+    "3.41.495.225 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   4356, progress = 0.14, t =  51.30 s / 84.92 tokens per second",
+    "3.44.049.975 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   6396, progress = 0.20, t =  53.85 s / 118.77 tokens per second",
+    "3.46.690.754 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   8436, progress = 0.26, t =  56.49 s / 149.33 tokens per second",
+    "3.49.416.299 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  10476, progress = 0.32, t =  59.22 s / 176.91 tokens per second",
+    "3.52.222.498 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  12516, progress = 0.39, t =  62.02 s / 201.80 tokens per second",
+    "3.55.125.478 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  14558, progress = 0.45, t =  64.93 s / 224.23 tokens per second",
+    "3.58.097.290 I slot print_timing: id  0 | task 143 | prompt eval time =   51285.72 ms / 32508 tokens (    1.58 ms per token,   633.86 tokens per second)",
+    "3.58.097.320 I slot print_timing: id  0 | task 143 |        eval time =   16611.82 ms /    16 tokens ( 1038.24 ms per token,     0.96 tokens per second)",
+    "3.58.098.401 I slot      release: id  0 | task 143 | stop processing: n_tokens = 32523, truncated = 0",
+    "3.58.098.436 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  16603, progress = 0.51, t =  67.90 s / 244.53 tokens per second",
+    "4.01.067.226 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  18651, progress = 0.57, t =  70.87 s / 263.18 tokens per second",
+    "4.04.124.078 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  20699, progress = 0.64, t =  73.92 s / 280.00 tokens per second",
+    "4.07.258.832 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  22747, progress = 0.70, t =  77.06 s / 295.19 tokens per second",
+    "4.10.483.055 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  24795, progress = 0.76, t =  80.28 s / 308.84 tokens per second",
+    "4.13.799.442 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  26843, progress = 0.82, t =  83.60 s / 321.09 tokens per second",
+    "4.17.200.040 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  28891, progress = 0.89, t =  87.00 s / 332.08 tokens per second",
+    "4.20.744.578 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  30582, progress = 0.94, t =  90.54 s / 337.76 tokens per second"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "E_32k_x4",
+   "conc": 4,
+   "ctx_tok": 32000,
+   "rep": 1,
+   "idx": 1,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 87.729,
+   "t_first_progress_s": 87.729,
+   "ttft_s": 145.04,
+   "progress": [
+    [
+     87.729,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     91.272,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 3544
+     }
+    ],
+    [
+     94.994,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 158,
+      "time_ms": 7265
+     }
+    ],
+    [
+     97.455,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 2202,
+      "time_ms": 9726
+     }
+    ],
+    [
+     99.93,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 4242,
+      "time_ms": 12201
+     }
+    ],
+    [
+     102.518,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 6282,
+      "time_ms": 14789
+     }
+    ],
+    [
+     105.167,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 8322,
+      "time_ms": 17438
+     }
+    ],
+    [
+     107.884,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 10362,
+      "time_ms": 20155
+     }
+    ],
+    [
+     110.688,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 12404,
+      "time_ms": 22958
+     }
+    ],
+    [
+     113.57,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 14449,
+      "time_ms": 25841
+     }
+    ],
+    [
+     116.497,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 16496,
+      "time_ms": 28768
+     }
+    ],
+    [
+     119.445,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 18544,
+      "time_ms": 31716
+     }
+    ],
+    [
+     122.482,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 20592,
+      "time_ms": 34753
+     }
+    ],
+    [
+     125.605,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 22640,
+      "time_ms": 37875
+     }
+    ],
+    [
+     128.805,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 24688,
+      "time_ms": 41076
+     }
+    ],
+    [
+     132.098,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 26736,
+      "time_ms": 44369
+     }
+    ],
+    [
+     135.48,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 28784,
+      "time_ms": 47751
+     }
+    ],
+    [
+     138.9,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 30352,
+      "time_ms": 51171
+     }
+    ],
+    [
+     142.594,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 32396,
+      "time_ms": 54865
+     }
+    ],
+    [
+     145.039,
+     {
+      "total": 32400,
+      "cache": 0,
+      "processed": 32400,
+      "time_ms": 57310
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 32400,
+    "prompt_ms": 57311.36,
+    "prompt_per_token_ms": 1.768869135802469,
+    "prompt_per_second": 565.3329462082212,
+    "predicted_n": 16,
+    "predicted_ms": 13424.254,
+    "predicted_per_token_ms": 839.015875,
+    "predicted_per_second": 1.1918725614101162,
+    "draft_n": 29,
+    "draft_n_accepted": 10
+   },
+   "finish": "length",
+   "wall_s": 158.465,
+   "prompt_ms": 57311.36,
+   "prompt_n": 32400,
+   "cache_n": 0,
+   "predicted_ms": 13424.254,
+   "draft_n": 29,
+   "draft_n_accepted": 10,
+   "nonprompt_ttft_s": 87.729,
+   "log_slice": [
+    "2.49.748.763 I slot launch_slot_: id  1 | task 140 | processing task, is_child = 0",
+    "2.50.198.111 I slot launch_slot_: id  3 | task 141 | processing task, is_child = 0",
+    "2.50.198.865 I slot launch_slot_: id  2 | task 142 | processing task, is_child = 0",
+    "2.50.199.263 I slot launch_slot_: id  0 | task 143 | processing task, is_child = 0",
+    "2.54.979.199 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   2202, progress = 0.07, t =   4.78 s / 460.68 tokens per second",
+    "2.57.314.290 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   4250, progress = 0.13, t =   7.12 s / 597.33 tokens per second",
+    "2.59.722.502 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   6298, progress = 0.19, t =   9.52 s / 661.33 tokens per second",
+    "3.02.215.853 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   8346, progress = 0.26, t =  12.02 s / 694.54 tokens per second",
+    "3.04.791.578 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  10394, progress = 0.32, t =  14.59 s / 712.29 tokens per second",
+    "3.07.452.197 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  12442, progress = 0.38, t =  17.25 s / 721.15 tokens per second",
+    "3.10.224.267 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  14490, progress = 0.45, t =  20.02 s / 723.60 tokens per second",
+    "3.13.060.864 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  16538, progress = 0.51, t =  22.86 s / 723.40 tokens per second",
+    "3.15.974.617 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  18586, progress = 0.57, t =  25.78 s / 721.08 tokens per second",
+    "3.18.988.901 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  20634, progress = 0.63, t =  28.79 s / 716.72 tokens per second",
+    "3.22.077.620 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  22682, progress = 0.70, t =  31.88 s / 711.52 tokens per second",
+    "3.25.252.613 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  24730, progress = 0.76, t =  35.05 s / 705.50 tokens per second",
+    "3.28.516.200 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  26778, progress = 0.82, t =  38.32 s / 698.86 tokens per second",
+    "3.31.863.608 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  28826, progress = 0.89, t =  41.66 s / 691.86 tokens per second",
+    "3.31.863.938 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   1894, progress = 0.06, t =  41.66 s / 45.46 tokens per second",
+    "3.35.351.995 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  30460, progress = 0.94, t =  45.15 s / 674.60 tokens per second",
+    "3.35.372.891 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2308, progress = 0.08, t =  45.17 s / 51.09 tokens per second",
+    "3.38.997.094 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  32504, progress = 1.00, t =  48.80 s / 666.10 tokens per second",
+    "3.39.021.186 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2312, progress = 0.08, t =  48.82 s / 47.36 tokens per second",
+    "3.41.495.225 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   4356, progress = 0.14, t =  51.30 s / 84.92 tokens per second",
+    "3.44.049.975 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   6396, progress = 0.20, t =  53.85 s / 118.77 tokens per second",
+    "3.46.690.754 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   8436, progress = 0.26, t =  56.49 s / 149.33 tokens per second",
+    "3.49.416.299 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  10476, progress = 0.32, t =  59.22 s / 176.91 tokens per second",
+    "3.52.222.498 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  12516, progress = 0.39, t =  62.02 s / 201.80 tokens per second",
+    "3.55.125.478 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  14558, progress = 0.45, t =  64.93 s / 224.23 tokens per second",
+    "3.58.097.290 I slot print_timing: id  0 | task 143 | prompt eval time =   51285.72 ms / 32508 tokens (    1.58 ms per token,   633.86 tokens per second)",
+    "3.58.097.320 I slot print_timing: id  0 | task 143 |        eval time =   16611.82 ms /    16 tokens ( 1038.24 ms per token,     0.96 tokens per second)",
+    "3.58.098.401 I slot      release: id  0 | task 143 | stop processing: n_tokens = 32523, truncated = 0",
+    "3.58.098.436 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  16603, progress = 0.51, t =  67.90 s / 244.53 tokens per second",
+    "4.01.067.226 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  18651, progress = 0.57, t =  70.87 s / 263.18 tokens per second",
+    "4.04.124.078 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  20699, progress = 0.64, t =  73.92 s / 280.00 tokens per second",
+    "4.07.258.832 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  22747, progress = 0.70, t =  77.06 s / 295.19 tokens per second",
+    "4.10.483.055 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  24795, progress = 0.76, t =  80.28 s / 308.84 tokens per second",
+    "4.13.799.442 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  26843, progress = 0.82, t =  83.60 s / 321.09 tokens per second",
+    "4.17.200.040 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  28891, progress = 0.89, t =  87.00 s / 332.08 tokens per second",
+    "4.20.744.578 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  30582, progress = 0.94, t =  90.54 s / 337.76 tokens per second"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "E_32k_x4",
+   "conc": 4,
+   "ctx_tok": 32000,
+   "rep": 1,
+   "idx": 2,
+   "first_ever": false
+  },
+  {
+   "t_first_event_s": 87.729,
+   "t_first_progress_s": 87.729,
+   "ttft_s": 189.925,
+   "progress": [
+    [
+     87.729,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 0,
+      "time_ms": 0
+     }
+    ],
+    [
+     91.273,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 3543
+     }
+    ],
+    [
+     94.994,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 7264
+     }
+    ],
+    [
+     97.455,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 9725
+     }
+    ],
+    [
+     99.931,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 12201
+     }
+    ],
+    [
+     102.518,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 14788
+     }
+    ],
+    [
+     105.167,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 17437
+     }
+    ],
+    [
+     107.884,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 20154
+     }
+    ],
+    [
+     110.688,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 22957
+     }
+    ],
+    [
+     113.571,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 25841
+     }
+    ],
+    [
+     116.497,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 28768
+     }
+    ],
+    [
+     119.445,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 31716
+     }
+    ],
+    [
+     122.483,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 34753
+     }
+    ],
+    [
+     125.604,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 37874
+     }
+    ],
+    [
+     128.805,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 41075
+     }
+    ],
+    [
+     132.099,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 44369
+     }
+    ],
+    [
+     135.48,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 154,
+      "time_ms": 47750
+     }
+    ],
+    [
+     138.9,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 634,
+      "time_ms": 51171
+     }
+    ],
+    [
+     142.595,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 638,
+      "time_ms": 54865
+     }
+    ],
+    [
+     145.04,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 2682,
+      "time_ms": 57310
+     }
+    ],
+    [
+     147.559,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 4722,
+      "time_ms": 59829
+     }
+    ],
+    [
+     150.154,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 6762,
+      "time_ms": 62424
+     }
+    ],
+    [
+     152.835,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 8802,
+      "time_ms": 65105
+     }
+    ],
+    [
+     155.604,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 10844,
+      "time_ms": 67874
+     }
+    ],
+    [
+     158.463,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 12888,
+      "time_ms": 70733
+     }
+    ],
+    [
+     161.311,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 14936,
+      "time_ms": 73581
+     }
+    ],
+    [
+     164.245,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 16984,
+      "time_ms": 76515
+     }
+    ],
+    [
+     167.25,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 19032,
+      "time_ms": 79520
+     }
+    ],
+    [
+     170.349,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 21080,
+      "time_ms": 82619
+     }
+    ],
+    [
+     173.531,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 23128,
+      "time_ms": 85799
+     }
+    ],
+    [
+     176.803,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 25176,
+      "time_ms": 89073
+     }
+    ],
+    [
+     180.162,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 27224,
+      "time_ms": 92432
+     }
+    ],
+    [
+     183.617,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 29272,
+      "time_ms": 95887
+     }
+    ],
+    [
+     186.195,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 30742,
+      "time_ms": 98465
+     }
+    ],
+    [
+     189.829,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 32786,
+      "time_ms": 102099
+     }
+    ],
+    [
+     189.925,
+     {
+      "total": 32790,
+      "cache": 0,
+      "processed": 32790,
+      "time_ms": 102195
+     }
+    ]
+   ],
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 32790,
+    "prompt_ms": 102195.974,
+    "prompt_per_token_ms": 3.1166811222933823,
+    "prompt_per_second": 320.8541267975977,
+    "predicted_n": 16,
+    "predicted_ms": 659.059,
+    "predicted_per_token_ms": 41.1911875,
+    "predicted_per_second": 24.27703741243197,
+    "draft_n": 41,
+    "draft_n_accepted": 8
+   },
+   "finish": "length",
+   "wall_s": 190.586,
+   "prompt_ms": 102195.974,
+   "prompt_n": 32790,
+   "cache_n": 0,
+   "predicted_ms": 659.059,
+   "draft_n": 41,
+   "draft_n_accepted": 8,
+   "nonprompt_ttft_s": 87.729,
+   "log_slice": [
+    "2.49.748.763 I slot launch_slot_: id  1 | task 140 | processing task, is_child = 0",
+    "2.50.198.111 I slot launch_slot_: id  3 | task 141 | processing task, is_child = 0",
+    "2.50.198.865 I slot launch_slot_: id  2 | task 142 | processing task, is_child = 0",
+    "2.50.199.263 I slot launch_slot_: id  0 | task 143 | processing task, is_child = 0",
+    "2.54.979.199 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   2202, progress = 0.07, t =   4.78 s / 460.68 tokens per second",
+    "2.57.314.290 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   4250, progress = 0.13, t =   7.12 s / 597.33 tokens per second",
+    "2.59.722.502 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   6298, progress = 0.19, t =   9.52 s / 661.33 tokens per second",
+    "3.02.215.853 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =   8346, progress = 0.26, t =  12.02 s / 694.54 tokens per second",
+    "3.04.791.578 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  10394, progress = 0.32, t =  14.59 s / 712.29 tokens per second",
+    "3.07.452.197 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  12442, progress = 0.38, t =  17.25 s / 721.15 tokens per second",
+    "3.10.224.267 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  14490, progress = 0.45, t =  20.02 s / 723.60 tokens per second",
+    "3.13.060.864 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  16538, progress = 0.51, t =  22.86 s / 723.40 tokens per second",
+    "3.15.974.617 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  18586, progress = 0.57, t =  25.78 s / 721.08 tokens per second",
+    "3.18.988.901 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  20634, progress = 0.63, t =  28.79 s / 716.72 tokens per second",
+    "3.22.077.620 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  22682, progress = 0.70, t =  31.88 s / 711.52 tokens per second",
+    "3.25.252.613 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  24730, progress = 0.76, t =  35.05 s / 705.50 tokens per second",
+    "3.28.516.200 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  26778, progress = 0.82, t =  38.32 s / 698.86 tokens per second",
+    "3.31.863.608 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  28826, progress = 0.89, t =  41.66 s / 691.86 tokens per second",
+    "3.31.863.938 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   1894, progress = 0.06, t =  41.66 s / 45.46 tokens per second",
+    "3.35.351.995 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  30460, progress = 0.94, t =  45.15 s / 674.60 tokens per second",
+    "3.35.372.891 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2308, progress = 0.08, t =  45.17 s / 51.09 tokens per second",
+    "3.38.997.094 I slot print_timing: id  0 | task 143 | prompt processing, n_tokens =  32504, progress = 1.00, t =  48.80 s / 666.10 tokens per second",
+    "3.39.021.186 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   2312, progress = 0.08, t =  48.82 s / 47.36 tokens per second",
+    "3.41.495.225 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   4356, progress = 0.14, t =  51.30 s / 84.92 tokens per second",
+    "3.44.049.975 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   6396, progress = 0.20, t =  53.85 s / 118.77 tokens per second",
+    "3.46.690.754 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =   8436, progress = 0.26, t =  56.49 s / 149.33 tokens per second",
+    "3.49.416.299 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  10476, progress = 0.32, t =  59.22 s / 176.91 tokens per second",
+    "3.52.222.498 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  12516, progress = 0.39, t =  62.02 s / 201.80 tokens per second",
+    "3.55.125.478 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  14558, progress = 0.45, t =  64.93 s / 224.23 tokens per second",
+    "3.58.097.290 I slot print_timing: id  0 | task 143 | prompt eval time =   51285.72 ms / 32508 tokens (    1.58 ms per token,   633.86 tokens per second)",
+    "3.58.097.320 I slot print_timing: id  0 | task 143 |        eval time =   16611.82 ms /    16 tokens ( 1038.24 ms per token,     0.96 tokens per second)",
+    "3.58.098.401 I slot      release: id  0 | task 143 | stop processing: n_tokens = 32523, truncated = 0",
+    "3.58.098.436 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  16603, progress = 0.51, t =  67.90 s / 244.53 tokens per second",
+    "4.01.067.226 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  18651, progress = 0.57, t =  70.87 s / 263.18 tokens per second",
+    "4.04.124.078 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  20699, progress = 0.64, t =  73.92 s / 280.00 tokens per second",
+    "4.07.258.832 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  22747, progress = 0.70, t =  77.06 s / 295.19 tokens per second",
+    "4.10.483.055 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  24795, progress = 0.76, t =  80.28 s / 308.84 tokens per second",
+    "4.13.799.442 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  26843, progress = 0.82, t =  83.60 s / 321.09 tokens per second",
+    "4.17.200.040 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  28891, progress = 0.89, t =  87.00 s / 332.08 tokens per second",
+    "4.20.744.578 I slot print_timing: id  1 | task 140 | prompt processing, n_tokens =  30582, progress = 0.94, t =  90.54 s / 337.76 tokens per second"
+   ],
+   "own_vram_b": 55625072640,
+   "schema": "kvu16g.req.v1",
+   "phase": "E_32k_x4",
+   "conc": 4,
+   "ctx_tok": 32000,
+   "rep": 1,
+   "idx": 3,
+   "first_ever": false
+  }
+ ],
+ "load_s": 4.0,
+ "hip_dlopen_proof": {
+  "ok": true,
+  "ggml_libs": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0"
+  ],
+  "hip_mapped": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0"
+  ]
+ },
+ "build_info": "b10420-181483cfc",
+ "vram_after_load_b": 54515687424,
+ "teardown": {
+  "pid": 3107106,
+  "already_exited": false,
+  "sent": [
+   "TERM"
+  ],
+  "verified_dead": true,
+  "returncode": 0
+ },
+ "vram": {
+  "n_samples": 181,
+  "peak_used_b": 55647764480,
+  "baseline_used_b": 13094912,
+  "peak_minus_baseline_b": 55634669568,
+  "own_pid_peak_vram_b": 55625072640,
+  "nonzero_samples": 180,
+  "peak_used_gib": 51.83,
+  "own_pid_peak_vram_gib": 51.8
+ },
+ "port_free_after": true
+}
