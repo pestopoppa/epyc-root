@@ -31,3 +31,7 @@ Wrote the FILED receipt for `lsa-dpbf16-row474-20261104` using the existing fail
 ## 15:36Z — Acknowledge filed LSA blocked row 474 diagnostic
 
 Wrote the FILED receipt for `lsa-dpbf16-blocked-row474-20261104` using its existing PASS verdict. The filed result reports blocked hardware BF16 dot raw bits 47057 matching the frozen/PyTorch value for row 474, with zero raw or frozen-key mismatches. Native result SHA-256 `217fde9e1dcbfddd6afe9ec36f5187094a7a2ff2948ad7726f64f28cf0d4b4b3`. This is a one-row diagnostic; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
+
+## 15:41Z — Acknowledge filed LSA packet mock controls
+
+Wrote the FILED receipt for `lsa-27b-packet-mocks-20261104` using its existing PASS verdict: five of five model-free packet gate mock controls passed with no errors or failures. Native result SHA-256 `498b9c14b68d3b3bf5c38296def6f0ec0994619b7fee22d07961d77a18becaa9`. This establishes mock controls only, not a 27B model, GPU performance or full LSA-SCREEN-1 result; no checkbox was ticked.
