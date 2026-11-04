@@ -27,3 +27,7 @@ Wrap retry: prior CAF-2 attempt applied the scoped observer tick and complete pr
 ## 17:44Z — Published the prospective KPF-17.4d custody build prerequisite after its four-CPU first-object smoke passed.
 
 Published `kvu-kpf174-custody-r5-20261104`: four-CPU first-object smoke PASS, then CPU build row published. The row builds prospective 6ec877068 and verifies build and mapped-library custody; it does not adjudicate historical a1f0c8cf9 cells. KPF-13.1 CPU legs and KPF-17.4 CPU conformance were already decided; historical GPU controls remain outstanding.
+
+## 17:53Z — Qualified two model-free output supervision boundaries for the KPF-18 native-control successor and queued the KVU-19b-gap GPU smoke.
+
+KPF-18.0d: two model-free tests passed for the pinned successor output-reserve guard and periodic supervisor failure path; [test packet](../evidence/kpf18-supervisor-qualification-20261104/README.md). Process cleanup, disk free, and GPU admission were mocked, so this is not native-control or GPU readiness. The independent `handoff-kvu19b-gap-clean-20261104` smoke was queued because the GPU was busy; it has not passed and is not claimed ready. KPF-17.4d custody r5 remains grantable.
