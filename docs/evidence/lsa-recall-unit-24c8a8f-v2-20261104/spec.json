@@ -1,0 +1,29 @@
+{
+  "id": "lsa-recall-unit-24c8a8f-v2-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-v2-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 4,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "smoke_timeout_s": 60,
+  "dryrun_native_result": true,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-v2-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "On committed recall source 24c8a8f2, verify the research venv Python and torch import in a no-test FILLER_SMOKE preflight, then run only model-free Python units on an owned CPU quarter. Require exit 0; stop at completion, first failure, STOP, deadline, 120 seconds, or 1 MiB output. No model or GPU work.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-v2-20261104",
+  "keep": [
+    "code",
+    "job.py",
+    "launch.sh",
+    "complete.py",
+    "spec.json",
+    "unit-tests.log",
+    "RESULT.json",
+    "results.jsonl"
+  ],
+  "supersedes": "lsa-recall-unit-24c8a8f-20261104"
+}

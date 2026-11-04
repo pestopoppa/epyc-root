@@ -63,3 +63,11 @@ N10 qualification ended rc=75 after a full response: all 2,269 observation attem
 ## 18:33Z — File failed recall unit import and submit PyTorch environment successor
 
 Filed lsa-recall-unit-24c8a8f-20261104 fail: system Python could not import torch and the four tests never ran. Evidence in docs/evidence/lsa-recall-unit-24c8a8f-20261104/. Prepared successor bound to the existing research environment, verified PyTorch 2.13.0+cu130 available, and submitted smoke; no test result or publication success claimed yet.
+
+## 18:35Z — File four passing model-free recall instrumentation tests
+
+Filed lsa-recall-unit-24c8a8f-v2-20261104 pass: four model-free tests passed with rc=0 on source 24c8a8f2 and research PyTorch; no GPU or model work. Evidence docs/evidence/lsa-recall-unit-24c8a8f-v2-20261104/. The separately prepared equivalent torch successor is already keeper-armed and was not modified.
+
+## 18:36Z — File model-free recall reference build proof
+
+Filed lsa-recall-reference-build-24c8a8f-20261104 pass: source 24c8a8f2, 174 reused objects, changed Qwen object, linked recall marker, server and HIP library identities preserved; launcher completed proof verification. Evidence docs/evidence/lsa-recall-reference-build-24c8a8f-20261104/. Build only; no model, GPU, recall or quality claim.

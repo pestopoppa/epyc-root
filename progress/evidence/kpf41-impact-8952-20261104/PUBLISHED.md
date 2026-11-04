@@ -1,3 +1,5 @@
 # KPF-41 integrated-candidate impact row
 
 `kpf41-direct-vec-impact-8952a0f-20261104` was published after the rowflow four-CPU source-reference smoke passed on CPUs 24–27. Its rc75 `partial-native-incomplete` is the expected smoke stop after first source-reference progress; it is not a full scan result. The full row must produce four native impacts and coverage at candidate `8952a0f693fb923918157eb25117641b74766230`; HIGH/CRITICAL stops source edits. Missing, partial or skipped coverage remains unknown. The preparation README predates publication.
+
+On operator instruction, the private `repo` checkout was removed after recreating the row's source at the same path as a detached worktree directly from `/mnt/raid0/llm/llama.cpp`. The sealed source precondition subsequently passed for the same commit and tree; no graph scan was run. The preparation README describes the original pre-removal custody and is historical: the worktree now uses the canonical repository's Git common directory. Runtime and READY files were not edited.
