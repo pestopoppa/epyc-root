@@ -9,7 +9,7 @@
   "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately and emit OWNER_WARNING on any HIGH/CRITICAL. Stop on ambiguity, parser failure, source drift or missing graph binding. Partial source-reference smoke is first progress only; success needs scan_complete partial=false. No inference or edit-safety claim for skipped files.",
   "estimate_s": 7200,
   "ram_gib": 48,
-  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-CONTRACT",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-IMPACT",
   "priority_rank": 45,
   "first_progress_s": 300,
   "dryrun_timeout_s": 300,
@@ -19,10 +19,12 @@
     "out/**",
     "identity.json",
     "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
     "launch.sh",
     "spec.json",
     "README.md"
   ],
   "lineage": "kpf30-impact-8952",
-  "notes": "New integrated-candidate lineage, distinct from older P3 c72ec82 graph. Prepared only; publisher performs smoke then grants full indexing. Isolated detached worktree outside scratch; full verbose analyzer outputs preserve skipped-file coverage."
+  "notes": "New integrated-candidate lineage, distinct from older P3 c72ec82 graph. Prepared only; publisher performs smoke then grants full indexing. Isolated detached worktree outside scratch; full verbose analyzer outputs preserve skipped-file coverage. Source guard rejects all untracked non-ignored files before and after analysis/queries; ignored GitNexus private metadata is excluded by git ls-files --exclude-standard and covered by a model-free regression test."
 }

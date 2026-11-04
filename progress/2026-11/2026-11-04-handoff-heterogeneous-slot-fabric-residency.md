@@ -103,3 +103,7 @@ Consumed all five resumed preparation files; the KPF-17 custody and gauge succes
 ## 16:29Z — File KPF-17.4d failed build and prepare candidate-bound impact row
 
 Acknowledged previously filed KPF-17.CUSTODY full rc0 scoped PASS. Filed KPF-17.4d custody r3 INCONCLUSIVE after rc75 disk-floor, with no full RESULT or CUSTODY; its first-object smoke is not build acceptance. Reviewed the KPF-30 exact-candidate impact row and found its cleanliness check ignored untracked files; a fail-closed repair and reseal is in progress before publication. Captured the KVU-12.5 exposure inventory: 24 complete start-anchor requests, eight submitted unified requests and a target-model qualification; exact adaptive corpus offsets are absent and replacement selection is not predeclared, so the r3 draft stays withheld.
+
+## 16:32Z — Publish the candidate-bound KPF-30 impact row
+
+Acknowledged the previously filed KVU-12.6 gauge r2 capability PASS (0 to 45, one HTTP200 token, strict within-request mapping times and verified cleanup). Repaired the separate KPF-30 static impact row to reject untracked source inputs, checked its detached identity and seals, and published it after four-CPU partial-reference smoke PASS. Full candidate-bound indexing and six risks remain pending; HIGH/CRITICAL must stop source edits and warn. Preserved the launcher and source-custody packet.
