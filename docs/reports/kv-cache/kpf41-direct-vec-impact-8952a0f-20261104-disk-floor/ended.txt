@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T20:05:59Z reason=disk-floor
+job_id=kpf41-direct-vec-impact-8952a0f-20261104
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T20:05:58Z
+regions=0-95

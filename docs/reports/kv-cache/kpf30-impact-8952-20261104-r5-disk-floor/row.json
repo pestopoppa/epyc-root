@@ -1,0 +1,52 @@
+{
+ "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately and emit OWNER_WARNING on any HIGH/CRITICAL. Stop on ambiguity, parser failure, source drift or missing graph binding. Partial source-reference smoke is first progress only; success needs scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-IMPACT",
+ "id": "kpf30-impact-8952-20261104-r5",
+ "keep": [
+  "out/**",
+  "identity.json",
+  "job.py",
+  "source_integrity.py",
+  "test_source_integrity.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "gitnexus-guard.py",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/launch.sh",
+  "sha256": "47b434d3afea0c4f5deec32d6cf4b17924065de3d68cdae2f1288896c686dc1e"
+ },
+ "lineage": "kpf30-impact-8952",
+ "min_window_s": 300,
+ "notes": "Prepared successor only; not published, granted, or run. Predecessor r4 ended rc=75 reason=disk-floor before native impact results; preserve that outcome and do not treat its smoke/reference rows as impact evidence. Preserve canonical FILLER_DISK_FLOOR_GIB=150 GiB: do not launch any qualification until free space is at least 150 GiB, and stop if it falls below the floor. Whole-host CPU claim 0-95 and 48 GiB reservation are unchanged. Fresh empty output directory prevents reuse of any prior exposure. Use the detached source worktree at /mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104-r5 pinned at 8952a0f693fb923918157eb25117641b74766230. Require six native source-bound upstream impacts and complete verbose skipped-file coverage; HIGH/CRITICAL emits OWNER_WARNING and stops, and skipped files are never cleared. No inference, runtime correctness, or blanket edit-safety claim.",
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:990: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "kv-cache-program.md:990: untestable prose prerequisite: 'after grant; no native risk records, coverage or scan_complete exist. [End and qualification]. No source-edit clearance '"
+ ],
+ "published_at": "2026-11-04T19:27:29Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/STOP",
+ "supersedes": "kpf30-impact-8952-20261104-r4",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5"
+}

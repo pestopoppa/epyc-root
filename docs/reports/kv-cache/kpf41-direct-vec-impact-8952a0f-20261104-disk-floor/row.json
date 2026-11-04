@@ -1,0 +1,56 @@
+{
+ "decision_rule": "At exact full experimental candidate source commit 8952a0f693fb923918157eb25117641b74766230, after verifying tree 8772563484cd449f15188aaf6db89e84bdb6b025 and clean source integrity, run native GitNexus upstream impact scans for ggml_cuda_get_best_fattn_kernel, ggml_cuda_flash_attn_ext_vec, ggml_cuda_flash_attn_ext_vec_case_impl, and flash_attn_ext_vec, each bound to its source file. Retain source-reference hits, full analyzer stdout/stderr, tracked-file coverage including files above the 512 KiB index limit, graph status, and complete raw impact JSON. Stop with OWNER_WARNING before any source change on HIGH/CRITICAL. Stop INCONCLUSIVE on source drift, missing/ambiguous targets, analyzer/parser failure, partial/truncated results, missing coverage logs, STOP, or deadline. This is a source-only impact scan; it does not authorize kernel edits, builds, inference, GPU execution, or claim that skipped/unparsed files have zero impact.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41",
+ "id": "kpf41-direct-vec-impact-8952a0f-20261104",
+ "keep": [
+  "out/**",
+  "identity.json",
+  "SHA256SUMS",
+  "runtime.json",
+  "repo/.git/**",
+  "source/**",
+  "source_integrity.py",
+  "gitnexus-guard.py",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan/launch.sh",
+  "sha256": "74bcd6fa6339bb7d511687dd54fbb3ac7f764f48426d67edf278baf3dc09fa96"
+ },
+ "lineage": "kpf41-direct-vec-impact-8952a0f",
+ "min_window_s": 7200,
+ "notes": "Model-free source-bound static impact only. Source checkout is a fresh detached worktree of the complete RTG-58 experimental candidate; its commit tree and key source files are bound below. Existing direct-vector narrow-case smoke is prior evidence; this row concerns impact scope before any future dtype/shape extension. No source or gate edits are part of this row.",
+ "owner": "h-heterogeneous-slot-fabric-residency",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:1020: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "kv-cache-program.md:1020: untestable prose prerequisite: 'prerequisite:** On detached integrated experimental source `8952a0f693fb923918157eb25117641b74766230`, capture upstream '"
+ ],
+ "published_at": "2026-11-04T18:25:27Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan",
+ "shape": "host",
+ "smoke_predicate": "test -s \"$FILLER_DRYRUN_RESULT_PATH\"",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan/STOP",
+ "unit_key": "unit",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan"
+}
