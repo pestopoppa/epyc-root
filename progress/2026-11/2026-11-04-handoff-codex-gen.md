@@ -19,3 +19,7 @@ Filed `brf-cap04-pilot-20261102-v3` through file_result.py as inconclusive, reta
 ## 07:35Z — File invalid LSA CPU parity attempt
 
 Filed `lsa-screen-1-cpu-parity-20261103` through file_result.py as inconclusive and wrote the FILED receipt. Native result is invalid (`rc=1`, own quarter lock not visible), with null parity metrics; outer `rc=0` is not a parity success. Preserved native result and filed verdict at `progress/evidence/codex-gen-lsa-parity-filing-20261104.json`. The declared finite logits/dense-all tolerance/argmax/16-layer mask conditions were not evaluated. LSA-SCREEN-1 remains open in the owning long-context handoff; no checkbox was ticked and no timing, quality or parity verdict was issued. Experimental repair and remaining CPU/MI210 work remain with that handoff session.
+
+## 15:20Z — Acknowledge filed P5 gold-control result
+
+Wrote the FILED receipt for `codex-gpu-serving-p5-gold-offline-r3-20261104` using its existing PASS verdict. The owning handoff already records P5-2a complete and preserves the gold/no-op control evidence in `docs/reports/p5-gold-controls-20261104/`; broader P5-2 remains open. No checkbox was reticked or new result inferred.
