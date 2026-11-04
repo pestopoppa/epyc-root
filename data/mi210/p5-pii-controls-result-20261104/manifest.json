@@ -1,0 +1,48 @@
+{
+ "decision_rule": "COMPLETE requires actual pytest exit0 and JUnit exactly7 collected/testcases, zero failures/errors/skips, source hashes verified pre/post and no temporary Git repositories. Failed/incomplete runs write INCOMPLETE.json only and exit1. Same seven staged-blob controls in smoke/full; no models or network. Four CPUs, 270s execution cap, >=300s estimate/window.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 2,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2d",
+ "id": "codex-gpu-serving-p5-candidate-pii-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "*.xml",
+  "*.log",
+  "SOURCE.sha256",
+  "READY",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/launch.sh",
+  "sha256": "9f0be4ed64ac3427dda590f17de1c49ef5a1b171292910c7b061ab6a22c323da"
+ },
+ "min_window_s": 300,
+ "owner": "handoff-gpu-serving-tie-in",
+ "ports": [],
+ "priority_rank": 69.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:224: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:224: identity fields incomplete: ['metric', 'region', 'estimate'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better); region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210); estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "mi210-serving-program.md:224: untestable prose prerequisite: 'after all seven pass or the first failure; no model or benchmark inference is involved. The exception is account-scan-on'"
+ ],
+ "published_at": "2026-11-04T15:40:23Z",
+ "published_from": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/complete.py",
+ "stop_file": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/STOP",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row"
+}
