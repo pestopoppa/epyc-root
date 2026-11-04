@@ -823,3 +823,26 @@ class HandoffRoutingTests(unittest.TestCase):
         self.assertEqual(bg.pilot_of(pilots, "new-row", None, "alpha.md:INF-3"), "a")
         self.assertEqual(bg.pilot_of(pilots, "new-row", None, "test.md"), None, "no suffix match (contest.md)")
         self.assertEqual(bg.pilot_of(pilots, "old-row", None, "FILLERS"), "b", "row_ids stay the fallback for old rows")
+
+
+
+class InferenceFirstSlotTests(_DSHBase):
+    """operator 2026-11-04: a session whose next task is inference gets the free slot ahead of priority order."""
+
+    def test_inference_next_session_beats_higher_priority_non_inference(self):
+        base = {"engine": "codex", "status": "suspended", "pid": None, "last_wrapup": "abc1234",
+                "last_end": "2026-11-01T10:00:00Z", "last_resume": "2026-11-01T10:00:00Z", "row_ids": []}
+        self.reg["max_live"] = 1
+        self.reg["auto_start"] = False
+        self.reg["sessions"] = {
+            "zed": dict(base, handoff="handoffs/active/zed.md", session_id="tz", last_report={"next": "non-inference"}),
+            "alpha": dict(base, handoff="handoffs/active/alpha.md", session_id="ta", last_report={"next": "inference"}),
+        }
+        hs.save(hs.reg_path(self.flags), self.reg)
+        reg, _ = self.dispatch()
+        S = reg["sessions"]
+        self.assertEqual(S["alpha"]["work_reason"], "next=inference")
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("alpha", self.calls[0]["out"], "alpha (next=inference, rank 9) takes the slot ahead of zed (rank 1)")
+        self.assertTrue(hs.inference_next({"_work": ("continue", "making-ready: r is not ready")}))
+        self.assertFalse(hs.inference_next({"work_reason": "next=non-inference"}))

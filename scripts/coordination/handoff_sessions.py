@@ -1194,6 +1194,13 @@ def maybe_regen_index(flags, now=None, spawn=None):
     return True
 
 
+def inference_next(e) -> bool:
+    """True when the session's next task is readying an inference row (work_state reason next=inference / making-ready)."""
+    why = (e.get("_work") or ("", ""))[1] if len(e.get("_work") or ()) > 1 else ""
+    why = why or e.get("work_reason") or ""
+    return why.startswith("next=inference") or why.startswith("making-ready")
+
+
 def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=None, keeper_log=None):
     now = now or time.time()
     repo = repo or ROOT
@@ -1407,7 +1414,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         # A paused session whose wrap-up has not landed is not parked: it gets the go-on nudge.
         pos = priority_order(repo, priority)
         rank = lambda hf, slug, i: pos.get(hkey(hf), (2, i))
-        work = [(rank(e.get("handoff"), slug, 0), slug, None) for slug, e in S.items()
+        # Inference-next sessions (next=inference / making-ready) take free slots first (operator 2026-11-04:
+        # never stop readying inference); backlog-priority order holds within each tier. Ordering only, no preemption.
+        work = [((0 if inference_next(e) else 1, rank(e.get("handoff"), slug, 0)), slug, None) for slug, e in S.items()
                 if e.get("status") not in ("done", "retired") and not alive(e.get("pid")) and slug not in launched
                 and not any(ev["slug"] == slug for ev in rest)
                 and ((e.get("_work") or ("",))[0] == "continue" or ((e.get("_work") or ("",))[0] == "pause" and not wrapped(e, lcache)))]
@@ -1416,7 +1425,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             have = {hkey(h["handoff"]) for h in cands}
             cands = cands + [{"handoff": hf, "slug": handoff_slug(S, hf), "rows": [ev["rid"] for ev in evs]}
                              for hf, evs in unowned.items() if hf not in have]
-            work += [(((-1, 0) if hkey(h["handoff"]) in unowned else rank(h["handoff"], h.get("slug") or "", i)), None, h)
+            work += [(((-1, (-1, 0)) if hkey(h["handoff"]) in unowned else (1, rank(h["handoff"], h.get("slug") or "", i))), None, h)
                      for i, h in enumerate(cands) if reg.get("auto_start", True) or hkey(h["handoff"]) in unowned]
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
