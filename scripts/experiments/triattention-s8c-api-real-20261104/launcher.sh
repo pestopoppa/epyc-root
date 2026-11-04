@@ -13,6 +13,6 @@ if [[ ${1:-} == --complete ]]; then
   test -f "$R/complete"
   exit
 fi
-[[ $(sha256sum "$R/packet-pin.json" | cut -d' ' -f1) == 7dc464b4f921bc15054cb70c774c34f99da3d772b808423b5f960ae7abac9542 ]]
+[[ $(sha256sum "$R/packet-pin.json" | cut -d' ' -f1) == 14afeb2a3b1233c396f04d3a4e215f1b8fe1e3968fa46203d2b6ace8d8f1886c ]]
 : "${WS58_REGIONS:?}"
 exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id "$ID" --class cpu --self-claim --role bench --gpu-quiet none --claim-cpus "$WS58_REGIONS" --min-window 600 --stop "$R/STOP" --port 18214 --workdir "$D" --cmd "/bin/bash $D/launcher.sh --job" --complete-cmd "/bin/bash $D/launcher.sh --complete"
