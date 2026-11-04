@@ -343,3 +343,7 @@ The kpf60-checked-fixture-20261104-r2 disk-floor outcome was already filed. HSF-
 ## 21:44Z — Identify raw-evidence overwrite hazard and document safe usage
 
 The kpf60-checked-fixture-20261104-r3 full run was already filed inconclusive. KPF-50 child-evidence review found --out can overwrite its input, including through a symlink; documented a separate-output precaution. A code fix is not landed: GitNexus could not resolve upstream impact because the lane is unindexed. HSF-3 remaining source-census row preparation continues with an awaited result registered. Disk free was 132 GiB below the 150 GiB floor; no new inference verdict.
+
+## 21:45Z — Prepare validator impact and remaining HSF-3 source census
+
+The kpf60-checked-fixture-20261104-r4 disk-floor outcome was already filed. KPF-50 validator input-overwrite guard remains unimplemented pending source-bound GitNexus impact; independent impact and HSF-3 census preparation were delegated, with HSF-3 completion registered. No new row or runtime verdict. The filesystem had 132 GiB free, below the unchanged 150 GiB grant floor.
