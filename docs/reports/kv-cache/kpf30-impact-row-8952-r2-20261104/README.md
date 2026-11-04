@@ -1,0 +1,7 @@
+Prepared only; not published or executed. Publish with canonical publish_row.py spec.json through the owning session. Smoke scans committed symbol references and emits partial first progress; full analysis/queries only after filler_run15 grant. Detached source worktree: /mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104 at 8952a0f693fb923918157eb25117641b74766230. Preserve out/** including verbose skip logs and coverage.json; never infer zero impact from skipped files.
+
+Source custody: job.py checks pinned HEAD, detached state, tracked cleanliness, identity worktree path and `git ls-files --others --exclude-standard -z` before and after the full scan. This rejects all untracked non-ignored inputs while permitting GitNexus private metadata excluded by Git. `python3 test_source_integrity.py` is a model-free regression check for those semantics.
+
+Successor r2: predecessor full attempt stopped before graph compute with rc=75 disk-floor (148 GiB available versus canonical 150 GiB). No source/risk bypass or floor reduction is authorized. Owning session must safely reclaim host disk above the canonical floor before publication/launch; allocation remains through canonical rowflow. Source worktree is retained intentionally at the same pinned detached commit.
+
+Owner published the successor after the four-CPU partial-reference smoke passed. The original disk floor remains in force; full source-bound impact results are pending.
