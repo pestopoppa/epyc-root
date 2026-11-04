@@ -119,3 +119,7 @@ KPF-17: prepared a reviewable patch for the shared rowflow engine that preserves
 ## 21:37Z — Validate KPF-50 raw child fork evidence
 
 KPF-50: implemented a prospective raw JSONL validator requiring four distinct child suffixes, successful responses, exact run identity and integer fork witnesses of at least 60000, with the input digest; six model-free tests pass. Its output is partial structural evidence only, not an independently authenticated or completed window. The GPU packet still needs custody, process cleanup, clock/trace integration and qualification; no inference row or model run was produced. KPF-17 remains constrained by the shared stop-precedence issue and the full-run 150 GiB disk floor.
+
+## 21:44Z — Bind KPF-50 child records and bracket host clock samples
+
+KPF-50: prospective child evidence now binds raw JSONL digest and native run identity to the item-7 Run.finish record and requires four successful fork checks; standalone CLI and six model-free tests pass. A separate host-monotonic clock validator binds the native capture hashes and producer lifetime and rejects non-bracketing or overlapping samples; six model-free tests pass. Both are structural checks, not a completed window, authenticated step trace, profiler calibration, GPU residency or scientific result. A draft durable rowflow stop marker was not retained after review found shared-grant and smoke-isolation defects. No inference row was published or model run. Full rows still encounter the unchanged 150 GiB disk floor.
