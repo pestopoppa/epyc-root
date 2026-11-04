@@ -95,3 +95,7 @@ KVU-19b-gap row handoff-kvu19b-gap-clean-20261104 passed publisher GPU smoke rc0
 ## 19:54Z — Harden KPF-17 mutation oracle runtime custody before publication
 
 KPF-17 prospective mutation oracle now independently validates every retained in-test mapping against sealed source, patch, receipt, model, library hashes and mapped inode identities; duplicate or missing samples fail closed. Twelve focused custody, verdict and cleanup unit tests passed. A scratch-only subreaper and initial-stop cleanup candidate removes process-group signals and passed a two-process fixture, but remains unintegrated and needs initial-stop qualification and review before resealing and publisher smoke. No row was published and no model inference ran. GitNexus impact was unavailable because this lane is unindexed.
+
+## 20:30Z — Harden KPF-17 completion evidence after r3 invalid interruption
+
+KPF-17 r3 completion hardening requires PASS, bound identities, verified cleanup and all three same-attempt evidence files with matching hashes; five model-free tests pass. The existing rowflow wrapper checks completion after a disk-floor or deadline stop, so a coincident PASS can still mask that stop; the guard was not altered and the candidate is not integrated. RAID available space observed 146 GiB against the 150 GiB floor, so a publisher smoke would be stopped by the unchanged guard. No row was published or model inference run; historical r3 signal cause remains unproven.
