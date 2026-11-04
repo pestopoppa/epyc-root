@@ -155,3 +155,7 @@ Filed CH-LB1.1 successor rc1 as inconclusive: four F32/BF16 guard cases passed, 
 ## 18:43Z — File 1f7 HIP coverage build and start CH-LB1.1 ANSI successor smoke
 
 Filed 1f7 HIP coverage build pass: 572 compile entries, 141 HIP objects, 292 GNU coverage notes and two binaries; retained 451 digest-verified artifacts and 14 symlinks. This is build-only, not GPU execution or replay. CH-LB1.1 ANSI-safe successor passed nine parser controls and its publisher smoke is in progress; no publication claim yet.
+
+## 18:47Z — Publish ANSI-safe CH-LB1.1 successor and file 732 CPU coverage build
+
+Published akagg-ch-lb1-c5-ansi-r2-20261104 after four-CPU publisher smoke PASS using the hash-verified source-bound prior smoke build and a real state-guard test; nine parser controls passed. Full test gates and CAS remain open. Filed 732 CPU coverage build rc0 with 431 reviewed entries, 292 coverage notes and 307 verified artifacts retained; no workload or replay conclusion.
