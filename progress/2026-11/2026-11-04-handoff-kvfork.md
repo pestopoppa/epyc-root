@@ -265,3 +265,9 @@ KVU-12.6: restored the detached research worktree at `beb7b859c55e8b8c720a77ac44
 ## 23:49Z — File KPF-50 clock qualification and queue KVU-11c smoke
 
 KPF-50.CLOCK-QUAL: `kvfork50-clock-qual-r6-20261104` completed rc0, native status QUALIFIED; rocprof observed the kernel and the HSA/host bracketing verifier passed. The result is model-free and all four target windows remain unexposed; no KPF-50 performance or attribution verdict follows. [Native result and verifier](../../docs/reports/kv-cache/kpf50-clock-qual-r6-20261104/). KVU-11c: preverified both model hashes outside the grant, isolated the fixed reference WAV, and submitted `kvu11c-gpu-mechanics-smoke-r1-20261104`; the GPU was busy and its publisher smoke is queued, so this row is not yet published or qualified. KPF-18 group-3 scratch affinity overlay passed 18 model-free tests; its relocated component-receipt suite and full lifecycle and GPU qualifications remain open.
+
+## 23:53Z — File the KPF-17 GDB continue controls and repair the queued KVU-11c preparation.
+
+## 23:54Z — File scoped KPF-17 GDB controls
+
+`kvfork17-gdb-continue-qual-r2-20261104` ended rc0. The normal and deliberately nonzero inferiors returned GDB exit codes 0 and 23 with post-continue PID 0 and unsignalled cleanup. Filed INCONCLUSIVE because neither case exercised timeout cleanup, a condition in the row decision rule. [Native result](../../docs/reports/kv-cache/kpf17-gdb-continue-r2-20261104/). This establishes no model, oracle or mapped-library claim. KVU-11c queued smoke: corrected the impossible sample-span test, pinned a local reference WAV and repaired receipt parsing, but job.py and spec.json changed again after sealing; the packet integrity check now fails closed. Identify and coordinate the writer, review its changes, reseal and resubmit before considering it runnable; no smoke PASS is claimed.
