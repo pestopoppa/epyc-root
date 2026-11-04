@@ -27,3 +27,15 @@ KPF-30.PHASE-IMPACT: r3 stopped at the disk floor before native impacts. Prepare
 ## 17:35Z — Make existing stop rules explicit for GPU row publication
 
 KVU-19b-gap GPU publication was refused before smoke because the existing six-pair completion and failure conditions lacked the required stop-rule labels. Labeled those unchanged conditions and futility-only interim treatment in the handoff; the target GPU qualification and full remeasurement remain pending.
+
+## 17:37Z — Queue clean GPU qualification and validate synthetic paired scoring entry
+
+KVU-19b-gap: made the already-declared completion and futility rules explicit and landed them; publisher's main view was stale, so its supported ROWFLOW_REPO setting used this landed lane. The allocator reported GPU busy and queued handoff-kvu19b-gap-clean-20261104 for its next GPU smoke; PASS and third-failure events are registered. It is not yet qualified or published. KPF-62: a synthetic four-request paired scoring subprocess test passed complete-ledger, interrupted-ledger and exhausted-ledger controls; fixture coverage constants were overridden, so no real scoring or model result follows. Its build row remains pending. KPF-18.1 R4 still requires writer exclusion, context and rate qualification; interrupted 181-041 remains unknown.
+
+## 17:38Z — Queue clean GPU qualification and validate synthetic paired scoring entry
+
+KVU-19b-gap: made the already-declared completion and futility rules explicit and landed them; publisher's main view was stale, so its supported ROWFLOW_REPO setting used this landed lane. The allocator reported GPU busy and queued handoff-kvu19b-gap-clean-20261104 for its next GPU smoke; PASS and third-failure events are registered. It is not yet qualified or published. KPF-62: a synthetic four-request paired scoring subprocess test passed complete-ledger, interrupted-ledger and exhausted-ledger controls; fixture coverage constants were overridden, so no real scoring or model result follows. Its build row remains pending. KPF-18.1 R4 still requires writer exclusion, context and rate qualification; interrupted 181-041 remains unknown.
+
+## 17:39Z — Queue clean GPU qualification and validate synthetic paired scoring entry
+
+KVU-19b-gap: made the already-declared completion and futility rules explicit and landed them; publisher's main view was stale, so its supported ROWFLOW_REPO setting used this landed lane. The allocator reported GPU busy and queued handoff-kvu19b-gap-clean-20261104 for its next GPU smoke; PASS and third-failure events are registered. It is not yet qualified or published. KPF-62: a synthetic four-request paired scoring subprocess test passed complete-ledger, interrupted-ledger and exhausted-ledger controls; fixture coverage constants were overridden, so no real scoring or model result follows. Its build row remains pending. KPF-18.1 R4 still requires writer exclusion, context and rate qualification; interrupted 181-041 remains unknown.
