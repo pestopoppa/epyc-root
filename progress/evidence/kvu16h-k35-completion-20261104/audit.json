@@ -1,0 +1,152 @@
+{
+  "schema": "epyc.kvu16h.completion-audit.v1",
+  "as_of": "2026-11-04",
+  "row_id": "handoff-kvu16h-k35-native-20261102",
+  "active_handoff": "kv-cache-program.md:KVU-16h-runner",
+  "question": "Did the minimal native K35 pair run and satisfy its lifecycle answer?",
+  "verdict": "full_pair_completed_no_successor_needed",
+  "historical_failure": "Nov2 11:45 qualification refused unrelated CPU inference blockers before creating a unit; later PASS supersedes this attempt.",
+  "qualification_passed_at": "2026-11-02T20:48:35Z",
+  "full_completed_at": "2026-11-02T21:26:01Z",
+  "checks": {
+    "two_successful_distinct_servers": true,
+    "both_cleanup_native_ps_no_pid": true,
+    "both_16_tokens": true,
+    "dedicated_no_draft_command": true,
+    "independent_mtp_command": true,
+    "requests_no_speculative_n_max": true,
+    "mtp_native_drafts_observed": true,
+    "smoke_four_cpu_affinity": true
+  },
+  "source_receipt_caveat": {
+    "prepared_sha256": "7c892a8a4170d2bf677019ad5d8e7ad1f7d0702d381420404efe52d0bda86dcc",
+    "retained_native_job_sha256": "c788a95704d61fb6931d99786f85181112b136b1ade041203ef6a5b6cf45d274",
+    "pre_ws58_sha256": "7c892a8a4170d2bf677019ad5d8e7ad1f7d0702d381420404efe52d0bda86dcc",
+    "prepared_digest_matches_retained": false,
+    "prepared_digest_matches_pre_ws58": true,
+    "effect": "The retained file adds only a native-smoke blocker filter; full-row branch is unchanged. The stat identity in prepared.json was updated but source_sha256 was not. Historical exact executed source is not cryptographically re-attested by this audit; original receipt is preserved."
+  },
+  "remaining_native_work": "None for this two-arm K35 validation row; do not republish terminal ID or rerun the answered pair. The broader KVU-16h-runner cross-runner repair remains separate.",
+  "runnable_successor_spec": null,
+  "historical_spec": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/row-spec.json",
+  "proposed_owner_result_text": "K35 native lifecycle validation completed 2026-11-02: two independent 35B server lifetimes on production GPU store, dedicated no-draft argv/request then native-MTP argv, 16 completion tokens each, distinct captured PIDs 4020185/4023919 and ps-confirmed cleanup. MTP emitted and accepted 11 draft tokens; no-draft native draft counter was absent, so no measured-zero counter claim. Source receipt caveat: native_job source_sha256 predates the native-only blocker-filter edit, though the prepared stat record matches the retained edited file; preserve this provenance limitation. Scoped validation only; cross-runner parent remains open. [no-belief: engineering lifecycle validation; receipt discrepancy retained]",
+  "manifest": [
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-k35-native-20261102/PASS.json",
+      "capsule_path": "qualification-PASS.json",
+      "sha256": "a2f37e9ca64017333b74cf19af3d8c0331b89f4d25bf96a1e9f6fc694e3821aa"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-k35-native-20261102/superseded/20261102T191921134408Z/FAIL-1.json",
+      "capsule_path": "superseded-FAIL-1.json",
+      "sha256": "5687c94f309d9325b114e7a1408abf23564f725ba3ee8b33760ba16cea359d33"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-k35-native-20261102/native-attempts/attempt-l1upyl0c/native-result.json",
+      "capsule_path": "qualification-native-result.json",
+      "sha256": "8798da7273f6b7c68dd637612dc0282aa698552eec8bc32caf4b4608304e24b6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/RESULT.json",
+      "capsule_path": "full-RESULT.json",
+      "sha256": "ac34063d16e0f2e74788bb5b3367ad7f5b93e8be15f50f80d65224d8de1d9077"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/prepared.json",
+      "capsule_path": "historical-prepared.json",
+      "sha256": "48b7104ab2e0b686eafbc78bedaaf8d945632b0cb06e86eef42a3a0280afe8c3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/row-spec.json",
+      "capsule_path": "historical-row-spec.json",
+      "sha256": "1f27ea0650d9b3d7d4bf8ecf8d72ffa0a824f5e30fd56197c90b29e4de1bdb2c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-kvu16h-k35-native-20261102.ended",
+      "capsule_path": "terminal.ended",
+      "sha256": "db1c69b3d026ba8addb67cf5258bb912a327833825436a56d08f4af1b6931666"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-kvu16h-k35-native-20261102.complete",
+      "capsule_path": "terminal.complete",
+      "sha256": "2abf780b5495ba2f97ef7937d40b8a2e56e6b16b71b58ee71a557e1ff447a81b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/native_job.py",
+      "capsule_path": "retained-native_job.py",
+      "sha256": "c788a95704d61fb6931d99786f85181112b136b1ade041203ef6a5b6cf45d274"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/native_job.py.pre-ws58",
+      "capsule_path": "pre-ws58-native_job.py",
+      "sha256": "7c892a8a4170d2bf677019ad5d8e7ad1f7d0702d381420404efe52d0bda86dcc"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/cell-0.json",
+      "capsule_path": "arm-0/cell.json",
+      "sha256": "87cd823660e0dace9c467b3474ec0227977f9e1e8b329a147f9685577c1e47a6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_no_spec_ctx2048_rep1/request.json",
+      "capsule_path": "arm-0/request.json",
+      "sha256": "c4b96d1eca41c112cd6bf50fad340dab4ca3833b5513409e5c91e177c3140b6c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_no_spec_ctx2048_rep1/response.json",
+      "capsule_path": "arm-0/response.json",
+      "sha256": "378e437e4a7a93aba280e387a468136fe777e9258a5695c7f5ac09c912f780fb"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_no_spec_ctx2048_rep1/server.stderr",
+      "capsule_path": "arm-0/server.stderr",
+      "sha256": "24b8ca2c051ea8d221de596385406e85752ff474fa9be982e5e606eb99c98b4d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_no_spec_ctx2048_rep1/result.json",
+      "capsule_path": "arm-0/result.json",
+      "sha256": "b27facef58b377222060bf7c27cc6bd22939519d8ab725e12d32ebd34af72ce7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_no_spec_ctx2048_rep1/prompt_sha256.txt",
+      "capsule_path": "arm-0/prompt_sha256.txt",
+      "sha256": "16618194db08a7664e25479398b1d4f869248817c555b07950cc9a58fb33e9ea"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/cell-1.json",
+      "capsule_path": "arm-1/cell.json",
+      "sha256": "b5a17a8e7d80376bba993dfdc16b09dda34d88b77d2735c7ed2847ed716095ad"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_native_mtp_ctx2048_rep1/request.json",
+      "capsule_path": "arm-1/request.json",
+      "sha256": "c4b96d1eca41c112cd6bf50fad340dab4ca3833b5513409e5c91e177c3140b6c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_native_mtp_ctx2048_rep1/response.json",
+      "capsule_path": "arm-1/response.json",
+      "sha256": "febfb0321f2b339245d89104ea7546b759ed6983b69c016d939b651836d7ccb2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_native_mtp_ctx2048_rep1/server.stderr",
+      "capsule_path": "arm-1/server.stderr",
+      "sha256": "f9ba1fc17b99757e2190d988f2eeb816b2cc9c71bd80e17d1669f8670e4ea5c3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_native_mtp_ctx2048_rep1/result.json",
+      "capsule_path": "arm-1/result.json",
+      "sha256": "6ed38665e356681b6661898b7ab4af1a92055a26c361760d3a33d410d1f77a7c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/run/runs/kvu16h_35b_native_mtp_ctx2048_rep1/prompt_sha256.txt",
+      "capsule_path": "arm-1/prompt_sha256.txt",
+      "sha256": "16618194db08a7664e25479398b1d4f869248817c555b07950cc9a58fb33e9ea"
+    }
+  ],
+  "scope_limitations": [
+    "No throughput, quality or graph-memory plateau inference.",
+    "No-draft response draft counter is null; zero drafting is supported by launch/request structure, not a native zero count.",
+    "Qualification/full artifacts preserve historical cleanup evidence; this audit does not inspect current reused PIDs.",
+    "No new inference, publication, grant, handoff/index change or source receipt amendment."
+  ],
+  "proposed_scoped_child_task_text": "KVU-16h K35 native two-arm lifecycle validation \u2014 Validate the dedicated no-draft conversion followed by a separate native-MTP server on the retained 35B packet; done when both arms complete at least one token, have distinct captured PIDs, and each server cleanup is proved before another launch. Answered 2026-11-02 by handoff-kvu16h-k35-native-20261102: 16 tokens per arm, PIDs 4020185/4023919, successful cleanup, MTP 11/11 drafts accepted. Evidence: progress/evidence/kvu16h-k35-completion-20261104/audit.json. Preserve the documented stale native_job.py source digest; no benchmark, native zero-draft counter or global runner-coverage claim. [no-belief: scoped engineering validation with retained source-receipt discrepancy]"
+}

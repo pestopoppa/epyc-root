@@ -1,0 +1,249 @@
+{
+  "schema": "epyc.kvu16h.prepared.v1",
+  "model_verification": "GGUF magic and stat identity; no weight digest claim",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "kernel_catalog": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+  "verified_store_files": [
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+      "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+      "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+      "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+      "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
+      "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
+      "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
+      "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+      "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
+      "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
+      "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
+      "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
+      "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+      "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+      "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+      "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b"
+    }
+  ],
+  "source_sha256": {
+    "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/native_job.py": "7c892a8a4170d2bf677019ad5d8e7ad1f7d0702d381420404efe52d0bda86dcc",
+    "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/parent_exec.py": "80e4ccf4d1faf2eb0b59e50b9de4097d06ed7b28716f33f0faae992c6f5d8ceb",
+    "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/check_complete.py": "2d8de20dc7dd56dcd3e5d1d0b3a75bb16b357eb589309dc93c4cc1963181db38",
+    "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/scripts/benchmark/k35_stack_context_matrix_runner.py": "a43a5760fda5c37e965bddedec5a5843eeacf3f117a5e487f2228df73a980d14"
+  },
+  "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64\n",
+  "identities": [
+    {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "dev": 2431,
+      "ino": 96242023,
+      "size": 37801097504,
+      "mtime_ns": 1782411254270412235
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "dev": 2431,
+      "ino": 110022855,
+      "size": 17984,
+      "mtime_ns": 1790001545090254286
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+      "dev": 2431,
+      "ino": 110023848,
+      "size": 9329,
+      "mtime_ns": 1790075703763279315
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/prompt.txt",
+      "dev": 2431,
+      "ino": 206097966,
+      "size": 10333,
+      "mtime_ns": 1793619601006792973
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/native_job.py",
+      "dev": 2431,
+      "ino": 206093027,
+      "size": 7383,
+      "mtime_ns": 1793645845571232525
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/check_complete.py",
+      "dev": 2431,
+      "ino": 206093045,
+      "size": 622,
+      "mtime_ns": 1793619451807324875
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/parent_exec.py",
+      "dev": 2431,
+      "ino": 206097970,
+      "size": 897,
+      "mtime_ns": 1793619600726701359
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/scripts/benchmark/k35_stack_context_matrix_runner.py",
+      "dev": 2431,
+      "ino": 206092963,
+      "size": 68443,
+      "mtime_ns": 1793619422646592279
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+      "dev": 2431,
+      "ino": 110021857,
+      "size": 939848,
+      "mtime_ns": 1790001481878850105
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+      "dev": 2431,
+      "ino": 110022260,
+      "size": 2982176,
+      "mtime_ns": 1790001493440951019
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+      "dev": 2431,
+      "ino": 110022320,
+      "size": 68250624,
+      "mtime_ns": 1790001510815103014
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+      "dev": 2431,
+      "ino": 110022327,
+      "size": 59440,
+      "mtime_ns": 1790001511515109147
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
+      "dev": 2431,
+      "ino": 110023666,
+      "size": 44144,
+      "mtime_ns": 1790021021162399740
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
+      "dev": 2431,
+      "ino": 110022867,
+      "size": 511656,
+      "mtime_ns": 1790001551374757428
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
+      "dev": 2431,
+      "ino": 110023813,
+      "size": 460944,
+      "mtime_ns": 1790021026006941072
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+      "dev": 2431,
+      "ino": 110022824,
+      "size": 6067360,
+      "mtime_ns": 1790001527223246937
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
+      "dev": 2431,
+      "ino": 110023751,
+      "size": 106880,
+      "mtime_ns": 1790021022605993538
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
+      "dev": 2431,
+      "ino": 110023693,
+      "size": 34824,
+      "mtime_ns": 1790021021490928291
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
+      "dev": 2431,
+      "ino": 110023765,
+      "size": 163688,
+      "mtime_ns": 1790021023137507076
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
+      "dev": 2431,
+      "ino": 110023713,
+      "size": 84048,
+      "mtime_ns": 1790021021807629026
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+      "dev": 2431,
+      "ino": 110022851,
+      "size": 7181064,
+      "mtime_ns": 1790001545013403385
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+      "dev": 2431,
+      "ino": 110022673,
+      "size": 4513808,
+      "mtime_ns": 1790001516692154523
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+      "dev": 2431,
+      "ino": 110022814,
+      "size": 1460072,
+      "mtime_ns": 1790001524288221166
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "dev": 2431,
+      "ino": 110022855,
+      "size": 17984,
+      "mtime_ns": 1790001545090254286
+    }
+  ]
+}
