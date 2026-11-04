@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T15:06:11Z",
+  "generated_at": "2026-11-04T15:17:07Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1355,14 +1355,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 350,
-      "dispatchable": 90,
+      "dispatchable": 91,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 92,
+      "open": 93,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2186,7 +2186,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1325,
+          "line": 1327,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1449,
+          "line": 1451,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2204,7 +2204,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1776,
+          "line": 1778,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2213,7 +2213,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1915,
+          "line": 1917,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2222,7 +2222,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2468,
+          "line": 2470,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2239,7 +2239,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2605,
+          "line": 2607,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2262,7 +2262,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3457,
+          "line": 3459,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
