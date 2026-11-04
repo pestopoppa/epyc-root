@@ -31,3 +31,7 @@ Published vb-ak-wire-canary-r3-20261104 after four-CPU first-progress smoke PASS
 ## 16:47Z — File disk-floor canary as inconclusive without claiming a planning result
 
 Filed vb-ak-wire-canary-r3-20261104 INCONCLUSIVE: rc 75 disk-floor after two seconds, RESULT.json absent; no native ingest or planner verdict occurred. Retained the end, manifest, verdict and explicit absent-result record under data/vidya/run-filings/2026-11-04. Harness acceptance and matrix parent remain open. Filesystem reported 145 GiB available; no disk-floor override or unowned scratch cleanup was attempted. Delegated bounded disk analysis, EXP01 prospective adapter and independent CPU-row preparation; completion events registered.
+
+## 16:55Z — Close G-P1 parity source wiring against existing projected native evidence
+
+Closed VB-UFH12-PARITY on three unique shipped-argv G-P1 parity claims written and projected 2026-10-27, each Judged/Located. Native source recorded complete scope and flash_attn on; min cosine 0.999993, mean 0.999997300781, zero non-finite across 211 chunks and 45 queries. Accepted r2 also appears in progress/2026-10/2026-10-29.md:70. Copied original ledger frame payloads to data/vidya/ufh12-gp1-ledger-20261104; original temporary raw parity output is unavailable for reopening. This closes the bounded G-P1 source-wiring box only, not the parent rehearsal, recall, speed or deployment. The actor-wire retry remains blocked by free capacity below the 150 GiB run floor and 160 GiB scheduler threshold.
