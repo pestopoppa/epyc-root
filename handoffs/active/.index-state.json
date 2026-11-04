@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1436,
+          "line": 1438,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1560,
+          "line": 1562,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1887,
+          "line": 1889,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2026,
+          "line": 2028,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2579,
+          "line": 2581,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2716,
+          "line": 2718,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3593,
+          "line": 3595,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1339,7 +1339,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1505,
+          "line": 1508,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1894,
+          "line": 1899,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
