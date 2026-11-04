@@ -127,3 +127,7 @@ P12-NEXT-4: r1 and r2 remain inconclusive. The exact process named by r2 clean-r
 ## 19:22Z — Filed Q38P compatibility probe and preserved scoped parity evidence.
 
 Q38P-4: filed q38p-window-probe rc0 PASS for ROCm 10.1 dispatch on the in-kernel driver and vLLM 4B generation with in-window own-PID KFD/VRAM evidence. Three first-100-character prefixes match; later prompt 3 output diverges. No timing or full-output parity claim. Native packet preserved and prospective belief wiring enrolled; comparator remains open.
+
+## 20:06Z — Filed NPD step 2 incomplete ABBA result and preserved native evidence.
+
+NPD1-STEP2: filed rc75 disk-floor inconclusive; current grant stopped after p1 A0 both lengths and p1 A1 8k, with 32k and second pair missing. Results JSONL also includes earlier attempts, retained but not pooled. A fresh isolated-output packet is being prepared for review; no adopt/reject verdict.

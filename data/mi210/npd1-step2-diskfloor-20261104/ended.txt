@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T20:04:09Z reason=disk-floor
+job_id=npd1-step2-a1-tpot-20261104
+owner=ws58
+step=job-run
+estimated_wall_s=2100
+started=2026-11-04T19:54:13Z
+regions=mi210_0,0-95
