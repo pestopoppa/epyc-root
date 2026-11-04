@@ -1,0 +1,57 @@
+{
+  "schema": "epyc.agentic-serving-independent-prep.v1",
+  "written_at": "2026-11-04T16:08:39Z",
+  "scope": "Independent review of prior B4k/A4a terminal packets; bounded offline replay; no queue polling, republishing, maintained-source, handoff, or grant edits.",
+  "review": {
+    "b4k_prior_terminal": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-final-20261104.json",
+    "b4k_status_at_review": "GPU_SMOKE_QUEUED; original-shape request (384 output tokens, default thinking), source/job pins and offline checks reported PASS; no runtime-valid inference claim.",
+    "a4a_prior_terminal": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/a4-final-20261104.json",
+    "a4a_status_at_review": "GPU_SMOKE_QUEUED; prior owner published once; no republish or monitoring by this follow-up.",
+    "handoff": "handoffs/active/harness-program.md: UFH14-B4k checkpoint still requires its original-shape bounded window; docs/reports/ufh14-a4a-split-task-20261104/README.md records the prospective A4a scratch patch and calls for upstream impact/source-closure review before any publication.",
+    "independent_fix": "No separate maintained-source fix was justified. B4k's remaining gate is its already-queued runtime smoke. A4a's known split-part restoration patch is already in scratch; no additional behavior change was identified. Its 11 offline controls were independently rerun and passed."
+  },
+  "a4a_offline_replay": {
+    "command": "python3 /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/a4a-split-part-successor/replay_controls.py",
+    "status": "PASS",
+    "passed_controls": 11,
+    "wire_sha256": "82e7f7dd11f7acd2b58c4d43f22ced8f77b14c570d6208d1497c3d06e35a1593",
+    "scope": "Recorded-wire restoration and tamper/ambiguity controls only; no native performance or efficacy conclusion."
+  },
+  "b4k_accidental_bounded_run": {
+    "cause": "I mistakenly invoked job.py --help; the script has no help branch and starts its bounded job. No queued smoke was republished or inspected.",
+    "run_path_original": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-original-successor/out/runs/20261104T160643Z",
+    "preserved_raw_run_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/independent-prep-20261104/b4k-accidental-stopped-run",
+    "preserved_raw_run_manifest_sha256": "2efd7622cf1d12c4fc744b98389d78472f0509395b7f86f9ed61f1ed01951761",
+    "manifest_method": "SHA-256 of canonical JSON mapping sorted relative file paths to each file's SHA-256.",
+    "started_at": "2026-11-04T16:06:42Z (server PID lstart); launcher argv artifact mtime 16:06:43.422Z",
+    "last_call_records_at": "2026-11-04T16:07:47.249Z",
+    "captured_pids": {
+      "job_driver": 3873329,
+      "llama_server_child": 3873347
+    },
+    "cleanup": "Sent SIGTERM to captured job driver PID 3873329; its registered handler reaped the captured server child PID 3873347. A subsequent ps query for both exact PIDs returned exit 1/no rows (dead).",
+    "runtime_facts": {
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "draft_model": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "scratch_port": 18183,
+      "gpu_residency_kfd_vram_bytes": 51338338304,
+      "libggml_maps": "GPU build gpu-20260921-ffc1bac82; base, CPU, HIP, and ggml libraries mapped.",
+      "linkage_verifier_rc": 0,
+      "calls_total": 6,
+      "successful_warm_calls": 2,
+      "failed_turn_calls": 4,
+      "failed_turn_duration_s": "30.751-30.753",
+      "valid_window": false,
+      "outcome": "Stopped during growing-context requests; below the >=200-call floor; no report/COMPLETE or baseline was produced."
+    },
+    "scientific_use": "None. These incidental calls are not a window, baseline, cache-performance result, or decision evidence; do not include them in the queued smoke.",
+    "limitation": "Wall duration is about 65 seconds from server process start through the last recorded request. The exact kill/verification timestamp was not separately timestamped."
+  },
+  "authorization_boundary": {
+    "maintained_source_edited": false,
+    "handoff_edited": false,
+    "manual_grants_written": false,
+    "queued_smoke_republished": false,
+    "queue_or_smoke_monitoring": false
+  }
+}

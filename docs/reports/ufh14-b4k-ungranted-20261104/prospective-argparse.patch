@@ -1,0 +1,24 @@
+--- a/job.py
++++ b/job.py
+@@ -19,6 +19,7 @@
+ """
+ from __future__ import annotations
+ 
++import argparse
+ import concurrent.futures as cf
+ import datetime as dt
+ import hashlib
+@@ -252,8 +253,11 @@
+     return ok
+ 
+ 
+-def main() -> int:
+-    if "--check" in sys.argv:
++def main(argv: list[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description="Run the bounded B4k successor job")
++    parser.add_argument("--check", action="store_true", help="validate pinned inputs without starting a run")
++    args = parser.parse_args(argv)
++    if args.check:
+         return check()
+     if check() != 0:
+         return 5

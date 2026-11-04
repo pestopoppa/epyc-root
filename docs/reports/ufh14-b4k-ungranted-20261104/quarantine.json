@@ -1,0 +1,15 @@
+{
+  "source_original": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-original-successor/out/runs/20261104T160643Z",
+  "quarantine": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/independent-prep-20261104/b4k-accidental-original-quarantined",
+  "method": "atomic same-filesystem rename; no row or grant altered",
+  "files_sha256": {
+    "argv.json": "89582d6fd38e1487b797df2a45f345aebca9f42cc6a17bba63df6932d76b49a0",
+    "calls.jsonl": "8a9d3d699509c4356633932918a20d4a30f4d194f11a7adf2f98b24a4307374c",
+    "errors.log": "5f0c09b376d9bb21ec1062a5142d5dfeb059a8fdf02f85f373ad14446b83982f",
+    "residency-proof.json": "f8d8fec05572388714e9096d706394289272b3368521c81be139eb0de7807a6a",
+    "server.log": "7fb8e0a9878104c4e582de3b9b6f52a7b589f3088d237aea3c5906264fb27358",
+    "serving_calls.jsonl": "ea3c529b2a7b85ae844aa8106cd472ab5af7a9a7f071a10b598f668ab9a6b4a6",
+    "serving_calls.jsonl.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scientific_use": "none; ungranted run must never be included in official results"
+}
