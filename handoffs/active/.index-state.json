@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 668
+      "open": 667
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 206
+      "open": 205
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -422,7 +422,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 145,
+      "closed": 146,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 40,
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 187,
+      "total": 188,
       "tracks": [
         {
           "blocked": 0,
@@ -508,7 +508,7 @@
         },
         {
           "blocked": 0,
-          "closed": 50,
+          "closed": 51,
           "gates": [],
           "guarded": 0,
           "line": 2930,
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 249,
+      "closed": 250,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 90,
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 340,
+      "total": 341,
       "tracks": [
         {
           "blocked": 1,
@@ -1339,20 +1339,20 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1371,
+          "line": 1377,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
         },
         {
           "blocked": 0,
-          "closed": 108,
+          "closed": 109,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1753,
+          "line": 1759,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1496,7 +1496,7 @@
       "closed": 200,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 36,
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 238,
+      "total": 237,
       "tracks": [
         {
           "blocked": 0,
@@ -1522,7 +1522,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 679,
+          "line": 680,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,17 +1532,17 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1038,
+          "line": 1039,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1315,
+          "line": 1317,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1950,
+          "line": 1952,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2252,
+          "line": 2254,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 2
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2861,
+          "line": 2864,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
@@ -2614,10 +2614,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 350,
+      "closed": 351,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 95,
+      "open": 94,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
