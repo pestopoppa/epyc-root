@@ -91,3 +91,7 @@ Acknowledged CH18 controls rc0: occupancy and provenance/fail-closed model-free 
 ## 15:05Z — File EG2 fixed-versus-control co-batch diagnostic and preserve native evidence.
 
 Filed EG2 co-batch row rc0. Three fixed cases pass cosine distance <=0.001; the same-tip C5 control produced identical distances and did not reproduce the defect on these cases. Preserved 21 raw outputs, prompts and binding files with hashes; CH33 model gates and fold remain open.
+
+## 15:07Z — Acknowledge failed CH27 preflight and integrate the isolated ownership-protocol preparation.
+
+Acknowledged CH27 rc70 missing/symlinked CPU lock preflight: no FINAL or sealed floors. Recorded the retained owner-token/flock prototype and six model-free controls; an unmodified legacy release bypasses the new lock, so shared-writer custody and calibration authorization remain unproven.
