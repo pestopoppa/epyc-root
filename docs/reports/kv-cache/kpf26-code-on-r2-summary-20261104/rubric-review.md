@@ -1,0 +1,20 @@
+# KPF-26 r2 source-grounded descriptive comparison (2026-11-04)
+
+## Scope and applicability
+
+The requested prior review file `kpf26-outcome-review-nov04.txt` was absent when checked. The available reference, `/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-real-siblings-20261102/OUTCOME-RUBRIC.md`, describes a prospective seven-parent-task cohort with two scouts per task and a long task-root path (rubric lines 1-3). It requires source-file/complete-summary review, per-child descriptive labels and source/summary spans, with UNKNOWN retained where trace or material is insufficient (lines 5-14). It expressly says this protocol is not the frozen enablement rule and cannot support enablement, non-regression, P2 PASS, or fork efficacy conclusions absent the listed authority and gates (lines 16-17).
+
+The r2 records instead identify scope `prospective-real-code-three-scout-diagnostic-not-kpf26-gate` and report three scouts, each targeting a distinct code symbol, rather than the rubric's constructed seven tasks/two-child cases. Thus the protocol's task/case mapping and outcome unit do not match these runs. I do not transfer or invent a scoring rule. All six scout outcomes remain `UNKNOWN` under the requested descriptive rubric; this is not a judgment that any summary is factually wrong. Raw summaries are private; this report does not reproduce them.
+
+## Raw record observations
+
+Paths below are the exact recorded artifacts. The code result paths are listed in `off-results.jsonl` and `on-results.jsonl`; each JSONL record says collector_rc 0, status completed, and scope as above.
+
+- OFF trace: `/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/off.CQZm24/result/scout-trace.json`. Trace says complete=true, launched/completed=3, failed=0; raw flags PREFIX_INDEX=0, FORK=0, LPM=0. Three calls returned HTTP 200 and `n_fork_tokens=0` (tasks 3, 4, 5). All three summaries have status `ok`, but the stored summaries at indices 0 and 2 end with an explicit clipped marker; index 1 has a stored summary. Per rubric lines 10-14, clipped or incomplete material cannot establish a full-summary result. Labels: scouts 0, 1, 2 = UNKNOWN.
+- ON trace: `/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/on.5xg9ck/result/scout-trace.json`. Trace says complete=true, launched/completed=3, failed=0; raw flags PREFIX_INDEX=1, FORK=1, LPM=1. Three calls returned HTTP 200; `n_fork_tokens` were 3,547, 5,498, and 0 (tasks 107, 106, 105, respectively; trace order differs). Summary status is `ok` for each, but index 0 stores only a 58-character source-read instruction, while indices 1 and 2 end in explicit clipped markers. No complete attributable three-summary review against rubric-mapped source tasks is available. Labels: scouts 0, 1, 2 = UNKNOWN.
+
+The trace files provide per-arm raw summary digests and the per-call request payload digests. The aggregate result files report `outcome: null`, `gate_pass: null`, and reason `single route smoke; no paired fork/checkpoint or full-summary outcome verdict`; this reinforces the diagnostic-only scope, not a quality conclusion. In the native attempt records, both arms used the same request SHA-256 `a8c5cf9fdf190e0897afdc3c7fc6c0c771b7c0fb23d825911ea1c69363dc0f05`, returned HTTP 200 with one completion token, and had different response digests (OFF `9cd0ab4828338af6bcfe77ae3adcbfba5b472c7f9d2e2ff5a57c5e764705a8c5`; ON `887b747ebd5ff1eaf9571deb0d43dcaaca137ccf580d729ce7a8f4384aa47bb2`). Those are single native qualification calls, explicitly not the three-scout fan-out or a gate verdict.
+
+## Bounded conclusion
+
+Descriptively, the recorded raw flag values differ as intended (the top-level effective-flag attestation is unverified), both three-call diagnostic traces completed, and recorded fork-token counts differ (all zero OFF; 3,547/5,498/0 ON). The source-grounded outcome comparison requested by the 2026-11-02 rubric is not assignable to these mismatched three-scout diagnostic cases; each outcome remains UNKNOWN. No enablement, non-regression, efficacy, or gate inference follows.

@@ -55,3 +55,7 @@ The original CODE-off diagnostic was already filed INCONCLUSIVE: full rc1, no de
 ## 15:34Z — Preserve and scope the completed P3 r3 full run
 
 Acknowledged the previously filed P3 r3 rc0 full run; retained both native arm records, residency streams, server logs, final and derived reports, and original verdict. Recomputed loss versus the combined mean of L0 base/after: 58.00% drafted and 61.29% no-draft. The no-draft native draft_n is UNKNOWN, not zero; sampled own-PID maximum 51.7 GiB is not a lifetime peak. Corrected stale r3 queued-smoke language and left the global cross-runner parent open. The P5 partial run has no validated no-redraw continuation; its missing last row was already exposed.
+
+## 15:37Z — File scoped CODE-on diagnostic and correct per-child outcome ordering
+
+The previously filed KPF-26 CODE-on r2 event was acknowledged: one route HTTP200, three scouts with child-index fork counts 3547/5498/0 and keyword booleans false/true/true, top-level flag attestation unverified and checkpoint witness null. Corrected the prior checkpoint which incorrectly paired the booleans to child indices, preserved the native result and original filed verdict, and stored raw response/trace privately for source-grounded review. It is a descriptive diagnostic only and does not close P2. No runnable independent successor was identified; outcome review remains in progress.

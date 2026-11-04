@@ -1,0 +1,147 @@
+{
+  "api": {
+    "argv": [
+      "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/private_api.py",
+      "src.api:app"
+    ],
+    "cwd": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-belief-orch",
+    "exe": "/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/bin/python3.11",
+    "pid": 1284881,
+    "start_ticks": "190092444"
+  },
+  "api_url": "http://127.0.0.1:18079",
+  "end_s": 1793778717.1104112,
+  "flags": "unverified",
+  "gate_pass": null,
+  "grant": {
+    "end_s": 1793780820.0,
+    "grant_id": "rtg58-kpf26-code-on-diag-r2-20261104",
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/rtg58-kpf26-code-on-diag-r2-20261104.grant",
+    "regions": "48-71",
+    "sha256": "04272615a79b1bdce940169470fa734ce972b589e20b86652d96fbe175208a81",
+    "start_s": 1793778360.0
+  },
+  "http_status": 200,
+  "manifest_sha256": "b783b2b6974495c7a92772ed98ed6354dcaa36a030a8a34f2d8d8d86d0df9a8b",
+  "outcome": null,
+  "reason": "single route smoke; no paired fork/checkpoint or full-summary outcome verdict",
+  "request_sha256": "1fb78347222f7bb74e7ca8f6939449f9f5b5e768571b79c848d71e58098eb769",
+  "response_sha256": "bc1921dca7af4d035e7f3dc7f6bbcf703623e249c8caf42122651a5d4290990c",
+  "scope": {
+    "src/api/routes/chat_pipeline/scout_stage.py": "035ce54711ed4b7f0314767413804c20ffab47a67a9998c47dc945fc7e71acea",
+    "src/backends/context_limits.py": "26315e7700577d95d3cf2ebe6d77baaacfe68c41de298a7ed6e7c547a923166f",
+    "src/inference/prefix_index.py": "3921d463b16b97b77b50a9025cc72f4df182fc71958b5fa167e5ed561171c316"
+  },
+  "scout_trace": {
+    "checkpoint_witness": null,
+    "children": [
+      {
+        "index": 0,
+        "n_fork_tokens": 3547,
+        "outcome": false,
+        "slot_witness": {
+          "sample_t": 1793778593.0863094,
+          "slot": 1,
+          "task": 107
+        },
+        "summary_sha256": "e80f0f8babe35f3b66e358727571e71f0bbcb1de8b1383cd7b925f17f679bcff"
+      },
+      {
+        "index": 1,
+        "n_fork_tokens": 5498,
+        "outcome": true,
+        "slot_witness": {
+          "sample_t": 1793778593.0863094,
+          "slot": 2,
+          "task": 106
+        },
+        "summary_sha256": "69e09dfab698eaba772064cdb37841e0fba3fa01de9b1b54ac51c472d6c5bc8d"
+      },
+      {
+        "index": 2,
+        "n_fork_tokens": 0,
+        "outcome": true,
+        "slot_witness": {
+          "sample_t": 1793778593.0863094,
+          "slot": 3,
+          "task": 105
+        },
+        "summary_sha256": "d5dd4a45fef96784cf1408a741e7df5ed35d444c2fd1bf69ec04b49ea113331a"
+      }
+    ],
+    "flags_raw": {
+      "ORCHESTRATOR_PREFIX_INDEX": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_FORK": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM_MAX_SKIPS": "1"
+    },
+    "note": "raw flags only; absent task/slot samples remain unknown",
+    "trace_sha256": "5b0148ea3f029eba0fc2f3015e6312321cb37a29ec2ba542c8623a8103b7ffaa"
+  },
+  "server": {
+    "argv": [
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/llama-server",
+      "-m",
+      "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "18979",
+      "-np",
+      "4",
+      "-c",
+      "98304",
+      "-t",
+      "8",
+      "-tb",
+      "8",
+      "-ub",
+      "2048",
+      "--flash-attn",
+      "on",
+      "--jinja",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "--no-mmap",
+      "--cache-ram",
+      "0",
+      "--chat-template-file",
+      "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+      "--spec-type",
+      "draft-mtp",
+      "--spec-draft-n-max",
+      "4",
+      "--reasoning",
+      "off",
+      "--device",
+      "none",
+      "--device-draft",
+      "none",
+      "--kv-unified",
+      "--no-cache-idle-slots",
+      "--slot-fork-min-tokens",
+      "1024",
+      "--metrics",
+      "--slot-save-path",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/on.5xg9ck/slots"
+    ],
+    "binary_sha256": "a62c3ab1835b8eb8ce33722f67d5e8eac6674576fcf2b0b15eb6ba44e4b0fa30",
+    "exe": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/llama-server",
+    "ggml": {
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libggml-base.so.0": "78646b5a15d6c7defedc739c420b4d8290d0dc8ca9d209a10fc5b2a53ad8ada0",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libggml-cpu.so.0": "a4a040447eedf9ab9be8da7a6ebbaef213c01de1aeb164cbb9d5291bb35d309b",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libggml.so.0": "7c857a24bb0765d234ed1756027ddee33aa1562447530043cd0213e391eb9f91",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libllama-common.so.0": "72278caa75913cba756aed4cdfa57b7368045cfe98d49019d4122ecfa0b834c5",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libllama-server-impl.so": "1ac2e7108c99c41012317e23471314b5a47818d6795fc7cb10e8ff8f6846b0de",
+      "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/bin/libllama.so.0": "28d1169032aa9e1906ac0f44bafe801f8b26c86add1b1145535db04bab5dc2fb"
+    },
+    "pid": 1272251,
+    "start_ticks": "190089899"
+  },
+  "server_url": "http://127.0.0.1:18979",
+  "start_s": 1793778474.9488,
+  "status": "API_SCOUTS_OBSERVED"
+}
