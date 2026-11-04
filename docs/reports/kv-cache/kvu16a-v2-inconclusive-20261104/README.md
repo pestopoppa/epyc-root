@@ -1,0 +1,3 @@
+# KVU-16a v2 — incomplete load sample
+
+The previously filed v2 row ended rc75. The native result reports 79 samples, but `coverage_qualified=false`, `target_kv_b_from_log=null`, and `healthy_sampled_max_non_kv_b=null`; its PID-file path points into dry-run state. The declared shape-matched non-KV subtraction and original-run belief are not established. This is INCONCLUSIVE, not a load or lifetime peak and not a registry update. The distinct later r3 post-health sample is separately recorded under KVU-16a and cannot retroactively qualify this v2 attempt. Original result, sample stream, log, end event and filed verdict are retained here.
