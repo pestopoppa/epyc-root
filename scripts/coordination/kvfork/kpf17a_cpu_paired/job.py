@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Pinned CPU exactness job; builds and runs occur only under a keeper grant."""
-import hashlib, json, math, os, pathlib, re, signal, struct, subprocess, sys, tarfile, time, uuid
+import hashlib, json, math, os, pathlib, re, signal, struct, subprocess, sys, time, uuid
+from source_worktrees import verify as verify_source
 D=pathlib.Path(__file__).resolve().parent
 R=D/'out'
 def sha(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
@@ -22,7 +23,6 @@ def run(cmd,log,env=None):
                 raise SystemExit(75)
             time.sleep(.1)
     if p.returncode: raise RuntimeError(f'command rc={p.returncode}; see {log}')
-def tree(src): return {str(p.relative_to(src)):sha(p) for p in sorted(src.rglob('*')) if p.is_file()}
 def fnv(data):
     n=0x14650fb0739d0383
     for b in data: n=((n^b)*0x100000001b3)&((1<<64)-1)
@@ -45,6 +45,8 @@ def validate(log,dump,case,shared):
 C=json.loads((D/'identity.json').read_text())
 assert C['reviewed'] is True
 assert all(sha(D/p)==h for p,h in C['inputs'].items()), 'input changed'
+for arm in ('baseline', 'champion'):
+    verify_source(D/'sources'/arm, C['sources'][arm], C['source_repository'])
 binding=sha(D/'identity.json')
 if '--check' in sys.argv:
     print('static input hashes verified; no builds or inference'); sys.exit(0)
@@ -55,12 +57,8 @@ else: (R/'binding').write_text(binding)
 threads=str(int(os.environ['FILLER_THREADS'])); assert int(threads)>0
 builds=[]
 for arm in ('baseline','champion'):
-    pause(); src=D/'sources'/arm; archive=D/'sources'/f'{arm}.tar'; B=D/f'build-{arm}'
-    if not src.exists():
-        staging=D/'sources'/f'{arm}.extracting'; staging.mkdir(exist_ok=True)
-        with tarfile.open(archive) as t: t.extractall(staging,filter='data')
-        staging.rename(src)
-    assert tree(src)==C['sources'][arm]['files'], 'source snapshot changed'
+    pause(); src=D/'sources'/arm; B=D/f'build-{arm}'
+    verify_source(src, C['sources'][arm], C['source_repository'])
     B.mkdir(exist_ok=True); receipt=B/'identity.json'
     flags=['-DCMAKE_BUILD_TYPE=Release','-DGGML_NATIVE=ON','-DGGML_HIP=OFF','-DGGML_CUDA=OFF','-DGGML_BACKEND_DL=OFF','-DLLAMA_CURL=OFF','-DBUILD_SHARED_LIBS=ON']
     if receipt.exists():
@@ -114,7 +112,7 @@ for harness,count in (('shared',111),('original',86)):
 # Verify input/source/build custody again before claiming complete.
 assert all(sha(D/p)==h for p,h in C['inputs'].items())
 for arm,B in zip(('baseline','champion'),builds):
-    assert tree(D/'sources'/arm)==C['sources'][arm]['files']
+    verify_source(D/'sources'/arm, C['sources'][arm], C['source_repository'])
     assert all(sha(p)==h for p,h in json.loads((B/'identity.json').read_text())['files'].items())
 for harness,count in (('original',86),('shared',111)):
     for case in range(count):
