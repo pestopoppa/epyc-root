@@ -6,6 +6,17 @@
 **Sources**: 266 native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
 
 
+## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): instrument defects, not models, dominated the day: lock self-deadlock, unobserved pytest PASS lines, smoke contamination and vacuous verdicts
+
+**Confidence: verified.**
+
+- **Self-deadlock in a paired run.** The live CRM pair (`tu-dtap-2`, rc75, no completed arm) held q0 in the outer filler while the nested receipt provider waited on the same lock until timeout; the synthetic smoke never exercised the live claim path. A successor needs one lock owner with genuine spanning receipts.
+- **Scorer controls.** Astropy gold/no-op controls pass and a second-repository (SymPy) candidate question manifest is frozen. The first Sphinx smoke was a FAIL, not a scorer PASS: pytest emitted `F.F` progress with a failure-only summary, so the official `parse_log_pytest_v2` saw both FAIL_TO_PASS failures but no named PASS_TO_PASS line; the successor adds only `-rA --color=no`. Lesson: tox `-v` controls tox, not pytest.
+- **Corpora.** IFBench root corpus pinned (300 unique prompts, 344 constraints, 58 IDs; V7 skips empty expected fields so the direct-corpus worker and official scorer are used). BFCL V3: 26 fixed coverage pairs and a native tool-call response adapter (12 synthetic tests), not scorable until the official checker and live transport are wired.
+- **Verdict hygiene.** A smoke sample mixed into official samples (EXP01 r2), a science FAIL filed over a native UNKNOWN (SR-8), a wrapper rc=0 over a failed predicate, and a NaN `predicted_ms` accepted as COMPLETE_DESCRIPTIVE (now rejected by a finite validator) are all instances of reading success from the wrong field. A canary FAIL against a trial excluded from learning (trial 1472) likewise indicted the reference, not the embedder.
+
+Sources: [canonical-judge-suite progress](../progress/2026-11/2026-11-04-handoff-canonical-judge-suite-revamp.md) · [GPU tie-in progress](../progress/2026-11/2026-11-04-handoff-gpu-serving-tie-in.md) · [Sphinx diagnosis](../docs/reports/p5-sphinx-first-smoke-20261104/diagnosis.md) · [benchmark-suites handoff](../handoffs/active/benchmark-suites.md) · [harness fixes progress](../progress/2026-11/2026-11-04-handoff-agentic-serving-harness-fixes.md)
+
 ## Compiled Update — 2026-11-03: four BRF-T4 pilots returned REVISE, and none for the reason the headline suggested
 
 Verdicts are screens (n=1, no CI), recorded as OBSERVATIONs in the owner handoffs; none is ticked as a result. Read the cause, not the status:

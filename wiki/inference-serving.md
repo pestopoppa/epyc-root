@@ -6,6 +6,18 @@
 **Sources**: (+ sweep 2 sources, see its Source References) 157 native document references (source review 2026-10-07)
 
 
+## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): PF1 control drift is a covariate not a fix, SRPF's M4 fold items are declined, and YARN E1 memory closes under the 55 GiB criterion
+
+**Confidence: verified** for filings; PF1 and P12 remain open.
+
+- **PF1 (MI210 vs CPU prefill crossover).** r2 stopped at the disk floor after 2/3 blocks with A1-disabled/A0 controls 0.8975/0.8820/0.8597/0.9004 at L384/448/512/768, failing the 0.90-1.10 guard at three lengths; A0 throughput fell from ~229-248 to ~207 tok/s between blocks while controls stayed ~193-202. r3 passed (48/48 units, medians 0.9349/0.9291/0.9258/0.9853, CPU placement 25% per node); a separate CPU-only A0 diagnostic (15/15 cells) saw spreads of 1.5-6%, so the earlier 9-17% drift did not recur at that size. Cause stays confounded; GPU skew is recorded as a covariate. r5 stopped on the disk floor at 36/48 (control 0.87455 at L256); r6 is the canonical retry.
+- **P12.** C1 np1/2/4 placement passed (aggregate decode 84.235/89.930/84.585 tok/s). A request-overlapping `/slots` busy witness is still absent: r1 failed, r2 was refused by a clean-runtime check that found another llama server, and the operator declined P12-NEXT-4 here because the E5 Stage-B remeasure is owned by the NUMA program.
+- **M4/SRPF items declined (operator, same day).** The plan measured decode, which SRPF cannot move; the default-OFF fold needs no A/B, and greedy token identity is unsound under batching. The fold spec was also reopened: plan-r4 dispatched generic `fold_entry.py` rather than native entries, its seal omitted imported runtime modules, and GPU V2 requires candidate-only `--prefill-contend-cap 512` that a shared role argument cannot supply. The Q38 t48-vs-t96 recipe row failed pre-inference (r4 rc1: missing `captures/` parent) and is recut as r5. An order-sensitivity root-cause task was declined with the same reasoning.
+- **YARN-E1-MEM closed.** A single-server A1 chain 128k to 240k to 400k to 500k peaked at 47.632 GiB own-PID KFD, under the 55 GiB criterion; static A1-A0 KV sizing is ~10.5 GiB and no +15 GiB overshoot or W effect reproduced.
+- **Cross-cutting.** Many rows ended `rc75 disk-floor` one second after grant against the 150 GiB floor; each is INCONCLUSIVE and the floor was held, not relaxed.
+
+Sources: [window-2 MI210 progress](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md) · [GPU tie-in progress](../progress/2026-11/2026-11-04-handoff-gpu-serving-tie-in.md) · [MI210 serving program](../handoffs/active/mi210-serving-program.md) · [engineering-hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
 ## Compiled Update — 2026-11-04 (operator wiki sweep, INF-22 main): np16 halves lose, the PF1 crossover is bracketed, and the M4 decode A/B measured the wrong mechanism
 
 - **P1-2 head-to-head (indicative).** C1 np8 79.2 / np16 83.9 tok/s, C1b np8 74.7. The cross-day C1b np16 reading (99.2, 11-03) is WITHDRAWN: same-session np16 gave C1 87.5 vs C1b 60.5, so the halves lose at np16. A cross-day comparison cannot carry that claim; only the same-session one can.
