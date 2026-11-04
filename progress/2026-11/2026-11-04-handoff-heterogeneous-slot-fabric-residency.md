@@ -399,3 +399,7 @@ The KVU-11c HIP build interruption was already filed inconclusive. Reviewed and 
 ## 22:32Z — Review and preserve HSF-1 receipt source preparation
 
 Consumed all five preparation events. HSF-3 row and both validator proposals were already recorded; the KPF-50 diagnostic draft is superseded and not runnable. Reviewed an HSF-1 standalone receipt draft: its first form hashes redacted argv and can leak free-form secrets. A scratch revision stores only an original-argv digest and passed five lifecycle tests, but does not capture required effective argv and an unkeyed digest can expose low-entropy secrets. Preserved both drafts and limits; no orchestrator integration, launch receipt, measurement, or new row is claimed.
+
+## 22:36Z — Prepare optional HSF-1 effective-argv privacy design
+
+The KPF-50 clock qualification was already filed inconclusive. Prepared an optional HSF-1 exact-argv encryption-boundary sketch and three offline tests with a fake provider. It is not a selected policy, does not validate cryptography or key custody, and is not integrated into the orchestrator; no launch or measurement claim follows. Independent KPF-17 same-UID custody qualification preparation is registered for resumption; no new row was published.
