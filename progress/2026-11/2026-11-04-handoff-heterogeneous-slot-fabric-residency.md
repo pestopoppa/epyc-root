@@ -327,3 +327,7 @@ The KPF-60 selection-build r3 event was already filed. Filed kpf60-checked-fixtu
 ## 21:34Z — File checked-fixture interruption and prepare expanded validation.
 
 The KPF-17 oracle r5 event was already filed. Filed kpf60-checked-fixture-20261104-r9 INCONCLUSIVE after rc75 disk-floor before full compile/test result; preserved receipt. The previously filed r6 receipt capsule was found untracked and is included so its handoff link remains durable. Prepared an extended standalone F16 row-major arithmetic fixture covering inventory, overlap, geometry and overflow; it remains uncompiled and has no native cache measurement or parity result. Prepared a read-only KPF-50 cgroup context diagnostic with five model-free tests; it refuses admission because snapshot-based containment remains unproven. Published independent kpf60-checked-extended-20261104 after four-CPU object-and-fixture publisher smoke PASS; full isolated result remains pending and is not native byte-count or calibration evidence.
+
+## 21:37Z — File extended fixture disk-floor interruption
+
+The observer-build event had already been filed. Filed kpf60-checked-extended-20261104 inconclusive: rc75 disk-floor, no full RESULT.json, and no build verdict; preserved its grant-end receipt. The four-CPU publisher smoke is qualification only. Remaining native-byte measurement depends on the full run and source-safety clearance; existing repeated runs have stopped at the disk floor.
