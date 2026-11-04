@@ -1,0 +1,50 @@
+{
+ "decision_rule": "One of three prospectively sealed windows: raw proposer counts must reconcile, incomplete or interrupted capture is UNKNOWN. Apply the fixed paired stratified analysis only after all three independent windows; no registry or historical 122B claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 14400,
+ "gib": 128,
+ "handoff_task": "speculative-decoding.md:SR-7",
+ "id": "sr7-qwen36-proposer-w2-20261102",
+ "keep": [
+  "*.json",
+  "*.jsonl",
+  "*.py",
+  "*.sh",
+  "*.sha256",
+  "SOURCE-SHA256SUMS",
+  "region-lock",
+  "output/**",
+  "smoke/**",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102/launch.sh",
+  "sha256": "7f24e2e29f00c06ce004fd09a0168c82e0721da8f09936ea150d81a9cf6f2166"
+ },
+ "min_window_s": 10800,
+ "owner": "handoff-speculative-decoding-mtp",
+ "ports": [
+  18989
+ ],
+ "priority_rank": 30.0,
+ "publish_warnings": [
+  "speculative-decoding-mtp-refresh.md:223: untestable prose prerequisite: 'requires all three complete windows and the sealed analysis; partial or missing evidence is UNKNOWN. Publication and smo'"
+ ],
+ "published_at": "2026-11-03T07:24:36Z",
+ "published_from": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102/spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w2-20261102"
+}
