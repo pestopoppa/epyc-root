@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 676
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 477
+      "open": 476
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 748,
+      "closed": 749,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 129,
+      "open": 128,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -108,7 +108,7 @@
         },
         {
           "blocked": 0,
-          "closed": 207,
+          "closed": 208,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -118,7 +118,7 @@
           "line": 9407,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 59
+          "open": 58
         },
         {
           "blocked": 0,
@@ -733,7 +733,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 93,
+      "open": 92,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -742,7 +742,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 332,
+      "total": 331,
       "tracks": [
         {
           "blocked": 0,
@@ -802,7 +802,7 @@
           "line": 1430,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
-          "open": 36
+          "open": 35
         },
         {
           "blocked": 0,
@@ -1339,7 +1339,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1370,
+          "line": 1371,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1752,
+          "line": 1753,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1361,7 +1361,7 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 94,
+      "closed": 95,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 35,
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 129,
+      "total": 130,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,7 +1419,7 @@
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
           "line": 1709,
@@ -1496,7 +1496,7 @@
       "closed": 200,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 43,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 245,
+      "total": 238,
       "tracks": [
         {
           "blocked": 0,
@@ -1515,14 +1515,14 @@
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 26
+          "open": 20
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 678,
+          "line": 679,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1037,
+          "line": 1038,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1314,
+          "line": 1315,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1949,
+          "line": 1950,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8
@@ -1562,10 +1562,10 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2251,
+          "line": 2252,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2860,
+          "line": 2861,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
