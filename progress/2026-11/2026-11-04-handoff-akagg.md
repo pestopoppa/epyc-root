@@ -343,3 +343,7 @@ Filed akxall8-c5-declared-floor-v30-20261104 and akx-c6-q4k-n4-paired-seed-diagn
 ## 22:41Z — File interrupted paired diagnostic and publish independent GPU successor
 
 Filed akx-c6-q4k-n4-paired-seed-diagnostic-r26-20261104 inconclusive after rc75 disk-floor, with no full result; terminal evidence retained under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published independent akx-c6-q4k-n4-paired-seed-diagnostic-r27-20261104 after its four-CPU publisher smoke PASS; real paired diagnostic remains pending. The reported GDN event was already filed.
+
+## 22:45Z — Ready BF16 sentinel build and independent floor successor
+
+Filed akxall8-c5-declared-floor-v31-20261104 inconclusive after rc75 disk-floor with no full result; retained terminal evidence under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published akx-gdn-bf16-sentinel-build-r16-20261104 and akxall8-c5-declared-floor-v32-20261104 after publisher smoke PASS. Full BF16 build and floor calibration remain pending. The reported v9 HIP event was already filed.
