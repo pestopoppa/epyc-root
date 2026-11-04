@@ -1,0 +1,8 @@
+{
+  "tag": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8593:latest",
+  "index_digest": "sha256:815b32905af211560f2ccece18e672fb3660569d3f00b3b6c663fe55efe8e6a8",
+  "platform": "linux/amd64",
+  "immutable_reference": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8593@sha256:bf09a4f64ca8a2dd3c9e2d252d640ed0239e6b2927fa524e40b6cde7aa0fafc0",
+  "expected_image_id": "sha256:84fd7981cbcb53fe42d3f314cac61670175b9429ec51abea180f258d6e66f293",
+  "compressed_layer_bytes": 1097184645
+}

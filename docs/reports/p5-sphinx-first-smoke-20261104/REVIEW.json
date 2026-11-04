@@ -1,0 +1,52 @@
+{
+  "schema": "p5.preparation-review.v2",
+  "status": "PREPARED_NOT_EXECUTED",
+  "question": "Does a second-repository official scorer distinguish pinned gold and no-op without regressions?",
+  "selection": "selection.json",
+  "image_id": "sha256:e48db103c5c1b2d13782a16375c1efb79e5d4f12ea55755d6de43b83443d3f9f",
+  "case_base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+  "scope": "Two controls one Sphinx case; no model inference; no full P5-2 or total-isolation claim. Native tests require authorized publisher smoke.",
+  "files": {
+    "finalize.py": "cdc1b0f32a5c67ceceeacf4f3adcceab8a313cb7ed29b1649d57171f08066dd6",
+    "build-input-receipt.json": "b5c1a1bfb4d3eecbc90c44f064434b7a51404bc4fa1e1d182d478a022349c4bc",
+    "offline_eval.py": "7d2d1123e9c34047fe407c2622221162692f085e35a6648d59a170fad2af9508",
+    "case.json": "0971c84ae68579da57b1a94541d5d1a600ee842db58dadd7334d3f1d89c54135",
+    "pull.sh": "767101db115a2847d491892be1e0bb8943562743e3b85d80a16b63e5b693d321",
+    "selection.json": "acf057aa861a3a31b78ebb0e71976bb124af6d2d70f0d079652d9456206fcd4e",
+    "complete.py": "6680cecec096b2eb9e89f58184615334fb623dbc272746cd42b983e1f7ec1737",
+    "pins.json": "87a06a2dfc41ac5763a956baa745750da6850d3dde753d426dc05cc4f3ad196a",
+    "registry-manifest.json": "bf09a4f64ca8a2dd3c9e2d252d640ed0239e6b2927fa524e40b6cde7aa0fafc0",
+    "registry-index.json": "815b32905af211560f2ccece18e672fb3660569d3f00b3b6c663fe55efe8e6a8",
+    "guard-proof.json": "723839a28f8b52d0687e5be7617a26188ec00655b4d5d6e236f24ec9496c353d",
+    "BUILD-INPUTS.json": "a2f4e8a89017a5d29737c1edfc031f7570f308b3489e2a3c998f0e2cb9dbcd99",
+    "job.py": "b4b8bfcae38f6eea22b7d6ed1f8a3254b2142cf61c4779adc1d29077f825637f",
+    "run-build.sh": "7b0ecdf48a60fdacbccc5e0e46530b5c174da0ab25089bea31f097c70cac765a",
+    "spec.json": "9edd5eea33b3c272e3bbd808e2f72eebbc652f4e09982b0ee3a8c0c3ecbe50e1",
+    "registry-pin.json": "bb84d067f28543e52bfaa9b1b0e9d15909661dcf5befed735b6c5c12cd94736d",
+    "test_native_outcome.py": "1ca3e3de59791332068d4def8d655a3dd711169524bf18eea9f83d17b4dec362",
+    "source_guard.py": "4ee06a3364b5dbf6e4bdd5efcf76719d6e736cecfaf06e759b83e3984c8663e0",
+    "launch.sh": "4c9a77a876c8e5a76f9391169d69a886eb1f6f3dcc37bf289734ba0a51d001a6",
+    "retain.py": "54403add1dc349b1dc09257f61d6082c8b02fd4ef6e04ee48bdcd28b55bd38d7",
+    "build-sealed.py": "d43e9ae2ff230aad3b2d1daff38721a986fe52074c1dde6207215f269698155d"
+  },
+  "source_manifest_sha256": "3f26e8c4c4b3a0bb30a45c0350e94c20e0b8e8ff43dc1463df33264174e596b1",
+  "launch_sha256": "4c9a77a876c8e5a76f9391169d69a886eb1f6f3dcc37bf289734ba0a51d001a6",
+  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2c",
+  "checks": {
+    "synthetic_native_control_loop": "4 passed after ns-prefixed hexadecimal run-id fix; narrow q1 CPU24-27 build-role claim, timeout1",
+    "exact_base_checkout_guard": "guard-proof.json; image HEAD equals base, blob trees match, clean tracked/nonignored untracked",
+    "network_disabled_build": "passed; build-input-receipt.json before/after unchanged; pip check passed",
+    "offline_eval": "one exact original-script setup substitution; official tests unchanged"
+  },
+  "envelope": {
+    "estimate_s": 300,
+    "min_window_s": 300,
+    "both_mode_cap_s": 270
+  },
+  "build_proof": {
+    "cpu_claim": "sub-quarter q2 cores48-51 build role; preparation.log",
+    "network": "none",
+    "before_after_input_hashes_equal": true
+  },
+  "run_id_encoding": "Single alphanumeric ns-prefixed hexadecimal time_ns token; test/verdict semantics unchanged."
+}

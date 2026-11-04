@@ -1,0 +1,52 @@
+{
+ "completed_result_sha256": "83c8b9dd45abdfb2d27db4ad361d13f6434c78a90d6feab54b7aec0b12c01e01",
+ "decision_rule": "Full instrument diagnostic completes only with both real arms, every 2 FTP+1 PTP status named, source-bound reports and clean owned-container removal. decision=PASS requires resolved gold/all tests pass and unresolved no-op/FTP failure+PTP pass; complete-but-wrong controls file decision=FAIL with successful job completion. Missing/error/incomplete runs fail closed. Both modes identically cap270s; estimate/window300s. Exact reporting-only pytest -rA --color=no suffix, unchanged selectors/patches/parser. No models; not full P5-2. Launcher runs seven native-outcome and four parser/reporting controls under FILLER_CPUS before both actual arms, identically in smoke/full; shared instrument deadline270s starts before controls. ERROR/SKIPPED named statuses refuse completion. Controls have not run independently and must pass in publisher smoke.",
+ "declared_result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/RESULT.json",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 16,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2c",
+ "id": "codex-gpu-serving-p5-sphinx-gold-r2-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "SOURCE.sha256",
+  "logs/run_evaluation/*/*/*/*.json",
+  "logs/run_evaluation/*/*/*/*.txt",
+  "logs/run_evaluation/*/*/*/*.diff",
+  "logs/run_evaluation/*/*/*/*.sh",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/launch.sh",
+  "sha256": "ee7f6d18cad3652d87af2d59b8ed8a3676a9cd298105cce663510844da232dea"
+ },
+ "min_window_s": 300,
+ "owner": "handoff-gpu-serving-tie-in",
+ "ports": [],
+ "priority_rank": 70.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:226: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:226: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "mi210-serving-program.md:226: untestable prose prerequisite: 'requires gold resolved with all three named tests passing, no-op unresolved with at least one named FAIL_TO_PASS failure'"
+ ],
+ "published_at": "2026-11-04T15:28:56Z",
+ "published_from": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/complete.py",
+ "stop_file": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/STOP",
+ "supersedes": "codex-gpu-serving-p5-sphinx-gold-20261104",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104"
+}
