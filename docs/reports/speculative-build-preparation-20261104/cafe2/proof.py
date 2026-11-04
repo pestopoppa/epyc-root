@@ -6,7 +6,10 @@ def digest(p):
  with open(p,'rb') as f:
   for b in iter(lambda:f.read(1048576),b''): h.update(b)
  return h.hexdigest()
+CANDIDATE='d9cc5fe5e40c81caccc553ee14a8d5de2f4408c9868340a8515b9a2c81c7f41c'
+BRIDGE='9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919'
 def source():
+ assert digest(D/'candidate.cpp')==CANDIDATE and digest(D/'mtp_draft_bridge.hpp')==BRIDGE
  assert subprocess.check_output(['git','-C',str(S),'rev-parse','HEAD'],text=True).strip()=='ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
  assert hashlib.sha256(subprocess.check_output(['git','-C',str(S),'diff','--binary','--abbrev=10','HEAD'])).hexdigest()==PATCH
  assert not subprocess.check_output(['git','-C',str(S),'ls-files','--others','--exclude-standard'])
@@ -26,6 +29,18 @@ def write(mode,run,out):
  validate(d); p=pathlib.Path(out); p.parent.mkdir(parents=True,exist_ok=True); fd,tmp=tempfile.mkstemp(dir=p.parent,prefix='.proof-')
  with os.fdopen(fd,'w') as f: json.dump(d,f,sort_keys=True); f.write('\n'); f.flush(); os.fsync(f.fileno())
  os.replace(tmp,p)
+if sys.argv[1]=='predicate':
+ try:
+  t0=int(os.environ['FILLER_SMOKE_T0'])
+  p=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']); assert p.stat().st_mtime >= t0
+  d=json.loads(p.read_text()); assert d['mode']=='smoke'
+  assert d['source_commit']=='ffc1bac82eeca6f9099e1ccd9ba49703c460a115' and d['patch_sha256']==PATCH
+  assert d['candidate_sha256']==CANDIDATE and d['bridge_sha256']==BRIDGE
+  obj=(pathlib.Path(d['run']).resolve(strict=True)/'candidate.o').resolve(strict=True)
+  assert str(obj) in d['files'] and obj.stat().st_size>0 and obj.stat().st_mtime>=t0
+  validate(d)
+ except (AssertionError, OSError, KeyError, TypeError, ValueError, json.JSONDecodeError, subprocess.SubprocessError): raise SystemExit(1)
+ raise SystemExit(0)
 if sys.argv[1]=='source': source()
 elif sys.argv[1]=='write': write(*sys.argv[2:])
 elif sys.argv[1]=='check':

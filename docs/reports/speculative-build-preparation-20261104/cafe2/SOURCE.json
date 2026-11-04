@@ -3,14 +3,14 @@
   "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
   "source_overlay_sha256": "86851c0e550ba543ef3ab1ccfa85c14aa18715ddff4836332c380b7d0740ad7a",
   "files": {
-    "candidate.cpp": "03231c2d7cca3eaf11112b06a449639f6766d1c89fc92f7fbba82a5cae0a4cc1",
+    "candidate.cpp": "d9cc5fe5e40c81caccc553ee14a8d5de2f4408c9868340a8515b9a2c81c7f41c",
     "mtp_draft_bridge.hpp": "9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919",
-    "proof.py": "349b4a9c252389bb787603dfedba2c6a252c069f520a6ccefc122a5e69f87323",
+    "proof.py": "c121cd707e8039fdb42c773958f773144279ed76add546a84e5adf5d9f0a85d6",
     "build.sh": "343defaf8a74b9b70a064f64012362d6abb2c0ed08f534823d311aabb6584ed9",
     "job.sh": "b36f0e1aaf69ae553924137340c044b9b97e4646fd12a56111eb3fd40cad79da",
     "DESIGN.md": "9c20f61bd0ef9ba45010aacd3b4aebb196245a6f3532f06f24a209509d814fe4",
-    "spec.json": "84c8dc087c56f6996d6e1a23698702bd54214ef4ce77e1b8a9aac89533a702c2",
-    "runtime.sha256": "c5be3eb2d8027e080c8037b0bc2a7d095f89f40835d10adeb18c7de8275debc0",
+    "spec.json": "5ae8aa55a67393d8debfe94b1843858ec72880d67ace7c69d925fd04bedbec01",
+    "runtime.sha256": "3005c8bfba66306fb6715b78ddf2eadb53e4c5f4751df52fafa18ec937de8e3d",
     "launch.sh": "e3a55af998890959c434c9cac7715bede247890fb48bceaddc329059810f449c",
     "supervise.py": "ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2"
   },
