@@ -255,3 +255,7 @@ The db18 CPU build was already filed as a bounded coverage-build pass. Filed GDN
 ## 21:22Z — Filed interrupted C6 build, published successor and prepared CH-LB1 fold provenance.
 
 The CH-LB1.1 CPU gates had already been filed as passed; fold CAS remains open. Filed C6 cuBLAS build r8 as inconclusive rc75 disk-floor stop with terminal evidence retained. Published C6 build r9 after four-CPU custody smoke PASS; full build remains pending. CH-LB1 fold prep verified the tested tree on C5; no commit with that tree exists in local refs, and the experimental-kernel owner must finalize immutable source before store builds and CAS gates.
+
+## 21:26Z — Filed disk-floor interruptions and published independent CPU, floor and GPU successors.
+
+The P1b 732 HIP build event had already been filed. Filed floor v12, C6 cuBLAS build r9 and C6 paired diagnostic r6 as inconclusive disk-floor stops with terminal packets retained. Published source-bound C6 build r10 after publisher custody smoke PASS; full build and GPU verdict remain pending. Published independent-source floor v13 and paired GPU diagnostic r7 after publisher smoke PASS; their full results remain pending.
