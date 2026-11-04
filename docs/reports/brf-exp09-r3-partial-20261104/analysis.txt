@@ -1,0 +1,23 @@
+EXP-09 expanded R3 partial result inspection
+Inspected: /mnt/raid0/llm/tmp/brf-exp09-expand-r3/out/results.jsonl, corpus/MANIFEST.json, and /mnt/raid0/llm/tmp/compute-flags/ready/brf-exp09-expanded-r3-20261104.json
+
+Observed stream
+- 26 JSONL records: 1 preflight, 24 cell records, 1 paired_readout. All 26 parsed; 0 parse errors.
+- Cells cover 24 distinct items (item-01 through item-24), and every item_sha256 equals its manifest item SHA-256.
+- Only arm observed: control, 24 cells. Unique completed item-arm cells: 24; duplicate item-arm keys: 0. Other three arms have 0 observed cells each. Thus this is a partial observed stream, not the manifest's requested 96-cell set.
+- Each cell has a nonempty captured `view` and `answer_raw`; `parsed` is true for 24/24. Completion token counts are all below 1024 (range 47–141). The result stream contains no separate captured answer-text field; `answer_raw` is the recorded answer response.
+- `refetch_requested`: true for 12/24, false for 12/24. `evidence.fell_back`: false for all 24. Exact failed-ID recall is 1.0 on 3 cells and 0 on 21 cells (aggregate descriptive observation only).
+- Cell accuracy values in stream: 8 x 1.0, 7 x 0.75, 7 x 0.5, 1 x 0.667, 1 x 0.975. The paired_readout reports control_cells=24 and control_accuracy_mean=0.766. These are recorded outputs, not a complete comparison.
+
+Manifest coverage
+- 12 cells correspond to retained original EXP-09 items (item-01..12); 12 to added items (item-13..24). The added half includes 10 "new saved pytest failure log" and 2 "new qualifying log" entries; item-24 is marked intentional negative control in manifest. All item hashes match.
+
+Mismatch checks
+- No cell record contains a mismatch-related key or per-cell mismatch outcome. The ready manifest requires 24/24 planted mismatch rejections, but the JSONL does not report that check. Observed mismatch-check evidence: none; do not count it as passed or failed.
+
+Preflight and last record
+- Preflight at line 1, ts 2026-11-04T16:11:37Z: probe="ready", linkage_ok=true, foreign_libs=[], n_items=24, cap_s=2700, control_code_unchanged=true, corpus SHA matches manifest. Server PID recorded as 3932529; command uses pinned CPU kernel path and Qwen3.6-35B-A3B-MTP-Q8_0.
+- Last record, line 26, is paired_readout at 2026-11-04T16:16:54Z, t=323.6s: control_cells=24, control_accuracy_mean=0.766. Last cell is item-24/control at line 25, same timestamp.
+
+Scope limit
+This reports only what is present in the supplied files. It does not infer the status of absent arms, missing mismatch checks, remaining requested cells, or a full paired comparison, and it makes no run-validity or promotion determination.

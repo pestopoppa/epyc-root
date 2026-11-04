@@ -1,0 +1,11 @@
+TOC-SP-3-EXP09-R4 smoke-flow correction — 2026-11-04
+
+Fix: in job.py, DRY returns rc=0 immediately after its single newly emitted verified_quote cell. It does not reach the 96-cell terminal validator, does not emit `pass_complete`, and does not create `out/COMPLETE`. The non-dry path still executes the original complete-grid validation and terminal logic unchanged.
+
+Preserved failed publisher qualification trace at `out/results.dryrun.r4.failed-qual1.jsonl`; it is not at the smoke predicate input path and is not in native `out/results.jsonl`. The later mocked-flow qualification trace is retained separately as `out/results.dryrun.r4.mock-regression.jsonl`; predicate path `out/results.dryrun.r4.jsonl` is absent for a fresh rowflow smoke. `job.emit` keeps dry cells in the dry-run stream and real cells in the native treatment result stream. Seed remains `out/results.r3-native.jsonl`, byte-exact SHA-256 `59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266`; production engine floor, smoke policy, and rowflow invocation were not changed.
+
+Offline mocked main-flow regression used the actual job module with mocked model/server calls: rc=0, exactly one dry-run verified_quote cell, no COMPLETE marker, no pass_complete event, and no native treatment output. `job.py` SHA-256 is `bac3464feffb6e08877d0969a74a770861d61bf209ecd870465e4bb6381641e9`, refreshed in launcher pins. The venv interpreter path remains `/mnt/raid0/llm/tmp/brf-exp09/pyenv/venv/bin/python` in launcher/spec because it supplies pydantic; its import was checked.
+
+No actual inference or publication was performed. Existing native seed, corpus manifest/item pins and R4 output separation remain unchanged.
+
+The spec also requires the owner to inspect separate `out/run-events.r4.jsonl` and verify a matching non-dryrun execution ID, valid preflight linkage and unchanged control code, and valid `pass_complete`, alongside the seed and treatment grid before any verdict. Both preserved dry-run qualification traces are listed in `keep` explicitly and remain separate from `result_path`.

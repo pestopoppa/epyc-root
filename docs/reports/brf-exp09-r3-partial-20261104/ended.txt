@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T16:17:27Z reason=disk-floor
+job_id=brf-exp09-expanded-r3-20261104
+owner=ws58
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T16:11:30Z
+regions=0-23

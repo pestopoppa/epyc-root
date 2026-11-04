@@ -7,3 +7,7 @@ TOC-SP-3: filed the original EXP-09 pilot as inconclusive/REVISE harness (rc=75,
 ## 16:10Z — File completed EXP-09 R2 and prepare the expanded screen
 
 Filed R2 pass/EXPAND as a scoped exploratory decision: 48/48 cells, all parsed below1024; unchanged control, 12/12 mismatch rejections; verified quote0.8681 vs control0.8035. Preserved native false terminal flags and prior inconclusive verdict; source review shows aggregation used score-only objects despite full cell capture. A non-gating exact-ID audit and R3 scorer preserve the original capped reference. Published the expanded R3 row after four-CPU smoke PASS. GitNexus reports CRITICAL impact for production _spill_output with a stale index; no product edit was made.
+
+## 16:58Z — File disk-floor-interrupted EXP-09 R3 and publish its continuation
+
+Filed R3 as inconclusive after rc75 disk-floor: native capture contains 24/96 cells, all control, and no paired comparison. Preserved native results, source, identity, manifest, end record, and verdict under docs/reports/brf-exp09-r3-partial-20261104. The first R4 qualification generated a treatment cell but failed when dry-run fell through to full-grid validation; preserved the failure, fixed the dry-only exit, and published R4 after a fresh real-cell four-CPU smoke PASS; it preserves the 24 original control cells and frozen corpus and resumes the 72 treatment cells with split-execution provenance. The production 150 GiB disk floor remains intact; the scheduler must admit the row when capacity permits. Parent R3 remains open.

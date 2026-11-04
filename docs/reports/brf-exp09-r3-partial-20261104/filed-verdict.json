@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-delegation-context-preassembly",
+  "rationale": "rc=75 disk-floor; original native result sha256=59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266; 24/96 cells, all control, no treatment or paired comparison. Preserve frozen inputs and completed controls for an unpooled resumable successor; no EXPAND/STOP or gate conclusion.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T16:41:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T16:17:27Z reason=disk-floor",
+ "filed_at": "2026-11-04T16:41:58+00:00",
+ "filed_by": "handoff-delegation-context-preassembly",
+ "handoff_task": "handoffs/active/context-and-token-economy.md:TOC-SP-3-EXP09-R3",
+ "id": "brf-exp09-expanded-r3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp09-expanded-r3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp09-expand-r3/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc=75 disk-floor; original native result sha256=59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266; 24/96 cells, all control, no treatment or paired comparison. Preserve frozen inputs and completed controls for an unpooled resumable successor; no EXPAND/STOP or gate conclusion.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09-expand-r3/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp09-expanded-r3-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Exploratory expanded 24-log screen, 24 paired logs x four arms, frozen corpus and pinned worker Qwen3.6-35B-A3B-MTP-Q8_0 and production-consolidated-v10 CPU kernel. The paired pilot observed verified-quote minus control +0.06458 accuracy; 24 independent pairs have worst-case paired standard error 0.204; source correlation can increase it, so do not claim a statistically established effect or promotion. Complete 96 unique matched cells with captured evidence and answer text, all parsed below 1024 tokens, unchanged control and 24/24 planted mismatch rejections: report arm accuracy, matched outcomes and retained evidence; compare verified-quote and control descriptively. Stop on invalid control/linkage, stopfile/deadline, 2700s cap or operational futility; incomplete/truncated/invalid captures are INCONCLUSIVE, never gate success. Original per-log reference is capped at ten failed IDs with substring matching; disclose this limit. Sample is exploratory and nonrepresentative. For a valid complete run, file descriptive PASS if verified-quote mean accuracy >= control; otherwise file descriptive FAIL/STOP for this scoped screen. Missing validity is INCONCLUSIVE; no significance or production decision. Report original 12 and added 12 separately as well as combined; reused pilot cases are not independent confirmation. Record source-campaign clusters and separate added cases by provenance; do not treat same-campaign cases as independent groups. Checkpoint after each verified-quote cell from the fourth onward; stop on declared operational futility or after the full 96-cell screen. This is not an interim success gate. Record exact-string failed-ID recall as a separate report-only companion to the primary substring scorer; preserve the capped-10 gold denominator and primary futility/decision rule. Report accepted quote versus fail-open fallback counts and refetch-request counts by arm; retain fallback cells in the primary denominator.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}
