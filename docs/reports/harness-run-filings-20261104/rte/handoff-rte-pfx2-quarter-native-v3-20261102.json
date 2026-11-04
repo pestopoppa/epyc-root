@@ -1,0 +1,51 @@
+{
+ "decision_rule": "PFX-2 cache mechanism probe only: require real-phase rc=0, 5 complete trials per arm and 4 native metric rows per trial, valid prompt/cache counts and prompt_ms, declared salted tokenized prefix, pinned server/runtime header and owned-process drain. Report uncached token totals, each sibling cache_n >= 0.9 tokenized prefix, TTFT distributions and trial counts; snapshot matches streamed id_slot to a processing slot but cannot distinguish buffering or slot reuse because native stream lacks id_task. Exclude dryrun, incomplete or failed trials, no semantic-quality or feature-promotion claim. Write-side belief adapter must be invoked with original window claim before filing any measurement warrant. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 1500,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 5400,
+ "gib": 100,
+ "handoff_task": "handoffs/active/harness-program.md:RTE-PFX2-QN-V3",
+ "id": "handoff-rte-pfx2-quarter-native-v3-20261102",
+ "keep": [
+  "*.json",
+  "*.jsonl",
+  "*.py",
+  "*.sh",
+  "*.sha256",
+  "prefix.txt",
+  "smoke_prefix.txt",
+  "run/**/*",
+  "dryrun/**/*",
+  "run/*/probe.json.journal.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/launch.sh",
+  "sha256": "8e110e6f33e8fecdf01b72b2084490b8dacd4cb66ca78986e2e018625ea4eb5e"
+ },
+ "lineage": "handoff-rte-pfx2",
+ "lineage_reset": 3,
+ "min_window_s": 3600,
+ "notes": "Qualification captures one complete native trial; snapshot waits up to 300 seconds for streamed slot IDs after CPU prefill. Qualification results are excluded from measurements. ws58 2026-11-02 repair: /slots probe request timeout 5s->240s with retry inside a 900s fail-closed snapshot window (root cause: server answers /slots only between prefill batches); supervisor dryrun accepts the 4-cpu smoke slice. Parked-lineage re-admission via lineage_reset=3.",
+ "owner": "handoff-repl-turn-efficiency",
+ "ports": [
+  18971
+ ],
+ "priority_rank": 30.0,
+ "published_at": "2026-11-03T07:12:38Z",
+ "published_from": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/run/*/probe.json.journal.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/STOP",
+ "supersedes": "handoff-rte-pfx2-quarter-native-v2-20261101",
+ "window_s": 6780,
+ "workdir": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3"
+}

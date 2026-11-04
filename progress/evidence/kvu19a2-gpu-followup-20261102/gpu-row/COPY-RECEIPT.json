@@ -1,0 +1,17 @@
+{
+  "schema": "kvu19a2.packet-copy.v3",
+  "durable_manifest_sha256": "efd40af8f8bdeaa84c1bb632ccfc304aa477a4b3b8755d5b9e42745a0becfbab",
+  "source_manifest_sha256": "d5986318ec79e2b1e5b47bb7ef59d2f2cbd353f237b5b1b3ac5d55cfc2aea222",
+  "runtime_manifest_sha256": "e6a9cc7856da8ddaa972a97049ddbfdb7a91fb1151bd04c45bd6b569836d05db",
+  "spec_sha256": "4dd2f0a8bab6ba5d3ff60235866000270e510affc437935d9b1f9f55370d805d",
+  "launcher_sha256": "6d82c2f3b1110cc755d30208b8870f905e0dff9a2731a8b49a47e59d00a48bdf",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kvu19a2-gpu-repeat-20261104",
+  "all_durable_files_equal_scratch": true,
+  "durable_file_count": 64,
+  "gpu_qualification": "not executed; future separately granted smoke required",
+  "unchanged_preserved_harness_sha256": "6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a",
+  "offline_controls": "OFFLINE-CONTROLS-v3.json",
+  "omitted_from_durable_copy": {
+    "capture-inputs/headers/ggml.h": "Unnecessary vendor header omitted after commit scanner flagged its repeated-zero illustrative comment. Exact pinned file remains in scratch; source/runtime catalogs are unchanged. This archive is not a complete runnable packet."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "akx-auto10-full-result.v1",
+  "manifest_sha256": "003c04c28b1f8e140128092aedff39ca20c9410744fad8c373eecb73fbd85c5f",
+  "units": 54,
+  "thread_arms": [
+    48,
+    96
+  ],
+  "scope": "synthetic M2048 only; diagnostic effective logical bandwidth; no DRAM or model claim"
+}

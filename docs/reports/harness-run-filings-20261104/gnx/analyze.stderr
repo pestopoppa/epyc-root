@@ -1,0 +1,3 @@
+gitnexus-patch: /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli is not writable — skipping (analyze will run unpatched).
+{"level":40,"time":1793620390348,"name":"gitnexus","workerIndex":3,"timeoutSec":30,"items":110,"estimatedBytes":692575,"lastProgress":0,"firstSplitItems":55,"secondSplitItems":55,"nextTimeoutSec":60,"msg":"Worker 3 parse job idle timeout. Splitting into 55/55 item jobs."}
+{"level":40,"time":1793620390349,"name":"gitnexus","workerIndex":3,"reason":"idle-timeout retry","msg":"Worker 3 timed out; retiring without immediate terminate to avoid aborting native parser state."}

@@ -1,0 +1,48 @@
+{
+ "decision_rule": "Accept only complete pinned v10 plus target-bound snapshot diagnostic and corrected load_mtp real-MTP rollback/fault candidate CPU executable, compiled CAFE4_MTP_LOAD_ENABLED and CAFE4_MTP_ROLLBACK markers, source/artifact hashes and local common linkage. Build only; native matched controls and numerical floor remain unexecuted; no CAFE-4 completion.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-rollback-build-v2-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2/launch.sh",
+  "sha256": "a6c949df2a6996e9797f3cec780bf17f02f5a6b3fc6a547e768cdcf122e99fe3"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:461: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:461: identity fields incomplete: ['metric', 'region'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better); region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T07:31:37Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v2"
+}

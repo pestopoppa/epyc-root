@@ -1,0 +1,44 @@
+{
+ "decision_rule": "Read-only pinned f58d0bf source context and upstream impact for four targets. PASS requires all four exact path identities and known LOW/MEDIUM risks. HIGH/CRITICAL records a warning and stops immediately: no edits. Partial, unknown, ambiguous, stale index or wrong target is not PASS. Smoke source scan is not a verdict.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/filler_run15.sh",
+  "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3",
+ "id": "codex-ufh12-shadow-gnx-v2-20261104",
+ "keep": [
+  "out/**",
+  "source/**",
+  "successor-v2/**",
+  "successor-v2/out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/launch.sh",
+  "sha256": "99d2147872c3955b7ae74d6b4982bf650e771d4f4cb01143824a681cb8e2bb56"
+ },
+ "min_window_s": 300,
+ "notes": "Reuses pinned index, no indexing; isolated smoke and official outputs. Shared source checkout/index preserved.",
+ "owner": "handoff-repl-embedding-retrieval",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "harness-program.md:2468: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T07:15:56Z",
+ "published_from": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow",
+ "shape": "host",
+ "smoke_predicate": "test -s /mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/smoke.jsonl",
+ "stop_file": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/STOP",
+ "supersedes": "codex-ufh12-shadow-gnx-v1-20261102",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2"
+}

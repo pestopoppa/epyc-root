@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+D="$(cd "$(dirname "$0")" && pwd)"
+read -r actual _ < <(sha256sum "$D/lock-catalog.json")
+[ "$actual" = ccac432287c5daa7474a63cc53f468fd2af515a3811e4a1da51e7f84b4ac28ab ] || { echo "private lock catalog mismatch" >&2; exit 65; }
+read -r actual _ < <(sha256sum /usr/bin/python3)
+/usr/bin/grep -Fxq "$actual" "$D/REGION-LOCK-PYTHON-ALLOW.txt" || exit 65
+read -r actual _ < <(sha256sum "$D/lock_bootstrap.py")
+[ "$actual" = c1ebc7ef623ee911353145b119d063860d550285a4930a5ecc2324a528d1e885 ] || exit 65
+exec /usr/bin/python3 -I -B "$D/lock_bootstrap.py" "$@"

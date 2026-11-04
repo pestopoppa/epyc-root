@@ -3187,3 +3187,14 @@ Sources: [serving-harness fixes](../handoffs/active/harness-program.md#track-age
 ### Run 2026-08-03-ids-938-990 — [digest](../research/deep-dives/intake-digests/2026-08-03-ids-938-990.md)
 
 - intake-958#record (QuixiFlow vLLM fork): The dive found main is zero-delta and the three stale branches are far behind; the flagship rocm-fp8-marlin branch provably does not build (missing .cu files, an undefined fp8_marlin_gemm symbol). The FP8 concept duplicates the existing MMQ/dequant path and serving is llama.cpp. Verdict not_applicable, dive-verified.
+
+## Compiled update — 2026-11-04: GPU claim path, scorer controls, MTP and KV diagnostics
+
+- **GPU host claim path (P2-5g).** Source review at orchestrator `326f5027` shows production `architect_critic` (:8083) pins host threads to SMT `184-191` but the compiled topology (`smt_siblings="drop"`) gives it empty CPU regions, so direct dispatch takes no q3 lock. The default-off shadow lease still folds those CPUs to q3. Empty claims do not show an absence of physical SMT contention with `architect_general` (`0-95`) or frontdoor half B. No serving config was changed.
+- **P5-2a scorer controls.** The pinned Astropy scorer (`astropy__astropy-12907`) passed gold/no-op controls: gold 2/2 FAIL_TO_PASS and 13/13 PASS_TO_PASS; no-op failed the expected 2/2 and passed 13/13. Broader P5-2 scorer coverage stays open; no model-quality claim.
+- **Real-MTP lifecycle build.** The full real-MTP lifecycle executable build (`cafe4-v10-mtp-lifecycle-build-r2`) filed PASS as a build-only result. Three native lifecycle qualification attempts then failed (missing `load_mtp=true`, namespace mismatch, misspelled linker args); the lineage is parked, with no native lifecycle outcome claimed.
+- **Speculative windows.** SR-6 closed under its predeclared any-UNKNOWN futility rule (UNKNOWN DrainError); SR-7 W1-W3 recorded 0/90 completed per window. No confirmation or registry authority follows.
+- **KV/MTP records.** CPU-FA-VKQ-3 (one enrolled 70814-token prompt): accepted 96 / drafted 121 = 79.34 %, delta 0 pp, 128 identical generated IDs; no population, speed or adoption claim. CPU-FA-VKQ-2: effect +1.84 % (16k) and +2.11 % (64k) against floors of 36.39 % and 4.11 %, both within floor, so no superiority.
+- **Harness filings.** RTE-PFX2-QN-V3: no sibling reached the 90 % hit threshold. S4-OMEGA-PILOT-V2: FUTILITY, 1/16 complete pairs. B4k incomplete (140 dispatched / 4 ok); a diagnostic no-think successor cannot give a comparable baseline. Full G-S and online shadow remain open.
+
+Sources: [claim-path design](../docs/design/gpu-serving-p25g-claim-path-20261104.md) · [GPU serving tie-in](../progress/2026-11/2026-11-04-handoff-gpu-serving-tie-in.md) · [DF2](../progress/2026-11/2026-11-04-handoff-df2.md) · [slot-fabric residency](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [harness fixes](../progress/2026-11/2026-11-04-handoff-agentic-serving-harness-fixes.md)

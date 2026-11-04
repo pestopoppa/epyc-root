@@ -1,0 +1,48 @@
+--- a/job.py
++++ b/job.py
+@@ -8,11 +8,12 @@
+ 
+ D = Path(__file__).resolve().parent
+ TREE = Path('/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102')
+-GUARD = Path('/mnt/raid0/llm/worktrees/mains/h-kvfork/scripts/gitnexus-guard.py')
++GUARD = Path('/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/scripts/gitnexus-guard.py')
+ IDENTITY = json.loads((D / 'identity.json').read_text())
++from scan_policy import analysis_env, impact_args, validate_impact
+ 
+ def run(args, log=None):
+-    p = subprocess.run(args, cwd=TREE, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++    p = subprocess.run(args, cwd=TREE, env=analysis_env(os.environ), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+     if log:
+         (D / 'out' / (log + '.stdout')).write_text(p.stdout)
+         (D / 'out' / (log + '.stderr')).write_text(p.stderr)
+@@ -42,6 +43,7 @@
+           'references': references, 'counts': {k: len(v) for k, v in references.items()}}
+ if os.environ.get('FILLER_SMOKE') == '1':
+     out = Path(os.environ['FILLER_DRYRUN_RESULT_PATH'])
++    out.parent.mkdir(parents=True, exist_ok=True)
+     out.write_text(json.dumps(record) + '\n')
+     raise SystemExit(75)
+ with (D / 'out/results.jsonl').open('a') as f:
+@@ -49,16 +51,18 @@
+     f.flush(); os.fsync(f.fileno())
+ # Admission must precede the P3 historical wrapper and every analysis/query.
+ run(['/usr/bin/python3', '-I', str(GUARD), '--repo', 'app'], 'guard')
+-run(['bash', str(TREE / 'scripts/gitnexus-analyze.sh'), '--skip-agents-md', '--skip-skills'], 'analyze')
++run(['bash', str(TREE / 'scripts/gitnexus-analyze.sh'), '--skip-agents-md', '--skip-skills', '--workers', '1', '--force'], 'analyze')
+ run(['gitnexus', 'status'], 'status')
+ for symbol, source in [('find_slot', 'src/llama-kv-cache.cpp'), ('apply_ubatch', 'src/llama-kv-cache.cpp'), ('llama_kv_cells', 'src/llama-kv-cells.h')]:
+     run(['/usr/bin/python3', '-I', str(GUARD), '--repo', 'app'])
+-    raw = run(['gitnexus', 'impact', symbol, '--direction', 'upstream', '--file', source], symbol)
++    raw = run(impact_args(TREE, symbol, source), symbol)
+     data = json.loads(raw)
+-    assert not data.get('error') and data.get('status') != 'ambiguous', f'{symbol}: {data}'
+-    assert data.get('risk') not in (None, 'UNKNOWN'), f'unresolved impact: {symbol}: {data}'
++    validate_impact(symbol, data)
+     record = {'symbol': symbol, 'source': source, 'head': IDENTITY['head'], 'impact': data}
+     with (D / 'out/results.jsonl').open('a') as f:
+         f.write(json.dumps(record) + '\n')
+ check()
++with (D / 'out/results.jsonl').open('a') as f:
++    f.write(json.dumps({'type': 'scan_complete', 'head': IDENTITY['head'], 'impact_count': 3, 'partial': False}) + '\n')
++    f.flush(); os.fsync(f.fileno())
+ (D / 'out/COMPLETE').write_text('All three native impact outputs captured; review risk before source edits.\n')

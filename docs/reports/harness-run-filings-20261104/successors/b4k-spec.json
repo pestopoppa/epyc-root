@@ -1,0 +1,33 @@
+{
+  "id": "ufh14-b4k-nothink-successor-20261104",
+  "owner": "handoff-agentic-serving-harness-fixes",
+  "launcher": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-successor/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-successor/out/runs/*/calls.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "DIAGNOSTIC ONLY, not B4a production baseline or B4k closure: >=200 successful dispatched calls, >=95% prefix_fp coverage, pinned private 8083 server argv with scratch port and slot path, GPU residency and cleanup; report missed_prefill_share, hit_tok, cold_large_share, concurrent_dupes and evictions. Request uses enable_thinking=false and 128 output tokens, differs from predecessor, may change prompt and cache behavior. Treat any result as diagnostic until independent workload comparability has been established. No organic traffic or semantic-quality claim. Incomplete otherwise.",
+  "estimate_s": 9000,
+  "handoff_task": "handoffs/active/harness-program.md:UFH14-B4k",
+  "ram_gib": 64,
+  "priority_rank": 50,
+  "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-successor",
+  "dryrun_timeout_s": 1500,
+  "keep": [
+    "out/runs/*/calls.jsonl",
+    "out/runs/*/serving_calls.jsonl",
+    "out/runs/*/REPORT.json",
+    "out/runs/*/SUMMARY.json",
+    "out/runs/*/argv.json",
+    "out/runs/*/residency-proof.json",
+    "out/runs/*/server.log",
+    "out/runs/*/errors.log",
+    "out/COMPLETE",
+    "job.py",
+    "launch.sh",
+    "spec.json",
+    "prod-8083-launch.json"
+  ],
+  "notes": "Diagnostic only: predecessor 136/140 empty_generation with generated tokens; backend classifies whitespace-only content after 30s, regardless of separately collected reasoning; raw stream not retained so exact reason unknown. Thinking off and 128 output cap are workload deviations. Pinned independent source worktree and shared orchestrator venv.",
+  "supersedes": "ufh14-b4a-window-8083-20261102"
+}

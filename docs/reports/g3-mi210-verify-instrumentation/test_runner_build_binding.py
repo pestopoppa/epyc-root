@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from diagnostic_runner import resolve_build_binding
+from diagnostic_runner import resolve_build_binding, runtime_library_path
 
 
 class RunnerBuildBindingTest(unittest.TestCase):
@@ -51,6 +51,10 @@ class RunnerBuildBindingTest(unittest.TestCase):
         self.config['backend_sha256'] = 'b' * 64
         with patch('diagnostic_runner.bind_v4_receipt', return_value=self.bound), self.assertRaises(ValueError):
             resolve_build_binding(self.config)
+
+    def test_rocm_dependency_path_keeps_candidate_first(self):
+        with patch.dict('os.environ', {'LD_LIBRARY_PATH': '/unrelated/ggml'}):
+            self.assertEqual(runtime_library_path(self.backend), str(self.backend.parent) + ':/opt/rocm/lib')
 
     def test_missing_result_refused(self):
         self.result.unlink()

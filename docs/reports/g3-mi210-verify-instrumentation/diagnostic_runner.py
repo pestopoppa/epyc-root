@@ -3,16 +3,19 @@
 import argparse, datetime, hashlib, json, os, pathlib, signal, subprocess, sys, threading, time, urllib.request
 from residency_evidence import analyze_residency
 from build_receipt_v4 import bind_v4_receipt
+from analyze_timed_run import analyze as analyze_timed_run
 
 
 def gpu_sample():
-    record = {"observation_start": time.time()}
+    record = {"observation_start": time.time(), "monotonic_start": time.monotonic()}
     try:
         proc = subprocess.run(["rocm-smi", "--showmeminfo", "vram", "--showproductname", "--json"], capture_output=True, text=True, timeout=5)
         record.update(rocm_smi_rc=proc.returncode, rocm_smi=proc.stdout)
     except (OSError, subprocess.TimeoutExpired) as exc:
         record["rocm_smi_error"] = repr(exc)
     record["time"] = time.time()
+    record["observation_end"] = time.time()
+    record["monotonic_end"] = time.monotonic()
     return record
 
 
@@ -30,6 +33,11 @@ def read_samples(path):
         return [json.loads(line) for line in path.read_text().splitlines()], None
     except (OSError, ValueError) as exc:
         return [], repr(exc)
+
+
+def runtime_library_path(backend):
+    """Use the candidate libraries first, then the host's ROCm dependencies."""
+    return os.pathsep.join((str(pathlib.Path(backend).resolve(strict=True).parent), '/opt/rocm/lib'))
 
 
 def resolve_build_binding(config):
@@ -68,13 +76,21 @@ def main():
     st = model.stat()
     actual = dict(dev=st.st_dev, ino=st.st_ino, size=st.st_size, mtime_ns=st.st_mtime_ns, ctime_ns=st.st_ctime_ns)
     if str(model) != model_info['path'] or actual != model_info['stat'] or c['model_sha256'] != model_info['sha256']: raise ValueError('model preflight stat or hash identity mismatch')
+    layer_manifest = pathlib.Path(c['layer_manifest']).resolve(strict=True)
+    if digest(layer_manifest) != c['layer_manifest_sha256']: raise ValueError('layer manifest digest mismatch')
+    layers = json.loads(layer_manifest.read_text())
+    if layers['provenance']['path'] != str(model) or layers['provenance']['size_bytes'] != st.st_size: raise ValueError('layer manifest model mismatch')
+    layer_ids = layers['verify_attention_layer_ids']
+    if (not isinstance(layer_ids, list) or not layer_ids or
+        any(type(x) is not int or x < 0 for x in layer_ids) or len(set(layer_ids)) != len(layer_ids)):
+        raise ValueError('invalid expected attention layers')
     # Fixed marker must be specified after source review; it must occur in a built backend.
     if c['trace_marker'].encode() not in backend.read_bytes(): raise ValueError('trace marker missing')
     if not c['trace_marker']: raise ValueError('empty trace marker')
     if not c['requests']: raise ValueError('empty request list')
     if not 1 <= c['timeout_seconds'] <= 1800: raise ValueError('invalid timeout')
     if not c['url'].startswith('http://127.0.0.1:'): raise ValueError('loopback URL required')
-    env = os.environ.copy(); env['LD_LIBRARY_PATH'] = str(backend.parent); env['GGML_G3_FATTN_TRACE'] = '1'
+    env = os.environ.copy(); env['LD_LIBRARY_PATH'] = runtime_library_path(backend); env['GGML_G3_FATTN_TRACE'] = '1'
     with (out / 'linkage.txt').open('w') as linkage:
         subprocess.run(['/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh', str(server), str(build)], env=env, stdout=linkage, stderr=subprocess.STDOUT, check=True)
     argv = [str(server), *c['server_args']]
@@ -89,7 +105,31 @@ def main():
     (out / 'residency-baseline.json').write_text(json.dumps(baseline) + '\n')
     request_windows = []
     with (out / 'server.log').open('wb') as log:
-        proc = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+        # Keep TERM/INT pending until the new process group is captured and its
+        # leader registered with the filler. The child restores the old signal
+        # mask before exec. The filler can then reap the captured PID even if
+        # this Python process is forcibly killed.
+        masked = {signal.SIGTERM, signal.SIGINT}
+        oldmask = signal.pthread_sigmask(signal.SIG_BLOCK, masked)
+        oldhandlers = {sig: signal.getsignal(sig) for sig in masked}
+        def interrupted(signum, frame):
+            raise InterruptedError('signal ' + str(signum))
+        for sig in masked: signal.signal(sig, interrupted)
+        proc = None
+        try:
+            proc = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env,
+                                    start_new_session=True,
+                                    preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, oldmask))
+            with open(os.environ['FILLER_PIDFILE'], 'a', encoding='ascii') as registry:
+                registry.write(str(proc.pid) + '\n'); registry.flush(); os.fsync(registry.fileno())
+        except BaseException:
+            if proc is not None:
+                try: os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError: pass
+                proc.wait(timeout=10)
+            for sig, handler in oldhandlers.items(): signal.signal(sig, handler)
+            signal.pthread_sigmask(signal.SIG_SETMASK, oldmask)
+            raise
         def sample():
             with (out / 'residency.jsonl').open('w') as f:
                 while not done.is_set():
@@ -99,10 +139,12 @@ def main():
                     except OSError: record['maps'] = None
                     record['kfd_pid_present'] = pathlib.Path(f'/sys/class/kfd/kfd/proc/{proc.pid}').exists()
                     record['observation_end'] = time.time()
+                    record['monotonic_end'] = time.monotonic()
                     f.write(json.dumps(record) + '\n'); f.flush(); done.wait(1)
         sampler = threading.Thread(target=sample, daemon=True); sampler.start()
         result = {'status': 'partial', 'requests': []}; deadline = time.monotonic() + c['timeout_seconds']
         try:
+            signal.pthread_sigmask(signal.SIG_SETMASK, oldmask)
             for payload in c['requests']:
                 while True:
                     if stop.exists(): raise InterruptedError('STOP')
@@ -132,6 +174,7 @@ def main():
             result['status'] = 'complete'
         except Exception as e: result['error'] = repr(e)
         finally:
+            for sig in masked: signal.signal(sig, signal.SIG_IGN)
             if stop.exists(): result['status'] = 'partial'; result['error'] = 'STOP'
             try: os.killpg(proc.pid, signal.SIGTERM)
             except ProcessLookupError: pass
@@ -167,8 +210,21 @@ def main():
             result['residency_scope'] = 'HTTP request window only; trace overlap and device isolation remain unproven'
             result['request_windows'] = request_windows
             result.update(server_exit=proc.returncode, process_group_drained=drained)
+            # The observations are diagnostic-only and fail closed when capture,
+            # correlation or clock samples are incomplete. They do not authorize
+            # admission and device-wide VRAM is not per-process attribution.
+            log.flush()
+            try:
+                result['timed_analysis'] = analyze_timed_run(
+                    trace=(out / 'server.log').read_text(errors='replace'), expected_layer_ids=layer_ids,
+                    baseline=baseline, samples=samples, card=c['rocm_card'], pid=proc.pid,
+                    backend=backend, backend_sha256=c['backend_sha256'],
+                    complete=result['status'] == 'complete' and not sample_error, drained=drained)
+            except (OSError, ValueError, KeyError) as exc:
+                result['timed_analysis'] = {'status': 'UNKNOWN', 'reasons': [repr(exc)]}
             if not drained: result['status'] = 'partial'
             (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+            for sig, handler in oldhandlers.items(): signal.signal(sig, handler)
     return 0 if result['status'] == 'complete' else 75
 
 if __name__ == '__main__': sys.exit(main())

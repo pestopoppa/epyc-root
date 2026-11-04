@@ -1,0 +1,8 @@
+
+==== arm 2026-11-02T22:19:38Z
+2026-11-02T22:19:38Z [kvfork17-partial-v2-20261102] launcher up pid=487628 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/STOP minwin=1200s ports=none dryrun=0
+2026-11-02T22:19:43Z [kvfork17-partial-v2-20261102] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-11-02T23:11Z
+[region-lock] REFUSING: orchestrator dispatch pid(s) [459747] do NOT have ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT enabled — they take per-role locks only and will not contend this wrapper's GLOBAL locks. Exclusion would be one-sided (false confidence).
+[region-lock] re-run with --no-preflight to override deliberately.
+2026-11-02T22:19:46Z [kvfork17-partial-v2-20261102] ended rc=64 reason=job-rc-64:exited (grant deleted)
+2026-11-02T22:19:46Z [kvfork17-partial-v2-20261102] one window done; exiting (no --repeat)

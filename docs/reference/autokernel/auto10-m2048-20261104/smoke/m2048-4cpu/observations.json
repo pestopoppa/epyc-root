@@ -1,0 +1,122 @@
+{
+  "samples": [
+    {
+      "time_unix": 1793618863.5769181,
+      "pid": 3863553,
+      "scope": "overlaps whole native process, not inner graph timer",
+      "affinity": "0-3",
+      "mapped_ggml_records": [],
+      "loaded_ggml_paths": [],
+      "region_lock_status": "not sampled before ggml mapping",
+      "filler_id": "akx-auto10-q4k-mmid-v3-20261102",
+      "filler_deadline": "1793621670",
+      "filler_end": "1793621760",
+      "filler_cpus": "0-3",
+      "grant_file": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/akx-auto10-q4k-mmid-v3-20261102.grant",
+        "observation_error": "FileNotFoundError(2, 'No such file or directory')"
+      }
+    },
+    {
+      "time_unix": 1793618863.5791595,
+      "pid": 3863553,
+      "scope": "overlaps whole native process, not inner graph timer",
+      "affinity": "0-3",
+      "mapped_ggml_records": [
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391572"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391572"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391572"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391572"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391572"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391578"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391578"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391578"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391578"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391578"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391575"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391575"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391575"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391575"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+          "device": "09:7f",
+          "inode": "215391575"
+        }
+      ],
+      "loaded_ggml_paths": [
+        "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+        "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+        "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0"
+      ],
+      "region_lock_status": "  q0  free   \n  q1  HELD   build[None] filler-codex-gpu-serving-zos22-native-r2-20261102\n  q2  free   \n  q3  free   \ngpu-quiet  free   \n",
+      "lock_status_rc": 0,
+      "filler_id": "akx-auto10-q4k-mmid-v3-20261102",
+      "filler_deadline": "1793621670",
+      "filler_end": "1793621760",
+      "filler_cpus": "0-3",
+      "grant_file": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/akx-auto10-q4k-mmid-v3-20261102.grant",
+        "observation_error": "FileNotFoundError(2, 'No such file or directory')"
+      }
+    }
+  ],
+  "sample_count": 2,
+  "placement_observed": true,
+  "contention_status": "unknown unless region-lock output proves otherwise"
+}

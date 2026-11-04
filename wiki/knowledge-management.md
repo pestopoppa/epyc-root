@@ -4377,3 +4377,15 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 - Prepared, unapproved build path KT-1..KT-5 and the shared loop/knowledge GUI answer: [knowledge transparency](../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md).
 
 Sources: [wiki3 dive](../research/deep-dives/ws58-jev-20261102/wiki3-dive.md) · [wiki3b dive](../research/deep-dives/ws58-jev-20261102/wiki3b-dive.md) · [digest 2617-2621](../research/deep-dives/intake-digests/2026-11-02-ids-2617-2621.md)
+
+## Compiled Update — 2026-11-04 (Vidya live captures)
+
+**Confidence: verified** — native records retained under `data/vidya/run-filings/2026-11-04/`.
+
+- **Serving steps estimate accepted**: two same-image A/A pairs yielded `target_sample_steps_est` (estimator `predicted_n_minus_draft_n_accepted`, not the server's `n_draft_verif_steps`); canonical ingest emitted 15 frames for five claims with `steps_projected=2` and no refusals. Estimates are reporting observations with no floor and `decisive=None`: this establishes the producer/reader path, not an improvement.
+- **Actor-wire matrix**: 15/15 seats PASS; ingest projected 31 verifier findings and 93 frames, no refusals. Scripted loopback provider, so no model-quality or timing claim. The planning gate stays open until the real AK planning context lists the decided proposition.
+- **Canary B FAILED on a pre-era sentinel, not an embedder defect**: the live BGE-large embedder ran cleanly (1024 dims, no errors, protected ledger hashes unchanged), but the required trial 1472 keep was natively excluded and pre-era.
+- **R18 symbol comparison INCONCLUSIVE**: the pinned private_hip input changed before comparison (rc70 partial).
+- Projection-accepted is not planning-wired: a loop counts as wired only when its planning-context canary passes.
+
+Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [vidya shard](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [vidya program](../handoffs/active/vidya-belief-substrate-program.md)

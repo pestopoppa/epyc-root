@@ -1,0 +1,110 @@
+[
+  {
+    "source": "s4/capture.json",
+    "file": "capture.json",
+    "bytes": 6590,
+    "sha256": "40101184ece90609122ee573234bea6d3c946b9c5238126c13f81a37da859ae2"
+  },
+  {
+    "source": "s4/pairs.jsonl",
+    "file": "pairs.jsonl",
+    "bytes": 4157,
+    "sha256": "39064e07a83e1fd433f4545817dd7b1a78a0954ec73b271f3ff5c1122183f27e"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-s4-omega-isolated-pilot-v2-20261102.json",
+    "file": "handoff-s4-omega-isolated-pilot-v2-20261102.json",
+    "bytes": 3637,
+    "sha256": "f7b709309e9d13a150bd653e393e823ff38ef33dbe323970e773642d52cbd22f"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-s4-omega-isolated-pilot-v2-20261102.ended",
+    "file": "handoff-s4-omega-isolated-pilot-v2-20261102.ended",
+    "bytes": 211,
+    "sha256": "78edffa70abc2baa2aa9da58ff343f119e18fd3d1525c219164522ccef04ede8"
+  },
+  {
+    "source": "s4/live-199f78a2d596479f9f312f661275dd27.manifest.json",
+    "file": "live-199f78a2d596479f9f312f661275dd27.manifest.json",
+    "bytes": 2934,
+    "sha256": "d53d335de8be54ac5500b2059d2afce2fa93b9f7c819d0e998359d5443ffe21b"
+  },
+  {
+    "source": "s4/live-eddb44661f4746ca9bf4b382aaf675f5.manifest.json",
+    "file": "live-eddb44661f4746ca9bf4b382aaf675f5.manifest.json",
+    "bytes": 3118,
+    "sha256": "c93545cbb9c337596310a7ffe52aa167bf8386f44264b32f034fb5285504284d"
+  },
+  {
+    "source": "s4/live-5e56dc9d05324da696559981351fe217.manifest.json",
+    "file": "live-5e56dc9d05324da696559981351fe217.manifest.json",
+    "bytes": 2871,
+    "sha256": "88e990e5d5a97078ace73effea0cca04e5e894136e38aa00ac3d048080e40032"
+  },
+  {
+    "source": "s4/live-2c9bd6826a3a48e59f10cbc1ae5300c9.manifest.json",
+    "file": "live-2c9bd6826a3a48e59f10cbc1ae5300c9.manifest.json",
+    "bytes": 2760,
+    "sha256": "3ba4d7c7287708eefaef25723ca5a5be6bb61734663ac730981154504cbf6af5"
+  },
+  {
+    "source": "s4/live-83a4c9b73cf9440c81256705eaa47834.manifest.json",
+    "file": "live-83a4c9b73cf9440c81256705eaa47834.manifest.json",
+    "bytes": 2857,
+    "sha256": "cb5be18b3f123168fd70ad157c2c369f921db9079397b150fed62868ee18d6d1"
+  },
+  {
+    "source": "s4/live-0581c5e1f26f491788d4d6174c5e759e.manifest.json",
+    "file": "live-0581c5e1f26f491788d4d6174c5e759e.manifest.json",
+    "bytes": 2790,
+    "sha256": "d7b955c4dd0a3316222596809a9b1bfb4ef807a93468b5a4add170109e84f7a9"
+  },
+  {
+    "source": "s4/live-a1880d0d487c4b8ea2a21bedf8bab9f1.manifest.json",
+    "file": "live-a1880d0d487c4b8ea2a21bedf8bab9f1.manifest.json",
+    "bytes": 2827,
+    "sha256": "7f2f88370e224f23efd6ac8b7f81bbb8ff75055fdd7d6a17831f06d5611cd221"
+  },
+  {
+    "source": "s4/live-eddb44661f4746ca9bf4b382aaf675f5.records.jsonl",
+    "file": "live-eddb44661f4746ca9bf4b382aaf675f5.records.jsonl",
+    "bytes": 32719,
+    "sha256": "0df921afba36c9dcf151662ac650731f725de8fc71a9b0869ad59782cc8013a3"
+  },
+  {
+    "source": "s4/live-199f78a2d596479f9f312f661275dd27.records.jsonl",
+    "file": "live-199f78a2d596479f9f312f661275dd27.records.jsonl",
+    "bytes": 9853,
+    "sha256": "4910a889b94e12a5ebded56152732bf809639ecf666737e1e7f7116cb644bfb7"
+  },
+  {
+    "source": "s4/live-a1880d0d487c4b8ea2a21bedf8bab9f1.records.jsonl",
+    "file": "live-a1880d0d487c4b8ea2a21bedf8bab9f1.records.jsonl",
+    "bytes": 8986,
+    "sha256": "9fde57c90514874c790718868e448d9b0917fa561515262336f12ec48a6be694"
+  },
+  {
+    "source": "s4/live-0581c5e1f26f491788d4d6174c5e759e.records.jsonl",
+    "file": "live-0581c5e1f26f491788d4d6174c5e759e.records.jsonl",
+    "bytes": 9880,
+    "sha256": "a25cc68ef52e362de666c57e298dd88a96376bc0415204c0a89ec4b41deda59d"
+  },
+  {
+    "source": "s4/live-5e56dc9d05324da696559981351fe217.records.jsonl",
+    "file": "live-5e56dc9d05324da696559981351fe217.records.jsonl",
+    "bytes": 9539,
+    "sha256": "4041ff745384cc9fe5116342bb409dd4e8fd6e0dd82085ea075d37077b6649ce"
+  },
+  {
+    "source": "s4/live-83a4c9b73cf9440c81256705eaa47834.records.jsonl",
+    "file": "live-83a4c9b73cf9440c81256705eaa47834.records.jsonl",
+    "bytes": 8611,
+    "sha256": "16bda356e07b8dd5fdb883c7e15519d429f0d1c30235807f19e853feff9b2177"
+  },
+  {
+    "source": "s4/live-2c9bd6826a3a48e59f10cbc1ae5300c9.records.jsonl",
+    "file": "live-2c9bd6826a3a48e59f10cbc1ae5300c9.records.jsonl",
+    "bytes": 10049,
+    "sha256": "d97445028047396024741d55f82b71c52ce4fe17d671c0b5ab229ae9ea44a9cc"
+  }
+]

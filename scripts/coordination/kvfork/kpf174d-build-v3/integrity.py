@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path('/mnt/raid0/llm/tmp/kvfork/kpf174d-build')
+SOURCE_COMMIT = '6ec877068936588b6d63dbba5842bbd540b92031'
 HASHES = {
     'source-files.sha256': '39089f3d1221e2539f04c24a2244551661c14a8891caf24a8de4f83c1bf8f2b3',
     'source-file-list.txt': 'efc2adb35b152970ebf415b662425fdfd43529b7647e979d6594ac85af0e3556',
@@ -34,7 +35,16 @@ def verify(root=ROOT, actual_cache=None):
     inputs, source = root/'input', root/'v3/source'
     for name, expected in HASHES.items():
         if digest(inputs/name) != expected: raise ValueError('input digest mismatch: '+name)
-    entries = list(source.rglob('*'))
+    if not (source/'.git').is_file() or (source/'.git').is_symlink(): raise ValueError('source must be a registered detached worktree')
+    registered = subprocess.check_output(['git', '-C', str(source), 'worktree', 'list', '--porcelain'], text=True).splitlines()
+    if 'worktree '+str(source.resolve()) not in registered: raise ValueError('source worktree destination is unregistered')
+    head = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
+    if head != SOURCE_COMMIT: raise ValueError('source commit mismatch')
+    if subprocess.run(['git', '-C', str(source), 'symbolic-ref', '-q', 'HEAD'], stdout=subprocess.DEVNULL).returncode != 1:
+        raise ValueError('source must remain detached')
+    if subprocess.check_output(['git', '-C', str(source), 'status', '--porcelain', '--untracked-files=all'], text=True).strip():
+        raise ValueError('source worktree is dirty')
+    entries = [p for p in source.rglob('*') if p != source/'.git']
     if any(p.is_symlink() for p in entries): raise ValueError('source symlink refused')
     inventory = ''.join('./'+str(p.relative_to(source))+'\n' for p in sorted((p for p in entries if p.is_file()),key=lambda p: str(p.relative_to(source)).encode()))
     if inventory != (inputs/'source-file-list.txt').read_text(): raise ValueError('source inventory mismatch')

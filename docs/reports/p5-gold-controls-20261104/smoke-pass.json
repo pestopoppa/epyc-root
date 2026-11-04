@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-gpu-serving-p5-gold-offline-r3-20261104/launcher.out",
+ "elapsed_s": 15,
+ "ended": "rc=0 time=2026-11-04T07:17:15Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T07:17:14Z",
+ "id": "codex-gpu-serving-p5-gold-offline-r3-20261104",
+ "job_complete": true,
+ "job_complete_reason": "no smoke branch; full-job --complete-cmd passes on the job's own artifacts",
+ "launcher_sha256": "4821dc0e6557b202b18a51b1871fc2442f74ea385004d6855377fb9c48f37cbf",
+ "passed_at": "2026-11-04T07:17:19Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/RESULT.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

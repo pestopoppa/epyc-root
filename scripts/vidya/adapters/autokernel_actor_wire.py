@@ -38,6 +38,8 @@ from claim_tuple import ClaimTuple, ProjectionError, register, to_frames  # noqa
 ADAPTER_ID = "vidya.adapters.autokernel_actor_wire/v1"
 AUTHORITY = "verifier_finding_no_timing_no_merge_validity_no_retroactive_warrant"
 SOURCE_KIND = "autokernel-actor-wire"
+#: The planning consumer these harness verifier findings are scoped to (VB-AK-WIRE-PLANNER-TIER).
+PLANNER_CONSUMER = "autokernel.planner"
 FINAL_SCHEMA = "epyc.autokernel.actor_wire_final.v1"
 WIRE_SCHEMA = "epyc.autokernel.actor_wire.v1"
 #: Prospective only: a finalization stamped before this is refused, never projected.
@@ -409,7 +411,8 @@ def project(native: Any) -> ClaimTuple:
         category="CANDIDATE", metric_direction="higher_better", protocol_id="", unit="boolean",
         claim=text, decided_proposition=text, source_class="verifier", binding_kind="identity",
         attestation_sha256=sha, attestation_locator=locator, attestation_present=present,
-        attestation_verified=verified, source_kind=SOURCE_KIND, extra=extra)
+        attestation_verified=verified, source_kind=SOURCE_KIND, extra=extra,
+        applicability={"consumer": PLANNER_CONSUMER, "scope_basis": "native"})
 
 
 def frames_for_path(path: str | Path, *, as_of: str) -> list[dict]:

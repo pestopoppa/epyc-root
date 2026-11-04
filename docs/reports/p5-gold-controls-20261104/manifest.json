@@ -1,0 +1,50 @@
+{
+ "decision_rule": "Instrument subset PASS only if official SWE-bench run_evaluation applies both the pinned gold patch and an independently valid no-op negative control to fresh pinned astropy-12907 containers, explicitly parses every named FAIL_TO_PASS and PASS_TO_PASS test, resolves gold with all passed and marks negative unresolved with at least one named FAIL_TO_PASS failure and all PASS_TO_PASS passed; owned containers cleaned. One case only, not complete P5-2 or proof of other cases.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 16,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2a",
+ "id": "codex-gpu-serving-p5-gold-offline-r3-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "SOURCE.sha256",
+  "logs/run_evaluation/*/*/*/*.json",
+  "logs/run_evaluation/*/*/*/*.txt",
+  "logs/run_evaluation/*/*/*/*.diff",
+  "logs/run_evaluation/*/*/*/*.sh",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/launch.sh",
+  "sha256": "4821dc0e6557b202b18a51b1871fc2442f74ea385004d6855377fb9c48f37cbf"
+ },
+ "min_window_s": 1800,
+ "owner": "handoff-gpu-serving-tie-in",
+ "ports": [],
+ "priority_rank": 70.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:199: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:199: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "mi210-serving-program.md:199: untestable prose prerequisite: 'after these two controls answer the one-case instrument question, or at the first source/setup/test/cleanup failure; cap'"
+ ],
+ "published_at": "2026-11-04T07:17:03Z",
+ "published_from": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/complete.py",
+ "stop_file": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/STOP",
+ "supersedes": "codex-gpu-serving-p5-gold-offline-r2-20261102",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3"
+}

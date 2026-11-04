@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T22:32:33Z reason=complete
+job_id=handoff-s4-omega-isolated-pilot-v2-20261102
+owner=handoff-repl-turn-efficiency
+step=job-run
+estimated_wall_s=12000
+started=2026-11-02T22:17:06Z
+regions=0-23

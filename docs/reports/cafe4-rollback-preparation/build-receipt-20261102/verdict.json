@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "Official rc0 complete and native RESULT mode=build pin frozen v10 ffc1bac82, exact target-bound patch f9824d7605b50380f00d7a1795ce788a41a4a6f5caceb234bcfee610ca7cba34, candidate input b1311e85c1950952274236e4e63bcb54f6830e2add0f76e90d72567e46bd7bb5, executable/library digests and logs. Successful completion proof checked compiled target markers and source/artifact digests. PASS applies only to the synthetic diagnostic build; no MTP, rollback, fault-sensitivity or CAFE-4 completion follows.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:08:06+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:50:49Z reason=complete",
+ "filed_at": "2026-11-04T07:08:06+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-diagnostic-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-diagnostic-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-build-row/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc0 complete and native RESULT mode=build pin frozen v10 ffc1bac82, exact target-bound patch f9824d7605b50380f00d7a1795ce788a41a4a6f5caceb234bcfee610ca7cba34, candidate input b1311e85c1950952274236e4e63bcb54f6830e2add0f76e90d72567e46bd7bb5, executable/library digests and logs. Successful completion proof checked compiled target markers and source/artifact digests. PASS applies only to the synthetic diagnostic build; no MTP, rollback, fault-sensitivity or CAFE-4 completion follows.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-diagnostic-build-20261102",
+ "row_verdict": "pass",
+ "rule": "Accept only a complete pinned v10 plus target-bound diagnostic CPU build, compiled target markers and source/artifact digest proof; build-only synthetic fixture, no inference, MTP, fault-sensitivity or CAFE-4 conclusion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d456fb0a292955a1666893588d8e8e20b6c36033ba64252c4bd2c7be793c7120",
+  "result": "pass",
+  "status": "filed"
+ }
+}

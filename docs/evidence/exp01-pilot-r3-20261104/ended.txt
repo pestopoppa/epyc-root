@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:25:06Z reason=complete
+job_id=brf-exp01-trellis-pilot-20261104-r3
+owner=ws58
+step=job-run
+estimated_wall_s=3000
+started=2026-11-04T07:20:05Z
+regions=0-23

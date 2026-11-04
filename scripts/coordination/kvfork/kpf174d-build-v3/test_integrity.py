@@ -1,6 +1,7 @@
 """Fixtures verify before/after source and configuration tamper refusal."""
 import hashlib
 import importlib.util
+import subprocess
 from pathlib import Path
 import pytest
 
@@ -13,8 +14,16 @@ def load():
 
 def test_source_and_option_tampering_refused(tmp_path, monkeypatch):
     mod = load(); source = tmp_path/'v3/source'; inputs = tmp_path/'input'
-    source.mkdir(parents=True); inputs.mkdir()
-    item = source/'unit.cpp'; item.write_text('original')
+    repo = tmp_path/'repo'; repo.mkdir(); inputs.mkdir()
+    def git(*args):
+        return subprocess.check_output(['git', '-C', str(repo), *args], text=True).strip()
+    git('init', '-q'); (repo/'unit.cpp').write_text('original')
+    git('add', 'unit.cpp')
+    git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'fixture')
+    commit = git('rev-parse', 'HEAD'); source.parent.mkdir()
+    git('worktree', 'add', '--detach', str(source), commit)
+    monkeypatch.setattr(mod, 'SOURCE_COMMIT', commit)
+    item = source/'unit.cpp'
     (inputs/'source-files.sha256').write_text(hashlib.sha256(item.read_bytes()).hexdigest()+'  ./unit.cpp\n')
     (inputs/'source-file-list.txt').write_text('./unit.cpp\n')
     (inputs/'source.tar').write_text('fixture archive')

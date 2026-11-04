@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T22:52:53Z reason=complete
+job_id=codex-ufh12-gs-private-v3-20261102
+owner=handoff-repl-embedding-retrieval
+step=job-run
+estimated_wall_s=7200
+started=2026-11-02T22:17:05Z
+regions=24-47

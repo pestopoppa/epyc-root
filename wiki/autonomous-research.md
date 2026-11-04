@@ -4600,3 +4600,16 @@ Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-progra
 ### Run 2026-08-21-ids-1218-1251 — [digest](../research/deep-dives/intake-digests/2026-08-21-ids-1218-1251.md)
 
 - intake-1226#record (GPU Kernel Scientist): The dive found the target is AMD MI300 (CDNA3), not gfx90a, with no profiler and no released framework: the only artifact is one example HIP kernel in a ZIP, and the loop depended on a defunct competition endpoint. Verdict adopt_patterns (no component exists), dive-verified; handoff agentic-rocm-kernel-authoring.
+
+## Compiled Update — 2026-11-04 (AutoKernel filings and harness churn)
+
+**Confidence: verified** — filed native results; scope limits are as stated in each filing.
+
+- **R23-4 v10 factor sweep is INCONCLUSIVE, descriptive only**: 63/63 unique requests, acceptance log windows reparse, mapped HIP and own-PID residency recorded in-window; all 18 treatment/prompt metric ranges overlap their adjacent baselines. No historical attribution follows.
+- **R18-A r4 identity PASS**: CPU 590, HIP host 1332 and gfx90a 6141 symbol names each have zero additions or removals against the anchor. This is symbol-set identity only, not runtime, binary or performance equivalence.
+- **AUTO10 Q4_K M2048 diagnostic PASS** (54 mode/k/thread cells, 108 equal correctness repetitions): logical rates are not DRAM or roofline numbers, timing pairs are not independent process samples, and placement/contention remain unproven.
+- **A staged-overlay build failed on a malformed edit**: the GDN HIP build prerequisite failed (rc1) because comment prose was appended as C++ tokens at `test-backend-ops.cpp:12509`; the repaired successor syntax-compiled the actual translation unit in smoke before publication. CPU/HIP oracle correctness stays unproved.
+- **Smoke is qualification, not a verdict**: AKX pair smoke and a KVU capture-build smoke were filed `inconclusive` because their rules exclude smoke; a declared-floor row refused for under-5-minute estimates was not inflated to pass.
+- **`churn_up.sh` implicitly started the handoff dispatcher on 2026-11-04**, which resumed 11 Codex handoff sessions nobody requested; tracked as CHURN-UP-NO-DISPATCHER (start only on an explicit flag, proven by `--dry-run`).
+
+Sources: [autokernel-rebuild shard](../progress/2026-11/2026-11-04-handoff-autokernel-rebuild.md) · [akagg shard](../progress/2026-11/2026-11-04-handoff-akagg.md) · [all-devices shard](../progress/2026-11/2026-11-04-handoff-autokernel-all-devices-all-dimensions.md) · [codex-gen shard](../progress/2026-11/2026-11-04-handoff-codex-gen.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)

@@ -1,0 +1,39 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "codex-handoff-canonical-judge-suite-revamp",
+  "rationale": "Scheduled rc0 with native schema dtap.crm_live_source_tests.v1, capture_kind=source-test, passed=36 >=30, model_invoked=false, source commit ec063054d2d7e2e801b130d124fec18683a96a15. Retained full pytest log records 36 passed in 1.08s; pinned source-manifest verification precedes tests in original job. This closes TU-DTAP-2-SOURCE only, not live model, timing, security or post-hash acceptance.",
+  "tick_text": null,
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:30:13+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:11:48Z reason=complete",
+ "filed_at": "2026-11-04T07:30:13+00:00",
+ "filed_by": "codex-handoff-canonical-judge-suite-revamp",
+ "handoff_task": "benchmark-suites.md:TU-DTAP-2-SOURCE",
+ "id": "evl46-crm-live-source-tests-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/evl46-crm-live-source-tests-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/result.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "codex-evl46",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0 with native schema dtap.crm_live_source_tests.v1, capture_kind=source-test, passed=36 >=30, model_invoked=false, source commit ec063054d2d7e2e801b130d124fec18683a96a15. Retained full pytest log records 36 passed in 1.08s; pinned source-manifest verification precedes tests in original job. This closes TU-DTAP-2-SOURCE only, not live model, timing, security or post-hash acceptance.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/result.json",
+ "root_cause_family": null,
+ "row": "evl46-crm-live-source-tests-20261102",
+ "row_verdict": "pass",
+ "rule": "Pass iff schema dtap.crm_live_source_tests.v1, capture_kind source-test, passed >=30 and model_invoked false. Deterministic source/fixture verification only; no live model, timing, security or post-hash claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a9d3a09c8ced909a4d9f80e239d6c0f2bf12e883b0c766c6863d76e10af33241",
+  "result": "pass",
+  "status": "filed"
+ }
+}

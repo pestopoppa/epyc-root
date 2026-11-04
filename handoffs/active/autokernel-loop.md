@@ -7333,7 +7333,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       stratification unnecessary, only the span (2.4x measured) needs reporting. H5 (calibratable
       ~13% instrument gap) folds into R23-3: measure 3-4 arms on both instruments; wide ratio
       variance → cross-instrument claims stay banned rather than corrected.
-- [ ] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability**
+- [x] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability** ✅ 2026-11-04 (rc=0 inconclusive; Complete v10 descriptive sweep63/63; attribution INCONCLUSIVE (18/18 treatment/prompt metric ranges overlap adjacent baselines). Native evidence: docs/reports/autokernel-r23-4-v10-sweep-20261104/README.md. Historical9e18beb0 attribution remains unestablished; streaming events are not verified tokens and acceptance is window-correlated. [belief: cc])
       (from the peer's 2026-09-01 seam; feeds INF-22 P3-4 and INF-62). Two findings need
       attribution: (a) P3 decays monotonically across repeated requests at the verbatim c1
       config `[67.3, 52.6, 46.7]` while the 32K config is tight `[57.6, 61.1, 62.9]`; (b)

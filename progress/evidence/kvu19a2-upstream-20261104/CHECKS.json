@@ -1,0 +1,14 @@
+{
+  "schema": "kvu19a2.upstream-draft-checks.v1",
+  "all_source_copy_hashes_verified": true,
+  "raw_committed_outputs_rechecked": 40,
+  "raw_hash_log_hash_canonical_inputs_rc_mapping_in_window_kfd_checked": true,
+  "metrics_recomputed_offline": true,
+  "patch_applies_to_exact_baseline_tile_and_matches_candidate_digest": true,
+  "local_markdown_links_exist": true,
+  "new_gpu_runs": 0,
+  "compiles": 0,
+  "public_writes": 0,
+  "source_commit_external_reachability": "not verified; explicitly limited in draft",
+  "old_gpu_packet": "untouched during reuse/draft task"
+}

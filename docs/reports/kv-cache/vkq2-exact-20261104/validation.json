@@ -1,0 +1,167 @@
+{
+  "records": [
+    {
+      "depth": 16384,
+      "rep": 0,
+      "arm": "hybrid",
+      "pid": 62245,
+      "during_process_library_samples": 497,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 0,
+      "arm": "legacy",
+      "pid": 79916,
+      "during_process_library_samples": 500,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 1,
+      "arm": "legacy",
+      "pid": 95278,
+      "during_process_library_samples": 521,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 1,
+      "arm": "hybrid",
+      "pid": 117683,
+      "during_process_library_samples": 487,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 2,
+      "arm": "hybrid",
+      "pid": 133675,
+      "during_process_library_samples": 490,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 2,
+      "arm": "legacy",
+      "pid": 144851,
+      "during_process_library_samples": 492,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 3,
+      "arm": "legacy",
+      "pid": 178358,
+      "during_process_library_samples": 476,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 3,
+      "arm": "hybrid",
+      "pid": 206678,
+      "during_process_library_samples": 475,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 4,
+      "arm": "hybrid",
+      "pid": 213084,
+      "during_process_library_samples": 477,
+      "native_matches": true
+    },
+    {
+      "depth": 16384,
+      "rep": 4,
+      "arm": "legacy",
+      "pid": 221389,
+      "during_process_library_samples": 474,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 0,
+      "arm": "hybrid",
+      "pid": 227465,
+      "during_process_library_samples": 2374,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 0,
+      "arm": "legacy",
+      "pid": 268595,
+      "during_process_library_samples": 2388,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 1,
+      "arm": "legacy",
+      "pid": 336142,
+      "during_process_library_samples": 2407,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 1,
+      "arm": "hybrid",
+      "pid": 403622,
+      "during_process_library_samples": 2390,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 2,
+      "arm": "hybrid",
+      "pid": 503909,
+      "during_process_library_samples": 2390,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 2,
+      "arm": "legacy",
+      "pid": 559801,
+      "during_process_library_samples": 2387,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 3,
+      "arm": "legacy",
+      "pid": 628138,
+      "during_process_library_samples": 2396,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 3,
+      "arm": "hybrid",
+      "pid": 727571,
+      "during_process_library_samples": 2385,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 4,
+      "arm": "hybrid",
+      "pid": 783803,
+      "during_process_library_samples": 2386,
+      "native_matches": true
+    },
+    {
+      "depth": 65536,
+      "rep": 4,
+      "arm": "legacy",
+      "pid": 844207,
+      "during_process_library_samples": 2385,
+      "native_matches": true
+    }
+  ],
+  "recomputed_cells_match": true,
+  "distinct_pids": 20,
+  "mode": "full"
+}

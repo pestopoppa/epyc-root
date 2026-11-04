@@ -56,7 +56,9 @@ def main():
     else: raise AssertionError('existing 96-thread default changed')
     print('PASS: proposed 48-thread fixtures only; existing 96-thread defaults intact')
 
-def test_proposed48_fixture():
+def test_all():
+    """Collect the existing synthetic assertion suite under pytest."""
     assert main() is None
+
 
 if __name__=='__main__': main()

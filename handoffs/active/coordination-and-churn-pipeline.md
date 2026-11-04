@@ -2541,6 +2541,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Row estimate_s vastly overstated**: fix estimator.
 - [ ] **Per-row UNDERUSED is only logged**: act on it.
 - [ ] **OBS-CHURN-UP** `churn_up.sh` liveness probes (pidfile+argv, exact-path argv over /proc) are registered `unadopted` in `observer_registry.json`: adopt `observer_guard.sh` three-valued state (measured / absent / blind).
+- [ ] **CHURN-UP-NO-DISPATCHER** `churn_up.sh` must not start the handoff dispatcher implicitly. 2026-11-04 it started pid 3977332, which resumed 11 Codex handoff sessions the operator had not asked for (stopped at operator order; sessions left running). Done when `churn_up.sh` starts the dispatcher only on an explicit flag and a `--dry-run` test proves the default path leaves it down. [no-belief: tooling]
 
 #### Stop-everything, disk reclaim and runbook (2026-11-02 afternoon, ws58)
 

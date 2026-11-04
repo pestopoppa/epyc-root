@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Task scoped record-delta completion: full20 fresh distinct processes, five per arm at each depth16384/65536, 48threads, F16K/V, exact C5 same binary and during-process own-library witnesses. Each native result rc0 and 32 generated tokens; alternating default HYBRID versus GGML_FA_VKQ_F16=1 with F32 override absent. Recomputed medians/effects/floors match:16k 19.917212 vs19.557956 tok/s,+1.83687906855% with36.3922169428% floor;64k13.137735 vs12.866371,+2.10909509760% with4.11045196816% floor. Both within observed floor. No superiority, MTP, fold, promotion or production claim.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

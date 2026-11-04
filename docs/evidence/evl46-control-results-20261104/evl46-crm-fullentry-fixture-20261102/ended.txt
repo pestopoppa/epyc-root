@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T21:18:39Z reason=complete
+job_id=evl46-crm-fullentry-fixture-20261102
+owner=codex-evl46
+step=job-run
+estimated_wall_s=900
+started=2026-11-02T21:18:15Z
+regions=24-47

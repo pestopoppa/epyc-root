@@ -1,0 +1,48 @@
+{
+  "schema": "akx-auto10-build-manifest.v1",
+  "producer_source_sha256": "0b97c4a4e21e4c8240d1ce1e8377eca041d4e56577b4d23a20a35cec6e75cecb",
+  "binary_sha256": "df875b53ad6dc2d99c1ef71c3c744d2d9b0f1b2b41643c7792538f4099206862",
+  "compiler": "c++ (Ubuntu 15.2.0-4ubuntu4) 15.2.0",
+  "compile_argv": [
+    "c++",
+    "-O2",
+    "-std=c++17",
+    "-I/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/ggml-include",
+    "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/mmid_roofline_probe_v3.cpp",
+    "-L/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib",
+    "-Wl,-rpath,/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib",
+    "-lggml-cpu",
+    "-lggml",
+    "-lggml-base",
+    "-pthread",
+    "-o",
+    "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/bin/mmid_roofline_probe_v3"
+  ],
+  "libraries_identity": {
+    "libggml-cpu.so": {
+      "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-cpu.so.0.16.0",
+      "sha256": "643129bc8c6a88c736f4d89bb7765ce3c12955f2898af2c96a64d868aa3d9f78",
+      "device": 2431,
+      "inode": 215391572
+    },
+    "libggml.so": {
+      "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml.so.0.16.0",
+      "sha256": "3016d041e3243b618bc97ab5581b8d81fec978b9fbf2cb4a981383cf258d7953",
+      "device": 2431,
+      "inode": 215391575
+    },
+    "libggml-base.so": {
+      "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/lib/libggml-base.so.0.16.0",
+      "sha256": "4847bcd5de217f5738adad2c6a925422de51dbf5c3003f116d6156b4d0a8c303",
+      "device": 2431,
+      "inode": 215391578
+    }
+  },
+  "vendor_manifest_sha256": "02c92468e86e0d5cff345c9f335b60c995b59435e7652887725a73536ebc2667",
+  "vendor_header_root": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/vendor/ggml-include",
+  "library_source_provenance": "historical DSO; exact source/build provenance unproven",
+  "repository_head_observed": "ebb68dc55d5f6af4a4a5dccdd2a013fa76c63bee",
+  "GGML_IQK": "1",
+  "compile_commands_has_GGML_USE_IQK_MULMAT": true,
+  "input_manifest_sha256": "176dae1b34ebe2ed0f187db9337f5c934f60a061decfa31c30e780cfb3f63712"
+}

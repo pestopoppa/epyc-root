@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/sr7-qwen36-proposer-w1-20261102/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-03T07:24:34Z reason=partial-native-incomplete",
+ "engine_sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c",
+ "first_unit_at": "2026-11-03T07:24:36Z",
+ "id": "sr7-qwen36-proposer-w1-20261102",
+ "launcher_sha256": "9628ce0caa9cba26e1e591d0e72ecf236f7031b3429fe5fbc879aca4c79c3e93",
+ "passed_at": "2026-11-03T07:24:36Z",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/sr7-qwen36-proposer-w1-20261102/native-attempts/attempt-s91yk8_l/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

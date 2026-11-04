@@ -278,3 +278,17 @@ def test_cli_ingest_end_to_end(tmp_path, capsys):
     assert report["refused"] == [] and report["rows_projected"] == 4
     rows = [r.frame for r in Ledger(ledger).read_all()]
     assert any(f["frame_type"].endswith("evidence_supports_claim/v1") for f in rows)
+
+
+def test_projection_carries_consumer_scope_and_no_model_scope(tmp_path):
+    """VB-AK-WIRE-PLANNER-TIER: every tuple declares the planner consumer scope; no model/device."""
+    path, _ = build(tmp_path, verdicts=("PASS", "FAIL"))
+    tuples = project_all(path)
+    assert tuples
+    for t in tuples:
+        assert t.applicability == {"consumer": w.PLANNER_CONSUMER, "scope_basis": "native"}
+        assert not {"model_file", "model_sha256", "device", "backend"} & set(t.applicability)
+    frames = w.frames_for_path(path, as_of=AS_OF)
+    sources = [f for f in frames if f["frame_type"].endswith("source_observed/v1")]
+    assert sources and all(
+        f["assertion"]["applicability"]["consumer"] == "autokernel.planner" for f in sources)

@@ -14,6 +14,9 @@ def run(cmd, name=None, accepted=(0,)):
  return p.stdout
 
 def check():
+ if not (TREE/'.git').is_file() or (TREE/'.git').is_symlink(): raise RuntimeError('source must be a registered detached worktree; prepare it outside the grant')
+ if 'worktree '+str(TREE.resolve()) not in run(['git','worktree','list','--porcelain']).splitlines(): raise RuntimeError('source worktree destination is unregistered')
+ if run(['git','symbolic-ref','-q','HEAD'], accepted=(0,1)).strip(): raise RuntimeError('source must remain detached')
  assert run(['git','rev-parse','HEAD']).strip()==HEAD
  assert not run(['git','diff','--name-only','HEAD']).strip()
  untracked=run(['git','ls-files','--others','--exclude-standard']).splitlines()

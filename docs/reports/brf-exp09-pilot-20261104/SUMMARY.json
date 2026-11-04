@@ -1,0 +1,75 @@
+{
+  "row": "brf-exp09-pilot-20261102",
+  "verdict": "inconclusive",
+  "disposition": "REVISE harness; answer truncation confounds operational futility",
+  "rc": 75,
+  "cells": 37,
+  "planned_cells": 48,
+  "arms": {
+    "control": {
+      "n": 12,
+      "accuracy_mean": 0.8097500000000001,
+      "retention_mean": 0.41658333333333336,
+      "parse_failures": 0
+    },
+    "verified_quote": {
+      "n": 9,
+      "accuracy_mean": 0.7324444444444445,
+      "retention_mean": 0.7296666666666667,
+      "parse_failures": 1
+    },
+    "shape_header": {
+      "n": 8,
+      "accuracy_mean": 0.5,
+      "retention_mean": 1.0,
+      "parse_failures": 4
+    },
+    "pointer_only": {
+      "n": 8,
+      "accuracy_mean": 0.27075,
+      "retention_mean": 0.0,
+      "parse_failures": 0
+    }
+  },
+  "parse_failures": [
+    {
+      "item": "item-03",
+      "arm": "shape_header",
+      "completion_tokens": 256
+    },
+    {
+      "item": "item-05",
+      "arm": "shape_header",
+      "completion_tokens": 256
+    },
+    {
+      "item": "item-06",
+      "arm": "shape_header",
+      "completion_tokens": 256
+    },
+    {
+      "item": "item-07",
+      "arm": "verified_quote",
+      "completion_tokens": 256
+    },
+    {
+      "item": "item-07",
+      "arm": "shape_header",
+      "completion_tokens": 256
+    }
+  ],
+  "control_code_unchanged": true,
+  "planted_mismatch_rejected": 9,
+  "stop": {
+    "kind": "stop",
+    "reason": "futility",
+    "label": "operational decision, not a gate result",
+    "vq_sum": 6.592,
+    "control_total": 9.716999999999999,
+    "vq_cells": 9,
+    "exec_id": "f43974f28c9f",
+    "dryrun": false,
+    "t": 552.5,
+    "ts": "2026-11-02T22:19:44Z"
+  }
+}

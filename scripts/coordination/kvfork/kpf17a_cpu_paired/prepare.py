@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
+from source_worktrees import prepare as prepare_source
 
 HERE = Path(__file__).resolve().parent
 LIVE = Path('/mnt/raid0/llm/tmp/kvfork/kpf17a-cpu-paired')
@@ -19,6 +21,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--destination', type=Path, default=LIVE)
     parser.add_argument('--predecessor', type=Path, default=OLD)
+    parser.add_argument('--source-repository', type=Path,
+                        default=Path('/mnt/raid0/llm/llama.cpp-experimental'))
     args = parser.parse_args()
     d = args.destination.resolve()
     old = args.predecessor.resolve()
@@ -28,22 +32,33 @@ def main():
         (d / name).mkdir()
     for path in (old / 'input').iterdir():
         shutil.copy2(path, d / 'input' / path.name)
-    for name in ('baseline.tar', 'champion.tar'):
-        shutil.copy2(old / 'sources' / name, d / 'sources' / name)
     for name in ('filler_run15.sh', 'filler_lib.sh'):
         shutil.copy2(old / name, d / name)
     for path in (old / 'out').glob('original-???.json'):
         shutil.copy2(path, d / 'prior-receipts' / path.name)
     shutil.copy2(old / 'identity.json', d / 'prior-receipts' / 'identity.json')
     # The checked-in job is canonical.  Never regenerate it from mutable scratch.
-    shutil.copy2(HERE / 'job.py', d / 'job.py')
+    for name in ('job.py', 'source_worktrees.py'):
+        shutil.copy2(HERE / name, d / name)
     launch = (HERE / 'launch.sh').read_text().replace(str(LIVE), str(d))
     (d / 'launch.sh').write_text(launch)
     identity = json.loads((old / 'identity.json').read_text())
+    identity['source_repository'] = str(args.source_repository.resolve())
+    created = []
+    try:
+        for arm, expected in identity['sources'].items():
+            expected.pop('archive_sha256', None)
+            prepare_source(args.source_repository, d / 'sources' / arm, expected)
+            created.append(d / 'sources' / arm)
+    except BaseException:
+        for source in reversed(created):
+            subprocess.run(['git', '-C', str(args.source_repository), 'worktree',
+                            'remove', '--force', str(source)], check=True)
+        raise
     identity['scope'] = ('CPU exactness successor: original and extended preservation '
                          'compared under identical grant and thread count; earlier '
                          'receipts retained separately')
-    inputs = [*(d / 'input').iterdir(), *(d / 'sources').glob('*.tar'),
+    inputs = [*(d / 'input').iterdir(), d / 'source_worktrees.py',
               d / 'job.py', d / 'filler_run15.sh', d / 'filler_lib.sh',
               *(d / 'prior-receipts').iterdir()]
     identity['inputs'] = {str(path.relative_to(d)): sha(path) for path in inputs}

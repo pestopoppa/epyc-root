@@ -1,0 +1,87 @@
+{
+  "schema": "p5.gold-control.v1",
+  "producer_source_manifest_sha256": "f4cbcf8b12ddd6063f6d185638342f9ac3c43ed834dde9760471a0734cc55443",
+  "producer_launcher_sha256": "4821dc0e6557b202b18a51b1871fc2442f74ea385004d6855377fb9c48f37cbf",
+  "instance_id": "astropy__astropy-12907",
+  "arms": {
+    "negative": {
+      "resolved": false,
+      "FAIL_TO_PASS": {
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6]": "FAILED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model9-result9]": "FAILED"
+      },
+      "PASS_TO_PASS": {
+        "astropy/modeling/tests/test_separable.py::test_coord_matrix": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_cdot": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_cstack": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_arith_oper": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model0-result0]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model1-result1]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model2-result2]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model3-result3]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model4-result4]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model5-result5]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model7-result7]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model8-result8]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_custom_model_separable": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r3-20261104-negative-1793776624441671177/negative/astropy__astropy-12907/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r3-20261104-negative-1793776624441671177/negative/astropy__astropy-12907/test_output.txt"
+    },
+    "gold": {
+      "resolved": true,
+      "FAIL_TO_PASS": {
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model9-result9]": "PASSED"
+      },
+      "PASS_TO_PASS": {
+        "astropy/modeling/tests/test_separable.py::test_coord_matrix": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_cdot": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_cstack": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_arith_oper": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model0-result0]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model1-result1]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model2-result2]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model3-result3]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model4-result4]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model5-result5]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model7-result7]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_separable[compound_model8-result8]": "PASSED",
+        "astropy/modeling/tests/test_separable.py::test_custom_model_separable": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r3-20261104-gold-1793776627415868881/gold/astropy__astropy-12907/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r3-20261104-gold-1793776627415868881/gold/astropy__astropy-12907/test_output.txt"
+    }
+  },
+  "image_id": "sha256:e3cb199d0e50c97db515de04b01be65e1d7fd6390b047a00da90655ed9b6002e",
+  "case_sha256": "ea9e936b6d002607859edadc526fbb7fa3a7342ba5f06668019504610e637382",
+  "script_binding": {
+    "official_script_sha256": "8982427832e1065d24fd44f827a6857a985d58e9da604bb0b16c2adf4f8afe82",
+    "offline_script_sha256": "c1b649c200bd0a7641175877b558b0cb2694d7f32898c35ebe24a7c7ccafa1d8",
+    "setup_index": 10,
+    "derived_image_id": "sha256:e3cb199d0e50c97db515de04b01be65e1d7fd6390b047a00da90655ed9b6002e",
+    "scope": "one exact setup substitution; all other generated commands unchanged"
+  },
+  "image_build_log_sha256": "c8e85113399a5c9472db181cedf813166bf4d6d9ee2ef17bc512fc399c9790da",
+  "wheel_manifest_sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba",
+  "checkout_proofs": {
+    "795037d7d61450f579b67b84b77c7c177d4ae24d5959bbaf046685a6598fff93": {
+      "base_commit": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+      "base_tree": "4d9ea46e57a9bc539b358a59c526dfd933f98aba",
+      "image_head": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    },
+    "be628c7d757d72f4a9632b2792babf0cc15a10e90c28ecd7e2149f6c93278f49": {
+      "base_commit": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+      "base_tree": "4d9ea46e57a9bc539b358a59c526dfd933f98aba",
+      "image_head": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    }
+  },
+  "status": "PASS",
+  "owned_containers_removed": true
+}

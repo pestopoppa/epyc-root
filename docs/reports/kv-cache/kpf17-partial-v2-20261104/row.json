@@ -1,0 +1,39 @@
+{
+ "decision_rule": "Diagnostic only: OBSERVED_PASS requires rc=0 on the identified hybrid model and explicit Test 6 PASS, with no SKIP. Fixed 1e-3 tolerance and missing mutation control cannot establish a fork defect or close KPF-17; other outcomes INVALID.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 1500,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 2400,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+ "id": "kvfork17-partial-v2-20261102",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/launch.sh",
+  "sha256": "78251b26103a2918e7ec679ab54fca50dd0a85a09538b3c1ae917f40935af23c"
+ },
+ "min_window_s": 1200,
+ "notes": "Preparation and publication required; diagnostic only, prior row untouched; source checked before and after execution, not protected from same-UID mutate-and-restore.",
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-02T19:39:18Z",
+ "published_from": "/mnt/raid0/llm/tmp/ws58-repair/kpf17-v2-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/STOP",
+ "supersedes": "kvfork17-partial-20261102",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2"
+}

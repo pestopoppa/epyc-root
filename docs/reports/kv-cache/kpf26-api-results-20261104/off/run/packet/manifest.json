@@ -1,0 +1,60 @@
+{
+  "api_request": {
+    "path": "api-request.json",
+    "sha256": "42317c1b36d6f91c7c2cfabe0be9d5ff4e5b616fc54b7f9bd3727e4a17507fa5"
+  },
+  "arm_order": [
+    "off",
+    "on"
+  ],
+  "arm_timeout_s": 900,
+  "max_occupancy_sample_gap_s": 2,
+  "pins": {
+    "argv": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port 18976 -np 4 -c 98304 -t 8 -tb 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-fork-min-tokens 1024 --metrics --slot-save-path /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/off.AY0LQH/slots",
+    "executor_sha256": "9fdb6c8fe67d4a09ddc20ad2b12a86e713299d4b58a4e68018a339c901d2fcc3",
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "server_binary_sha256": "a62c3ab1835b8eb8ce33722f67d5e8eac6674576fcf2b0b15eb6ba44e4b0fa30",
+    "source_commit": "868275acb64ef3d490ecac6952518ae187fe74d3"
+  },
+  "provenance": {
+    "interpretation": "Prospective transformed HS-19a two-scout long-root diagnostic, not a real historical fan-out or a gate.",
+    "kind": "prospective-scout-smoke-derived-from-hs19a",
+    "scope_sha256": "bffaaa5c14978954c942a5c0d00e078c7a05e26043491a004adeb3a968da2700",
+    "source": "HS-19a live acceptance fixture 2026-09-27",
+    "source_prompt_sha256": "b09e3bb11a17211c2fc2d9b3c45106348a1398d32a2d204c8b6ecfba47a03a7f"
+  },
+  "runtime": {
+    "off": {
+      "grant_id": "rtg58-kpf26-api-off-diag-20261102",
+      "role": "frontdoor",
+      "sample_interval_s": 0.5,
+      "server_pid": 1062667,
+      "url": "http://127.0.0.1:18976",
+      "window_id": "rtg58-kpf26-api-off-diag-20261102-off"
+    },
+    "on": {
+      "grant_id": "rtg58-kpf26-api-off-diag-20261102",
+      "role": "frontdoor",
+      "sample_interval_s": 0.5,
+      "server_pid": 1062667,
+      "url": "http://127.0.0.1:18976",
+      "window_id": "rtg58-kpf26-api-off-diag-20261102-on"
+    }
+  },
+  "schema": "epyc.kpf26.paired.v1",
+  "tasks": [
+    {
+      "expected": {
+        "path": "expected.json",
+        "sha256": "ed4ab22b63b331641244534e03d7317f33a5225d1e80c312f4bfa9f6271c3b8d"
+      },
+      "id": "hs19a-release-codename-scout-smoke",
+      "request": {
+        "path": "request.json",
+        "sha256": "0c64708f45b9e9294932f4e02a4764e7a7335ade6ae19549f424feff2cf966e9"
+      },
+      "siblings": 2
+    }
+  ]
+}

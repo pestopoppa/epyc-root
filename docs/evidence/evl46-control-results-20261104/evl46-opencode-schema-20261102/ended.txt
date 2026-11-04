@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T21:18:34Z reason=complete
+job_id=evl46-opencode-schema-20261102
+owner=codex-evl46
+step=job-run
+estimated_wall_s=300
+started=2026-11-02T21:18:28Z
+regions=72-95

@@ -7690,3 +7690,13 @@ Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md) · [C
 
 - The R18-A independent v10 rebuild matched the exported CPU, HIP host and gfx90a device symbol-name sets against frozen anchors, with 141 recorded HIP CUIDs replayed. This establishes the stated symbol-set identity, not byte, runtime or performance equivalence. [Evidence](../artifacts/compute/r18a-r4-20261102/README.md).
 - R23-62's formerly reported champion-only shift combined the window-3 paired ratio with a window-1 pristine rate. Raw replay places window 3 at 12.0184 t/s pristine and 20.5891 t/s champion, with mean per-prompt ratio 1.7151 over 60 pairs; unequal observed GPU co-residency and differing windows leave the historical cause unresolved. [Audit](../docs/design/inf70-r2362-evidence-20261102/AUDIT.md).
+
+## Filing discipline and pilot limits — 2026-11-04
+
+- **Outer rc0 is not a pass**: LSA-SCREEN-1 CPU parity was filed invalid (inner rc=1, own quarter lock not visible, null metrics) and no parity condition was evaluated.
+- **Pilots are operational screens**: CAP-04 completed 76/76 units but nested-prefix validation matched 0/4, so derived 8k/16k comparisons and TB-4 do not count; EXP-09 hit rc75 at 37/48 cells with 5 answers capped at 256 tokens, so the repair raises the cap to 1024 with corpus, control and scorer frozen.
+- **Control filings split from live acceptance**: EVL-46 schema, reader (7 passed) and 36-test source controls PASS with `model_invoked=false`; they close only the control steps, not live TU-MH-1/TU-DTAP-2.
+- **J7 cannot measure identical-arm correctness flips** (DCP-12): it alternates OFF/ON, has no fixed-prompt quality labels and saves summaries rather than answer bodies; calibration needs repeated matched configurations, predeclared binary labels, answer capture, a pinned judge and quiet-window admission.
+- **Sizing**: IFBench pinned corpus 421,499 bytes; LiveCodeBench lite test6.jsonl 134,303,240 bytes (payload metadata, not a local measurement or proof of a post-cutoff slice).
+
+Sources: [codex-gen shard](../progress/2026-11/2026-11-04-handoff-codex-gen.md) · [judge-suite shard](../progress/2026-11/2026-11-04-handoff-canonical-judge-suite-revamp.md) · [judge-suite 11-02](../progress/2026-11/2026-11-02-handoff-canonical-judge-suite-revamp.md) · [DCP 11-02](../progress/2026-11/2026-11-02-handoff-delegation-context-preassembly.md) · [DCP shard](../progress/2026-11/2026-11-04-handoff-delegation-context-preassembly.md)

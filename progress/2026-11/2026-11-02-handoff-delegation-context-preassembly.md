@@ -19,3 +19,7 @@ Recovered the prior serialized-push failure: serialized_push published the calib
 ## 09:24Z — Build the three missing DCP-12 calibration components
 
 Dispatched bounded implementation of the DCP-12 identical-arm runner, fixed scoring fixture and paired-outcome analyzer, with result files registered for dispatcher wakeup. Each component is prepared in scratch for owner review; no inference, admission or row publication was performed.
+
+## 09:25Z — Review DCP-12 scoring fixture and identify required answer capture
+
+Reviewed the draft DCP-12 rubric against the live J7 prompts and writer. Its expected claims are not yet bound to verified source, it has no fixed binary outcome, and J7 saves summaries rather than answer bodies. Recorded the answer-capture and pinned-judge requirements in the handoff; requested a source-bound revised fixture. Harness and paired-outcome analysis remain pending. No inference or scoring was run.
