@@ -375,3 +375,7 @@ Filed floor v36, sentinel build r21, paired GPU diagnostic r33 and direct-parent
 ## 23:10Z — File interrupted sentinel build and qualify independent successor
 
 Filed sentinel build r22 inconclusive after rc75 disk-floor without a full result; terminal evidence retained under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published independent sentinel build r23 after publisher smoke PASS; full build and BF16 oracle remain pending. The reported CPU BF16 event was already filed.
+
+## 23:18Z — Publish source-bound W2 tracer build prerequisite
+
+Published inf75-w2-native-tracer-cpu-build-20261104 after a smoke compiled the real pinned C5-header tracer into a separate ELF and emitted its SHA receipt. The full build and W2 GPU census remain pending. W5s storage admission recovered; repaired publisher-only CPU admission with outside-grant, deadline and missing-ancestor controls, preserving full grant predicates. The fresh W5s publisher smoke was started and its PASS/FAIL events registered; it is not yet claimed qualified. The reported GDN event was already filed.
