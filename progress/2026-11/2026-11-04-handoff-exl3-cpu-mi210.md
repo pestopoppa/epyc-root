@@ -15,3 +15,7 @@ Duplicate r2 event acknowledged with its existing inconclusive verdict retained.
 ## 07:23Z — Acknowledge already-filed EXP01 build-r3 event
 
 Duplicate build-r3 end acknowledged; existing fail verdict retained (missing shared-expert imatrix entry). The completed build-r5 supersedes it. EXP01-PILOT awaits the running, smoke-passed isolated measurement brf-exp01-trellis-pilot-20261104-r3.
+
+## 07:24Z — Acknowledge already-filed EXP01 build-r2 event
+
+Duplicate build-r2 event acknowledged; retain its existing fail verdict for incomplete importance-matrix coverage. Build-r5 supplies the completed prerequisite. The isolated pilot brf-exp01-trellis-pilot-20261104-r3 is running; no new evidence or task completion claimed.
