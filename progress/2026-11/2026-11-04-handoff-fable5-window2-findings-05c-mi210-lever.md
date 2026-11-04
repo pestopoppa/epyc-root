@@ -35,3 +35,7 @@ Filed pf1-expand-r2-20261104 inconclusive, rc75 disk-floor after 2/3 blocks: 32 
 ## 14:23Z — Prepare M4 fold scope binding and Q38 launch regression
 
 PF1 pilot r4 had already been filed inconclusive; r6 later completed the bounded pilot screen. Q38 recipe r5 preparation continues with its source and plan re-seal; commissioned an independent no-model full-job directory regression check and M4 current-role fold specification binding. File-triggered handoffs registered. No new measurement or completed gate is asserted.
+
+## 14:25Z — Repair Q38 recipe packet and submit native smoke
+
+Recut Q38 recipe successor r5 after r4 exited before inference due to a missing captures parent. Fixed the row-local reader enrollment and re-sealed its independent source digest; pregrant checks pass for all 12 cells and four custody receipts. A model-free subprocess test exercises the real shell full-run branch, missing-parent creation, repeat refusal and the distinct dry-run branch. Submitted the native publisher smoke; it has not yet reported PASS, so no row-readiness or measurement claim is made. Archived the prepared packet and regression test under data/mi210/q38-recipe-r5-20261104. Original recipe r1 was already filed inconclusive.
