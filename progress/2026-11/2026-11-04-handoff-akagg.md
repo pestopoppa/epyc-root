@@ -231,3 +231,7 @@ Published `akx-c6-n4-cublas-build-r3-20261104` after its four-CPU custody smoke.
 ## 20:57Z — Filed three disk-floor interrupted runs and published the C6 diagnostic build successor after publisher smoke.
 
 Filed C6 build r3 and GDN BF16 CPU r8 / sentinel build r11 as inconclusive disk-floor interruptions, retaining terminal evidence. Published C6 diagnostic build r4 after publisher custody smoke PASS; full build and GPU correctness remain pending. Prepared BF16 CPU r9; publisher reported an existing smoke in progress. Removed superseded C6 r3 scratch after retaining evidence.
+
+## 21:04Z — Repaired signal receipt handling and published floor v10; attempted W5s qualification, which refused at its disk guard.
+
+Reviewed v9 floor ancestry: 24 main pairs and zero longctx pairs, no completed floor. Repaired v10 repeated signal telemetry writes; 28 model-free tests passed, and publisher smoke passed for akxall8-c5-declared-floor-v10-20261104. Reconciled W5s registry bindings and repaired its packet; publisher smoke refused rc75 before work because the RAID storage floor was unmet. Removed four unreferenced superseded W5s source worktrees (about 3.3 GiB). CH-LB1 successor smoke was already followed by passed CPU gates; fold CAS remains open.
