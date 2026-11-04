@@ -215,3 +215,7 @@ KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r5-20261104 passed publisher GPU smoke an
 ## 23:03Z — Ready KPF-27d per-worker capture source-impact scan
 
 KPF-27d: published kpf27d-impact-326f-20261104 after four-CPU source-reference smoke PASS, bound to detached orchestrator 326f502759986c9846027f8187972969139c0089. The six native impacts and skipped-file coverage remain pending under the unchanged 150 GiB full-run floor; smoke is not edit clearance or a shadow window. KPF-50 clock witness r5 stopped rc75 at the disk floor before a native result and was filed INCONCLUSIVE, with no target window exposed.
+
+## 23:06Z — Ready KPF-41 direct-vector impact successor
+
+KPF-41: published kpf41-direct-vec-impact-8952a0f-20261104-r4 after its four-CPU source-reference smoke passed. The detached source and tree are bound to 8952a0f693fb923918157eb25117641b74766230 and 8772563484cd449f15188aaf6db89e84bdb6b025; the four full impact queries and skipped-file coverage remain pending under the 150 GiB floor. Smoke is not edit clearance or a GPU result. KPF-27d source-impact attempt ended rc75 at the disk floor before native results and was filed INCONCLUSIVE. A separate KPF-30.PHASE-IMPACT r8 packet is prepared at /mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r8/spec.json, not yet published.
