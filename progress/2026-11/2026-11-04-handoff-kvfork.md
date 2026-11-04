@@ -259,3 +259,9 @@ KPF-17: published `kvfork17-gdb-continue-qual-r2-20261104` after its isolated fo
 ## 23:46Z — Ready KVU-12.6 source-impact successor
 
 KVU-12.6: restored the detached research worktree at `beb7b859c55e8b8c720a77ac442eec6a5b0393bf` and published `kvu126-impact-beb7-r2-20261104` after the four-CPU source-reference smoke passed. The two native upstream impacts and skipped-file coverage remain pending under the unchanged 150 GiB full-run floor. Smoke is not source-edit clearance or an np8 attribution result.
+
+## 23:49Z — File the KPF-50 model-free clock qualification and prepare KVU-11c GPU mechanics.
+
+## 23:49Z — File KPF-50 clock qualification and queue KVU-11c smoke
+
+KPF-50.CLOCK-QUAL: `kvfork50-clock-qual-r6-20261104` completed rc0, native status QUALIFIED; rocprof observed the kernel and the HSA/host bracketing verifier passed. The result is model-free and all four target windows remain unexposed; no KPF-50 performance or attribution verdict follows. [Native result and verifier](../../docs/reports/kv-cache/kpf50-clock-qual-r6-20261104/). KVU-11c: preverified both model hashes outside the grant, isolated the fixed reference WAV, and submitted `kvu11c-gpu-mechanics-smoke-r1-20261104`; the GPU was busy and its publisher smoke is queued, so this row is not yet published or qualified. KPF-18 group-3 scratch affinity overlay passed 18 model-free tests; its relocated component-receipt suite and full lifecycle and GPU qualifications remain open.

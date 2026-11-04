@@ -1,0 +1,12 @@
+{
+  "schema": "epyc.kpf50.clock-smoke.v1",
+  "verified": true,
+  "host_start_ns": 1958437975171587,
+  "host_end_ns": 1958438023008385,
+  "gpu_start_ns": 1958438022998955,
+  "gpu_end_ns": 1958438023001195,
+  "host_minus_hsa_ns": [
+    -260,
+    90
+  ]
+}

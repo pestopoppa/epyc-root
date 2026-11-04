@@ -1,0 +1,14 @@
+{
+  "schema": "kpf50.clock-build.v1",
+  "source_sha256": "76146da85e18290ae9878466660f99ed8632d15487b1845a874a201c2e8178d9",
+  "binary_sha256": "d1525306838457f88b6abc3572143deec0d618c73f6673ee9219f2dc754e4d4e",
+  "argv": [
+    "/opt/rocm/bin/hipcc",
+    "--offload-arch=gfx90a",
+    "-O2",
+    "/mnt/raid0/llm/tmp/kvfork/kpf50-clock-qual-r6-20261104/clock-smoke.cpp",
+    "-o",
+    "/mnt/raid0/llm/tmp/kvfork/kpf50-clock-qual-r6-20261104/out/clock-smoke"
+  ],
+  "toolchain_manifest_sha256": "9f2d85e540340b84b970688ea0199cfb5fcb5d8410ed21923b41e172fa8c9d1f"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "kpf50.clock-qualification.v1",
+  "status": "QUALIFIED",
+  "progress": 1,
+  "model": null,
+  "target_windows_launched": 0,
+  "scope": "model-free profiler clock qualification only; no inference, trunk-time or gate result",
+  "commands": {
+    "build": 0,
+    "before": 0,
+    "witness": 0,
+    "after": 0,
+    "verify": 0
+  },
+  "files": {
+    "BUILD.json": "90c4d2f5c79cb7ce0b0f730247f4d0ab072715099ef469a96c18a54a4bd7bff0",
+    "verification.json": "1d579115c83a40b6401a0230bca3ecbd0e97af47cedc436092431fbd2c0b223a",
+    "dispatch.csv": "aad8be632c53585cb90c9f1280ddbbacd33aad3794f7aa001f7611d83c3350a8",
+    "build.log": "881077b0ca109b3dac4e4dfe4a66cbe5be4c18240605f400b3872a66fa06bba9",
+    "witness.log": "d9e236c789c1946558bde06e6b1cac390f87797838a864ef9883b3377fde909c",
+    "clock-smoke": "d1525306838457f88b6abc3572143deec0d618c73f6673ee9219f2dc754e4d4e",
+    "after.json": "b4ff97cc3e56c92072f4a03534658e4efb63f84653a5c3f09147d62ba9ef9980",
+    "verify.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.json": "c48efd4bbf8b066c6cdc5b8e879e81d7fbf612718436f7ea58ddbc6e6e15d9ef",
+    "before.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
