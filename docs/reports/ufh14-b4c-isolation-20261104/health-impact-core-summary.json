@@ -1,0 +1,9 @@
+{
+  "source_commit": "326f502759986c9846027f8187972969139c0089",
+  "index": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source",
+  "target": "Function:src/api/routes/health.py:_probe_core_backends",
+  "risk": "LOW",
+  "impacted_count": 2,
+  "direct": 1,
+  "scope": "exact index result; dynamic callers may be absent"
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "epyc.health-private-path-tests.v1",
+  "passed": true,
+  "tests": [
+    {
+      "name": "unset_preserves_checkout_default",
+      "passed": true,
+      "resolved_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source/orchestration/derived/stack_priors.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "empty_preserves_checkout_default",
+      "passed": true,
+      "resolved_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source/orchestration/derived/stack_priors.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "absolute_private_override",
+      "passed": true,
+      "resolved_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/private/stack_priors.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "private_override_runtime_selected_branch",
+      "passed": true,
+      "resolved_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/private/stack_priors.yaml",
+      "route": "runtime_selected",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "unset_runtime_selected_preserves_default",
+      "passed": true,
+      "resolved_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source/orchestration/derived/stack_priors.yaml",
+      "route": "runtime_selected",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "spaces_unicode_path_parsed",
+      "passed": true,
+      "resolved_path": "/private path/\u03b4\u03bf\u03ba\u03b9\u03bc\u03ae.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "relative_path_semantics_preserved",
+      "passed": true,
+      "resolved_path": "private/stack_priors.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    },
+    {
+      "name": "explicit_parameter_overrides_environment",
+      "passed": true,
+      "resolved_path": "/explicit/priors.yaml",
+      "route": "stack_prior",
+      "fake_probe_calls": 1
+    }
+  ],
+  "source_commit": "326f502759986c9846027f8187972969139c0089",
+  "source_clean": true,
+  "maintained_source_edits": false,
+  "application_imports": false,
+  "network_calls": 0,
+  "inference": false,
+  "patch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/health-private-path.proposed.patch",
+  "patch_sha256": "4e0ed75ddabb191a5ba25198951ae23b2cabf95ce325c2a34441a6f0cf8f53b0",
+  "test_script": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/test_health_private_path.py",
+  "scope": "Exact AST-extracted native _probe_core_backends and both native URL resolvers compiled from proposed source; fake native records, runtime manifest reader and backend probes. No copied checkout or application imports.",
+  "limits": [
+    "Tests isolate path resolution; no live HTTP, model server or full API integration.",
+    "Override is captured at module import, matching existing default-argument behavior.",
+    "Relative overrides retain pathlib semantics; set an absolute private path before application import."
+  ],
+  "change": "Existing environment override becomes effective for health defaults; unset and empty retain original checkout default."
+}
