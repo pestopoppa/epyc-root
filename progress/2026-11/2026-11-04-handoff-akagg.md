@@ -203,3 +203,7 @@ Filed `gdn-bf16-reference-diag-20261104` pass for the declared diagnostic rule: 
 ## 20:11Z — Filed three disk-floor terminal events and published the f32 CPU one-hot successor.
 
 Filed `inf75-p1b-moespec-hip-retry-r2-20261104`, `akx-gdn-onehot-cpu-bf16-fixed-20261104`, and `akx-gdn-onehot-cpu-f32-fixed-r2-20261104` inconclusive, rc75 disk-floor after START and no complete result. Retained terminal packets and GDN baseline smoke logs under `/mnt/raid0/llm/tmp/akagg/ended-20261104-retained/`. Published `akx-gdn-onehot-cpu-f32-fixed-r3-20261104` after its four-CPU baseline smoke matched all 27,262,976 values; mutant arms await grant. The 7d2 Git diagnostic is parked after three arm failures and floor calibration remains held by STOP. The v9 CPU configure event was previously filed pass. Removed the superseded C6 paired proposal whose contents were preserved by the newer packet. Shared free disk was 149 GiB, below the admission floor.
+
+## 20:15Z — Published the corrected-image BF16 CPU one-hot successor after baseline smoke.
+
+Published `akx-gdn-onehot-cpu-bf16-fixed-r2-20261104` after its four-CPU corrected-image BF16 baseline smoke passed; the full three-arm CPU result and all GPU BF16 results remain pending. The C6 pre-MMQ paired comparison needs a separately built, source-bound test binary with capture instrumentation: the retained pre-MMQ binary lacks the capture symbol.
