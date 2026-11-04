@@ -253,3 +253,9 @@ KPF-50.CHILD-EVIDENCE-OUTPUT: published kpf50-child-evidence-main-impact-2026110
 ## 23:42Z — Ready KPF-17 GDB continue qualification
 
 KPF-17: published `kvfork17-gdb-continue-qual-r2-20261104` after its isolated four-CPU publisher smoke passed. The full row checks normal and deliberately nonzero inferior exit codes, post-continue state and captured-child cleanup. Smoke is not a full qualification, native oracle result, model result or library-custody claim.
+
+## 23:46Z — Ready the source-bound impact scan needed for the KVU-12.6 sampling correction.
+
+## 23:46Z — Ready KVU-12.6 source-impact successor
+
+KVU-12.6: restored the detached research worktree at `beb7b859c55e8b8c720a77ac442eec6a5b0393bf` and published `kvu126-impact-beb7-r2-20261104` after the four-CPU source-reference smoke passed. The two native upstream impacts and skipped-file coverage remain pending under the unchanged 150 GiB full-run floor. Smoke is not source-edit clearance or an np8 attribution result.
