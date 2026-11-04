@@ -307,3 +307,7 @@ The targeted C6 n=5 GPU diagnostic and CH-26 compact observer r2 had already bee
 ## 22:09Z — Filed interrupted paired GPU diagnostic, published independent successor, and investigated P1b historical custody.
 
 The P1b 9e18 HIP coverage build was already filed as a bounded build pass. Filed paired C6 GPU r17 as inconclusive rc75 disk-floor stop with terminal packet retained. Published paired GPU r18 after publisher smoke PASS; full diagnostic pending. W4 custody search found July 20 two-instance argv but no historical model content digests or complete replay-era environment/affinity/input bindings; context 16384 differs from the registry value 262144, so replay remains unqualified.
+
+## 22:13Z — Filed floor interruption, published successors, and prepared CH31 input discrimination prerequisites.
+
+CH31 cap4096 predecessor and subsequent route diagnostic were already filed. Floor v23 stopped rc75 at disk-floor and was filed inconclusive; paired GPU r18 was already filed inconclusive. Published independent floor v24 and paired GPU r19 after publisher smokes PASS. CH31 retained metadata identifies Q8_0 weight/F32 activation shapes and distinct route tags; byte equality, exact IQK rejection and isolated causation remain open. Independent ownership and post-join replay controls are being prepared with outcome events registered.
