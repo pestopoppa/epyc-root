@@ -79,3 +79,7 @@ KPF-18 item 3: the offline manifest rebinder now pins the original manifest dige
 ## 18:10Z — Implement exact-inventory custody verification for group 3
 
 KPF-18 group 3: added an offline pinned-manifest verifier requiring nonempty exact path coverage, unique entries and matching regular-file digests; 15 custody tests pass. The disabled launcher remains unwired; current lock semantics, cancellation, full-attempt supervision and GPU qualification remain open. No model inference or verdict. GitNexus could not resolve an index for this lane, so graph-based blast radius is unavailable.
+
+## 18:16Z — Integrate offline custody and prepare current-lock and bounded seed-transport qualification
+
+KPF-18 group 3: custody-only successor checks the retained 52-entry inventory and refuses runtime; 21 custody tests pass. Prepared a current-provider writer witness with 23 tests, including private-namespace exclusive-lock controls. Prepared a source-bound seed socket deadline patch with 8 tests and output accounting controls; it is not installed in the NI-owned candidate. Separate slot queries, filesystem stalls, native cleanup, continuous writer custody, validation manifests and GPU qualification remain open. The retained 150+64 GiB admission requires 214 GiB; observed free space was about 165 GiB. No row was published or model run, and R15 remains INVALID. GitNexus could not resolve an index for this lane; these are new isolated artifacts without a graph-verified blast radius.
