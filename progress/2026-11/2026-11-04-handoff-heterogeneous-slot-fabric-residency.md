@@ -403,3 +403,7 @@ Consumed all five preparation events. HSF-3 row and both validator proposals wer
 ## 22:36Z — Prepare optional HSF-1 effective-argv privacy design
 
 The KPF-50 clock qualification was already filed inconclusive. Prepared an optional HSF-1 exact-argv encryption-boundary sketch and three offline tests with a fake provider. It is not a selected policy, does not validate cryptography or key custody, and is not integrated into the orchestrator; no launch or measurement claim follows. Independent KPF-17 same-UID custody qualification preparation is registered for resumption; no new row was published.
+
+## 22:42Z — Publish and audit KPF-17 mapping revalidation fixture
+
+The prior KPF-50 clock outcome was already filed. Rejected the initial KPF-17 race fixture because it tested substitute comparisons; published kvfork17-alt17-custody-race-qual-20261104 after a four-CPU smoke against source-bound custody.validate_maps on private fixtures. Publisher reported the first progress in the declared full-result path; that path is smoke-contaminated and cannot support a full PASS without independent same-attempt proof. An isolated-output successor is being prepared. The test only concerns revalidation after a mutation; it cannot establish safety after the last check, build identity or native loading.
