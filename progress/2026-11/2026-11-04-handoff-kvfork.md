@@ -23,3 +23,7 @@ KPF-17 oracle build qualification: repaired the missing Ninja dependency by usin
 ## 17:32Z — Prepare and publish the source-bound six-symbol impact scan successor
 
 KPF-30.PHASE-IMPACT: r3 stopped at the disk floor before native impacts. Prepared fresh r4 with pinned candidate 8952a0f693fb923918157eb25117641b74766230, all six queries, source-integrity and risk-stop checks, 150 GiB floor, and a sealed private guard. Source integrity checks pass; four-CPU source-reference smoke PASS and row kpf30-impact-8952-20261104-r4 published. The full scan, risk findings, and source-edit clearance remain pending. KPF-17 oracle smoke event consumed; its full build remains pending. KPF-17.4d custody r5 is already published by its owner. Prepared model-free KPF-62 joint-source build packet at scripts/coordination/kvfork/kpf62-g3-build; its publisher smoke was started and its outcome was not observed at this boundary. The full build and scoring-launch integration remain pending; no inference successor is authorized.
+
+## 17:35Z — Make existing stop rules explicit for GPU row publication
+
+KVU-19b-gap GPU publication was refused before smoke because the existing six-pair completion and failure conditions lacked the required stop-rule labels. Labeled those unchanged conditions and futility-only interim treatment in the handoff; the target GPU qualification and full remeasurement remain pending.
