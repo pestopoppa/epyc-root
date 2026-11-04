@@ -347,3 +347,7 @@ The kpf60-checked-fixture-20261104-r3 full run was already filed inconclusive. K
 ## 21:45Z — Prepare validator impact and remaining HSF-3 source census
 
 The kpf60-checked-fixture-20261104-r4 disk-floor outcome was already filed. KPF-50 validator input-overwrite guard remains unimplemented pending source-bound GitNexus impact; independent impact and HSF-3 census preparation were delegated, with HSF-3 completion registered. No new row or runtime verdict. The filesystem had 132 GiB free, below the unchanged 150 GiB grant floor.
+
+## 21:48Z — Split out raw evidence overwrite fix and prepare source-bound impact row
+
+KPF-60 checked-fixture r5 was already filed inconclusive. Added KPF-50.CHILD-EVIDENCE-OUTPUT for the validator overwrite hazard, requiring exact-source upstream impact, safe alias refusal and regression coverage. The current lane is unindexed and older indexed roots do not contain the symbol; risk is UNKNOWN. Prepared-work requests for the guarded fix and an isolated impact row are registered for resumption; no code fix, row publication or native profile claim yet.
