@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 81f23d7e70..0ee8ff501d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -280,3 +280,10 @@ configure_file(cmake/llama.pc.in
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/llama.pc"
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++
++# CAFE-2 target verification diagnostic, experimental source overlay.
++if(CAFE2_DIR)
++ add_executable(cafe2-verify-cost ${CAFE2_DIR}/candidate.cpp examples/gguf-hash/deps/sha256/sha256.c)
++ target_include_directories(cafe2-verify-cost PRIVATE common include ggml/include ${CAFE2_DIR} examples/gguf-hash/deps examples/gguf-hash/deps/sha256)
++ target_link_libraries(cafe2-verify-cost PRIVATE llama-common llama)
++endif()
