@@ -103,3 +103,7 @@ M4-Q38-RECIPE-COMPARISON: r4 had already been filed as invalid, with the missing
 ## 15:57Z — Consumed duplicate r1 dispatch; its invalid-run receipt and successful r2 successor were already filed.
 
 YARN-E1-MEM-CHAIN: r1 was already filed and acknowledged as invalid because smoke stages s1/s2 lacked precomputed token counts. The corrected r2 continuous-chain result was already recorded at 47.63 GiB peak, within the 55 GiB criterion; the box is closed.
+
+## 15:59Z — Consumed duplicate PF1 expansion event; filing and active refinement already exist.
+
+PF1-EXPAND: original row had already been filed inconclusive: L=512 A1-disabled/A0 control 0.869 fails the ±10% guard despite complete capture; the active r5 refinement addresses this unresolved crossover. No duplicate run was submitted.
