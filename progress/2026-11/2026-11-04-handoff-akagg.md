@@ -259,3 +259,7 @@ The CH-LB1.1 CPU gates had already been filed as passed; fold CAS remains open. 
 ## 21:26Z — Filed disk-floor interruptions and published independent CPU, floor and GPU successors.
 
 The P1b 732 HIP build event had already been filed. Filed floor v12, C6 cuBLAS build r9 and C6 paired diagnostic r6 as inconclusive disk-floor stops with terminal packets retained. Published source-bound C6 build r10 after publisher custody smoke PASS; full build and GPU verdict remain pending. Published independent-source floor v13 and paired GPU diagnostic r7 after publisher smoke PASS; their full results remain pending.
+
+## 21:29Z — Filed disk-floor interruptions and published independent CPU, floor and GPU successors.
+
+CH-31 metadata event was already filed. Filed floor v13, C6 cuBLAS build r10 and C6 paired GPU r7 as inconclusive disk-floor stops, retaining terminal packets. Published C6 build r11 after publisher custody smoke PASS; full build remains pending. Published floor v14 and paired GPU diagnostic r8 after publisher smokes passed; full results remain pending.
