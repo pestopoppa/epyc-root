@@ -67,3 +67,7 @@ Wrote the FILED receipt for `codex-gpu-serving-p5-sphinx-gold-r2-20261104` using
 ## 16:36Z — Acknowledge filed LSA capacity calculation
 
 Wrote the FILED receipt for `lsa-native-capacity-9216-20261104` using its existing PASS verdict. The filed calculation reports valid host admission for 16 layers and 9,216 keys, with calculated aggregate device memory 326,772,064 bytes under the 2 GiB limit. Native result SHA-256 `8444d6eb4c03825710ba29357f9bbd6ea6a906a71c386efb560c3abbb17c212f`. This is a capacity calculation, not GPU allocation, inference, quality or speed evidence. The owner already checked the capacity subtask; no checkbox was reticked.
+
+## 16:37Z — Acknowledge filed TriAttention recency validation
+
+Wrote the FILED receipt for `triattention-s8c-recency-unit-20261104` using its existing fail verdict. Nine of eleven mock-memory cases passed; gapped occupancy and failed sequence removal each over-reported removals. Native result SHA-256 `e99738f8a7668e9a973dcf998afeb562d100b02472948ec4a65f8a545327c8d0`; retained evidence is `docs/evidence/triattention-s8c-recency-unit-20261104/`. The owning S8-C-VALIDATION checkbox was already ticked for the completed test set; this is mock evidence, not real-server behavior, and no checkbox was reticked.
