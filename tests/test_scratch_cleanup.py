@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -452,3 +453,140 @@ def test_orphan_sibling_marker_still_trashed(env, monkeypatch):
     assert not orphan.exists()
     assert (env["trash"] / orphan.name).read_text() == "orphaned custody marker"
     assert not env["scratch"].exists()
+
+
+# ---------------------------------------------------------------- orphan sweep (operator approval 2026-11-04)
+import time as _time  # noqa: E402
+
+
+def _old(path, days=10):
+    t = _time.time() - days * 86400
+    for dp, dn, fn in os.walk(path, topdown=False):
+        for n in fn + dn:
+            os.utime(os.path.join(dp, n), (t, t), follow_symlinks=False)
+    os.utime(path, (t, t))
+
+
+@pytest.fixture
+def sw(env):
+    base = env["tmp"] / "llmtmp"
+    flags = base / "compute-flags"
+    (flags / "ready").mkdir(parents=True)
+    (flags / "grants").mkdir()
+
+    def mk(name, files=("out.log",), days=10):
+        d = base / name
+        d.mkdir(parents=True, exist_ok=True)
+        for f in files:
+            (d / f).write_text("x" * 4096)
+        _old(d, days)
+        return d
+
+    def run(dry=False, probe=None, fds=(), free=0.0, **kw):
+        items, eff = sc.sweep(str(base), min_age_days=3, dry_run=dry, flags=str(flags),
+                              probe=probe or wg.Probe(), fd_paths=list(fds), guarded_rm=env["rm"],
+                              fetch=False, free=lambda _p: free, **kw)
+        return {os.path.basename(i.path): i for i in items}, eff
+
+    return dict(env, base=base, flags=flags, mk=mk, run=run)
+
+
+def test_sweep_reaps_old_orphan_and_logs(sw):
+    d = sw["mk"]("codex-ni-old-20261020")
+    log = sw["tmp"] / "reap.log"
+    items, eff = sw["run"](log_path=str(log))
+    assert not eff and items["codex-ni-old-20261020"].verdict == "REAP"
+    assert not d.exists() and (sw["trash"] / "out.log").exists()
+    text = log.read_text()
+    assert "SCRATCH-REAP path=" in text and "bytes=" in text and "reason=" in text and "SUMMARY" in text
+
+
+def test_sweep_dry_run_removes_nothing(sw):
+    d = sw["mk"]("refactor-x-20261001")
+    items, eff = sw["run"](dry=True)
+    assert eff and items["refactor-x-20261001"].verdict == "REAP" and d.exists()
+
+
+def test_sweep_free_space_above_threshold_forces_dry_run(sw):
+    d = sw["mk"]("codex3-y-20261001")
+    items, eff = sw["run"](free=10_000.0)
+    assert eff and d.exists() and "dry run" in items["codex3-y-20261001"].result
+
+
+def test_sweep_guard_a_recent_file_inside(sw):
+    d = sw["mk"]("oneoff-20261001")
+    (d / "sub").mkdir()
+    (d / "sub" / "new.txt").write_text("fresh")
+    os.utime(d, (_time.time() - 864000,) * 2)
+    items, _ = sw["run"]()
+    assert items["oneoff-20261001"].verdict == "KEEP-RECENT" and d.exists()
+
+
+def test_sweep_guard_b_cwd_argv_and_open_fd(sw):
+    a, b, c = sw["mk"]("cwd-dir"), sw["mk"]("argv-dir"), sw["mk"]("fd-dir")
+    pr = wg.Probe(cwds={os.path.realpath(a): "11"})
+    pr.add_text(f"python run.py {b}/x", "pid 12", proc=True)
+    items, _ = sw["run"](probe=pr, fds=[str(c / "out.log")])
+    assert {items[n].verdict for n in ("cwd-dir", "argv-dir", "fd-dir")} == {"KEEP-BUSY"}
+    assert a.exists() and b.exists() and c.exists()
+
+
+def test_sweep_guard_c_live_references(sw):
+    base, flags = sw["base"], sw["flags"]
+    for n in ["row-armed", "row-complete", "ready-ref", "grant-live", "grant-ended", "sess-live", "sess-done"]:
+        sw["mk"](n)
+    (flags / "FILLERS.md").write_text(
+        "| id | launcher | status |\n|---|---|---|\n"
+        f"| r1 | `{base}/row-armed/go.sh` | ARMED |\n| r2 | `{base}/row-complete/go.sh` | COMPLETE |\n")
+    (flags / "ready" / "x.json").write_text(f'{{"engine": "{base}/ready-ref/run.sh"}}')
+    (flags / "grants" / "g1.grant").write_text(f"cwd={base}/grant-live")
+    (flags / "grants" / "g2.grant").write_text(f"cwd={base}/grant-ended")
+    (flags / "grants" / "g2.ended").write_text("")
+    (flags / "handoff-sessions.json").write_text(json.dumps({"sessions": {
+        "sess-live": {"status": "suspended"}, "sess-done": {"status": "done"}}}))
+    items, _ = sw["run"]()
+    for n in ("row-armed", "ready-ref", "grant-live", "sess-live"):
+        assert items[n].verdict == "KEEP-LIVE-REF", n
+        assert (base / n).exists()
+    for n in ("row-complete", "grant-ended", "sess-done"):
+        assert items[n].verdict == "REAP", n
+    assert items["compute-flags"].verdict == "KEEP-PROTECTED"
+
+
+def test_sweep_guard_c_live_launch_file_reference(sw):
+    d = sw["mk"]("launched")
+    pr = wg.Probe()
+    pr.add_text(f"export ROOT={d}", "/elsewhere/launch.sh")
+    items, _ = sw["run"](probe=pr)
+    assert items["launched"].verdict == "KEEP-REFERENCED" and d.exists()
+
+
+def test_sweep_guard_d_protected_and_markers(sw):
+    p = sw["mk"]("autokernel-cross-workload-keep-gate")
+    m1 = sw["mk"]("has-keep", files=("a", "KEEP"))
+    m2 = sw["mk"]("deep-retain")
+    (m2 / "s").mkdir()
+    (m2 / "s" / "RETAIN.md").write_text("why")
+    _old(m2)
+    m3 = sw["mk"]("lean-note", files=("LEAN-RETENTION.txt",))
+    m4 = sw["mk"]("epyc", files=(".epyc-load-bearing",))
+    ok = sw["mk"]("retained_cas-lowercase", files=("retained_cas.py",))
+    items, _ = sw["run"]()
+    assert items["autokernel-cross-workload-keep-gate"].verdict == "KEEP-PROTECTED"
+    for n in ("has-keep", "deep-retain", "lean-note", "epyc"):
+        assert items[n].verdict == "KEEP-MARKED", n
+    assert all(x.exists() for x in (p, m1, m2, m3, m4))
+    assert items["retained_cas-lowercase"].verdict == "REAP" and not ok.exists()
+
+
+def test_sweep_reuses_evidence_keep(sw):
+    d = sw["mk"]("has-evidence", files=("VERDICT.json", "junk.bin"))
+    items, _ = sw["run"]()
+    assert items["has-evidence"].verdict == "KEEP-EVIDENCE" and (d / "VERDICT.json").exists()
+
+
+def test_sweep_cli_dry_run(sw, capsys):
+    sw["mk"]("cli-old")
+    rc = sc.main(["sweep", "--base", str(sw["base"]), "--flags", str(sw["flags"]), "--dry-run", "--no-fetch"])
+    out = capsys.readouterr().out
+    assert rc == 0 and "SCRATCH-REAP-DRYRUN" in out and "cli-old" in out and (sw["base"] / "cli-old").exists()
