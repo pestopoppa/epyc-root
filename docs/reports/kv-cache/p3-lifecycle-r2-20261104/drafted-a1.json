@@ -1,0 +1,472 @@
+{
+ "schema": "p3.a1.v1",
+ "started_at": "2026-11-04T07:13:12Z",
+ "nonce": "ab7c319d81aa",
+ "park_mode": "restore",
+ "park_mode_effective": "restore",
+ "pool_cells": 393216,
+ "rows": [
+  {
+   "level": "L0_base",
+   "variant": "drafted",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57077,
+   "prefill_tps": 34.7,
+   "decode_tps": 36.259,
+   "predicted_n": 512,
+   "draft_n": 971,
+   "draft_n_accepted": 371,
+   "draft_acc": 0.3821,
+   "ttft_s": 0.173,
+   "wall_s": 14.3,
+   "finish": "length",
+   "reasoning_chars": 1533,
+   "content_chars": 0,
+   "draft_count_observation": "reported",
+   "kv_resident": {
+    "n_samples": 7,
+    "n_during_busy": 6,
+    "resident_min": 57180,
+    "resident_max": 57507,
+    "resident_max_frac_pool": 0.1462,
+    "per_slot_at_max": {
+     "0": 57507,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57180,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57507,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L0_base",
+   "variant": "drafted",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57077,
+   "prefill_tps": 21.5,
+   "decode_tps": 36.341,
+   "predicted_n": 512,
+   "draft_n": 971,
+   "draft_n_accepted": 371,
+   "draft_acc": 0.3821,
+   "ttft_s": 0.244,
+   "wall_s": 14.33,
+   "finish": "length",
+   "reasoning_chars": 1533,
+   "content_chars": 0,
+   "draft_count_observation": "reported",
+   "kv_resident": {
+    "n_samples": 8,
+    "n_during_busy": 6,
+    "resident_min": 57174,
+    "resident_max": 57502,
+    "resident_max_frac_pool": 0.1462,
+    "per_slot_at_max": {
+     "0": 57502,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57174,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57502,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L1_156k",
+   "variant": "drafted",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57077,
+   "prefill_tps": 6.8,
+   "decode_tps": 25.21,
+   "predicted_n": 512,
+   "draft_n": 971,
+   "draft_n_accepted": 371,
+   "draft_acc": 0.3821,
+   "ttft_s": 0.652,
+   "wall_s": 20.96,
+   "finish": "length",
+   "reasoning_chars": 1533,
+   "content_chars": 0,
+   "draft_count_observation": "reported",
+   "kv_resident": {
+    "n_samples": 11,
+    "n_during_busy": 10,
+    "resident_min": 156522,
+    "resident_max": 156959,
+    "resident_max_frac_pool": 0.3992,
+    "per_slot_at_max": {
+     "0": 57582,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57145,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57582,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L1_156k",
+   "variant": "drafted",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57077,
+   "prefill_tps": 6.7,
+   "decode_tps": 25.243,
+   "predicted_n": 512,
+   "draft_n": 971,
+   "draft_n_accepted": 371,
+   "draft_acc": 0.3821,
+   "ttft_s": 0.661,
+   "wall_s": 20.95,
+   "finish": "length",
+   "reasoning_chars": 1533,
+   "content_chars": 0,
+   "draft_count_observation": "reported",
+   "kv_resident": {
+    "n_samples": 11,
+    "n_during_busy": 10,
+    "resident_min": 156522,
+    "resident_max": 156959,
+    "resident_max_frac_pool": 0.3992,
+    "per_slot_at_max": {
+     "0": 57582,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57145,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57582,
+     "1": 99377,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  }
+ ],
+ "parks": [
+  {
+   "nb": 1,
+   "how": "prefill",
+   "prompt_n": 99377,
+   "cache_n": 0,
+   "prefill_tps": 281.4,
+   "ttft_s": 353.274,
+   "kv_resident": {
+    "n_samples": 47,
+    "n_during_busy": 0,
+    "resident_min": null,
+    "resident_max": null,
+    "resident_max_frac_pool": null,
+    "per_slot_at_max": null,
+    "busy_per_slot_min": {},
+    "busy_per_slot_max": {}
+   },
+   "save": {
+    "id_slot": 1,
+    "filename": "p3-nb1.bin",
+    "n_saved": 99377,
+    "n_written": 3619586956,
+    "timings": {
+     "save_ms": 1051.071
+    }
+   }
+  },
+  {
+   "nb": 2,
+   "how": "restore(nb1 state)",
+   "restore": {
+    "id_slot": 2,
+    "filename": "p3-nb1.bin",
+    "n_restored": 99377,
+    "n_read": 3619586956,
+    "timings": {
+     "restore_ms": 504.619
+    }
+   }
+  }
+ ],
+ "residency": [
+  {
+   "at": "L0",
+   "per_slot": {
+    "0": 57592,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 57592,
+   "busy": [],
+   "frac_pool": 0.1465,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 57094.0,
+    "llamacpp:prompt_seconds_total": 94.509,
+    "llamacpp:tokens_predicted_total": 529.0,
+    "llamacpp:tokens_predicted_seconds_total": 14.421,
+    "llamacpp:n_decode_total": 175.0,
+    "llamacpp:n_tokens_max": 57592.0,
+    "llamacpp:prompt_tokens_seconds": 604.112,
+    "llamacpp:predicted_tokens_seconds": 36.6826,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L1",
+   "per_slot": {
+    "0": 57592,
+    "1": 99377,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 156969,
+   "busy": [],
+   "frac_pool": 0.3992,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 156479.0,
+    "llamacpp:prompt_seconds_total": 447.996,
+    "llamacpp:tokens_predicted_total": 1554.0,
+    "llamacpp:tokens_predicted_seconds_total": 42.629,
+    "llamacpp:n_decode_total": 508.0,
+    "llamacpp:n_tokens_max": 99377.0,
+    "llamacpp:prompt_tokens_seconds": 349.287,
+    "llamacpp:predicted_tokens_seconds": 36.4541,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L2",
+   "per_slot": {
+    "0": 57592,
+    "1": 99377,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 156969,
+   "busy": [],
+   "frac_pool": 0.3992,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 156487.0,
+    "llamacpp:prompt_seconds_total": 449.174,
+    "llamacpp:tokens_predicted_total": 2578.0,
+    "llamacpp:tokens_predicted_seconds_total": 83.22,
+    "llamacpp:n_decode_total": 790.0,
+    "llamacpp:n_tokens_max": 99377.0,
+    "llamacpp:prompt_tokens_seconds": 348.388,
+    "llamacpp:predicted_tokens_seconds": 30.9781,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  }
+ ],
+ "server": {
+  "argv": [
+   "numactl",
+   "--membind=3",
+   "--",
+   "taskset",
+   "-c",
+   "184,185,186,187,188,189,190,191",
+   "/mnt/raid0/llm/kernels/production/gpu/llama-server",
+   "-m",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+   "--host",
+   "127.0.0.1",
+   "--port",
+   "18198",
+   "-np",
+   "4",
+   "-c",
+   "393216",
+   "-t",
+   "8",
+   "-ub",
+   "2048",
+   "--flash-attn",
+   "on",
+   "--jinja",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "--kv-unified",
+   "--no-mmap",
+   "-ngl",
+   "all",
+   "--cache-ram",
+   "65536",
+   "--chat-template-file",
+   "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+   "-md",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+   "-ngld",
+   "99",
+   "--spec-type",
+   "draft-dflash",
+   "--spec-draft-n-max",
+   "7",
+   "--device",
+   "ROCm0",
+   "--slot-save-path",
+   "/mnt/raid0/llm/tmp/kvu/p3-row-r2-20261104/run-z0jjm1dp/drafted/slots",
+   "--device-draft",
+   "ROCm0",
+   "--metrics",
+   "--no-cache-idle-slots",
+   "-tb",
+   "8"
+  ],
+  "argv_transforms": [
+   "binary /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -> /mnt/raid0/llm/kernels/production/gpu/llama-server",
+   "--port -> 18198",
+   "--slot-save-path -> /mnt/raid0/llm/tmp/kvu/p3-row-r2-20261104/run-z0jjm1dp/drafted/slots",
+   "+ --metrics",
+   "+ --no-cache-idle-slots (keep idle neighbours resident)",
+   "keeper effective CPUs 184,185,186,187,188,189,190,191"
+  ],
+  "env_overrides": {
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "KMP_BLOCKTIME": "10",
+   "GGML_IQK": "1"
+  },
+  "vram_before": {
+   "t": 1793776392.778493,
+   "used_b": 13094912,
+   "total_b": 68702699520,
+   "pids": {}
+  },
+  "pid": 110887,
+  "load_s": 4.0,
+  "hip_dlopen_proof": {
+   "ok": true,
+   "ggml_libs": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0"
+   ],
+   "hip_mapped": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0"
+   ]
+  },
+  "build_info": "b10303-ffc1bac82",
+  "n_slots": 4,
+  "n_ctx_slot": 262144,
+  "teardown": {
+   "pid": 110887,
+   "already_exited": false,
+   "sent": [
+    "TERM"
+   ],
+   "verified_dead": true,
+   "returncode": 0
+  },
+  "vram": {
+   "n_samples": 270,
+   "peak_used_b": 55524585472,
+   "baseline_used_b": 13094912,
+   "peak_minus_baseline_b": 55511490560,
+   "own_pid_peak_vram_b": 55509909504,
+   "nonzero_samples": 269,
+   "peak_used_gib": 51.71,
+   "own_pid_peak_vram_gib": 51.7
+  },
+  "log_scan": {
+   "failed to find a memory slot": 0,
+   "context size has been exceeded": 0,
+   "failed to find free space in the KV cache": 0,
+   "exceeds the available context size": 0,
+   "purging slot": 0,
+   "Unable to restore slot": 0,
+   "saving_idle_slot_lines": 0
+  },
+  "port_free_after": true
+ },
+ "warmup": {
+  "prompt_n": 168,
+  "cache_n": 0,
+  "prefill_tps": 256.7,
+  "decode_tps": 59.558,
+  "predicted_n": 17,
+  "draft_n": 21,
+  "draft_n_accepted": 13,
+  "draft_acc": 0.619,
+  "ttft_s": 0.672,
+  "wall_s": 0.96,
+  "finish": "stop",
+  "reasoning_chars": 48,
+  "content_chars": 6
+ },
+ "cpt_meas": 2.9312,
+ "cpt_pool": 2.9338,
+ "prime": {
+  "prompt_n": 56926,
+  "cache_n": 155,
+  "prefill_tps": 606.5,
+  "decode_tps": 36.219,
+  "predicted_n": 512,
+  "draft_n": 971,
+  "draft_n_accepted": 371,
+  "draft_acc": 0.3821,
+  "ttft_s": 93.961,
+  "wall_s": 108.1,
+  "finish": "length",
+  "reasoning_chars": 1533,
+  "content_chars": 0
+ },
+ "p_tokens": 57081,
+ "status": "failed",
+ "error": "RuntimeError: parked neighbour occupancy below threshold",
+ "traceback": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/kvu/p3-row-r2-20261104/p3_kvu_probe.py\", line 401, in phase_a1_single\n    raise RuntimeError(\"parked neighbour occupancy below threshold\")\nRuntimeError: parked neighbour occupancy below threshold\n",
+ "finished_at": "2026-11-04T07:22:11Z"
+}

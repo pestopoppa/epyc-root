@@ -1,0 +1,64 @@
+{
+  "schema": "kpf26.api.budget600.identity.v1",
+  "original_scratch": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-granted-scout-20261102",
+  "source_commit": "868275acb64ef3d490ecac6952518ae187fe74d3",
+  "binary_root": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-granted-scout-20261102/bin",
+  "binary_manifest_sha256": "18b5468cf9b4865baf071e1dc7f2867130baa7bf57f33f23492e75d0ff5a0dfd",
+  "original_input_sha256": {
+    "job.sh": "20287cf5d5a5e06773ceb1a672a6a139f43a3560cdf947bcc772f67ea53e6488",
+    "private_api.py": "44cc3b05ff110d3117f088d25e482464f58a0129547ca508bd9ac73eb809d0e6",
+    "rebind_packet.py": "b7f1836804c7c60dab5b15ac5542d2bcb4c1c1ff8010ed720fe29d2b330464b7",
+    "off-launch.sh": "6a5fba1d2a0c8b812b6950e3b9f467a08ca5ea830aec8b5b9583898571c9ad4e",
+    "on-launch.sh": "b0e96c0b6606534e97b5d2bbd16cf0955d752f722e29db423b7d7e509f2c0c67",
+    "BINARIES.sha256": "18b5468cf9b4865baf071e1dc7f2867130baa7bf57f33f23492e75d0ff5a0dfd"
+  },
+  "prepared_input_sha256": {
+    "BINARIES-COMPLETE.sha256": "6c983698459ab8d920420577e82cb328b6b3e3dc912527cec90decc884065d34",
+    "BINARIES.sha256": "18b5468cf9b4865baf071e1dc7f2867130baa7bf57f33f23492e75d0ff5a0dfd",
+    "KEEP": "9857cc9590393f2cd36bec59d81c874cd37547223a4066efd8cff6c9d1efb4fb",
+    "UNSUBMITTED.json": "21d2a382695882f980f80e2d9cb9b5271eaf7bc59064e40b40f3b039306a6507",
+    "job.sh": "4fc13e533df331f194ede5480c5857b3c668be9f2f29bce8ae012d67783a2247",
+    "long-scope-path.txt": "3cd8f74349179ad1a2276396362eb7396908bd0312d10ca0df5cd0b186efeb06",
+    "native_smoke.py": "ef886b4ff0641eee6f842e58a1cea4cbcb0ec1220329cf61c2fd3891a5eebb38",
+    "off-launch.sh": "f0f96293cbc6712ab863960426bd4e08b8cd38bdc0e652f96f1144dbbf82c2c2",
+    "off-spec.json": "8fe7e087f085850e29236b5b99a4a5bf425bec872d0801919f646401a735a11d",
+    "on-launch.sh": "7be0e61441ed3a6d74755847b82f09486c8f8630a0498e2cd9c57854046e0839",
+    "on-spec.json": "3bd32829bc31ea231d13341f1d785db6621dda86727e70a3af80c427849d55bd",
+    "private_api.py": "c8a582928d9a5ab366778cd3d00ef3df89f27d4ac56584cfa64f41007cbd1eed",
+    "rebind_packet.py": "cbcc4048b590393aeb48a42b54e9758d2364df428d7b92b441ea40ba16525518",
+    "test_budget_policy.py": "dd7c06ece36f4d9f1c232cc7d93af3091256127d4ec1c7e1bd9ea4f19f8b3fed",
+    "test_native_smoke.py": "8ba992141e883cbd06acd283fe0fe54c869db4268e4f2685acc1a029408a0f96"
+  },
+  "same_ids": false,
+  "same_lineage": true,
+  "same_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "scope": "Prospective HS19a-derived two-scout API diagnostic; no gate/performance decision",
+  "full_binary_manifest_sha256": "6c983698459ab8d920420577e82cb328b6b3e3dc912527cec90decc884065d34",
+  "smoke_scope": "one positive-token native target completion before API spawn, not a two-scout/API diagnostic",
+  "parent_generation": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104",
+  "policy_change": {
+    "native_per_call_timeout_s": 180,
+    "configured_per_call_timeout_s": 600,
+    "api_request_timeout_s": 1800,
+    "request_budget_fraction": 0.4,
+    "scout_budget_s": 600,
+    "actual_effective_source": "native scout report budget_s"
+  },
+  "parent_generation_sha256": {
+    "identity.json": "3b5a21df3a6f582df121835ff00a08763925f49368d24bc9dbf600e267a72d15",
+    "job.sh": "33e67364c3618abf9c6546f627cfcddd8e56e20e8c0f15eb686cb59b94b4fb8e",
+    "off-launch.sh": "02f472ed9ad3301a46e8b5bef5ffed89295d94835d9ccc09390b64a1b6f076cd",
+    "off-spec.json": "017677a11a063358bdab32f24d8b7b4f045cb233136743882acfa33f0eb5d177",
+    "on-launch.sh": "b4ee1ecfb1959085c9582e555e4e807c0a9370dc411ccf75b4c8c447ec29c201",
+    "on-spec.json": "21d0e390430bfd0fce61bbe977866dee7fd56f8820f56b1027bf15ee0f48f21e",
+    "private_api.py": "44cc3b05ff110d3117f088d25e482464f58a0129547ca508bd9ac73eb809d0e6",
+    "rebind_packet.py": "7236df5d0b648054456d2597bad2812f267ae206c43ad4c1e35ad17924bffddc"
+  },
+  "publication_status": {
+    "schema": "epyc.unsubmitted-packet.v1",
+    "submitted": false,
+    "status": "UNSUBMITTED_FUTURE_ONLY",
+    "reason": "Original API OFF and ON completed both native scouts with outcomes and slot witnesses; scoped descriptive rule answered at effective240s budget. No successor needed for that rule. Do not publish merely to change the cap.",
+    "superseding_evidence": "docs/reports/kv-cache/kpf26-api-results-20261104/README.md"
+  }
+}

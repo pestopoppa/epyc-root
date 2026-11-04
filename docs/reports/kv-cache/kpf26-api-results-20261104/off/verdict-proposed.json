@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Scoped API diagnostic complete, rc0 and HTTP200:2/2 native scouts completed, both slot/task witnesses captured, independently bound raw flags=0, LPM max skips1. Recorded keyword outcomes=[True, False], fork counts=[0, 0]; checkpoint witness absent. Raw request,response,manifest and trace hashes match; native report effective scout budget240s was sufficient. Top-level flags remain unverified and gate_pass=null. This is a descriptive prospective two-scout fixture; no accuracy/generalization, semantic flag proof, KPF26 formal gate, performance or deployment claim. Parent KPF26 stays open.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

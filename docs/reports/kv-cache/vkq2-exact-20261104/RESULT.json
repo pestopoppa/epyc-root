@@ -1,0 +1,189 @@
+{
+  "schema": "cpu-fa-vkq2.result.v1",
+  "mode": "full",
+  "complete": true,
+  "records": [
+    {
+      "depth": 16384,
+      "rep": 0,
+      "arm": "hybrid",
+      "tok_s": 13.537767,
+      "pid": 62245,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 0,
+      "arm": "legacy",
+      "tok_s": 14.180184,
+      "pid": 79916,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 1,
+      "arm": "legacy",
+      "tok_s": 13.893978,
+      "pid": 95278,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 1,
+      "arm": "hybrid",
+      "tok_s": 15.993459,
+      "pid": 117683,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 2,
+      "arm": "hybrid",
+      "tok_s": 19.917212,
+      "pid": 133675,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 2,
+      "arm": "legacy",
+      "tok_s": 19.557956,
+      "pid": 144851,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 3,
+      "arm": "legacy",
+      "tok_s": 20.646882,
+      "pid": 178358,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 3,
+      "arm": "hybrid",
+      "tok_s": 20.718902,
+      "pid": 206678,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 4,
+      "arm": "hybrid",
+      "tok_s": 20.786082,
+      "pid": 213084,
+      "rc": 0
+    },
+    {
+      "depth": 16384,
+      "rep": 4,
+      "arm": "legacy",
+      "tok_s": 20.920781,
+      "pid": 221389,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 0,
+      "arm": "hybrid",
+      "tok_s": 13.139105,
+      "pid": 227465,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 0,
+      "arm": "legacy",
+      "tok_s": 12.858591,
+      "pid": 268595,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 1,
+      "arm": "legacy",
+      "tok_s": 13.233733,
+      "pid": 336142,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 1,
+      "arm": "hybrid",
+      "tok_s": 12.857031,
+      "pid": 403622,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 2,
+      "arm": "hybrid",
+      "tok_s": 13.244962,
+      "pid": 503909,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 2,
+      "arm": "legacy",
+      "tok_s": 12.80533,
+      "pid": 559801,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 3,
+      "arm": "legacy",
+      "tok_s": 13.334196,
+      "pid": 628138,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 3,
+      "arm": "hybrid",
+      "tok_s": 12.728451,
+      "pid": 727571,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 4,
+      "arm": "hybrid",
+      "tok_s": 13.137735,
+      "pid": 783803,
+      "rc": 0
+    },
+    {
+      "depth": 65536,
+      "rep": 4,
+      "arm": "legacy",
+      "tok_s": 12.866371,
+      "pid": 844207,
+      "rc": 0
+    }
+  ],
+  "cells": {
+    "16384": {
+      "median_tok_s": {
+        "hybrid": 19.917212,
+        "legacy": 19.557956
+      },
+      "effect_pct": 1.83687906854888,
+      "noise_floor_pct": 36.39221694281308,
+      "verdict": "within_floor"
+    },
+    "65536": {
+      "median_tok_s": {
+        "hybrid": 13.137735,
+        "legacy": 12.866371
+      },
+      "effect_pct": 2.109095097599778,
+      "noise_floor_pct": 4.1104519681579275,
+      "verdict": "within_floor"
+    }
+  },
+  "direction": "higher tok/s better",
+  "scope": "CPU decode only; no MTP acceptance, fold or deployment verdict"
+}

@@ -1,0 +1,59 @@
+{
+ "decision_rule": "Prospective HS-19a-derived two-scout API diagnostic: record outcomes and slot-bound witnesses; no gate or performance decision.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1500,
+ "first_progress_s": 300,
+ "gib": 64,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-26",
+ "id": "rtg58-kpf26-api-off-diag-20261102",
+ "keep": [
+  "*.json",
+  "*.jsonl",
+  "*.py",
+  "*.sh",
+  "KEEP",
+  "*/result/**",
+  "*/packet/**",
+  "*/trace/**",
+  "*/server.log",
+  "*/api.log",
+  "off-results.jsonl",
+  "identity.json",
+  "long-scope-path.txt",
+  "BINARIES.sha256",
+  "BINARIES-COMPLETE.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/off-launch.sh",
+  "sha256": "02f472ed9ad3301a46e8b5bef5ffed89295d94835d9ccc09390b64a1b6f076cd"
+ },
+ "lineage": "rtg58-kpf26-api-off-diag-20261102",
+ "min_window_s": 900,
+ "notes": "SAME-ID source/binary freshness repair of existing API diagnostic. Original identity, flags, ports, model, workload and decision rule preserved; source commit868275acb64ef3d490ecac6952518ae187fe74d3, unchanged retained binary manifest. No failure counter reset; no publication/smoke by preparer. Reduced smoke completes one positive-token target call with PID/birth/socket ownership, before API launch; qualification cannot satisfy full two-scout diagnostic.",
+ "owner": "rtg58-codex",
+ "ports": [
+  18076,
+  18976
+ ],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "kv-cache-program.md:858: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "prep-in-grant: /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/job.sh runs `for _ in {1..180}; do kill -0 \"$server_pid\" 2>/dev/null || exit 1; curl -fsS --max-time 2 \"http://127.0.0.1:$PORT/health\" >/dev/null 2>&1 && break; [[ ! -e \"$FI`; verify/prepare inputs once before publishing, not inside the grant (it spends grant time; publish continues)"
+ ],
+ "published_at": "2026-11-04T07:33:44Z",
+ "published_from": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/off-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/off-results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/off.STOP",
+ "window_s": 2100,
+ "workdir": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104"
+}

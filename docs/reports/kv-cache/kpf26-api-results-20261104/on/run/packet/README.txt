@@ -1,0 +1,3 @@
+Prospective smoke from retained HS-19a inputs; not the original scout cohort or KPF-26 gate.
+Run only within the matching active grant on the exact pinned server. This packet never starts or reloads a server.
+python3 /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-belief-orch/scripts/trace/kpf26_paired_replay.py --manifest /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/on.kFYo9r/packet/manifest.json --executor /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-belief-orch/scripts/trace/kpf26_scout_executor.py --output /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/on.kFYo9r/packet/result
