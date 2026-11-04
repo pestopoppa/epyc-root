@@ -47,3 +47,7 @@ Filed the previously judged single q4_0 MMVQ correction: native rc0 with unchang
 ## 14:40Z — Acknowledge the already-filed q4_K n5 diagnostic and retain its raw same-input run evidence.
 
 Acknowledged the C6 original versus combined ordinal 7047 diagnostic: matching inputs and outputs, MMQ route, both residual 0.0086928737870828558 above 0.0059480931310319316. Preserved both native run directories and result with SHA-256 inventory; no full gate claim. CH18 fixed-case discovery and runtime preparation delegated.
+
+## 14:42Z — Acknowledge the filed C6 q4_0 route diagnostic and preserve its native log and captures.
+
+The previously filed q4_0 route diagnostic returned native rc1, reproduced prior input and output hashes and recorded MMVQ. Preserved native route log, captures and result with SHA-256 inventory; no full GPU gate pass. CH18 case discovery and runner preparation remain in progress.
