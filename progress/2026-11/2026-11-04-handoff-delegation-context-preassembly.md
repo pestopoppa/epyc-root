@@ -19,3 +19,7 @@ Filed R4 inconclusive: rc75 disk-floor one second after grant, with no native tr
 ## 17:15Z — File R5 disk-floor stop and ready its preserved-seed continuation
 
 Filed R5 inconclusive: rc75 disk-floor one second after grant, with no native treatment data or real preflight. Preserved the original 24-control seed, R5 end record, qualification, events and verdict under docs/reports/brf-exp09-r5-disk-stop-20261104. Published the R6 continuation after its fresh-treatment-cell four-CPU smoke PASS. The 150 GiB runtime disk guard is unchanged and the parent 96-cell screen remains open; compare only after reconciling seed, treatments and real-run events, with split-execution limitations.
+
+## 17:23Z — File the R6 disk-floor stop and ready a preserved-seed continuation
+
+Filed R6 rc=75 disk-floor inconclusive: native result absent, no non-dry preflight, and the 24-control R3 seed remains byte-exact (SHA-256 59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266). Prepared R7 and started publish qualification; it had not returned at this boundary. The 150 GiB runtime floor remains enforced; available disk sampled at 225 GiB. Parent R3 remains open.

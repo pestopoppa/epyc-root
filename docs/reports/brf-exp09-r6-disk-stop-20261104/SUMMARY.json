@@ -1,0 +1,12 @@
+{
+  "row": "brf-exp09-resume-r6-20261104",
+  "returncode": 75,
+  "reason": "disk-floor",
+  "result_exists": false,
+  "r6_non_dry_preflights": 0,
+  "r6_native_treatment_cells": 0,
+  "r3_control_cells": 24,
+  "r3_seed_sha256": "59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266",
+  "r3_corpus_sha256": "d69556e907a25d24a1e837a1258413791d5ad86335f389721e5a701a119f216d",
+  "verdict": "inconclusive"
+}

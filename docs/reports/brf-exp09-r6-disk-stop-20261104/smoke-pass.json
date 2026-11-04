@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp09-resume-r6-20261104/launcher.out",
+ "elapsed_s": 97,
+ "ended": "rc=75 time=2026-11-04T17:15:07Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 900,
+ "first_unit_at": "2026-11-04T17:15:09Z",
+ "id": "brf-exp09-resume-r6-20261104",
+ "launcher_sha256": "d83970f23767c25aa04b64c570f119358625843008b1011e8ebfb74b7267f87b",
+ "passed_at": "2026-11-04T17:15:09Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09-resume-r6/out/results.jsonl",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": null
+}
