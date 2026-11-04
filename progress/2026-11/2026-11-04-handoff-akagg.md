@@ -83,3 +83,7 @@ Acknowledged previously filed pair rc1 PAIR_INVALID: GM measurement overhead +12
 ## 15:00Z — Acknowledge the filed CH33 CPU/HIP source build and preserve its native evidence.
 
 Acknowledged CH33 build rc0: CPU and HIP built/linkage verified for aa493c690, parent C5 c72ec82f5. Retained 25 source-check, patch, options, linkage and compile evidence files with hashes; no model or GPU execution claim. CH33 model gates remain open; prior EG2 same-tip control did not discriminate.
+
+## 15:02Z — Acknowledge the filed CH18 model-free controls and retain their evidence.
+
+Acknowledged CH18 controls rc0: occupancy and provenance/fail-closed model-free controls passed. Retained both logs, completion marker and result with hashes before filing receipt. Server/model validation and original CH18.b reuse gate remain open.
