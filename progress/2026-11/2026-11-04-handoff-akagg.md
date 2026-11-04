@@ -71,3 +71,7 @@ Filed native route2 distinct-sinks diagnostic: OFF and nth 1,16,32,64,96 passed,
 ## 14:54Z — File the C6 fused-ON watched-directory smoke and preserve native evidence.
 
 C6 default versus fused-ON smoke rc0: arms completed and died, ON environment matched, watched directory had no events or changes and latency ratio 17.69 met indirect-engagement criterion. Both prompts diverged at token 2; no correctness or performance claim. Retained result and logs; CH24 parent stays open for operator promotion determination.
+
+## 14:56Z — Acknowledge the historical model reconstruction partial and preserve its native result.
+
+Acknowledged previously filed historical reconstruction inconclusive: quantizer rc0 and expected size but grant rc75 partial-native-incomplete, so required complete status, output hash and canonical publication are absent. Retained native result SHA fef408dcec95119dfa5d66a244a8d536431dfaa7d1b8378b0656a56e3381737f; no historical model identity or replay claim.
