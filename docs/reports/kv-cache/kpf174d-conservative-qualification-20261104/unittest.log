@@ -1,0 +1,21 @@
+test_boundary_excludes_later_coverage (test_boundary_controls.BoundaryControls.test_boundary_excludes_later_coverage) ... ok
+test_duplicate_boundaries_refused (test_boundary_controls.BoundaryControls.test_duplicate_boundaries_refused) ... ok
+test_multilayout_boundary_refused (test_boundary_controls.BoundaryControls.test_multilayout_boundary_refused) ... ok
+test_multilayout_nonboundary_target_refused (test_boundary_controls.BoundaryControls.test_multilayout_nonboundary_target_refused) ... ok
+test_non_target_multilayout_does_not_confuse_boundary (test_boundary_controls.BoundaryControls.test_non_target_multilayout_does_not_confuse_boundary) ... ok
+test_only_later_coverage_refused (test_boundary_controls.BoundaryControls.test_only_later_coverage_refused) ... ok
+test_single_matching_layout_in_multilayout_refused (test_boundary_controls.BoundaryControls.test_single_matching_layout_in_multilayout_refused) ... ok
+test_ambiguous_owner (test_layout_witness.Tests.test_ambiguous_owner) ... ok
+test_bound (test_layout_witness.Tests.test_bound) ... ok
+test_capacity_mismatch (test_layout_witness.Tests.test_capacity_mismatch) ... ok
+test_different_layout (test_layout_witness.Tests.test_different_layout) ... ok
+test_duplicate_snapshot (test_layout_witness.Tests.test_duplicate_snapshot) ... ok
+test_incomplete (test_layout_witness.Tests.test_incomplete) ... ok
+test_missing_geometry (test_layout_witness.Tests.test_missing_geometry) ... ok
+test_unexpected_drafter (test_layout_witness.Tests.test_unexpected_drafter) ... ok
+test_wrong_task (test_layout_witness.Tests.test_wrong_task) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.001s
+
+OK

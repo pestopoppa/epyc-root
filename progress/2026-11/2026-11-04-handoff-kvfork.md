@@ -151,3 +151,7 @@ KPF-64.3: published kpf64-impact-4f4f-20261104 after a four-CPU source-reference
 ## 22:03Z — Investigated runnable KPF-17.4d and KPF-20 continuations; neither existing packet is safe to publish.
 
 KPF-17.4d: R5 exposed witness remains INVALID; conservative multi-ubatch refusal has not established a new unexposed matched pair. KPF-20 v2 pins stale orchestrator source and cannot satisfy the fresh-source continuation. KPF-17 oracle and KPF-30 impact lineages have three consecutive disk-floor failures; do not republish them around the lineage limit. No inference row was published.
+
+## 22:14Z — Prepare KPF-50 GPU clock qualification and conservative KPF-17.4d witness parser
+
+KPF-50.CLOCK-QUAL: published kvfork50-clock-qual-20261104 after GPU publisher smoke PASS; no target windows launched. Two earlier qualification failures (missing ROCm path, insufficient sampled VRAM) were repaired within the same lineage; full qualification awaits a grant under the unchanged 150 GiB floor. KPF-17.4d: prepared a conservative prefix parser patch and verified 16 model-free cases; source-bound impact and an unexposed prospective input remain prerequisites. No retained result was regraded. Prior report incorrectly treated full-run disk-floor stops as failed qualifications; the three-qualification rule requires qualification failures.
