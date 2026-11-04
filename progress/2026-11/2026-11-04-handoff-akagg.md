@@ -39,3 +39,7 @@ Acknowledged previously filed diagnostic q4_0 capture; both C5 and C6 used match
 ## 14:36Z — Acknowledge CH18 bounded CPU/HIP build and retain model-free controls and linkage evidence.
 
 Filed prior CH18 build rc0: model-free occupancy and provenance controls passed; CPU/HIP server builds and per-tree linkage checks completed. Retained 12 native evidence files with SHA-256 inventory; no model, reuse, runtime residency or promotion claim. Model-backed upstream, rollback and warm/cold validation remain open.
+
+## 14:38Z — Acknowledge the filed C6 single-case MMVQ fix and retain the native candidate and capture.
+
+Filed the previously judged single q4_0 MMVQ correction: native rc0 with unchanged input bytes, without a broader GPU gate claim. Preserved its run image, HIP library, captured inputs and build logs after checking binary and library hashes against the result. CH18 input preparation and runtime packet work were delegated.
