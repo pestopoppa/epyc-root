@@ -1,0 +1,62 @@
+"""Deterministic expiry regressions; no inference or wall-clock waiting."""
+import importlib.util
+import io
+import json
+import os
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+P = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location('private_guard_ttl', P/'private_arm_guard.py')
+guard = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(guard)
+
+class ExpiryTests(unittest.TestCase):
+    def expire(self, root, before):
+        target = root/'runtime_flags.json'
+        if before is not None:
+            target.write_bytes(before)
+        attestation, raw = guard.snapshot(target)
+        guard.atomic_write(target, b'{"prefix_stable_order": true}')
+        read_fd, write_fd = os.pipe()
+        lease_fd = os.open(root/'lease', os.O_CREAT|os.O_RDWR, 0o600)
+        payload = {'root':str(root), 'before':attestation,
+                   'raw':raw.hex() if raw is not None else None, 'ttl_s':0.1}
+        try:
+            with patch.object(guard.sys, 'stdin', io.StringIO(json.dumps(payload))), \
+                 patch.object(guard.select, 'select', return_value=([],[],[])) as select:
+                guard.watchdog(read_fd, lease_fd)
+                select.assert_called_once_with([read_fd], [], [], 0.1)
+            receipt=json.loads((root/'arm-restoration.json').read_text())
+            self.assertEqual(receipt['reason'], 'ttl_expired')
+            self.assertTrue(receipt['restored'])
+            self.assertNotEqual(receipt['during'], receipt['before'])
+            self.assertEqual(receipt['after'], receipt['before'])
+            self.assertEqual(target.read_bytes() if target.exists() else None, before)
+            for fd in (read_fd, lease_fd):
+                with self.assertRaises(OSError): os.fstat(fd)
+        finally:
+            os.close(write_fd)
+
+    def test_expiry_restores_existing_exact_bytes(self):
+        with tempfile.TemporaryDirectory(dir=P) as tmp:
+            self.expire(Path(tmp), b'{ "original": true }\n')
+
+    def test_expiry_restores_absence(self):
+        with tempfile.TemporaryDirectory(dir=P) as tmp:
+            self.expire(Path(tmp), None)
+
+    def test_symlink_flags_refused_before_mutation(self):
+        with tempfile.TemporaryDirectory(dir=P) as tmp:
+            root=Path(tmp)
+            original=root/'original'
+            original.write_bytes(b'unchanged')
+            (root/'runtime_flags.json').symlink_to(original)
+            with self.assertRaisesRegex(ValueError, 'symlink'):
+                with guard.ArmGuard(root, {}): pass
+            self.assertEqual(original.read_bytes(), b'unchanged')
+            self.assertTrue((root/'runtime_flags.json').is_symlink())
+
+if __name__ == '__main__': unittest.main()

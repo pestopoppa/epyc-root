@@ -1,0 +1,26 @@
+{
+  "schema": "epyc.ufh14-b4c.cpu-next-work.v1",
+  "input_requested": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-advance13-20261104.json",
+  "input_present": false,
+  "fallback_input": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-prefix-v12-20261104.json",
+  "advance": "Added deterministic TTL expiry restoration and pre-mutation symlink refusal regression tests against existing scratch private_arm_guard.py",
+  "files_created": [
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/test_private_arm_guard_ttl.py"
+  ],
+  "test_sha256": "d4a8ad49a485faffa97bba8852cf2caf1d247fe9ed642b2e0f1173303750bef0",
+  "validation": {
+    "command": "python3 -m unittest discover -s /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104 -p 'test_private_arm_guard*.py'",
+    "passed": 7,
+    "duration_s": 0.107,
+    "ttl_tests_use_mocked_select": true
+  },
+  "maintained_source_edits": false,
+  "compute_launched": false,
+  "production_endpoints_contacted": false,
+  "commits": false,
+  "scope_limit": "Guard unit regressions only; no native request integration or model-backed EvalTower smoke established. Existing guard was present at inspection and not modified.",
+  "remaining": [
+    "Wire guard to private arm execution and bind its attestation to serving-record join.",
+    "Prove real model-backed EvalTower -> private API -> REPL scored serving-record join under publisher bounded smoke."
+  ]
+}

@@ -111,3 +111,7 @@ UFH14-A3A-F2: fresh successor rejects nonnumeric, boolean and nonfinite native t
 ## 17:14Z — Preserve the tested finite timing validator and its publication ownership constraint.
 
 UFH14-A3A-F2: fresh successor rejects nonnumeric, boolean and nonfinite native timing/count fields; 24 malformed timing controls, 13 authority controls and receipt controls passed offline. Saved analyzer, controls and two receipts under docs/reports/ufh14-a3-f2-finite-20261104. Prior attempt FAIL-1 is terminal, but its unpublished retry remains keeper-owned; successor not published, no native smoke or measurement claimed. B4k successor and independent CPU preparation delegated with terminal events.
+
+## 17:16Z — Preserve private arm guard and TTL rollback controls for the EvalTower packet.
+
+UFH14-B4c: captured scratch-only private arm lease guard and TTL regression test snapshots; seven offline tests pass including restoration of bytes/absence and symlink refusal. Native model-backed EvalTower integration and serving join remain unproved, and a bounded integration is underway. UFH14-B4k v5 is offline prepared and unqueued; 49 tests and source pins pass but 143019368448 bytes free is below the 161061273600-byte disk floor, preserved. Independent successor validation registered.
