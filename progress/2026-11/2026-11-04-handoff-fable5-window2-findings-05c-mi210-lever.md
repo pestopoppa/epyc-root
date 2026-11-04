@@ -99,3 +99,7 @@ P12-NEXT-4: Published p12-slots-followup-r2-20261104 with real four-CPU one-requ
 ## 15:55Z — Consumed duplicate r4 event; prior filing and r5 repair are already recorded.
 
 M4-Q38-RECIPE-COMPARISON: r4 had already been filed as invalid, with the missing capture-parent root cause and r5 correction recorded. r5 qualification remains pending; no t48/t96 result can be inferred from r4. The prior P12 scout wrap landed as 2066342a85503171e7d587c9d5c9700f62a5feed.
+
+## 15:57Z — Consumed duplicate r1 dispatch; its invalid-run receipt and successful r2 successor were already filed.
+
+YARN-E1-MEM-CHAIN: r1 was already filed and acknowledged as invalid because smoke stages s1/s2 lacked precomputed token counts. The corrected r2 continuous-chain result was already recorded at 47.63 GiB peak, within the 55 GiB criterion; the box is closed.
