@@ -363,3 +363,7 @@ Filed floor v34, sentinel build r18 and paired GPU diagnostic r30 inconclusive a
 ## 22:58Z — File interrupted GPU, sentinel build and floor and ready independent successors
 
 Filed floor v35, sentinel build r19 and paired GPU diagnostic r31 inconclusive after rc75 disk-floor, without full results; terminal evidence retained under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published GPU diagnostic r32, sentinel build r20 and floor v36 after publisher smoke PASS; full results remain pending. The reported reference build was already filed.
+
+## 23:03Z — File interrupted GPU and sentinel builds; ready independent successors
+
+Filed sentinel build r20 and paired GPU diagnostic r32 inconclusive after rc75 disk-floor, without full results; terminal evidence retained under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published GPU diagnostic r33 and sentinel build r21 after publisher smoke PASS; full results remain pending. The reported MoE-Spec event was already filed. Published the independently reviewed direct-parent 435-command build experiment after repairing the nine dirty-to-clean GGML_COMMIT plan tokens and passing its publisher smoke; complete custody, build and replay remain pending.
