@@ -315,3 +315,7 @@ CH31 cap4096 predecessor and subsequent route diagnostic were already filed. Flo
 ## 22:17Z — Filed disk-floor interruptions and published independent floor and GPU successors.
 
 The P1b MoE-Spec HIP build was already filed as an incomplete disk-floor stop. Filed floor v24 and paired C6 GPU r19 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent floor v25 and paired GPU diagnostic r20 after publisher smokes passed; full results remain pending.
+
+## 22:21Z — Filed disk-floor interruptions and published independent floor and GPU successors; enforced LB3.2b no-retry rule.
+
+LB3.2b pair r2 had already been filed inconclusive. Filed floor v25 and paired C6 GPU r20 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent paired GPU r21 after publisher smoke PASS; full diagnostic remains pending. Published independent floor v26 after publisher smoke PASS. LB3.2b fixed-pair amendment forbids retry or cross-grant resume; stopped proposed successor preparation, so no attribution verdict is drawn.
