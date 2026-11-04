@@ -7,7 +7,7 @@ libatomic; counter/stream/owner integration still requires independent review.
 """
 import ctypes,fcntl,mmap,os,struct,time
 from perf_ring import decode
-from child_trace_counter import IOC_ID
+from kernel_counter import IOC_ID
 from kernel_counter import IOC_ENABLE,IOC_DISABLE
 
 HEAD=1024;TAIL=1032;DATA_OFFSET=1040;DATA_SIZE=1048

@@ -10,7 +10,7 @@ import fcntl
 import os
 import struct
 import threading
-from child_trace_counter import IOC_ID
+from kernel_counter import IOC_ID
 
 
 def _identity(fd):

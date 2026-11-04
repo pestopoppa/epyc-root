@@ -1,4 +1,4 @@
-import pathlib, unittest
+import pathlib, unittest, subprocess, sys
 from unittest.mock import patch
 import native_functional as diagnostic
 
@@ -6,6 +6,10 @@ class Repair(unittest.TestCase):
  def test_real_owner_module_imports(self):
   self.assertEqual(diagnostic.RequestCapture.__module__, 'owner_hook')
   self.assertEqual(diagnostic.CPUS,(0,1,2,3))
+ def test_capture_worker_imports_in_isolated_interpreter(self):
+  native = pathlib.Path(__file__).resolve().parent / 'native'
+  code = "import sys; sys.path.insert(0, sys.argv[1]); import capture_worker"
+  subprocess.run([sys.executable, '-I', '-c', code, str(native)], check=True, capture_output=True, text=True)
  def test_context_is_bound_to_controlled_child(self):
   p=pathlib.Path('/tmp/example-only.json')
   with patch.object(diagnostic,'RequestCapture') as factory:

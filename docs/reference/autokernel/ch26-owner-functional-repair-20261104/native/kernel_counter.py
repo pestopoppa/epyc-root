@@ -59,3 +59,6 @@ class Counter:
                 'limitations':['this single software counter does not measure per-CPU scheduler rings',
                 'ioctl brackets bound transitions but are not exact kernel timestamps',
                 'PERF_FORMAT_LOST for this event is not proof of losslessness of other rings']}
+
+# Linux PERF_EVENT_IOC_ID; shared with the ring and same-FD guards.
+IOC_ID = 0x80082407
