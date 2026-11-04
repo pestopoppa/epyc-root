@@ -1,0 +1,43 @@
+{
+ "decision_rule": "Build the experimental dense-layout fail-closed S8-c CPU candidate from frozen production tip and pinned safety patch; checkpoint ggml-base, retain server and library digests, stop on first compile failure, stop request, or deadline. Build evidence only; no hybrid, gapped-cache, runtime, quality, or GPU claim.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:S8-C-SAFETY-BUILD",
+ "id": "triattention-s8c-safety-build-20261104",
+ "keep": [
+  "results.jsonl",
+  "base-unit.json",
+  "artifact-sha256.txt",
+  "out/**",
+  "packet/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/packet/launcher.sh",
+  "sha256": "24fa6c82675d63f7325e8b6404bd8ce5664de982f779e88cfe2732b09dc9f8b4"
+ },
+ "min_window_s": 1800,
+ "owner": "triattention",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "long-context-program.md:1740: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T15:57:08Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/triattention-s8c-safety-build-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104"
+}

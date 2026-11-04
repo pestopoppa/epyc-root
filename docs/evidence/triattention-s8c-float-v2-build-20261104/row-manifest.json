@@ -1,0 +1,44 @@
+{
+ "decision_rule": "Build the experimental production-tip recency safety candidate with the pinned legacy float-rounding correction. Checkpoint ggml-base, retain binary and library digests, stop on compile error, stop request or deadline. Build only: no real-cache, server, model, quality or GPU claim.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:S8-C-ROUNDING-BUILD",
+ "id": "triattention-s8c-float-v2-build-20261104",
+ "keep": [
+  "results.jsonl",
+  "base-unit.json",
+  "artifact-sha256.txt",
+  "out/**",
+  "packet/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/packet/launcher.sh",
+  "sha256": "d17d309b00fe2c188b39d5334ff811342afcfb1522ac70cfe1a6cf6bb870ffbe"
+ },
+ "min_window_s": 1800,
+ "owner": "triattention",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "long-context-program.md:1743: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "long-context-program.md:1743: untestable prose prerequisite: 'require separate validation.'"
+ ],
+ "published_at": "2026-11-04T16:08:14Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/triattention-s8c-float-v2-build-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104"
+}
