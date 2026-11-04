@@ -1,0 +1,23 @@
+
+==== dry run 2026-11-04T17:00:04Z regions=mi210_0,184-191 launcher_sha=96758223ef8694fa80b1810f6197d9b8774eff704600a1cfb60f6d21d592f04c units_before=0
+2026-11-04T17:00:05Z [ufh14-b4k-guard-v3-20261104] launcher up pid=3011855 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-b4k-guard-v3-20261104/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-b4k-guard-v3-20261104/stop minwin=10800s ports=18483 dryrun=1
+2026-11-04T17:00:05Z [ufh14-b4k-guard-v3-20261104] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-04T20:04Z
+[region-lock] dry run: no lock taken (cpus=184-191)
+2026-11-04T17:00:05Z mi210_0 flock held
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/job.py", line 355, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/job.py", line 276, in main
+    binding = consumed_grant(D)
+              ^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/grant_guard.py", line 30, in consumed_grant
+    fields = kv_line(source)
+             ^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/select_run.py", line 52, in kv_line
+    raise ValueError("unknown grant fields")
+ValueError: unknown grant fields
+job rc=1
+2026-11-04T17:00:08Z [ufh14-b4k-guard-v3-20261104] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-04T17:00:08Z [ufh14-b4k-guard-v3-20261104] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=1 time=2026-11-04T17:00:08Z reason=job-rc-1:exited after 5s, before its first progress (smoke_predicate `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python /mnt/raid0/llm/tmp/agentic-ser` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-b4k-guard-v3-20261104/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-04T17:00:10Z)

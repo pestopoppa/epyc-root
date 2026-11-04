@@ -1,0 +1,538 @@
+{
+  "schema": "epyc.offline-cpu-isolation.v12",
+  "inference": false,
+  "production_endpoints_contacted": false,
+  "backend_port": 38163,
+  "child_returncode": 0,
+  "stdout": "{\"checks\": {\"outside_write\": \"denied\", \"outside_create\": \"denied\", \"outside_chmod\": \"denied\", \"raw_inet_socket\": \"denied\", \"raw_connect_on_inherited_channel\": \"denied\", \"outside_unlink\": \"denied\", \"broker_negative_cases\": 10}, \"private_write\": \"allowed\", \"native\": {\"private_health_parameter_control\": {\"architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision\": {\"ok\": true, \"latency_ms\": 4.0, \"url\": \"http://127.0.0.1:38163\", \"status_code\": 200, \"failure_reason\": \"\", \"failure_detail\": \"\"}}, \"native_health_ignores_private_config\": false, \"native_model_free_tests\": {\"returncode\": 0, \"output\": \".........\\n=============================== warnings summary ===============================\\n../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434\\n  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode\\n  \\n    self._warn_or_fail_if_strict(f\\\"Unknown config option: {key}\\\\n\\\")\\n\\n../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32\\n  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.\\n    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)\\n\\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\\n9 passed, 2 warnings in 2.10s\\n\"}, \"attestation_private\": \"/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/private-v12/tmp/orchestrator_config_attest/3021972.json\", \"attestation_during_lifespan\": {\"flags\": {\"accurate_token_counting\": false, \"approval_gates\": false, \"architect_delegation\": false, \"architect_untrusted_boundary_sentence\": false, \"batch_edit_mode\": false, \"binding_routing\": false, \"caching\": false, \"cascading_tool_policy\": false, \"claude_code_mcp_chat\": false, \"content_cache\": false, \"context_arm_ab\": false, \"context_compression\": false, \"credential_redaction\": true, \"dcp_for_consult\": false, \"dcp_pre_assembly\": false, \"deep_research_mode\": false, \"deepconf\": false, \"deferred_tool_results\": false, \"depth_model_overrides\": false, \"derived_prefill_timeout\": false, \"escalation_compression\": false, \"eval_batch_serving\": false, \"exec_containment\": false, \"exec_write_flags\": false, \"final_schema_validation\": false, \"generalized_interrupts\": false, \"generation_monitor\": false, \"gpu_shadow_lane\": false, \"graph_router\": false, \"helpfulness_scoring\": false, \"hierarchical_speculation\": false, \"ingest_triviality_guard\": false, \"injection_scanning\": false, \"input_formalizer\": false, \"interleaved_edit_rider\": false, \"langgraph_architect\": false, \"langgraph_bridge\": false, \"langgraph_coder\": false, \"langgraph_coder_escalation\": false, \"langgraph_frontdoor\": false, \"langgraph_ingest\": false, \"langgraph_worker\": false, \"logit_probe\": false, \"memrl\": false, \"mock_mode\": false, \"model_fallback\": false, \"model_grading\": false, \"observed_dependency_logging\": false, \"openai_compat\": false, \"output_formalizer\": false, \"output_spill_to_file\": false, \"parallel_execution\": false, \"parallel_tools\": true, \"personas\": false, \"plan_review\": false, \"prefix_stable_order\": false, \"process_reward_telemetry\": false, \"react_mode\": false, \"reasoning_length_alarm\": false, \"reasoning_runaway_retry\": false, \"repl\": true, \"repl_answer_force\": false, \"repl_embedding_pool\": false, \"repl_think_fence_continue\": false, \"repl_thinking_budget\": false, \"repl_turn_counter_tail\": false, \"replay_recording\": false, \"restricted_python\": false, \"resume_tokens\": false, \"review_before_commit_consult\": false, \"review_before_commit_targeted_gate\": false, \"review_decision_enforce\": false, \"review_decision_shadow\": false, \"role_aware_compaction\": false, \"routing_classifier\": false, \"script_interception\": false, \"scripts\": false, \"segment_cache_dedup\": false, \"self_speculation\": false, \"semantic_classifiers\": true, \"session_compaction\": false, \"session_compaction_llm_index\": false, \"session_log\": false, \"session_log_verbatim\": false, \"session_scratchpad\": false, \"session_token_budget\": false, \"side_effect_tracking\": false, \"skill_injection_scan\": false, \"skillbank\": false, \"spec_off_bitwise_roles\": false, \"specialist_routing\": false, \"staged_rewards\": false, \"state_history_snapshots\": false, \"step_event_logging\": false, \"streaming\": false, \"structured_delimiters\": true, \"structured_tool_output\": false, \"swarm_fanout\": false, \"task_token_budget\": false, \"thinking_roles_chat_lane\": false, \"tool_output_compression\": false, \"tool_result_clearing\": false, \"tools\": false, \"trajectory_artifact\": false, \"tts_it_normalize\": true, \"tts_it_respell\": true, \"two_level_condensation\": false, \"typed_decisions\": false, \"typed_decisions_shadow\": false, \"typed_decisions_tool_args\": false, \"unified_streaming\": false, \"ure_uncertainty_shadow_log\": false, \"user_modeling\": false, \"v1_client_session_guard\": true, \"v1_escalation\": false, \"v1_subagent_link\": false, \"voice_turn\": false, \"web_fetch_guard\": false, \"web_research_rerank\": false, \"worker_call_budget\": false}, \"pid\": 3021972, \"sources\": {\"accurate_token_counting\": \"default_test\", \"approval_gates\": \"default_test\", \"architect_delegation\": \"default_test\", \"architect_untrusted_boundary_sentence\": \"default_test\", \"batch_edit_mode\": \"default_test\", \"binding_routing\": \"default_test\", \"caching\": \"default_test\", \"cascading_tool_policy\": \"default_test\", \"claude_code_mcp_chat\": \"default_test\", \"content_cache\": \"default_test\", \"context_arm_ab\": \"default_test\", \"context_compression\": \"default_test\", \"credential_redaction\": \"default_test\", \"dcp_for_consult\": \"default_test\", \"dcp_pre_assembly\": \"default_test\", \"deep_research_mode\": \"default_test\", \"deepconf\": \"default_test\", \"deferred_tool_results\": \"default_test\", \"depth_model_overrides\": \"default_test\", \"derived_prefill_timeout\": \"default_test\", \"escalation_compression\": \"default_test\", \"eval_batch_serving\": \"ORCHESTRATOR_FEATURE_EVAL_BATCH_SERVING\", \"exec_containment\": \"default_test\", \"exec_write_flags\": \"default_test\", \"final_schema_validation\": \"default_test\", \"generalized_interrupts\": \"default_test\", \"generation_monitor\": \"default_test\", \"gpu_shadow_lane\": \"default_test\", \"graph_router\": \"default_test\", \"helpfulness_scoring\": \"default_test\", \"hierarchical_speculation\": \"default_test\", \"ingest_triviality_guard\": \"default_test\", \"injection_scanning\": \"default_test\", \"input_formalizer\": \"default_test\", \"interleaved_edit_rider\": \"default_test\", \"langgraph_architect\": \"default_test\", \"langgraph_bridge\": \"default_test\", \"langgraph_coder\": \"default_test\", \"langgraph_coder_escalation\": \"default_test\", \"langgraph_frontdoor\": \"default_test\", \"langgraph_ingest\": \"default_test\", \"langgraph_worker\": \"default_test\", \"logit_probe\": \"default_test\", \"memrl\": \"ORCHESTRATOR_MEMRL\", \"mock_mode\": \"ORCHESTRATOR_MOCK_MODE\", \"model_fallback\": \"default_test\", \"model_grading\": \"default_test\", \"observed_dependency_logging\": \"default_test\", \"openai_compat\": \"default_test\", \"output_formalizer\": \"default_test\", \"output_spill_to_file\": \"default_test\", \"parallel_execution\": \"default_test\", \"parallel_tools\": \"default_test\", \"personas\": \"default_test\", \"plan_review\": \"default_test\", \"prefix_stable_order\": \"default_test\", \"process_reward_telemetry\": \"default_test\", \"react_mode\": \"default_test\", \"reasoning_length_alarm\": \"default_test\", \"reasoning_runaway_retry\": \"default_test\", \"repl\": \"default_test\", \"repl_answer_force\": \"default_test\", \"repl_embedding_pool\": \"default_test\", \"repl_think_fence_continue\": \"default_test\", \"repl_thinking_budget\": \"default_test\", \"repl_turn_counter_tail\": \"default_test\", \"replay_recording\": \"default_test\", \"restricted_python\": \"default_test\", \"resume_tokens\": \"default_test\", \"review_before_commit_consult\": \"default_test\", \"review_before_commit_targeted_gate\": \"default_test\", \"review_decision_enforce\": \"default_test\", \"review_decision_shadow\": \"default_test\", \"role_aware_compaction\": \"default_test\", \"routing_classifier\": \"default_test\", \"script_interception\": \"default_test\", \"scripts\": \"default_test\", \"segment_cache_dedup\": \"default_test\", \"self_speculation\": \"default_test\", \"semantic_classifiers\": \"default_test\", \"session_compaction\": \"default_test\", \"session_compaction_llm_index\": \"default_test\", \"session_log\": \"default_test\", \"session_log_verbatim\": \"default_test\", \"session_scratchpad\": \"default_test\", \"session_token_budget\": \"default_test\", \"side_effect_tracking\": \"default_test\", \"skill_injection_scan\": \"default_test\", \"skillbank\": \"default_test\", \"spec_off_bitwise_roles\": \"default_test\", \"specialist_routing\": \"default_test\", \"staged_rewards\": \"default_test\", \"state_history_snapshots\": \"default_test\", \"step_event_logging\": \"default_test\", \"streaming\": \"default_test\", \"structured_delimiters\": \"default_test\", \"structured_tool_output\": \"default_test\", \"swarm_fanout\": \"default_test\", \"task_token_budget\": \"default_test\", \"thinking_roles_chat_lane\": \"default_test\", \"tool_output_compression\": \"default_test\", \"tool_result_clearing\": \"default_test\", \"tools\": \"default_test\", \"trajectory_artifact\": \"default_test\", \"tts_it_normalize\": \"default_test\", \"tts_it_respell\": \"default_test\", \"two_level_condensation\": \"default_test\", \"typed_decisions\": \"default_test\", \"typed_decisions_shadow\": \"default_test\", \"typed_decisions_tool_args\": \"default_test\", \"unified_streaming\": \"default_test\", \"ure_uncertainty_shadow_log\": \"default_test\", \"user_modeling\": \"default_test\", \"v1_client_session_guard\": \"default_test\", \"v1_escalation\": \"default_test\", \"v1_subagent_link\": \"default_test\", \"voice_turn\": \"default_test\", \"web_fetch_guard\": \"default_test\", \"web_research_rerank\": \"default_test\", \"worker_call_budget\": \"default_test\"}}, \"native_pipeline_constructor_control_roles\": [\"frontdoor\"], \"native_real_config_constructor\": {\"mock_mode\": false, \"server_urls_source\": \"config\", \"roles\": [\"architect_critic\", \"architect_general\", \"coder\", \"coder_escalation\", \"frontdoor\", \"ingest_long_context\", \"toolrunner\", \"vision_escalation\", \"worker\", \"worker_coder\", \"worker_explore\", \"worker_fast\", \"worker_general\", \"worker_math\", \"worker_summarize\", \"worker_vision\"], \"server_urls\": {\"frontdoor\": \"http://127.0.0.1:38163\", \"coder_escalation\": \"http://127.0.0.1:38163\", \"coder\": \"http://127.0.0.1:38163\", \"worker\": \"http://127.0.0.1:38163\", \"worker_general\": \"http://127.0.0.1:38163\", \"toolrunner\": \"http://127.0.0.1:38163\", \"worker_explore\": \"http://127.0.0.1:38163\", \"worker_math\": \"http://127.0.0.1:38163\", \"worker_vision\": \"http://127.0.0.1:38163\", \"vision_escalation\": \"http://127.0.0.1:38163\", \"worker_coder\": \"http://127.0.0.1:38163\", \"worker_fast\": \"http://127.0.0.1:38163\", \"worker_summarize\": \"http://127.0.0.1:38163\", \"architect_general\": \"http://127.0.0.1:38163\", \"architect_critic\": \"http://127.0.0.1:38163\", \"ingest_long_context\": \"http://127.0.0.1:38163\"}, \"force_mode\": \"repl\", \"workload_class\": \"eval_batch\", \"no_explicit_request_urls\": true, \"no_generation\": true}, \"empty_evaltower_control\": true, \"http_status\": 200, \"native_health\": {\"status\": \"ok\", \"models_loaded\": 1, \"mock_mode_available\": true, \"version\": \"0.1.0\", \"backend_health\": {}, \"backend_probes\": {\"architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision\": {\"ok\": true, \"latency_ms\": 13.8, \"url\": \"http://127.0.0.1:38163\", \"status_code\": 200, \"failure_reason\": \"\", \"failure_detail\": \"\"}}, \"knowledge_tools\": {\"available\": false, \"tools\": {\"search_arxiv\": {\"available\": false, \"error\": \"No module named 'arxiv'\"}, \"search_papers\": {\"available\": false, \"error\": \"No module named 'semanticscholar'\"}, \"search_wikipedia\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"get_wikipedia_article\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"search_books\": {\"available\": false, \"error\": \"No module named 'googleapiclient'\"}}}}, \"lifespan_started\": true, \"native_health_default_private_override\": true, \"backend_roles\": [], \"real_evaltower_questions_loaded\": 50, \"evaltowers_run\": false}}\n",
+  "stderr": "Knowledge tools unavailable: search_arxiv, search_papers, search_wikipedia, get_wikipedia_article, search_books. Install with: pip install -e '.[knowledge]'\n",
+  "broker_audit": [
+    {
+      "request": [
+        "127.0.0.1",
+        8000
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "localhost",
+        38163
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.2",
+        38163
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::1",
+        38163
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::ffff:127.0.0.1",
+        38163
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "192.0.2.1",
+        38163
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        "38163"
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        38163,
+        1
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": {},
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": null,
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        38163
+      ],
+      "allowed": true
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        38163
+      ],
+      "allowed": true
+    }
+  ],
+  "backend_hits": [
+    {
+      "path": "/health",
+      "peer": "127.0.0.1"
+    },
+    {
+      "path": "/health",
+      "peer": "127.0.0.1"
+    }
+  ],
+  "sentinel_unchanged": true,
+  "escape_absent": true,
+  "scope": "sandbox-before-application-import native lifespan + ASGI /health + privately configured native backend probes + real suite load; no inference",
+  "sandbox_before_application_import": true,
+  "deployment_ready": false,
+  "limitations": [
+    "Backend HTTP responder is a transport fixture; no model server was started.",
+    "API ingress is in-process ASGI; backend leg uses real TCP HTTP.",
+    "No model or REPL execution. Empty EvalTower evaluation is a control only. Native config-derived real constructor is exercised without request server_urls; shared lifespan empty backend map is expected, not a wiring failure."
+  ],
+  "child": {
+    "checks": {
+      "outside_write": "denied",
+      "outside_create": "denied",
+      "outside_chmod": "denied",
+      "raw_inet_socket": "denied",
+      "raw_connect_on_inherited_channel": "denied",
+      "outside_unlink": "denied",
+      "broker_negative_cases": 10
+    },
+    "private_write": "allowed",
+    "native": {
+      "private_health_parameter_control": {
+        "architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision": {
+          "ok": true,
+          "latency_ms": 4.0,
+          "url": "http://127.0.0.1:38163",
+          "status_code": 200,
+          "failure_reason": "",
+          "failure_detail": ""
+        }
+      },
+      "native_health_ignores_private_config": false,
+      "native_model_free_tests": {
+        "returncode": 0,
+        "output": ".........\n=============================== warnings summary ===============================\n../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434\n  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32\n  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.\n    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n9 passed, 2 warnings in 2.10s\n"
+      },
+      "attestation_private": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/private-v12/tmp/orchestrator_config_attest/3021972.json",
+      "attestation_during_lifespan": {
+        "flags": {
+          "accurate_token_counting": false,
+          "approval_gates": false,
+          "architect_delegation": false,
+          "architect_untrusted_boundary_sentence": false,
+          "batch_edit_mode": false,
+          "binding_routing": false,
+          "caching": false,
+          "cascading_tool_policy": false,
+          "claude_code_mcp_chat": false,
+          "content_cache": false,
+          "context_arm_ab": false,
+          "context_compression": false,
+          "credential_redaction": true,
+          "dcp_for_consult": false,
+          "dcp_pre_assembly": false,
+          "deep_research_mode": false,
+          "deepconf": false,
+          "deferred_tool_results": false,
+          "depth_model_overrides": false,
+          "derived_prefill_timeout": false,
+          "escalation_compression": false,
+          "eval_batch_serving": false,
+          "exec_containment": false,
+          "exec_write_flags": false,
+          "final_schema_validation": false,
+          "generalized_interrupts": false,
+          "generation_monitor": false,
+          "gpu_shadow_lane": false,
+          "graph_router": false,
+          "helpfulness_scoring": false,
+          "hierarchical_speculation": false,
+          "ingest_triviality_guard": false,
+          "injection_scanning": false,
+          "input_formalizer": false,
+          "interleaved_edit_rider": false,
+          "langgraph_architect": false,
+          "langgraph_bridge": false,
+          "langgraph_coder": false,
+          "langgraph_coder_escalation": false,
+          "langgraph_frontdoor": false,
+          "langgraph_ingest": false,
+          "langgraph_worker": false,
+          "logit_probe": false,
+          "memrl": false,
+          "mock_mode": false,
+          "model_fallback": false,
+          "model_grading": false,
+          "observed_dependency_logging": false,
+          "openai_compat": false,
+          "output_formalizer": false,
+          "output_spill_to_file": false,
+          "parallel_execution": false,
+          "parallel_tools": true,
+          "personas": false,
+          "plan_review": false,
+          "prefix_stable_order": false,
+          "process_reward_telemetry": false,
+          "react_mode": false,
+          "reasoning_length_alarm": false,
+          "reasoning_runaway_retry": false,
+          "repl": true,
+          "repl_answer_force": false,
+          "repl_embedding_pool": false,
+          "repl_think_fence_continue": false,
+          "repl_thinking_budget": false,
+          "repl_turn_counter_tail": false,
+          "replay_recording": false,
+          "restricted_python": false,
+          "resume_tokens": false,
+          "review_before_commit_consult": false,
+          "review_before_commit_targeted_gate": false,
+          "review_decision_enforce": false,
+          "review_decision_shadow": false,
+          "role_aware_compaction": false,
+          "routing_classifier": false,
+          "script_interception": false,
+          "scripts": false,
+          "segment_cache_dedup": false,
+          "self_speculation": false,
+          "semantic_classifiers": true,
+          "session_compaction": false,
+          "session_compaction_llm_index": false,
+          "session_log": false,
+          "session_log_verbatim": false,
+          "session_scratchpad": false,
+          "session_token_budget": false,
+          "side_effect_tracking": false,
+          "skill_injection_scan": false,
+          "skillbank": false,
+          "spec_off_bitwise_roles": false,
+          "specialist_routing": false,
+          "staged_rewards": false,
+          "state_history_snapshots": false,
+          "step_event_logging": false,
+          "streaming": false,
+          "structured_delimiters": true,
+          "structured_tool_output": false,
+          "swarm_fanout": false,
+          "task_token_budget": false,
+          "thinking_roles_chat_lane": false,
+          "tool_output_compression": false,
+          "tool_result_clearing": false,
+          "tools": false,
+          "trajectory_artifact": false,
+          "tts_it_normalize": true,
+          "tts_it_respell": true,
+          "two_level_condensation": false,
+          "typed_decisions": false,
+          "typed_decisions_shadow": false,
+          "typed_decisions_tool_args": false,
+          "unified_streaming": false,
+          "ure_uncertainty_shadow_log": false,
+          "user_modeling": false,
+          "v1_client_session_guard": true,
+          "v1_escalation": false,
+          "v1_subagent_link": false,
+          "voice_turn": false,
+          "web_fetch_guard": false,
+          "web_research_rerank": false,
+          "worker_call_budget": false
+        },
+        "pid": 3021972,
+        "sources": {
+          "accurate_token_counting": "default_test",
+          "approval_gates": "default_test",
+          "architect_delegation": "default_test",
+          "architect_untrusted_boundary_sentence": "default_test",
+          "batch_edit_mode": "default_test",
+          "binding_routing": "default_test",
+          "caching": "default_test",
+          "cascading_tool_policy": "default_test",
+          "claude_code_mcp_chat": "default_test",
+          "content_cache": "default_test",
+          "context_arm_ab": "default_test",
+          "context_compression": "default_test",
+          "credential_redaction": "default_test",
+          "dcp_for_consult": "default_test",
+          "dcp_pre_assembly": "default_test",
+          "deep_research_mode": "default_test",
+          "deepconf": "default_test",
+          "deferred_tool_results": "default_test",
+          "depth_model_overrides": "default_test",
+          "derived_prefill_timeout": "default_test",
+          "escalation_compression": "default_test",
+          "eval_batch_serving": "ORCHESTRATOR_FEATURE_EVAL_BATCH_SERVING",
+          "exec_containment": "default_test",
+          "exec_write_flags": "default_test",
+          "final_schema_validation": "default_test",
+          "generalized_interrupts": "default_test",
+          "generation_monitor": "default_test",
+          "gpu_shadow_lane": "default_test",
+          "graph_router": "default_test",
+          "helpfulness_scoring": "default_test",
+          "hierarchical_speculation": "default_test",
+          "ingest_triviality_guard": "default_test",
+          "injection_scanning": "default_test",
+          "input_formalizer": "default_test",
+          "interleaved_edit_rider": "default_test",
+          "langgraph_architect": "default_test",
+          "langgraph_bridge": "default_test",
+          "langgraph_coder": "default_test",
+          "langgraph_coder_escalation": "default_test",
+          "langgraph_frontdoor": "default_test",
+          "langgraph_ingest": "default_test",
+          "langgraph_worker": "default_test",
+          "logit_probe": "default_test",
+          "memrl": "ORCHESTRATOR_MEMRL",
+          "mock_mode": "ORCHESTRATOR_MOCK_MODE",
+          "model_fallback": "default_test",
+          "model_grading": "default_test",
+          "observed_dependency_logging": "default_test",
+          "openai_compat": "default_test",
+          "output_formalizer": "default_test",
+          "output_spill_to_file": "default_test",
+          "parallel_execution": "default_test",
+          "parallel_tools": "default_test",
+          "personas": "default_test",
+          "plan_review": "default_test",
+          "prefix_stable_order": "default_test",
+          "process_reward_telemetry": "default_test",
+          "react_mode": "default_test",
+          "reasoning_length_alarm": "default_test",
+          "reasoning_runaway_retry": "default_test",
+          "repl": "default_test",
+          "repl_answer_force": "default_test",
+          "repl_embedding_pool": "default_test",
+          "repl_think_fence_continue": "default_test",
+          "repl_thinking_budget": "default_test",
+          "repl_turn_counter_tail": "default_test",
+          "replay_recording": "default_test",
+          "restricted_python": "default_test",
+          "resume_tokens": "default_test",
+          "review_before_commit_consult": "default_test",
+          "review_before_commit_targeted_gate": "default_test",
+          "review_decision_enforce": "default_test",
+          "review_decision_shadow": "default_test",
+          "role_aware_compaction": "default_test",
+          "routing_classifier": "default_test",
+          "script_interception": "default_test",
+          "scripts": "default_test",
+          "segment_cache_dedup": "default_test",
+          "self_speculation": "default_test",
+          "semantic_classifiers": "default_test",
+          "session_compaction": "default_test",
+          "session_compaction_llm_index": "default_test",
+          "session_log": "default_test",
+          "session_log_verbatim": "default_test",
+          "session_scratchpad": "default_test",
+          "session_token_budget": "default_test",
+          "side_effect_tracking": "default_test",
+          "skill_injection_scan": "default_test",
+          "skillbank": "default_test",
+          "spec_off_bitwise_roles": "default_test",
+          "specialist_routing": "default_test",
+          "staged_rewards": "default_test",
+          "state_history_snapshots": "default_test",
+          "step_event_logging": "default_test",
+          "streaming": "default_test",
+          "structured_delimiters": "default_test",
+          "structured_tool_output": "default_test",
+          "swarm_fanout": "default_test",
+          "task_token_budget": "default_test",
+          "thinking_roles_chat_lane": "default_test",
+          "tool_output_compression": "default_test",
+          "tool_result_clearing": "default_test",
+          "tools": "default_test",
+          "trajectory_artifact": "default_test",
+          "tts_it_normalize": "default_test",
+          "tts_it_respell": "default_test",
+          "two_level_condensation": "default_test",
+          "typed_decisions": "default_test",
+          "typed_decisions_shadow": "default_test",
+          "typed_decisions_tool_args": "default_test",
+          "unified_streaming": "default_test",
+          "ure_uncertainty_shadow_log": "default_test",
+          "user_modeling": "default_test",
+          "v1_client_session_guard": "default_test",
+          "v1_escalation": "default_test",
+          "v1_subagent_link": "default_test",
+          "voice_turn": "default_test",
+          "web_fetch_guard": "default_test",
+          "web_research_rerank": "default_test",
+          "worker_call_budget": "default_test"
+        }
+      },
+      "native_pipeline_constructor_control_roles": [
+        "frontdoor"
+      ],
+      "native_real_config_constructor": {
+        "mock_mode": false,
+        "server_urls_source": "config",
+        "roles": [
+          "architect_critic",
+          "architect_general",
+          "coder",
+          "coder_escalation",
+          "frontdoor",
+          "ingest_long_context",
+          "toolrunner",
+          "vision_escalation",
+          "worker",
+          "worker_coder",
+          "worker_explore",
+          "worker_fast",
+          "worker_general",
+          "worker_math",
+          "worker_summarize",
+          "worker_vision"
+        ],
+        "server_urls": {
+          "frontdoor": "http://127.0.0.1:38163",
+          "coder_escalation": "http://127.0.0.1:38163",
+          "coder": "http://127.0.0.1:38163",
+          "worker": "http://127.0.0.1:38163",
+          "worker_general": "http://127.0.0.1:38163",
+          "toolrunner": "http://127.0.0.1:38163",
+          "worker_explore": "http://127.0.0.1:38163",
+          "worker_math": "http://127.0.0.1:38163",
+          "worker_vision": "http://127.0.0.1:38163",
+          "vision_escalation": "http://127.0.0.1:38163",
+          "worker_coder": "http://127.0.0.1:38163",
+          "worker_fast": "http://127.0.0.1:38163",
+          "worker_summarize": "http://127.0.0.1:38163",
+          "architect_general": "http://127.0.0.1:38163",
+          "architect_critic": "http://127.0.0.1:38163",
+          "ingest_long_context": "http://127.0.0.1:38163"
+        },
+        "force_mode": "repl",
+        "workload_class": "eval_batch",
+        "no_explicit_request_urls": true,
+        "no_generation": true
+      },
+      "empty_evaltower_control": true,
+      "http_status": 200,
+      "native_health": {
+        "status": "ok",
+        "models_loaded": 1,
+        "mock_mode_available": true,
+        "version": "0.1.0",
+        "backend_health": {},
+        "backend_probes": {
+          "architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision": {
+            "ok": true,
+            "latency_ms": 13.8,
+            "url": "http://127.0.0.1:38163",
+            "status_code": 200,
+            "failure_reason": "",
+            "failure_detail": ""
+          }
+        },
+        "knowledge_tools": {
+          "available": false,
+          "tools": {
+            "search_arxiv": {
+              "available": false,
+              "error": "No module named 'arxiv'"
+            },
+            "search_papers": {
+              "available": false,
+              "error": "No module named 'semanticscholar'"
+            },
+            "search_wikipedia": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "get_wikipedia_article": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "search_books": {
+              "available": false,
+              "error": "No module named 'googleapiclient'"
+            }
+          }
+        }
+      },
+      "lifespan_started": true,
+      "native_health_default_private_override": true,
+      "backend_roles": [],
+      "real_evaltower_questions_loaded": 50,
+      "evaltowers_run": false
+    }
+  },
+  "owned_child_pid": 3021972,
+  "owned_child_absent": true,
+  "source_mechanism": "fresh detached git worktree",
+  "source_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-prefix-v12-source-20261104",
+  "source_commit": "326f502759986c9846027f8187972969139c0089",
+  "source_detached": true,
+  "source_modified": true,
+  "source_dirty_diff_sha256": "b7bfb0fd34d82ad026bd95fccfb353309d9360438dcdc76bb5693d6cb3adfbe9",
+  "source_diff": " src/api/routes/health.py | 6 +++++-\n 1 file changed, 5 insertions(+), 1 deletion(-)\n",
+  "health_source_sha256": "65ced9f842a306c9a1e176915632dfeaa34845f0f8bf6def6d536b0230e74ff3",
+  "patch_sha256": "4e0ed75ddabb191a5ba25198951ae23b2cabf95ce325c2a34441a6f0cf8f53b0",
+  "probe_sha256": "2f4d02ae9c50e52887cd9ae26c30186aad2862fe11651e710d888743de2a7da6",
+  "maintained_source_edits": false,
+  "promptbuilder_modified": false,
+  "publisher_run": false,
+  "full_native_benchmark_proven": false,
+  "verdict": "private_native_config_real_constructor_and_isolation_pass_model_eval_unproven",
+  "remaining": [
+    "Implement exclusive owner lease, independent restoration watchdog, short per-arm TTL and before/after private-flag attestation.",
+    "Connect real model-backed CPU EvalTower -> private API -> REPL scored serving-record join through publisher bounded smoke; no mock or direct completion substitution."
+  ],
+  "predecessor_result_missing": true,
+  "fallback_input": "cpu-next-20261104.json plus original prefix-cpu packet",
+  "native_request_path_advance": "Native real-mode constructor consumes config-derived private endpoints for EvalTower-shaped REPL/frontdoor/eval_batch request without explicit request URLs.",
+  "shared_lifespan_empty_backends_interpretation": "Expected: lifespan omits server_urls; native real request initialization creates and caches config-derived backends.",
+  "private_runtime_flags_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/private-v12/flags.json",
+  "private_flags_absence_preserved": true,
+  "no_model_until_publisher_smoke": true,
+  "published": false,
+  "source_promptbuilder_matches_pinned_commit": true,
+  "owned_pid_ps_verification": {
+    "pid": 3021972,
+    "returncode": 1
+  },
+  "attestation_captured_during_lifespan": true,
+  "attestation_removed_by_native_shutdown": true,
+  "source_dirty_patch_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/prefix-cpu-packet-20261104/cpu-prefix-v12-source.patch",
+  "ownership_and_drain": {
+    "owned_child_pid": 3021972,
+    "child_reaped_and_absent": true,
+    "owned_transport_server_shutdown": true,
+    "exclusive_run_lease_implemented": false,
+    "restoration_watchdog_implemented": false
+  },
+  "tool_calls": 19
+}

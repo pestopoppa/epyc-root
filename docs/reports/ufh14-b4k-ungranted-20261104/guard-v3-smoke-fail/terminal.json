@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-04T17:00:33.325897+00:00",
+  "status": "NATIVE_PUBLISHER_SMOKE_FAILED_UNPUBLISHED",
+  "ready": false,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104",
+  "input_report_missing": true,
+  "fixes_already_present": [
+    "actual NUL-joined argv SHA rederived before acceptance",
+    "launcher literal packet-manifest SHA anchor",
+    "consumed native grant capture and verification before COMPLETE",
+    "atomic RESULT equals COMPLETE bytes; filing checks original native ended receipt"
+  ],
+  "offline_tests": {
+    "command": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest -q /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/test_*.py",
+    "passed": 43,
+    "subtests_passed": 23
+  },
+  "packet_pins_verified": true,
+  "literal_manifest_sha256": "062265ed06d649fe04875f18cd91a024126337418ff9374f800d2197facc85b7",
+  "launcher_anchor_matches": true,
+  "source_closure_verified": true,
+  "source_closure_files": 1837,
+  "source_mechanism": "existing clean detached git worktree at 77ba24efe7f27783a3a98be5474bace26c753f12; no checkout copy",
+  "precondition": "job.py --check passed; check rejects any KFD process before server startup; consumed_grant precedes model startup",
+  "publisher": {
+    "ran": true,
+    "command": "python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/spec.json",
+    "runtime": "system Python 3.13.7",
+    "exit_code": 2,
+    "native_smoke_ran": true,
+    "terminal": "job ended rc=1 at 2026-11-04T17:00:08Z after 5s before first progress; smoke predicate never exited 0",
+    "log": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v3-20261104/publisher.log",
+    "early_failed_attempts": [
+      "orch venv Python 3.11 rejected rowflow syntax before publisher import",
+      "direct non-executable file returned 126 before publisher execution"
+    ]
+  },
+  "safety": {
+    "foreign_gpu_untouched": true,
+    "manual_grants": false,
+    "grant_queue_polling": false,
+    "dryrun_state_inspected": false,
+    "model_directly_invoked": false,
+    "production_handoff_old_packet_edits": false
+  },
+  "qualification": {
+    "real_grant_bound_RESULT_produced": false,
+    "PASS": false,
+    "claim": "No native success or qualified baseline claimed"
+  },
+  "next_action": "Owning session may inspect the exact native launcher.out once to diagnose smoke rc=1; no republish or polling was started."
+}

@@ -1,0 +1,272 @@
+{
+  "assessment": "STOP_WARN_HIGH",
+  "context": {
+    "epistemic": "exact",
+    "incoming": {
+      "calls": [
+        {
+          "filePath": "tests/unit/test_strategy_store.py",
+          "name": "test_store_and_retrieve_use_document_then_query_sides",
+          "uid": "Method:tests/unit/test_strategy_store.py:TestStrategyStore.test_store_and_retrieve_use_document_then_query_sides#1"
+        },
+        {
+          "filePath": "tests/unit/test_strategy_store.py",
+          "name": "test_retrieve_sees_external_strategy_seed_without_restart",
+          "uid": "Method:tests/unit/test_strategy_store.py:TestStrategyStore.test_retrieve_sees_external_strategy_seed_without_restart#1"
+        },
+        {
+          "filePath": "tests/unit/test_strategy_store.py",
+          "name": "test_retrieve_sees_external_strategy_seed_without_restart",
+          "uid": "Method:tests/unit/test_strategy_store.py:TestStrategyStore.test_retrieve_sees_external_strategy_seed_without_restart#1"
+        },
+        {
+          "filePath": "tests/unit/test_strategy_store.py",
+          "name": "test_closing_stale_store_does_not_overwrite_external_faiss_seed",
+          "uid": "Method:tests/unit/test_strategy_store.py:TestStrategyStore.test_closing_stale_store_does_not_overwrite_external_faiss_seed#1"
+        },
+        {
+          "filePath": "tests/unit/test_strategy_store.py",
+          "name": "test_stale_store_write_keeps_external_faiss_seed",
+          "uid": "Method:tests/unit/test_strategy_store.py:TestStrategyStore.test_stale_store_write_keeps_external_faiss_seed#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "retrieve_for_journal",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.retrieve_for_journal#7"
+        },
+        {
+          "filePath": "orchestration/repl_memory/episodic_control.py",
+          "name": "run_paired_arms",
+          "uid": "Function:orchestration/repl_memory/episodic_control.py:run_paired_arms"
+        },
+        {
+          "filePath": "orchestration/repl_memory/episodic_control.py",
+          "name": "run_paired_arms",
+          "uid": "Function:orchestration/repl_memory/episodic_control.py:run_paired_arms"
+        }
+      ],
+      "has_method": [
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "StrategyStore",
+          "uid": "Class:orchestration/repl_memory/strategy_store.py:StrategyStore"
+        }
+      ]
+    },
+    "outgoing": {
+      "calls": [
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "quarantined_ids",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.quarantined_ids#0"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "compute_context_hash",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.compute_context_hash#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_validity_score",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._validity_score#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_retrieve_bm25",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._retrieve_bm25#3"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "search_index_health",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.search_index_health#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_embed",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._embed#2"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_refresh_faiss_if_changed",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._refresh_faiss_if_changed#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_evidence_trial_ids_for_row",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._evidence_trial_ids_for_row#1"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_row_is_unprovenanced",
+          "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore._row_is_unprovenanced#2"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_compact_text",
+          "uid": "Function:orchestration/repl_memory/strategy_store.py:_compact_text"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_derive_title",
+          "uid": "Function:orchestration/repl_memory/strategy_store.py:_derive_title"
+        },
+        {
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "name": "_specificity_flags",
+          "uid": "Function:orchestration/repl_memory/strategy_store.py:_specificity_flags"
+        }
+      ]
+    },
+    "processes": [],
+    "status": "found",
+    "symbol": {
+      "endLine": 1880,
+      "filePath": "orchestration/repl_memory/strategy_store.py",
+      "kind": "Method",
+      "name": "retrieve",
+      "startLine": 1740,
+      "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.retrieve#8"
+    }
+  },
+  "guard_note": "gitnexus guard denied in this session (required global/build pair unavailable); index queries below were read-only against the already existing pinned index.",
+  "impact": {
+    "affected_modules": [
+      {
+        "hits": 5,
+        "impact": "direct",
+        "name": "Autopilot"
+      },
+      {
+        "hits": 1,
+        "impact": "direct",
+        "name": "Repl_memory"
+      },
+      {
+        "hits": 1,
+        "impact": "indirect",
+        "name": "Species"
+      }
+    ],
+    "affected_processes": [],
+    "byDepth": {
+      "1": [
+        {
+          "confidence": 0.85,
+          "depth": 1,
+          "filePath": "orchestration/repl_memory/strategy_store.py",
+          "id": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.retrieve_for_journal#7",
+          "name": "retrieve_for_journal",
+          "processes": [],
+          "relationType": "CALLS"
+        },
+        {
+          "confidence": 0.85,
+          "depth": 1,
+          "filePath": "orchestration/repl_memory/episodic_control.py",
+          "id": "Function:orchestration/repl_memory/episodic_control.py:run_paired_arms",
+          "name": "run_paired_arms",
+          "processes": [],
+          "relationType": "CALLS"
+        }
+      ],
+      "2": [
+        {
+          "confidence": 0.85,
+          "depth": 2,
+          "filePath": "scripts/autopilot/actions.py",
+          "id": "Function:scripts/autopilot/actions.py:_seed_batch_strategy_hints",
+          "name": "_seed_batch_strategy_hints",
+          "processes": [],
+          "relationType": "CALLS"
+        },
+        {
+          "confidence": 0.85,
+          "depth": 2,
+          "filePath": "scripts/autopilot/actions.py",
+          "id": "Function:scripts/autopilot/actions.py:_build_mutation_context",
+          "name": "_build_mutation_context",
+          "processes": [],
+          "relationType": "CALLS"
+        }
+      ],
+      "3": [
+        {
+          "confidence": 0.85,
+          "depth": 3,
+          "filePath": "scripts/autopilot/actions.py",
+          "id": "Function:scripts/autopilot/actions.py:_action_seed_batch",
+          "name": "_action_seed_batch",
+          "processes": [],
+          "relationType": "CALLS"
+        },
+        {
+          "confidence": 0.85,
+          "depth": 3,
+          "filePath": "scripts/autopilot/actions.py",
+          "id": "Function:scripts/autopilot/actions.py:_action_prompt_mutation",
+          "name": "_action_prompt_mutation",
+          "processes": [],
+          "relationType": "CALLS"
+        },
+        {
+          "confidence": 0.85,
+          "depth": 3,
+          "filePath": "scripts/autopilot/actions.py",
+          "id": "Function:scripts/autopilot/actions.py:_action_code_mutation",
+          "name": "_action_code_mutation",
+          "processes": [],
+          "relationType": "CALLS"
+        }
+      ]
+    },
+    "byDepthCounts": {
+      "1": 2,
+      "2": 2,
+      "3": 3
+    },
+    "direction": "upstream",
+    "epistemic": "exact",
+    "impactedCount": 7,
+    "risk": "HIGH",
+    "summary": {
+      "direct": 2,
+      "modules_affected": 3,
+      "processes_affected": 0
+    },
+    "target": {
+      "filePath": "orchestration/repl_memory/strategy_store.py",
+      "id": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.retrieve#8",
+      "name": "retrieve",
+      "type": "Method"
+    }
+  },
+  "pinned_index": {
+    "indexedAt": "2026-11-04T14:44:35.468Z",
+    "lastCommit": "326f502759986c9846027f8187972969139c0089",
+    "repoPath": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source",
+    "stats": {
+      "communities": 3647,
+      "edges": 169078,
+      "embeddings": 0,
+      "files": 4505,
+      "nodes": 90321,
+      "processes": 300
+    }
+  },
+  "resolution": {
+    "epistemic": "exact",
+    "index_startLine": 1740,
+    "source_index_line_offset": 1,
+    "uid": "Method:orchestration/repl_memory/strategy_store.py:StrategyStore.retrieve#8"
+  },
+  "source": {
+    "ast_source_line": 1741,
+    "class": "StrategyStore",
+    "clean": true,
+    "commit": "326f502759986c9846027f8187972969139c0089",
+    "method": "retrieve",
+    "path": "orchestration/repl_memory/strategy_store.py",
+    "repo": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source"
+  },
+  "warning": "HIGH upstream risk; stop before edits or assessment of further methods."
+}
