@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T17:13:21Z",
+  "generated_at": "2026-11-04T17:21:38Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1562,14 +1562,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 200,
-      "dispatchable": 35,
+      "dispatchable": 22,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 37,
+      "open": 24,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,21 +1589,21 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 20,
+          "dispatchable": 10,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 20,
+          "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 680,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
-          "open": 3,
-          "readiness": "ready"
+          "open": 2,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -1625,25 +1625,24 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [],
           "line": 1952,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 8,
+          "open": 7,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 2254,
           "name": "qwen38-27b-replace-qwen36",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [
-            "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
             "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
             "INF-22#gpu-acceleration-path",
             "INF-22#mi210-big-model-and-acceleration-roadmap",
@@ -2262,7 +2261,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3460,
+          "line": 3461,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -2915,7 +2914,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 147,
+      "closed": 148,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,

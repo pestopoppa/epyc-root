@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 667
+      "open": 654
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -422,7 +422,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 147,
+      "closed": 148,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 40,
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 189,
+      "total": 190,
       "tracks": [
         {
           "blocked": 0,
@@ -508,7 +508,7 @@
         },
         {
           "blocked": 0,
-          "closed": 52,
+          "closed": 53,
           "gates": [],
           "guarded": 0,
           "line": 2930,
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3460,
+          "line": 3461,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1496,7 +1496,7 @@
       "closed": 200,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 35,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 237,
+      "total": 224,
       "tracks": [
         {
           "blocked": 0,
@@ -1515,7 +1515,7 @@
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 20
+          "open": 10
         },
         {
           "blocked": 2,
@@ -1525,7 +1525,7 @@
           "line": 680,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1555,7 +1555,7 @@
           "line": 1952,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 8
+          "open": 7
         },
         {
           "blocked": 0,
@@ -1565,7 +1565,7 @@
           "line": 2254,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
