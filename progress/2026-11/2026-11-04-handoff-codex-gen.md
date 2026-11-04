@@ -75,3 +75,7 @@ Wrote the FILED receipt for `triattention-s8c-recency-unit-20261104` using its e
 ## 16:38Z — Acknowledge filed TriAttention planner oracles
 
 Wrote the FILED receipt for `triattention-s8c-plan-oracles-20261104` using its existing PASS verdict. All 26 synthetic planner cases passed on the pinned source and safety patch. Native result SHA-256 `719dd33e3dfd192529dad24ad16f437abd81b7b26be4c4973f4d7f7fc673e622`; exact source and case receipts are retained in `docs/evidence/triattention-s8c-plan-oracles-20261104/`. The owner already ticked the planner-oracle task. This is not evidence of actual eviction, server, model, GPU, speed or quality behavior.
+
+## 16:40Z — Acknowledge filed TriAttention planner property test
+
+Wrote the FILED receipt for `triattention-s8c-plan-property-20261104` using its existing fail verdict. The bounded synthetic planner test stopped at its first counterexample: n=10, sink=0, ratio=0.7f selected 6 versus the legacy oracle’s 7. Native result SHA-256 `b5f76d1644d3db206d44f84a2c57bfd7e33f0a8e4a6f8568bb8925926430bab0`; evidence is retained in `docs/evidence/triattention-s8c-plan-property-20261104/`. The owning test box was already ticked; no real cache, server, model, quality or performance claim.
