@@ -1,0 +1,70 @@
+{
+  "schema": "epyc.scratch.static-review.v1",
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-successor-20261104",
+  "review_date": "2026-11-04",
+  "verdict": "BLOCKED_FOR_RUNTIME_ACCEPTANCE",
+  "scope": "Static source/worktree, guard, cleanup, first progress and producer binding; no launcher/job/compute execution and no queue/grant reads.",
+  "source_manifest": {
+    "result": "PASS",
+    "files_checked": 1905,
+    "mismatches": [],
+    "git_metadata_in_manifest": false,
+    "head": "77ba24efe7f27783a3a98be5474bace26c753f12",
+    "git_status_porcelain": "",
+    "packet_pin_mismatches": [],
+    "worktree_compatibility": "Manifest hashes regular source files and does not assume .git is a directory; git -C rev-parse resolves the replacement worktree correctly."
+  },
+  "offline_tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest test_safety test_integration",
+    "passed": 30,
+    "elapsed_s": 0.036
+  },
+  "passes": [
+    "Exact regions mi210_0,184-191 required; optional cpus must equal 184-191; canonical native grant directory and non-symlink grant required.",
+    "Consumed grant bytes retained, SHA256 and start/end bound to COMPLETE; rechecked immediately before COMPLETE.",
+    "Filing requires same-ID native original-directory successful ended receipt, matching grant hash/window and exactly one in-window run.",
+    "Server PID captured by Popen, registered for launcher cleanup; startup and workload enclosed in finally with terminate/wait/kill/wait escalation; 30 isolated guard/selector/cleanup tests pass."
+  ],
+  "blockers": [
+    {
+      "id": "PRODUCER-BINDING",
+      "severity": "high",
+      "file": "job.py:run",
+      "finding": "ORCHESTRATOR_GIT_SHA uses os.environ.setdefault. Any inherited value survives, and serving_calls computes _PROCESS.orch_commit from that value at import. A valid source manifest and HEAD do not prevent serving records identifying another commit.",
+      "required_fix": "Set ORCHESTRATOR_GIT_SHA to ORCH_COMMIT unconditionally before importing backend modules, or reject a nonmatching inherited value; assert imported producer commit/file binding before issuing calls."
+    },
+    {
+      "id": "FIRST-PROGRESS",
+      "severity": "acceptance-gap",
+      "file": "spec.json:first_progress_s; job.py:main/run",
+      "finding": "Declared first_progress_s is 300; result_path calls.jsonl receives its first measured record only after up to 300 health iterations (2 s sleep plus health timeout), linkage checks and a completed warm inference (timeout 3600). Static review cannot establish first progress within 300 s, and no successful same-packet first-progress evidence is present in reviewed packet. This is an unverified acceptance condition, not proof the run necessarily exceeds 300 s.",
+      "required_fix": "Obtain actual native first-progress PASS under the exact packet and declared 300 s limit in the owning execution session; if measured load/call latency exceeds it, revise a justified bound and repin before publication."
+    }
+  ],
+  "observations": [
+    {
+      "id": "REGISTRY-INPUT",
+      "finding": "RegistryLoader(validate_paths=False) has no explicit registry_path; its default/full resolution can load a live external research registry or inherited config. The source closure does not itself bind that role input. Pin explicit registry path/content if frozen workload/role shape is required."
+    },
+    {
+      "id": "DEADLINE",
+      "finding": "Calls can block for 3600 s and executor waits for pending calls after stop/deadline; graceful completion within remaining grant is not guaranteed. Native hard-end/owned-PID cleanup provides a safety backstop, but such a terminated run must remain incomplete."
+    },
+    {
+      "id": "CHECK-NOT-RUN",
+      "finding": "No job.py --check or real first-progress smoke was run by this review, per bounded review instruction."
+    }
+  ],
+  "proposed_corrections": {
+    "inherited_source_identity": {
+      "replace": "os.environ.setdefault(\"ORCHESTRATOR_GIT_SHA\", ORCH_COMMIT)",
+      "with": "os.environ[\"ORCHESTRATOR_GIT_SHA\"] = ORCH_COMMIT",
+      "placement": "Before importing src.backends.llama_server or serving_calls. Assert imported module paths resolve beneath SRC and serving_calls process orch_commit equals ORCH_COMMIT."
+    },
+    "first_progress_300_600": {
+      "do_not": "Do not simply replace first_progress_s=300 with 600 and claim acceptance. The load loop alone can exceed 600 s when health requests consume their timeout; warm inference adds up to 3600 s.",
+      "exact_next_action": "Owning session obtains native same-packet first-progress evidence at 300 s. If it fails due to measured load/warm latency, prepare a new successor with first_progress_s set to a justified observed bound and run native first-progress again. A numerical replacement cannot be justified from static evidence alone.",
+      "optional_hard_bound": "If the contractual limit remains 300 s, enforce a shared monotonic start+300 deadline across health/linkage/warm inference and fail incomplete before that limit; this bounds failure but does not substitute for a PASS."
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "checks": {
+    "recorded_case": "pass",
+    "zero_count": "pass",
+    "leading_zero": "pass",
+    "wrong_plural": "pass",
+    "newline": "pass",
+    "empty_prefix": "pass",
+    "empty_suffix": "pass",
+    "nontext_prefix": "pass",
+    "part_metadata_extra": "pass",
+    "item_metadata_mismatch": "pass",
+    "volatile_id_ignored": "pass",
+    "original_contains_marker": "pass"
+  },
+  "source_sha256": "ec694ebb267ca1f4b36fabfcdac64c88088b0ed173799c2f77122563be088b41",
+  "wire_sha256": "82e7f7dd11f7acd2b58c4d43f22ced8f77b14c570d6208d1497c3d06e35a1593",
+  "scope": "independent offline matcher edge controls; scratch only; no inference or performance claim"
+}
