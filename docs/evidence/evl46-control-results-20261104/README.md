@@ -1,0 +1,13 @@
+# Scheduled EVL-46 controls filed 2026-11-04
+
+These are three completed scheduled controls from 2026-11-02. Each subdirectory preserves its native result, original manifest, scheduler end record and checksums. The reader bundle preserves the full-run unit, not its separate dry-run unit. The fixture bundle also preserves its provider close, seal and journal before filing permits scratch reclamation.
+
+| Row | Verdict and evidence | Scope |
+| --- | --- | --- |
+| [evl46-opencode-schema-20261102](evl46-opencode-schema-20261102/RESULT.json) | PASS: scheduled rc0; OpenCode 1.18.31; completed inventory read; pinned read-tool schema SHA `741660709a3538b1d55503f8228a1bfa6cbcdc75e6be2d8370f1e2d0e5c79394`; broker refused injected bash; canary unchanged; no unauthorized file; export rc0 | Actual pinned client, fake upstream. The client rc1 is the expected refused-response path. No live inference or production isolation result. |
+| [evl46-crm-reader-64-tests-20261102](evl46-crm-reader-64-tests-20261102/unit.jsonl) | PASS: full mode, pytest rc0, 7 passed; exact ROOT source `64a96b58b5054a54a2efae416ae25908d0f13dbe` | The captured job writes its unit only after the native source-manifest recheck returns. Synthetic reader/source/custody and CLI/planning controls; no live CRM result or live planner canary. |
+| [evl46-crm-fullentry-fixture-20261102](evl46-crm-fullentry-fixture-20261102/result.json) | PASS: `dtap.crm_fullentry_fixture_qualification.v1`, fixture, pass=true, model_invoked=false; provider close child_rc0 and seal retained | Scripted endpoint: attack delivered, control not observed, both complete and backend cleanup recorded. No live model, injection-resistance or security result. |
+
+The parent TU-MH-1 shared-driver acceptance and TU-DTAP-2 live-model subset remain open. Their narrow scheduled-result filing steps are tracked separately because these native records meet only the synthetic control/fixture predicates. Existing DTAP write-side source registration remains the producer contract; this filing creates no retrospective measurement warrant.
+
+The existing source-test row was republished with its retired handoff pointer repaired to `benchmark-suites.md:TU-DTAP-2-SOURCE`. [Publisher smoke PASS](source-tests-smoke-PASS.json) and [published manifest](source-tests-published-manifest.json) retain the 4-CPU qualification. The smoke produced a partial fixture with rc75; the publisher accepted its first native progress. Its scheduled `source-test` result remains pending.
