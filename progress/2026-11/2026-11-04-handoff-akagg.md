@@ -175,3 +175,7 @@ Filed CH-LB1 trial CPU guard/corpus/linkage/strings pass with 38/38 and BF16 ref
 ## 19:18Z — Register C6 MMQ diagnostic belief-source wiring while preparing full suite
 
 Registered C6 MMQ n5/full-op native diagnostic as a prospective seeded-operation source and added VB-C6-MMQ-FULL-WIRE using the existing shared ladder. The completed n5 remains a committed conclusion; no retrospective measurement warrant. Full-suite packet is being repaired to validate inputs before publication and avoid grant-time GGUF hashing and reaperable predecessor paths.
+
+## 19:26Z — File GDN GPU f32 observation and BF16 diagnostic failure, plus three disk-floor stops
+
+GDN GPU diagnostic outer rc0 but full rule failed: f32 baseline matched 27,262,976 outputs and both f32 mutants mismatched, each with 17 positive mapped VRAM samples; BF16 baseline native -11 had no receipt and BF16 mutants did not run. The marker covers reference/oracle work as well as device work. Filed MoE-Spec HIP build, LB3.2b pair and CH31 route rows inconclusive after rc75 disk-floor stops, retaining partial evidence. Removed completed superseded CH-LB1.1 attempts after checking separately retained evidence; active CH27 and W5s worktrees preserved.
