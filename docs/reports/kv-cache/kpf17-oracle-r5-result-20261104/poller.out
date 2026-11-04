@@ -1,0 +1,9 @@
+
+==== arm 2026-11-04T20:46:53Z
+2026-11-04T20:46:53Z [kvfork17-oracle-test-r5-20261104] launcher up pid=699297 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/STOP minwin=300s ports=none dryrun=0
+2026-11-04T20:46:59Z [kvfork17-oracle-test-r5-20261104] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-11-04T21:26Z
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=2341.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/filler_run15.sh --inner --id kvfork17-oracle-test-r5-20261104 --class cpu --cmd python3 '/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/gdb_job.py' --min-window 300 --stop /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/STOP --port  --workdir /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5 --gpu-threads 184-191
+[region-lock] forwarded signal(s) [15] to child
+2026-11-04T20:47:01Z [kvfork17-oracle-test-r5-20261104] ended rc=75 reason=disk-floor (grant deleted)
+2026-11-04T20:47:01Z [kvfork17-oracle-test-r5-20261104] one window done; exiting (no --repeat)
