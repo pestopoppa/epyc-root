@@ -183,3 +183,7 @@ KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r3-20261104 ended rc75 disk-floor before 
 ## 22:41Z — Check KPF-17.4d readiness and reclaimable session scratch
 
 KPF-17.4d remains unready: the R5 prospective cell was exposed and invalid and cannot be redrawn; a safe successor needs a source-bound parser impact and a confirmed unexposed input. The prepared CPU and GPU source-impact and native rows share a 150 GiB full-run floor; approximately 107 GiB was available, so repeating their already interrupted attempts would immediately stop. No additional material scratch could be reclaimed without removing cited evidence, retained build inputs, or keeper-owned scratch. No row published and no inference performed.
+
+## 22:45Z — File KPF-17 mapping fixture interruption
+
+KPF-17.MAP-REVALIDATION: kvfork17-alt17-map-revalidation-safe-20261104 ended rc75 disk-floor before native RESULT.json; filed INCONCLUSIVE with a filing receipt. The isolated publisher smoke does not establish a full fixture result. The filesystem had approximately 104 GiB free versus the unchanged 150 GiB full-run floor. KPF-17.4d prospective predeclaration authorizes only g0-S2-B, already exposed and invalid; the other frozen inputs have no authorized selection rule or proven exposure status. No inference run or replacement input was selected.
