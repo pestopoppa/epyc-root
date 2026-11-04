@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-gitnexus-enum-validate-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T11:05:19Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/gitnexus-parser-debug-20261104/enum-validation/results.jsonl (unit_key unit set)",
+ "first_progress_s": 80,
+ "first_unit_at": "2026-11-04T11:05:18Z",
+ "id": "lsa-gitnexus-enum-validate-20261104",
+ "launcher_sha256": "bcba5dae2de1c59045428fc6137e74ef37a4ee2f50c6022b865dad90b6d43b55",
+ "passed_at": "2026-11-04T11:05:23Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/gitnexus-parser-debug-20261104/enum-validation/results.jsonl",
+ "units": 2,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

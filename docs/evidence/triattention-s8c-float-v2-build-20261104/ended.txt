@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T16:10:01Z reason=complete
+job_id=triattention-s8c-float-v2-build-20261104
+owner=triattention
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T16:09:07Z
+regions=0-23
