@@ -1,0 +1,5 @@
+# KPF-50 clock witness candidate
+
+`clock_witness.py` runs a hash-pinned native HSA clock producer under the caller's GPU claim and requires its `epyc.kpf50.hsa-clock.v1` frequency, process identity and complete ordered sample list. It preserves and hashes the entire native capture, binds the narrowest sample to the window, lineage and before/after phase in a `kpf50.clock-sample.v1` record, and refuses missing, failed, changed, out-of-lifetime or malformed input. Files are exclusive and fsynced. A failed or interrupted capture cannot authorize window completion.
+
+The record includes `window`, `run_id`, `phase`, `hsa_tick`, `hsa_hz`, `mono_before_ns`, `mono_after_ns`, the native file name and SHA-256, pinned producer SHA-256, PID/birth and parent process-time bounds. Four model-free tests passed using a synthetic producer. This prospective code is not integrated or GPU-qualified; neither a chosen bracket nor before/after ordering proves clock calibration, stable offset, actual device use or any profiling result.

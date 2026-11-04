@@ -1751,12 +1751,31 @@ def item6(ctx: Ctx) -> list[Step]:
 
 
 # ---- item 7
+def require_kpf50_forks(results):
+    """Four distinct successful child replies must each witness a 60k fork."""
+    if not isinstance(results, dict) or any(type(k) is not int for k in results) or set(results) != {0, 1, 2, 3}:
+        raise ValueError("KPF-50 requires exactly four distinct child replies")
+    counts = []
+    for i in range(4):
+        reply = results[i]
+        if not isinstance(reply, dict) or reply.get("http") != 200 or reply.get("error"):
+            raise ValueError("KPF-50 child reply failed")
+        timings = reply.get("timings")
+        count = timings.get("n_fork_tokens") if isinstance(timings, dict) else None
+        if type(count) is not int or count < 60000:
+            raise ValueError("KPF-50 child fork witness absent, malformed or below 60000")
+        counts.append(count)
+    return counts
+
+
 def item7(ctx: Ctx) -> list[Step]:
     a = ctx.args
     steps: list[Step] = []
     grp_i = SPEED_GROUP
     T = G(ctx, grp_i)["T"]
     Ss = G(ctx, grp_i)["suffix_lens"]
+    if len(Ss) != 4:
+        raise Abort("KPF-50 requires exactly four child inputs")
     n = a.item7_n_predict
     summary: dict = {"windows": []}
     for w, scenario in enumerate(["full", "mask", "mask", "full"]):
@@ -1808,6 +1827,8 @@ def item7(ctx: Ctx) -> list[Step]:
             poll.stop()
             first_tok, last_tok, per_slot, gen = [], [], [], 0
             for i in range(len(Ss)):
+                if i not in res:
+                    continue  # Preserve available child rows before refusing.
                 r = R.row("child", res[i], suffix=i)
                 t = r.get("timings") or {}
                 per_slot.append(t.get("predicted_per_second"))
@@ -1815,8 +1836,13 @@ def item7(ctx: Ctx) -> list[Step]:
                 if r.get("token_times"):
                     first_tok.append(r["token_times"][0][0])
                     last_tok.append(r["token_times"][-1][0])
-                R.check("fork_expected" if arm == "fork_on" else "no_fork_fields",
-                        (arm == "fork_on") == ("n_fork_tokens" in t), [i, t.get("n_fork_tokens"), t.get("fork_src_kind")])
+                count = t.get("n_fork_tokens")
+                R.check("fork_expected", type(count) is int and count >= 60000,
+                        [i, count, t.get("fork_src_kind")])
+            try:
+                R.extra["kpf50_child_fork_tokens"] = require_kpf50_forks(res)
+            except ValueError as exc:
+                raise Abort(str(exc)) from exc
             span = (max(last_tok) - min(first_tok)) if first_tok else None
             R.decode = {"per_slot": per_slot, "aggregate": round(gen / span, 3) if span else None,
                         "aggregate_method": "sum predicted_n / (last child's last token - first child's first token)"}

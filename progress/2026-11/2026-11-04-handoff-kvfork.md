@@ -103,3 +103,7 @@ KPF-17 r3 completion hardening requires PASS, bound identities, verified cleanup
 ## 21:17Z — Attempt KPF-17 row readiness under unchanged disk and completion guards
 
 KPF-17 successor was not published: the current completion predicate cannot observe the rowflow guard stop reason, and changing the guard is outside this lane authority. Available RAID space fell below the required 150 GiB floor; inspection found no authorized sufficiently large scratch to reclaim, and keeper-owned row scratch was left to its reaper. No smoke or model run was started. KPF-60 observer attempts also previously stopped at the floor. Further readiness needs free space above the floor and a qualified way to distinguish guard stops without changing the guard.
+
+## 21:24Z — Enforce KPF-50 fork evidence and prepare prospective window custody
+
+KPF-50 experimental candidate now aborts unless four successful child replies each report an integer fork count >=60000; four adversarial tests and syntax compilation pass. Added prospective structural no-redraw window completion, clock witness and trace-manifest candidates; seven receipt, four clock and two trace model-free tests pass. These are not integrated into a runnable row: typed live outcome, calibrated clock alignment, process/descendant cleanup and GPU custody remain required. Current RAID free space remains below the unchanged 150 GiB floor; no smoke, GPU inference or profile occurred. GitNexus lane was unindexed, so no graph impact result was available.
