@@ -11,3 +11,7 @@ Filed `codex-ni-akxall31-gdn-hip-build-prereq-20261102` FAIL rc1: malformed stag
 ## 17:12Z — Repair GDN build affinity and publish the build prerequisite successor
 
 Published `codex-ni-akxall31-gdn-hip-build-affinity-20261104` after the publisher smoke passed the source-bound C++ syntax and gfx90a object compilation. The affinity guard validates four physical cores with or without their SMT siblings; `-j4` remains unchanged and six packet controls passed. The preceding run failed its eight-logical-CPU guard before compilation. Full build and oracle correctness remain open. Packet: `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/hip-build-affinity-20261104/`.
+
+## 17:19Z — Publish the C5 floor successor and file the GDN disk-floor result
+
+Published `akxall8-c5-declared-floor-v9-20261104` after four-CPU control-model publisher smoke PASS. Fresh source/research seals and 22 model-free controls passed; model metadata continuity checked without rehashing weights. Original full-host claim and 24-pair floor predicates remain, and the live lock checks and floor remain unproved. Filed `codex-ni-akxall31-gdn-hip-build-affinity-20261104` inconclusive, rc75 disk-floor before the native build; terminal receipt retained at `/mnt/raid0/llm/tmp/akagg/gdn-affinity-terminal-20261104/`. W2 repair remains unsealed pending replacement of its missing custody-pinned tracer and wrapper.
