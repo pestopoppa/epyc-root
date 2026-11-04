@@ -187,3 +187,7 @@ Published `inf75-p1b-moespec-hip-retry-20261104` after publisher smoke passed on
 ## 19:42Z — Published the bounded C6 full-suite successor and CPU-only GDN BF16 reference diagnostic.
 
 Published `c6-mmq-full-r2-20261104` after bounded N5 GPU smoke and `gdn-bf16-reference-diag-20261104` after four-CPU custody smoke. C6 was granted before a concurrent full-suite failure landed: that earlier result found two q4_K n=4 failures, so this candidate is not qualified; the new diagnostic is running and GDN awaits grant. Narrowed C6 scratch reclamation to its own packet; GDN diagnostic source pins are retained within its packet. Removed superseded CH27 native v5 and v6 attempts, preserving active worktrees and evidence. The 732 CPU configure event was already filed pass, rc0, 431 entries.
+
+## 19:49Z — Published an isolated clean-source 7d2 HIP configure-plan successor.
+
+Published `inf75-p1b-7d2-hip-clean-configure-20261104` after four-CPU packet-only smoke. Fresh configure and independent plan review remain pending. The DFlash endpoint CPU configure event was already filed pass, rc0 with 431 entries. Reviewed scratch: preserved active source worktrees and retained evidence, and removed the stale CH-31 worktree registration with git worktree remove. Prepared an unpublished C6 n=4 diagnostic packet; original failed-run input tensors were not retained, so seed/descriptor/residual agreement must not be represented as byte-identity proof.
