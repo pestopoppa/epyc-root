@@ -391,3 +391,7 @@ The KPF-50 impact interruption was already filed. Filed kvfork50-clock-qual-2026
 ## 22:23Z — File clock qualification r2 and preserve atomic validator proposal
 
 KPF-64 impact was already filed inconclusive. Filed kvfork50-clock-qual-r2-20261104 inconclusive after rc75 disk-floor before the native witness result; no clock qualification or target profiling follows. Preserved an unapplied atomic no-replace validator proposal; eight isolated tests pass, with explicit existing-output, writable-directory and post-link fsync limitations. Exact-source impact remains unknown. No new GPU row was safe to publish.
+
+## 22:28Z — Review anonymous-inode validator guard
+
+The KVU-11c HIP build interruption was already filed inconclusive. Reviewed and preserved a corrected anonymous-inode guard design sketch after detecting the first draft closed its descriptor before linking. A separate mechanism check passed on the project filesystem; the exact target script is not tested or changed, filesystem and crash-durability limits remain, and source-bound impact remains unknown. HSF-1 receipt preparation is incomplete and its review result is registered. No new row was published.
