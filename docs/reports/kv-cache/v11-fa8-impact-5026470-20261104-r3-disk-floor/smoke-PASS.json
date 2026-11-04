@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v11-fa8-impact-5026470-20261104-r3/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T20:14:15Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/v11-fa8-impact-5026470-20261104-r3/native-attempts/attempt-kx3zbo4y/native-result.json (measurement field)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T20:14:16Z",
+ "id": "v11-fa8-impact-5026470-20261104-r3",
+ "launcher_sha256": "cfa7682788dd28afb9d43997eeee468e1e6965723446f9807455f050e73d70d0",
+ "passed_at": "2026-11-04T20:14:16Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v11-fa8-impact-5026470-20261104-r3/native-attempts/attempt-kx3zbo4y/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}
