@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 680
+      "open": 678
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 193
+      "open": 198
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 475
+      "open": 476
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -422,10 +422,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 143,
+      "closed": 144,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 39,
+      "last_advanced": "2026-11-04",
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 184,
+      "total": 186,
       "tracks": [
         {
           "blocked": 0,
@@ -508,13 +508,13 @@
         },
         {
           "blocked": 0,
-          "closed": 48,
+          "closed": 49,
           "gates": [],
           "guarded": 0,
           "line": 2930,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 4
+          "open": 5
         }
       ]
     },
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 3,
-      "closed": 184,
+      "closed": 186,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 48,
+      "last_advanced": "2026-11-04",
+      "open": 47,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,24 +1505,24 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 235,
+      "total": 236,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 96,
+          "closed": 98,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 28
+          "open": 27
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 633,
+          "line": 637,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 992,
+          "line": 996,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1269,
+          "line": 1273,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1904,
+          "line": 1908,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2199,
+          "line": 2203,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2808,
+          "line": 2812,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3
@@ -2093,10 +2093,10 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 27,
+      "open": 26,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2119,13 +2119,13 @@
         },
         {
           "blocked": 0,
-          "closed": 27,
+          "closed": 28,
           "gates": [],
           "guarded": 0,
           "line": 205,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 103,
+      "closed": 104,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 137,
+      "total": 138,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 61,
+          "closed": 62,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 669,
+          "line": 673,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2617,7 +2617,7 @@
       "closed": 346,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 83,
+      "open": 88,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 431
+      "total": 436
     }
   },
   "row_id_collisions": {},

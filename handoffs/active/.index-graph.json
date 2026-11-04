@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T07:26:44Z",
+  "generated_at": "2026-11-04T07:37:26Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1355,14 +1355,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 346,
-      "dispatchable": 83,
+      "dispatchable": 88,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 85,
+      "open": 90,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1558,18 +1558,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 184,
-      "dispatchable": 48,
+      "closed": 186,
+      "dispatchable": 47,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 51,
+      "open": 50,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,18 +1589,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 28,
+          "dispatchable": 27,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 29,
+          "open": 28,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 633,
+          "line": 637,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 992,
+          "line": 996,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1269,
+          "line": 1273,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1904,
+          "line": 1908,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 9,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2199,
+          "line": 2203,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2808,
+          "line": 2812,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3,
           "readiness": "blocked"
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 103,
+      "closed": 104,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 669,
+          "line": 673,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2457,15 +2457,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 67,
-      "dispatchable": 27,
+      "closed": 68,
+      "dispatchable": 26,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-04",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 27,
+      "open": 26,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2494,11 +2494,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 205,
           "name": "iqk-iquant-enablement",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
@@ -2912,18 +2912,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 143,
-      "dispatchable": 39,
+      "closed": 144,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 41,
+      "open": 42,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -3006,11 +3006,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 2930,
           "name": "tool-output-compression",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         }
       ]
