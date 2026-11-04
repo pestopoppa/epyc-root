@@ -1,0 +1,3 @@
+# KPF-17 integrated Test 6 custody result
+
+`kvfork17-integrated-custody-20261104` ended rc0 and satisfied the scoped custody rule: both `n_rs_seq=0/8` reported Test 6 PASS, zero A/A and source A/A floors and `mutation=detected`; six in-test mappings witnessed the three loader-initialized ggml DSOs, bound to the build manifest. Captured process cleanup was verified dead. This is sequential before/after source activity, not simultaneous in-flight operations. The existing test lacks a valid destination-2 restore control, so its mutation marker does not establish stale-specific non-vacuity. No speed, production or parent KPF-17 closure follows. Raw run result, test log, witness, grant and end event are preserved alongside checksums.
