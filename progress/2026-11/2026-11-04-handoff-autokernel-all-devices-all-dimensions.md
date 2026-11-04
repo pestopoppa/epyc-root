@@ -109,3 +109,9 @@ Prepared source-bound `akx-w2-tracer-build-20261104` for the W2 private tracer u
 ## 19:50Z — Repair and publish C6 n4 diagnostic; file CH-31 metadata result
 
 C6 n4 predecessor publisher smoke failed rc1 before native execution because the retained shared image files had changed inode and ctime. All seven files still matched the sealed original image SHA-256 and source-bound build receipt; cause of replacement is unknown. Fresh `akx-c6-q4k-n4-diagnostic-r2-20261104` uses a private image, newly pinned identities and unchanged two n4 cases, original property tolerance and own-PID HIP/VRAM checks. Published after four-CPU first actual n4-case publisher smoke PASS; no full diagnostic or promotion result is claimed. Packet `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/c6-n4-diagnostic-r2-20261104/`. Also filed `akx-ch31-node13-route-cap4096-r2-20261104` rc0 against its diagnostic rule: both solos and all 16 route-4 batch rows had identical logits; all 16 route-0 batch rows first differed at node_13 and had differing logits. Four rotations reuse four inputs; no fixed-input causality, Q38FN or performance claim. Full evidence retained at `/mnt/raid0/llm/tmp/akagg/ch31-cap4096-r2-retained-20261104/`; handoff updated, CH-31-DEF1 remains open.
+
+## 20:00Z — File source-bound BF16 reference build and prepare its native oracle successor
+
+## GDN BF16 reference build result
+
+Filed `akx-gdn-bf16-reference-build-20261104` pass rc0 for the source-bound build prerequisite. Manifest SHA-256 `9100dae88b9e1af0550be6cfe8afe72d83d039c23a7dd575b8d737341c4bc907`; binary, libraries, HIP object, logs and inputs are retained at `/mnt/raid0/llm/tmp/akagg/gdn-bf16-reference-build-retained-20261104/`. No native operation ran; BF16 correctness and crash causation remain open.
