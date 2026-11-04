@@ -1,0 +1,20 @@
+{
+  "case": "own-child active STOP with grandchild",
+  "rc": 75,
+  "births": {
+    "2623392": "195355932",
+    "2623393": "195355933"
+  },
+  "after": {
+    "2623392": {
+      "state": "absent",
+      "same_birth": false
+    },
+    "2623393": {
+      "state": "absent",
+      "same_birth": false
+    }
+  },
+  "passed": true,
+  "limits": "Model-free captured descendants; zombie is terminated but may await host reaping. No inference or full-wrapper qualification."
+}

@@ -163,3 +163,7 @@ KPF-50.CLOCK-QUAL: filed kvfork50-clock-qual-20261104 INCONCLUSIVE, rc75 disk-fl
 ## 22:22Z — File the disk-floor interruption of the clock qualification successor
 
 KPF-50.CLOCK-QUAL: `kvfork50-clock-qual-r2-20261104` ended rc75 at the unchanged disk floor before native RESULT.json. Filed INCONCLUSIVE; its publisher smoke does not qualify the full witness and no target window was exposed. Available filesystem space was approximately 109 GiB against the 150 GiB floor. KPF-61 prospective CPU permutation packet requires pre-grant model verification, exposure review, STOP qualification and native source enrollment before publication.
+
+## 22:28Z — Repair and qualify KPF-61 prospective CPU permutation packet
+
+KPF-61: prepared two synthetic 35B CPU permutation fixtures, preverified the model identities outside the grant, enrolled prospective native capture, and ran a model-free supervisor STOP control. The first publisher smoke failed at the obsolete dry-run guard; a second was started but was superseded while running when review found shared smoke/full output and request-window mapping defects. The isolated-attempt and request-window repair reports ten model-free controls passed; smoke outcomes are registered as asynchronous events. Review the repair, reseal its runtime, and run a fresh publisher smoke before trusting or granting the row. The bounded exposure search is not a complete fleet-wide ledger. No target model result or gate verdict.
