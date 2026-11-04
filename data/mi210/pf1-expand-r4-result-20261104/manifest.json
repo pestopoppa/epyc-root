@@ -1,0 +1,46 @@
+{
+ "decision_rule": "PF1-EXPAND-2 r4 lower-bracket successor: fresh L={256,320,384,448}, A0/A1/A2/A1-disabled, three independent blocks, five reps per launch; no pooling. Previous exact grid {384,448,512,768}: r3 L384 A1/A0=1.0009 within +/-0.07 noise, A2/A0=1.1494, no lower bracket. Question: does a lower sampled L fall below 0.93 before a sustained >1.07 region? Expected separation must exceed descriptive +/-0.07 paired noise; [0.93,1.07] remains at crossover, never proof of crossover. Same source/model pins, A0 strict40% node cap, required GPU in-window placement/residency and capture1.0. Disabled/A0 median must be within [0.90,1.10] at EVERY L; all three valid blocks required for any bracket. A0 hot bias remains unresolved, not claimed fixed. Block-end checks stop for >=2 run/residency/placement failures; after block2 stop if control divergence >25% at every L. Cumulative2400s cap and engine safety/window stops apply; never stop on answer. Incomplete or guard-failing outcomes inconclusive. Descriptive exploratory non-gate scope only; never a PF1 verdict.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1900,
+ "first_progress_s": 1500,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r4-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "STATIC-CHECKS.json",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/launch.sh",
+  "sha256": "41c9e7abc9c0d4c986fbee6deb5449ca415bdc44bff8136e25b8aebf0c099027"
+ },
+ "min_window_s": 1800,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T14:46:35Z",
+ "published_from": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/spec.json",
+ "regions": "mi210_0,0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/STOP",
+ "supersedes": "pf1-expand-r3-20261104",
+ "window_s": 2580,
+ "workdir": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104"
+}

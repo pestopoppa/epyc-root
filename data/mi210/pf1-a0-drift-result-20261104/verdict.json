@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Scoped descriptive A0 capture complete rc0: 15/15 valid units, 3 independent launches, CPU own-PID ggml/KFD evidence and per-launch NUMA max share 25.0% with 99% coverage (strict cap 40%). Per-L max-minus-min / median spreads 4.12%,3.43%,1.52%,5.95%,4.84% at L256/384/448/512/768. The earlier 9\u201317% two-launch decline did not recur to that magnitude here; n=3, co-tenancy and different windows prevent causal, strict per-thread affinity, GPU crossover or PF1 verdict. Raw outputs in data/mi210/pf1-a0-drift-result-20261104/.",
+  "tick_text": "",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:38:26+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:11:15Z reason=complete",
+ "filed_at": "2026-11-04T15:38:26+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "mi210-independent-cpu-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/mi210-independent-cpu-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "codex-ni",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scoped descriptive A0 capture complete rc0: 15/15 valid units, 3 independent launches, CPU own-PID ggml/KFD evidence and per-launch NUMA max share 25.0% with 99% coverage (strict cap 40%). Per-L max-minus-min / median spreads 4.12%,3.43%,1.52%,5.95%,4.84% at L256/384/448/512/768. The earlier 9\u201317% two-launch decline did not recur to that magnitude here; n=3, co-tenancy and different windows prevent causal, strict per-thread affinity, GPU crossover or PF1 verdict. Raw outputs in data/mi210/pf1-a0-drift-result-20261104/.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "mi210-independent-cpu-20261104",
+ "row_verdict": "pass",
+ "rule": "Descriptive CPU-only PF1 A0 drift diagnostic: same pinned C6/lbt CPU image and Q38FN UD-IQ4_XS input, three independent A0 launches each at L=256/384/448/512/768. Metric prefill tok/s, higher is better, and strict <=40% node share. Earlier r2 two-block A0 changed by roughly 9\u201317%; prior paired noise was roughly 5\u20139%, so three launches can describe repeatability but cannot establish cause or GPU crossover. Stop-on-answer when all 15 unique planned native records are valid with complete placement evidence; futility-only on STOP, deadline, failed identity, launch or placement; report partials and co-tenancy. No PF1 gate, quality, causal or promotion verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "58bfae5b0d93db494ccd1d2214e04f1515b1ba70668359c0400103c8f7cca779",
+  "result": "pass",
+  "status": "filed"
+ }
+}
