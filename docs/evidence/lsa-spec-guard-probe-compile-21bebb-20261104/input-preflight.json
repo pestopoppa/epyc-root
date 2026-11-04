@@ -1,0 +1,10 @@
+{
+  "unit": "candidate-and-probe-inputs-verified",
+  "build_receipt_sha256": "8bbaa6d3119c720f56a4b4087209b2abe4ca906008ee8f5d5d05688955bc4779",
+  "probe_source_sha256": "b03f649bbdadd2aea6e688e947afde1847382bf2f35dcb073cdc5f9558a06796",
+  "candidate_dsos_verified": 5,
+  "compiled": false,
+  "model_loaded": false,
+  "gpu_used": false,
+  "recorded_ns": 1793817648357663396
+}

@@ -79,3 +79,7 @@ Filed recall-unit Torch successor pass: four model-free tests rc=0, evidence doc
 ## 18:39Z — File speculative-guard model-free build result
 
 Filed lsa-spec-guard-build-21bebb-20261104 pass: 448 donor objects verified, changed graph object compiled and libllama relinked; artifact digests and preflight preserved in docs/evidence/lsa-spec-guard-build-21bebb-20261104/. Build only, no GPU or model execution.
+
+## 18:42Z — File speculative guard probe compile and linkage
+
+Filed lsa-spec-guard-probe-compile-21bebb-20261104 pass: probe SHA be5793e96adc268799c2fff6683dc5531c113cf9b1a923504ab329e3ff6c1784 and five linked candidate libraries recorded. Evidence docs/evidence/lsa-spec-guard-probe-compile-21bebb-20261104/. No model or GPU execution.

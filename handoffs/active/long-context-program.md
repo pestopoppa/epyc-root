@@ -1813,6 +1813,7 @@ After S8 runs, update this handoff with the artifact fields above and the decisi
 ### D-LSA research intake — approved 2026-11-03
 
 - [ ] **LSA-SCREEN-1 — Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**
+  - [x] **LSA-SPEC-GUARD-PROBE-COMPILE — Compile and link the model-free speculative-guard probe against the verified 21bebb748 candidate:** preserve probe and linked library identities; no model or GPU run. ✅ 2026-11-04 [belief: cc]
   - [x] **LSA-SPEC-GUARD-BUILD — Build the 21bebb748 speculative-guard candidate from verified donor objects:** retain graph object and relinked library digests; no GPU execution or model work. ✅ 2026-11-04 [belief: cc]
   - The phase CPU timing request `lsa-phase-cpu-timing-20261104` exceeded its 360-second cap; no complete response, validated trace, or timing decision was recorded. Filed inconclusive with no retry; evidence `docs/evidence/lsa-phase-cpu-timing-20261104/`. [belief: cc]
   - [x] **LSA-RECALL-REFERENCE-BUILD — Build and verify the committed 24c8a8f2 recall reference candidate with pinned HIP donor and reused-object closure:** retain the proof and artifact identities; no model or GPU execution. ✅ 2026-11-04 [belief: cc]

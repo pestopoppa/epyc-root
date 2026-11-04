@@ -1,0 +1,19 @@
+{
+  "id": "lsa-spec-guard-probe-compile-21bebb-20261104",
+  "owner": "lsa-screen",
+  "lane": "cpu",
+  "regions": "q0",
+  "ram_gib": 2,
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/probe-compile/launch.sh",
+  "estimate_s": 300,
+  "first_progress_s": 180,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/probe-compile/smoke-predicate.py",
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/probe-compile/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Model-free CPU-claimed compile/link of guard-probe.cpp against verified 21bebb748 candidate libllama. Record probe SHA-256, linked candidate DSO paths/hashes and build logs. No model or GPU run.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/probe-compile",
+  "keep": ["results.jsonl", "input-preflight.json", "compile.log", "linkage.log", "ldd.log"]
+}
