@@ -363,3 +363,7 @@ The kpf60 checked-fixture r7 was already filed inconclusive. Published kpf50-chi
 ## 21:58Z — File interrupted KPF-50 and KVU-12.6 impact rows
 
 The KPF-60 checked-fixture r8 result was already filed. Filed kpf50-child-evidence-main-impact-20261104 and kvu126-impact-beb7-20261104 inconclusive: both ended rc75 at the disk floor before native impact output; preserved grant receipts. No risk clearance or source edit follows. Independent HSF-3 residual source-census row preparation is registered for resumption.
+
+## 22:00Z — File interrupted KPF-64 impact row
+
+KPF-60 checked-fixture r9 was already filed inconclusive. Filed kpf64-impact-4f4f-20261104 inconclusive: rc75 disk-floor before native impact and coverage output. Preserved grant end; no risk or edit clearance follows. HSF-3 residual source census preparation remains incomplete and has a registered output event.
