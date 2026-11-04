@@ -1,0 +1,284 @@
+diff --git a/src/llama-kv-cache.cpp b/src/llama-kv-cache.cpp
+index 80c73f75b..d9a650878 100644
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -2304,13 +2304,9 @@ bool llama_kv_cache::chunk_supported(std::string * why) const {
+     return true;
+ }
+ 
+-bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, llama_pos p0, llama_pos p1) const {
+-    std::string why;
+-    if (!chunk_supported(&why)) {
+-        LLAMA_LOG_WARN("%s: chunk export refused: %s\n", __func__, why.c_str());
+-        return false;
+-    }
+-
++// Select the exact physical cells used by a chunk. This does not authorize export.
++bool llama_kv_cache::chunk_select_cells(llama_seq_id seq_id, llama_pos & p0, llama_pos & p1,
++        cell_ranges_t & cr, uint32_t & cell_count) const {
+     if (seq_id < 0 || (size_t) seq_id >= seq_to_stream.size()) {
+         return false;
+     }
+@@ -2330,9 +2326,9 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+         return false;
+     }
+ 
+-    cell_ranges_t cr { strm, {} };
++    cr = cell_ranges_t { strm, {} };
+ 
+-    uint32_t cell_count = 0;
++    cell_count = 0;
+     uint32_t range_begin = cells.size();
+ 
+     // every position of [p0, p1) must be present exactly once
+@@ -2344,7 +2340,7 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+         if (add) {
+             const size_t k = (size_t) (cells.pos_get(i) - p0);
+             if (seen[k]) {
+-                LLAMA_LOG_WARN("%s: chunk export refused: position %d appears twice\n", __func__, (int) cells.pos_get(i));
++                LLAMA_LOG_WARN("%s: chunk export refused: position %d appears twice\n", "chunk_export", (int) cells.pos_get(i));
+                 return false;
+             }
+             seen[k] = true;
+@@ -2363,11 +2359,27 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+     }
+ 
+     if (cell_count != (uint32_t) (p1 - p0)) {
+-        LLAMA_LOG_WARN("%s: chunk export refused: [%d, %d) holds %u cells, expected %d\n", __func__,
++        LLAMA_LOG_WARN("%s: chunk export refused: [%d, %d) holds %u cells, expected %d\n", "chunk_export",
+                 (int) p0, (int) p1, cell_count, (int) (p1 - p0));
+         return false;
+     }
+ 
++    return true;
++}
++
++bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, llama_pos p0, llama_pos p1) const {
++    std::string why;
++    if (!chunk_supported(&why)) {
++        LLAMA_LOG_WARN("%s: chunk export refused: %s\n", __func__, why.c_str());
++        return false;
++    }
++
++    cell_ranges_t cr {};
++    uint32_t cell_count = 0;
++    if (!chunk_select_cells(seq_id, p0, p1, cr, cell_count)) {
++        return false;
++    }
++
+     io.write(&p0, sizeof(p0));
+     io.write(&p1, sizeof(p1));
+     io.write(&cell_count, sizeof(cell_count));
+@@ -2957,14 +2969,22 @@ void llama_kv_cache::state_write_meta(llama_io_write_i & io, const cell_ranges_t
+     }
+ }
+ 
+-void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t & cr) const {
++void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t & cr, state_data_observer_i * observer) const {
+     const auto & cells = v_cells[cr.strm];
++    auto write_metadata = [&](const void * src, size_t size) {
++        if (observer) observer->metadata(size);
++        io.write(src, size);
++    };
++    auto write_tensor = [&](uint32_t layer, bool is_key, ggml_tensor * value, size_t offset, size_t size) {
++        if (observer) observer->tensor(layer, is_key, cr.strm, value, offset, size);
++        io.write_tensor(value, offset, size);
++    };
+ 
+     const uint32_t v_trans = this->v_trans ? 1 : 0;
+     const uint32_t n_layer = layers.size();
+ 
+-    io.write(&v_trans, sizeof(v_trans));
+-    io.write(&n_layer, sizeof(n_layer));
++    write_metadata(&v_trans, sizeof(v_trans));
++    write_metadata(&n_layer, sizeof(n_layer));
+ 
+     // Iterate and write all the keys first, each row is a cell
+     // Get whole range at a time
+@@ -2977,17 +2997,17 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+         // Write key type
+         const int32_t k_type_i = (int32_t) k->type;
+-        io.write(&k_type_i, sizeof(k_type_i));
++        write_metadata(&k_type_i, sizeof(k_type_i));
+ 
+         // Write row size of key
+         const uint64_t k_size_row = ggml_row_size(k->type, n_embd_k_gqa);
+-        io.write(&k_size_row, sizeof(k_size_row));
++        write_metadata(&k_size_row, sizeof(k_size_row));
+ 
+         // Read each range of cells of k_size length and write out
+         for (const auto & range : cr.data) {
+             const size_t range_size = range.second - range.first;
+             const size_t buf_size = range_size * k_size_row;
+-            io.write_tensor(k, range.first * k_size_row, buf_size);
++            write_tensor(il, true, k, range.first * k_size_row, buf_size);
+         }
+     }
+ 
+@@ -3004,17 +3024,17 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+             // Write value type
+             const int32_t v_type_i = (int32_t) v->type;
+-            io.write(&v_type_i, sizeof(v_type_i));
++            write_metadata(&v_type_i, sizeof(v_type_i));
+ 
+             // Write row size of value
+             const uint64_t v_size_row = ggml_row_size(v->type, n_embd_v_gqa);
+-            io.write(&v_size_row, sizeof(v_size_row));
++            write_metadata(&v_size_row, sizeof(v_size_row));
+ 
+             // Read each range of cells of v_size length and write out
+             for (const auto & range : cr.data) {
+                 const size_t range_size = range.second - range.first;
+                 const size_t buf_size = range_size * v_size_row;
+-                io.write_tensor(v, range.first * v_size_row, buf_size);
++                write_tensor(il, false, v, range.first * v_size_row, buf_size);
+             }
+         }
+     } else {
+@@ -3033,14 +3053,14 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+             // Write value type
+             const int32_t v_type_i = (int32_t) v->type;
+-            io.write(&v_type_i, sizeof(v_type_i));
++            write_metadata(&v_type_i, sizeof(v_type_i));
+ 
+             // Write element size
+             const uint32_t v_size_el = ggml_type_size(v->type);
+-            io.write(&v_size_el, sizeof(v_size_el));
++            write_metadata(&v_size_el, sizeof(v_size_el));
+ 
+             // Write GQA embedding size
+-            io.write(&n_embd_v_gqa, sizeof(n_embd_v_gqa));
++            write_metadata(&n_embd_v_gqa, sizeof(n_embd_v_gqa));
+ 
+             // For each row, we get the element values of each cell
+             for (uint32_t j = 0; j < n_embd_v_gqa; ++j) {
+@@ -3049,13 +3069,86 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+                     const size_t range_size = range.second - range.first;
+                     const size_t src_offset = (range.first + j * kv_size) * v_size_el;
+                     const size_t buf_size = range_size * v_size_el;
+-                    io.write_tensor(v, src_offset, buf_size);
++                    write_tensor(il, false, v, src_offset, buf_size);
+                 }
+             }
+         }
+     }
+ }
+ 
++// Test-only accounting of state_write_data, not a chunk-export or transfer API.
++// Expected inventory is supplied independently; no model measurement follows.
++bool llama_kv_cache::count_state_data_for_test(
++        const cell_ranges_t & cr, const std::vector<kpf60::expected_tensor> & expected,
++        kpf60::totals & output) const {
++    if (v_trans || cr.strm >= v_cells.size() || cr.data.empty()) return false;
++    uint32_t prev_end = 0;
++    for (const auto & range : cr.data) {
++        if (range.first >= range.second || range.second > v_cells[cr.strm].size() || range.first < prev_end) return false;
++        prev_end = range.second;
++    }
++    for (const auto & layer : layers) {
++        if (cr.strm >= layer.k_stream.size() || cr.strm >= layer.v_stream.size()) return false;
++        auto * k = layer.k_stream[cr.strm];
++        auto * v = layer.v_stream[cr.strm];
++        if (!k || k->type != GGML_TYPE_F16 || !ggml_is_contiguous(k)) return false;
++        if (v && (v->type != GGML_TYPE_F16 || !ggml_is_contiguous(v))) return false;
++    }
++    // Refuse an externally supplied inventory that doesn't bind the exact selection.
++    for (const auto & item : expected) {
++        if (item.id.stream != cr.strm || item.cells.size() != cr.data.size()) return false;
++        for (size_t i = 0; i < cr.data.size(); ++i) {
++            if (item.cells[i].begin != cr.data[i].first || item.cells[i].end != cr.data[i].second) return false;
++        }
++    }
++    struct null_sink final : llama_io_write_i {
++        size_t bytes = 0;
++        bool valid = true;
++        void add(size_t n) {
++            if (n > std::numeric_limits<size_t>::max() - bytes) { valid = false; return; }
++            bytes += n;
++        }
++        void write(const void *, size_t n) override { add(n); }
++        void write_tensor(ggml_tensor *, size_t, size_t n) override { add(n); }
++        size_t n_bytes() override { return bytes; }
++    } sink;
++    struct adapter final : state_data_observer_i {
++        kpf60::checked_counter counter;
++        const std::vector<kpf60::expected_tensor> & expected;
++        std::map<kpf60::key, size_t> next;
++        bool valid = true;
++        explicit adapter(const std::vector<kpf60::expected_tensor> & e) : expected(e) {}
++        void metadata(size_t n) override { if (!counter.metadata(n)) valid = false; }
++        void tensor(uint32_t layer, bool is_key, uint32_t stream,
++                    ggml_tensor * tensor, size_t offset, size_t size) override {
++            if (!valid || !tensor) { valid = false; return; }
++            kpf60::key id{layer, stream, !is_key};
++            const kpf60::expected_tensor * match = nullptr;
++            for (const auto & item : expected) {
++                if (!(item.id < id) && !(id < item.id)) {
++                    if (match) { valid = false; return; }
++                    match = &item;
++                }
++            }
++            if (!match) { valid = false; return; }
++            size_t & i = next[id];
++            if (i >= match->cells.size()) { valid = false; return; }
++            const auto range = match->cells[i++];
++            // nb[1] is the cell stride on the checked contiguous F16 view.
++            const bool contiguous = ggml_is_contiguous(tensor);
++            if (!counter.tensor(layer, !is_key, stream, tensor->type == GGML_TYPE_F16,
++                                contiguous, tensor->nb[1], ggml_nbytes(tensor),
++                                range.begin, range.end, offset, size)) valid = false;
++        }
++    } observer(expected);
++    state_write_data(sink, cr, &observer);
++    kpf60::totals candidate{};
++    if (!sink.valid || !observer.valid || !observer.counter.finish(expected, candidate) ||
++        candidate.serialized != sink.n_bytes()) return false;
++    output = candidate;
++    return true;
++}
++
+ bool llama_kv_cache::state_read_meta(llama_io_read_i & io, uint32_t strm, uint32_t cell_count, slot_info & sinfo, llama_seq_id dest_seq_id, const slot_info * sinfo_in) {
+     auto & cells = v_cells[strm];
+     auto & head  = v_heads[strm];
+diff --git a/src/llama-kv-cache.h b/src/llama-kv-cache.h
+index 147760f87..28cbeac84 100644
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -5,6 +5,7 @@
+ #include "llama-kv-cells.h"
+ #include "llama-kv-rows-plan.h"
+ #include "llama-memory.h"
++#include "kpf60-checked-counter.hpp"
+ 
+ #include <unordered_map>
+ #include <vector>
+@@ -389,8 +390,25 @@ private:
+         std::vector<std::pair<uint32_t, uint32_t>> data; // ranges, from inclusive, to exclusive
+     };
+ 
++    // Selection only; callers must separately check the operation-specific eligibility.
++    bool chunk_select_cells(llama_seq_id seq_id, llama_pos & p0, llama_pos & p1,
++                            cell_ranges_t & cr, uint32_t & cell_count) const;
++
+     void state_write_meta(llama_io_write_i & io, const cell_ranges_t & cr, llama_seq_id seq_id = -1) const;
+-    void state_write_data(llama_io_write_i & io, const cell_ranges_t & cr) const;
++    // Read-only diagnostics: reports the exact serialization traversal. The observer
++    // must not modify tensors or the I/O sink; a null observer keeps the normal path.
++    struct state_data_observer_i {
++        virtual ~state_data_observer_i() = default;
++        virtual void metadata(size_t size) = 0;
++        virtual void tensor(uint32_t layer, bool is_key, uint32_t stream,
++                            ggml_tensor * value, size_t offset, size_t size) = 0;
++    };
++    void state_write_data(llama_io_write_i & io, const cell_ranges_t & cr,
++                          state_data_observer_i * observer = nullptr) const;
++    // Test-only data-section accounting: caller supplies independently established inventory.
++    bool count_state_data_for_test(const cell_ranges_t & cr,
++                                   const std::vector<kpf60::expected_tensor> & expected,
++                                   kpf60::totals & output) const;
+ 
+     // sinfo_in, when set, replaces the find_slot call: the cells are given by the caller
+     bool state_read_meta(llama_io_read_i & io, uint32_t strm, uint32_t cell_count,       slot_info & sinfo, llama_seq_id dest_seq_id = -1, const slot_info * sinfo_in = nullptr);
