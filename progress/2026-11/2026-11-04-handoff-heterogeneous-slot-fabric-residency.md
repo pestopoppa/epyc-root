@@ -187,3 +187,7 @@ Completed KPF-62-G3-OUTCOME-CONTINUATION using the linked build, C++ bounded-gen
 ## 18:56Z — Validated the patched G3 scoring invocation with complete, interrupted and exhausted paired synthetic records and completed the continuation implementation task. Submitted KPF-17.4d witness qualification; GPU-busy smoke queued.
 
 The KPF-62 continuation implementation and model-free scoring-entry checks are complete; the separate authorization boundary for a successor remains in force. Witness row kvfork174d-witness-r5-20261104 is queued for publisher smoke because the GPU is busy; it is not yet qualified or published.
+
+## 19:03Z — Prepare prospective KPF-17 native oracle evidence capture and safe test qualification
+
+The KPF-17 full oracle build remains a build-only PASS; registered prospective native mutation-oracle write-side capture preserving original controls, mutation mechanisms and complete custody. Native execution remains open pending captured-PID cleanup and publisher qualification. Corrected the prior G3 source-stage note to reflect subsequent synthetic scoring-entry validation. The queued KPF-17.4d witness uses filed predecessor scratch; its pinned preconditions refuse absent inputs, and a successor needs its own presealed runtime before publication.
