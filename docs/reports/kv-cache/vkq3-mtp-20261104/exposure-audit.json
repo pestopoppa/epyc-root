@@ -1,0 +1,13 @@
+{
+  "schema": "vkq3.exposure-audit.v1",
+  "prompt_sha256": "be82b737c800252d7c267f56a61ddeefad47f46f2dab4c55746d09b8954d2333",
+  "searched_roots": [
+    "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245",
+    "/mnt/raid0/llm/tmp/handoff-kvu-vkq3-independent-calibration-20261101",
+    "/mnt/raid0/llm/tmp/compute-flags"
+  ],
+  "glob": "*exposure*.json",
+  "match_count": 0,
+  "scope": "bounded filesystem filename/content search; not host-wide proof",
+  "prior_calibration": "independent run stopped at tokenizer before target arms per filed evidence"
+}
