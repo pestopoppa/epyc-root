@@ -175,3 +175,7 @@ KPF-61: removed superseded scratch attempts, reducing scratch from ~11 GiB to 6 
 ## 22:37Z — Park the KPF-61 failed qualification lineage and ready the KPF-50 clock witness successor
 
 KPF-61: third publisher smoke returned rc75 with a native tiny-model FAIL: 32/32 token IDs matched, probability rows differed from token 0, and planner prefix increased 32 to 224. The three-failure lineage is parked; no 35B or parent gate result follows. KPF-50.CLOCK-QUAL: the separate r3 model-free GPU clock witness passed publisher smoke and was published; the unchanged 150 GiB full-run floor remains in force. Prior r1 and r2 full attempts stopped at that floor; smoke does not qualify the full witness or expose target profiling windows.
+
+## 22:39Z — File the KPF-50 clock witness disk-floor interruption and remove superseded scratch attempts
+
+KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r3-20261104 ended rc75 disk-floor before native RESULT.json; filed INCONCLUSIVE with filing receipt. No target profile window was exposed. Removed superseded scratch attempts; kvfork scratch was 4.8 GiB on inspection and remains approximately 4.8 GiB after small obsolete attempts were removed. Retained current attempt and cited inputs. RAID had approximately 107 GiB available against the unchanged 150 GiB full-run floor; the existing CPU oracle and GPU clock successors would stop at that floor, so no repeat was published. KPF-61 remains parked after three failed qualifications.
