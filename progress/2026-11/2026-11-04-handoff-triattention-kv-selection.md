@@ -51,3 +51,7 @@ The corrected real-cache API qualification completed on the pinned Qwen3-1.7B CP
 ## 16:47Z — Prepare bounded real-cache recency parameter validation
 
 The integrated CPU v3 compile was already filed pass. Prepared an isolated Qwen3-1.7B CPU parameter-validation packet using 128 frozen valid token IDs, candidate/model/DSO pins, fresh slots and stop-on-first-response-mismatch. Python syntax and shell syntax passed. Submitted the row for smoke; no runtime pass or publication is asserted until smoke returns.
+
+## 17:04Z — File phase CPU build disk-floor stop
+
+Filed lsa-phase-cpu-build-20261104 inconclusive: rc=75 disk-floor after configuration, no build completion. Preserved result, manifest and end in docs/evidence/lsa-phase-cpu-build-20261104/. Integrated CPU v2 failure was already filed and superseded by passing v3.
