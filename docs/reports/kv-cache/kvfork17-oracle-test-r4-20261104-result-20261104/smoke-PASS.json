@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork17-oracle-test-r4-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T20:30:33Z reason=partial-native-incomplete",
+ "engine_sha256": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork17-oracle-test-r4-20261104/native-attempts/attempt-q5j5mio2/native-result.json (measurement field)",
+ "first_progress_s": 900,
+ "first_unit_at": "2026-11-04T20:30:35Z",
+ "id": "kvfork17-oracle-test-r4-20261104",
+ "launcher_sha256": "d7a99b800993e9b3760b8533187b5da64d3f4a8413abf4abad5731d550ef1742",
+ "passed_at": "2026-11-04T20:30:35Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork17-oracle-test-r4-20261104/native-attempts/attempt-q5j5mio2/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

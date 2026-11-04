@@ -1,0 +1,11 @@
+
+Program stopped.
+0x000077427f36f140 in ?? () from /lib64/ld-linux-x86-64.so.2
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x77427dfff6c0 (LWP 497230)]
+[Thread 0x77427dfff6c0 (LWP 497230) exited]
+[New Thread 0x77427dfff6c0 (LWP 497231)]
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions

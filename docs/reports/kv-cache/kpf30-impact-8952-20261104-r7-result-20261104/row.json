@@ -1,0 +1,51 @@
+{
+ "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately and emit OWNER_WARNING on any HIGH/CRITICAL. Stop on ambiguity, parser failure, source drift or missing graph binding. Partial source-reference smoke is first progress only; success needs scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-IMPACT",
+ "id": "kpf30-impact-8952-20261104-r7",
+ "keep": [
+  "out/**",
+  "identity.json",
+  "job.py",
+  "source_integrity.py",
+  "test_source_integrity.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "gitnexus-guard.py",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7/launch.sh",
+  "sha256": "0e78abdd9f76fa559463dde18b616d63fec9c2c605c280fdee1a59eccf6a1774"
+ },
+ "lineage": "kpf30-impact-8952",
+ "min_window_s": 300,
+ "notes": "Fresh independent r7 after r6 disk-floor inconclusive; unchanged 150 GiB floor and six-symbol source-bound rule; no model run.",
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:1003: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T20:30:38Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7/STOP",
+ "supersedes": "kpf30-impact-8952-20261104-r6",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf30-impact-r7"
+}
