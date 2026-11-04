@@ -55,3 +55,7 @@ Wrote the FILED receipt for `lsa-norm-row1185-20261104` using its existing PASS 
 ## 15:57Z — Acknowledge filed LSA tied-sort profile
 
 Wrote the FILED receipt for `lsa-tied-sort-profile-20261104` using its existing inconclusive verdict. The CPU tied-cutoff and full sort-order checks passed, while the compile-only HIP std::sort viability leg failed. Native result SHA-256 `7afc6c794166dc8558bb8ab6e9e382562d8437cb133a42141a2baa0181da86a8`. No model or GPU execution was included; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
+
+## 15:59Z — File LSA author fixture control
+
+Filed `lsa-ward-author-fixture-20261104` as PASS via file_result.py and wrote its FILED receipt. The source-derived host sort matched the pinned 128-item reference order; the 513-key author fixture was generated, and `sha256sum -c outputs.sha256` validated all three outputs. Preserved host-sort order, native-result digest and output checksums in `progress/evidence/codex-gen-lsa-ward-fixture-filing-20261104.json`. This is a bounded CPU fixture check; no HIP/GPU execution, model inference or broader Ward correctness is established. LSA-SCREEN-1 remains open; no checkbox was ticked.
