@@ -1522,7 +1522,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 657,
+          "line": 658,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1016,
+          "line": 1017,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1293,
+          "line": 1294,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1928,
+          "line": 1929,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2230,
+          "line": 2231,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2839,
+          "line": 2840,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 684,
+          "line": 685,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
