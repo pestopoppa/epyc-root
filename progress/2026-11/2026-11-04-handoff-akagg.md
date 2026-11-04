@@ -283,3 +283,7 @@ The P1b 9e18 CPU build was already filed as a bounded build pass. Filed floor v1
 ## 21:49Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
 
 The P1b 9e18 CPU build was already filed as a bounded build pass. Filed floor v17, paired C6 GPU r11 and NEMO marker build r4 as inconclusive rc75 disk-floor stops with terminal packets retained. Published floor v18 and paired GPU diagnostic r12 after publisher smoke PASS. NEMO r5 launcher/provenance changed after its smoke and rowflow marks it stale; prepared an independent r6 and published it after a fresh publisher smoke. Full results remain pending. Published independent NEMO marker r7, floor v19 and paired GPU diagnostic r13 after publisher smokes passed; full results remain pending.
+
+## 21:51Z — Filed interrupted NEMO marker build and published source-bound successor.
+
+The P1b DFlash CPU build was already filed as a bounded build pass. Filed NEMO marker build r7 as inconclusive rc75 disk-floor stop with terminal packet retained. Published NEMO marker build r8 after publisher source-custody smoke PASS; full build and recapture remain pending. P1b W4 historical model/recipe binding review is in progress.
