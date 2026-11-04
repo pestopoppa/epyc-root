@@ -1,0 +1,28 @@
+{
+  "id": "handoff-kvu16h-k35-native-20261102",
+  "owner": "handoff-kv-unified-stack-rollout",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/launcher.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,q0,q1,q2,q3,184-191",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 600,
+  "min_window_s": 600,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "handoff_task": "kv-unified-stack-rollout.md:KVU-16h-runner",
+  "decision_rule": "Lifecycle validation only: full row passes when two fresh distinct server PIDs complete at least one token each and each captured process is proven dead before the next arm; first arm is dedicated spec-type none, has no draft model/flags and sends no speculative.n_max override. Failed sampling, health ownership or cleanup rejects the row. Native qualification emits one real no-draft result only after verified cleanup; it does not establish full pair behavior or throughput/quality claims.",
+  "keep": [
+    "RESULT.json",
+    "run/**",
+    "prepared.json",
+    "prompt.txt",
+    "scripts/**",
+    "*.py",
+    "launcher.sh",
+    "row-spec.json"
+  ],
+  "notes": "Prepared offline only; owner publishes. Existing 35B GGUF used because historical 27B path is absent. Model header/stat identity verified, no weight digest claim. Fixed 2048 nominal context, 16 max output tokens, no warmups, full row 2 requests; smoke 1 request. Whole-host quiet claim full run. No production source/build/config mutations. Custody hardened: parent-death SIGKILL wrapper, same engine process group, continuous STOP/deadline watchdog. Native smoke pins exactly four CPUs from inherited actual grant affinity and four server threads.",
+  "kind": "compute"
+}

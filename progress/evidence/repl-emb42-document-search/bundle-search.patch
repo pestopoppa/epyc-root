@@ -1,0 +1,51 @@
+--- a/src/repl_document.py
++++ b/src/repl_document.py
+@@ -132,0 +133,4 @@
++        # Bundle reads must use context.get so byte and pull budgets apply.
++        # The legacy section() accessor would expose unaccounted document text.
++        if self._document_search_enabled and self.context_bundle is not None:
++            raise ValueError("section() is unavailable with document search and a context bundle; use context.get")
+@@ -277,5 +280,0 @@
+-        # peek without a file switches to bundle.page(), so document offsets do
+-        # not name its source or pass through its pull accounting. Refuse rather
+-        # than return unreadable or unaccounted pointers.
+-        if self.context_bundle is not None:
+-            raise ValueError("document search unavailable with a context bundle")
+@@ -286 +285,10 @@
+-        if not text or not self.context.endswith(text):
++        bundle = self.context_bundle
++        bundle_section = None
++        if bundle is not None:
++            # The caller explicitly supplied the exact searchable document as a
++            # bundle section. Never charge an unrelated bundle for document reads.
++            matches = [s.name for s in bundle.sections if s.kind == "text" and s.text == text]
++            if not text or len(matches) != 1:
++                raise ValueError("bundle must contain exactly one exact document text section")
++            bundle_section = matches[0]
++        elif not text or not self.context.endswith(text):
+@@ -292 +300 @@
+-        base = len(self.context) - len(text)
++        base = 0 if bundle is not None else len(self.context) - len(text)
+@@ -308,3 +316,9 @@
+-            results.append({**hit, "section": section, "start": start, "end": end,
+-                            "line": self.context.count("\n", 0, start) + 1,
+-                            "source": "context", "read": "peek"})
++            source_text = text if bundle is not None else self.context
++            result = {**hit, "section": section, "start": start, "end": end,
++                      "line": source_text.count("\n", 0, start) + 1}
++            if bundle is not None:
++                result.update(source="context_bundle", bundle_section=bundle_section,
++                              read="context.get")
++            else:
++                result.update(source="context", read="peek")
++            results.append(result)
+@@ -336 +350,2 @@
+-            f"context: str ({len(self.context)} chars)",
++            ("context: bundle view" if self._document_search_enabled and self.context_bundle is not None
++             else f"context: str ({len(self.context)} chars)"),
+@@ -341 +356,4 @@
+-            f"  section(n): Get section n content (1-{len(self.document_context.sections)})",
++            ("  Document reads: use context.get(bundle_section, offset=start, "
++             "max_chars=end-start) with search_sections pointers"
++             if self._document_search_enabled and self.context_bundle is not None
++             else f"  section(n): Get section n content (1-{len(self.document_context.sections)})"),

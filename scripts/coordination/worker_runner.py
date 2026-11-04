@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """worker_runner.py — one assignment, one visible worker, one typed report, then exit.
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P2-1, P2-4, P2-6)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P2-1, P2-4, P2-6)
 Plan of record: docs/design/loop-owned-fleet.html  (runner lifecycle diagram)
 Contract:       coordination/session-bus/BUS_PROTOCOL.md
 Ratified decisions this file implements: D1 (bounds), D2/D2b (harness knob +
@@ -476,8 +476,9 @@ def build_brief(rows: list[dict], *, batch_id: str, lane: str, worktree: Path,
     """
     brief_rows = []
     for row in rows:
-        text = str(row.get("task_text") or "").strip()
-        if not text:
+        raw_text = row.get("task_text")
+        text = raw_text if isinstance(raw_text, str) else ""
+        if not text.strip():
             raise RefusalError(
                 "a batch row has no task_text — the dispatch IDENTITY. A row_ref is a hint, "
                 "not an identity. Re-resolve with scripts/coordination/backlog_row_check.py.")
@@ -1492,7 +1493,7 @@ def park_rows(bus_root: Path, agent: str, rows: list[dict], verdicts: dict,
                 "lane": "none",
                 "gating": "none",
                 "spec_ref": str(row.get("source_handoff")
-                                or "handoffs/active/loop-owned-fleet-implementation.md#P2-2"),
+                                or "handoffs/active/coordination-and-churn-pipeline.md#P2-2"),
                 "summary": (f"Re-verify the premise of {row['task_id']} "
                             f"(screener: {verdict['verdict']})"),
                 "task_text": (f"Premise check on {row['task_id']} returned "
@@ -1510,10 +1511,22 @@ def park_rows(bus_root: Path, agent: str, rows: list[dict], verdicts: dict,
 
 
 def load_assignment(args: argparse.Namespace) -> dict:
+    # Direct file readers may pass a Namespace that predates --assignment-stdin.
+    from_stdin = bool(getattr(args, "assignment_stdin", False))
+    if args.assignment and from_stdin:
+        raise RefusalError("choose one assignment source")
     if args.assignment:
         data = json.loads(Path(args.assignment).read_text(encoding="utf-8"))
         if not isinstance(data, dict) or not isinstance(data.get("rows"), list):
             raise RefusalError("assignment file must be an object with a `rows` list")
+    elif from_stdin:
+        # RTG-52: the coordinator delivers the resolved row as exact UTF-8 JSON on
+        # stdin, so long task text is neither clipped nor exposed to argv limits.
+        stream = getattr(sys.stdin, "buffer", None)
+        raw = stream.read() if stream is not None else sys.stdin.read().encode("utf-8")
+        data = json.loads(raw.decode("utf-8"))
+        if not isinstance(data, dict) or not isinstance(data.get("rows"), list):
+            raise RefusalError("assignment stdin must be an object with a `rows` list")
     else:
         if not (args.task_id and args.row_text):
             raise RefusalError("need --assignment <file>, or --task-id and --row-text")
@@ -1803,7 +1816,7 @@ def write_results(bus_root: Path, agent: str, results: list[dict], report: Optio
             "to": "coordinator-agent", "needs_routing_to": ["coordinator-agent"],
             "action_required": True, "assignee": "coordinator-agent",
             "payload": {"lane": "none", "gating": "none",
-                        "spec_ref": "handoffs/active/loop-owned-fleet-implementation.md#P2-8",
+                        "spec_ref": "handoffs/active/coordination-and-churn-pipeline.md#P2-8",
                         "summary": f"Merge-gate promotion for batch {ctx['batch_id']}",
                         "task_text": f"Promote pool-worker batch {ctx['batch_id']} "
                                      f"({', '.join(promo['task_ids'])}) through the merge gate",
@@ -1834,6 +1847,8 @@ def build_parser() -> argparse.ArgumentParser:
     r = sub.add_parser("run", help="claim → brief → screen → spawn → watch → collect")
     r.add_argument("--lane", required=True, help="pool lane name (lane0..lane3) or absolute path")
     r.add_argument("--assignment", help="JSON file: {rows: [{task_id, task_text, ...}]}")
+    r.add_argument("--assignment-stdin", action="store_true",
+                   help="read the exact resolved {rows: [...]} assignment as UTF-8 JSON from stdin")
     r.add_argument("--task-id")
     r.add_argument("--row-text")
     r.add_argument("--row-ref", help="file.md:LINE — a HINT; task_text is the identity")

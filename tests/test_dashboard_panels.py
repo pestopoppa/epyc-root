@@ -114,7 +114,9 @@ def _hip_decision_receipt() -> dict:
         "timing": {
             "median_speedup": 1.0769349742219618,
             "provider": {"provider_id": "torch_rocm_compile"},
-            "e_process": {"first_crossing_block": 9},
+            "e_process": {"first_crossing_block": 9, "threshold": 20.0},
+            "blocks": [{"candidate_ns": 9_200.0, "anchor_ns": 9_936.0}
+                       for _ in range(20)],
             "ranked_duration_admission": {
                 "all_arms_passed": True, "minimum_ns": 250_090_903,
                 "minimum_observed_ns": 276_039_581.2988281,
@@ -910,6 +912,36 @@ class KernelActivityContextTest(unittest.TestCase):
                 row = legacy._hip_decision_grade_summary(root)
             self.assertFalse(row["available"])
             self.assertIn(phrase, row["error"])
+
+    def test_hip_r6_crossing_is_rederived_not_pinned(self):
+        def summarize(mutate):
+            with tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                path = (root / "campaigns" /
+                        legacy.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
+                path.parent.mkdir(parents=True)
+                value = _hip_decision_receipt()
+                mutate(value)
+                value.pop("receipt_sha256")
+                value["receipt_sha256"] = legacy._canonical_receipt_hash(value)
+                path.write_text(json.dumps(value), encoding="utf-8")
+                return legacy._hip_decision_grade_summary(root)
+
+        def lose_first(value):
+            value["timing"]["blocks"][0] = {"candidate_ns": 9_936.0,
+                                            "anchor_ns": 9_200.0}
+            value["timing"]["e_process"]["first_crossing_block"] = 11
+
+        row = summarize(lose_first)
+        self.assertTrue(row["available"], row.get("error"))
+        self.assertEqual(row["e_process_first_crossing_block"], 11)
+
+        def never(value):
+            value["timing"]["blocks"] = [
+                {"candidate_ns": 9_936.0, "anchor_ns": 9_200.0}] * 20
+        row = summarize(never)
+        self.assertFalse(row["available"])
+        self.assertIn("never crosses", row["error"])
 
     def test_current_state_keeps_fixed_diagnostic_and_smoke_claims_separate(self):
         with tempfile.TemporaryDirectory() as td:

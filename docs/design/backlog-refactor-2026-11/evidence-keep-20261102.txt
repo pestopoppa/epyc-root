@@ -1,0 +1,85 @@
+# evidence-keep-20261102 — paths the experiment packages, replays and adjudications depend on (plan v6). Status 2026-11-02: a KEEP marker now exists on /mnt/raid0/llm/tmp/ws58-csh/ (created by ws58) covering this audit directory ONLY; the 27 evidence paths below still need the markers listed in the last section, created by their owning sessions.
+# Format: KEEP <path>\t<size>\t<files>\t<dependency>. Create the marker named in the last section with the owning session, then re-run scratch_cleanup.py plan.
+
+KEEP /mnt/raid0/llm/tmp/cal-1025/nemo-gpu-prof	307M	59	NEMO-PROF-RESEG retained diagnostic (historical; prospective capture still required)
+KEEP /mnt/raid0/llm/tmp/cal-1025/ch27-q38fn-floors	28K	6	EXP-02 CH-27 prepared launcher (authorized C5 window)
+KEEP /mnt/raid0/llm/tmp/codex-ch27-custody-20261102/isolated-draft	259M	485	EXP-02 CH-27a isolated calibration successor
+KEEP /mnt/raid0/llm/tmp/codex-ni-20261026-ch27-actual-floor	2.2G	32263	EXP-02 CH-27 03:25Z aborted window artifacts + recipe/plan-for-dry.json
+KEEP /mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/inputs-ch27-20261023	104K	14	EXP-02 CH-27 bundle
+KEEP /mnt/raid0/llm/tmp/ak-q38fn-ch27-20261024	384K	47	EXP-02 CH-27 launchers (ch27_window.sh etc.)
+KEEP /mnt/raid0/llm/tmp/hil15b-flagon-out	6.6M	513	CAP-02 HIL-16a verified recordings (80/80 clean) — HIL-13/15/18a analyses
+KEEP /mnt/raid0/llm/tmp/hil18a-spectrum-out	9.8M	852	CAP-02 HIL-18a spectrum replays
+KEEP /mnt/raid0/llm/tmp/hil15c-20261024	28K	4	CAP-02 hil15c_eval.py predeclared floor
+KEEP /mnt/raid0/llm/epyc-orchestrator/data/bep_sandbox	632K	88	TOC-SP-5 per-turn corpus (zero-inference audit)
+KEEP /mnt/raid0/llm/datasets/nearmiss-corpus-v1	95M	7	RCP-W3 / RC-8 nearmiss corpus (not part of EXP-11)
+KEEP /mnt/raid0/llm/epyc-inference-research/data/batched_decode	28M	1062	EXP-05 A7 banked cells (gemma4 group + qwen partials) — adjudication input
+KEEP /mnt/raid0/llm/tmp/pip02-phaseb-20261028	7.2M	99	EXP-06 Phase B results + custody inputs
+KEEP /mnt/raid0/llm/epyc-inference-research/data/moe-routing-rt1-q38fn-20261023	672K	12	CAP-01 RT-1 Q38FN traces (RT-6/RT-7 replay)
+KEEP /mnt/raid0/llm/epyc-inference-research/artifacts/exl3-cpu-dispatch-20260926	764K	31	RPL-EXL3 related dispatch artifacts (the 10-04 nine-file copy is in root git d735d5d2)
+KEEP /mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-parakeet-r2-20261030	31M	5589	EXP-07 / RPL-STT banked Parakeet hypotheses
+KEEP /mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101	5.9M	31	EXP-07 / RPL-STT Nemotron rescore
+KEEP /mnt/raid0/llm/tmp/cs8l-ratings-20261023	312K	76	EXP-07 CS-8 ratings
+KEEP /mnt/raid0/llm/tmp/cs-47-20261020	583M	11202	CAP-06 turn-taking trace bank
+KEEP /mnt/raid0/llm/tmp/cs-46-20261020/export	902M	5	CAP-06 CS-46 export
+KEEP /mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/cs45	286M	57654	CAP-06 CS-45 derived results
+KEEP /mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026	380M	6055	EXP-04 PF1 native launcher evidence (PF1-NATIVE-READ…)
+KEEP /mnt/raid0/llm/tmp/refactor-01a16fc3/inf34-prefill-crossover-ready	3.0M	518	EXP-04 PF1 ready packets
+KEEP /mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720	40M	491	CAP-04 pinned GPQA items (questions_gpqa_diamond_cot.json); CAP-08
+KEEP /mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_journal.jsonl	18M	1	RPL-AP immutable journal shard 0
+KEEP /mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_journal_1.jsonl	19M	1	RPL-AP immutable journal shard 1 (read all shards)
+KEEP /mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_checkpoints	4.5G	-	RPL-AP checkpoints / Pareto state
+
+# 27 paths, ≈9.6 GiB total (du -sh, 2026-11-02)
+
+# MISSING (cited by handoffs, not on disk — do not recreate, record as unexposed/rebuild):
+MISSING /mnt/raid0/llm/tmp/a7-fire-20260813	E5 A7 launcher — MISSING on disk (rebuild from research main before any regeneration)
+MISSING /mnt/raid0/llm/epyc-inference-research/data/exl3-6c5-quality	EXL3-6c5a quality data — MISSING on disk; fields stay unexposed
+MISSING /mnt/raid0/llm/tmp/codex-ni-20261027-pf1-native-ready	PF1 ready dir cited in the handoff — MISSING; use compute-coordination-20261026 packets
+
+# KEEP-marker files to create (handoff-index-authoring.md → Scratch roots rule 2; a plain dir gets KEEP or .epyc-keep whose text says why; a file gets <name>.epyc-keep):
+/mnt/raid0/llm/tmp/cal-1025/nemo-gpu-prof/KEEP	# load-bearing: NEMO-PROF-RESEG retained diagnostic (historical; prospective capture still required)
+/mnt/raid0/llm/tmp/cal-1025/ch27-q38fn-floors/KEEP	# load-bearing: EXP-02 CH-27 prepared launcher (authorized C5 window)
+/mnt/raid0/llm/tmp/codex-ch27-custody-20261102/isolated-draft/KEEP	# load-bearing: EXP-02 CH-27a isolated calibration successor
+/mnt/raid0/llm/tmp/codex-ni-20261026-ch27-actual-floor/KEEP	# load-bearing: EXP-02 CH-27 03:25Z aborted window artifacts + recipe/plan-for-dry.json
+/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/inputs-ch27-20261023/KEEP	# load-bearing: EXP-02 CH-27 bundle
+/mnt/raid0/llm/tmp/ak-q38fn-ch27-20261024/KEEP	# load-bearing: EXP-02 CH-27 launchers (ch27_window.sh etc.)
+/mnt/raid0/llm/tmp/hil15b-flagon-out/KEEP	# load-bearing: CAP-02 HIL-16a verified recordings (80/80 clean) — HIL-13/15/18a analyses
+/mnt/raid0/llm/tmp/hil18a-spectrum-out/KEEP	# load-bearing: CAP-02 HIL-18a spectrum replays
+/mnt/raid0/llm/tmp/hil15c-20261024/KEEP	# load-bearing: CAP-02 hil15c_eval.py predeclared floor
+/mnt/raid0/llm/epyc-orchestrator/data/bep_sandbox/KEEP	# load-bearing: TOC-SP-5 per-turn corpus (zero-inference audit)
+/mnt/raid0/llm/datasets/nearmiss-corpus-v1/KEEP	# load-bearing: RCP-W3 / RC-8 nearmiss corpus (not part of EXP-11)
+/mnt/raid0/llm/epyc-inference-research/data/batched_decode/KEEP	# load-bearing: EXP-05 A7 banked cells (gemma4 group + qwen partials) — adjudication input
+/mnt/raid0/llm/tmp/pip02-phaseb-20261028/KEEP	# load-bearing: EXP-06 Phase B results + custody inputs
+/mnt/raid0/llm/epyc-inference-research/data/moe-routing-rt1-q38fn-20261023/KEEP	# load-bearing: CAP-01 RT-1 Q38FN traces (RT-6/RT-7 replay)
+/mnt/raid0/llm/epyc-inference-research/artifacts/exl3-cpu-dispatch-20260926/KEEP	# load-bearing: RPL-EXL3 related dispatch artifacts (the 10-04 nine-file copy is in root git d735d5d2)
+/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-parakeet-r2-20261030/KEEP	# load-bearing: EXP-07 / RPL-STT banked Parakeet hypotheses
+/mnt/raid0/llm/tmp/codex3-stt5-nemo-rescore-v3-20261101/KEEP	# load-bearing: EXP-07 / RPL-STT Nemotron rescore
+/mnt/raid0/llm/tmp/cs8l-ratings-20261023/KEEP	# load-bearing: EXP-07 CS-8 ratings
+/mnt/raid0/llm/tmp/cs-47-20261020/KEEP	# load-bearing: CAP-06 turn-taking trace bank
+/mnt/raid0/llm/tmp/cs-46-20261020/export/KEEP	# load-bearing: CAP-06 CS-46 export
+/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/cs45/KEEP	# load-bearing: CAP-06 CS-45 derived results
+/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/KEEP	# load-bearing: EXP-04 PF1 native launcher evidence (PF1-NATIVE-READ…)
+/mnt/raid0/llm/tmp/refactor-01a16fc3/inf34-prefill-crossover-ready/KEEP	# load-bearing: EXP-04 PF1 ready packets
+/mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720/KEEP	# load-bearing: CAP-04 pinned GPQA items (questions_gpqa_diamond_cot.json); CAP-08
+/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_journal.jsonl.epyc-keep	# load-bearing: RPL-AP immutable journal shard 0
+/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_journal_1.jsonl.epyc-keep	# load-bearing: RPL-AP immutable journal shard 1 (read all shards)
+/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_checkpoints/KEEP	# load-bearing: RPL-AP checkpoints / Pareto state
+
+# Journal shards: both autopilot_journal*.jsonl live under /mnt/raid0/llm/epyc-orchestrator/orchestration/, which carries a shared parent marker; a parent KEEP protects children only for reapers that walk ancestors (scratch_cleanup.py does; reap_idle_lanes.py reads no KEEP at all) — check the particular reaper before relying on it, and keep the per-file .epyc-keep entries above.
+# git worktree KEEP (none required: no package depends on a worktree).
+
+# T3 additions (ws58, 2026-11-02, BRF-T3-1): replay evidence cited by t3-cells.json that was not listed above. KEEP markers are created by the owning sessions.
+KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030	92M	2165	RPL-KB G11 R2 native records + stored embeddings (G11 disagreement analysis input)
+KEEP /mnt/raid0/llm/tmp/codex-ni-kbrag-g13-truncskip-20261030	-	-	RPL-KB G13 truncation sweep packet
+KEEP /mnt/raid0/llm/tmp/codex-c6-*-20261102	-	-	RPL-C6 retained diagnostic captures (10 dirs; unchanged-predicate re-reads only)
+
+# T3 additions, second pass (ws58, 2026-11-02, BRF-T3-2 continuation): inputs read by the C6 / EXP-06 / LID1 / RT-6 / CAP-06 replays.
+KEEP /mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030	-	57932	EXP-07 CS-26.LID1 arm (b): Nemotron 3.5 auto-mode tags (raw-r0-auto.json); KEEP marker created 2026-11-02
+KEEP /mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101	46M	-	EXP-06 PIP02-PHASEC-CUSTODY v8 exposure snapshot (last readable record; /mnt/micron campaign roots not visible in the 2026-11-02 session namespace)
+KEEP /mnt/raid0/llm/tmp/codex3-cs26-lid1-20261030	-	-	EXP-07 CS-26.LID1 frozen crop manifest (9,150 cases) + v2 packet
+KEEP /mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results	742M	-	CAP-01 RT-6 raw Q38FN routing traces (27 hash-verified shards); protected by the parent /mnt/raid0/llm/tmp/roi-prep-20261023/KEEP; no marker added inside the trace tree
+
+# T3 additions, third pass (ws58, 2026-11-02, BRF-T3-2 CAP-02): further inputs read by the CAP-02 scans. KEEP markers already exist on each.
+KEEP /mnt/raid0/llm/tmp/hil16a-verify-out	-	-	CAP-02 HIL-16a filed verify result (80/80 clean) compared with the offline re-verify
+KEEP /mnt/raid0/llm/tmp/hil15d-20261024	-	-	CAP-02 hil15d_eval.py + filed result (no_final_step replication on the HIL-18a replays)
+KEEP /mnt/raid0/llm/tmp/fillers-3c4ca599/jobs/hil15b_tasks.json	-	-	CAP-02 task set (sha256 833d307b) that sets tool_required for the L2 scan; protected by the parent /mnt/raid0/llm/tmp/fillers-3c4ca599/KEEP

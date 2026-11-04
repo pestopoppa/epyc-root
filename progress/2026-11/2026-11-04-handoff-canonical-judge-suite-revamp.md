@@ -1,0 +1,5 @@
+# 2026-11-04 — handoff canonical-judge-suite-revamp
+
+## 07:11Z — File three scheduled EVL-46 controls and ready the pinned source-test row
+
+Filed evl46-opencode-schema-20261102, evl46-crm-reader-64-tests-20261102 and evl46-crm-fullentry-fixture-20261102 as PASS against their original scoped rules, with filing receipts written by file_result.py. Preserved native results, full-mode reader test log (7 passed), provider close/seal/journal, manifests, end records, verdicts and checksums in docs/evidence/evl46-control-results-20261104/. The pinned OpenCode schema matches, workspace read executes and unsolicited bash is broker-refused with unchanged canary; fixture qualification invokes no model. Split only the narrow completed control-filing steps from live TU-MH-1/TU-DTAP-2 acceptance, which remains open. Repaired the existing evl46-crm-live-source-tests-20261102 task pointer to TU-DTAP-2-SOURCE and republished through the current 4-CPU smoke; publisher reported SMOKE PASS and PUBLISHED. Full source-test receipt and actual model pair remain separate.

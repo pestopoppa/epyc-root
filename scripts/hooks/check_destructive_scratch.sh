@@ -9,7 +9,8 @@ set -euo pipefail
 # docs/reference/tmp-loss-reconcile-2026-10-25.md section 2 and section 6 guard 5, NIB2-108.
 # Limits: cannot see deletes in already-running processes or files it cannot read; fail-open on
 # unparseable input (the hygiene-tick backstop covers those). Rules live in the scanner.
-# Override: EPYC_ALLOW_SCRATCH_DELETE="operator: <who> <date>: <reason>" in the hook env.
+# No override (LOOP-53, operator decision B 2026-11-02); exceptions: sanctioned tools and
+# the sha256 pins in destructive_scratch_pins.json.
 # Tests: scripts/hooks/tests/test_destructive_scratch_hook.sh
 
 INPUT=$(cat)

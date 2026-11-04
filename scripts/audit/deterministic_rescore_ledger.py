@@ -2,7 +2,7 @@
 """Bounded, fail-closed deterministic re-score of already-persisted eval outputs.
 
 WHY THIS EXISTS (2026-08-12, backlog rows B9/B10 of
-``handoffs/active/autopilot-decision-plane-audit-2026-07-22.md``).
+``handoffs/active/autopilot-program.md``).
 
 B9 asked for a *bounded deterministic completion over already-generated
 outputs* once the scorer-isolation fix was integrated; B10 asked to resolve a

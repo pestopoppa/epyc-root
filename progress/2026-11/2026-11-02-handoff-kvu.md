@@ -27,3 +27,207 @@ Restored the quarter-run filing and native partial archive after the lane sparse
 ## 09:21Z — Confirm KVU quarter filing publication
 
 The previous wrap failed during push after committing. The dispatcher refreshed the lane, and origin/main already contains equivalent quarter filing and native archive in commit 444c53c50. The rc=75 incomplete target comparison remains UNKNOWN. GPU repair remains pending. No inference was launched.
+
+## 09:26Z — Repair and republish GPU C5 replay qualification
+
+Repaired and republished handoff-kvu-16i-c5-replay-20261101. Its failed dry run was pre-inference: historical receipt was unavailable inside the chroot and rowflow engine pin was stale. Restored the exact SHA-bound receipt under the job root, updated protocol and runtime paths, bound the installed tracked 329a1a03e engine (dry-run resource claim change), resealed source catalog and atomically replaced launcher last. Source catalog checks and all 48 historical request body hashes/order pass offline. Keeper qualification remains pending; no inference or promotion claim.
+
+## 09:27Z — Record C5 GPU replay qualification
+
+The GPU C5 row was republished after its missing historical receipt and stale engine pin were repaired; source and 48 request identities passed offline and keeper qualification is running. Lane refresh shows the durable repair in commit a44a037e2. Independent tokenizer, runner and CPU row preparation have been delegated. No inference was launched by this session.
+
+## 09:32Z — Investigate C5 qualification failure and assess KVU inference readiness
+
+Investigated C5 FAIL-2 (rc 75): producer refused MI210 because it tested WS58_REGIONS, which rowflow supplies as CPU-only; the qualification log separately shows the mi210_0 grant and GPU flock. A bounded repair and tests are in progress; completion event c5-region-repair-20261102 is registered for review before activation. KVU-15b requires 200 credited live :8083 calls in two eligible windows; the default serving log has 14 :8083 records and one credited call, insufficient, with other logs unverified. KVU-16h requires unfinished lifecycle and custody work. KVU-16a’s current 38.03 GiB value is derived at ubatch 512; the equal historical measurement used ubatch 2048, so it cannot establish current-shape provenance. No row was published or compute launched. GitNexus reports this lane unindexed; impact analysis unavailable. [no-belief: qualification log and bounded source review only]
+
+## 09:36Z — Repair and republish C5 GPU replay after region admission failure
+
+Repaired C5 FAIL-2 (rc 75): WS58_REGIONS is CPU-only, so the producer now parses exactly one regions field from the grant bytes it hashes and requires the exact mi210_0 token; FILLER_NEEDGPU remains mandatory. Five offline fixture tests passed, including missing/spoofed/duplicate region rejection, qualification cleanup and no target read. PIDs 847094 and 847095 from the failure report were absent. Resealed producer catalog and launcher and republished handoff-kvu-16i-c5-replay-20261101 for keeper qualification; no inference was launched. Two qualification failures exist; another may park the lineage. GitNexus is unindexed for this lane, so impact analysis was unavailable; the changed producer is confined to this row. [no-belief: source review and offline fixture tests only]
+
+## 09:39Z — Advance VKQ3 calibration and runner payload custody while C5 qualifies
+
+C5 repair was committed as 3d1da56d81eb; the prior wrap-up push failed, so this wrap retries publication. Dispatcher reports its republished row is in keeper dry-run; no outcome is claimed. VKQ3 synthetic input generation and KVU-16h P3/X0 payload custody were delegated as bounded offline work, with completion events registered for review. No inference was launched by this session. [no-belief: work in progress and dispatcher status only]
+
+## 09:39Z — Prepare fixed synthetic input for VKQ3 diagnostic and publish prior C5 repair
+
+Prepared deterministic synthetic input generator for the VKQ3 tokenizer diagnostic: 4,550,000 bytes, SHA-256 e354df7f35d62a98716b1d0c37ddf1dbedc3ce69f9722286d8f8f19c865d5417; three offline tests pass. This is only a draft input, not a tokenizer run or feasibility result. Grant integration, custody, receipts and pinned runtime remain. C5 repair commit 3d1da56d81eb awaits publication after the prior wrap-up push failed; dispatcher reports keeper qualification underway. No inference was launched. [no-belief: synthetic input identity and offline tests only]
+
+## 09:46Z — Harden KVU-16h draft runner payload custody
+
+Prepared an uninstalled P3/X0 coordinator draft that hashes request payloads before adapter calls, rejects mutation, and isolates authoritative cases and occupancy data. Ten offline tests pass, including payload mutation and cleanup cases. The broader cross-runner lifecycle task remains open; no inference was run. [no-belief: offline draft tests only]
+
+## 09:47Z — Harden runner payload evidence and prepare VKQ3 diagnostic receipts
+
+The uninstalled P3/X0 coordinator now validates canonical payloads before server startup and snapshots adapter responses and occupancy; twelve offline tests pass. A separate VKQ3 draft isolates qualification and full attempt receipts, rejects invalid completion and records bounded stdout identity without raw output; four offline tests pass. Its token output grammar is unverified and the draft is not integrated with the tokenizer, grant or process custody. No inference was run. [no-belief: isolated offline draft tests only]
+
+## 09:49Z — Preserve VKQ3 tokenizer supervision draft
+
+Preserved a syntax-checked, uninstalled VKQ3 supervisor draft with bounded input and output, cancellation, timeout and direct-child cleanup paths. It has no verified descendant custody, parent-death containment, live grant integration or pinned model/tokenizer identities; it cannot run as a diagnostic row. No inference was run. [no-belief: source and syntax review only]
+
+## 09:52Z — Test VKQ3 draft supervisor failure and cleanup paths
+
+Ten fake-child tests pass for the VKQ3 draft supervisor, including short stdin, output limits, cancellation, timeout, selector failure and direct-child reaping. These do not establish descendant custody, parent-death containment, pinned runtime identity or grant integration; the diagnostic remains unpublishable. No model or tokenizer inference was run. [no-belief: offline fake-child tests only]
+
+## 09:55Z — Advance VKQ3 grant and containment integration
+
+VKQ3 grant, identity and parent-death integration is in progress in scratch; it has no full success receipt and is not row-ready. KVU-16h still needs separate real server lifecycles; the existing guard drafts are insufficient. No inference was run. [no-belief: implementation in progress]
+
+## 09:57Z — Review VKQ3 grant guard against keeper contract
+
+Reviewed the unpublished VKQ3 grant guard against filler_run15.sh: it accepts any nonempty grant and assumes 0-95 CPUs in qualification, but the keeper dry-runs a multi-quarter job on one quarter. Both must be fixed before integration or publication. Containment and runner work continue separately; no inference was run. [no-belief: source contract review only]
+
+## 09:58Z — Bind VKQ3 guard repair to keeper grant contract
+
+The VKQ3 grant repair is being implemented against the keeper serializer: the fixed row ID is bound by grant filename, while regions, start and end are parsed from the grant; the full CPU shape and quarter-sized qualification must be validated independently. No new row or inference result exists. [no-belief: implementation in progress]
+
+## 10:00Z — Review VKQ3 guard against actual rowflow modes
+
+Independent review found the candidate VKQ3 guard rejects real arming because rowflow removes FILLER_DRYRUN, and rejects valid diagnostic and correctness admission classes. It is not publishable; the mode and serializer checks require repair and integration tests. No inference was run. [no-belief: source contract review only]
+
+## 10:01Z — Repair VKQ3 grant validation against keeper serializers
+
+Repaired the uninstalled VKQ3 guard draft to accept real-arm mode when FILLER_DRYRUN is absent, require the synthetic keeper schema/id/kind in dry runs, verify grant window and CPU shape, and reject revoked or changed grants. Six offline tests pass against actual keeper serializers, including quarter q0 mapping, full mode, identity, stop and deadline. The guard is not integrated with process custody or a launcher and is not a publishable row. The reported origin/main merge conflict did not reproduce; the merge completed. [no-belief: offline grant-guard tests only]
+
+## 10:03Z — Investigated VKQ3 calibration and scoped independent runner and cache-credit work; delegated bounded supervisor fix for integration.
+
+VKQ3 calibration: bounded supervisor review delegated; output is awaited in /mnt/raid0/llm/tmp/kvu/vkq3-agent-result.txt. KVU-15b requires organic traffic: current serving log has one credited call against the required 200 in two windows. KVU-16h remains open because dedicated server lifecycles and verified cleanup span multiple runners. No inference was run.
+
+## 10:05Z — Corrected VKQ3 diagnostic receipt parsing to the native tokenizer --ids format and tested offline.
+
+VKQ3 diagnostic receipt draft now parses the native bracketed comma-separated --ids output rather than whitespace-separated IDs. Five receipt and ten supervisor offline tests pass; source confirms the output format. No tokenizer binary provenance, integrated worker, keeper qualification, or target result is asserted. Worker and provenance preparation are delegated, with scratch-preserved outputs registered for integration.
+
+## 10:06Z — Integrated VKQ3 offline worker seam connecting supervised tokenization to private receipts.
+
+VKQ3 worker draft composes bounded supervision and private receipt creation, propagates mode and deadline, and refuses success after grant loss; four offline tests pass. Grant and deadline inputs remain injected rather than authoritative; actual containment, provenance, rowflow wiring, qualification and target inference remain unverified. Independent worker review, grant integration and provenance investigation are registered for follow-up.
+
+## 10:08Z — Integrated VKQ3 worker custody review and prior-runtime identity verification.
+
+VKQ3 worker now checks attempt identity and private receipt custody before starting the child; six offline tests pass, including a harmless subprocess through the real supervisor and receipt writer. Runtime identity helper checks the tokenizer and five libraries against the previously committed calibration catalog; three offline tests pass. These checks do not establish source-build attestation, runtime loader residency, or race-free execution binding. The grant bridge and launcher remain to be integrated; no row is publishable and no inference ran.
+
+## 10:09Z — Connected VKQ3 diagnostic worker to the existing grant guard in an offline bridge.
+
+VKQ3 grant bridge draft derives worker mode and deadline from the existing grant guard and tests grant revocation, invalid CPU shape and dry-run mode; three offline tests pass. The bridge is not a launcher: signal routing, process-tree containment, authoritative engine integration and runtime identity binding remain. Review found rowflow can count unit.jsonl before the separate completion marker: the launcher must validate the receipt then atomically publish a separate result file. No inference ran and no row was published.
+
+## 10:11Z — Implemented offline VKQ3 completion validation and atomic rowflow result publication.
+
+VKQ3 offline publication draft validates matching completion receipt before atomically exposing a separate rowflow result, including the native dry-run path; eleven completion and integration tests pass, including marker absence and injected link failure. Two publication helpers need reconciliation; actual engine, runtime binding and process containment remain unverified, and no row was published. KVU-16h operative runners are outside this lane and tracked historical sources must be preserved.
+
+## 10:12Z — Added cancellation signal handling to the VKQ3 grant bridge draft.
+
+VKQ3 grant bridge draft routes SIGINT and SIGTERM to the grant guard and restores prior handlers even on exception. Four offline tests pass, including a delivered SIGTERM. Handler coverage ends when the guarded attempt returns and does not yet cover subsequent publication; parent-death containment, runtime binding and real engine integration remain. No row published or inference run.
+
+## 10:14Z — Reconciled VKQ3 diagnostic result publication into one checked atomic writer.
+
+VKQ3 diagnostic drafts now use one receipt-validated atomic publisher, retaining exclusive partial files, and reject dry-run result paths that resolve to the full result path. Thirteen offline tests pass. Receipt custody assumes a private directory without concurrent mutation; runtime binding, process containment and actual engine integration remain open. No inference ran and no row was published.
+
+## 10:16Z — Prepared synthetic diagnostic input and implemented direct-child parent-death adapter.
+
+Prepared VKQ3 synthetic input at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthetic-full.txt: 4,550,000 bytes, SHA-256 e354df7f35d62a98716b1d0c37ddf1dbedc3ce69f9722286d8f8f19c865d5417, matching its committed generator contract. Added direct-child Linux parent-death adapter; three offline tests pass including a real parent SIGKILL and child exit via pidfd. It is not wired to a row and does not prove descendant cleanup, interpreter provenance or actual engine behavior. No inference or tokenizer execution ran.
+
+## 10:17Z — Added private sanitized stderr custody to VKQ3 diagnostic receipts.
+
+VKQ3 diagnostic receipt now durably records a bounded private category-only stderr excerpt and labels interrupted or overflow captures as potentially incomplete rather than claiming a true stream tail. Twenty offline receipt, worker and publication tests pass. Launcher, runtime binding and full engine integration remain unverified; no inference ran and no row was published.
+
+## 10:18Z — Wired VKQ3 worker to direct-child parent-death supervisor and prepared distinct qualification input.
+
+VKQ3 worker draft now defaults to the direct-child parent-death supervisor; seven offline tests pass, including wrapper invocation and cancellation/reaping. Descendant cleanup, interpreter and wrapper provenance and real rowflow/chroot integration remain unproven. Prepared distinct qualification input as ASCII `synthetic qualification control: amber cedar river 20261102` followed by LF: 60 bytes, SHA-256 af67718fefc2257d854467d8d36537640bf1a65131a5d01458e83bc9994543cd at /mnt/raid0/llm/tmp/kvu/diagnostic-input/synthetic-qualification.txt. No inference ran or row was published.
+
+## 10:20Z — Fixed VKQ3 diagnostic guard rejection of authentic four-CPU rowflow smoke grants.
+
+VKQ3 diagnostic guard accepts the four exact CPU smoke shapes selected by publish_row.py only for authenticated rowflow dry-run grants, while full runs still require the whole host. Seven offline guard tests pass, covering all four shapes and rejected mismatches or elevation. Launcher and model identity integration remain open; no row was published and no inference ran.
+
+## 10:21Z — Added a last-moment grant check hook before VKQ3 atomic result publication.
+
+VKQ3 atomic result publisher now accepts a pre-publication check after fsync and before linking the result; eight offline completion tests pass, including revocation leaving the result invisible. The launcher must actually wire the hook and retain signal handling. Engine source review also found dry-run grants live in FILLER_GRANTS_DIR and dynamic sibling imports outside the launcher snapshot will be missing; launcher integration must address both. No row was published or inference run.
+
+## 10:23Z — Integrated VKQ3 rowflow worker grant and publication checks with offline tests.
+
+VKQ3 rowflow worker draft selects the engine grant directory for full and native dry-run modes, uses contained worker supervision, keeps signal handling through publication and invokes the final grant check before exposing the result. Nine offline tests pass, including four-CPU native dry-run, grant revocation and path binding cases. The preflight/bundle and actual engine/chroot remain unverified; metadata checks do not prove immutable model bytes or source provenance. No row was published or inference run.
+
+## 10:24Z — Added monotonic start and end evidence to VKQ3 diagnostic supervisor and receipt.
+
+VKQ3 diagnostic supervisor now records monotonic supervision start and child-reap end; the receipt carries both and elapsed total. Pre-cancelled and legacy or injected attempts retain null endpoints; no phase timings are inferred. Twenty-five offline supervisor, receipt and worker tests pass. Launcher and real engine integration remain unverified; no inference or tokenizer execution ran.
+
+## 10:26Z — Added VKQ3 prelaunch execution identity receipt and validated successful timing evidence.
+
+VKQ3 worker draft writes a private fsynced mode-isolated prelaunch receipt recording tokenizer and wrapper argv, child environment and preflight digest pins; eleven offline worker tests pass. Completion predicate rejects completed receipts with absent, nonfinite, reversed or inconsistent monotonic endpoints; nine completion and six guarded-publication tests pass. Pins are not source-build attestation or runtime residency proof. Launcher bundle and engine integration remain open; no row was published or inference run.
+
+## 10:28Z — Delegate VKQ3 calibration and cache-credit row preparation; inspect remaining no-draft runner integration
+
+Delegated bounded VKQ3 calibration and KVU-15b row preparation; KVU-16h-runner inspection found the existing coordinator remains non-runnable and cross-runner integration remains open. Results are pending integration.
+
+## 10:29Z — Integrate VKQ3 model-free grant-to-native-result test and investigate cache-credit record availability
+
+VKQ3 model-free integration passed: synthetic grant through guard, supervisor and fake tokenizer produces an isolated qualification result and receipt; it does not establish real keeper execution or target feasibility. KVU-15b has no adequate organic record sample identified; archival discovery continues.
+
+## 10:31Z — Bind diagnostic bundle to supplied source hashes and test qualification input isolation
+
+VKQ3 draft bundle preflight requires an exact supplied SHA-256 pin set and hashes copied bytes; three offline tests pass. The model-free integration test now asserts that the tokenizer receives the short qualification input. These tests do not establish pin authority, runtime integrity, safe concurrent scratch ancestry, atomic manifest consumption, real keeper execution, or target feasibility; the draft is not publishable.
+
+## 10:33Z — Verify model-free VKQ3 qualification executes from the prepared module bundle
+
+An isolated Python process ran the model-free qualification lifecycle from the prepared VKQ3 bundle; assertions bind imported draft modules, guard and wrapper to that bundle. One offline test passed. Pins are local test fixtures; trusted provenance, real keeper execution, runtime integrity and target feasibility remain unproven.
+
+## 10:34Z — Harden draft bundle verification and reconcile KVU-16a evidence
+
+VKQ3 draft adds atomic manifest publication and a separate pinned-file verifier; nine offline tests pass. The verifier is unwired and does not establish trusted provenance, protected custody or controlled imports. KVU-16a old package is stale, and the current derived ubatch-512 value is not the historical ubatch-2048 measurement; recorded the distinction in the handoff.
+
+## 10:36Z — Merge origin/main and apply VKQ3 execution-boundary review to ongoing implementation
+
+Merged current origin/main into the lane after the prior serialized push failed. VKQ3 review identified that verification must precede imports in a trusted bootstrap and that point-in-time hashes alone cannot protect later execution; bounded implementation and verifier work are underway.
+
+## 10:38Z — Reject unpinned imports from the VKQ3 draft bundle
+
+The draft bundle verifier now rejects unexpected root and subdirectory entries including unpinned Python modules and bytecode; six verifier tests pass. The separate bootstrap remains deny-only and the tokenizer worker does not measure target MTP acceptance, so neither is a publishable calibration.
+
+## 10:40Z — Identify reusable MTP calibration worker and its grant-time preparation defects
+
+The earlier VKQ3 calibration worker launches both MTP arms and records divergence, but hashes model weights and tokenizes in-grant; its previous run timed out before target exposure. Adaptation must bind a one-time preflight receipt and isolate qualification output before publication. KVU-16a load-row preparation continues.
+
+## 10:41Z — Coordinate real VKQ3 worker receipt adaptation and KVU measurement row preparation
+
+The real VKQ3 worker draft has been located; it still tokenizes in-grant. Separate work is assessing a bound preflight receipt and a shape-matched KVU-16a GPU measurement. The drafts are not qualified or published.
+
+## 10:43Z — Apply real VKQ3 worker review to receipt, native output and exposure-custody implementation
+
+Review of the real two-arm VKQ3 draft found in-grant tokenization, hardcoded grants, no native dry-run result, local-only exposure custody and incomplete runtime inputs. Receipt, grant/result and exposure components are being implemented separately; no row is publishable yet.
+
+## 10:45Z — Review real worker grant and receipt integration for keeper smoke
+
+The two-arm VKQ3 worker still hardcodes whole-host grants and source-local outputs; the existing tokenizer-only grant bridge is not a drop-in. Input receipt, grant/result and exposure components remain under implementation and require integration before a four-CPU keeper smoke.
+
+## 10:46Z — Harden K35 no-draft refusal against extra arguments and prebuilt launch commands
+
+Prepared a source-hash-bound K35 patch that refuses request-local n_max=0 before launch or request construction, including prebuilt argv; three offline tests pass. This is an uninstalled patch, not the dedicated server lifecycle or global runner protection required by KVU-16h.
+
+## 11:00Z — Prepare VKQ3 native-input receipt and two-arm row, repair four-CPU smoke claim, prepare KVU-16a load row
+
+VKQ3 independent prompt preflight verified the catalog and counted 70,814 native target tokens; a bounded exposure audit and binary knob/linkage checks were recorded. The first smoke failed before model launch on a whole-host region claim; corrected launcher uses granted CPUs and the second smoke is running. No PASS or target result is claimed. KVU-16a load-only row preparation verified model inputs and passed four offline tests, but its publication was refused because the GPU was busy. The new load source is enrolled for future belief capture.
+
+## 11:08Z — Fix native smoke path and prove captured server owns its listener; prepare K35 dedicated no-draft lifecycle and KVU-19a source pair
+
+The corrected VKQ3 second smoke requested only q0 but failed after waiting for the real region lock; a current snapshot showed all quarters held by INF70, so the remaining lineage retry must not run until release. Fixed the keeper nested native-result path and per-attempt scratch, added a captured-PID loopback ownership check, and passed 18 offline tests. K35 dedicated no-draft patch passes five offline tests but is not installed. KVU-19a-2 source pair was materialized and its one-file difference verified; no build or GPU run occurred. GPU load-row publication was refused while GPU busy.
+
+## 11:29Z — Publish the KVU-19a-2 experimental source-pair build row after four-CPU configuration smoke
+
+Published handoff-kvu-kvu19a2-build-20261102: four-CPU smoke PASS, one native unit, rc=0; the smoke configured the two source arms and did not build them or test GPU nondeterminism. The preflight binds the source pair and actual chroot toolchain; the node-owned snapshot is reaper-compatible but same-UID mutation is not ruled out. CPU-FA-VKQ-3 is parked after its third failed qualification, before target launch; no retry. Lane-only fixes cover startup cleanup and HTTP-200 completion (24 offline tests). K35 runner and fixture patches pass 10 guard and 34 fixture tests but are uninstalled. KVU-16a GPU smoke is separately in progress; do not infer PASS.
+
+## 11:31Z — Published KVU-16a GPU load measurement row after successful smoke
+
+KVU-16a: published `handoff-kvu-16a-load-20261102`; publisher lint passed and the four-CPU GPU smoke completed rc=0 on mi210_0,184-187 at 2026-11-02T11:28:56Z. The full result will be `/mnt/raid0/llm/tmp/kvu16a-load-20261102/result.json`; smoke is not a VRAM measurement verdict. Full-run identity and shape must be reviewed before applying the result. The KVU-19a-2 build row is also published; actual build and GPU nondeterminism results remain pending. CPU-FA-VKQ-3 remains parked after three failed qualifications. The K35 runner patch remains uninstalled and needs native-server validation.
+
+## 11:34Z — Review K35 no-draft refusal and preserve lane-only ownership
+
+KVU-16h-runner: a delegated guard against request-level n_max=0 on a draft-configured K35 server passed 33 focused tests, but does not supply the dedicated lifecycle or finish the box. The delegate wrote it in the shared research checkout contrary to lane-only scope; its exact diff was reversed there and saved at /mnt/raid0/llm/tmp/kvu/runner-guard-20261102.patch. The existing lane K35 lifecycle patch remains uninstalled and requires native validation. CPU-FA-VKQ-3 remains parked after three failed qualifications; no new target comparison or retry. KVU-15b current organic log has one qualifying credited call, insufficient for its >=200-call two-window gate. KVU-16a and KVU-19a-2 rows remain pending; no new row was published in this turn.
+
+## 11:46Z — Publish KVU-12.5 quarter-host np8 A/B row after four-CPU native smoke
+
+KVU-16h-runner: submitted P3 `handoff-kvu16h-p3-lifecycle-20261102` and K35 `handoff-kvu16h-k35-native-20261102` to publish_row; both passed lint but GPU busy queued both smoke runs, so neither is READY or a native result. P3 uses grant-limited CPU affinity and records missing no-draft counters as unknown; 12 offline tests passed. K35 uses captured-PID parent-death custody and continuous STOP/deadline checks; 22 offline tests passed. PASS/first FAIL events registered. KVU-19a-2: recovered and pinned exact cases 78–80, raw-output harness and branch transition; source/case structural checks passed, but old binary binding and same-binary repeatability remain unproven, and running build result must be filed first. V11-FA-2b: preserved port-selector successor; six socket tests passed, no native server verdict. CPU-FA-VKQ-2: exact hybrid/legacy packet prepared, model/store preflight still running, not published; completion event registered. KVU-12.5 successor smoke/preflight remains under repair; no new completion tick. No inference verdict or deployment claim. KVU-12.5 np8 pair: `handoff-kvu12-5-quarter-r2-20261102` published after native four-CPU smoke PASS on CPUs 72–75, one unit, rc75; target model preflight was completed before grant and the target remains unrun. Full pair is a 24-thread quarter, GPU-quiet row with 45,000-second minimum; result path `events.jsonl`; smoke is a separate small-model control, not target evidence.
+
+## 11:51Z — File source-pair build and load measurement; compile capture harness in smoke
+
+Filed `handoff-kvu-kvu19a2-build-20261102` pass rc0 after preserving and verifying both test executables and HIP libraries in `/mnt/raid0/llm/tmp/kvu/kvu19a2-preserved-20261102`; no GPU repeatability verdict. Filed `handoff-kvu-16a-load-20261102` pass rc0: 47.812553 GiB own VRAM minus 12.75 GiB observed KV = 35.062553 GiB, shape reconciliation and registry application still outstanding. `handoff-kvu-kvu19a2-capture-build-20261102` smoke PASS compiled harness SHA 6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a, preserved alongside libraries. Its two prior smoke failures were the same incorrect host-chroot compiler pin; the second retry was accidental after a failed pin update. The publisher auto-completed the smoke although its decision rule excluded qualification as full build; file_result could not find the publisher-removed manifest. Filed inconclusive using staged original manifest/end and acknowledged the receipt; no full-build or GPU verdict. GPU repeatability row still needs source-bound runtime, residency and process-custody producer.
+
+## 11:54Z — File failed P3 lifecycle and publish the exact CPU FA decode comparison
+
+KVU-16a load result was already filed and acknowledged in the preceding turn; its parent remains open for registry reconciliation. Filed `handoff-kvu16h-p3-lifecycle-20261102` inconclusive, rc1: region_lock_cli.py checksum mismatch stopped the full job before any result; prior native control used eight CPUs and is not a four-CPU smoke or full occupancy comparison. The publisher removed its manifest; preserved original spec/end were staged for file_result and its verdict and receipt installed. Published `handoff-kvu-cpu-fa-vkq2-exact-20261102` after four-CPU smoke PASS on 0–3; 128 GiB reservation, full-host 48-thread hybrid versus legacy at 16k/64k, five launches per arm/depth. A first 48 GiB reservation was corrected before handoff; second smoke exposed reuse of native-cells, fixed by per-attempt output. Full target remains unrun and no decode verdict exists. Added prospective belief source and write-side task; projection and planning-context canary remain open.

@@ -66,8 +66,6 @@ class _Fixture(unittest.TestCase):
         self._disk.start()
         self._cwd = patch.object(hs, "project_cwd", lambda e, repo=None: self.repo)  # the fixture repo is not a git clone
         self._cwd.start()
-        self._inv = patch.object(hs, "unreadied", lambda data: {})  # no un-readied tasks by default
-        self._inv.start()
 
     def dispatch(self, **kw):
         return hs.dispatch_once(self.flags, runner=self.runner, repo=self.repo, **kw)
@@ -77,7 +75,6 @@ class _Fixture(unittest.TestCase):
         self._lane.stop()
         self._disk.stop()
         self._cwd.stop()
-        self._inv.stop()
         self.td.cleanup()
 
     def runner(self, cmd, prompt_file, out):
@@ -134,32 +131,31 @@ class TransferTests(_Fixture):
 
 
 class UnwrappedGateTests(_Fixture):
-    def test_end_event_not_resumed_while_unwrapped(self):
+    def test_end_event_waits_while_unwrapped_and_push_prompt_is_sent(self):
         _w(os.path.join(self.flags, "grants", "yarn-1.ended"), "rc=0\n")
         with patch.object(hs, "landed", return_value=False):
             reg, st = self.dispatch()
-        self.assertEqual(self.calls, [], "no resume while last_wrapup is not landed")
-        self.assertEqual([ev["rid"] for ev in st["queue"]], ["yarn-1"])
-        e = reg["sessions"][self.slug]
-        self.assertEqual(e["pending_event"]["rid"], "yarn-1")
-        self.assertEqual(e["status"], "suspended")
-        self.assertIn("UNWRAPPED yarn: refusing resume for new work; last_wrapup=deadbeef1", self.log_text())
+        self.assertEqual(len(self.calls), 1, "unwrapped: the PUSH prompt, never a park")
+        self.assertIn("NOT on origin/main", self.calls[0]["prompt"])
+        self.assertEqual([ev["rid"] for ev in st["queue"]], ["yarn-1"], "the run-end waits for the landed wrap-up")
+        self.assertIn("UNWRAPPED yarn: PUSH prompt instead of new work; last_wrapup=deadbeef1", self.log_text())
         # once the wrap-up lands, the queued event is served
         with patch.object(hs, "landed", return_value=True):
             reg, st = self.dispatch()
-        self.assertEqual(len(self.calls), 1)
-        self.assertIn("row `yarn-1`", self.calls[0]["prompt"])
-        self.assertIn("File the verdict yourself", self.calls[0]["prompt"])
-        self.assertIn("filing-done/yarn-1.FILED", self.calls[0]["prompt"])
+        self.assertEqual(len(self.calls), 2)
+        self.assertIn("row `yarn-1`", self.calls[1]["prompt"])
+        self.assertIn("File the verdict yourself", self.calls[1]["prompt"])
+        self.assertIn("filing-done/yarn-1.FILED", self.calls[1]["prompt"])
         self.assertEqual(st["queue"], [])
 
-    def test_missing_wrapup_blocks_a_session_that_has_run(self):
+    def test_missing_wrapup_gets_push_prompt(self):
         self.reg["sessions"][self.slug]["last_wrapup"] = None
         hs.save(hs.reg_path(self.flags), self.reg)
         _w(os.path.join(self.flags, "grants", "yarn-1.ended"), "rc=0\n")
         with patch.object(hs, "landed", return_value=True):
             reg, st = self.dispatch()
-        self.assertEqual(self.calls, [])
+        self.assertEqual(len(self.calls), 1)
+        self.assertIn("NOT on origin/main", self.calls[0]["prompt"])
         self.assertEqual(len(st["queue"]), 1)
         self.assertIn("last_wrapup=None", self.log_text())
 
@@ -174,28 +170,16 @@ class WrappedParsingTests(_Fixture):
             reg, _ = self.dispatch()
         e = reg["sessions"][self.slug]
         self.assertEqual(e["last_wrapup"], "83c110265331")
-        # CAF-1 no-op guard: this turn committed nothing and published no row -> NOT resumed until an event arrives
-        self.assertEqual(e["status"], "suspended")
-        self.assertTrue(e["await_event"])
-        self.assertIn("NOOP yarn: turn completed nothing", self.log_text())
-        self.assertEqual(self.calls, [])
-        self.assertIn("OPEN yarn: 1 advanceable row(s)", self.log_text())
         ld.assert_any_call("83c110265331")
-        # a row published during the turn is an effect -> 21:15Z pause rule: resumed at once with "continue: next task"
-        e.update({"pid": 99999999, "last_output": out, "status": "live",
-                  "last_resume": hs._dt.datetime.now(hs._dt.timezone.utc).replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")})
-        _w(os.path.join(self.flags, "ready", "yarn-9.json"), "{}")  # placeholder so the next turn has an effect
-        e["last_resume"] = hs._dt.datetime.fromtimestamp(hs.time.time() - 11 * 60, hs._dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        hs.save(hs.reg_path(self.flags), reg)
-        _w(os.path.join(self.flags, "ready", "yarn-9.json"), json.dumps({"schema": "epyc.row.v3", "id": "yarn-9", "owner": "yarn", "lane": "cpu"}))
-        with patch.object(hs, "landed", return_value=True):
-            reg, _ = self.dispatch()
-        e = reg["sessions"][self.slug]
+        # operator loop 2026-11-02: a no-op turn is logged, never parked; no report.json -> resumed at once
+        self.assertIn("NOOP yarn: turn completed nothing", self.log_text())
+        self.assertIn("OPEN yarn: next=unreported", self.log_text())
         self.assertEqual(e["status"], "live")
         self.assertEqual(len(self.calls), 1)
-        self.assertIn("continue: FINISH ALL READY ITEMS", self.calls[0]["prompt"])
-        self.assertIn("INFERENCE FIRST", self.calls[0]["prompt"])
-        self.assertIn("NEVER wait in this turn", self.calls[0]["prompt"])
+        p = self.calls[0]["prompt"]
+        for marker in ("go on: next=unreported", "NEVER wait in this turn", hs.REPORT_LINE, "`blocked_by`", "priority order",
+                       "A turn ends ONLY at one of", "Spend this turn on the task itself", "Progress = a box in YOUR handoff"):
+            self.assertIn(marker, p)
 
     def test_legacy_wrapup_form_still_parsed(self):
         self.assertEqual(hs.WRAPPED_RX.findall("WRAPUP: abcdef0 then WRAPPED 1234567"), ["abcdef0", "1234567"])
@@ -210,10 +194,11 @@ class FanoutPolicyTests(unittest.TestCase):
         e = {"handoff": "handoffs/active/x.md", "engine": "codex", "row_ids": ["r1"], "row_patterns": [], "handoff_rows": ["INF-1"]}
         flags = tempfile.mkdtemp()
         for name, text in (("brief", hs.brief_text("x", e, flags)), ("end", hs.end_prompt("x", e, flags, "r1", flags + "/r1.ended")),
-                           ("idle", hs.idle_prompt("x", e, flags))):
+                           ("idle", hs.idle_prompt("x", e, flags)), ("continue", hs.continue_prompt("x", e, flags, "why"))):
             self.assertIn("FAN OUT", text, name)
             self.assertIn("3-5 concurrent subagents", text, name)
             self.assertIn("OPERATING_CONSTRAINTS.md", text, name)
+            self.assertIn(hs.REPORT_LINE, text, name)
         self.assertIn("## Working mode: fan out", hs.brief_text("x", e, flags))
 
 

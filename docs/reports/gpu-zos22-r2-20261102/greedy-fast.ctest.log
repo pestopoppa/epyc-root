@@ -1,0 +1,34 @@
+
+$ ctest --test-dir /mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release -R ^test-sampling-greedy-fast$ --no-tests=error --output-on-failure --verbose
+Internal ctest changing into directory: /mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release
+UpdateCTestConfiguration  from :/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/DartConfiguration.tcl
+Parse Config file:/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/DartConfiguration.tcl
+Parse Config file:/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/DartConfiguration.tcl
+Test project /mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 18
+    Start 18: test-sampling-greedy-fast
+
+18: Test command: /mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin/test-sampling-greedy-fast
+18: Working Directory: .
+18: Environment variable modifications: 
+18:  LD_LIBRARY_PATH=path_list_prepend:/mnt/raid0/llm/kernels/builds/gpu-20261102-zos22-c5-native-r2-release/bin
+18: Test timeout computed to be: 1500
+18: test-sampling-greedy-fast: 1296 checks, 0 failures
+1/1 Test #18: test-sampling-greedy-fast ........   Passed    0.18 sec
+
+The following tests passed:
+	test-sampling-greedy-fast
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+main    =   0.18 sec*proc (1 test)
+
+Total Test time (real) =   0.18 sec

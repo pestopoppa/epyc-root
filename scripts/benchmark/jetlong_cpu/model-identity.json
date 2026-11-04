@@ -1,0 +1,8 @@
+{
+  "schema": "jetlong-model-identity-v1",
+  "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "size_bytes": 37801097504,
+  "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "capture_method": "sha256sum outside grant; size, inode and mtime matched before and after",
+  "scope": "content identity only; not a source-to-binary build attestation"
+}

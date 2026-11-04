@@ -53,6 +53,74 @@ printf -v ts '%(%Y-%m-%dT%H:%M:%S%z)T' -1
 printf '{"ts":"%s","session":"earlyoom","level":"WARN","cat":"EARLYOOM_KILL","msg":"earlyoom killed %s (pid %s)","details":"pid=%s uid=%s cmd=%s"}\n' \
   "$ts" "$name" "$pid" "$pid" "$uid" "$cmd" >> "$LOG"
 
+# --- Memory snapshot, once per kill burst (NIB2-97(b), INC-20261021-earlyoom-session-kills) ---
+# The 2026-10-21 trigger left no memory sample anywhere on disk (13 kills in 16 s, no dmesg,
+# no journal). So the FIRST kill of a burst also appends one JSON line to a sidecar log: the
+# /proc/meminfo fields below, the memory PSI line, and the top-10 processes by VmRSS read from
+# /proc/<pid>/status. READ-ONLY on /proc; it writes only the sidecar log and its stamp. Still
+# fork-free (globs, read, printf). Rate limit: a snapshot is taken when none was taken in the
+# last EARLYOOM_SNAPSHOT_WINDOW seconds (default 60). The stamp is created with noclobber, so
+# two hooks racing on the FIRST kill take one snapshot; two racing to replace a stale stamp may
+# both take one, which costs a duplicate line, never a missing one.
+# Test knobs: EARLYOOM_PROC_ROOT (default /proc), EARLYOOM_SNAPSHOT_LOG, EARLYOOM_SNAPSHOT_STAMP.
+SNAP_LOG="${EARLYOOM_SNAPSHOT_LOG:-${LOG%/*}/earlyoom_meminfo_snapshots.log}"
+SNAP_STAMP="${EARLYOOM_SNAPSHOT_STAMP:-${LOG%/*}/earlyoom_snapshot_stamp.log}"
+SNAP_WINDOW="${EARLYOOM_SNAPSHOT_WINDOW:-60}"
+PROC="${EARLYOOM_PROC_ROOT:-/proc}"
+[[ "$SNAP_WINDOW" =~ ^[0-9]+$ ]] || SNAP_WINDOW=60
+printf -v now '%(%s)T' -1
+
+_snapshot_due() {
+  local last=""
+  set -C
+  if { printf '%s\n' "$now" > "$SNAP_STAMP"; } 2>/dev/null; then set +C; return 0; fi
+  set +C
+  { read -r last < "$SNAP_STAMP"; } 2>/dev/null
+  [[ "$last" =~ ^[0-9]+$ ]] || last=0
+  (( now - last < SNAP_WINDOW )) && return 1
+  { printf '%s\n' "$now" >| "$SNAP_STAMP"; } 2>/dev/null
+  return 0
+}
+
+_snapshot() {
+  local k v rest mem="" psi="" f name spid rss i j top=""
+  local -a trss=() tpid=() tname=()
+  while read -r k v rest; do
+    case "$k" in
+      MemTotal:|MemFree:|MemAvailable:|Cached:|AnonPages:|Mlocked:|SwapTotal:|SwapFree:)
+        [[ "$v" =~ ^[0-9]+$ ]] && mem+="${mem:+,}\"${k%:}_kB\":$v" ;;
+    esac
+  done < "$PROC/meminfo"
+  if { read -r psi < "$PROC/pressure/memory"; } 2>/dev/null; then _esc "$psi"; psi=$REPLY; fi
+  for f in "$PROC"/[0-9]*/status; do
+    name="" spid="" rss=""
+    { while read -r k v rest; do
+        case "$k" in
+          Name:) name="$v${rest:+ $rest}" ;;
+          Pid:) spid=$v ;;
+          VmRSS:) rss=$v; break ;;
+        esac
+      done < "$f"; } 2>/dev/null
+    [[ "$rss" =~ ^[0-9]+$ && "$spid" =~ ^[0-9]+$ ]] || continue   # kernel threads have no VmRSS
+    (( ${#trss[@]} == 10 && rss <= trss[9] )) && continue
+    i=${#trss[@]}; (( i == 10 )) && i=9
+    while (( i > 0 && trss[i-1] < rss )); do
+      trss[i]=${trss[i-1]}; tpid[i]=${tpid[i-1]}; tname[i]=${tname[i-1]}; i=$((i - 1))
+    done
+    _esc "$name"
+    trss[i]=$rss; tpid[i]=$spid; tname[i]=$REPLY
+  done
+  for (( j = 0; j < ${#trss[@]}; j++ )); do
+    top+="${top:+,}{\"pid\":${tpid[j]},\"name\":\"${tname[j]}\",\"VmRSS_kB\":${trss[j]}}"
+  done
+  printf '{"ts":"%s","session":"earlyoom","cat":"EARLYOOM_MEM_SNAPSHOT","trigger_pid":"%s","meminfo":{%s},"psi_memory_some":"%s","top_vmrss":[%s]}\n' \
+    "$ts" "$pid" "$mem" "$psi" "$top" >> "$SNAP_LOG"
+}
+
+if _snapshot_due; then
+  { _snapshot; } 2>/dev/null || true
+fi
+
 # OPTIONAL (off by default): drop a sentinel the orchestrator/autopilot can watch
 # to PAUSE new model loads after a kill, mitigating the #309 no-post-kill-backoff
 # cascade risk on a box of large mlock'd servers. Enable only once a watcher exists.

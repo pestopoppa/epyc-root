@@ -1,0 +1,82 @@
+{
+ "pinned_sha": "3ac825873dfb8a8ef8d729133dff42c73b5d074d",
+ "plan_source": "origin/main 3ac825873dfb8a8ef8d729133dff42c73b5d074d (pinned)",
+ "manifest_tasks": 8089,
+ "closed": 5281,
+ "open_dispatchable": 2808,
+ "refinements_n_open": 2808,
+ "refinements_deficient": 1920,
+ "reconciliation_8130_vs_8089": "8,130 = v1 regex parser at origin/main 283e2be1de (2,794 open + 5,280 closed + 56 guarded). At 3ac825873 the same regex yields 8,071 (-59 from commits between the two shas); backlog_row_check._boxes (the manifest parser) also accepts numbered-list boxes, +18 in engram-conditional-memory.md:331-340 => 8,089. Every companion now uses 8,089 open+closed @ 3ac825873; no task is unaccounted.",
+ "executable_v3": 827,
+ "executable_v4": 888,
+ "class_v4": {
+  "class:non-inference": 1935,
+  "class:inference": 801,
+  "class:operator-decision": 69,
+  "class:blocked-external": 3
+ },
+ "fail_v4": {
+  "fail:d": 669,
+  "fail:c": 624,
+  "fail:a": 653,
+  "fail:e": 626,
+  "fail:f": 278,
+  "fail:h": 180,
+  "fail:b": 132
+ },
+ "decision_kinds_v4": {
+  "historical-ruling": 40,
+  "pending-choice": 180,
+  "issued-authorization": 108,
+  "standing-constraint": 35
+ },
+ "class_changes_vs_v3": {
+  "inference_v3": 946,
+  "inference_v4": 801,
+  "operator_decision_v3": 153,
+  "operator_decision_v4": 69,
+  "fail_h_v3": 279,
+  "fail_h_v4": 180
+ },
+ "executable_v5": 927,
+ "class_v5": {
+  "class:non-inference": 1984,
+  "class:inference": 761,
+  "class:operator-decision": 61,
+  "class:blocked-external": 2
+ },
+ "fail_v5": {
+  "fail:d": 629,
+  "fail:c": 627,
+  "fail:a": 686,
+  "fail:e": 531,
+  "fail:f": 239,
+  "fail:h": 134,
+  "fail:b": 133
+ },
+ "decision_kinds_v5": {
+  "historical-ruling": 33,
+  "pending-choice": 134,
+  "issued-authorization": 127,
+  "standing-constraint": 34
+ },
+ "refinements_deficient_v5": 1881,
+ "lint_tests": "test_task_lint_v2.py: 15/15 PASS (3 v5 fixes + 12 v4 regressions)",
+ "v6": {
+  "executable": 913,
+  "pending_choice": 158,
+  "decision_kinds": {
+   "historical-ruling": 32,
+   "pending-choice": 158,
+   "issued-authorization": 120,
+   "standing-constraint": 28
+  },
+  "class": {
+   "class:non-inference": 1978,
+   "class:inference": 761,
+   "class:operator-decision": 67,
+   "class:blocked-external": 2
+  },
+  "lint_tests": "test_task_lint_v2.py 17/17"
+ }
+}

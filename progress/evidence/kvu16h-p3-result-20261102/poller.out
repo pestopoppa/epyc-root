@@ -1,0 +1,9 @@
+
+==== arm 2026-11-02T11:50:50Z
+2026-11-02T11:50:50Z [handoff-kvu16h-p3-lifecycle-20261102] launcher up pid=228540 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/kvu/p3-row-20261102/STOP minwin=600s ports=18198 dryrun=0
+2026-11-02T11:50:55Z [handoff-kvu16h-p3-lifecycle-20261102] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-02T13:42Z
+/mnt/raid0/llm/epyc-orchestrator/src/runtime/region_lock_cli.py: FAILED
+sha256sum: WARNING: 1 computed checksum did NOT match
+2026-11-02T11:50:55Z [handoff-kvu16h-p3-lifecycle-20261102] WARN: 231581 is not a group leader
+2026-11-02T11:50:55Z [handoff-kvu16h-p3-lifecycle-20261102] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-02T11:50:55Z [handoff-kvu16h-p3-lifecycle-20261102] one window done; exiting (no --repeat)

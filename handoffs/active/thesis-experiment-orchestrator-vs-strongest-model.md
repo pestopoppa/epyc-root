@@ -21,7 +21,7 @@ https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
   frontdoor scout-stage claim sample, taken at the next frontdoor scout stage. ARCHSWAP-4 is done (2026-10-01:
   `:8074` relaunched under `architect_general`, 0 drift). ARCHSWAP-5 is done (2026-09-29).
 
-**Priority:** active (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked)). The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
+**Priority**: HIGH — active (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked)). The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
 (operator, 2026-09-28): until the second GPU is in, the working direction is infrastructure and design work with the
 operator (see `CURRENT-CAMPAIGN.md`, 2026-09-28). The freeze list at the end still binds INFERENCE-bearing steps; the
 design and documentation work of a frozen item may proceed.
@@ -240,7 +240,7 @@ code for a rider), and only if the window has its estimated time left.
   - Progress 2026-09-27: research `2b59bebe`'s `run_thesis.py score` writes the `belief_measurements.jsonl` sidecar
     (`ufh13-thesis-belief/v1`, attestation = `records.jsonl`). The read-side adapter is VB-THESIS-2.
 - ARCHSWAP-1 (signed 2026-09-28, receipt `RATIFY-ARCHSWAP-20260927`) and ARCHSWAP-2 (lanes merged with the A-3 fix `9a4785e1`, 2026-09-28) are done: § *Completed Scope*.
-- [ ] **ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7).
+- **[declined: ws58 2026-11-03 content-review: superseded — every step is done (B1 reload, pipeline check, P1-P4 proofs, reviewer/planner resolution) except the A-3 scout-stage claim sample, which is carried by the ARCHSWAP-3b sample box below]** **ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7).
   - Run `orchestrator_stack.py reload orchestrator` with `ORCHESTRATOR_V1_ESCALATION=1`. Do not stop autopilot.
   - Run `stack_change_pipeline.py check --numa-mode both`. Expect only the two slot_save_path lines.
   - Run the serving proofs:
@@ -253,12 +253,12 @@ code for a rider), and only if the window has its estimated time left.
     During the first scout stage after the reload, sample the claim state and any `contention_denied` or 503 on
     concurrent frontdoor calls. Record either "no denials" or the denial rate.
   - Done 2026-09-28: the B1 API-only reload (PID 1100541, `ORCHESTRATOR_FEATURE_V1_ESCALATION=1`), `check`, P4 and the reviewer/planner resolution (§ *Completed Scope*). This box ticks when ARCHSWAP-3b does.
-- [ ] **ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).
+- **[declined: ws58 2026-11-03 content-review: duplicate — P1-P3 are proven (Completed Scope); the only residue is the A-3 sample box directly below, which stays open]** **ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).
   - P1 (`:8074`) and P2/P3 (`:8083`; templated answers with `reasoning_content` since RI-23, 2026-09-29 15:04Z) are proven: § *Completed Scope*.
   - [ ] The A-3 side-effect sample from ARCHSWAP-3: during the next scout stage on the frontdoor after 2026-09-29,
     sample the frontdoor claim state and any `contention_denied` or 503 on concurrent frontdoor calls, and record
     either "no denials" or the denial rate, unless it was already recorded. (Reworded 2026-09-30: the first scout
-    stage after the reload passed unobserved.)
+    stage after the reload passed unobserved.) Done when one scout stage's claim state and denial count (or "no denials") are recorded here with the window; stop after one observed stage.
     - 2026-09-29: P1-P3 are all proven, so this sample is the only open item left in ARCHSWAP-3b. It was not taken
       in the :8083 window, which exercised :8083 roles only (no frontdoor scout stage).
 - [x] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
@@ -311,7 +311,8 @@ code for a rider), and only if the window has its estimated time left.
   the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide
   before spending it.
   - ~~PARKED 2026-09-28~~ ACTIVE: operator 2026-10-29: run the UFH-13 thesis experiment now (unparked).
-- [ ] **TE-reopen — reopen the experiment once escalation is trained on the swapped stack** (operator, 2026-09-28).
+- [ ] **TE-pre-A2 — prerequisites before any A2 run (was TE-reopen; the operator unparked the experiment 2026-10-29, so the "escalation trained on the swapped stack" trigger no longer gates it).** (1) Escalation-design review: RI-18c removed the review gate, verdict and revision from all five call sites, so A2 has no review-gate trigger; any A2 arm must name its escalation trigger explicitly (the Q-value trigger as-is, or a registered consultant-answers variant on a different trigger — a new registration, never an edit of the frozen rule). (2) Record in the manifest that the escalation Q-values were learned on the pre-ARCHSWAP stack (store newest 2026-09-24), as a declared confound of A2. Done when (1) names the A2 trigger in the manifest and (2) is written there; then TE-pilot, TE-5, TE-6.
+  - Renamed from TE-reopen (ws58 2026-11-03 content-review). [moved: handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md]
   - Trigger: an autopilot run has trained escalation on the swapped stack (`architect_general` = Flash-Next). That run
     waits for the second MI210.
   - First, review the escalation design. Under the review gate, a WRONG verdict is rewritten by `worker_general`

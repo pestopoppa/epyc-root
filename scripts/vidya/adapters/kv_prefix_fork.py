@@ -273,7 +273,72 @@ def _intkeys(obj: Any) -> Any:
     return obj
 
 
+def _validate_kpf30(row: Any) -> list[str]:
+    """Validate only native run metadata and recorded counters; never invent row class."""
+    from adapters.kpf30_capture import SCHEMA as KPF30_SCHEMA
+    if not isinstance(row, dict) or row.get("schema") != KPF30_SCHEMA:
+        return ["not a KPF-30 native record"]
+    problems = []
+    for key in ("run_id", "window_id", "host", "start_utc", "end_utc", "rows", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "prompt_set_sha256", "rows_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if not isinstance(row.get("argv"), list) or not row["argv"] or not all(isinstance(x, str) for x in row["argv"]):
+        problems.append("missing argv")
+    if type(row.get("exit_code")) is not int or row["exit_code"] != 0:
+        problems.append("run did not complete")
+    if type(row.get("n_rows")) is not int or row["n_rows"] <= 0:
+        problems.append("no observed rows")
+    c = row.get("counts")
+    keys = ("blocks", "live", "mixed", "unknown", "live_unknown", "invalid_mask")
+    if not isinstance(c, dict) or any(type(c.get(k)) is not int or c[k] < 0 for k in keys):
+        problems.append("invalid native counts")
+    elif c["mixed"] > c["live"] or c["live"] > c["blocks"] or c["unknown"] > c["blocks"] \
+            or c["live_unknown"] > c["live"] or c["live_unknown"] > c["unknown"]:
+        problems.append("inconsistent native counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
+    return problems
+
+
+def _validate_kpf26_api(row: dict) -> list[str]:
+    problems = []
+    for key in ("run_id", "window_id", "host", "api_url", "role", "server_url", "start_utc", "end_utc", "rows", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "model_sha256", "prompt_set_sha256", "request_sha256",
+                "grant_sha256", "rows_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if not isinstance(row.get("argv"), list) or not row["argv"] or not all(isinstance(x, str) for x in row["argv"]):
+        problems.append("missing argv")
+    if row.get("http_status") != 200 or row.get("flags") != "unverified" or "arm" in row:
+        problems.append("invalid API observation scope")
+    trace = row.get("scout_trace")
+    if trace is not None and (not isinstance(trace, dict) or set(trace) != {"path", "sha256"}
+            or not isinstance(trace.get("path"), str) or not trace["path"]
+            or not isinstance(trace.get("sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", trace["sha256"])):
+        problems.append("invalid API scout trace binding")
+    counts = row.get("kpf26")
+    if (not isinstance(counts, dict) or set(counts) != {"tasks", "children", "completed"}
+            or any(type(counts.get(k)) is not int for k in ("tasks", "children", "completed"))
+            or counts["tasks"] != 1 or counts["children"] < 1
+            or not 0 <= counts["completed"] <= counts["children"]):
+        problems.append("invalid API scout counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
+    return problems
+
+
 def validate_row(row: Any) -> list[str]:
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.phase_observation.v1":
+        return _validate_kpf30_phase(row)
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf26.api-observation.v1":
+        return _validate_kpf26_api(row)
+    if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.observation.v1":
+        return _validate_kpf30(row)
     if not isinstance(row, dict):
         return ["row is not an object"]
     problems = []
@@ -328,6 +393,35 @@ def validate_row(row: Any) -> list[str]:
                                 "rather than weakening the integrity gate")
             else:
                 problems.append("record_sha256 does not re-derive")
+    return problems
+
+
+def _validate_kpf30_phase(row: dict) -> list[str]:
+    problems = []
+    for key in ("run_id", "window_id", "host", "start_utc", "end_utc", "rows", "source_log", "category"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            problems.append(f"missing {key}")
+    for key in ("binary_sha256", "prompt_set_sha256", "rows_sha256", "source_log_sha256", "writer_sha256", "record_sha256"):
+        if not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key]):
+            problems.append(f"invalid {key}")
+    if row.get("phase") not in ("decode", "verify") or type(row.get("swa")) is not int or row["swa"] not in (0, 1):
+        problems.append("invalid phase or SWA")
+    if row.get("category") not in ("BASELINE", "CANDIDATE", "OPTIMUM") or not isinstance(row.get("argv"), list) or not row["argv"]:
+        problems.append("invalid scope")
+    if row.get("fan_completed") is not True or row.get("process_reaped") is not True or type(row.get("server_returncode")) is not int:
+        problems.append("missing owner completion or process-reaping evidence")
+    if type(row.get("n_rows")) is not int or row["n_rows"] <= 0:
+        problems.append("no phase rows")
+    if type(row.get("excluded_prestart_rows")) is not int or row["excluded_prestart_rows"] < 0:
+        problems.append("invalid prestart row count")
+    c = row.get("counts")
+    keys = ("blocks", "live", "mixed", "unknown", "live_unknown", "invalid_mask")
+    if not isinstance(c, dict) or set(c) != set(keys) or any(type(c.get(k)) is not int or c[k] < 0 for k in keys):
+        problems.append("invalid phase counts")
+    elif not (0 <= c["mixed"] <= c["live"] <= c["blocks"]) or c["live"] == 0 or c["unknown"] or c["live_unknown"] or c["invalid_mask"]:
+        problems.append("unknown, invalid or zero-denominator phase counts")
+    if not problems and _digest({k: v for k, v in row.items() if k != "record_sha256"}) != row["record_sha256"]:
+        problems.append("record_sha256 does not re-derive")
     return problems
 
 
@@ -447,7 +541,7 @@ def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
         return ()
     natives = [{"row": r, "sidecar_path": str(path), "attestation_present": _rows_present(r, path)} for r in rows
                if not _DECLINED_SUB_ARM.match(str(r.get("arm")))]
-    return tuple(natives + _serving_natives(natives))
+    return tuple(natives + _serving_natives([n for n in natives if n["row"].get("schema") == SCHEMA]))
 
 
 def _metric(row: dict) -> tuple[str, Any, str, int, str]:
@@ -476,6 +570,14 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
     present = _rows_present(row, sidecar)
+    if row["schema"] == "epyc.kpf30.phase_observation.v1":
+        return _project_kpf30_phase(row, sidecar, present)
+    if row["schema"] == "epyc.kpf26.api-observation.v1":
+        return _project_kpf26_api(row, sidecar, present)
+    if row["schema"] == "epyc.kpf30.observation.v1":
+        return _project_kpf30(row, sidecar, present)
+    if row.get("kpf_task") == "KPF-26":
+        return _project_kpf26(row, sidecar, present)
     if row["arm"] == OUTCOME_ARM:
         return _project_outcome(row, sidecar, present)
     if is_conformance(row):
@@ -532,6 +634,165 @@ def project(native: Any) -> ClaimTuple:
         },
         applicability=_applicability(row),
     )
+
+
+def _project_kpf26_api(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """Project API-reported completion only, with no inference about flags or quality."""
+    counts = row["kpf26"]
+    if present:
+        try:
+            body = json.loads(_rows_path(row, sidecar).read_bytes())
+            report = body["scouts"]
+            scouts = report["scouts"]
+            if not isinstance(scouts, list) or any(not isinstance(c, dict) for c in scouts):
+                raise ValueError("invalid scouts")
+            observed = {"tasks": 1, "children": len(scouts),
+                        "completed": sum(c.get("status") == "ok" for c in scouts)}
+            if (report.get("schema") != "epyc.orchestrator.scouts.v1" or report.get("role") != row["role"]
+                    or not isinstance(report.get("url"), str)
+                    or report["url"].rstrip("/") != row["server_url"].rstrip("/")
+                    or report.get("requested") != observed["children"]
+                    or report.get("launched") != observed["children"]
+                    or report.get("completed") != observed["completed"]
+                    or observed["completed"] != observed["children"]):
+                raise ValueError("inconsistent API report")
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-26 API response") from exc
+        if observed != counts:
+            raise ProjectionError("KPF-26 API counts disagree with attested response")
+    trace = row.get("scout_trace")
+    trace_present = None
+    if trace:
+        sibling = sidecar.parent / Path(trace["path"]).name
+        trace_path = sibling if sibling.is_file() else Path(trace["path"])
+        trace_present = trace_path.is_file() and hashlib.sha256(trace_path.read_bytes()).hexdigest() == trace["sha256"]
+    return ClaimTuple(
+        measurement_id="kpf26-api-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf26_api_completed_scouts", value=counts["completed"], unit="scouts",
+        date=row["end_utc"], category=row["category"], metric_direction="higher_better",
+        claim=(f"KPF-26 API reported {counts['completed']} completed scouts of {counts['children']} "
+               "in one route smoke; flags unverified, no quality, fork or gate verdict"),
+        protocol_id="", reps=counts["children"], reps_basis="scouts reported in one API request",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf26-api:{row['run_id']}:win={row['window_id']}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "kpf26": counts, "run_id": row["run_id"],
+               "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
+               "model_sha256": row["model_sha256"], "grant_sha256": row["grant_sha256"],
+               "prompt_set_sha256": row["prompt_set_sha256"], "request_sha256": row["request_sha256"],
+               "flags": "unverified", "api_url": row["api_url"], "role": row["role"],
+               "server_url": row["server_url"], "record_sha256": row["record_sha256"],
+               "scout_trace": trace, "scout_trace_present": trace_present},
+        applicability=_applicability(row))
+
+
+def _project_kpf26(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """Project native scout completion, never a performance or gate verdict."""
+    block = row.get("kpf26")
+    if not isinstance(block, dict) or any(type(block.get(k)) is not int or block[k] < 0
+                                          for k in ("tasks", "children", "completed")):
+        raise ProjectionError("KPF-26 native counts missing or invalid")
+    if block["tasks"] == 0 or block["children"] == 0 or block["completed"] > block["children"]:
+        raise ProjectionError("KPF-26 native counts inconsistent")
+    if present:
+        try:
+            tasks = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+            children = [c for task in tasks for c in task["children"]]
+            observed = {"tasks": len(tasks), "children": len(children),
+                        "completed": sum(c["status"] == "ok" for c in children)}
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-26 native task rows") from exc
+        if observed != block:
+            raise ProjectionError("KPF-26 counts disagree with attested native rows")
+    return ClaimTuple(
+        measurement_id="kpf26-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf26_completed_scouts", value=block["completed"], unit="scouts",
+        date=row["end_utc"], category=row["category"], metric_direction="higher_better",
+        claim=(f"KPF-26 recorded {block['completed']} completed scouts of {block['children']} "
+               "in one serving window; no quality, performance or gate verdict"),
+        protocol_id="", reps=block["children"], reps_basis="scouts attempted in one window",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=f"kpf26:{row['run_id']}:{row['arm']}:win={row['window_id']}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "kpf26": block, "run_id": row["run_id"], "arm": row["arm"],
+               "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
+               "model_sha256": row.get("model_sha256"),
+               "prompt_set_sha256": row["prompt_set_sha256"], "start_utc": row.get("start_utc"),
+               "end_utc": row["end_utc"], "record_sha256": row["record_sha256"],
+               "ttft_ms": row.get("ttft_ms"), "unique_cells_peak": row.get("unique_cells_peak")},
+        applicability=_applicability(row))
+
+
+def _project_kpf30_phase(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    from adapters.kpf30_phase_capture import parse_log
+    if not present:
+        raise ProjectionError("phase rows missing or digest does not match")
+    source = Path(row["source_log"])
+    sibling = sidecar.parent / source.name
+    if sibling.is_file():
+        source = sibling
+    if not source.is_file() or _sha256_file(source) != row["source_log_sha256"]:
+        raise ProjectionError("phase source log missing or digest does not match")
+    try:
+        with source.open(encoding="utf-8", errors="strict") as f:
+            replayed, prestart = parse_log(f)
+        if prestart != row["excluded_prestart_rows"]:
+            raise ValueError("prestart exclusion count disagrees with source log")
+        rows = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+        if rows != replayed:
+            raise ValueError("phase row provenance disagrees with source log")
+        selected = [x for x in rows if x["phase"] == row["phase"] and x["swa"] == row["swa"]]
+        counts = {key: sum(x[key] for x in selected) for key in row["counts"]}
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise ProjectionError("invalid KPF-30 phase provenance") from exc
+    if len(selected) != row["n_rows"] or counts != row["counts"]:
+        raise ProjectionError("phase counts do not re-derive from attested rows")
+    return ClaimTuple(
+        measurement_id="kpf30-phase-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf30_phase_mixed_live_fraction", value=counts["mixed"] / counts["live"], unit="fraction",
+        date=row["end_utc"], category=row["category"], metric_direction="lower_better",
+        claim=(f"KPF-30 {row['phase']} SWA={row['swa']} recorded {counts['mixed']} mixed of "
+               f"{counts['live']} live blocks across {row['n_rows']} mask rows; no threshold decision"),
+        protocol_id="", reps=row["n_rows"], reps_basis="mask rows recorded, not independent windows",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf30:{row['run_id']}:win={row['window_id']}:phase={row['phase']}:swa={row['swa']}",
+        attestation_present=True, attestation_verified=True, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "counts": counts, "phase": row["phase"], "swa": row["swa"],
+               "source_log": str(source), "source_log_sha256": row["source_log_sha256"],
+               "writer_sha256": row["writer_sha256"], "excluded_prestart_rows": prestart,
+               "window_id": row["window_id"], "run_id": row["run_id"],
+               "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+        applicability=_applicability(row))
+
+
+def _project_kpf30(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    counts = row["counts"]
+    if present:
+        # Verify the producer's aggregate against its sealed native per-mask rows.
+        try:
+            rows = [json.loads(line) for line in _rows_path(row, sidecar).read_text().splitlines() if line.strip()]
+            sums = {key: sum(x[key] for x in rows) for key in counts}
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise ProjectionError("invalid KPF-30 attested rows") from exc
+        if len(rows) != row["n_rows"] or sums != counts:
+            raise ProjectionError("KPF-30 aggregate does not match attested rows")
+    return ClaimTuple(
+        measurement_id="kpf30-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf30_known_mixed_live_blocks", value=counts["mixed"], unit="blocks",
+        date=row["end_utc"], category=row["category"], metric_direction="lower_better",
+        claim=(f"KPF-30 recorded {counts['mixed']} known mixed live blocks across {row['n_rows']} "
+               "mask rows; includes all observed row types, not a decode-only or threshold verdict"),
+        protocol_id="", reps=row["n_rows"], reps_basis="mask rows recorded, not independent windows",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_locator=f"kpf30:{row['run_id']}:win={row['window_id']}:bin={row['binary_sha256'][:16]}",
+        attestation_present=present, attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "counts": counts, "run_id": row["run_id"],
+               "window_id": row["window_id"], "host": row["host"], "argv": row["argv"],
+               "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+               "start_utc": row["start_utc"], "end_utc": row["end_utc"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+        applicability=_applicability(row))
 
 
 def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:

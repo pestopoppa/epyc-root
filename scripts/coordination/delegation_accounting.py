@@ -18,7 +18,7 @@ a fallback to changes of `token_count.info.total_token_usage` for older rollouts
 Request input = input + cache_creation + cache_read (Codex: `input_tokens`, which
 already includes `cached_input_tokens`).
 
-DECISION NUMBER A (predeclared in handoffs/active/fleet-fanout-measurement.md FM-7):
+DECISION NUMBER A (predeclared in handoffs/active/coordination-and-churn-pipeline.md FM-7):
 
   A = sum(chars/4 of main-thread FULL reads of files > 350 lines
           x requests remaining in that session)

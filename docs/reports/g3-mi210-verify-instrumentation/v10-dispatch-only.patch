@@ -1,0 +1,38 @@
+--- a/ggml/src/ggml-cuda/fattn.cu
++++ b/ggml/src/ggml-cuda/fattn.cu
+@@ -2,6 +2,10 @@
+ #include "fattn-common.cuh"
+ #include "fattn-mma-f16.cuh"
+ #include "fattn-tile.cuh"
++
++#include <cinttypes>
++#include <cstdio>
++#include <cstdlib>
+ 
+ template <int DV, int ncols1, int ncols2>
+ static void launch_fattn_vec(
+@@ -642,7 +646,23 @@
+ 
+ void ggml_cuda_flash_attn_ext(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+     ggml_cuda_set_device(ctx.device);
+-    switch (ggml_cuda_get_best_fattn_kernel(ggml_cuda_get_device(), dst)) {
++    const int g3_device = ggml_cuda_get_device();
++    const best_fattn_kernel g3_kernel = ggml_cuda_get_best_fattn_kernel(g3_device, dst);
++    // Diagnostic only: correlation with target verify calls is NOT established.
++    if (const char * g3_enabled = std::getenv("GGML_G3_FATTN_TRACE")) {
++        if (g3_enabled[0] == '1' && g3_enabled[1] == '\0') {
++            const ggml_tensor * q = dst->src[0];
++            const ggml_tensor * k = dst->src[1];
++            const ggml_tensor * v = dst->src[2];
++            std::fprintf(stderr,
++                "G3_FATTN_DISPATCH_V1 correlation=unavailable device=%d cc=%d kernel=%d tensor=%p q=%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 " k_type=%s k=%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 " v_type=%s v=%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
++                g3_device, ggml_cuda_info().devices[g3_device].cc, (int) g3_kernel, (void *) dst,
++                q->ne[0], q->ne[1], q->ne[2], q->ne[3], ggml_type_name(k->type),
++                k->ne[0], k->ne[1], k->ne[2], k->ne[3], ggml_type_name(v->type),
++                v->ne[0], v->ne[1], v->ne[2], v->ne[3]);
++        }
++    }
++    switch (g3_kernel) {
+         case BEST_FATTN_KERNEL_NONE:
+             GGML_ABORT("fatal error");
+         case BEST_FATTN_KERNEL_TILE:

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "The official grant ended rc0; RESULT.json is build mode and binds v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115, exact V3 patch a222fd35d3766288353d17186abb6aeed1842bba455687e1d596c368d3d96a94, server, HIP backend and receipt artifact digests. The row's successful completion command validated source identity, hashes and compiled V3 server/backend/layer markers; retained linkage.log and configure/build logs are listed in the result. This is a build-only pass, not MI210 residency, verification dispatch, performance or G3 completion. V3 lacks native timestamps for the pending dispatch/residency correlation.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-02T11:50:09+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:46:16Z reason=complete",
+ "filed_at": "2026-11-02T11:50:09+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "handoffs/active/speculative-decoding-mtp-refresh.md:G3",
+ "id": "g3-v10-hip-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/g3-v10-hip-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-build-row/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "The official grant ended rc0; RESULT.json is build mode and binds v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115, exact V3 patch a222fd35d3766288353d17186abb6aeed1842bba455687e1d596c368d3d96a94, server, HIP backend and receipt artifact digests. The row's successful completion command validated source identity, hashes and compiled V3 server/backend/layer markers; retained linkage.log and configure/build logs are listed in the result. This is a build-only pass, not MI210 residency, verification dispatch, performance or G3 completion. V3 lacks native timestamps for the pending dispatch/residency correlation.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "g3-v10-hip-build-20261102",
+ "row_verdict": "pass",
+ "rule": "Accept only a complete clean v10 plus exact trace patch HIP gfx90a build, source checked before and after, compiled markers in server and backend, linkage and SHA-256 receipt validated. Build-only diagnostic; graph replay disabled when tracing; no inference or kernel-selection conclusion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "3b848ff1f63efa7d0f273b185b8190fceda673c09a59520203c55bcc35953dc1",
+  "result": "pass",
+  "status": "filed"
+ }
+}

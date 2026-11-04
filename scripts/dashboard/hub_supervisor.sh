@@ -7,7 +7,7 @@
 # WHY: the :8100 handoff-dashboard hub has been launched with a bare `setsid`
 # and has died silently >=3x (Jul 17-18, 2026) with no watchdog to bring it
 # back (see progress/2026-07/2026-07-05-dashboard-hub.md and
-# handoffs/active/loops-and-dashboards-audit-2026-07-05.md P1 ":8100 hub
+# handoffs/active/autopilot-program.md P1 ":8100 hub
 # process durability"). This script is that watchdog, entirely in userspace —
 # NO systemd unit (host config is operator territory).
 #

@@ -70,8 +70,7 @@ class WrapupTests(unittest.TestCase):
         p = os.path.join(self.tmp, "rec.json")
         json.dump(rec, open(p, "w"))
         out, err = io.StringIO(), io.StringIO()
-        with patch.object(wu, "run_push", fake_push), patch.object(wu, "run_index_check", lambda lane: (0, "ok")), \
-                patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
+        with patch.object(wu, "run_push", fake_push), patch.object(wu, "PUSH_SLEEP_S", 0), redirect_stdout(out), redirect_stderr(err):
             rc = wu.main(["--json", p, "--lane", self.lane, "--flags", self.flags, *extra])
         return rc, out.getvalue(), err.getvalue()
 
@@ -104,14 +103,81 @@ class WrapupTests(unittest.TestCase):
         self.assertEqual(rep["wrapped_sha"], sha)
         self.assertEqual(rep["state"], "progress")
         self.assertIn("wrapped_at", rep)
+        self.assertIs(rep["wrapped"], True)
         self.assertEqual(rep["ticks"], ["D-1 — first task."])
+
+    def test_generated_index_conflict_takes_origin_and_lands(self):
+        gen = "handoffs/active/.index-state.json"
+        for d, v in ((self.seed, "base"),):
+            open(os.path.join(d, gen), "w").write(v + "\n")
+            _git(d, "add", gen); _git(d, "commit", "-q", "-m", "gen"); _git(d, "push", "-q", "origin", "main")
+        _git(self.lane, "fetch", "-q", "origin"); _git(self.lane, "merge", "-q", "--ff-only", "origin/main")
+        open(os.path.join(self.lane, gen), "w").write("lane\n")
+        _git(self.lane, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "lane gen", "--", gen)
+        open(os.path.join(self.seed, gen), "w").write("origin\n")
+        _git(self.seed, "commit", "-q", "-am", "origin gen"); _git(self.seed, "push", "-q", "origin", "main")
+        rc, out, err = self._run(self.rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertIn("generated conflicts took origin", err + out)
+        self.assertEqual(open(os.path.join(self.lane, gen)).read(), "origin\n")
+        self.assertEqual(_git(self.lane, "cherry", "origin/main").strip(), "")
+
+    def test_light_persist_never_runs_index_state_nor_commits_generated(self):
+        """Ruling 2 (2026-11-02): no index_state.py, generated files dropped from the worker pathspec."""
+        self.assertFalse(hasattr(wu, "run_index_check") or hasattr(wu, "run_index_regen"))
+        gen = "handoffs/active/.index-state.json"
+        open(os.path.join(self.lane, gen), "w").write("worker-written\n")
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", gen]))
+        self.assertEqual(rc, 0, err + out)
+        self.assertNotIn("index_state", err + out)
+        self.assertNotIn(gen, _git(self.lane, "show", "--name-only", "--format=", "HEAD"))
+
+    def test_failed_push_writes_report_with_next(self):
+        rec = dict(self.rec, next="inference")
+        p = os.path.join(self.tmp, "rec.json")
+        json.dump(rec, open(p, "w"))
+        out, err = io.StringIO(), io.StringIO()
+        with patch.object(wu, "PUSH_RETRIES", 1), patch.object(wu, "run_push", lambda lane, slug: (4, "PUSH FAILED")), \
+                redirect_stdout(out), redirect_stderr(err):
+            rc = wu.main(["--json", p, "--lane", self.lane, "--flags", self.flags])
+        self.assertEqual(rc, 1)
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertEqual((rep["next"], rep["wrapped"]), ("inference", False))
+        self.assertIn("PUSH FAILED", rep["failure"])
 
     def _assert_no_commit(self, rc, err, needle):
         self.assertEqual(rc, 1)
         self.assertIn(needle, err)
         self.assertEqual(_git(self.lane, "rev-parse", "HEAD"), _git(self.lane, "rev-parse", "origin/main"))
         self.assertEqual(open(os.path.join(self.lane, "handoffs/active/demo.md")).read(), HANDOFF)
-        self.assertFalse(os.path.exists(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertIs(rep["wrapped"], False)
+        self.assertIn(rep["next"], ("non-inference", "inference", "blocked"))
+        self.assertIn(needle, rep["failure"])
+        self.assertNotIn("wrapped_sha", rep)
+
+    def test_scratch_superseded_cleaned_only_inside_own_roots(self):
+        tmproot = os.path.realpath(os.path.join(self.tmp, "scratchtmp"))
+        old = os.path.join(tmproot, "demo", "attempt1")
+        os.makedirs(old)
+        argv_log = os.path.join(self.tmp, "cleanup-argv")
+        fake = os.path.join(self.tmp, "fake_cleanup.py")
+        with open(fake, "w") as fh:
+            fh.write("import sys\nopen(%r, 'a').write(' '.join(sys.argv[1:]) + '\\n')\nprint('1 entry; 0 kept')\n" % argv_log)
+        rec = dict(self.rec, scratch_superseded=[old, os.path.join(tmproot, "other", "x"), "/etc", os.path.join(tmproot, "demo", "gone")])
+        with patch.object(wu, "SCRATCH_CLEANUP", fake), patch.object(wu, "TMP_ROOT", tmproot):
+            rc, out, err = self._run(rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertEqual(open(argv_log).read().splitlines(), [f"apply --root {old}"])
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertEqual(rep["scratch_cleaned"], [[old, 0]])
+        self.assertIn("REFUSED", err + out)
+
+    def test_no_scratch_superseded_runs_no_cleanup(self):
+        with patch.object(wu, "SCRATCH_CLEANUP", "/nonexistent/never-run.py"):
+            rc, out, err = self._run(self.rec)
+        self.assertEqual(rc, 0, err + out)
+        self.assertNotIn("scratch_cleaned", json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json"))))
 
     def test_tick_zero_matches_refuses(self):
         rc, out, err = self._run(dict(self.rec, ticks=["D-9 — nowhere"]))

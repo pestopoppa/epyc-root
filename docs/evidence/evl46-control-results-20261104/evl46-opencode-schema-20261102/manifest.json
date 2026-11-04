@@ -1,0 +1,43 @@
+{
+ "decision_rule": "Verify actual pinned OpenCode read-only schema matches exact captured read schema SHA, workspace read executes, an unsolicited bash tool call is refused by broker before client execution, canary unchanged, and session export retained. Fake upstream only; refused attack is expected and is not model inference or a production isolation claim.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 120,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 300,
+ "gib": 4,
+ "handoff_task": "handoffs/active/benchmark-suites.md:TU-MH-1 synthetic pinned read-only tool-schema and response gate",
+ "id": "evl46-opencode-schema-20261102",
+ "keep": [
+  "RESULT.json",
+  "source-base.txt",
+  "runtime.sha256",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "scripts/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102/launch.sh",
+  "sha256": "1e1f36768639c3412246519532b610a57905269cc3e21810d34c30f55c981966"
+ },
+ "min_window_s": 120,
+ "notes": "Exact-entry smoke and scheduled execution use a fake localhost model server in a network-none container, source-bound scripts and pinned local image; dry-run result is separate. FILLER_CPUS and the outer region claim bind the container. SIGTERM/STOP drain the exact owned Docker container before return. No inference.",
+ "owner": "codex-evl46",
+ "ports": [],
+ "priority_rank": 50.0,
+ "published_at": "2026-11-02T13:27:33Z",
+ "published_from": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102/STOP",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/evl46-opencode-schema-20261102"
+}

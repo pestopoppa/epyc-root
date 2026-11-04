@@ -1,0 +1,33 @@
+{
+  "$schema": "epyc.filed.verdict.v1",
+  "id": "akx-lb3-2-cv3-pair-20261102",
+  "row": "akx-lb3-2-cv3-pair-20261102",
+  "owner": "handoff-autokernel-all-devices-all-dimensions",
+  "filed_at": "2026-11-04T07:11:35+00:00",
+  "at": "2026-11-04T07:11:35+00:00",
+  "outcome_class": "PARTIAL-VERDICT",
+  "phase": "filing",
+  "compute_burned": true,
+  "root_cause_family": null,
+  "verdict": {
+    "status": "filed",
+    "kind": "diagnostic",
+    "native_result_sha256": "f0df6c37d0e31160bcd771895b90d01daf5850f22fb959cf1f2c096fbd003e01",
+    "result": "inconclusive"
+  },
+  "native_result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/akx-lb3-2-cv3-pair-20261102/native-attempts/attempt-nmmmmm4u/native-result.json",
+  "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/akx-lb3-2-cv3-pair-20261102/native-attempts/attempt-nmmmmm4u/native-result.json",
+  "result_format": "json",
+  "result_exists": true,
+  "row_verdict": "inconclusive",
+  "qualification": "SMOKE_ONLY",
+  "rule": "One fixed GM and MG pair under one whole-host GPU-quiet grant. Accept LANE_LARGE, LANE_SMALL or SPLIT_UNRESOLVED only when both runs pass the predeclared overhead gate and agree; otherwise PAIR_INVALID or PAIR_ORDER_SENSITIVE. G uses verified C5 champion store image; M uses C5 plus pinned profiling patch with strict build and linkage checks. Affinity receipts establish point-in-time masks only. Smoke is a four-CPU pp1 depth512 single cell, not a pair verdict.",
+  "machine_checkable": false,
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/akx-lb3-2-cv3-pair-20261102/unpublished.json",
+  "manifest_sha256": "ad4d7fba3e71df4494e7c98f036e66ea2059292f1b38aae294d680ecd64db956",
+  "rc": 0,
+  "filed_by": "codex-gen",
+  "reason": "SMOKE_ONLY: supplied native evidence is one four-CPU pp1/depth512 CPU cell. The declared rule explicitly excludes this smoke from a fixed GM/MG pair verdict. Pair acceptance, pair invalidity and order sensitivity are not established by this event.",
+  "handoff_task": "autokernel-all-devices-all-dimensions.md:AKX-ALL-LB3.2b",
+  "checkbox_disposition": "Parent AKX-ALL-LB3.2b remains open; the diagnostic does not complete the requested pair."
+}

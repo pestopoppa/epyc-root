@@ -1,0 +1,10 @@
+{
+  "schema": "rtg58.kpf17-cpu.v1",
+  "rc": 0,
+  "markers": [
+    "Test 6 PASS n_rs_seq=0 restored=0 A/A=0 source=0 source_A/A=0 mutation=detected",
+    "Test 6 PASS n_rs_seq=8 restored=0 A/A=0 source=0 source_A/A=0 mutation=detected",
+    "All tests passed."
+  ],
+  "complete": true
+}

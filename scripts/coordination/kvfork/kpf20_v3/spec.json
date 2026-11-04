@@ -1,0 +1,27 @@
+{
+  "id": "kvfork20-p2-impact-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf20-v3/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf20-v3/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Capture upstream GitNexus impact and context for KPF-20 symbols at pinned 488b31c, plus native member-call search. HIGH/CRITICAL requires operator warning and stops edits. A partial scan or unresolved symbol is not a completed impact pass.",
+  "estimate_s": 2400,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-20",
+  "priority_rank": 45,
+  "dryrun_timeout_s": 2700,
+  "dryrun_whole_host": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf20-v3",
+  "keep": [
+    "out/**",
+    "source/.gitnexus/**",
+    "source/scripts/gitnexus-*.py",
+    "source/scripts/gitnexus-analyze.sh",
+    "job.py",
+    "launch.sh",
+    "filler_run15.sh"
+  ],
+  "notes": "Isolated retained scratch checkout pinned to orchestrator origin/main; real member-call grep first, then admitted full-host index and impacts. Four-CPU smoke exits after one real grep unit."
+}

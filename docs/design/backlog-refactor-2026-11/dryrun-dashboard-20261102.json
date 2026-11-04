@@ -1,0 +1,355 @@
+{
+ "before": {
+  "board_cols": {
+   "active": 179,
+   "blocked": 6,
+   "completed": 225,
+   "archived": 120
+  },
+  "board_keys": [
+   "_freshness",
+   "activity_today",
+   "activity_window",
+   "backlog",
+   "columns",
+   "counts",
+   "generated_at"
+  ],
+  "activity_today": {
+   "commits": 310,
+   "handoffs_touched": 66,
+   "boxes_checked": 145,
+   "boxes_added": 113
+  },
+  "activity_window": {},
+  "graph_nodes": 175,
+  "graph_dep_edges": 78,
+  "graph_ready": 133,
+  "graph_blocked": 41,
+  "has_RTG05": true,
+  "has_INF62": true,
+  "has_EVL53": false,
+  "graph_status": null,
+  "timeline_status": null,
+  "timeline_keys": [
+   "_freshness",
+   "daily_flow",
+   "error",
+   "generated_at",
+   "handoffs_weekly",
+   "series",
+   "tasks_weekly"
+  ],
+  "timeline_head": null,
+  "queue_status": null,
+  "queue_rows": 38,
+  "cards": {
+   "active/eval-tower-verification": {
+    "open": null,
+    "done": 74,
+    "total": 107,
+    "progress": null,
+    "activity": "2026-07-20",
+    "activity_source": "updated",
+    "status_short": "IN PROGRESS \u2014 EV-1/2/3/6 code complete; EV-11 scorer flip, EV-11a boxed-Latex companion fix, and EV-11b closed-bin ECE implementation lande\u2026",
+    "created": "2026-04-14",
+    "updated": "2026-07-20"
+   },
+   "active/bep-dcp-falsification-harness": {
+    "open": null,
+    "done": 4,
+    "total": 6,
+    "progress": null,
+    "activity": "2026-07-06",
+    "activity_source": "updated",
+    "status_short": "COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair code landed on the live orchest\u2026",
+    "created": "2026-05-26",
+    "updated": "2026-07-06"
+   },
+   "active/autopilot-continuous-optimization": {
+    "open": null,
+    "done": 42,
+    "total": 101,
+    "progress": null,
+    "activity": "2026-09-25",
+    "activity_source": "updated",
+    "status_short": "",
+    "created": "2026-03-08",
+    "updated": "2026-09-25"
+   },
+   "active/dflash2-block-drafter-experimental-build": {
+    "open": null,
+    "done": 41,
+    "total": 61,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "active (created 2026-08-20) \u2014 build/regression/np1 complete; np2/4/8 and greedy parity remain",
+    "created": null,
+    "updated": null
+   },
+   "active/speculative-decoding-mtp-refresh": {
+    "open": null,
+    "done": 59,
+    "total": 92,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "active (created 2026-06-22 via operator-directed MTP review; v6 status correction added 2026-07-11)",
+    "created": null,
+    "updated": null
+   },
+   "completed/mtp-speculative-decoding": {
+    "open": null,
+    "done": 8,
+    "total": 0,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/bep-dcp-falsification-harness-completed-through-2026-05-28": {
+    "open": null,
+    "done": 0,
+    "total": 10,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/autopilot-continuous-optimization-history-through-2026-06-20": {
+    "open": null,
+    "done": 0,
+    "total": 0,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25": {
+    "open": null,
+    "done": 174,
+    "total": 275,
+    "progress": null,
+    "activity": "2026-07-11",
+    "activity_source": "updated",
+    "status_short": "",
+    "created": "2026-03-08",
+    "updated": "2026-07-11"
+   },
+   "completed/01-speculative-decoding-completed-through-2026-08-23": {
+    "open": null,
+    "done": 2,
+    "total": 2,
+    "progress": null,
+    "activity": "2026-07-11",
+    "activity_source": "created",
+    "status_short": "COMPLETED \u2014 compatibility pointer retired 2026-08-23.",
+    "created": "2026-07-11",
+    "updated": null
+   },
+   "archived/speculative-decoding-mtp-refresh-history-through-2026-10-06": {
+    "open": null,
+    "done": 5,
+    "total": 5,
+    "progress": null,
+    "activity": null,
+    "activity_source": null,
+    "status_short": "",
+    "created": null,
+    "updated": null
+   }
+  }
+ },
+ "after": {
+  "board_cols": {
+   "active": 178,
+   "blocked": 6,
+   "completed": 227,
+   "archived": 120
+  },
+  "board_keys": [
+   "_freshness",
+   "activity_today",
+   "activity_window",
+   "backlog",
+   "columns",
+   "counts",
+   "generated_at"
+  ],
+  "activity_today": {
+   "commits": 311,
+   "handoffs_touched": 70,
+   "boxes_checked": 160,
+   "boxes_added": 136
+  },
+  "activity_window": {},
+  "graph_nodes": 174,
+  "graph_dep_edges": 78,
+  "graph_ready": 132,
+  "graph_blocked": 41,
+  "has_RTG05": false,
+  "has_INF62": false,
+  "has_EVL53": true,
+  "graph_status": null,
+  "timeline_status": null,
+  "timeline_keys": [
+   "_freshness",
+   "daily_flow",
+   "file_activity",
+   "generated_at",
+   "handoffs_weekly",
+   "last_sha",
+   "method",
+   "next_action_repoints",
+   "series",
+   "tasks_weekly",
+   "totals"
+  ],
+  "timeline_head": null,
+  "queue_status": null,
+  "queue_rows": 38,
+  "cards": {
+   "active/eval-tower-verification": {
+    "open": null,
+    "done": 74,
+    "total": 105,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "IN PROGRESS \u2014 EV-1/2/3/6 code complete; EV-11 scorer flip, EV-11a boxed-Latex companion fix, and EV-11b closed-bin ECE implementation lande\u2026",
+    "created": "2026-04-14",
+    "updated": "2026-07-20"
+   },
+   "active/autopilot-continuous-optimization": {
+    "open": null,
+    "done": 42,
+    "total": 103,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "",
+    "created": "2026-03-08",
+    "updated": "2026-09-25"
+   },
+   "active/model-evaluation-queue": {
+    "open": null,
+    "done": 0,
+    "total": 2,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "ACTIVE (created 2026-11-02 by the backlog refactor, operator directive: every new-model trial, bake-off and new-quant trial lives here).",
+    "created": "2026-11-02",
+    "updated": null
+   },
+   "active/speculative-decoding-mtp-refresh": {
+    "open": null,
+    "done": 74,
+    "total": 126,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "active (created 2026-06-22 via operator-directed MTP review; v6 status correction added 2026-07-11)",
+    "created": null,
+    "updated": null
+   },
+   "completed/dflash2-block-drafter-experimental-build": {
+    "open": null,
+    "done": 26,
+    "total": 27,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "active (created 2026-08-20) \u2014 build/regression/np1 complete; np2/4/8 and greedy parity remain",
+    "created": null,
+    "updated": null
+   },
+   "completed/bep-dcp-falsification-harness": {
+    "open": null,
+    "done": 4,
+    "total": 4,
+    "progress": null,
+    "activity": "2026-11-02",
+    "activity_source": "git",
+    "status_short": "COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair code landed on the live orchest\u2026",
+    "created": "2026-05-26",
+    "updated": "2026-07-06"
+   },
+   "completed/mtp-speculative-decoding": {
+    "open": null,
+    "done": 8,
+    "total": 0,
+    "progress": null,
+    "activity": "2026-07-29",
+    "activity_source": "git",
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/bep-dcp-falsification-harness-completed-through-2026-05-28": {
+    "open": null,
+    "done": 0,
+    "total": 10,
+    "progress": null,
+    "activity": "2026-07-29",
+    "activity_source": "git",
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/autopilot-continuous-optimization-history-through-2026-06-20": {
+    "open": null,
+    "done": 0,
+    "total": 0,
+    "progress": null,
+    "activity": "2026-07-29",
+    "activity_source": "git",
+    "status_short": "",
+    "created": null,
+    "updated": null
+   },
+   "completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25": {
+    "open": null,
+    "done": 174,
+    "total": 275,
+    "progress": null,
+    "activity": "2026-09-25",
+    "activity_source": "git",
+    "status_short": "",
+    "created": "2026-03-08",
+    "updated": "2026-07-11"
+   },
+   "completed/01-speculative-decoding-completed-through-2026-08-23": {
+    "open": null,
+    "done": 2,
+    "total": 2,
+    "progress": null,
+    "activity": "2026-08-23",
+    "activity_source": "git",
+    "status_short": "COMPLETED \u2014 compatibility pointer retired 2026-08-23.",
+    "created": "2026-07-11",
+    "updated": null
+   },
+   "archived/speculative-decoding-mtp-refresh-history-through-2026-10-06": {
+    "open": null,
+    "done": 5,
+    "total": 5,
+    "progress": null,
+    "activity": "2026-10-06",
+    "activity_source": "git",
+    "status_short": "",
+    "created": null,
+    "updated": null
+   }
+  }
+ },
+ "fold_rc": 0,
+ "timeline_rebuild_rc": 0
+}

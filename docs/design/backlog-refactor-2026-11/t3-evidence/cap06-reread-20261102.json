@@ -1,0 +1,1192 @@
+{
+ "all_reproduced": true,
+ "schema": "brf-t3/cap06-reread/1",
+ "source": "/mnt/raid0/llm/tmp/codex3-next-cpu-prep-20261031-0110/cs45/results/derived",
+ "tails": {
+  "t0300": {
+   "arms": {
+    "parakeet_eou_adaptive:fp32_fp32,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.077
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,160,full": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.077
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.231
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.209
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,full": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.231
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.209
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.077
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,full": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.077
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.231
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.209
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,full": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.231
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.209
+     },
+     "tag": "feasible"
+    },
+    "smartturn_silero_adaptive": {
+     "conf": {
+      "eot_fpr": 0.091,
+      "inc_never_fired_censored": 0.545,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.641
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": 0.3,
+      "gate_s": 0.2,
+      "theta": 0.0082
+     },
+     "sel": {
+      "eot_fpr": 0.028,
+      "inc_never_fired_censored": 0.278,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.698
+     },
+     "tag": "feasible"
+    }
+   },
+   "best_feasible_parakeet_by_selection": "parakeet_eou_adaptive:fp32_fp32,80,decoder",
+   "byte_identical_to_filed": {
+    "adaptive.items.jsonl": true,
+    "adaptive.json": true,
+    "scores/items.jsonl": true,
+    "scores/results.json": true
+   },
+   "config_echo": {
+    "advance_eligible_strata": [
+     "human_recorded"
+    ],
+    "human_recorded_n": 0,
+    "n_clips": 164,
+    "n_confirmation": 78,
+    "n_selection": 86
+   },
+   "parakeet_feasible_variants": 8,
+   "parakeet_variants": 8,
+   "rc": {
+    "adaptive.py": 0,
+    "score.py": 0
+   },
+   "separation_selection_recall_smartturn_minus_best_feasible_parakeet": 0.489,
+   "smartturn_tag": "feasible"
+  },
+  "t0600": {
+   "arms": {
+    "parakeet_eou_adaptive:fp32_fp32,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.182,
+      "inc_never_fired_censored": 0.818,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.154
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.028,
+      "inc_never_fired_censored": 0.972,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.07
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,160,full": {
+     "conf": {
+      "eot_fpr": 0.182,
+      "inc_never_fired_censored": 0.818,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.154
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.028,
+      "inc_never_fired_censored": 0.972,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.07
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.273,
+      "inc_never_fired_censored": 0.727,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.359
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.111,
+      "inc_never_fired_censored": 0.889,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.256
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,full": {
+     "conf": {
+      "eot_fpr": 0.273,
+      "inc_never_fired_censored": 0.727,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.359
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.111,
+      "inc_never_fired_censored": 0.889,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.256
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.182,
+      "inc_never_fired_censored": 0.818,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.154
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.028,
+      "inc_never_fired_censored": 0.972,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.07
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,full": {
+     "conf": {
+      "eot_fpr": 0.182,
+      "inc_never_fired_censored": 0.818,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.154
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.028,
+      "inc_never_fired_censored": 0.972,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.07
+     },
+     "tag": "feasible"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.273,
+      "inc_never_fired_censored": 0.727,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.359
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.111,
+      "inc_never_fired_censored": 0.889,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.256
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,full": {
+     "conf": {
+      "eot_fpr": 0.273,
+      "inc_never_fired_censored": 0.727,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.359
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.111,
+      "inc_never_fired_censored": 0.889,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.256
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "smartturn_silero_adaptive": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.077
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": 0.3,
+      "gate_s": 0.2,
+      "theta": 0.99
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    }
+   },
+   "best_feasible_parakeet_by_selection": "parakeet_eou_adaptive:fp32_fp32,160,decoder",
+   "byte_identical_to_filed": {
+    "adaptive.items.jsonl": true,
+    "adaptive.json": true,
+    "scores/items.jsonl": true,
+    "scores/results.json": true
+   },
+   "config_echo": {
+    "advance_eligible_strata": [
+     "human_recorded"
+    ],
+    "human_recorded_n": 0,
+    "n_clips": 164,
+    "n_confirmation": 78,
+    "n_selection": 86
+   },
+   "parakeet_feasible_variants": 4,
+   "parakeet_variants": 8,
+   "rc": {
+    "adaptive.py": 0,
+    "score.py": 0
+   },
+   "separation_selection_recall_smartturn_minus_best_feasible_parakeet": -0.047,
+   "smartturn_tag": "feasible"
+  },
+  "t1000": {
+   "arms": {
+    "parakeet_eou_adaptive:fp32_fp32,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.242,
+      "inc_never_fired_censored": 0.758,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.436
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.167,
+      "inc_never_fired_censored": 0.833,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.233
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,160,full": {
+     "conf": {
+      "eot_fpr": 0.242,
+      "inc_never_fired_censored": 0.758,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.436
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.167,
+      "inc_never_fired_censored": 0.833,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.233
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.485,
+      "inc_never_fired_censored": 0.515,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.615
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.306,
+      "inc_never_fired_censored": 0.694,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.512
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,full": {
+     "conf": {
+      "eot_fpr": 0.485,
+      "inc_never_fired_censored": 0.515,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.615
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.306,
+      "inc_never_fired_censored": 0.694,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.512
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.242,
+      "inc_never_fired_censored": 0.758,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.436
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.167,
+      "inc_never_fired_censored": 0.833,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.233
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,full": {
+     "conf": {
+      "eot_fpr": 0.242,
+      "inc_never_fired_censored": 0.758,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.436
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.167,
+      "inc_never_fired_censored": 0.833,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.233
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.485,
+      "inc_never_fired_censored": 0.515,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.615
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.306,
+      "inc_never_fired_censored": 0.694,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.512
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,full": {
+     "conf": {
+      "eot_fpr": 0.485,
+      "inc_never_fired_censored": 0.515,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.615
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.306,
+      "inc_never_fired_censored": 0.694,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.512
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "smartturn_silero_adaptive": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.051
+     },
+     "point": {
+      "T_long": 2.5,
+      "T_short": 0.3,
+      "gate_s": 0.2,
+      "theta": 0.99
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.023
+     },
+     "tag": "feasible"
+    }
+   },
+   "best_feasible_parakeet_by_selection": null,
+   "byte_identical_to_filed": {
+    "adaptive.items.jsonl": true,
+    "adaptive.json": true,
+    "scores/items.jsonl": true,
+    "scores/results.json": true
+   },
+   "config_echo": {
+    "advance_eligible_strata": [
+     "human_recorded"
+    ],
+    "human_recorded_n": 0,
+    "n_clips": 164,
+    "n_confirmation": 78,
+    "n_selection": 86
+   },
+   "parakeet_feasible_variants": 0,
+   "parakeet_variants": 8,
+   "rc": {
+    "adaptive.py": 0,
+    "score.py": 0
+   },
+   "separation_selection_recall_smartturn_minus_best_feasible_parakeet": null,
+   "smartturn_tag": "feasible"
+  },
+  "t3000": {
+   "arms": {
+    "parakeet_eou_adaptive:fp32_fp32,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.424,
+      "inc_never_fired_censored": 0.576,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.923
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.333,
+      "inc_never_fired_censored": 0.667,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.884
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,160,full": {
+     "conf": {
+      "eot_fpr": 0.424,
+      "inc_never_fired_censored": 0.576,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.923
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.333,
+      "inc_never_fired_censored": 0.667,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.884
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,decoder": {
+     "conf": {
+      "eot_fpr": 1.0,
+      "inc_never_fired_censored": 0.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.977
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,full": {
+     "conf": {
+      "eot_fpr": 1.0,
+      "inc_never_fired_censored": 0.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.977
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.424,
+      "inc_never_fired_censored": 0.576,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.923
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.333,
+      "inc_never_fired_censored": 0.667,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.884
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,full": {
+     "conf": {
+      "eot_fpr": 0.424,
+      "inc_never_fired_censored": 0.576,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.923
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.333,
+      "inc_never_fired_censored": 0.667,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.884
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,decoder": {
+     "conf": {
+      "eot_fpr": 1.0,
+      "inc_never_fired_censored": 0.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.977
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,full": {
+     "conf": {
+      "eot_fpr": 1.0,
+      "inc_never_fired_censored": 0.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.977
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "smartturn_silero_adaptive": {
+     "conf": {
+      "eot_fpr": 0.061,
+      "inc_never_fired_censored": 0.939,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.744
+     },
+     "point": {
+      "T_long": 3.0,
+      "T_short": 0.3,
+      "gate_s": 0.2,
+      "theta": 0.99
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.767
+     },
+     "tag": "feasible"
+    }
+   },
+   "best_feasible_parakeet_by_selection": null,
+   "byte_identical_to_filed": {
+    "adaptive.items.jsonl": true,
+    "adaptive.json": true,
+    "scores/items.jsonl": true,
+    "scores/results.json": true
+   },
+   "config_echo": {
+    "advance_eligible_strata": [
+     "human_recorded"
+    ],
+    "human_recorded_n": 0,
+    "n_clips": 164,
+    "n_confirmation": 78,
+    "n_selection": 86
+   },
+   "parakeet_feasible_variants": 0,
+   "parakeet_variants": 8,
+   "rc": {
+    "adaptive.py": 0,
+    "score.py": 0
+   },
+   "separation_selection_recall_smartturn_minus_best_feasible_parakeet": null,
+   "smartturn_tag": "feasible"
+  },
+  "t4000": {
+   "arms": {
+    "parakeet_eou_adaptive:fp32_fp32,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.576,
+      "inc_never_fired_censored": 0.424,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.821
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.389,
+      "inc_never_fired_censored": 0.611,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.651
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,160,full": {
+     "conf": {
+      "eot_fpr": 0.576,
+      "inc_never_fired_censored": 0.424,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.821
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.389,
+      "inc_never_fired_censored": 0.611,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.651
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.97,
+      "inc_never_fired_censored": 0.03,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.953
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_fp32,80,full": {
+     "conf": {
+      "eot_fpr": 0.97,
+      "inc_never_fired_censored": 0.03,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.953
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,decoder": {
+     "conf": {
+      "eot_fpr": 0.576,
+      "inc_never_fired_censored": 0.424,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.821
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.389,
+      "inc_never_fired_censored": 0.611,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.651
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,160,full": {
+     "conf": {
+      "eot_fpr": 0.576,
+      "inc_never_fired_censored": 0.424,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.821
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.389,
+      "inc_never_fired_censored": 0.611,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.651
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,decoder": {
+     "conf": {
+      "eot_fpr": 0.97,
+      "inc_never_fired_censored": 0.03,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.953
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "parakeet_eou_adaptive:fp32_selfdec,80,full": {
+     "conf": {
+      "eot_fpr": 0.97,
+      "inc_never_fired_censored": 0.03,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 1.0
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": null
+     },
+     "sel": {
+      "eot_fpr": 0.972,
+      "inc_never_fired_censored": 0.028,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.953
+     },
+     "tag": "INFEASIBLE(min-FPR shown)"
+    },
+    "smartturn_silero_adaptive": {
+     "conf": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 78,
+      "n_complete": 39,
+      "n_incomplete": 33,
+      "recall": 0.051
+     },
+     "point": {
+      "T_long": 5.0,
+      "T_short": 0.5,
+      "gate_s": 0.4,
+      "theta": 0.99
+     },
+     "sel": {
+      "eot_fpr": 0.0,
+      "inc_never_fired_censored": 1.0,
+      "n": 86,
+      "n_complete": 43,
+      "n_incomplete": 36,
+      "recall": 0.047
+     },
+     "tag": "feasible"
+    }
+   },
+   "best_feasible_parakeet_by_selection": null,
+   "byte_identical_to_filed": {
+    "adaptive.items.jsonl": true,
+    "adaptive.json": true,
+    "scores/items.jsonl": true,
+    "scores/results.json": true
+   },
+   "config_echo": {
+    "advance_eligible_strata": [
+     "human_recorded"
+    ],
+    "human_recorded_n": 0,
+    "n_clips": 164,
+    "n_confirmation": 78,
+    "n_selection": 86
+   },
+   "parakeet_feasible_variants": 0,
+   "parakeet_variants": 8,
+   "rc": {
+    "adaptive.py": 0,
+    "score.py": 0
+   },
+   "separation_selection_recall_smartturn_minus_best_feasible_parakeet": null,
+   "smartturn_tag": "feasible"
+  }
+ }
+}

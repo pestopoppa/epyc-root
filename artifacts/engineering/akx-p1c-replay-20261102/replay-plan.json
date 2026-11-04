@@ -1,0 +1,52 @@
+{
+  "schema": "epyc.akx.p1c.preparation.v1",
+  "status": "NOT_READY",
+  "handoff_task": "INF-75:AKX-P1c",
+  "source_repository": "/mnt/raid0/llm/tmp/inf70/retest1wt",
+  "baseline": "ef81196d5bdd4190b46dff4ae7eecc333a46c8ce",
+  "candidate": "2516c9807b8a92d472c8e75a0a1ce8558d2e34a7",
+  "patch_sha256": "02ade30871a43157718a3ff96582023efe7e5109390af8ee8edca775132166f0",
+  "candidate_default_on": [
+    "GGML_SCALE_SPLIT",
+    "GGML_SOLO_YIELD_ROWCOL"
+  ],
+  "candidate_default_off": [
+    "GGML_TINY_SOLO_CLAMP"
+  ],
+  "intended_workloads": {
+    "inf70_cpu": {
+      "historical_model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf",
+      "model_present_at_preparation": false,
+      "recipe_evidence": "/mnt/raid0/llm/tmp/inf70/agents/retest1/session2.sh",
+      "historical_sha256": "4bfb98496364f8721c1e3ea084a238d690c52b1042a317e05fb43b756c9f8957",
+      "historical_size_bytes": 98392912256,
+      "digest_evidence": "/mnt/raid0/llm/tmp/inf70/results-c5postbios-20260921T100850Z/artifact.sha256",
+      "custody_note": "Original absent; no matching-size copy found in searched model stores. Historical checksum record is not a fresh verification of a current file.",
+      "reconstruction": {
+        "source_commit": "7cdd7c97bed538a85c3b75331b6cdb369e5b2adc",
+        "historical_binary": "llama-quantize build 10151 GNU 15.2.0",
+        "command": "llama-quantize --allow-requantize <UD-IQ4_XS-00001-of-00003.gguf> <output> IQ4_XS 48",
+        "record": "/mnt/raid0/llm/epyc-inference-research/data/inf68-uniform-iq4xs-ab-20260831/requant.log",
+        "shard_sha256": [
+          "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+          "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+          "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+        ],
+        "qualification": "Current input bytes not verified. Rebuilt quantizer, admitted storage and isolated dry-run are required; regenerated output must match historical digest before use."
+      }
+    },
+    "w1": {
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "historical_diagnostic_recipe": "/mnt/raid0/llm/tmp/akx-p0bc-acceptance-20260915/w1-gpu-run2/invocation.json",
+      "recipe_scope": "decode-only diagnostic; not the required full W1 MTP envelope"
+    }
+  },
+  "decision_rule": "Pass only when actual coverage-bound CPU workload is TOUCHED and names the executed default-ON knob reads, the footprint records default_after flips, and W1 receives a T1 classification with an execution witness. Missing data or ambiguous coverage is UNKNOWN; no rate or promotion claim.",
+  "remaining_before_publish": [
+    "Resolve and bind historical INF-70 model or demonstrate an equivalent exact-identity copy by digest.",
+    "Implement and test the coverage-to-knob-read and blast-radius classification producer; bind its revision and hashes.",
+    "Prepare pinned experimental coverage builds for baseline and candidate; bind compiler, flags, source commit and resulting loaded DSO digests.",
+    "Construct model-server requests and observations for both required workloads and production shape envelopes, including W1 MTP; verify actual device residency during requests.",
+    "Implement bounded cleanup, resource, admission and result contracts; independently review and seal the actual runnable packet before rowflow publication."
+  ]
+}

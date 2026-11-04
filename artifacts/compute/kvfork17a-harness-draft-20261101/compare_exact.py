@@ -14,7 +14,8 @@ import sys
 from pathlib import Path
 
 CASE_RE = re.compile(r"^case\s+(\d+)\s+(.+)$")
-FIELD_RE = re.compile(r"(?:^|\s)(hsk|hsv|nh|nr2|nb|hash)=([^\s]+)")
+FIELD_RE = re.compile(r"(?:^|\s)(nh|nr2|nb|hash)=([^\s]+)")
+HS_RE = re.compile(r"(?:^|\s)hs=(\d+)/(\d+)(?:\s|$)")
 SHARED_RE = re.compile(r"(?:^|\s)shared=(\d+)(?:\s|$)")
 NAN_RE = re.compile(r"(?:^|\s)nan=(\d+)(?:\s|$)")
 
@@ -81,9 +82,32 @@ def load_listing(path: Path, manifest: Path) -> tuple[dict[int, str], set[int]]:
         aggregate = ((aggregate ^ h) * 0x100000001b3) & ((1 << 64) - 1)
     if all_lines[0].split()[1].lower() != f"{aggregate:016x}":
         fail(f"ALL summary does not match supported case hashes in {path}")
-    shared_rows = [i for i, row in rows.items() if (m := SHARED_RE.search(row)) and int(m.group(1)) > 0]
-    if len(shared_rows) != 25:
-        fail(f"expected 25 shared-trunk output rows in {path}; found {len(shared_rows)}")
+    shared_rows = {i for i, row in rows.items() if (m := SHARED_RE.search(row)) and int(m.group(1)) > 0}
+    expected_shared = set(range(max(0, count - 25), count))
+    if shared_rows != expected_shared:
+        fail(
+            f"shared-trunk rows in {path} differ from the final 25 case ids: "
+            f"missing={sorted(expected_shared - shared_rows)}, "
+            f"unexpected={sorted(shared_rows - expected_shared)}"
+        )
+    for idx, row in rows.items():
+        shared = SHARED_RE.search(row)
+        if not shared:
+            fail(f"case {idx} has missing/malformed shared count in {path}")
+        if (idx in expected_shared) != (int(shared.group(1)) > 0):
+            fail(f"case {idx} has an unexpected shared count in {path}")
+        fields = dict(FIELD_RE.findall(row))
+        hs = HS_RE.search(row)
+        if not hs or any(name not in fields for name in ("nh", "nr2", "nb", "hash")):
+            fail(f"case {idx} has missing/malformed output metadata in {path}: {row}")
+        try:
+            hsk, hsv = int(hs.group(1)), int(hs.group(2))
+            nh, nr2, nb = (int(fields[name]) for name in ("nh", "nr2", "nb"))
+            output_hash = int(fields["hash"], 16)
+        except ValueError:
+            fail(f"case {idx} has malformed output metadata in {path}: {row}")
+        if min(hsk, hsv, nh, nr2, nb) <= 0 or output_hash < 0 or output_hash >= (1 << 64):
+            fail(f"case {idx} has invalid output metadata in {path}: {row}")
     return rows, expected_unsupported
 
 
@@ -94,7 +118,10 @@ def read_dump(directory: Path, idx: int, row: str) -> bytes:
     data = path.read_bytes()
     fields = dict(FIELD_RE.findall(row))
     try:
-        expected_floats = int(fields["hsv"]) * int(fields["nh"]) * int(fields["nr2"]) * int(fields["nb"])
+        hs = HS_RE.search(row)
+        if not hs:
+            fail(f"case {idx} has malformed hs=hsk/hsv metadata: {row}")
+        expected_floats = int(hs.group(2)) * int(fields["nh"]) * int(fields["nr2"]) * int(fields["nb"])
     except (KeyError, ValueError):
         fail(f"case {idx} has malformed output-shape metadata: {row}")
     if len(data) != expected_floats * 4:
@@ -102,6 +129,15 @@ def read_dump(directory: Path, idx: int, row: str) -> bytes:
     vals = struct.unpack(f"={expected_floats}f", data)
     if any(not (v == v and abs(v) != float("inf")) for v in vals):
         fail(f"non-finite output in case {idx}: {path}")
+    actual_hash = 0x14650fb0739d0383
+    for byte in data:
+        actual_hash = ((actual_hash ^ byte) * 0x100000001b3) & ((1 << 64) - 1)
+    try:
+        expected_hash = int(fields["hash"], 16)
+    except (KeyError, ValueError):
+        fail(f"case {idx} has no valid output hash in listing")
+    if actual_hash != expected_hash:
+        fail(f"case {idx} output hash does not match listing: {path}")
     return data
 
 

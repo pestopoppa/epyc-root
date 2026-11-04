@@ -1,9 +1,9 @@
 # Harness doctrine — re-targetability and evaluation-side randomization
 
-**Promoted 2026-09-17** out of [`handoffs/active/harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md)
+**Promoted 2026-09-17** out of [`handoffs/active/harness-program.md`](../../../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 (rows HS-7 and HS-10, both ticked 2026-07-29). These are **standing criteria**, not history: HS-7 is
 cited as a live constraint by the HS-4 feature map, by
-[`handoffs/active/harness-improvement-loop.md`](../../../handoffs/active/harness-improvement-loop.md)
+[`handoffs/active/harness-program.md`](../../../handoffs/active/harness-program.md#track-harness-improvement-loop)
 (what a self-improving loop may mutate) and by HS-5b's freeze-before-tuning ordering.
 
 ---

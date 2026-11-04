@@ -1,0 +1,43 @@
+{
+  "schema": "sr6.scoped-exposure-review.v1",
+  "inputs": [
+    {
+      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/prompts_p1.jsonl",
+      "sha256": "1d1318fa21fbc15bacbf7963104fac16741730b086a23ac7802a8bb606d462ab",
+      "n": 85
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/prompts_p1.jsonl",
+      "sha256": "5c376290be231c0d581db14c1e4defdf9005a8cff285858fe8462dd27444be7a",
+      "n": 65
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/sweep/prompts_sweep.jsonl",
+      "sha256": "8cff7d5dda62cd2afc685340ab33fcf4dc729d1b644b1a1cb63cc8639631a8fd",
+      "n": 90
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/gpu27b/prompts_sweep.jsonl",
+      "sha256": "8cff7d5dda62cd2afc685340ab33fcf4dc729d1b644b1a1cb63cc8639631a8fd",
+      "n": 90
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/PROMPTS.json",
+      "sha256": "3cda64879d67ffcf7a1960aa0b526d9f21cef8bfc3440a88c56032479cf14e2e",
+      "n": 15
+    }
+  ],
+  "candidate_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/prompt-prep-v2/rendered-candidate.json",
+  "candidate_sha256": "eb600f1ddf9a86ee10458a9c29c9e7629767115c87ed5489ee78bafa82ec230e",
+  "candidate_count": 45,
+  "prior_records_including_overlap": 345,
+  "exact_matches": [],
+  "source_excerpt_substrings_min100": [],
+  "shared_12word_fingerprints": [],
+  "limitations": [
+    "candidate sets include possible rather than proven exposures",
+    "historical 2026-07 three-prompt SR-6 sweep original requests not located",
+    "raw exact and 12-word token fingerprints do not establish semantic disjointness",
+    "excluded sources are limited to inspected prior SR6, COPYSPEC P1/WIDTH/SWEEP/GPU27B candidate files"
+  ]
+}

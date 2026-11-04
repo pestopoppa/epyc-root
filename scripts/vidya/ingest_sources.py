@@ -101,10 +101,10 @@ def _np_ctx_kvu_units(path: Path) -> list[Path]:
     """A directory holding ``summary.jsonl`` or ``requests.jsonl`` is one unit, else its children that do are; a
     named ``requests.jsonl`` file is its own unit."""
     if path.is_file():
-        return [path] if path.name == "requests.jsonl" else []
+        return [path] if path.name in ("requests.jsonl", "belief_measurements.jsonl") else []
     if not path.is_dir():
         return []
-    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file()  # noqa: E731
+    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file() or (p / "belief_measurements.jsonl").is_file()  # noqa: E731
     if held(path):
         return [path]
     return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
@@ -162,6 +162,8 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("inf34-a2-raw-prefill", "inf34_a2_raw", _files("raw-a2.observation.json"),
            task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
     Source("ufh12-gs-coverage", "ufh12_gs_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-GS", note="prospective proxy-query and stored-token record coverage; explicit --path only"),
+    Source("repl-trace-coverage", "repl_trace_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-TRACE-WRITE", note="prospective trace event coverage only; explicit --path only"),
+    Source("repl-trace-facts", "repl_trace_facts", lambda path: [path] if path.is_file() else [], task="VB-UFH12-REPL-TRACE-CUSTODY", note="prospective sealed event observations, explicit file only; originals custody unknown"),
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
     Source("df2-row-exact-akx", "df2_row_exact", _files("belief-native.json", "*/belief-native.json"), task="VB-DF2-ROW-EXACT-WRITE", note="producer-time DF2 output and diagnostic observations; explicit --path only"),
@@ -175,6 +177,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            project="project_dtap_timeout_report", task="VB-DTAP-TIMEOUT-REPORT-WIRE",
            report_path="public_locator",
            note="explicit private original timeout-component integrity receipt; no default/body export"),
+    Source("dtap-crm-pair", "dtap_crm_pair", _files("*.json"),
+           task="VB-DTAP-CRM-PILOT-WRITE",
+           note="explicit prospective producer-reported CRM pair only; fixture and unbound custody refused; no authority or efficacy warrant"),
     Source("pii-staged-gate", "pii_staged_gate", _files("receipt.json"),
            task="VB-PII-STAGED-WIRE",
            note="explicit private original PII sub-gate receipt only; no default or public body export"),
@@ -423,6 +428,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
+    Source("kvu16a-sampled-load", "kvu16a_native",
+           _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"),
+           note="Prospective original-run sampled healthy load, not a peak; unknown coverage does not project",
+           task="VB-KVU-16A-LOAD"),
+    Source("kvu19a2-native", "kvu19a2_native",
+           _files("kvu19a2_native.beliefs.jsonl", "*/kvu19a2_native.beliefs.jsonl"),
+           note="Prospective per-launch GPU FA output NaN counts; original pre-hook observations do not project",
+           task="VB-KVU19A2-NATIVE-WRITE"),
     Source("repl-embedder-parity", "repl_embedder_parity",
            _files("repl_embedder_parity.beliefs.jsonl", "*/repl_embedder_parity.beliefs.jsonl"),
            note="EmbeddingGemma-2 vector-parity gate (REPL-EMB-2.5/2.6): per gated lane cos_min / cos_mean / "
@@ -505,6 +518,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("ak-r18-symbols", "autokernel_r18_symbols", _files("terminal.json", "*/terminal.json"),
+           note="Prospective guarded independent CPU/HIP symbol comparison capture; partial and historical runs decline",
+           task="VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
@@ -547,6 +563,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("inf66-r2364", "inf66_r2364", lambda p: importlib.import_module("adapters.inf66_r2364").units(p),
+           default=Path("/workspace/repos/epyc-inference-research/data/inf66/r23-64-thread-sweep-20261025"),
+           task="VB-R2364-SWEEP-WIRE",
+           note="INF-66 R23-64 CPU decode thread sweep (ANALYSIS.json + runs/*.rows.jsonl, SHA256SUMS-sealed): per-arm mean t/s "
+                "and per-arm effect vs t48, launch-unit floor sd 0.609%; per-launch t/s re-derived from rows; "
+                "RESOLVED/UNRESOLVED carried verbatim from RESULT.txt, never re-derived"),
     Source("m4-cpu-recipe-speed", "m4_cpu_speed", _files("**/process-captures/*.json"),
            note="prospective M4 process captures only, source-sealed and partial-safe",
            task="VB-M4-FOLD-SPEED-WRITE"),
@@ -606,6 +628,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "(timeout/signal) sessions decline; every tuple is an OBSERVATION (n=1, no "
                 "codified protocol)",
            task="VB-AK-SEAT"),
+    Source("ak-actor-wire", "autokernel_actor_wire",
+           _files("actor-wire-final.json", "**/actor-wire-final.json", "*.actor-wire-final.json"),
+           note="AutoKernel native actor-wire matrix finalization (epyc.autokernel.actor_wire_final.v1); "
+                "verifier findings: PASS/FAIL/aborted/unvisited verbatim, native-provider checks and mocked "
+                "controls separate; legacy actor-wire-pass.json / matrix-results.json decline",
+           task="VB-AK-NATIVE-WIRE-WRITE"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),

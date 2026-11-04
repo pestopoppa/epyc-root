@@ -2,13 +2,22 @@
 # churn_up.sh — idempotent bring-up of the backlog-churn pipeline (ws58, 2026-11-01).
 #
 # Operator goal: after a host reboot the churn pipeline comes back from FORMALIZED, PERSISTED rules and code; nothing
-# depends on any session's memory. This script is the one command. Runbook: docs/guides/agent-workflows/backlog-churn-flow.md
-# -> "Reboot / cold start".
+# depends on any session's memory. This script is the one command. Runbook: docs/guides/agent-workflows/backlog-churn-runbook.md
 #
 #   churn_up.sh            install git copies -> compute-flags, clean reboot residue, start what is not running,
 #                          recreate the tmux session, print the manual steps (start Claude ws58 + codex-gen).
 #   churn_up.sh --dry-run  same, printing every action instead of doing it (safe on a live system).
 #   churn_up.sh --status   read-only report: per component pid / alive / sha-vs-git; lanes; grants; sessions; tmux.
+#   churn_up.sh --stop     the 2026-11-02 operator stop order: (1) dispatcher, (2) keeper watchdog(s) THEN keeper (the
+#                          watchdog restarts the keeper), (3) revoke open grants by MOVING them to grants-revoked-<ts>/,
+#                          (4) armed launchers by their recorded pid (dryrun/*/ARMED.json|RUNNING.json, lane-*.queue),
+#                          (5) the remaining zero-token loops. TERM, wait 10 s, KILL, verify with ps. `--stop --dry-run`
+#                          prints the plan only. It does NOT stop the disk janitor (disk hygiene is not inference).
+#   churn_up.sh --janitor=start|stop|status|dry-run   the disk janitor only (disk_janitor.sh: keeper --reap-now every
+#                          30 min + trash-sweep --older-than 1 hourly; log disk-janitor.log). A normal bring-up starts it too.
+# Start order (live): install -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
+# backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch. A component already running (pidfile pid, or ANY pid whose
+# argv holds its exact installed path) is never started twice.
 #
 # Rules it obeys (do not weaken): liveness is `ps -o pid= -p <pid>` + argv match, never a process-name search or kill; a running
 # .sh is never edited in place (installs go through a temp file + mv, so a running bash keeps its old inode) and never
@@ -25,13 +34,18 @@ RL=/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock
 TMUX_SESSION=${CHURN_TMUX_SESSION:-agent}
 TMUX_WINDOWS="claude codex-gen"
 MODE=live
-case "${1:-}" in
-  "") ;;
+STOP=0
+JAN=""
+for a in "$@"; do case "$a" in
   --dry-run) MODE=dry;;
   --status) MODE=status;;
-  -h|--help) sed -n 2,20p "$0"; exit 0;;
-  *) echo "usage: churn_up.sh [--dry-run|--status]" >&2; exit 2;;
-esac
+  --stop) STOP=1;;
+  --janitor=start|--janitor=stop|--janitor=status|--janitor=dry-run) JAN=${a#--janitor=};;
+  -h|--help) sed -n 2,28p "$0"; exit 0;;
+  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
+esac; done
+[ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
+KEEPER=ws58-calendar-keeper-v12.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
 RC=0
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 LOG=$F/churn-up.log
@@ -61,21 +75,29 @@ start_bg() {  # start_bg <pidfile> <cwd> <cmd...>  (setsid, detached; pidfile wr
 # ---------------------------------------------------------------- 1. install git copies
 # dst-relative-to-F  src-absolute
 INSTALL=(
-  "ws58-calendar-keeper-v11.sh    $RF/ws58-calendar-keeper-v11.sh"
+  "$KEEPER    $RF/$KEEPER"
   "ws58-keeper-watchdog.sh        $CH/ws58-keeper-watchdog.sh"
   "ws58-disk-trend.sh             $CH/ws58-disk-trend.sh"
+  "disk_janitor.sh                $CH/disk_janitor.sh"
   "ws58-backlog-gen-v1.sh         $CH/ws58-backlog-gen-v1.sh"
   "ws58-flow-scoreboard-v1.sh     $CH/ws58-flow-scoreboard-v1.sh"
   "GOAL-codex-gen.md              $CH/GOAL-codex-gen.md"
   "bin/backlog_gen.py             $CO/backlog_gen.py"
   "bin/handoff_sessions.py        $CO/handoff_sessions.py"
   "bin/flow_scoreboard.py         $CO/flow_scoreboard.py"
+  "bin/index_regen.py             $CO/index_regen.py"
+  "bin/serialized_push.py         $CO/serialized_push.py"
+  "bin/flip_checkbox.py           $CO/flip_checkbox.py"
+  "bin/keeper_qual_memo.py        $CO/keeper_qual_memo.py"
+  "bin/churn/wrapup.py            $CH/wrapup.py"
+  "bin/churn/file_result.py       $CH/file_result.py"
+  "bin/churn/typed_classify.py    $CH/typed_classify.py"
+  "bin/churn/tokens_per_task.py   $CH/tokens_per_task.py"
   "bin/rowflow/rowflow.py         $RF/rowflow.py"
   "bin/rowflow/filler_run15.sh    $RF/filler_run15.sh"
   "bin/rowflow/filler_lib.sh      $RF/filler_lib.sh"
   "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
   "bin/rowflow/publish_row.py     $RF/publish_row.py"
-  "bin/rowflow/dryrun_disk_policy.json $RF/dryrun_disk_policy.json"
 )
 # RETIRED 2026-11-01 evening (allocator): grant-writer templates, grant_ok*.sh, ram_admit.sh, validate_fillers.py, the legacy
 # grant_ok_launcher.py. rowflow.py allocate (keeper v11) is the one actor that writes grants.
@@ -98,16 +120,17 @@ install_one() {
   act "INSTALL $src -> $dst"
   [ $MODE = dry ] && return
   mkdir -p "$(dirname "$dst")"
-  cp -p "$src" "$dst.churn-tmp.$$" && mv -f "$dst.churn-tmp.$$" "$dst" || fail "install $rel"
+  cp -p "$src" "$dst.churn-tmp.$$" && mv -f "$dst.churn-tmp.$$" "$dst" || { fail "install $rel"; return; }
+  cmp -s "$src" "$dst" || fail "install $rel: cmp differs after mv"
 }
 do_install() {
   say "== install (git -> $F)"
   local line
   for line in "${INSTALL[@]}"; do install_one $line; done
   local cur; cur=$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)
-  if [ "$cur" != "ws58-calendar-keeper-v11.sh" ]; then
-    act "SET ws58-calendar-keeper.current = ws58-calendar-keeper-v11.sh (was '${cur:-}')"
-    [ $MODE = dry ] || echo ws58-calendar-keeper-v11.sh > "$F/ws58-calendar-keeper.current"
+  if [ "$cur" != "$KEEPER" ]; then
+    act "SET ws58-calendar-keeper.current = $KEEPER (was '${cur:-}')"
+    [ $MODE = dry ] || { echo "$KEEPER" > "$F/ws58-calendar-keeper.current.tmp.$$" && mv -f "$F/ws58-calendar-keeper.current.tmp.$$" "$F/ws58-calendar-keeper.current"; }
   fi
   [ $MODE = dry ] || mkdir -p "$F/grants" "$F/ready" "$F/dryrun" "$F/ws58-keeper-state" "$F/filing-done" "$F/briefs" "$F/handoff-sessions"
 }
@@ -198,36 +221,109 @@ check_legacy_writers() {
 }
 
 # ---------------------------------------------------------------- 4. loops
-# name | pidfile | argv marker | cwd | command
+# name | pidfile | argv marker | cwd | command | exact installed path (duplicate key: any pid with this argv element)
+# ORDER IS THE START ORDER (the keeper is started by the watchdog between watchdog and dispatcher; see ensure_loops).
 LOOPS=(
-  "watchdog|ws58-keeper-watchdog.pid|ws58-keeper-watchdog.sh|$F|bash $F/ws58-keeper-watchdog.sh"
-  "backlog-gen|ws58-backlog-gen.pid|backlog_gen.py|$F|bash $F/ws58-backlog-gen-v1.sh"
-  "flow-scoreboard|ws58-flow-scoreboard.pid|ws58-flow-scoreboard-v1.sh|$F|bash $F/ws58-flow-scoreboard-v1.sh"
-  "dispatcher|handoff-sessions.dispatcher.pid|handoff_sessions.py|$F/bin|python3 -I $F/bin/handoff_sessions.py dispatch --loop --interval 60"
-  "disk-trend|ws58-disk-trend.pid|ws58-disk-trend.sh|$F|bash $F/ws58-disk-trend.sh"
-  "filing-watch|ws58-filing-watch.pid|filing_watch.sh|$REPO|env FILING_WATCH_FLAGS_ROOT=$F FILING_WATCH_BUS_ROOT=$REPO/coordination/session-bus bash $REPO/scripts/coordination/filing_watch.sh"
+  "watchdog|ws58-keeper-watchdog.pid|ws58-keeper-watchdog.sh|$F|bash $F/ws58-keeper-watchdog.sh|$F/ws58-keeper-watchdog.sh"
+  "dispatcher|handoff-sessions.dispatcher.pid|handoff_sessions.py|$F/bin|python3 -I $F/bin/handoff_sessions.py dispatch --loop --interval 60|$F/bin/handoff_sessions.py"
+  "backlog-gen|ws58-backlog-gen.pid|backlog_gen.py|$F|bash $F/ws58-backlog-gen-v1.sh|$F/bin/backlog_gen.py"
+  "flow-scoreboard|ws58-flow-scoreboard.pid|ws58-flow-scoreboard-v1.sh|$F|bash $F/ws58-flow-scoreboard-v1.sh|$F/ws58-flow-scoreboard-v1.sh"
+  "disk-trend|ws58-disk-trend.pid|ws58-disk-trend.sh|$F|bash $F/ws58-disk-trend.sh|$F/ws58-disk-trend.sh"
+  "disk-janitor|disk-janitor.pid|disk_janitor.sh|$F|bash $F/disk_janitor.sh|$F/disk_janitor.sh"
+  "filing-watch|ws58-filing-watch.pid|filing_watch.sh|$REPO|env FILING_WATCH_FLAGS_ROOT=$F FILING_WATCH_BUS_ROOT=$REPO/coordination/session-bus bash $REPO/scripts/coordination/filing_watch.sh|$REPO/scripts/coordination/filing_watch.sh"
 )
-loop_pid() { local name=$1 l; for l in "${LOOPS[@]}"; do IFS='|' read -r n pf mk cwd cmd <<< "$l"; [ "$n" = "$name" ] && { pid_of "$F/$pf"; return; }; done; }
+# pids whose argv has an element that IS <path> (or ./<basename> with cwd = dirname <path>). Exact-path match over
+# /proc/*/cmdline: never a name pattern, never pgrep. Excludes this script's own pid.
+argv_pids() {
+  python3 -I - "$1" "$$" <<'PY'
+import os, sys
+path, me = sys.argv[1], sys.argv[2]
+d, b = os.path.dirname(path), os.path.basename(path)
+out = []
+for pid in os.listdir("/proc"):
+    if not pid.isdigit() or pid in (me, str(os.getpid())): continue  # never this script or this probe (its argv holds <path>)
+    try:
+        argv = open(f"/proc/{pid}/cmdline", "rb").read().split(b"\0")
+        argv = [a.decode(errors="replace") for a in argv if a]
+    except OSError: continue
+    hit = path in argv
+    if not hit and f"./{b}" in argv:
+        try: hit = os.readlink(f"/proc/{pid}/cwd") == d
+        except OSError: pass
+    if hit: out.append(pid)
+print(" ".join(sorted(out, key=int)))
+PY
+}
+# pidfile pid (if alive with the marker) plus every exact-argv-path pid, deduplicated
+component_pids() {  # component_pids <pidfile> <marker> <path>
+  local p; p=$(pid_of "$F/$1"); { is_proc "$p" "$2" && echo "$p"; for q in $(argv_pids "$3"); do echo "$q"; done; } | sort -un | tr '\n' ' '
+}
+wait_keeper() {  # the watchdog starts the keeper on its first pass; verify (do not race it with a second start)
+  local i k K; K=$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)
+  if [ $MODE = dry ]; then say "  keeper: [dry-run] the watchdog would start ${K:-<.current missing>} (from .current); churn_up would wait <=30 s for ws58-calendar-keeper.pid"; return; fi
+  for i in $(seq 30); do k=$(pid_of "$F/ws58-calendar-keeper.pid"); is_proc "$k" "$K" && { say "  keeper: running pid $k ($K)"; return; }; sleep 1; done
+  fail "keeper $K not running 30 s after the watchdog (see ws58-keeper-watchdog.log, ws58-calendar-keeper.log)"
+}
 ensure_loops() {
-  say "== loops"
-  local l n pf mk cwd cmd p
+  say "== loops (start order: watchdog -> keeper -> dispatcher -> backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch)"
+  local l n pf mk cwd cmd path p dup
   for l in "${LOOPS[@]}"; do
-    IFS='|' read -r n pf mk cwd cmd <<< "$l"
+    IFS='|' read -r n pf mk cwd cmd path <<< "$l"
     p=$(pid_of "$F/$pf")
-    if is_proc "$p" "$mk"; then say "  $n: running pid $p"; continue; fi
-    [ -n "$p" ] && say "  $n: pidfile pid $p is dead or not $mk"
-    start_bg "$F/$pf" "$cwd" $cmd
+    if is_proc "$p" "$mk"; then say "  $n: running pid $p"
+    else
+      dup=$(argv_pids "$path")
+      if [ -n "$dup" ]; then warn "$n: already running as pid(s) $dup (argv holds $path) but pidfile $pf says '${p:-none}': NOT starting a duplicate"
+      else [ -n "$p" ] && say "  $n: pidfile pid $p is dead or not $mk"; start_bg "$F/$pf" "$cwd" $cmd; fi
+    fi
+    [ "$n" = watchdog ] && wait_keeper
   done
-  # the keeper is started by the watchdog within 2 min; say so rather than racing it
-  local k; k=$(pid_of "$F/ws58-calendar-keeper.pid")
-  if is_proc "$k" "$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)"; then say "  keeper: running pid $k"; else say "  keeper: not running; the watchdog starts $(cat "$F/ws58-calendar-keeper.current" 2>/dev/null) within 120 s"; fi
+}
+stop_pid() {  # stop_pid <label> <pid>: TERM, 10 s, KILL, verify with ps
+  local label=$1 p=$2 i
+  alive "$p" || return 0
+  act "STOP $label pid $p ($(ps -o args= -p "$p" 2>/dev/null | cut -c1-120))"
+  [ $MODE = dry ] && return 0
+  kill -TERM "$p" 2>/dev/null
+  for i in $(seq 10); do alive "$p" || break; sleep 1; done
+  alive "$p" && { act "KILL $label pid $p (TERM ignored 10 s)"; kill -KILL "$p" 2>/dev/null; sleep 1; }
+  alive "$p" && fail "$label pid $p still alive after KILL" || say "      pid $p gone (ps)"
+}
+loop_field() { local name=$1 l n pf mk cwd cmd path; for l in "${LOOPS[@]}"; do IFS='|' read -r n pf mk cwd cmd path <<< "$l"; [ "$n" = "$name" ] && { echo "$pf|$mk|$path"; return; }; done; }
+stop_loop() { local pf mk path p; IFS='|' read -r pf mk path <<< "$(loop_field "$1")"; for p in $(component_pids "$pf" "$mk" "$path"); do stop_pid "$1" "$p"; done; }
+do_stop() {
+  say "== stop 1/5: dispatcher"; stop_loop dispatcher
+  say "== stop 2/5: keeper watchdog(s), then keeper"; stop_loop watchdog
+  local k f; k=$(pid_of "$F/ws58-calendar-keeper.pid"); is_proc "$k" ws58-calendar-keeper && stop_pid keeper "$k"
+  for f in "$F"/ws58-calendar-keeper*.sh; do for k in $(argv_pids "$f"); do
+    [ "$k" = "$(pid_of "$F/ws58-calendar-keeper.pid")" ] && [ $MODE != dry ] && continue
+    warn "pid $k has keeper argv $f (job-wrapper subshell or a second keeper main loop): stop it by pid if it is a main loop"; done; done
+  say "== stop 3/5: revoke open grants -> $F/grants-revoked-$TS/"
+  local g id n=0
+  for g in "$F"/grants/*.grant; do [ -e "$g" ] || continue; id=$(basename "$g" .grant)
+    { [ -e "$F/grants/$id.ended" ] || [ -e "$F/grants/$id.complete" ]; } && continue
+    n=$((n+1)); act "MOVE grant $id -> grants-revoked-$TS/"
+    [ $MODE = dry ] && continue
+    mkdir -p "$F/grants-revoked-$TS"; mv -f "$g" "$F/grants-revoked-$TS/"
+    for s in "$F/.wsq-granted-$id" "$F/.wsg-granted-$id"; do [ -e "$s" ] && mv -f "$s" "$F/grants-revoked-$TS/"; done
+  done; [ $n = 0 ] && say "  no open grant"
+  say "== stop 4/5: armed launchers by recorded pid (dryrun/*/ARMED.json, RUNNING.json, lane-*.queue)"
+  local p n2=0
+  for p in $( { for f in "$F"/dryrun/*/ARMED.json "$F"/dryrun/*/RUNNING.json; do [ -e "$f" ] && python3 -I -c 'import json,sys
+try: print(json.load(open(sys.argv[1])).get("pid") or "")
+except Exception: pass' "$f"; done; cat "$F"/lane-*.queue 2>/dev/null | grep -v '^#' | awk -F'|' '{print $2}'; } | grep -E '^[0-9]+$' | sort -un ); do
+    is_proc "$p" filler_run || continue; n2=$((n2+1)); stop_pid launcher "$p"; done
+  [ $n2 = 0 ] && say "  no live recorded launcher"
+  say "== stop 5/5: remaining zero-token loops"
+  for f in backlog-gen flow-scoreboard disk-trend filing-watch; do stop_loop "$f"; done
 }
 status_loops() {
   say "== loops (pidfile -> pid, alive+argv, started)"
-  local l n pf mk cwd cmd p st
+  local l n pf mk cwd cmd path p st d
   for l in "${LOOPS[@]}"; do
-    IFS='|' read -r n pf mk cwd cmd <<< "$l"; p=$(pid_of "$F/$pf")
-    if is_proc "$p" "$mk"; then st="UP   since $(ps -o lstart= -p "$p")"; else st="DOWN (pidfile pid '${p:-none}')"; RC=1; fi
+    IFS='|' read -r n pf mk cwd cmd path <<< "$l"; p=$(pid_of "$F/$pf")
+    if is_proc "$p" "$mk"; then st="UP   since $(ps -o lstart= -p "$p")"
+    else d=$(argv_pids "$path"); if [ -n "$d" ]; then st="UP WITHOUT PIDFILE: pid(s) $d hold $path (pidfile '${p:-none}')"; else st="DOWN (pidfile pid '${p:-none}')"; fi; RC=1; fi
     printf '  %-16s %-8s %s\n' "$n" "${p:-none}" "$st"
   done
   p=$(pid_of "$F/ws58-calendar-keeper.pid")
@@ -287,7 +383,7 @@ PY
   say "== backlog freshness"
   local f; for f in BACKLOG-codex-gen.md FLOW-SCOREBOARD.md ws58-calendar-keeper.log; do
     [ -e "$F/$f" ] && printf '  %-28s %s\n' "$f" "$(date -u -r "$F/$f" +%FT%TZ)" || printf '  %-28s MISSING\n' "$f"; done
-  say "== disk"; printf '  /mnt/raid0/llm free: %s GiB (floor 150; dryrun policy %s)\n' "$(df -B1G --output=avail /mnt/raid0/llm | tail -1 | tr -d ' ')" "$(tr -d '\n ' < "$F/bin/rowflow/dryrun_disk_policy.json" 2>/dev/null | cut -c1-120)"
+  say "== disk"; printf '  /mnt/raid0/llm free: %s GiB (floor 150 = filler_run15.sh FILLER_DISK_FLOOR_GIB default)\n' "$(df -B1G --output=avail /mnt/raid0/llm | tail -1 | tr -d ' ')"
 }
 manual_steps() {
   cat <<EOF
@@ -309,9 +405,23 @@ EOF
 # ---------------------------------------------------------------- main
 say "churn_up $MODE  $(date -u +%FT%TZ)  repo=$REPO ($(git -C "$REPO" rev-parse --short HEAD 2>/dev/null)) flags=$F"
 [ -d "$F" ] || { [ $MODE = live ] && mkdir -p "$F" || { fail "$F missing"; }; }
+if [ -n "$JAN" ]; then  # the disk janitor alone; never touches inference components
+  case $JAN in
+    start) install_one "disk_janitor.sh" "$CH/disk_janitor.sh"; p=$(pid_of "$F/disk-janitor.pid")
+           if is_proc "$p" disk_janitor.sh; then say "  disk-janitor: running pid $p"
+           elif [ -n "$(argv_pids "$F/disk_janitor.sh")" ]; then warn "disk-janitor: already running as pid(s) $(argv_pids "$F/disk_janitor.sh"); not starting a duplicate"
+           else start_bg "$F/disk-janitor.pid" "$F" bash "$F/disk_janitor.sh"; fi;;
+    stop) stop_loop disk-janitor;;
+    status) p=$(pid_of "$F/disk-janitor.pid"); if is_proc "$p" disk_janitor.sh; then say "  disk-janitor UP pid $p since $(ps -o lstart= -p "$p")"; else say "  disk-janitor DOWN (pidfile '${p:-none}')"; RC=1; fi
+            say "  last log lines ($F/disk-janitor.log):"; tail -n 5 "$F/disk-janitor.log" 2>/dev/null | sed 's/^/    /';;
+    dry-run) J=$F/disk_janitor.sh; [ -f "$J" ] || J=$CH/disk_janitor.sh; bash "$J" --dry-run || RC=1;;
+  esac
+  [ $RC = 0 ] && say "churn_up janitor $JAN: OK" || say "churn_up janitor $JAN: PROBLEMS"
+  exit $RC
+fi
 case $MODE in
   status) status_install; status_loops; status_tmux; status_state;;
-  *)      do_install; clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps;;
+  *) if [ $STOP = 1 ]; then do_stop; else do_install; clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps; fi;;
 esac
 [ $RC = 0 ] && say "churn_up $MODE: OK" || say "churn_up $MODE: PROBLEMS (see FAIL/DOWN/DIFFERS lines)"
 exit $RC

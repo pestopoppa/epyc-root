@@ -1,0 +1,48 @@
+{
+  "conversion": {
+    "d3_has_audio_class": false,
+    "d4_has_audio_class": true,
+    "d7_removes_codec_f16_exclusion": true,
+    "d7_retains_encoder_depthwise_and_codec_quant_exemptions": true
+  },
+  "d3_ancestor_of_d4": true,
+  "d4_ancestor_of_d7": true,
+  "quantizer_rules": {
+    "codec_all": {
+      "c5": false,
+      "d4": true,
+      "d4_parent": false,
+      "d7": false,
+      "d7_parent": true
+    },
+    "codec_quant_only": {
+      "c5": false,
+      "d4": false,
+      "d4_parent": false,
+      "d7": true,
+      "d7_parent": false
+    },
+    "depthwise_convolution": {
+      "c5": false,
+      "d4": true,
+      "d4_parent": false,
+      "d7": true,
+      "d7_parent": true
+    },
+    "encoder_convolution": {
+      "c5": false,
+      "d4": true,
+      "d4_parent": false,
+      "d7": true,
+      "d7_parent": true
+    }
+  },
+  "revisions": {
+    "c5": "c72ec82f5417bb2937310326120f149b665e8400",
+    "d3": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "d4": "19ff817fb25e9a1b838b1d7f9f4325f7bf9779c4",
+    "d7": "889f2ec96deacbc2d8a9a67dbe181eaa43a2fb3b"
+  },
+  "schema": "akagg.ch32.d7-quant-source-check.v1",
+  "scope": "Pinned source text evidence only; neither minimal full-commit chain nor runtime behavior established."
+}

@@ -2,7 +2,7 @@
 """Deterministic repo-readiness scorer for the EPYC repo map.
 
 The rubric is adapted from the Factory-style model captured in
-handoffs/active/repo-readiness-scorer.md:
+handoffs/active/engineering-hygiene-backlog.md:
 
 - five maturity levels;
 - nine technical pillars;
@@ -417,7 +417,7 @@ def build_criteria() -> list[Criterion]:
         exists_any("handoffs/completed/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
                    ".claude/skills/security-review/**"))
     add(5, "Task Discovery", "auto_remediation_queue", "Has an autopilot/remediation queue or self-running lab.",
-        exists_any("scripts/autopilot/**", "handoffs/active/frontier-f2-self-running-lab.md",
+        exists_any("scripts/autopilot/**", "handoffs/active/frontier-lab-automation.md",
                    "handoffs/active/master-handoff-index.md"))
     add(5, "Product & Experimentation", "self_optimizing_loop", "Has Pareto/evolutionary optimization loops.",
         exists_any("scripts/autopilot/**", "orchestration/autopilot_journal.jsonl",

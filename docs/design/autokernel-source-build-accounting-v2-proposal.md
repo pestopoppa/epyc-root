@@ -1,4 +1,4 @@
-**PROPOSED — NOT IMPLEMENTED OR APPROVED.** Current work: [AKU-06l](../../handoffs/active/autokernel-unified-surface-program.md).
+**PROPOSED — NOT IMPLEMENTED OR APPROVED.** Current work: [AKU-06l](../../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program).
 
 # AKU-06l source/build multi-child accounting decision
 

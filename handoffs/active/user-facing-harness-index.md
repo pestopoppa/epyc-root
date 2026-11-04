@@ -15,19 +15,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | UFH-13 | thesis experiment (ACTIVE 2026-10-29) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
-| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | Re-size failed UFH14-A4a treatment window from measured tok/s, then validate its sandboxed paired rerun | INF-77, UFH-01 |
-| UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
-| UFH-15 | OpenCode shell integration | [opencode-shell-integration.md](opencode-shell-integration.md) | Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons | UFH-01 |
-| UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
-| UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
-| UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | Bind the published finite actor source to a reviewed native recipe; keep model execution with its owner | — |
-| UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text | — |
-| UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | Validate HIL-15b failure recordings for HIL-16; run the four-family cohort for HIL-18 without pooling incompatible cohorts | UFH-01 |
-| UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs | — |
-| UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
-| UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.8b trace write side, then 2.9-2.12 package gates; UFH-12-PROD-ADOPT is a separate decision | UFH-07, INF-78, EVL-37, UFH-01 |
-| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e1: read first post-reload write_outside_root audit record + POST-d proofs; then e2 web_fetch_guard, e3 containment | — |
+| UFH-01 | harness selection and integration | [harness-program.md](harness-program.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
 
 ## Cross-domain
 

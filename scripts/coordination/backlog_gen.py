@@ -25,7 +25,8 @@ Row states (epyc.row.v3, scripts/coordination/rowflow/rowflow.py is the one sour
     needs-qualification  row published, no dry run yet for the current launcher (keeper runs it when the lane is free)
     blocked              the dry run FAILED (dryrun/<id>/FAIL-n.json = the owner's one fix task), the dry run is running,
                          a legacy manifest needs `rowflow.py publish --migrate`, or a `blocked_by` entry is open
-    parked               >= MAX_FAILS failed dry runs in the lineage (operator-escalations/<lineage>.md); nobody retries
+    parked               >= MAX_FAILS failed dry runs in the lineage (operator-escalations/<lineage>.md), or >= MAX_FAILS
+                         consecutive arming/launch failures since its PASS (operator-escalations/<id>.arming.md); nobody retries
     qualified-armed      dry run PASSED and the launcher is unchanged (grantable / poller armed); writers grant it
     running              grants/<id>.grant open, NO grants/<id>.ended|.complete, and the recorded launcher/poller pid (armed
                          record or queue line) is alive; a grant whose pid is dead or whose .ended exists is never "running"
@@ -134,28 +135,36 @@ def load_json(p):
 
 
 def load_pilots(path: str | None) -> dict[str, dict]:
-    """slug -> {handoff, ids, patterns, rows} for every piloted handoff not marked done."""
+    """slug -> {handoff, ids, rows} for every piloted handoff not marked done."""
     reg = load_json(path) if path else None
     out = {}
     for slug, e in ((reg or {}).get("sessions") or {}).items():
-        if not isinstance(e, dict) or e.get("status") == "done" or not e.get("handoff"):
+        if not isinstance(e, dict) or e.get("status") in ("done", "retired") or not e.get("handoff"):
             continue
         out[slug] = {"handoff": "handoffs/" + str(e["handoff"]).split("handoffs/", 1)[-1],
                      "ids": set(e.get("row_ids") or []),
-                     "patterns": [re.compile(p) for p in (e.get("row_patterns") or []) if isinstance(p, str)],
                      "rows": set(e.get("handoff_rows") or []),
                      # a LIVE owner is one that is running or will be resumed for new work; yielded/failed sessions are not
                      "live": e.get("status") in ("live", "suspended", "unpushed", "retry") and not e.get("yield")}
     return out
 
 
+def handoff_file(handoff_task) -> str:
+    """'handoffs/active/x.md:ROW' | 'x.md' -> 'x.md' (the file a row belongs to); '' when it names no .md file."""
+    f = os.path.basename(str(handoff_task or "").split(":", 1)[0].strip())
+    return f if f.endswith(".md") else ""
+
+
 def pilot_of(pilots: dict, rid: str, row_id: str | None = None, handoff: str | None = None) -> str | None:
+    """A row belongs to its HANDOFF (operator 2026-11-02): the session whose handoff is the row's handoff_task file.
+    row_ids / handoff_rows stay only as the fallback for old rows published without a handoff file."""
+    hf = handoff_file(handoff)
+    if hf:
+        for slug, p in pilots.items():
+            if os.path.basename(p["handoff"]) == hf:
+                return slug
     for slug, p in pilots.items():
         if rid in p["ids"] or (row_id and row_id in p["rows"]):
-            return slug
-        if handoff and p["handoff"].endswith(str(handoff).split("handoffs/", 1)[-1]):
-            return slug
-        if any(rx.search(rid) for rx in p["patterns"]):
             return slug
     return None
 

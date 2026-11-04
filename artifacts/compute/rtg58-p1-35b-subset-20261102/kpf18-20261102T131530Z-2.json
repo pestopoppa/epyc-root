@@ -1,0 +1,272 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18",
+ "kpf18_item": 1,
+ "run_id": "kpf18-20261102T131530Z-2",
+ "arm": "fork_on",
+ "binary": "/mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin/llama-server",
+ "binary_realpath": "/mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin/llama-server",
+ "binary_sha256": "a62c3ab1835b8eb8ce33722f67d5e8eac6674576fcf2b0b15eb6ba44e4b0fa30",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "98304",
+  "-t",
+  "24",
+  "-tb",
+  "24",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--no-mmap",
+  "--cache-ram",
+  "32768",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "--spec-type",
+  "draft-mtp",
+  "--spec-draft-n-max",
+  "4",
+  "--reasoning",
+  "off",
+  "--device",
+  "none",
+  "--device-draft",
+  "none",
+  "--kv-unified",
+  "--no-cache-idle-slots",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/kv-prefix-fork/p1-35b-cpu-20261102/slot-save/item1-fork_on-20261102T131525Z",
+  "--port",
+  "18974",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "1024"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "0-23"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/argv.frontdoor-cpu-gate.txt",
+  "argv_file_sha256": "d52c880c05742135cc727263c66b4f4fe538f0f93b22b7b7043c65cb38e67fde",
+  "argv_file_header": [
+   "# KPF-18 CPU subset argv: production frontdoor (:8070) argv as rendered by",
+   "#   epyc-orchestrator scripts/server/orchestrator_stack.py build_server_command(registry.get_role('frontdoor'), ...)",
+   "#   on 2026-10-20 (no launch):",
+   "#   llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port <p> -np 4 -c 262144 -t 96",
+   "#   -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --cache-ram 32768",
+   "#   --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp",
+   "#   --spec-draft-n-max 4 --reasoning off --slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor --device none --device-draft none",
+   "# Changes for the one-quarter CPU gate: -t 96 -> -t 24 -tb 24 (q3 = cores 72-95); -c 262144 -> -c 98304 (4 x 16k trunks",
+   "# + suffixes fit); --mlock dropped (shared host); --kv-unified added (gate shape); --no-cache-idle-slots added (the GPU",
+   "# gate's shape: a trunk-first source must stay resident while fresh controls run on other slots; item 5 toggles it);",
+   "# --port / --slot-save-path / --metrics / --slot-fork-min-tokens are set by the runner."
+  ],
+  "shape_drift": [
+   "-c = '98304', gate shape expects '393216'",
+   "-ngl = None, gate shape expects 'all'",
+   "--spec-type = 'draft-mtp', gate shape expects 'draft-dflash'",
+   "--spec-draft-n-max = '4', gate shape expects '7'",
+   "--device = 'none', gate shape expects 'ROCm0'",
+   "-b = None, gate shape expects '512'",
+   "-ub = '2048', gate shape expects '512'",
+   "--cache-ram = '32768', gate shape expects '65536'",
+   "-md '' is not the DFlash2 drafter"
+  ],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": "cross-slot prefix fork enabled: mode = checkpoint, min tokens = 1024, cache_idle_slots = 0",
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  98304
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/run-20261020T163128Z/prompt_set.jsonl",
+ "prompt_set_sha256": "fe8c8c9202f71e678435717a931d3a97236968fe7b883a8748a88d1215b26662",
+ "dflash2": false,
+ "spec_type_from_argv": "draft-mtp",
+ "draft_model_from_argv": null,
+ "speculative_requested": false,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 8,
+   "n": 8,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 128,
+   "measured": true,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 8,
+   "greedy_prefix_quartiles": [
+    128,
+    128,
+    128,
+    128,
+    128
+   ],
+   "tokens_identical": 8,
+   "bit_identical": 8
+  },
+  "vs_fresh": {
+   "top1_agree": 8,
+   "n": 8,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 128,
+   "measured": true,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 8,
+   "greedy_prefix_quartiles": [
+    128,
+    128,
+    128,
+    128,
+    128
+   ],
+   "tokens_identical": 8,
+   "bit_identical": 8
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "vs_fresh_B": {
+   "top1_agree": 8,
+   "n": 8,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 128,
+   "measured": true,
+   "kld_mean": 0.0,
+   "prob_maxabs_intersection": 0.0,
+   "greedy_prefix_full": 8,
+   "greedy_prefix_quartiles": [
+    128,
+    128,
+    128,
+    128,
+    128
+   ],
+   "tokens_identical": 8,
+   "bit_identical": 8
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 128,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 24,
+ "cache_n": 162792,
+ "n_fork_tokens": 0,
+ "unique_cells_peak": null,
+ "unique_cells_method": null,
+ "decode_tok_s": {
+  "per_slot": [],
+  "aggregate": null
+ },
+ "window_id": "rtg58-p1-35b-20261102-item1",
+ "gpu_window_id": null,
+ "start_utc": "2026-11-02T13:15:30Z",
+ "end_utc": "2026-11-02T13:37:27Z",
+ "host": "Beelzebub",
+ "checks": {
+  "nodraft_restored_L_minus_1": {
+   "ok": 24,
+   "n": 24,
+   "failed": []
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1-35b-cpu-20261102/logs/item1-fork_on-20261102T131525Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 8,
+  "fork_lines_busy": 0,
+  "fork_kinds": [
+   "end"
+  ],
+  "prefill_budget_iters": 152,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 3
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1-35b-cpu-20261102/logs/item1-fork_on-20261102T131525Z.linkage.txt",
+   "s": 0.02,
+   "cmd": "LD_LIBRARY_PATH=/mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin/llama-server /mnt/micron/rtg58-integrated-c5-a58b513ba-20261102/bin"
+  },
+  "hip_mapped": [],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": null,
+  "vram": null,
+  "process_start_utc": "2026-11-02T13:15:25Z",
+  "process_stop_utc": "2026-11-02T13:37:25Z",
+  "stop": {
+   "pid": 570328,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-11-02T13:37:23Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1-35b-cpu-20261102/rows/kpf18-20261102T131530Z-2.jsonl",
+ "rows_sha256": "93caf03f582445b34380e4a957318625230aeec4b82aabf02806365100d5ce65",
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "dflash2_off_method": "DFlash2-off rows re-use each slot's own state: the same prompt is re-sent to the same slot with cache_prompt true, slot_fork false, speculative.n_max 0; the pinned checkpoint_at [L-1] set on the DFlash2-on request is restored and 1 token is re-processed, so the fork-derived and fresh-derived KV/recurrent states are compared under no-draft decode with identical shapes",
+ "record_sha256": "e53085feffcf05fa4e1b472b788146c3bfcbad51d3fd9e51c770e71e48e569c6"
+}

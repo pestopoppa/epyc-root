@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """headless_audit.py — the P2-7 headless auditor: derive the truth, then read the claim.
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md (P2-7)
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (P2-7)
 Plan of record: docs/design/loop-owned-fleet.html  (red-team finding R12)
 Contract:       coordination/session-bus/BUS_PROTOCOL.md (single writer)
 
@@ -392,18 +392,34 @@ def choose_probe_target(task_rows: list[dict], facts: dict,
                         worktree: Optional[Path] = None) -> dict:
     """Name ONE file the diff should have touched, and say where the name came from.
 
-    The dispatch may identify deliverable paths named in the task text. Every
-    declared path is validated and the first is used for this single probe.
-    Legacy task text with exactly one named path remains supported; ambiguous
-    or invalid inputs are undetermined. The target never comes from the diff or
-    worker report, which would make the probe tautological.
+    Two sources, in precedence order, and the target never comes from the diff
+    or the worker report (that would make the probe tautological):
+
+    1. A dispatch-declared ``deliverable_paths`` list. Every declared path is
+       validated (normalized, relative, named in the task text, inside the
+       worktree) and the first is used for this single probe; an invalid
+       declaration is undetermined.
+    2. Otherwise the task text, in the strict direct form ``Update path/to/file``
+       only (optionally preceded by a list marker or "please"), RTG-52.
+       Contextual prose, co-listed paths and negated clauses are ambiguous and
+       yield no target. A single strict target must also be normalized,
+       relative and inside the worktree.
 
     Returns {target, source_quote, task_id} or {target: None, reason: ...}.
     """
+    direct_action = re.compile(
+        r"^\s*(?:please\s+)?(?:add|create|write|edit|modify|update|implement|remove|delete|"
+        r"port|change|fix|replace|wire|extend|refactor|test|document)"
+        r"(?:\s+(?:the|file|module))?\s*$", re.IGNORECASE,
+    )
+    clause_break = re.compile(r"[;\n!?]|\.(?=\s|$)")
+    negated = re.compile(r"\b(?:do\s+not|don't|never|avoid|not)\b", re.IGNORECASE)
+    matches: list[tuple[str, dict]] = []
+    ambiguous = False
     for row in task_rows:
         text = str(row.get("task_text") or "")
-        named = candidate_paths(text)
         if "deliverable_paths" in row:
+            named = candidate_paths(text)
             paths = row["deliverable_paths"]
             if not isinstance(paths, list) or not paths or any(
                 not isinstance(path, str) or not path for path in paths
@@ -427,26 +443,57 @@ def choose_probe_target(task_rows: list[dict], facts: dict,
             return {"target": cand, "task_id": row.get("task_id"),
                     "source_quote": _quote_around(text, cand),
                     "derived_from": "dispatch_deliverable_paths"}
-        if len(named) == 1:
-            cand = named[0]
-            path = Path(cand)
-            if path.is_absolute() or ".." in path.parts or str(path) != cand:
-                return {"target": None, "task_id": row.get("task_id"),
-                        "reason": "task path is not normalized and relative"}
-            if worktree is not None:
-                try:
-                    (worktree / path).resolve().relative_to(worktree.resolve())
-                except (ValueError, OSError, RuntimeError):
-                    return {"target": None, "task_id": row.get("task_id"),
-                            "reason": "task path resolves outside the worktree"}
-            return {"target": cand, "task_id": row.get("task_id"),
-                    "source_quote": _quote_around(text, cand), "derived_from": "task_text"}
-        if len(named) > 1:
-            return {"target": None, "task_id": row.get("task_id"),
-                    "reason": "multiple task paths; no explicit deliverable_paths"}
+        for cand in candidate_paths(text):
+            search_from = 0
+            while (idx := text.find(cand, search_from)) >= 0:
+                search_from = idx + len(cand)
+                prior_breaks = list(clause_break.finditer(text, 0, idx))
+                clause_start = prior_breaks[-1].end() if prior_breaks else 0
+                clause = text[clause_start:idx]
+                normalized = re.sub(r"^[\s>*#\-\[\]0-9.)*]+", "", clause)
+                normalized = normalized.strip().rstrip("`'\"*").strip()
+                if not direct_action.fullmatch(normalized) or negated.search(normalized):
+                    continue
+                following_break = clause_break.search(text, idx + len(cand))
+                clause_end = following_break.start() if following_break else len(text)
+                tail = text[idx + len(cand):clause_end]
+                if candidate_paths(tail):
+                    # Multiple file paths in a clause do not name one unambiguous probe target.
+                    ambiguous = True
+                    continue
+                # A later pronoun-only negation can reverse the direct action
+                # without repeating its path ("Update x; do not change it").
+                # We cannot safely resolve that reference here, so abstain.
+                following = clause_break.search(text, idx + len(cand))
+                next_clause = (text[following.end():] if following else "")
+                if (negated.search(next_clause) and
+                        re.search(r"\b(?:it|this file|that file|the file|this module|that module|the module)\b",
+                                  next_clause, re.IGNORECASE)):
+                    ambiguous = True
+                    continue
+                quote = _quote_around(text, cand)
+                matches.append((cand, {"target": cand, "task_id": row.get("task_id"),
+                                       "source_quote": quote,
+                                       "derived_from": "task_text_direct_action_path"}))
+    if len(matches) == 1 and not ambiguous:
+        chosen = matches[0][1]
+        cand = chosen["target"]
+        path = Path(cand)
+        if path.is_absolute() or ".." in path.parts or str(path) != cand:
+            return {"target": None, "task_id": chosen.get("task_id"),
+                    "reason": "task path is not normalized and relative"}
+        if worktree is not None:
+            try:
+                (worktree / path).resolve().relative_to(worktree.resolve())
+            except (ValueError, OSError, RuntimeError):
+                return {"target": None, "task_id": chosen.get("task_id"),
+                        "reason": "task path resolves outside the worktree"}
+        return chosen
+    reason = ("multiple or co-listed direct action/path targets are ambiguous"
+              if matches or ambiguous else
+              "no file path uses the strict direct action/path form; context and broad prose are not enough")
     return {"target": None, "task_id": (task_rows[0].get("task_id") if task_rows else None),
-            "reason": "no file path is named in any task text, so no file can be asserted "
-                      "as one the diff SHOULD have touched"}
+            "reason": reason}
 
 
 def _quote_around(text: str, token: str, width: int = 120) -> str:

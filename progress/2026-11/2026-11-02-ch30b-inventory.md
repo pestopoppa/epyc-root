@@ -1,0 +1,3 @@
+# CH-30b inventory — 2026-11-02
+
+Identified YaRN jobs remain pinned to production v10, and the explicit f8 graph-off leak workarounds use an older image without the folded fix. Retain the workarounds: changing these pinned experiments is not justified by the later champion fold. No launcher was changed and no inference was run. The parent CH-30b remains open for a qualified fixed-image successor, with source and complete image provenance, launcher compatibility, runtime environment/linkage/residency checks, and the original predeclared leak test and threshold. The [inventory and design fragment](../../artifacts/compute/inf65-ch30b-20261102/README.md) document the gates and limits.

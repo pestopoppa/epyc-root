@@ -1,4 +1,4 @@
-{
+{"prior_session_record":{
   "session_id": "intake-ws58-jev-20261102",
   "started_at": "2026-11-02T00:00:00Z",
   "last_checkpoint": "2026-11-02T23:00:00Z",
@@ -66057,4 +66057,2049 @@
       "next_intake_id": 2603
     }
   ]
+},
+
+  "session_id": "intake-lsa-20261103",
+  "started_at": "2026-11-03T16:11:30.617390+00:00",
+  "stage": 4,
+  "phase": "stage4-complete",
+  "lane": "/tmp/epyc-lsa-intake",
+  "urls_processed": [
+    "https://arxiv.org/abs/2610.42147",
+    "https://github.com/Prefrontal-AI/latent-sparse-attention",
+    "https://arxiv.org/abs/2410.13276",
+    "https://arxiv.org/abs/2412.14468",
+    "https://arxiv.org/abs/2509.24663",
+    "https://arxiv.org/abs/2502.13189"
+  ],
+  "entries_processed": [
+    "intake-2622",
+    "intake-2623",
+    "intake-2624",
+    "intake-2625",
+    "intake-2626",
+    "intake-2627"
+  ],
+  "entries_remaining": [],
+  "next_intake_id": 2628,
+  "stage2_wave_cap": 3,
+  "stage2_waves": {
+    "count": 3,
+    "wave1": "Read seed and official model identities/configs",
+    "wave2": "Identify primary conversion baselines from seed citations and primary search",
+    "wave3": "Read method/conversion/experiments of four selected primary papers; versionless raw succeeded after guessed v3 URLs returned404",
+    "stop": "Further expansion stopped: remaining differences are implementation/measurement questions answered by selected sources."
+  },
+  "expansion_count": 4,
+  "expansion_cap": 10,
+  "expansion_refused": [],
+  "steering_ledger": [
+    {
+      "seq": 1,
+      "stage": 1,
+      "verbatim": "Run the research intake skill ont eh following sources: https://arxiv.org/html/2610.42147v1, https://github.com/Prefrontal-AI/latent-sparse-attention. Accept all deep dives and literature expansions for up to three stage 2 waves. I'm interested to udnerstand how hard/feasible it would be for us to custom transplant this attention algo on our models (specifically Qwen-3.8-27B and Qwen-3.6-35B-A3B",
+      "disposition": "planned",
+      "plan_ref": "P1",
+      "reason": "Conversion feasibility and controlled decision screen are proposed in P1/P2; the three-wave research selection is executed."
+    }
+  ],
+  "actionable_ledger": [
+    {
+      "ledger_id": "RI-LSA-1",
+      "source": "intake-2622",
+      "action": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-2",
+      "source": "intake-2622",
+      "action": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+      "terminal_mapping": "P2 / LSA-MOE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-3",
+      "source": "intake-2623",
+      "action": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+      "terminal_mapping": "P3 / LSA-PORT-1"
+    },
+    {
+      "ledger_id": "RI-LSA-4",
+      "source": "intake-2623",
+      "action": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+      "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-5",
+      "source": "intake-2623",
+      "action": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+      "terminal_mapping": "P5 / LSA-INTAKE-XREF-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-1",
+      "source": "intake-2622",
+      "action": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-2",
+      "source": "intake-2622",
+      "action": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+      "terminal_mapping": "P2 / LSA-MOE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-3",
+      "source": "intake-2622",
+      "action": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-4",
+      "source": "intake-2622",
+      "action": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-5",
+      "source": "intake-2622",
+      "action": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+      "terminal_mapping": "P3 / LSA-PORT-1"
+    },
+    {
+      "ledger_id": "RI-LSA-PAPER-6",
+      "source": "intake-2622",
+      "action": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+      "terminal_mapping": "P2 / LSA-MOE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-1",
+      "source": "intake-2623",
+      "action": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-2",
+      "source": "intake-2623",
+      "action": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+      "terminal_mapping": "P3 / LSA-PORT-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-3",
+      "source": "intake-2623",
+      "action": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+      "terminal_mapping": "P3 / LSA-PORT-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-4",
+      "source": "intake-2623",
+      "action": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+      "terminal_mapping": "P2 / LSA-MOE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-5",
+      "source": "intake-2623",
+      "action": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+      "terminal_mapping": "P3 / LSA-PORT-1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-6",
+      "source": "intake-2623",
+      "action": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-7",
+      "source": "intake-2623",
+      "action": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+      "terminal_mapping": "M2"
+    },
+    {
+      "ledger_id": "RI-LSA-REPO-8",
+      "source": "intake-2623",
+      "action": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+      "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+    },
+    {
+      "ledger_id": "RI-LSA-LIT-1",
+      "source": "intake-2624",
+      "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-LIT-2",
+      "source": "intake-2625",
+      "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-LIT-3",
+      "source": "intake-2626",
+      "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    },
+    {
+      "ledger_id": "RI-LSA-LIT-4",
+      "source": "intake-2627",
+      "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+      "terminal_mapping": "P1 / LSA-SCREEN-1"
+    }
+  ],
+  "stage3_filing": {
+    "format_version": 2,
+    "entry_updates": [
+      {
+        "id": "intake-2622",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md",
+          "handoffs/active/model-architecture-readiness.md",
+          "handoffs/active/rocm-kernel-authoring.md",
+          "handoffs/active/vidya-belief-substrate-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2623",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md",
+          "handoffs/active/model-architecture-readiness.md",
+          "handoffs/active/rocm-kernel-authoring.md",
+          "handoffs/active/vidya-belief-substrate-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2624",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2625",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2626",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2627",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P2": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P3": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/rocm-kernel-authoring.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P4": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/vidya-belief-substrate-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P5": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/knowledge-pipelines.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "M1": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Retain observable trigger only; no immediate tree/native-training backlog.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Current deciding question is frozen-base conversion at deployed context. Tree follows measured indexer dominance; native training follows an explicit training objective or demonstrated recovery need."
+      },
+      "M2": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Retain observable trigger only; no immediate tree/native-training backlog.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Current deciding question is frozen-base conversion at deployed context. Tree follows measured indexer dominance; native training follows an explicit training objective or demonstrated recovery need."
+      }
+    },
+    "opportunity_scan": [
+      {
+        "scan_id": "S1",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Frozen-base semantic selection with released Qwen maps",
+        "consumer": "27B serving",
+        "application": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-1"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S2",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Model-specific frozen QK projections",
+        "consumer": "35B MoE serving",
+        "application": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-2"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S3",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Sparse index lists with exact original QKV attention",
+        "consumer": "CPU/GPU attention graph",
+        "application": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-3"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S4",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Producer-time capture of experiment warrants",
+        "consumer": "Planning context",
+        "application": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-4"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S5",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": ".claude/skills/research-intake/scripts/validate_intake.py:473-488,626-674; committed fold-list-1a/1b.json",
+        "mechanism": "Committed fold provenance for persistent source cross-references",
+        "consumer": "Intake validator",
+        "application": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-5"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-1",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-1"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-2",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-2"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-3",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-3"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-4",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-4"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-5",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-5"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-6",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-6"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-1",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-1"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-2",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-2"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-3",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-3"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-4",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-4"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-5",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-5"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-6",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "RI-LSA-REPO-6"
+        ],
+        "basis": "Flat scan becomes material bottleneck after sparse read is effective, or user chooses ultra-long multi-million context; paper tree decode wins only at verylong1request and can lose taskquality. Usebf16nodes ongfx90a initially; paperFP8node optimization needs separate numerical andhardware support proof."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-7",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "RI-LSA-REPO-7"
+        ],
+        "basis": "An explicit native-model training objective or failure of frozen-map retrofit that warrants model training; paper100Bpretrain+12Bdecay not required for D-LSA."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-8",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-8"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "L1",
+        "source_ref": "intake-2624#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Learns pooled block attention gates through frozen-model self-distillation. Gate ground truth uses customized FlashAttention max-pooling rather than materializing dense attention maps.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-1"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L2",
+        "source_ref": "intake-2625#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Independent learned Q and KV mappings produce32-bit Hamming signatures; bitwise scores still scan cached token signatures before sparse token attention.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-2"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L3",
+        "source_ref": "intake-2626#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Reuses dense QKV with no new trainable parameters; unions selected and local blocks into single attention output and drops compressed-attention output. Parameter-free multistage pooling selects blocks.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-3"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L4",
+        "source_ref": "intake-2627#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Parameter-free mean-key block gate chooses top blocks and attends within them; dense/sparse layer modes can change during training.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-4"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      }
+    ],
+    "actionable_additions": [
+      {
+        "ledger_id": "RI-LSA-1",
+        "source": "intake-2622",
+        "action": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-2",
+        "source": "intake-2622",
+        "action": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-3",
+        "source": "intake-2623",
+        "action": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-4",
+        "source": "intake-2623",
+        "action": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-5",
+        "source": "intake-2623",
+        "action": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "terminal_mapping": "P5 / LSA-INTAKE-XREF-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-1",
+        "source": "intake-2622",
+        "action": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-2",
+        "source": "intake-2622",
+        "action": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-3",
+        "source": "intake-2622",
+        "action": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-4",
+        "source": "intake-2622",
+        "action": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-5",
+        "source": "intake-2622",
+        "action": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-6",
+        "source": "intake-2622",
+        "action": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-1",
+        "source": "intake-2623",
+        "action": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-2",
+        "source": "intake-2623",
+        "action": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-3",
+        "source": "intake-2623",
+        "action": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-4",
+        "source": "intake-2623",
+        "action": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-5",
+        "source": "intake-2623",
+        "action": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-6",
+        "source": "intake-2623",
+        "action": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-7",
+        "source": "intake-2623",
+        "action": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "terminal_mapping": "M2"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-8",
+        "source": "intake-2623",
+        "action": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-1",
+        "source": "intake-2624",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-2",
+        "source": "intake-2625",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-3",
+        "source": "intake-2626",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-4",
+        "source": "intake-2627",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      }
+    ],
+    "steering_reconciliation": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "verbatim": "Run the research intake skill ont eh following sources: https://arxiv.org/html/2610.42147v1, https://github.com/Prefrontal-AI/latent-sparse-attention. Accept all deep dives and literature expansions for up to three stage 2 waves. I'm interested to udnerstand how hard/feasible it would be for us to custom transplant this attention algo on our models (specifically Qwen-3.8-27B and Qwen-3.6-35B-A3B",
+        "disposition": "planned",
+        "plan_ref": "P1",
+        "reason": "Conversion feasibility and controlled decision screen are proposed in P1/P2; the three-wave research selection is executed."
+      }
+    ],
+    "outcome_reviews": {
+      "RI-LSA-1": {
+        "required_outcome": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-2": {
+        "required_outcome": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-3": {
+        "required_outcome": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-4": {
+        "required_outcome": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/vidya-belief-substrate-program.md",
+            "task_id": "LSA-EVIDENCE-1",
+            "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-5": {
+        "required_outcome": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/knowledge-pipelines.md",
+            "task_id": "LSA-INTAKE-XREF-1",
+            "task_text": "- [x] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.** \u2705 2026-11-03 [no-belief: software verification]",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-1": {
+        "required_outcome": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-2": {
+        "required_outcome": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-3": {
+        "required_outcome": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-4": {
+        "required_outcome": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-5": {
+        "required_outcome": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-6": {
+        "required_outcome": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-1": {
+        "required_outcome": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-2": {
+        "required_outcome": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-3": {
+        "required_outcome": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-4": {
+        "required_outcome": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-5": {
+        "required_outcome": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-6": {
+        "required_outcome": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Flat scan becomes material bottleneck after sparse read is effective, or user chooses ultra-long multi-million context; paper tree decode wins only at verylong1request and can lose taskquality. Usebf16nodes ongfx90a initially; paperFP8node optimization needs separate numerical andhardware support proof.",
+        "task_refs": []
+      },
+      "RI-LSA-REPO-7": {
+        "required_outcome": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "review_status": "closed-with-basis",
+        "review_basis": "An explicit native-model training objective or failure of frozen-map retrofit that warrants model training; paper100Bpretrain+12Bdecay not required for D-LSA.",
+        "task_refs": []
+      },
+      "RI-LSA-REPO-8": {
+        "required_outcome": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/vidya-belief-substrate-program.md",
+            "task_id": "LSA-EVIDENCE-1",
+            "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-1": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-2": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-3": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-4": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      }
+    },
+    "proposed_tasks": [
+      {
+        "owner": "handoffs/active/long-context-program.md",
+        "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**"
+      },
+      {
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**"
+      },
+      {
+        "owner": "handoffs/active/rocm-kernel-authoring.md",
+        "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**"
+      },
+      {
+        "owner": "handoffs/active/vidya-belief-substrate-program.md",
+        "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**"
+      },
+      {
+        "owner": "handoffs/active/knowledge-pipelines.md",
+        "task_text": "- [x] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.** \u2705 2026-11-03 [no-belief: software verification]"
+      }
+    ],
+    "plan_sha256": "19f4f38907d900468503cc4e5de78fb5f35dedd09668db7500575bdcea8ccad3"
+  },
+  "operator_approval": {
+    "verbatim": "approved",
+    "approved_plan_sha256": "19f4f38907d900468503cc4e5de78fb5f35dedd09668db7500575bdcea8ccad3",
+    "date": "2026-11-03"
+  },
+  "approved_stage3_filing": {
+    "format_version": 2,
+    "entry_updates": [
+      {
+        "id": "intake-2622",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md",
+          "handoffs/active/model-architecture-readiness.md",
+          "handoffs/active/rocm-kernel-authoring.md",
+          "handoffs/active/vidya-belief-substrate-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2623",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md",
+          "handoffs/active/model-architecture-readiness.md",
+          "handoffs/active/rocm-kernel-authoring.md",
+          "handoffs/active/vidya-belief-substrate-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2624",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2625",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2626",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      },
+      {
+        "id": "intake-2627",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/long-context-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment implied."
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P2": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P3": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/rocm-kernel-authoring.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P4": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/vidya-belief-substrate-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "P5": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/knowledge-pipelines.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Concrete deciding implementation and screen retained; no production or full-training claim."
+      },
+      "M1": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Retain observable trigger only; no immediate tree/native-training backlog.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Current deciding question is frozen-base conversion at deployed context. Tree follows measured indexer dominance; native training follows an explicit training objective or demonstrated recovery need."
+      },
+      "M2": {
+        "project_objective": "Decide whether sparse selection improves native EPYC long-context serving without losing task fidelity.",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "gap": "Current model graph has global attention and recurrent layers but no verified LSA selector/maps or integrated measurement producer.",
+        "operational_change": "Retain observable trigger only; no immediate tree/native-training backlog.",
+        "benefit_direction": "Lower TTFT/TPOT and bytes read at fixed task quality; account for retained KV and index memory.",
+        "owner": "handoffs/active/long-context-program.md",
+        "execution_conditions": "Experimental trees only; P4 capture before empirical runs; P3 reference implementation before P1/P2 screens; no production reload or promotion. Full training/tree/activation follows observable screen success.",
+        "closure_basis": "Current deciding question is frozen-base conversion at deployed context. Tree follows measured indexer dominance; native training follows an explicit training objective or demonstrated recovery need."
+      }
+    },
+    "opportunity_scan": [
+      {
+        "scan_id": "S1",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Frozen-base semantic selection with released Qwen maps",
+        "consumer": "27B serving",
+        "application": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-1"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S2",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Model-specific frozen QK projections",
+        "consumer": "35B MoE serving",
+        "application": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-2"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S3",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Sparse index lists with exact original QKV attention",
+        "consumer": "CPU/GPU attention graph",
+        "application": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-3"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S4",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "llama.cpp ffc1bac82 src/models/qwen35.cpp build_layer_attn and qwen35moe.cpp; upstream LSA 97b82d695b74",
+        "mechanism": "Producer-time capture of experiment warrants",
+        "consumer": "Planning context",
+        "application": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-4"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "S5",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": ".claude/skills/research-intake/scripts/validate_intake.py:473-488,626-674; committed fold-list-1a/1b.json",
+        "mechanism": "Committed fold provenance for persistent source cross-references",
+        "consumer": "Intake validator",
+        "application": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "RI-LSA-5"
+        ],
+        "basis": "Selected source mechanisms compared with actual hybrid graph and serving restrictions; validation repair comes from observed repository reference failures."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-1",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-1"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-2",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-2"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-3",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-3"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-4",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-4"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-5",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-5"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-PAPER-6",
+        "source_ref": "intake-2622#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-PAPER-6"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-1",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-1"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-2",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-2"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-3",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-3"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-4",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-4"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-5",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-5"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-6",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "RI-LSA-REPO-6"
+        ],
+        "basis": "Flat scan becomes material bottleneck after sparse read is effective, or user chooses ultra-long multi-million context; paper tree decode wins only at verylong1request and can lose taskquality. Usebf16nodes ongfx90a initially; paperFP8node optimization needs separate numerical andhardware support proof."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-7",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "RI-LSA-REPO-7"
+        ],
+        "basis": "An explicit native-model training objective or failure of frozen-map retrofit that warrants model training; paper100Bpretrain+12Bdecay not required for D-LSA."
+      },
+      {
+        "scan_id": "RI-LSA-REPO-8",
+        "source_ref": "intake-2623#record",
+        "implementation_ref": "qwen35/qwen35moe global-attention path and current Q8-KV/speculation recipe",
+        "mechanism": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "consumer": "Hybrid model serving and evaluation",
+        "application": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-REPO-8"
+        ],
+        "basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding."
+      },
+      {
+        "scan_id": "L1",
+        "source_ref": "intake-2624#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Learns pooled block attention gates through frozen-model self-distillation. Gate ground truth uses customized FlashAttention max-pooling rather than materializing dense attention maps.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-1"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L2",
+        "source_ref": "intake-2625#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Independent learned Q and KV mappings produce32-bit Hamming signatures; bitwise scores still scan cached token signatures before sparse token attention.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-2"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L3",
+        "source_ref": "intake-2626#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Reuses dense QKV with no new trainable parameters; unions selected and local blocks into single attention output and drops compressed-attention output. Parameter-free multistage pooling selects blocks.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-3"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      },
+      {
+        "scan_id": "L4",
+        "source_ref": "intake-2627#record",
+        "implementation_ref": "llama.cpp ffc1bac82 qwen35 global attention path",
+        "mechanism": "Parameter-free mean-key block gate chooses top blocks and attends within them; dense/sparse layer modes can change during training.",
+        "consumer": "Long-context screen design",
+        "application": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "disposition": "covered",
+        "ledger_ids": [
+          "RI-LSA-LIT-4"
+        ],
+        "basis": "Comparator provides a design control/caveat, not a requirement to reproduce a separate model or all training regimes."
+      }
+    ],
+    "actionable_additions": [
+      {
+        "ledger_id": "RI-LSA-1",
+        "source": "intake-2622",
+        "action": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-2",
+        "source": "intake-2622",
+        "action": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-3",
+        "source": "intake-2623",
+        "action": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-4",
+        "source": "intake-2623",
+        "action": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-5",
+        "source": "intake-2623",
+        "action": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "terminal_mapping": "P5 / LSA-INTAKE-XREF-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-1",
+        "source": "intake-2622",
+        "action": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-2",
+        "source": "intake-2622",
+        "action": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-3",
+        "source": "intake-2622",
+        "action": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-4",
+        "source": "intake-2622",
+        "action": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-5",
+        "source": "intake-2622",
+        "action": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-PAPER-6",
+        "source": "intake-2622",
+        "action": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-1",
+        "source": "intake-2623",
+        "action": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-2",
+        "source": "intake-2623",
+        "action": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-3",
+        "source": "intake-2623",
+        "action": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-4",
+        "source": "intake-2623",
+        "action": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "terminal_mapping": "P2 / LSA-MOE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-5",
+        "source": "intake-2623",
+        "action": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "terminal_mapping": "P3 / LSA-PORT-1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-6",
+        "source": "intake-2623",
+        "action": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-7",
+        "source": "intake-2623",
+        "action": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "terminal_mapping": "M2"
+      },
+      {
+        "ledger_id": "RI-LSA-REPO-8",
+        "source": "intake-2623",
+        "action": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "terminal_mapping": "P4 / LSA-EVIDENCE-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-1",
+        "source": "intake-2624",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-2",
+        "source": "intake-2625",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-3",
+        "source": "intake-2626",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      },
+      {
+        "ledger_id": "RI-LSA-LIT-4",
+        "source": "intake-2627",
+        "action": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "terminal_mapping": "P1 / LSA-SCREEN-1"
+      }
+    ],
+    "steering_reconciliation": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "verbatim": "Run the research intake skill ont eh following sources: https://arxiv.org/html/2610.42147v1, https://github.com/Prefrontal-AI/latent-sparse-attention. Accept all deep dives and literature expansions for up to three stage 2 waves. I'm interested to udnerstand how hard/feasible it would be for us to custom transplant this attention algo on our models (specifically Qwen-3.8-27B and Qwen-3.6-35B-A3B",
+        "disposition": "planned",
+        "plan_ref": "P1",
+        "reason": "Conversion feasibility and controlled decision screen are proposed in P1/P2; the three-wave research selection is executed."
+      }
+    ],
+    "outcome_reviews": {
+      "RI-LSA-1": {
+        "required_outcome": "Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-2": {
+        "required_outcome": "Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-3": {
+        "required_outcome": "Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-4": {
+        "required_outcome": "Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/vidya-belief-substrate-program.md",
+            "task_id": "LSA-EVIDENCE-1",
+            "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-5": {
+        "required_outcome": "Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.",
+        "review_status": "preserved",
+        "review_basis": "Task preserves the operational result and has an experimental execution gate; current production remains frozen.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/knowledge-pipelines.md",
+            "task_id": "LSA-INTAKE-XREF-1",
+            "task_text": "- [ ] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-1": {
+        "required_outcome": "Reproduce Qwen38 released PCA and distilled maps in experimental backend at exact source/model/map revisions; benchmark dense versus flat at actual EPYC context/concurrency mix before extrapolating10M gains.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-2": {
+        "required_outcome": "Implement Qwen36 MoE-aware frozen-teacher capture adapter and generate its own PCA baseline before distillation; validate GQA normalization/head aggregation and 75% RoPE-free flattening against current repo adapter.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-3": {
+        "required_outcome": "Separate memory feasibility, attention-module timing, TTFT, decode latency, and task fidelity. Keep complete KV retained unless an independently evaluated cache-compression layer is added.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-4": {
+        "required_outcome": "Use flat first; require tree-specific accuracy study and sufficiently long context/concurrency before claiming tree benefit. Consider dense fallback at short context after measured crossover.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-5": {
+        "required_outcome": "Port/reference-check Triton indexer and sparse gather-attention on experimental ROCm backend; use exact selected-index oracle/captured QKV tests and incremental benchmark checkpoints.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-PAPER-6": {
+        "required_outcome": "If distilled map misses quality target, compare longer-domain-specific distillation and optional sparse continued training against parameter-free switchable-attention alternatives.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-1": {
+        "required_outcome": "Decide whether released distilled/PCA maps retain useful attention and task quality at production rotation, Q8weights/Q8KV, before a long port.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-2": {
+        "required_outcome": "Reduce full-attention CPU work at long contexts without dense scan of skippedKV; decide net end-to-end gain against current MTP baseline.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-3": {
+        "required_outcome": "Establish gfx90a correctness/crossover at actual batch/context and Q8KV before porting NVIDIA microarchitecture optimizations.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-4": {
+        "required_outcome": "Determine same technique utility on deployed35B-A3B without altering MoE routing or GatedDeltaNet.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "LSA-MOE-1",
+            "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-5": {
+        "required_outcome": "Make useful sparse serving compatible with current27B DFlash2 and35B MTP; avoid per-request cache corruption or draft rejection regressions.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/rocm-kernel-authoring.md",
+            "task_id": "LSA-PORT-1",
+            "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-REPO-6": {
+        "required_outcome": "Only build hierarchy if measured flat selector dominates at actual context/concurrency or context objective expands.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Flat scan becomes material bottleneck after sparse read is effective, or user chooses ultra-long multi-million context; paper tree decode wins only at verylong1request and can lose taskquality. Usebf16nodes ongfx90a initially; paperFP8node optimization needs separate numerical andhardware support proof.",
+        "task_refs": []
+      },
+      "RI-LSA-REPO-7": {
+        "required_outcome": "Keep distinct from retrofit; only relevant if EPYC chooses to train an attention architecture.",
+        "review_status": "closed-with-basis",
+        "review_basis": "An explicit native-model training objective or failure of frozen-map retrofit that warrants model training; paper100Bpretrain+12Bdecay not required for D-LSA.",
+        "task_refs": []
+      },
+      "RI-LSA-REPO-8": {
+        "required_outcome": "Any port screen emits native run artifacts and source adapter registration so observed results can enter current decision loop.",
+        "review_status": "preserved",
+        "review_basis": "Exact proposed task retains this source-derived outcome; detailed controls and activation conditions remain binding.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/vidya-belief-substrate-program.md",
+            "task_id": "LSA-EVIDENCE-1",
+            "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-1": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-2": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-3": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      },
+      "RI-LSA-LIT-4": {
+        "required_outcome": "Retain the verified conversion comparator and dense-fallback caveat in the bounded sparse-selection screen.",
+        "review_status": "preserved",
+        "review_basis": "Screen includes dense/PCA/distilled arms and length-dependent crossover; further comparator implementations trigger only if the flat selector fails its quality or overhead budget.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/long-context-program.md",
+            "task_id": "LSA-SCREEN-1",
+            "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**",
+            "acceptance": "Reference parity and complete controlled result records decide feasibility separately per model and device; no missing or failed item silently removed."
+          }
+        ]
+      }
+    },
+    "proposed_tasks": [
+      {
+        "owner": "handoffs/active/long-context-program.md",
+        "task_text": "- [ ] **LSA-SCREEN-1 \u2014 Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**"
+      },
+      {
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "task_text": "- [ ] **LSA-MOE-1 \u2014 Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**"
+      },
+      {
+        "owner": "handoffs/active/rocm-kernel-authoring.md",
+        "task_text": "- [ ] **LSA-PORT-1 \u2014 Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**"
+      },
+      {
+        "owner": "handoffs/active/vidya-belief-substrate-program.md",
+        "task_text": "- [ ] **LSA-EVIDENCE-1 \u2014 Before the first conversion screen, register its native result producer in scripts/vidya/adapters/README.md and project complete raw-run identity, effective configuration, failures and decision records through the existing measurement ladder; require a planning-context canary, without inventing a new grading rule.**"
+      },
+      {
+        "owner": "handoffs/active/knowledge-pipelines.md",
+        "task_text": "- [ ] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.**"
+      }
+    ]
+  },
+  "completion_transitions": [
+    {
+      "task_id": "LSA-INTAKE-XREF-1",
+      "previous_task_text": "- [ ] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.**",
+      "applied_task_text": "- [x] **LSA-INTAKE-XREF-1 \u2014 Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.** \u2705 2026-11-03 [no-belief: software verification]",
+      "basis": "Approved validation repair implemented and passed full persisted-payload validation; checkbox state only, no scope change."
+    }
+  ],
+  "stage4": {
+    "reconciled": true,
+    "approval_verbatim": "approved",
+    "plan_sha256": "19f4f38907d900468503cc4e5de78fb5f35dedd09668db7500575bdcea8ccad3",
+    "task_count": 5,
+    "completed_tasks": [
+      "LSA-INTAKE-XREF-1"
+    ],
+    "open_tasks": [
+      "LSA-SCREEN-1",
+      "LSA-MOE-1",
+      "LSA-PORT-1",
+      "LSA-EVIDENCE-1"
+    ],
+    "completed": true,
+    "validation": {
+      "intake_entries": 2623,
+      "intake_exit": 0,
+      "regression_tests": 69,
+      "subtests": 16,
+      "digest_stale": 0,
+      "wiki_sources_discovered": 3,
+      "index_exit": 0,
+      "post_merge_intake_exit": 0
+    }
+  },
+  "last_checkpoint": "2026-11-03T16:22:44.122744+00:00"
 }

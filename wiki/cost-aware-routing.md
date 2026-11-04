@@ -23,7 +23,7 @@ A 2026-07 addition to the category's conclusions: the "offload reasoning to a ch
 ### New (2026-06-22, economic ledger live + text-routing A/B still net-negative on quality)
 
 - **The F7 economic ledger shipped (COMPLETED) and its first standing rule already fired a real priority change.** A weekly ledger aggregates cloud spend (planner via logs), local eval wall-time, and operator decision throughput; the AutoPilot daily digest now carries an economics section with planner spend, a monthly projection, and a gate-latency rule; standing decision rules live in `orchestration/economic_rules.yaml`. The first monthly review (2026-06-21) tripped the planner-spend threshold ($410.75 actual vs $250.00 budget), which raised the priority of F3-W3a (GPU fine-tunes). The gate-latency rule has not yet evaluated (canonical events missing). This makes cost a first-class, automatically-surfaced optimization input rather than an ad-hoc check. Source: [frontier-f7-economic-ledger.md](../handoffs/completed/frontier-f7-economic-ledger.md).
-- **Text-mediated X-MAS routing still does not pass: the latest A/B improved latency but regressed quality, so enforce stays OFF.** The constrained incumbent-aware policy (`incumbent_constrained_cheapfirst_v2`: only replace a role when both roles are evaluated and the challenger proves lift or material speed within a 1.10 cap) repaired the earlier same-cheap-role bypass failure mode. But the 2026-06-21 quiet-window A/B (100 rows) recorded score_delta -0.250 (vs required +0.050) at latency_ratio 0.714 — a speed win that fails the quality gate. The earlier 25-prompt held-out run was worse (overall -0.35, latency up to 16x, zero lift domains, X-MAS overrode 23/25 prompts mostly swapping coder_escalation→worker_general with 0 X-MAS-only wins). Next gate is to diagnose/repair the regression-causing cells before re-running; do not enable enforce until a passing verdict, and defer RMAS/LatentMAS/Dead-Weights paths until the text-mediated route either passes or is formally killed. Sources: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md), [progress 2026-06-21](../progress/2026-06/2026-06-21.md). Related: [routing-intelligence.md](routing-intelligence.md).
+- **Text-mediated X-MAS routing still does not pass: the latest A/B improved latency but regressed quality, so enforce stays OFF.** The constrained incumbent-aware policy (`incumbent_constrained_cheapfirst_v2`: only replace a role when both roles are evaluated and the challenger proves lift or material speed within a 1.10 cap) repaired the earlier same-cheap-role bypass failure mode. But the 2026-06-21 quiet-window A/B (100 rows) recorded score_delta -0.250 (vs required +0.050) at latency_ratio 0.714 — a speed win that fails the quality gate. The earlier 25-prompt held-out run was worse (overall -0.35, latency up to 16x, zero lift domains, X-MAS overrode 23/25 prompts mostly swapping coder_escalation→worker_general with 0 X-MAS-only wins). Next gate is to diagnose/repair the regression-causing cells before re-running; do not enable enforce until a passing verdict, and defer RMAS/LatentMAS/Dead-Weights paths until the text-mediated route either passes or is formally killed. Sources: [x-mas-text-routing.md](../handoffs/active/routing-program.md#track-x-mas-text-routing), [progress 2026-06-21](../progress/2026-06/2026-06-21.md). Related: [routing-intelligence.md](routing-intelligence.md).
 
 ### The Overthinking Problem
 
@@ -94,17 +94,17 @@ The cost-aware-routing literature now divides cleanly into **four methodological
 
 ### New findings (BaRP + LLM Bandit + design-space landscape)
 
-- **Bandit-feedback training pattern (BaRP, intake-495, arxiv:2510.07429).** Production logs only record the chosen specialist's outcome, not counterfactuals — closes a real train/test mismatch in EPYC's routing data. BaRP solves this with REINFORCE on bandit feedback. For the EPYC stack the rationale is adopted into DAR-3 SPO+ design: convex surrogate loss with 10% epsilon-greedy exploration manufactures counterfactual data; the SPO+ surrogate avoids REINFORCE's high-variance gradient. Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-3.
+- **Bandit-feedback training pattern (BaRP, intake-495, arxiv:2510.07429).** Production logs only record the chosen specialist's outcome, not counterfactuals — closes a real train/test mismatch in EPYC's routing data. BaRP solves this with REINFORCE on bandit feedback. For the EPYC stack the rationale is adopted into DAR-3 SPO+ design: convex surrogate loss with 10% epsilon-greedy exploration manufactures counterfactual data; the SPO+ surrogate avoids REINFORCE's high-variance gradient. Source: [`decision-aware-routing.md`](../handoffs/active/routing-program.md) DAR-3.
 
-- **2-D performance-cost preference vector at inference time (BaRP).** Trained router can be modulated at test time via `ω = (ω_perf, ω_cost)` on the simplex, shifting the routing decision distribution **without retraining**. Per-tenant or per-task ω override (e.g., interactive ω_perf=0.8, batch ω_perf=0.3). Calibrated cost scaling τ exposed as a runtime knob (env var `DAR_COST_TAU`). Implementation footprint: ~50–100 LoC across `retriever.py` selection scoring + `routing.py` ω plumbing. Adopted as **DAR-4b** — orthogonal to DAR-4 bilinear scorer; can ship independently if DAR-4 slips. Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-4b; intake-495.
+- **2-D performance-cost preference vector at inference time (BaRP).** Trained router can be modulated at test time via `ω = (ω_perf, ω_cost)` on the simplex, shifting the routing decision distribution **without retraining**. Per-tenant or per-task ω override (e.g., interactive ω_perf=0.8, batch ω_perf=0.3). Calibrated cost scaling τ exposed as a runtime knob (env var `DAR_COST_TAU`). Implementation footprint: ~50–100 LoC across `retriever.py` selection scoring + `routing.py` ω plumbing. Adopted as **DAR-4b** — orthogonal to DAR-4 bilinear scorer; can ship independently if DAR-4 slips. Source: [`decision-aware-routing.md`](../handoffs/active/routing-program.md) DAR-4b; intake-495.
 
-- **IRT score predictor for prompt features (LLM Bandit, intake-496, arxiv:2502.02743).** Per-prompt `(latent_difficulty, latent_discrimination)` over BGE pooled output, fitted to observed model outcomes. Discrimination scores stratify prompt selection — high-discrimination prompts separate model abilities; low-discrimination prompts are uninformative. Feeds DAR-5 (Q-value feature engineering) and LRC P4.1.3 (feature-position audit). Calibrated via Platt scaling. Source: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) P4.1.3 / P5.1; intake-496.
+- **IRT score predictor for prompt features (LLM Bandit, intake-496, arxiv:2502.02743).** Per-prompt `(latent_difficulty, latent_discrimination)` over BGE pooled output, fitted to observed model outcomes. Discrimination scores stratify prompt selection — high-discrimination prompts separate model abilities; low-discrimination prompts are uninformative. Feeds DAR-5 (Q-value feature engineering) and LRC P4.1.3 (feature-position audit). Calibrated via Platt scaling. Source: [`learned-routing-controller.md`](../handoffs/active/routing-program.md#track-learned-routing-controller) P4.1.3 / P5.1; intake-496.
 
-- **Model identity vectors (LLM Bandit).** Replace the hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` with a learned d-dim model identity vector trained jointly with the bilinear scorer. Initialized from spec features so cold-start is preserved. Adopted as **DAR-5** (~150 LoC, conditional on DAR-4). Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-5; intake-496.
+- **Model identity vectors (LLM Bandit).** Replace the hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` with a learned d-dim model identity vector trained jointly with the bilinear scorer. Initialized from spec features so cold-start is preserved. Adopted as **DAR-5** (~150 LoC, conditional on DAR-4). Source: [`decision-aware-routing.md`](../handoffs/active/routing-program.md) DAR-5; intake-496.
 
 - **Methodological taxonomy of learned routers extended to four published reference points.** The class table above (RL-trained end-to-end / preference-MF / contrastive-DA / black-box ES) now has named representatives at each point: BaRP (intake-495) is the canonical bandit-feedback class-1 with 2-D ω knob; LLM Bandit (intake-496) sits at the class-3 boundary with IRT prompt features + learned model identity; Trinity (intake-474) anchors class-4; Conductor (intake-493, arxiv:2512.04388, ICLR 2026 Sakana AI) sits at class-1 with `(worker_id, NL_subtask, access_list)` action space and 7B GRPO on 2× H100 80GB. Conductor is **competitive intelligence only** — GPU-required, out of CPU stack — and informs OC-0.6 design-space comparison but is not a target architecture. Source: intake-474, intake-493, intake-495, intake-496.
 
-- **Class-4 black-box ES is the new methodological insight.** When the routing loss is block-ε-separable and labels do not yet exist, ES outperforms REINFORCE at our scale (Trinity: 0.615 vs 0.253 LCB at matched budget). This is the unique class-4 lever and the realistic cold-start trainer for new role surfaces lacking episodic labels. Empirical block-ε-separability of EPYC's routing landscape is **testable on our own 175K-label episodic dataset** (LRC P4.2 diagnostic: full-rank vs rank-10 vs diagonal weight regularization). The diagnostic gates whether sep-CMA-ES ever becomes a viable trainer for our setup. Source: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) P4.2 / P4.4.
+- **Class-4 black-box ES is the new methodological insight.** When the routing loss is block-ε-separable and labels do not yet exist, ES outperforms REINFORCE at our scale (Trinity: 0.615 vs 0.253 LCB at matched budget). This is the unique class-4 lever and the realistic cold-start trainer for new role surfaces lacking episodic labels. Empirical block-ε-separability of EPYC's routing landscape is **testable on our own 175K-label episodic dataset** (LRC P4.2 diagnostic: full-rank vs rank-10 vs diagonal weight regularization). The diagnostic gates whether sep-CMA-ES ever becomes a viable trainer for our setup. Source: [`learned-routing-controller.md`](../handoffs/active/routing-program.md#track-learned-routing-controller) P4.2 / P4.4.
 
 - **Closure-inflation discipline (2026-04-28).** Do not generalize "Conductor 7B GRPO is out of CPU stack" to "no learned coordinator could ever work". The four published reference points (BaRP, LLM Bandit, Trinity, Conductor) occupy distinct positions in (action-space × optimizer × scale × hardware) space; only Conductor is GPU-bound at our review-pass-quality threshold. BaRP, LLM Bandit, and Trinity are each individually CPU-feasible at the head-size scales we operate.
 
@@ -132,7 +132,7 @@ Fable 5 identified a cost blind spot in the live AutoPilot objective: `quality`,
 
 The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proof gate did not pass: only 1 of 5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`, and raw task-rate admitted a zero-quality high-rate point. Live Pareto dominance stays on the existing vector until the evidence-plane restart, core/version boundary, and quality-eligible replay prevent that failure mode.
 
-Sources: [Fable 5 objective design](../handoffs/completed/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
+Sources: [Fable 5 objective design](../handoffs/completed/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput).
 
 ## 2026-06-13 Update — Stack-Prior Cost Contract
 
@@ -142,7 +142,7 @@ The durable rule is that stack-dependent quantities must flow through generated 
 
 The same rule applies to learned or distilled routing artifacts. Agent-config and MemRL distillation action spaces should be compiled from live stack priors, with historical labels preserved through era metadata, rather than letting a stale role roster leak into new policies. This keeps q_scorer, seeding rewards, GraphRouter, AutoPilot journals, and future distillation datasets on one model-stack contract.
 
-Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
+Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-update-pipeline-audit), [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
 
 ## 2026-06-20 Update - Stack-Prior Contract Freshness
 
@@ -150,7 +150,7 @@ The generated stack-prior contract is now treated as a source-hash freshness con
 
 The follow-up full gate passed with `summary: ok`, `guard: ok`, `guard_all_surfaces: ok`, `guard_strict: ok`, `runtime_attestation: ok`, and promotion gate `174 passed in 5.78s`. Operationally, this makes cost-aware consumers safer during non-model source changes: a stale generated contract now blocks before q_scorer, seeding, GraphRouter, launch/preflight, or operator summaries can silently rely on out-of-date stack source provenance.
 
-Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), `epyc-orchestrator` `e6d5ce6`.
+Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), `epyc-orchestrator` `e6d5ce6`.
 
 ## 2026-06-20 Update - Launch-Map Auxiliary Classification
 
@@ -176,7 +176,7 @@ tests) and `stack_change_pipeline.py check --run-promotion-gate` returned
 reopen already-audited routing/scoring consumers without a new duplicated
 model, role, serving, or runtime fact.
 
-Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md), `epyc-orchestrator` `471a4d2`.
+Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline), [progress 2026-06-20](../progress/2026-06/2026-06-20.md), `epyc-orchestrator` `471a4d2`.
 
 ## 2026-06-20 Update - Economic Ledger Digest Wiring
 
@@ -222,9 +222,9 @@ Sources: [Frontier F7 — Economic Ledger](../handoffs/completed/frontier-f7-eco
 
 ## 2026-06-15 Update — Decision-Aware Routing Stayed Frozen
 
-- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/completed/fable5-findings-02-impl-plan.md).
-- **The practical CPU-feasible path is still decision-aware losses plus runtime cost weights.** Trinity anchors the black-box ES class, while BaRP/LLM Bandit-style knobs reinforce the idea that the local design surface is in decision shaping, not end-to-end router training. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
-- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/completed/fable5-findings-05-objective-design.md).
+- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/routing-program.md), [fable5-findings-02-impl-plan.md](../handoffs/completed/fable5-findings-02-impl-plan.md).
+- **The practical CPU-feasible path is still decision-aware losses plus runtime cost weights.** Trinity anchors the black-box ES class, while BaRP/LLM Bandit-style knobs reinforce the idea that the local design surface is in decision shaping, not end-to-end router training. Sources: [decision-aware-routing.md](../handoffs/active/routing-program.md), [model-capability-descriptors.md](../handoffs/active/routing-program.md#track-model-capability-descriptors).
+- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/autopilot-program.md#track-objective-task-rate-goodput), [fable5-findings-05-objective-design.md](../handoffs/completed/fable5-findings-05-objective-design.md).
 
 ## Open Questions
 
@@ -244,7 +244,7 @@ Sources: [Frontier F7 — Economic Ledger](../handoffs/completed/frontier-f7-eco
 
 The predict-then-optimize architecture of the Q-scorer has been identified as a fundamental pathology in cost-aware routing. The Q-scorer learns Q-values per model independently via TD update (`Q_new = Q_old + alpha * (reward - Q_old)`), then selects models by argmax over `selection_score = Q_value - cost_lambda * (expected_cost / cold_cost)`. This architecture separates prediction from the routing decision -- the gradient is unaware of whether a Q-value change would actually flip the routing choice.
 
-> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md)
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md)
 
 ### DAR-1: 96% Uniform Q-Values
 
@@ -257,7 +257,7 @@ Offline regret analysis (DAR-1, 2026-04-15) over 7,211 routing decisions confirm
 
 The implication is stark: Q-values are decorative, not decision-driving. Cost and similarity dominate all routing choices. This explains the zero predictive spread in the difficulty signal (Package B, n=2,433) -- the upstream Q-values feeding the routing pipeline carry almost no learned signal.
 
-> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-1
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md) DAR-1
 
 ### SPO+ Formulation
 
@@ -271,25 +271,25 @@ where `c_hat` = predicted costs, `c_true` = true costs, `i*` = true optimal mode
 
 DAR-3 (planned) will implement SPO+ with 10% epsilon-greedy exploration routing to accumulate the counterfactual data needed for decision-aware training.
 
-> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-3
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md) DAR-3
 
 ### Contrastive Q-Score
 
 DAR-2 (implemented, 2026-04-15) adds a contrastive adjustment to the Q-scorer reward signal. The `_compute_contrastive_adjustment()` method in `q_scorer.py` retrieves top-10 similar routing memories, compares the selected model's Q-value against alternatives with learned Q-values, and computes a bounded adjustment (max +/-0.1, margin=0.05) that sharpens the decision boundary between models. The adjustment is zero when ranking is already correct with sufficient margin. It skips the 96% of memories at default Q=0.5 (unlearned) and only fires when alternatives have real learned Q-values. Gated by `CONTRASTIVE_Q_UPDATES` feature flag (ON by default).
 
-> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-2
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md) DAR-2
 
 ### Bilinear Model-Feature Scorer (Zero Cold-Start)
 
 DAR-4 (planned) replaces per-action Q-value tables with a bilinear scorer: `Q(prompt, model) = sigmoid(v_model^T W v_prompt + b)`. Model features are already available in `ScoringConfig` (baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits). When a new model joins the fleet, its features are known from specs -- no routing history is needed for cold-start. This eliminates the current bootstrapping problem where new models receive default Q=0.5 until enough traffic accumulates.
 
-> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-4
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/routing-program.md) DAR-4
 
 ### Validation Campaign
 
 Package I in the bulk inference campaign consolidates the decision-aware routing validation tasks: I1 (DAR-3 SPO+ exploration with sustained traffic for counterfactual data), I2 (DAR-4 bilinear scorer A/B test against per-action Q-tables), and I3 (EV-5 ThinkPRM-1.5B for T2 process verification). I1 is highest priority as it generates the counterfactual data needed for all downstream decision-aware training.
 
-> Source: [bulk-inference-campaign.md](/workspace/handoffs/active/bulk-inference-campaign.md) Package I
+> Source: [bulk-inference-campaign.md](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) Package I
 
 ## 2026-07-05 Update — CoT Scaffold Falsified in Both Regimes; Verifier/Selector Is the Forward Path
 
@@ -325,15 +325,15 @@ Two components stand IF an injection mechanism is ever revisited: **distillation
 
 Loop-depth is a "reasoning effort" knob — the local analog of cloud `reasoning_effort`/thinking budgets. This unifies `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` on ONE effort axis, exposed as an operator flag plus an autopilot per-task-class tunable through the existing 4D-Pareto + per-request-reasoning-budget plumbing. Even negative runs yield calibration data (the rescue-vs-effort curve, flat here). This is the routing-side consolidation of what this page previously tracked as separate levers (band budgets, think-mode toggles, escalation).
 
-Adjacent multi-sample pattern (2026-07-02 intake, [reasoning-compression.md](../handoffs/active/reasoning-compression.md)): SPIRAL-style **recursive self-aggregation** — sample N parallel traces, then a prompted aggregation trace — is the training-free multi-sample-selection complement to the verifier/selector pivot (worker/coder tier only, `-np >= 2`; any test must carry a same-compute majority-vote control since aggregation gains often reduce to sample-count scaling).
+Adjacent multi-sample pattern (2026-07-02 intake, [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression)): SPIRAL-style **recursive self-aggregation** — sample N parallel traces, then a prompted aggregation trace — is the training-free multi-sample-selection complement to the verifier/selector pivot (worker/coder tier only, `-np >= 2`; any test must carry a same-compute majority-vote control since aggregation gains often reduce to sample-count scaling).
 
 Related but owned elsewhere: the same MI210 campaign converged the MTP-on-GPU-MoE flip-flop (~neutral at production temperature; never A/B spec-dec at temp 0 — greedy inflates draft acceptance) — that angle lives in [speculative-decoding.md](speculative-decoding.md).
 
 ### The reasoning-effort ladder gets its first real measurements (2026-07-20→24)
 
-The framing above predicted a `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` effort axis; the architect-candidate GPU bench then measured its two cheapest rungs directly, plus discovered a third, previously-uncounted axis. **The accuracy lever is the PROMPT, not the native `<think>` channel**: on identical GPQA-Diamond items with `enable_thinking=false` in both arms, allowing CoT in `content` ("reason step by step, then answer" vs "answer with the letter only") is worth **+32.0pp** (52.0%→84.0%, McNemar p=8.6e-04) at 4× the tokens — and this result independently validated the harness (84.0% sits within noise of the model's vendor-published 86.0%). By contrast the native `--reasoning on` channel, unlimited, **loses** for both tested models (−16pp to −36pp) — not from a reasoning deficit but from a **non-termination tail** (18–50% of items burn the entire token budget inside `<think>` and emit zero content); a `--reasoning-budget N` force-close recovers to parity with `<think>` off at ~1.6–3× tokens instead of 6×. **Effort levels must be certified per (model, quant), never inherited or role-indexed** — the non-termination severity alone varies 18% vs 50% between two models on the same suite, mirroring the spec-dec-depth and repetition-penalty invariants elsewhere in the stack (see [Speculative Decoding](speculative-decoding.md), [Quantization](quantization.md)). [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md), [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) §R2
+The framing above predicted a `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` effort axis; the architect-candidate GPU bench then measured its two cheapest rungs directly, plus discovered a third, previously-uncounted axis. **The accuracy lever is the PROMPT, not the native `<think>` channel**: on identical GPQA-Diamond items with `enable_thinking=false` in both arms, allowing CoT in `content` ("reason step by step, then answer" vs "answer with the letter only") is worth **+32.0pp** (52.0%→84.0%, McNemar p=8.6e-04) at 4× the tokens — and this result independently validated the harness (84.0% sits within noise of the model's vendor-published 86.0%). By contrast the native `--reasoning on` channel, unlimited, **loses** for both tested models (−16pp to −36pp) — not from a reasoning deficit but from a **non-termination tail** (18–50% of items burn the entire token budget inside `<think>` and emit zero content); a `--reasoning-budget N` force-close recovers to parity with `<think>` off at ~1.6–3× tokens instead of 6×. **Effort levels must be certified per (model, quant), never inherited or role-indexed** — the non-termination severity alone varies 18% vs 50% between two models on the same suite, mirroring the spec-dec-depth and repetition-penalty invariants elsewhere in the stack (see [Speculative Decoding](speculative-decoding.md), [Quantization](quantization.md)). [reasoning-effort-levels](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels), [architect-model-selection-bench](../handoffs/active/model-evaluation-queue.md) §R2
 
-**A third, previously-invisible axis surfaced: `max_tokens` (completion budget) as a silent quality lever, independent of both the prompt-effort and native-thinking axes.** On a hard, non-saturated suite (`olympiadbench_hard`), a model that can solve 76.9% of items when allowed to finish scored only 50.0% overall because 46% of responses were truncated mid-derivation by the token cap — a ~57pp swing driven purely by budget, not capability. Because every production role runs with an effective completion ceiling, any role whose ceiling sits below its model's accuracy "knee" is **silently losing quality on hard tasks** in a way that looks like a wrong answer, not a truncation, in aggregate metrics. The proposed router extension (**TB-6-ROUTER**, gated on the GPU joining the serving stack) treats `max_tokens`/`reasoning_budget` as a per-request tunable the router sets from assessed task complexity, jointly with an admission-control constraint: KV per slot scales linearly with the budget and is strongly per-architecture (a dense 27B costs ~2.4× the KV/slot of the MoE arms at the same context), so budget selection and concurrency admission are one coupled scheduling problem, not two independent knobs. [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §Token-budget study
+**A third, previously-invisible axis surfaced: `max_tokens` (completion budget) as a silent quality lever, independent of both the prompt-effort and native-thinking axes.** On a hard, non-saturated suite (`olympiadbench_hard`), a model that can solve 76.9% of items when allowed to finish scored only 50.0% overall because 46% of responses were truncated mid-derivation by the token cap — a ~57pp swing driven purely by budget, not capability. Because every production role runs with an effective completion ceiling, any role whose ceiling sits below its model's accuracy "knee" is **silently losing quality on hard tasks** in a way that looks like a wrong answer, not a truncation, in aggregate metrics. The proposed router extension (**TB-6-ROUTER**, gated on the GPU joining the serving stack) treats `max_tokens`/`reasoning_budget` as a per-request tunable the router sets from assessed task complexity, jointly with an admission-control constraint: KV per slot scales linearly with the budget and is strongly per-architecture (a dense 27B costs ~2.4× the KV/slot of the MoE arms at the same context), so budget selection and concurrency admission are one coupled scheduling problem, not two independent knobs. [reasoning-effort-levels](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §Token-budget study
 
 ## 2026-08-16 Update — Two additions to the effort ladder: a harness rung, and what a role swap costs when its quality gate is declined
 
@@ -424,7 +424,7 @@ carries its as-of date and source; re-verify against the cited source before any
 these numbers.
 
 **Consumer, and the boundary on it**: this is a per-provider cost-shape prior for the live
-cost-aware-routing surface in [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md)
+cost-aware-routing surface in [decision-aware-routing.md](../handoffs/active/routing-program.md)
 §DAR-4b — the inference-time preference vector `ω_cost` and cost-scaling `τ` at the retriever
 selection score — **if and only if** a hosted vision reader (Gemini/OpenAI/Anthropic/Kimi) ever
 enters the routing pool. Nothing consumes it today. For local readers (OCC-1's actual subject) image
@@ -434,7 +434,7 @@ billing is irrelevant: their cost is tokens-decoded, not billed input.
 
 - [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — the OCC-2 Record (billing-shape table, per-provider verification status, staleness caveat, consumer pointer).
 - [progress 2026-08-25-mainA-rtg53.md](../progress/2026-08/2026-08-25-mainA-rtg53.md) — per-claim verification against primary sources and the DAR-4b consumer selection (scaffold-autopilot-cost-lever rejected as consumer).
-- [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md) §DAR-4b — the ω/τ cost surface the table would feed.
+- [decision-aware-routing.md](../handoffs/active/routing-program.md) §DAR-4b — the ω/τ cost surface the table would feed.
 
 ## 2026-08-25 Update — The effort ladder's certification stamp is now (model, quant, kernel_era, template_sha); the native-`<think>` verdict amends to "tied at fair budget"
 
@@ -479,10 +479,10 @@ such, not a new measurement.
 
 ### Source References (2026-08-25 effort-ladder extension)
 
-- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) — E-7 amendment (template_sha in the stamp), the CT-2 cross-handoff finding, the 2026-08-23 ledger-era correction and validator enforcement.
-- [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
+- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — E-7 amendment (template_sha in the stamp), the CT-2 cross-handoff finding, the 2026-08-23 ledger-era correction and validator enforcement.
+- [qwen-chat-template-evaluation.md](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
 - [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — CT-E7b master-registry propagation, era-enforcement follow-up (instrument_eras `kernel_name`, `2746c652`, `7fe84d9c`).
-- [qwen38-27b-replace-qwen36.md](../handoffs/active/qwen38-27b-replace-qwen36.md) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
+- [qwen38-27b-replace-qwen36.md](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
 
 ## Related Categories
 
@@ -494,17 +494,17 @@ such, not a new measurement.
 ## Source References
 
 - [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) -- EXTERNAL, credibility `3/6`, unrefereed preprint dive-verified 2026-08-15: the controlled target-harness swap (Table 3), the published per-suite noise floor and its reading rule, the 111-run normalized-gain comparison our dive derived, and the explicit warning that the `0.142` vs `0.079` headline varies the optimizer's coding agent rather than the target harness. Cite as `intake-1140#record`; it does not inherit `intake-1134`'s ICML venue credit
-- [routing-intelligence.md](../handoffs/active/routing-intelligence.md) §*Research Intake Update — 2026-08-15* -- the record-only filing of the harness-as-routing-dimension finding and the correction attached to it
-- [qwen38-27b-replace-qwen36.md](../handoffs/active/qwen38-27b-replace-qwen36.md) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
-- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md) -- the `operator-declined — deferred` cell convention, the deferred ladder recipe (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40), and the presentation-vs-evidence-authority split
-- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) -- the measured effort ladder: +32pp prompt-CoT lever, native-`<think>` non-termination-tail failure mode + budget-cap fix, the per-model calibration invariant, and the §Token-budget study (`max_tokens` as a silent quality lever + TB-6-ROUTER admission-control design)
-- [architect-model-selection-bench.md](../handoffs/active/architect-model-selection-bench.md) §R2 -- the R2a/R2b/R2c/R2d ablation runs the reasoning-effort ladder findings are measured from
+- [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence) §*Research Intake Update — 2026-08-15* -- the record-only filing of the harness-as-routing-dimension finding and the correction attached to it
+- [qwen38-27b-replace-qwen36.md](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update) -- the `operator-declined — deferred` cell convention, the deferred ladder recipe (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40), and the presentation-vs-evidence-authority split
+- [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) -- the measured effort ladder: +32pp prompt-CoT lever, native-`<think>` non-termination-tail failure mode + budget-cap fix, the per-model calibration invariant, and the §Token-budget study (`max_tokens` as a silent quality lever + TB-6-ROUTER admission-control design)
+- [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) §R2 -- the R2a/R2b/R2c/R2d ablation runs the reasoning-effort ladder findings are measured from
 - [Overthinking + Information Bottleneck](../research/deep-dives/overthinking-info-bottleneck.md) -- xi_O/xi_P efficiency metrics, CIB theory (Propositions 4.1/4.2), difficulty-adaptive budgets, surprisal-based filler detection, three compression mechanisms
 - [Reasoning Compression (S3-CoT + SEER)](../research/deep-dives/reasoning-compression-s3cot-adaptive.md) -- SEER MAD-based filtering, failed-longer-than-successful finding, integration paths A-D, n-gram loop parameters
 - [FlowSteer Concise Reasoning](../research/deep-dives/flowsteer-concise-reasoning.md) -- SEAL linear baseline compatibility, Qwen3.5 hybrid SSM blocker, FlowSteer MLP infeasibility
 - [CoLaR Latent Compression](../research/deep-dives/colar-latent-compression.md) -- Latent compression trade-offs, not-actionable assessment
-- [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- OPSDC analysis, 3-tier approach taxonomy, TrimR/Omega evaluation results, all action items
-- [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-continuous-optimization.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
+- [Reasoning Compression handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- OPSDC analysis, 3-tier approach taxonomy, TrimR/Omega evaluation results, all action items
+- [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-program.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
 - [intake-110#04](https://arxiv.org/abs/2603.05433) OPSDC -- 57-59% compression at accuracy parity (+0.0 to +3.3pp); difficulty adaptation is emergent; length-ratio routing signal. **The v1 abstract's "+9-16 points" was revised away by the authors** (their Appendix D: the base model was mis-scored by a boxed-only grader) — do not cite an accuracy uplift from this entry
 - [intake-125](https://arxiv.org/abs/2602.01982) S3-CoT -- Self-sampled activation steering; progressive curriculum; VL-D in residual stream
 - [intake-126](https://arxiv.org/abs/2602.05539) FlowSteer -- Nonlinear activation steering; SEAL linear baseline; +6% accuracy at 14.5% reduction
@@ -515,17 +515,17 @@ such, not a new measurement.
 - [intake-133](https://arxiv.org/abs/2603.08462) CIB theory -- Formal unification of budget forcing; Pareto-dominant compression; semantic token cost
 - [intake-134](https://arxiv.org/abs/2505.16552) CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
-- [Decision-Aware Routing](/workspace/handoffs/active/decision-aware-routing.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
-- [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
-- [Model Stack Update Pipeline Audit](../handoffs/active/model-stack-update-pipeline-audit.md) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
+- [Decision-Aware Routing](/workspace/handoffs/active/routing-program.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
+- [Bulk Inference Campaign](/workspace/handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
+- [Model Stack Update Pipeline Audit](../handoffs/active/stack-lifecycle-program.md#track-model-stack-update-pipeline-audit) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
 - [AVB Offline Reward Stack](../research/deep-dives/2026-06-20-avb-offline-reward-stack.md) -- tiny CPU reference-grounded MSE answer-quality regressor as an OFFLINE quality-oracle label source; binary q_reward ladder + disabled ClaudeAsJudge gap (code-verified); NEXT-A2/A3 verifier debiasing anchor; paraphrase-blindness risk; self-reported metrics are observations only. [intake-706], [intake-716], [intake-717], [intake-719]
 - [OptiLLM & Test-Time-Compute Techniques](../research/deep-dives/optillm-test-time-techniques.md) -- method-selection axis home (P21.B, GATED/not-built); OpenRouter Fusion typed-judge schema + model-discretionary invocation + recursion-depth bounding as `n`-free portable ideas; OptiLLM as self-hostable MoA analogue; `n`-degraded panel caveat. [intake-601], [intake-712], [intake-714]
 - [Frontier F7 — Economic Ledger](../handoffs/completed/frontier-f7-economic-ledger.md) -- cost ledger (cloud spend, local inference-hours, operator decision throughput) aggregated from existing logs; W2 digest economics section live in code; W3 operator-review-only standing rules tying planner spend / gate-latency back to routing investment.
-- [GPU CoT-Scaffold Sidecar handoff](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- single-shot scaffold-injection falsified (both regimes), self-debug loop 4%/RL-ceiling, verifier/selector pivot (GenRM 2408.15240 / GenPRM 2504.00891), blended-wall-clock objective + capability-registry lever registration, distillation-adds-value + format-native-injection survivors, Fork-4 external-generators-only.
+- [GPU CoT-Scaffold Sidecar handoff](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar) -- single-shot scaffold-injection falsified (both regimes), self-debug loop 4%/RL-ceiling, verifier/selector pivot (GenRM 2408.15240 / GenPRM 2504.00891), blended-wall-clock objective + capability-registry lever registration, distillation-adds-value + format-native-injection survivors, Fork-4 external-generators-only.
 - [progress 2026-07-05 — CoT falsification + MTP](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) -- session narrative + commit index for the falsification, design-dialogue outcomes table, reasoning-effort framing, literature cross-check; MTP convergence angle owned by [speculative-decoding.md](speculative-decoding.md).
 - [progress 2026-07-05 — MI210 residency + CoT reframe](../progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md) -- the operator rescue-rate reframe (metric/distribution/deployment corrections) that re-scoped the experiment before the close.
 - [progress 2026-07-04 daily](../progress/2026-07/2026-07-04.md) -- lane opening: Fable-5 distillation intake (773-778, incl. Qwable-v1 MTP-head-dropped GGUF finding), reasoning-economics cluster framing (MD-9 == G1 shared gate), seed-corpus cache with Groq-key redaction.
-- [Reasoning Compression handoff — 2026-07-02 update](../handoffs/active/reasoning-compression.md) -- SPIRAL / recursive self-aggregation training-free pattern (intake-732/746/747) with the mandatory same-compute self-consistency control; diverse-exploration RL objectives filed as Tier-3 HW-gated forward pointers.
+- [Reasoning Compression handoff — 2026-07-02 update](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- SPIRAL / recursive self-aggregation training-free pattern (intake-732/746/747) with the mandatory same-compute self-consistency control; diverse-exploration RL objectives filed as Tier-3 HW-gated forward pointers.
 
 
 ## 2026-10-06 confidence arithmetic preparation
@@ -559,7 +559,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **PB-QCOST-1 confirm CONFIRMED; q axis PASS; grade INDICATIVE (per-phase rule).** Run-wide aggregate contention is UNCONTENDED, but the amended per-phase rule grades the run INDICATIVE because ub 1024 failed (sibling busy median 8.87% against the 5% bar). ub 512 (0.26%) and ub 256 are UNCONTENDED, and ub 512 decides the confirm: refit held-out MAPE 2.65% (n = 1) and 5.27% (n = 4), coefficients within the noise floor. confirm-q stays open: measured b = 1.457 / 1.357 ms/token does not agree with 0.9865.
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) (PB-QCOST-1 confirm-R) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (PB-QCOST-1 confirm-R) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -574,10 +574,10 @@ Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
 
 **Confidence: verified** for the source fix and its regression coverage; no new measurement, threshold or reload.
 
-- **Cost-aware scoring no longer reads quality from non-live records.** `_baseline_quality_by_role()` (orchestrator `0815be05`) filters to `deployment_status == live_stack` before either structured quality or model-filename fallback. The compiled artifact had a benchmark-only record with quality_for_role 0.852 / overall 0.8387; the higher-is-better direction, 0.75 reference and quality-gap formula are unchanged. GitNexus rated upstream impact HIGH (9 nodes, 3 direct callers); 102 q_scorer/q_reward tests pass. ([source](../handoffs/active/scoring-infra-standardization.md))
-- **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-continuous-optimization.md))
+- **Cost-aware scoring no longer reads quality from non-live records.** `_baseline_quality_by_role()` (orchestrator `0815be05`) filters to `deployment_status == live_stack` before either structured quality or model-filename fallback. The compiled artifact had a benchmark-only record with quality_for_role 0.852 / overall 0.8387; the higher-is-better direction, 0.75 reference and quality-gap formula are unchanged. GitNexus rated upstream impact HIGH (9 nodes, 3 direct callers); 102 q_scorer/q_reward tests pass. ([source](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization))
+- **The N-way contention metric now names its event.** `contention_nway_non_allow_count` counts N-way checks returning non-ALLOW whether or not the pairwise result changed, and is no longer divided by the unrelated admitted count; the old key remains a deprecated alias. Admission decisions are unchanged. ([source](../handoffs/active/autopilot-program.md))
 
-Sources: [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md) · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
+Sources: [scoring-infra-standardization](../handoffs/active/eval-tower-program.md#track-scoring-infra-standardization) · [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md)
 
 ### Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 

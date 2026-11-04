@@ -1,0 +1,58 @@
+--- a/scripts/benchmark/test_k35_stack_context_matrix_runner.py
++++ b/scripts/benchmark/test_k35_stack_context_matrix_runner.py
+@@ -249 +249 @@
+-    def test_v9_coder_alias_disables_speculation_per_request(self):
++    def test_v9_coder_alias_uses_dedicated_no_draft_server(self):
+@@ -260,3 +260,4 @@
+-        self.assertIn("--spec-type draft-mtp", joined)
+-        self.assertIn("--spec-draft-n-max 4", joined)
+-        self.assertEqual(body["speculative.n_max"], 0)
++        self.assertIn("--spec-type none", joined)
++        self.assertNotIn("--spec-draft-n-max", argv)
++        self.assertNotIn("-md", argv)
++        self.assertNotIn("speculative.n_max", body)
+@@ -279 +280 @@
+-    def test_v9_dspark_pair_differs_only_at_request_cap(self):
++    def test_v9_dspark_pair_uses_distinct_dedicated_servers(self):
+@@ -296,7 +297,6 @@
+-        self.assertEqual(disabled_argv, enabled_argv)
+-        self.assertIn("--spec-type", disabled_argv)
+-        self.assertIn("draft-dspark", disabled_argv)
+-        self.assertEqual(
+-            k35.build_chat_request_body(disabled, "prompt", max_tokens=16)["speculative.n_max"],
+-            0,
+-        )
++        self.assertNotEqual(disabled_argv, enabled_argv)
++        self.assertEqual(disabled_argv[disabled_argv.index("--spec-type") + 1], "none")
++        self.assertNotIn("-md", disabled_argv)
++        self.assertFalse(any(arg.startswith("--spec-draft-") for arg in disabled_argv))
++        self.assertIn("draft-dspark", enabled_argv)
++        self.assertNotIn("speculative.n_max", k35.build_chat_request_body(disabled, "prompt", max_tokens=16))
+@@ -348,2 +348,3 @@
+-                    "effective_speculative_n_max": 0,
+-                    "draft_n": None,
++                    "server_no_draft": True,
++                    "effective_speculative_n_max": None,
++                    "draft_n": 0,
+@@ -363,0 +365,13 @@
++        # A missing native draft counter is unknown, not a measured zero.
++        self.assertTrue(result["comparisons"][0]["checks"]["disabled_no_draft_server"])
++
++    def test_dspark_parity_refuses_unknown_or_unattested_disabled_arm(self):
++        base = {"nominal_context": 2048, "rep": 1, "status": "ok", "token_ids": [1, 2]}
++        disabled = {**base, "scenario": "v9_dsv4_q8_dspark_request_nmax0",
++                    "server_no_draft": True, "draft_n": None}
++        enabled = {**base, "scenario": "v9_dsv4_q8_dspark_request_nmax3",
++                   "effective_speculative_n_max": 3, "draft_n": 4}
++        self.assertEqual(k35.evaluate_dspark_parity([disabled, enabled])["status"], "fail")
++        disabled["draft_n"] = 0
++        disabled["server_no_draft"] = False
++        self.assertEqual(k35.evaluate_dspark_parity([disabled, enabled])["status"], "fail")
+@@ -607 +621,2 @@
+-                "effective_speculative_n_max": 0,
++                "server_no_draft": True,
++                "effective_speculative_n_max": None,
+@@ -752 +767,2 @@
+-                    result["effective_speculative_n_max"] = 0
++                    result["server_no_draft"] = True
++                    result["effective_speculative_n_max"] = None

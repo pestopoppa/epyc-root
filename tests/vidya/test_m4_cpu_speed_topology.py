@@ -59,3 +59,9 @@ def test_source_tamper_does_not_break_legacy(roots):
  old,new,oc,nc=roots;legacy=make_capture(oc,old,'legacy');fresh=make_capture(nc,new,'worker_general',('all','0-95',96));(new/'dispatch.py').write_text('tampered')
  with pytest.raises(ProjectionError,match='producer seal changed'):reader.native_rows(fresh)
  assert reader.project(reader.native_rows(legacy)[0]).value==1.0
+
+
+def test_full_topology_preserves_bound_48_thread_recipe(roots):
+ _,new,_,nc=roots
+ p=make_capture(nc,new,'architect_general',('all','0-95',48))
+ assert reader.project(reader.native_rows(p)[0]).value == 1.0
