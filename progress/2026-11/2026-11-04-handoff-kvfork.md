@@ -111,3 +111,7 @@ KPF-50 experimental candidate now aborts unless four successful child replies ea
 ## 21:28Z — Attempt to ready KPF-17 mutation oracle
 
 KPF-17 mutation oracle remains unready: RAID free space was 142 GiB against the unchanged 150 GiB rowflow floor, and the existing engine can mark a coincident native PASS complete after a disk-floor or hard-end stop. No qualifying inference row or model execution was produced. KPF-17.4d prospective witness r5 exposed a unit and was INVALID; no redraw was attempted. KPF-62 successor remains separately unauthorized.
+
+## 21:33Z — Prepare a reviewable KPF-17 rowflow stop-precedence correction
+
+KPF-17: prepared a reviewable patch for the shared rowflow engine that preserves disk-floor and hard-end outcomes over a simultaneous native completion predicate; six model-free tests passed and the patch applies to the current source. The shared engine and keeper were not changed. The patch leaves a crash-before-ended-receipt gap and requires owner integration and end-to-end qualification. Full runs remain below the unchanged 150 GiB disk floor; publisher smoke uses its separate 20 GiB threshold. No inference row was published or model run. KPF-50 prospective native outcome producer remains incomplete and was not retained.
