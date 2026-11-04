@@ -1,0 +1,36 @@
+[  0%] Linking CXX shared library ../../bin/libggml-base.so
+[  2%] Built target ggml-base
+[  2%] Linking CXX shared library ../../bin/libggml-cpu.so
+[  4%] Linking HIP shared library ../../../bin/libggml-hip.so
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)
+[ 12%] Built target ggml-cpu
+[ 50%] Built target ggml-hip
+[ 50%] Linking CXX shared library ../../bin/libggml.so
+[ 50%] Built target ggml
+[ 52%] Building CXX object src/CMakeFiles/llama.dir/llama-lsa-graph.cpp.o
+In file included from /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-lsa-graph.cpp:7:
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, const llama_cparams&, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h:749:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  749 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h:749:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  749 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h:749:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  749 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h:749:156: warning: unused parameter ‘cparams’ [-Wunused-parameter]
+  749 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-model.h:749:200: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  749 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-lsa-graph.cpp: In member function ‘bool llama_lsa_graph_state::execute(const ggml_tensor*, void*, bool)’:
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104/src/llama-lsa-graph.cpp:387:18: warning: comparison of integer expressions of different signedness: ‘const size_t’ {aka ‘const long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+  387 |     if (elements != ggml_nelements(op)) return trace_failure(layer, "publication", "output_shape_mismatch");
+      |         ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+[ 52%] Linking HIP shared library ../bin/libllama.so
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)
+[100%] Built target llama

@@ -75,3 +75,7 @@ Filed lsa-recall-reference-build-24c8a8f-20261104 pass: source 24c8a8f2, 174 reu
 ## 18:37Z — File recall unit and phase CPU timing outcomes
 
 Filed recall-unit Torch successor pass: four model-free tests rc=0, evidence docs/evidence/lsa-recall-unit-24c8a8f-torch-20261104/. Filed phase CPU timing inconclusive: request hit 360s cap and has no completed timing or trace validation, no retry; evidence docs/evidence/lsa-phase-cpu-timing-20261104/.
+
+## 18:39Z — File speculative-guard model-free build result
+
+Filed lsa-spec-guard-build-21bebb-20261104 pass: 448 donor objects verified, changed graph object compiled and libllama relinked; artifact digests and preflight preserved in docs/evidence/lsa-spec-guard-build-21bebb-20261104/. Build only, no GPU or model execution.
