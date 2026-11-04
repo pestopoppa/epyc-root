@@ -635,10 +635,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-03T23:52:20Z",
+  "generated_at": "2026-11-04T00:00:37Z",
   "nodes": [
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 130,
@@ -988,7 +988,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 61,
@@ -1076,7 +1076,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 117,
@@ -1152,7 +1152,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1274,7 +1274,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1351,18 +1351,18 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 343,
-      "dispatchable": 82,
+      "closed": 344,
+      "dispatchable": 84,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-03",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 84,
+      "open": 86,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1394,7 +1394,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 747,
@@ -1558,7 +1558,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 3,
       "blocked_by": [],
       "closed": 184,
@@ -1667,7 +1667,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -1721,7 +1721,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 3,
       "blocked_by": [],
       "closed": 248,
@@ -1862,7 +1862,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 334,
@@ -1977,7 +1977,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 101,
@@ -2044,7 +2044,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -2125,7 +2125,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 235,
@@ -2270,7 +2270,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
@@ -2363,7 +2363,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2404,7 +2404,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 40,
       "blocked_by": [],
       "closed": 120,
@@ -2454,7 +2454,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 66,
@@ -2513,7 +2513,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 3,
       "blocked_by": [],
       "closed": 100,
@@ -2599,7 +2599,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2699,7 +2699,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 286,
@@ -2912,7 +2912,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 143,
@@ -3016,7 +3016,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 177,
@@ -3142,7 +3142,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 239,
@@ -3237,7 +3237,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
@@ -3388,7 +3388,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 120,
@@ -3504,7 +3504,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 237,
@@ -3579,7 +3579,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 15,
       "blocked_by": [],
       "closed": 221,
@@ -3723,7 +3723,7 @@
       ]
     },
     {
-      "age_days": 31,
+      "age_days": 32,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,

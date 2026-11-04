@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 191
+      "open": 193
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2614,10 +2614,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 343,
+      "closed": 344,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 82,
+      "open": 84,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 427
+      "total": 430
     }
   },
   "row_id_collisions": {},
