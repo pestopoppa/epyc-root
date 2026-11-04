@@ -191,3 +191,7 @@ The KPF-62 continuation implementation and model-free scoring-entry checks are c
 ## 19:03Z — Prepare prospective KPF-17 native oracle evidence capture and safe test qualification
 
 The KPF-17 full oracle build remains a build-only PASS; registered prospective native mutation-oracle write-side capture preserving original controls, mutation mechanisms and complete custody. Native execution remains open pending captured-PID cleanup and publisher qualification. Corrected the prior G3 source-stage note to reflect subsequent synthetic scoring-entry validation. The queued KPF-17.4d witness uses filed predecessor scratch; its pinned preconditions refuse absent inputs, and a successor needs its own presealed runtime before publication.
+
+## 19:06Z — Filed the single KPF-17.4d R5 prospective witness as INVALID and preserved its exposed-cell evidence.
+
+Filed kvfork174d-witness-r5-20261104 as INVALID, rc=1: no final RESULT, partial STATE reported expected exactly one bound prefix snapshot and no completed pair; the g0-S2-B fork arm was exposed and must not be redrawn. Copied the private raw trace and native state before the filing receipt, preserved hashes and verified server cleanup, and left historical verdicts unchanged.

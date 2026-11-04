@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T18:59:53Z reason=job-rc-1:exited
+job_id=kvfork174d-witness-r5-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=3600
+started=2026-11-04T18:59:38Z
+regions=mi210_0,184-187
