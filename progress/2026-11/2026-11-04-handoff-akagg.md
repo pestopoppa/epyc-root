@@ -263,3 +263,7 @@ The P1b 732 HIP build event had already been filed. Filed floor v12, C6 cuBLAS b
 ## 21:29Z — Filed disk-floor interruptions and published independent CPU, floor and GPU successors.
 
 CH-31 metadata event was already filed. Filed floor v13, C6 cuBLAS build r10 and C6 paired GPU r7 as inconclusive disk-floor stops, retaining terminal packets. Published C6 build r11 after publisher custody smoke PASS; full build remains pending. Published floor v14 and paired GPU diagnostic r8 after publisher smokes passed; full results remain pending.
+
+## 21:33Z — Filed disk-floor interruptions and published CPU, floor and GPU successors.
+
+The GDN comparator build was already filed. Filed floor v14, C6 build r11, paired GPU diagnostic r8 and NEMO marker build as inconclusive rc75 disk-floor stops with retained packets. Published C6 build r12 and floor v15 after scoped publisher smokes; full results remain pending. Published paired GPU diagnostic r9 after publisher smoke PASS; full diagnostic pending. NEMO successor packet preparation is in progress; its draft must pass publisher smoke before it is ready.
