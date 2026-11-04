@@ -6,8 +6,8 @@ VRAM. Its output is diagnostic evidence only, never a bandwidth verdict.
 """
 import math
 
-from invocation_trace_v4 import classify_invocation_trace_v4
-from residency_correlation import correlate_residency
+from invocation_trace_v5 import classify_invocation_trace_v5
+from sysfs_residency import correlate as correlate_residency
 
 
 def clocks_stable(samples, tolerance_s=0.05):
@@ -29,32 +29,31 @@ def clocks_stable(samples, tolerance_s=0.05):
 
 
 def analyze(*, trace, expected_layer_ids, baseline, samples, card, pid, backend, backend_sha256,
-            complete, drained):
+            complete, drained, device, pid_birth, topology_stable):
     result = {'status': 'UNKNOWN', 'reasons': [], 'trace': None, 'correlations': [],
-              'scope': 'Observed dispatches only; residency is device-wide; no bandwidth or performance conclusion.'}
-    if complete is not True or drained is not True:
-        result['reasons'].append('incomplete capture or unverified process drain')
+              'scope': 'Observed dispatches only; KFD VRAM is per captured PID and card VRAM is device-wide; no bandwidth or performance conclusion.'}
+    if complete is not True or drained is not True or topology_stable is not True:
+        result['reasons'].append('incomplete capture, unverified drain or changed device topology')
         return result
     if not clocks_stable([baseline, *samples]):
         result['reasons'].append('missing or unstable realtime and monotonic clock samples')
         return result
     try:
-        parsed = classify_invocation_trace_v4(trace, expected_layer_ids=expected_layer_ids)
+        parsed = classify_invocation_trace_v5(trace, expected_layer_ids=expected_layer_ids)
         result['trace'] = parsed
         candidates = parsed['candidates']
         if parsed['status'] != 'OBSERVED' or not candidates:
             result['reasons'].append('no fully attributed native verify trace')
             return result
         calls = [v for c in candidates for v in c['native_timing']]
-        joins = correlate_residency(calls=calls, samples=samples, baseline=baseline, card=card,
-                                    pid=pid, backend=backend, expected_sha256=backend_sha256)
+        joins = correlate_residency(calls=calls, samples=samples, pid=pid, birth=pid_birth, gpu_id=device['gpu_id'])
         result['correlations'] = joins
         if not any(j['status'] == 'BOUNDED_OBSERVATION' for j in joins):
             result['reasons'].append('no in-invocation dispatch overlaps a complete residency observation')
             return result
         # Restrict any VEC observation to calls with at least one matched dispatch;
         # a match for another dispatch in that call is insufficient for a VEC claim.
-        matches = {(j['invocation'], j['matches'][0]['native_dispatch'])
+        matches = {(j['invocation'], j['native_dispatch'])
                    for j in joins if j['status'] == 'BOUNDED_OBSERVATION'}
         observed = []
         for c in candidates:

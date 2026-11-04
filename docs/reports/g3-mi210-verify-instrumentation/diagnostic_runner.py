@@ -4,6 +4,7 @@ import argparse, datetime, hashlib, json, os, pathlib, signal, subprocess, sys, 
 from residency_evidence import analyze_residency
 from build_receipt_v4 import bind_v4_receipt
 from analyze_timed_run import analyze as analyze_timed_run
+from sysfs_residency import discover, proc_birth, read_sysfs_sample
 
 
 def gpu_sample():
@@ -104,6 +105,8 @@ def main():
     baseline = gpu_sample()
     (out / 'residency-baseline.json').write_text(json.dumps(baseline) + '\n')
     request_windows = []
+    device = discover()
+    (out / 'device-identity.json').write_text(json.dumps(device, indent=2) + '\n')
     with (out / 'server.log').open('wb') as log:
         # Keep TERM/INT pending until the new process group is captured and its
         # leader registered with the filler. The child restores the old signal
@@ -122,6 +125,7 @@ def main():
                                     preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, oldmask))
             with open(os.environ['FILLER_PIDFILE'], 'a', encoding='ascii') as registry:
                 registry.write(str(proc.pid) + '\n'); registry.flush(); os.fsync(registry.fileno())
+            birth = proc_birth(proc.pid)
         except BaseException:
             if proc is not None:
                 try: os.killpg(proc.pid, signal.SIGKILL)
@@ -142,6 +146,16 @@ def main():
                     record['monotonic_end'] = time.monotonic()
                     f.write(json.dumps(record) + '\n'); f.flush(); done.wait(1)
         sampler = threading.Thread(target=sample, daemon=True); sampler.start()
+        def fast_sample():
+            with (out / 'fast-residency.jsonl').open('w') as f:
+                while not done.is_set():
+                    try:
+                        row = read_sysfs_sample(pid=proc.pid, birth=birth, device=device, backend=backend)
+                        f.write(json.dumps(row) + '\n')
+                    except (OSError, ValueError) as exc:
+                        f.write(json.dumps({'error': repr(exc)}) + '\n')
+                    done.wait(0.001)
+        fast_sampler = threading.Thread(target=fast_sample, daemon=True); fast_sampler.start()
         result = {'status': 'partial', 'requests': []}; deadline = time.monotonic() + c['timeout_seconds']
         try:
             signal.pthread_sigmask(signal.SIG_SETMASK, oldmask)
@@ -176,6 +190,7 @@ def main():
         finally:
             for sig in masked: signal.signal(sig, signal.SIG_IGN)
             if stop.exists(): result['status'] = 'partial'; result['error'] = 'STOP'
+            done.set(); fast_sampler.join(timeout=8)
             try: os.killpg(proc.pid, signal.SIGTERM)
             except ProcessLookupError: pass
             try: proc.wait(timeout=10)
@@ -194,6 +209,10 @@ def main():
             except ProcessLookupError: drained = True
             except RuntimeError: drained = False
             samples, sample_error = read_samples(out / 'residency.jsonl')
+            fast_samples, fast_error = read_samples(out / 'fast-residency.jsonl')
+            if fast_sampler.is_alive() or any('error' in sample for sample in fast_samples): fast_error = 'fast sampling incomplete or failed'
+            try: topology_stable = discover() == device
+            except (OSError, ValueError): topology_stable = False
             residency = []
             for start, end in request_windows:
                 try:
@@ -217,9 +236,10 @@ def main():
             try:
                 result['timed_analysis'] = analyze_timed_run(
                     trace=(out / 'server.log').read_text(errors='replace'), expected_layer_ids=layer_ids,
-                    baseline=baseline, samples=samples, card=c['rocm_card'], pid=proc.pid,
+                    baseline=baseline, samples=fast_samples, card=c['rocm_card'], pid=proc.pid,
                     backend=backend, backend_sha256=c['backend_sha256'],
-                    complete=result['status'] == 'complete' and not sample_error, drained=drained)
+                    complete=result['status'] == 'complete' and not sample_error and not fast_error, drained=drained,
+                    device=device, pid_birth=birth, topology_stable=topology_stable)
             except (OSError, ValueError, KeyError) as exc:
                 result['timed_analysis'] = {'status': 'UNKNOWN', 'reasons': [repr(exc)]}
             if not drained: result['status'] = 'partial'

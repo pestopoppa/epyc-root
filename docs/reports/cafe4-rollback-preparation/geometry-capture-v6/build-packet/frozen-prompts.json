@@ -1,0 +1,171 @@
+{
+  "model": {
+    "hash_mode": "prior content verification plus unchanged full stat",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "stat": {
+      "ctime_ns": 1782411254270412235,
+      "dev": 2431,
+      "ino": 96242023,
+      "mtime_ns": 1782411254270412235,
+      "size": 37801097504
+    }
+  },
+  "prompts": [
+    {
+      "ids": [
+        814,
+        20139,
+        1330,
+        5337,
+        310,
+        29249,
+        264,
+        24279,
+        13
+      ],
+      "text": "Explain two ways to organize a workshop.",
+      "utf8_sha256": "16d8eeda75594bbcea1d07c7c71245bd940300ce32fc3020f9b7faada9969766"
+    },
+    {
+      "ids": [
+        72240,
+        2250,
+        5337,
+        19101,
+        5827,
+        16665,
+        13
+      ],
+      "text": "Describe three ways roots protect soil.",
+      "utf8_sha256": "6b2e08b13abeed8a0937d4f1d0fe1ca6cbc1c298b1c2db40485a0da1aa391d6f"
+    },
+    {
+      "ids": [
+        814,
+        20139,
+        1204,
+        264,
+        5128,
+        27028,
+        264,
+        6741,
+        2876,
+        13
+      ],
+      "text": "Explain how a lock prevents a race condition.",
+      "utf8_sha256": "b44f2b89125a8b3a6dfc46105779f1d55bb49645239ed6186d4714760ff45c20"
+    },
+    {
+      "ids": [
+        58235,
+        1204,
+        310,
+        1228,
+        264,
+        2624,
+        4416,
+        13
+      ],
+      "text": "Outline how to test a search feature.",
+      "utf8_sha256": "87015e076687af14368b87e955ad721cea6a2f4e62f4a7bc9214dedd5710be12"
+    },
+    {
+      "ids": [
+        8917,
+        5437,
+        537,
+        3069,
+        37683,
+        1144,
+        14046,
+        33124,
+        13
+      ],
+      "text": "Summarize why bridges need expansion joints.",
+      "utf8_sha256": "2258075d9b0894a9c965d3f85a8997b67343a49eb2d1ab4bf152cbaae5110b2e"
+    },
+    {
+      "ids": [
+        72240,
+        264,
+        5902,
+        10018,
+        364,
+        23331,
+        286,
+        264,
+        33828,
+        13
+      ],
+      "text": "Describe a safe procedure for inspecting a bicycle.",
+      "utf8_sha256": "7bbc83a680cbf4b8c7e16045ea84c61fabdde9ae69fe4eae827ae8a356815e8f"
+    },
+    {
+      "ids": [
+        814,
+        20139,
+        279,
+        7193,
+        314,
+        264,
+        4475,
+        1857,
+        13
+      ],
+      "text": "Explain the purpose of a database index.",
+      "utf8_sha256": "bccde318b590d2a91f4d08a35d3a8349be1eb090832406cbdf923d5e3d371a53"
+    },
+    {
+      "ids": [
+        826,
+        2250,
+        5337,
+        310,
+        1236,
+        264,
+        6236,
+        17853,
+        2708,
+        13
+      ],
+      "text": "List three ways to make a meeting agenda clear.",
+      "utf8_sha256": "e48d44fbd0be2cb3761f5b47673ae4aad40c87306262815ae314d98b967579f9"
+    },
+    {
+      "ids": [
+        72240,
+        1204,
+        2919,
+        10480,
+        1472,
+        264,
+        88211,
+        13
+      ],
+      "text": "Describe how water moves through a watershed.",
+      "utf8_sha256": "cb1ad5939198267483ac99c1f02742df3969f919e85874c6d48ff708901a0374"
+    }
+  ],
+  "schema": "cafe4.frozen.prompt.ids.v1",
+  "tokenizer": {
+    "add_special": "model default",
+    "dsos": {
+      "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+      "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+      "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+    },
+    "flags": [
+      "--ids",
+      "--model",
+      "--prompt"
+    ],
+    "ld_library_path": "/mnt/raid0/llm/kernels/production/cpu",
+    "parse_special": true,
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-tokenize",
+    "sha256": "3893e741f796e21342fd0d5a599db9e9eb3050448532689339f2523f19776407",
+    "vocab_only": true
+  }
+}
