@@ -39,3 +39,7 @@ The already filed CPU window run has raw result prompt_n=8204, eight capture che
 ## 16:37Z — Preserve failed full-tree index evidence and distinguish completed targeted successor
 
 The already filed lsa-native-c5-gitnexus-20261104 ended rc=75 at hard-end with only the 3345-file source inventory; it did not complete a full-tree index. Preserved the native record, end and verdict at docs/evidence/lsa-native-c5-gitnexus-20261104/. A later targeted-v4 index and query run completed for the targeted scope; no full caller-coverage claim.
+
+## 16:41Z — Repair the real-cache API validation fixture and resubmit its smoke
+
+The previously filed GitNexus targeted-v3 attempt failed and was superseded by targeted-v4. Repaired the pending S8-C real-cache diagnostic: the pinned model tokenizer maps valid text to token 23811; 128 repetitions and deterministic output bias replace the byte-token fixture that caused invalid UTF-8 responses. Four offline packet regression tests pass. The resubmitted smoke has not yet returned; runtime behavior and publication are not claimed.

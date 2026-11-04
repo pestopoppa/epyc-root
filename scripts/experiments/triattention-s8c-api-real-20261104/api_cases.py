@@ -119,7 +119,7 @@ def populate(port, timeout):
     if status != 200:
         raise RuntimeError("slot erase failed: " + str(status) + " " + raw)
     body = json.dumps({"id_slot": 0, "prompt": PROMPT, "n_predict": 0,
-                       "cache_prompt": False, "temperature": 0, "seed": 42}).encode()
+                       "cache_prompt": False, "temperature": 0, "seed": 42, "logit_bias": [[23811, 100.0]]}).encode()
     status, payload, raw = request(port, "/completion", body, timeout)
     processed = payload.get('timings', {}).get('prompt_n', payload.get('tokens_evaluated')) if isinstance(payload, dict) else None
     if status != 200 or not isinstance(payload, dict) or payload.get("id_slot", 0) != 0 or processed != len(PROMPT):

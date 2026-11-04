@@ -2,8 +2,8 @@
   "plan_sha256": "1deb8eb0696075957a33f4a7dd650217c712bcebb21e23d94f4bdd14a41cfd8d",
   "files": {
     "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/job.py": "e0db26ce3d20645565c3facbf82695ee0d20b8822310f86df27b377ba6436f06",
-    "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/api_cases.py": "ee89b4bfe7d3a445533e7079f60066e1c45d5b0dd59da5716bea305710edad60",
-    "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/token-ids.json": "dfee1d388a027a80b40438865688ed9812961c8ef57fdbe756d3c058d58bb9e2",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/api_cases.py": "3d13877a5323d5b49b2d16447f19ba86a6ff17c2ccb35622abc20f1d7126dc18",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/token-ids.json": "2152a130c2147e843aeeea9b0a04691c763fe60f83cd03d74d7b529604bd14dc",
     "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/first_progress.py": "fb62fb26549fcb6e4cb65b976ff74139080855e1a85d7852b7c18c6d9601a9ad",
     "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/packet_pins.py": "fdf5a09fd72c987d73a6116330d8e74cfa35cf9bfcfb5bfc78f5e29b6f21ba78"
   },
