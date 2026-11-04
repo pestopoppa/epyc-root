@@ -79,3 +79,7 @@ Wrote the FILED receipt for `triattention-s8c-plan-oracles-20261104` using its e
 ## 16:40Z — Acknowledge filed TriAttention planner property test
 
 Wrote the FILED receipt for `triattention-s8c-plan-property-20261104` using its existing fail verdict. The bounded synthetic planner test stopped at its first counterexample: n=10, sink=0, ratio=0.7f selected 6 versus the legacy oracle’s 7. Native result SHA-256 `b5f76d1644d3db206d44f84a2c57bfd7e33f0a8e4a6f8568bb8925926430bab0`; evidence is retained in `docs/evidence/triattention-s8c-plan-property-20261104/`. The owning test box was already ticked; no real cache, server, model, quality or performance claim.
+
+## 16:41Z — Acknowledge filed TriAttention planner property V2
+
+Wrote the FILED receipt for `triattention-s8c-plan-property-v2-20261104` using its existing inconclusive verdict. Four size groups were recorded, but the n=2 gap-nonmutation fixture was invalid and the 65-group suite did not complete; this is not evidence of a candidate defect. Native result SHA-256 `9a8103593e0eb74fcd53a3c565992d8b0cffaf3d1cbbe2343f816fea4127ce7c`. The owner separately records the corrected successor as passing and has already ticked S8-C-PLAN-PROPERTY-V2; no checkbox was reticked.
