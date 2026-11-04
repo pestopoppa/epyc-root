@@ -15,3 +15,7 @@ Published `codex-ni-akxall31-gdn-hip-build-affinity-20261104` after the publishe
 ## 17:19Z — Publish the C5 floor successor and file the GDN disk-floor result
 
 Published `akxall8-c5-declared-floor-v9-20261104` after four-CPU control-model publisher smoke PASS. Fresh source/research seals and 22 model-free controls passed; model metadata continuity checked without rehashing weights. Original full-host claim and 24-pair floor predicates remain, and the live lock checks and floor remain unproved. Filed `codex-ni-akxall31-gdn-hip-build-affinity-20261104` inconclusive, rc75 disk-floor before the native build; terminal receipt retained at `/mnt/raid0/llm/tmp/akagg/gdn-affinity-terminal-20261104/`. W2 repair remains unsealed pending replacement of its missing custody-pinned tracer and wrapper.
+
+## 17:27Z — Publish Q38 causal identity and GDN build successors
+
+Published `ch33-q38-causal-cpu-v3-20261104` after four-CPU control-model smoke PASS: original three-prompt Q38 C5 vs aa493c690 CPU identity remains for the full grant; DFlash and GPU are separate gates. Published `codex-ni-akxall31-gdn-hip-build-affinity-r2-20261104` after source-bound C++ syntax and gfx90a object smoke PASS; full build remains open. Disk free space had recovered above 150 GiB. W5s partial successor reconstructed its missing wrapper from matching source but still needs sealed custody and compliant smoke; retained at `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/w5s-successor-20261104/`.
