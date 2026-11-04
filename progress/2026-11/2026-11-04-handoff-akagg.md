@@ -139,3 +139,7 @@ Filed the 8f6487f3 direct-parent and 1f7f36e4 CPU configure rows as configure-on
 ## 18:28Z — File P1b configure plans and CH33 CPU identity result
 
 Filed fourteen P1b HIP/CPU configure-only rows with retained digest-verified evidence; no build, workload or replay classification follows. Filed CH33 Q38 CPU greedy identity pass: all three 128-token outputs matched and both arms drained. AKX-P1b and CH-33-MODEL-GATES remain open. CH-LB1.1 successor smoke is running.
+
+## 18:31Z — Publish CH-LB1.1 successor and file P1b and GDN build prerequisites
+
+Published akagg-ch-lb1-c5-successor-20261104 after four-CPU publisher smoke PASS; the full scientific gates and CAS remain open. Filed 1f7 CPU coverage build rc0 with 431 reviewed compile entries and 292 coverage notes and retained 307 verified artifacts. Filed GDN HIP build prerequisite rc0 with retained verified binary, object, libraries and linkage. Both parent workload/oracle gates remain open.
