@@ -3,8 +3,11 @@ set -euo pipefail
 D=/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet
 R=/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104
 ID=lsa-gpu-dense-bf16-8k-20261104
-: "${FILLER_STATE_DIR:=$R/state}"
-export FILLER_STATE_DIR
+if [[ ${FILLER_DRYRUN:-0} == 1 ]]; then
+  export FILLER_STATE_DIR="${FILLER_DRYRUN_DIR:?}/state"
+else
+  export FILLER_STATE_DIR="$R/state"
+fi
 if [[ ${1:-} == --job ]]; then
   : "${FILLER_CPUS:?}"
   exec taskset -c "$FILLER_CPUS" /mnt/raid0/llm/epyc-inference-research/.venv/bin/python "$D/job.py"

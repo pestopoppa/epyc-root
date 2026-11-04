@@ -1,0 +1,12 @@
+{
+  "reviewed": true,
+  "helper_sha256": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/job.sh": "60729bdac78b09c3afd5c6cad0e6b739667d3460ddd987de4d63821124b97f22",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/launch.sh": "93559a13e922867b413b17f043374d7eab42332068260b80e83ddebe3210ea9d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/exec-guard.c": "81593f46f929c87efafe53c499614fc91de596ea3985c213593d8a55504f2918",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/guard-control.c": "4f3c86339844eed110abcceb1540a6d294bb61977064f107f94eff3c14a1450d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/source-sha256.txt": "ed4441d7771fb0392c17a374aa254bbc668a85833f784e4ed37e440c09e1eba7",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/spec.json": "fc838479a7d0e0f8704b62a55b9a35e0b376a0e22f7dbd575554552b8f054ce8",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+  }
+}

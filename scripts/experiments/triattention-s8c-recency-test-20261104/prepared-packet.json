@@ -1,0 +1,11 @@
+{
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/packet",
+  "candidate_pin_sha256": "af05ee49b6a640ec06b21ae1429f908a3694ae90b5138fed95dc42857102e20f",
+  "files": {
+    "launcher.sh": "6440544179eea2de8d42cdaf0bd9dad2c548a1d32a1eb0f3950400b191e79427",
+    "README.md": "2d7c75b5f062fe644eff779a3b1c74c2fb597306ccfb37d3f8ea5a770f1de998",
+    "job.sh": "388964fac22140673efa0f632542aaaeaed38554060b6325b14e0acc59ca2b9b",
+    "spec.json": "446d3fd6fd89aa0f6253afa49fbd84d3abe615dd9e4628a84adedbb48325ce88",
+    "recency_test.cpp": "76f94882b5ce8322a8597772b05dfa266b8f6bf6155a7253b4c3fccbe8dd96ab"
+  }
+}

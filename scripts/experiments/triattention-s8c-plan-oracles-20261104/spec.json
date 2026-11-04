@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-plan-oracles-20261104",
+  "owner": "triattention",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-plan-oracles-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 4,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "first_progress_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-plan-oracles-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-plan-oracles-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Run the exact source-pinned production-tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 S8-c safety planner against 26 synthetic layout, reservation and removal/postcondition cases; all must pass. Stop after completed cases or first crash, STOP or deadline. Report every failed case; header-only synthetic unit, no model, actual server or performance claim.",
+  "handoff_task": "long-context-program.md:S8-C-PLAN-ORACLES",
+  "priority_rank": 17,
+  "keep": [
+    "input-pins.json",
+    "results.jsonl",
+    "output/*",
+    "packet/*",
+    "include/*"
+  ],
+  "kind": "compute"
+}

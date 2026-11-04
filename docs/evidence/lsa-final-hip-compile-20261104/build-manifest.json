@@ -1,0 +1,87 @@
+{
+  "schema": "lsa-final-build-v1",
+  "source_commit": "fd25848a11cb165bddf49673a534e83d117a1c50",
+  "source_manifest_sha256": "380305bcaaaec4377274267aa9c6ce8e8aa92c6b9121dcee5bb3f1afbc8ff82e",
+  "backend": "hip",
+  "configuration": [
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/actual-compilers.json",
+      "sha256": "574fe2e97d2bcefd33ea9725e18535bdb3cdbe3dadee0ac8dcd9939f71c90859"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/configure-command.txt",
+      "sha256": "a66b5c4ec72050a4e8a6c14fef2e93ba52426d11fe5fb9b63c89853143ae1fcb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/CMakeCache.txt",
+      "sha256": "27803d8d36e98e3813f1940a0e7459c83d761481f64c6b8bcc21d6c6eada635e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/compile_commands.json",
+      "sha256": "a5d215ce2031d96c60bb578b4c2ac5f711d35d3d1af87a36eb04209d66319ac9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/artifact-sha256.txt",
+      "sha256": "a1cdf6416099d0387dbd32b7611b76ff5bdf1eac317c086f5c198f5900e0faba"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/dependency.sha256",
+      "sha256": "77e57ae68f4486284dfa7e626e3713e0fe600597f8d89195cb16fedc85d82a9d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104/source-manifest.json",
+      "sha256": "380305bcaaaec4377274267aa9c6ce8e8aa92c6b9121dcee5bb3f1afbc8ff82e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/lsa-final-hip-compile-20261104.ended",
+      "sha256": "3c4ba04eafb7b2534cd7c0e4b8999588aa3b928289417f853927de0fa7f050ca"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-native-hip-live",
+      "sha256": "bb765adc1ea8c93267e3ab1a29be3804589055885abd2fefddca9cc2464de856"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-runtime-hip-live",
+      "sha256": "0c9b704f044d3ed5bb6f99f3b476596f37783891471bc91185089c1f99d14312"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-hip.so.0.16.0",
+      "sha256": "cb27005d1712a3511aa7436e94e8bb90ddbbfaa15c1bcc33961aac5c0a35b7b2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-cpu.so.0.16.0",
+      "sha256": "1942b7f226f5dad457e9b6cd4c91d3712fef9976c83991ecd8a957e6a526c4dc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama-common.so.0.0.0",
+      "sha256": "0eb4c5fc9e56d5cb7dd5381dcc47a87d70ff1fb2cd7f921a760460fcba801e35"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama.so.0.0.0",
+      "sha256": "df3ce34b0114dfcc6853cc9d54f0ff13fb8426eaf7565cc9fef3ade5e3d8c71b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml.so.0.16.0",
+      "sha256": "05e003c02f0fb6785e40ba261044f5294a04b8503617823167c2d10842997cfb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama-server-impl.so",
+      "sha256": "b056f895142a6108fdbe6f632e5e827531f3f939f1561e0bb16b75d9f71c862a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-base.so.0.16.0",
+      "sha256": "2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/llama-server",
+      "sha256": "3e204060319da756aa4e6efecbf9cb7f77d0141ceea9c399b69cfc209a7a3da7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-graph-integration",
+      "sha256": "47a29b6cc8e5d9f14fe979976d1556a14ea152bd9231ffb0c54c66bbf23e811b"
+    }
+  ],
+  "scope": "compile receipt only; runtime correctness and model admission are separate"
+}

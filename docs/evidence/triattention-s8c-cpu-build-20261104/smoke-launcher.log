@@ -1,0 +1,65 @@
+
+==== dry run 2026-11-04T15:38:25Z regions=0-3 launcher_sha=ab1aba3e2899365d4d25c3705b3219e10f260c33a4c85a8817d172a8cf4ae806 units_before=0
+2026-11-04T15:38:25Z [triattention-s8c-cpu-build-20261104] launcher up pid=3237772 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/triattention-s8c-cpu-build-20261104/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/triattention-s8c-cpu-build-20261104/stop minwin=1800s ports=none dryrun=1
+2026-11-04T15:38:25Z [triattention-s8c-cpu-build-20261104] START regions=0-3 cpus=0-3 threads=4 gpu=0 end=2026-11-04T16:12Z
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMAKE_BUILD_TYPE=Release
+-- Found Git: /usr/bin/git (found version "2.51.0")
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Found OpenMP_C: -fopenmp (found version "4.5")
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5")
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+-- ggml version: 0.16.0
+-- ggml commit:  ffc1bac82
+-- Could NOT find OpenSSL, try to set the path to OpenSSL root folder in the system variable OPENSSL_ROOT_DIR (missing: OPENSSL_CRYPTO_LIBRARY OPENSSL_INCLUDE_DIR) 
+CMake Warning at vendor/cpp-httplib/CMakeLists.txt:152 (message):
+  OpenSSL not found, HTTPS support disabled
+
+
+-- Generating embedded license file for target: llama-app
+-- Configuring done (0.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: /mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/out
+[  0%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[  0%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[ 33%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+[ 33%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+/mnt/raid0/llm/tmp/triattention-recency-s8c-20261104/ggml/src/ggml-alloc.c:19:9: warning: ‘AT_PRINTF’ redefined
+   19 | #define AT_PRINTF(...)
+      |         ^~~~~~~~~
+/mnt/raid0/llm/tmp/triattention-recency-s8c-20261104/ggml/src/ggml-alloc.c:18:9: note: this is the location of the previous definition
+   18 | #define AT_PRINTF(...) GGML_LOG_DEBUG(__VA_ARGS__)
+      |         ^~~~~~~~~
+[ 33%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[ 33%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[ 66%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[ 66%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[ 66%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[100%] Linking CXX shared library ../../bin/libggml-base.so
+[100%] Built target ggml-base
+job rc=75
+==== first progress at 2026-11-04T15:38:30Z (+5s): new record in /mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/results.jsonl (unit_key unit set)
+2026-11-04T15:38:31Z [triattention-s8c-cpu-build-20261104] ended rc=75 reason=exited (grant deleted)
+2026-11-04T15:38:31Z [triattention-s8c-cpu-build-20261104] one window done; exiting (no --repeat)
+==== dry run PASS: first progress: new record in /mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/results.jsonl (unit_key unit set); rc=75 time=2026-11-04T15:38:31Z reason=exited (2026-11-04T15:38:35Z)

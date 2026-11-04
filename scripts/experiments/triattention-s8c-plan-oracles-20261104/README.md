@@ -1,0 +1,1 @@
+Independent header-only safety planner tests: synthetic cell metadata, deterministic scores and injected removal callback. Source headers are captured and sha256-bound before publishing; this does not execute the actual server, cache extraction, or slot invalidation. Actual linked-candidate and server tests remain required.

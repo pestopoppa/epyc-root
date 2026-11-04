@@ -1,0 +1,24 @@
+PASS author query projection fixture executes
+PASS author key projection fixture executes
+KEY_MISMATCH count=0 max_bf16_steps=0
+AUTHOR_PROJECTION q_max_abs=0 k_max_abs=0
+PASS author query projections within3e-6
+PASS author BF16 index keys differ by at most one BF16 step
+PASS native projected keys build native Ward cache
+COUPLED_PARTITION native_vs_author_keys_members_exact=1
+COUPLED_INDICES position=0 order_exact=1 set_exact=1 actual=1 expected=1
+PASS coupled native projection selected attention support exact
+COUPLED_ATTENTION position=0 output_max_abs=0
+PASS coupled selected attention output within1e-5 despite possible slot order rounding
+PASS coupled native projection Ward and selection author indices exact
+COUPLED_INDICES position=4096 order_exact=1 set_exact=1 actual=4097 expected=4097
+PASS coupled native projection selected attention support exact
+COUPLED_ATTENTION position=4096 output_max_abs=0
+PASS coupled selected attention output within1e-5 despite possible slot order rounding
+PASS coupled native projection Ward and selection author indices exact
+COUPLED_INDICES position=5120 order_exact=1 set_exact=1 actual=4612 expected=4612
+PASS coupled native projection selected attention support exact
+COUPLED_ATTENTION position=5120 output_max_abs=0
+PASS coupled selected attention output within1e-5 despite possible slot order rounding
+PASS coupled native projection Ward and selection author indices exact
+PASS projection fixture has no trailing bytes

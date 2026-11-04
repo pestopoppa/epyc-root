@@ -1,0 +1,26 @@
+{
+  "id": "lsa-final-hip-compile-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 16,
+  "estimate_s": 2700,
+  "first_progress_s": 600,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Compile reviewed live-hip source and all requested test/server targets using canonical C5 configuration; stop on first error, STOP or deadline; no tests or inference.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip",
+  "keep": [
+    "out",
+    "results.jsonl",
+    "base-unit.json",
+    "artifact-sha256.txt",
+    "configure-command.txt",
+    "compiler-versions.txt",
+    "actual-compilers.json"
+  ]
+}

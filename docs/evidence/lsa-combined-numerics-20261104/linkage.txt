@@ -1,0 +1,15 @@
+binary : /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/test-combined
+expect : libraries under /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu
+
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-cpu.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-base.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.

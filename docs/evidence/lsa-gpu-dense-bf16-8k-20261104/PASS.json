@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-gpu-dense-bf16-8k-20261104/launcher.out",
+ "elapsed_s": 17,
+ "ended": "rc=0 time=2026-11-04T15:40:09Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 660,
+ "first_unit_at": "2026-11-04T15:40:12Z",
+ "id": "lsa-gpu-dense-bf16-8k-20261104",
+ "job_complete": false,
+ "job_complete_reason": "full-job --complete-cmd rc=1 outside the smoke: the full job's artifacts do not satisfy it",
+ "launcher_sha256": "3171f3a7d30f97f86fbbf5ff025ee46fd323850f8b73a0a004713fa0dc5fe8d7",
+ "passed_at": "2026-11-04T15:40:12Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "mi210_0,72-75",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/native/RESULT.json",
+ "units": 0,
+ "vram_used_max_bytes": 29425750016,
+ "warning": null
+}

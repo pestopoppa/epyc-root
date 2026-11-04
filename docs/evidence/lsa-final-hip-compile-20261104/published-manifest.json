@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Compile reviewed live-hip source and all requested test/server targets using canonical C5 configuration; stop on first error, STOP or deadline; no tests or inference.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2700,
+ "first_progress_s": 600,
+ "gib": 16,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-final-hip-compile-20261104",
+ "keep": [
+  "out",
+  "results.jsonl",
+  "base-unit.json",
+  "artifact-sha256.txt",
+  "configure-command.txt",
+  "compiler-versions.txt",
+  "actual-compilers.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/launch.sh",
+  "sha256": "06221b6b7f6dce71fff75ab6db9b84b50a73cbf59d7f37e822467011afe5572d"
+ },
+ "min_window_s": 2700,
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1805: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T12:56:00Z",
+ "published_from": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/STOP",
+ "unit_key": "unit",
+ "window_s": 3540,
+ "workdir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip"
+}

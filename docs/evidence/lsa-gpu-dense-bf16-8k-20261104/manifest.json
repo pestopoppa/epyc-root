@@ -1,0 +1,45 @@
+{
+ "admission_class": "diagnostic",
+ "decision_rule": "One Qwen3.8-27B Q8 weight 8204-token BF16-KV dense MI210 development sentinel: exact output 92-8-E75FB6 passes, a valid wrong answer fails and stops development; missing request, custody, native capture or in-window own-PID KFD/VRAM is inconclusive. Speculation off, native sparse mode off, one request, stop at answer or 360 seconds. No speedup or population-quality claim.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 660,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1-GPU-DENSE-8K",
+ "id": "lsa-gpu-dense-bf16-8k-20261104",
+ "keep": [
+  "native/*",
+  "state/*",
+  "native/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet/launcher.sh",
+  "sha256": "3171f3a7d30f97f86fbbf5ff025ee46fd323850f8b73a0a004713fa0dc5fe8d7"
+ },
+ "min_window_s": 900,
+ "notes": "Same full 8204-token model request in smoke and grant; smoke qualifies on first generated token. Does not invoke sparse mode or change original GPU PCA STOP.",
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1809: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "long-context-program.md:1809: untestable prose prerequisite: 'after one complete response, and stop-on-futility on the first validity failure or request deadline; gate-class = futili'"
+ ],
+ "published_at": "2026-11-04T15:39:54Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/lsa-gpu-dense-8k-20261104/spec.json",
+ "regions": "mi210_0,72-75",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/native/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104",
+ "shape": "gpu",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet/first_progress.py",
+ "stop_file": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet"
+}

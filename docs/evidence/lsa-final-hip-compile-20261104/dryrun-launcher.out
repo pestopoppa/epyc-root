@@ -1,0 +1,227 @@
+
+==== dry run 2026-11-04T12:56:00Z regions=0-3 launcher_sha=06221b6b7f6dce71fff75ab6db9b84b50a73cbf59d7f37e822467011afe5572d units_before=0
+2026-11-04T12:56:00Z [lsa-final-hip-compile-20261104] launcher up pid=308978 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-final-hip-compile-20261104/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-final-hip-compile-20261104/stop minwin=2700s ports=none dryrun=1
+2026-11-04T12:56:00Z [lsa-final-hip-compile-20261104] START regions=0-3 cpus=0-3 threads=4 gpu=0 end=2026-11-04T13:45Z
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/aes.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/asn1.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/asn1err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/asn1t.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/async.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/asyncerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/bio.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/bioerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/blowfish.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/bn.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/bnerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/buffer.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/buffererr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/byteorder.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/camellia.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cast.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cmac.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cmp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cmp_util.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cmperr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cms.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cmserr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/comp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/comperr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/conf.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/conf_api.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/conferr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/conftypes.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/core.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/core_dispatch.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/core_names.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/core_object.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/crmf.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/crmferr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/crypto.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cryptoerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cryptoerr_legacy.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ct.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/cterr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/decoder.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/decodererr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/des.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/dh.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/dherr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/dsa.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/dsaerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/dtls1.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/e_os2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/e_ostime.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ebcdic.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ec.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ecdh.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ecdsa.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ecerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/encoder.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/encodererr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/engine.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/engineerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ess.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/esserr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/evp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/evperr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/fips_names.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/fipskey.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/hmac.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/hpke.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/http.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/httperr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/idea.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/indicator.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/kdf.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/kdferr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/lhash.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/macros.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/md2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/md4.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/md5.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/mdc2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ml_kem.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/modes.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/obj_mac.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/objects.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/objectserr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ocsp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ocsperr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/opensslv.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ossl_typ.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/param_build.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/params.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pem.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pem2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pemerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pkcs12.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pkcs12err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pkcs7.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/pkcs7err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/prov_ssl.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/proverr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/provider.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/quic.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rand.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/randerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rc2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rc4.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rc5.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ripemd.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rsa.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/rsaerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/safestack.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/seed.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/self_test.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/sha.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/srp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/srtp.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ssl.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ssl2.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ssl3.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/sslerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/sslerr_legacy.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/stack.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/store.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/storeerr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/symhacks.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/thread.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/tls1.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/trace.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ts.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/tserr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/txt_db.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/types.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/ui.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/uierr.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/whrlpool.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509_acert.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509_vfy.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509v3.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/openssl/x509v3err.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/x86_64-linux-gnu/openssl/configuration.h: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/root/usr/include/x86_64-linux-gnu/openssl/opensslconf.h: OK
+/usr/lib/x86_64-linux-gnu/libcrypto.so.3: OK
+/usr/lib/x86_64-linux-gnu/libssl.so.3: OK
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/libssl-dev_3.5.3-1ubuntu3.4_amd64.deb: OK
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMAKE_BUILD_TYPE=Release
+-- Found Git: /usr/bin/git (found version "2.51.0")
+fatal: not a git repository (or any parent up to mount point /mnt/raid0)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /mnt/raid0)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Found OpenMP_C: -fopenmp (found version "4.5")
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5")
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+-- The HIP compiler identification is Clang 18.0.0
+-- Detecting HIP compiler ABI info
+-- Detecting HIP compiler ABI info - done
+-- Check for working HIP compiler: /opt/rocm/lib/llvm/bin/clang++ - skipped
+-- Detecting HIP compile features
+-- Detecting HIP compile features - done
+-- HIP and hipBLAS found
+-- Including HIP backend
+-- ggml version: 0.16.0
+-- ggml commit:  unknown
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so.3 (found version "3.5.3") found components: Crypto
+CMake Warning at common/CMakeLists.txt:33 (message):
+  Git repository not found; to enable automatic generation of build info,
+  make sure Git is installed and the project is a Git repository.
+
+
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so.3 (found version "3.5.3")
+-- Performing Test OPENSSL_VERSION_SUPPORTED
+-- Performing Test OPENSSL_VERSION_SUPPORTED - Success
+-- OpenSSL found: 3.5.3
+-- Generating embedded license file for target: llama-app
+-- Configuring done (1.8s)
+-- Generating done (0.2s)
+-- Build files have been written to: /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out
+[  0%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[  0%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[100%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+[100%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104/source/ggml/src/ggml-alloc.c:19:9: warning: ‘AT_PRINTF’ redefined
+   19 | #define AT_PRINTF(...)
+      |         ^~~~~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104/source/ggml/src/ggml-alloc.c:18:9: note: this is the location of the previous definition
+   18 | #define AT_PRINTF(...) GGML_LOG_DEBUG(__VA_ARGS__)
+      |         ^~~~~~~~~
+[100%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[100%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[100%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[100%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[100%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[100%] Linking CXX shared library ../../bin/libggml-base.so
+[100%] Built target ggml-base
+job rc=75
+2026-11-04T12:56:09Z [lsa-final-hip-compile-20261104] ended rc=75 reason=exited (grant deleted)
+2026-11-04T12:56:09Z [lsa-final-hip-compile-20261104] one window done; exiting (no --repeat)
+==== first progress at 2026-11-04T12:56:10Z (+10s): new record in /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl (unit_key unit set)
+==== dry run PASS: first progress: new record in /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl (unit_key unit set); rc=75 time=2026-11-04T12:56:09Z reason=exited (2026-11-04T12:56:10Z)

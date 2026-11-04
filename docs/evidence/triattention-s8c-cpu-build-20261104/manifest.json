@@ -1,0 +1,43 @@
+{
+ "decision_rule": "Build CPU llama-server from frozen production tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 plus the pinned S8-c recency patch; checkpoint ggml-base and stop on the first compile error, stop request or deadline. Pass only when the server binary and library digest manifest exist; build evidence only, no runtime or quality claim.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:S8-C-BUILD",
+ "id": "triattention-s8c-cpu-build-20261104",
+ "keep": [
+  "results.jsonl",
+  "base-unit.json",
+  "artifact-sha256.txt",
+  "out/**",
+  "packet/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/packet/launcher.sh",
+  "sha256": "ab1aba3e2899365d4d25c3705b3219e10f260c33a4c85a8817d172a8cf4ae806"
+ },
+ "min_window_s": 1800,
+ "owner": "triattention",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "long-context-program.md:1738: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T15:38:25Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/triattention-s8c-recency-build-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104"
+}

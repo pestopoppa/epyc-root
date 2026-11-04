@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/triattention-s8c-plan-oracles-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=0 time=2026-11-04T16:02:20Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/triattention-s8c-plan-oracles-20261104/results.jsonl (unit_key unit set)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T16:02:22Z",
+ "id": "triattention-s8c-plan-oracles-20261104",
+ "job_complete": true,
+ "job_complete_reason": "no smoke branch; full-job --complete-cmd passes on the job's own artifacts",
+ "launcher_sha256": "f71b201116ac0612fe7143bd3a297e2637c9fc4ce62974cbe53c0a80f252f692",
+ "passed_at": "2026-11-04T16:02:22Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-plan-oracles-20261104/results.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

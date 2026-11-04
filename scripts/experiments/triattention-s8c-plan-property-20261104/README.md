@@ -1,0 +1,1 @@
+Property/invariant cross-check of the original experimental planner header. Natural one-size checkpoints allow smoke and grant to run the same work and resume without repetition. The independent baseline uses original float multiplication. A bounded counterexample is a completed scientific failure, not an infrastructure failure. No model, server or actual eviction is run.

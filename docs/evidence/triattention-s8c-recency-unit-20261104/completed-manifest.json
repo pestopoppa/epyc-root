@@ -1,0 +1,47 @@
+{
+ "completed_result_sha256": "e99738f8a7668e9a973dcf998afeb562d100b02472948ec4a65f8a545327c8d0",
+ "decision_rule": "Exercise the actual compiled S8-c eviction function from production tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 and sealed recency patch with mock scoring and memory: all 11 deterministic cases must pass including default compatibility, sink/recent budget, ties and boundaries, physical accounting for gapped KV, and failed seq_rm propagation. Report failed cases; stop after the complete bounded case set, crash, STOP, or deadline. No model, real KV, server, performance or quality claim.",
+ "declared_result_path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/results.jsonl",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:S8-C-VALIDATION",
+ "id": "triattention-s8c-recency-unit-20261104",
+ "keep": [
+  "results.jsonl",
+  "output/*",
+  "candidate-pin.json",
+  "candidate-base-unit.json",
+  "candidate-artifact-sha256.txt",
+  "packet/*"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/packet/launcher.sh",
+  "sha256": "77a2437238caeb25d5d7b22e5b76fd9287b750e2b4751e6d10fde8970787bf9c"
+ },
+ "min_window_s": 300,
+ "owner": "triattention",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "long-context-program.md:1739: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "long-context-program.md:1739: untestable prose prerequisite: 'after all eleven cases; stop-on-futility on crash, stop or deadline; gate-class = futility-only. Check default compatibi'"
+ ],
+ "published_at": "2026-11-04T15:47:12Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/triattention-s8c-recency-test-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104"
+}

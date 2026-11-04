@@ -1,0 +1,1 @@
+V2 property/invariant cross-check of the corrected experimental planner header. One-size checkpoints allow smoke and grant to run the same work without repetition. The independent baseline and retained-budget invariant use original float multiplication. A counterexample is a scientific failure; no model, server or actual eviction is run.

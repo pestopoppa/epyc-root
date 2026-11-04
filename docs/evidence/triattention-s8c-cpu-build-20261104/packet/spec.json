@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-cpu-build-20261104",
+  "owner": "triattention",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 16,
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "first_progress_s": 600,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Build CPU llama-server from frozen production tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 plus the pinned S8-c recency patch; checkpoint ggml-base and stop on the first compile error, stop request or deadline. Pass only when the server binary and library digest manifest exist; build evidence only, no runtime or quality claim.",
+  "handoff_task": "long-context-program.md:S8-C-BUILD",
+  "priority_rank": 18,
+  "keep": [
+    "results.jsonl",
+    "base-unit.json",
+    "artifact-sha256.txt",
+    "out/**",
+    "packet/**"
+  ],
+  "kind": "compute"
+}

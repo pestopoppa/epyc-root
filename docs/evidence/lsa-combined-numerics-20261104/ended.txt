@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T12:14:31Z reason=direct-run
+job_id=lsa-combined-numerics-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=600
+started=2026-11-04T12:14:31Z
+regions=q1
