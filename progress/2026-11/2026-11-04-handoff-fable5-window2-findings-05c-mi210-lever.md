@@ -91,3 +91,7 @@ Prepared and published pf1-expand-r5-20261104 for one fresh L256/384/512/768 thr
 ## 15:49Z — File P5 privacy controls and P12 host-health refusal
 
 Filed and closed P5-2d on the actual grant rc0: pytest exit0, exactly 7 JUnit cases, zero failures/errors/skips, source hashes verified before/after and temporary Git repos removed; engineering qualification only, no model or scorer result. Preserved native result, JUnit, source pins and end in data/mi210/p5-pii-controls-result-20261104. Filed p12-slots-followup-20261104 inconclusive rc1: each of three harness cells refused before requests due to uptime over the decision-grade limit; no /slots, placement, cold-cache or throughput observation. Preserved the native refusal in data/mi210/p12-slots-r1-result-20261104. Preparing an explicitly descriptive non-gating scout using the harness-approved health-warning option and first-failure stop; no decision-grade claim. The older P12 H2H np16 event was already filed and its box ticked.
+
+## 15:53Z — Published P12 non-gating scout successor after full-run host-health refusal.
+
+P12-NEXT-4: Published p12-slots-followup-r2-20261104 with real four-CPU one-request native smoke PASS. The full run is a non-gating host-health-warning scout with cold-cache, placement and overlapping /slots evidence, stopping at the first incomplete cell; source packet and prospective belief wiring are recorded. Earlier r1 failed before requests and supplies no measurement.
