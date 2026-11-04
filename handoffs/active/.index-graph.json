@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T17:21:38Z",
+  "generated_at": "2026-11-04T17:24:14Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2914,7 +2914,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 148,
+      "closed": 149,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,

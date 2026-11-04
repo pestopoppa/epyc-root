@@ -422,7 +422,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 148,
+      "closed": 149,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 40,
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 190,
+      "total": 191,
       "tracks": [
         {
           "blocked": 0,
@@ -508,7 +508,7 @@
         },
         {
           "blocked": 0,
-          "closed": 53,
+          "closed": 54,
           "gates": [],
           "guarded": 0,
           "line": 2930,
