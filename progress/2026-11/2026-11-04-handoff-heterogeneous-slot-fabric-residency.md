@@ -231,3 +231,7 @@ KPF-17 model-free actual-GDB regression expanded to 4/4 passing: a previously un
 ## 19:50Z — File the six-source KPF-60 GPU-X impact scan and preserve its native coverage.
 
 Filed kpf60-gpux-impact-8952-20261104 PASS rc=0: six exact-source native impacts, scan_complete partial=false and verbose skipped-file coverage. Two MEDIUM risks had 25 and 10 affected nodes; four LOW risks had 0, 2, 2 and 2. Skipped files remain uncleared and there is no native KV-byte or crossover result.
+
+## 19:57Z — Qualify KPF-17 mutation-oracle cleanup and runtime custody and submit publisher smoke.
+
+Prepared the KPF-17 mutation-oracle successor: 24 model-free tests passed for GDB initial-stop and descendant cleanup, PID reuse and pidfd failure, independent build custody and tampered mapping refusal. Submitted kvfork17-oracle-test-r2-20261104 publisher smoke; its outcome is pending and no model verdict is claimed. Preserved a separate KPF-60 source-selection extraction patch and arithmetic oracle; neither native compilation nor byte-count calibration has run.

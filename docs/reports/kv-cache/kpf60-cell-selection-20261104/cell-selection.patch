@@ -1,0 +1,86 @@
+diff --git a/src/llama-kv-cache.cpp b/src/llama-kv-cache.cpp
+index 80c73f75b..c3c382220 100644
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -2304,13 +2304,9 @@ bool llama_kv_cache::chunk_supported(std::string * why) const {
+     return true;
+ }
+ 
+-bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, llama_pos p0, llama_pos p1) const {
+-    std::string why;
+-    if (!chunk_supported(&why)) {
+-        LLAMA_LOG_WARN("%s: chunk export refused: %s\n", __func__, why.c_str());
+-        return false;
+-    }
+-
++// Select the exact physical cells used by a chunk. This does not authorize export.
++bool llama_kv_cache::chunk_select_cells(llama_seq_id seq_id, llama_pos & p0, llama_pos & p1,
++        cell_ranges_t & cr, uint32_t & cell_count) const {
+     if (seq_id < 0 || (size_t) seq_id >= seq_to_stream.size()) {
+         return false;
+     }
+@@ -2330,9 +2326,9 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+         return false;
+     }
+ 
+-    cell_ranges_t cr { strm, {} };
++    cr = cell_ranges_t { strm, {} };
+ 
+-    uint32_t cell_count = 0;
++    cell_count = 0;
+     uint32_t range_begin = cells.size();
+ 
+     // every position of [p0, p1) must be present exactly once
+@@ -2344,7 +2340,7 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+         if (add) {
+             const size_t k = (size_t) (cells.pos_get(i) - p0);
+             if (seen[k]) {
+-                LLAMA_LOG_WARN("%s: chunk export refused: position %d appears twice\n", __func__, (int) cells.pos_get(i));
++                LLAMA_LOG_WARN("%s: chunk export refused: position %d appears twice\n", "chunk_export", (int) cells.pos_get(i));
+                 return false;
+             }
+             seen[k] = true;
+@@ -2363,11 +2359,27 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+     }
+ 
+     if (cell_count != (uint32_t) (p1 - p0)) {
+-        LLAMA_LOG_WARN("%s: chunk export refused: [%d, %d) holds %u cells, expected %d\n", __func__,
++        LLAMA_LOG_WARN("%s: chunk export refused: [%d, %d) holds %u cells, expected %d\n", "chunk_export",
+                 (int) p0, (int) p1, cell_count, (int) (p1 - p0));
+         return false;
+     }
+ 
++    return true;
++}
++
++bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, llama_pos p0, llama_pos p1) const {
++    std::string why;
++    if (!chunk_supported(&why)) {
++        LLAMA_LOG_WARN("%s: chunk export refused: %s\n", __func__, why.c_str());
++        return false;
++    }
++
++    cell_ranges_t cr {};
++    uint32_t cell_count = 0;
++    if (!chunk_select_cells(seq_id, p0, p1, cr, cell_count)) {
++        return false;
++    }
++
+     io.write(&p0, sizeof(p0));
+     io.write(&p1, sizeof(p1));
+     io.write(&cell_count, sizeof(cell_count));
+diff --git a/src/llama-kv-cache.h b/src/llama-kv-cache.h
+index 147760f87..3fe1d4b2f 100644
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -389,6 +389,10 @@ private:
+         std::vector<std::pair<uint32_t, uint32_t>> data; // ranges, from inclusive, to exclusive
+     };
+ 
++    // Selection only; callers must separately check the operation-specific eligibility.
++    bool chunk_select_cells(llama_seq_id seq_id, llama_pos & p0, llama_pos & p1,
++                            cell_ranges_t & cr, uint32_t & cell_count) const;
++
+     void state_write_meta(llama_io_write_i & io, const cell_ranges_t & cr, llama_seq_id seq_id = -1) const;
+     void state_write_data(llama_io_write_i & io, const cell_ranges_t & cr) const;
+ 
