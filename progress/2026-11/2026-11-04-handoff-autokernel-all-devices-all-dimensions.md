@@ -189,3 +189,7 @@ AKX-ALL-8-FLOOR: filed akxall8-c5-declared-floor-v10-20261104 inconclusive, rc75
 ## 21:10Z — Published finite-sentinel BF16 build prerequisite
 
 AKX-ALL-31.GDN: published akx-gdn-bf16-sentinel-build-r15-20261104 after four-CPU publisher smoke PASS. Independent detached C5 source is sealed with the finite-sentinel patch; the full build and BF16 GPU oracle remain pending. Scratch: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-sentinel-build-r15-20261104/. RAID free was 148 GiB against the runner 150 GiB disk floor; full execution requires space to recover. Correction to prior entry: rowflow defines three-failure parking as failed dry runs in a lineage or consecutive arming/launch failures since PASS; v6/v7/v9 full-run outcomes alone do not prove AKX-ALL-8-FLOOR is parked.
+
+## 21:11Z — Publish C5 floor calibration successor
+
+AKX-ALL-8-FLOOR: published akxall8-c5-declared-floor-v11-20261104 after four-CPU publisher smoke PASS. New independent packet is sealed, model metadata continuity was verified without rehashing weights, and the original full-host 24-pair main/longctx predicates remain. Packet: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/akxall8-floor-v11-20261104/. No calibration result follows from smoke; the runner disk floor is 150 GiB and 148 GiB was available at preparation.
