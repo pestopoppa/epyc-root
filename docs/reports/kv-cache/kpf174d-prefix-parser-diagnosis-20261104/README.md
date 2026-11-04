@@ -1,0 +1,12 @@
+KPF-17.4d retained-run parser diagnosis — 2026-11-04
+
+Evidence inspected (read-only):
+- `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174d-witness-r5-evidence-20261104/STATE.json` records `rc=1`, `partial=true`, `cells={}`, error `Invalid: expected exactly one bound prefix snapshot`, and verified cleanup.
+- `requests.jsonl` records `fork1-seed0` (HTTP 200) and `fork1` (HTTP 200, 64 output tokens, `n_fork_tokens=1984`, `fork_src_slot=0`). There is no control request, so the required pair never completed. Do not rerun this exposed g0/S2/B target.
+- The retained fork1 trace SHA-256 is `466b5de4737fb36f8bf7dbfec4b288a6e21ff56c317f52c328d99bc2cdc089e9`.
+
+Precise cause: `selected_slice` binds slot 1 to native task 10, and `witness(..., task=10, slot=1, prefix=1984)` finds two snapshots whose slot-1 cells both contain positions 0–1983. Batch 6 / layout 8 is the intended fork-boundary snapshot: its target prefill rows begin at position 1984 and its layout has used/head 1984. Batch 7 / layout 9 is a later snapshot: its target prefill rows begin at 2046 and its layout has used/head 2046 after positions 1984–2045 were appended. The original selector matched only task/slot/prefill and prefix-cell coverage, so it counted both snapshots and raised on `len(hits)==2`. This is a parser binding ambiguity, not a trace parse failure.
+
+A narrow candidate parser fix and model-free tests are isolated under `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174d-prefix-parser-fix-20261104/`. `witness` now binds to a target task/slot prefill batch whose minimum row position equals the requested prefix. On the retained trace, the candidate returns batch 6 / layout 8, used/head 1984, and 1984 mapped positions. Two synthetic tests pass: the later snapshot is excluded, while two duplicate boundary snapshots remain invalid. Commands run were `python3 -m unittest -v test_prefix_binding.py`, `python3 -m py_compile layout_witness.py test_prefix_binding.py`, and an offline parse of the retained trace.
+
+Scope and limits: no files in the retained packet/evidence copy were edited; no server, model, GPU, benchmark, inference, or publication was run. The fix is only a parser candidate; it does not turn the incomplete fork/control attempt into a valid smoke, establish layout agreement with a control, or change any historical KPF-17.4d verdict. Review the positional boundary assumption against the trace-writer contract before adopting it beyond this packet.

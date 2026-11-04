@@ -195,3 +195,7 @@ The KPF-17 full oracle build remains a build-only PASS; registered prospective n
 ## 19:06Z — Filed the single KPF-17.4d R5 prospective witness as INVALID and preserved its exposed-cell evidence.
 
 Filed kvfork174d-witness-r5-20261104 as INVALID, rc=1: no final RESULT, partial STATE reported expected exactly one bound prefix snapshot and no completed pair; the g0-S2-B fork arm was exposed and must not be redrawn. Copied the private raw trace and native state before the filing receipt, preserved hashes and verified server cleanup, and left historical verdicts unchanged.
+
+## 19:11Z — Integrated and validated the model-free R9 SSE STOP composition and diagnosed the already-exposed KPF-17.4d parser ambiguity.
+
+The model-free R9 SSE capture/rowflow STOP composition passed 2/2 in a portable evidence package. It does not test SeedControl, real HTTP, native release, admission, model or GPU. Diagnosed the already-exposed KPF-17.4d invalid witness: two prefix-containing snapshots appeared, one at the fork boundary and one after additional prompt positions. A candidate parser selected the former in the retained trace and two synthetic tests; independent trace-writer review is required before adoption. No rerun or change to the invalid verdict.
