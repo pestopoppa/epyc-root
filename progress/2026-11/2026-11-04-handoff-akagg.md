@@ -27,3 +27,7 @@ Acknowledged previously filed q4_K exact-case result, with its original input an
 ## 14:28Z — Acknowledge the previously filed combined C6 diagnostic and preserve the CH31 native fixture binaries.
 
 Acknowledged the already-filed combined C6 diagnostic: 1120 MUL_MAT passes, 25 q4_K failures and 326 unsupported, without a full GPU gate pass. Corrected the missing CH31 fixture filing receipt and preserved its ON/OFF CPU libraries and graph binaries after matching result digests. CH26 prerequisite implementations are delegated.
+
+## 14:31Z — File the already decided C6 same-input diagnostic and advance CH26 request-window and policy preparation.
+
+Acknowledged previously filed C6 q4_K same-input diagnostic: C5 and C6 original ordinal 7045 both fail at 0.0087896484419647033 versus 0.0056649673550878913; matching input and output bytes, MMVQ route, diagnostic only. CH26 request lifecycle and policy prototypes passed 28 and 23 model-free tests, but request-owner integration and placement/contention evidence remain unproven.
