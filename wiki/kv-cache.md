@@ -1628,3 +1628,12 @@ Sources: [KV unified rollout and evidence](../handoffs/active/kv-cache-program.m
 - kvu upstream issue filed: ggml-org/llama.cpp#31654.
 
 Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [KV program](../handoffs/active/kv-cache-program.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)
+
+## Compiled update — 2026-11-04 (wrap-up 2 sweep): KPF-62 / KPF-13.1 / KPF-17 controls
+
+- **KPF-62 G3 outcome continuation (source-only):** a bounded per-arm continuation with a segment ledger and an opt-in paired scoring guard (base `3ec14227a`). 13 G3 tests plus a model-free C++ budget test pass, the build is PASS (`kvfork62-g3-build-20261104`), and a four-request synthetic paired CLI fixture scored complete EOG records while refusing interrupted and exhausted ones. Model scoring remains unverified and the successor separately unauthorized.
+- **KPF-13.1 offline grid controls:** 29 model-free tests cover occupancy/high-water semantics and malformed or contradictory grids; synthetic matches establish no physical ABI or historical verdict.
+- **KPF-17 custody:** the starti-adoption and unknown-orphan controls pass as own-child synthetic tests (GDB starti paused before the receipt; the subreaper adopted and reaped). A custody-race qualification was filed inconclusive because publisher smoke contaminated the result path. Oracle-packet integration is unproven.
+- Process lesson: a smoke result written to the full-run result path is contamination; require same-attempt binding before filing a PASS.
+
+Sources: [KV program](../handoffs/active/kv-cache-program.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md)

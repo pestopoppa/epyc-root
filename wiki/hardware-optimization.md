@@ -7021,3 +7021,14 @@ Sources: [claim-path design](../docs/design/gpu-serving-p25g-claim-path-20261104
 - **Build failures are infra, not kernel results:** GDN HIP build FAIL (malformed staged BF16 registration emitted comment prose as C++ tokens), CAFE-4 rollback link against nonexistent `common` target (fixed to `llama-common`). R18-A symbol identity PASS (zero additions/removals across CPU, HIP host and gfx90a).
 
 Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md) · [MI210 program](../handoffs/active/mi210-serving-program.md) · [champion handoff](../handoffs/active/kernel-champion-and-promotion.md) · [AutoKernel loop](../handoffs/active/autokernel-loop.md)
+
+## Compiled update — 2026-11-04 (wrap-up 2 sweep): C6 correctness, CH-31, Q38P window, G15, NPD-1
+
+- **C6 combined MMVQ/MMQ candidate fails correctness.** The isolated MMQ correction passed the matched ordinal-7047 n=5 case (residual 0.00392 vs tolerance 0.00595), but the full ROCm0 MUL_MAT suite still shows two q4_K n=4 failures (ordinals 7686 and 7699, MMVQ route, residuals 0.00715/0.00743 vs tolerances 0.00560/0.00601; 1,143 OK, 326 unsupported). MUL_MAT_ID (815 OK) and FLASH_ATTN_EXT (2,978 OK, 2,229 unsupported) pass; unsupported is not a pass. No performance or promotion claim follows; n=4 must be fixed before a new candidate.
+- **CH-31 route association.** In the C5 ten-case small-model diagnostic, all 16 route-0 batch rows first differ at `node_13` while all 16 route-4 rows have identical logits; route 0 is `tinyblas-converted`, route 4 `generic-vecdot` (Q8_0 `[1024,6144]` weights, F32 `[1024,4]` activations). Only association is established, not isolated-op causation.
+- **Q38P window probe PASS (19:20Z).** ROCm 10.1 (isolated prefix `/mnt/raid0/llm/rocm-10.1.0-q38p/`) dispatches on the in-kernel amdgpu; the vLLM 0.33.0 ROCm container dispatches; Qwen3-4B parity vs llama.cpp. Champion C5 builds against 10.1 (static audit: spills 145 to 96, FA-MMA 53 to 2, GO). Stage-1 comparison `q38p3-stage1-20261104` is published.
+- **G15/G15a closed below noise:** at the served `-ub 512` the chunked-GDN port gives about 1.1 %; port kept on `experimental/g15-chunked-gdn-20261104`.
+- **NPD-1 step 1 (analytic):** the transfer cost is 1-4 % of the saving; step 2 (A1 op-offload TPOT/TTFT) is the decision row, its outcome feeding the candidate promotion runbook only. The first step-2 attempt ended inconclusive at the disk floor (no pooled verdict).
+- Operational lesson: disk-floor stops (rc75) dominated the day's GPU/CPU rows; each was filed inconclusive, never as a result.
+
+Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) · [MI210 serving program](../handoffs/active/mi210-serving-program.md) · [progress](../progress/2026-11/2026-11-04-inf22.md) · [AKAGG](../progress/2026-11/2026-11-04-handoff-akagg.md)

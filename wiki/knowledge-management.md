@@ -4408,3 +4408,12 @@ Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [
 - 11-03 fan-out landed `cert_check.py`, AK/autopilot/INF-66 adapters (R2364 ingest rows=5, frames=15) and `reliance_review.py`; the canary-A guard was kept (≥3 scoped comparable answers refuse).
 
 Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [fan-out](../progress/2026-11/2026-11-03-vidya-fanout-20261103.md) · [handoff log](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [program](../handoffs/active/vidya-belief-substrate-program.md)
+
+## Compiled update — 2026-11-04 (wrap-up 2 sweep): belief wiring and run-end alerting
+
+- New prospective belief-wire tasks were filed for CH-26 overhead and replay, C6 MMQ full-op, KPF-61 permutation, KPF-50 counterfactual, KPF-17 oracle, KPF-18 GPU residency witness, AKX-ALL-8 and the Q38P compatibility source; all project through existing carriers and shared `ClaimTuple.grade()`.
+- Rowflow now alerts the owner on every row end, smoke FAIL and disk-floor crossing (`notify.py`, bus plus `alerts.jsonl`; first live alert 23:23Z), after a disk-floor kill went unreported.
+- Question-discipline hook now allows real operator decision packages.
+- Long-context recall/spec-guard builds (LSA) completed model-free; a CPU phase-timing request exceeded its cap and was filed inconclusive.
+
+Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [long-context](../handoffs/active/long-context-program.md) · [progress](../progress/2026-11/2026-11-04-inf22.md)
