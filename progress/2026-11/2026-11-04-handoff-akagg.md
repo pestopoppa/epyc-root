@@ -55,3 +55,7 @@ The previously filed q4_0 route diagnostic returned native rc1, reproduced prior
 ## 14:44Z — Acknowledge the filed W5s precheck stop and advance its isolated grant-transport successor.
 
 Acknowledged W5s r7 rc1 precheck futility with no LAST-RESULT and no census observation. The successor grant parser and isolated job integration passed seven model-free controls; launcher, pinned source closure and actual lock verification remain outstanding and were delegated. No scientific pass or parent closure.
+
+## 14:47Z — Acknowledge v6 floor refusal and localize the v7 duplicate ancestor predicate.
+
+Acknowledged previously filed v6 root-cgroup run: rc2, native result REFUSED and no floor or process units. Localized v7 duplicate-R15 detection to an argv-membership test preceding FD255 inode and digest proof. Exact failed ancestry was not retained; successor work preserves the existing owner, lock and measurement predicates.
