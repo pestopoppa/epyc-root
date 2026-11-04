@@ -47,3 +47,7 @@ Wrote the FILED receipt for `vidya-exp01-proxy-wire-20261104` using its existing
 ## 15:52Z — Acknowledge filed LSA projection diagnostic
 
 Wrote the FILED receipt for `lsa-projection-row474-20261104` using its existing PASS verdict. The filed single-thread PyTorch BF16 slice matched the frozen row 474 fixture, with zero exact-row mismatches. Native result SHA-256 `c8e205a4fed1967055b93edd7d531d0135f1f2af2dbaa81e20955c6c4f224254`. This bounded diagnostic does not complete LSA-SCREEN-1; no checkbox was ticked.
+
+## 15:55Z — Acknowledge filed LSA normalization-order diagnostic
+
+Wrote the FILED receipt for `lsa-norm-row1185-20261104` using its existing PASS verdict. The filed one-row result reports that the eight-lane BF16 normalization matched the frozen row 1185 fixture, while the sequential result differed. Native result SHA-256 `191420106bedcb75b4db18de09b16b7c46426fef6b0d986726e7396e2de75092`. This bounded diagnostic does not complete LSA-SCREEN-1; no checkbox was ticked.
