@@ -271,3 +271,9 @@ KPF-50.CLOCK-QUAL: `kvfork50-clock-qual-r6-20261104` completed rc0, native statu
 ## 23:54Z — File scoped KPF-17 GDB controls
 
 `kvfork17-gdb-continue-qual-r2-20261104` ended rc0. The normal and deliberately nonzero inferiors returned GDB exit codes 0 and 23 with post-continue PID 0 and unsignalled cleanup. Filed INCONCLUSIVE because neither case exercised timeout cleanup, a condition in the row decision rule. [Native result](../../docs/reports/kv-cache/kpf17-gdb-continue-r2-20261104/). This establishes no model, oracle or mapped-library claim. KVU-11c queued smoke: corrected the impossible sample-span test, pinned a local reference WAV and repaired receipt parsing, but job.py and spec.json changed again after sealing; the packet integrity check now fails closed. Identify and coordinate the writer, review its changes, reseal and resubmit before considering it runnable; no smoke PASS is claimed.
+
+## 23:56Z — Ready the missing model-free timeout-cleanup qualification for KPF-17.
+
+## 23:56Z — Ready KPF-17 timeout cleanup qualification
+
+Published `kvfork17-timeout-qual-20261104` after four negative/positive validator controls and its isolated four-CPU publisher smoke passed. The full row deliberately times out an owned GDB and inferior and checks PID/birth-bound pidfd cleanup and subreaper drain; smoke is not the full qualification or an oracle, model or library-custody result. KVU-11c: corrected KFD GPU identity lookup to read the node's `gpu_id` file and verified it against this host; the queued packet remains unready with a stale integrity seal and an unqualified cleanup path if process capture fails. Repair and independently test that path, reseal, and resubmit before use. KPF-18 scratch component-receipt and affinity controls passed 7/7 with an explicitly substituted historical fixture; lifecycle, admission and GPU qualification remain open.
