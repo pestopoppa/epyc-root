@@ -235,3 +235,7 @@ KVU-11c: published kvu11c-hip-build-r2-20261104 after a four-CPU ggml-base smoke
 ## 23:19Z — Publish the source-impact successor for KPF-RS-1
 
 KPF-RS-1: published kpf-rs1-impact-8952-20261104-r5 after four-CPU source-reference smoke passed. The detached candidate is pinned to 8952a0f693fb923918157eb25117641b74766230; the seven native impact queries and skipped-file coverage remain pending under the unchanged 150 GiB disk floor. Smoke provides no source-edit clearance. KVU-11c r2 smoke completion event confirmed its previously filed PASS.
+
+## 23:24Z — Ready the model-free GPU clock witness successor
+
+KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r6-20261104 passed its queued publisher GPU smoke and was published. The isolated smoke is not the full clock qualification, exposes no target profiling window, and gives no KPF-50 verdict; the full attempt retains the 150 GiB disk floor.
