@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T23:35:21Z",
+  "generated_at": "2026-11-04T23:36:08Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1717,7 +1717,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 582,
+          "line": 583,
           "name": "engram-conditional-memory",
           "open": 9,
           "readiness": "ready"

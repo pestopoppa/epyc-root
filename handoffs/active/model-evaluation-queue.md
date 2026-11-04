@@ -1102,7 +1102,7 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
       [native control evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json).
       G18 retains its original3-prompt ×32-token, under8192-token, token-identical gate and remains open.
       [no-belief: CPU reference implementation and native-interface code tests; no inference result]
-- **[declined: ws58 2026-11-03 content-review: no lineup role names MiniCPM-SALA; its InfLLM-V2 block has no ggml op (model-architecture Gate 5, now retired) and the port decides nothing]** **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On
+- **[declined: ws58 2026-11-03 content-review: no lineup role names MiniCPM-SALA; its InfLLM-V2 block has no ggml op (model-architecture Gate 5, now retired) and the port decides nothing]** **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On *(2026-11-04: the MiniCPM-SALA checkpoint (/mnt/raid0/llm/models/MiniCPM-SALA-HF-9180fe1d, 18 GB) was deleted by operator order because adoption was declined 2026-11-03; re-downloadable from HF.)*
       `llama.cpp-experimental` branched from the current production tip (**never v9**). Greedy
       (`temp 0`, fixed seed), **3 prompts × 32 tokens, every prompt under `sparse_config.dense_len` =
       8192** so both sides run the sparse layers dense and the comparison is not confounded by the one
@@ -1132,7 +1132,7 @@ _Reuses the built harness (`/mnt/raid0/llm/tmp/cot-g1/`, SCAFFOLD-PREFIX mode) a
 
   <!-- task-evidence-integrity:start Z9 -->
   - Evidence metadata (hygiene, not new quota): Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log). Full Z9 primitive exists with native HF import and11 original numerical/interface controls; this is not G18 model/GGUF parity. No tests rerun or historical redating.
-  <!-- task-evidence-integrity:end Z9 --> [declined: operator 2026-11-03 model-audit: operator: adoption declined, not pursuing (MiniCPM-SALA throughput / NoLiMa / InfLLM-V2)]
+  <!-- task-evidence-integrity:end Z9 --> [declined: operator 2026-11-03 model-audit: operator: adoption declined, not pursuing (MiniCPM-SALA throughput / NoLiMa / InfLLM-V2)] *(2026-11-04: the MiniCPM-SALA checkpoint (/mnt/raid0/llm/models/MiniCPM-SALA-HF-9180fe1d, 18 GB) was deleted by operator order because adoption was declined 2026-11-03; re-downloadable from HF.)*
 
 ## Track: minddr-deep-research-mode
 <!-- gate: none -->

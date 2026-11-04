@@ -104,6 +104,7 @@ those three could not express.
       vendor's own reference runs those layers dense whenever CUDA is unavailable). Log-linear GDN
       fails this gate today: `ggml_log_linear_state_update()` and `ggml_log_linear_attention()` do not
       exist.
+      *(2026-11-04: the MiniCPM-SALA checkpoint (/mnt/raid0/llm/models/MiniCPM-SALA-HF-9180fe1d, 18 GB) was deleted by operator order because adoption was declined 2026-11-03; re-downloadable from HF. Intake citations above are research history.)*
 
 **Why this is not bookkeeping.** Gates 2 and 4 came apart in *opposite directions* on two candidates
 in a single wave. A gate list that scores both as "reference implementation available" cannot tell you
@@ -321,7 +322,7 @@ Five structurally different answers to GDN's fixed-state forgetting are now inde
 | Segment checkpoints | O(NL) | intake-354 | reference only |
 | Bounded exact side-cache | leave the state fixed, bolt on a bounded cache | intake-1272 (LTE), intake-1268 (HOLA) | **LTE opened the branch 8.5 months before HOLA** |
 | **Fix the update rule** | diagonal key-Gram preconditioner, state size unchanged | **intake-1273 (PGDN)** | **new fourth branch — no checkpoint, gate 1 CLOSED** |
-| **Offload recall to a sparse-attention minority** | 8 of 32 layers do block-sparse **exact** attention at 2 KV heads; the linear state stays lossy and simple | **intake-1287#00 (MiniCPM-SALA)** | **new fifth branch — Apache-2.0 9B checkpoint released; a dense-fallback port needs zero new ggml ops** |
+| **Offload recall to a sparse-attention minority** | 8 of 32 layers do block-sparse **exact** attention at 2 KV heads; the linear state stays lossy and simple | **intake-1287#00 (MiniCPM-SALA)** | **new fifth branch — Apache-2.0 9B checkpoint released; a dense-fallback port needs zero new ggml ops** *(2026-11-04: the MiniCPM-SALA checkpoint (/mnt/raid0/llm/models/MiniCPM-SALA-HF-9180fe1d, 18 GB) was deleted by operator order because adoption was declined 2026-11-03; re-downloadable from HF.)* |
 
 **Two things about the fifth row that a one-line summary will get wrong, and both are load-bearing.**
 (a) **SALA's linear primitive is constant-decay Simple GLA, not Gated DeltaNet.** The paper says
