@@ -1,0 +1,19 @@
+{
+  "README.md": "2dc3d9dd85c32d9a2ad2fc1ff270c81f907c413a8e6a279929aa218ace7a322b",
+  "RESULT.json": "360ca39f0c0e6d082e157d1fbcf414c03be63b2ee23196fe4e2165e2c35dd910",
+  "baseline-update.log": "149ecd660f096bd58487819cfdfa12af2745348ac25223ad74f56c7f8e17d043",
+  "check-fixed.log": "64fc81b5c67f4268859b3162c5e2498c1544a176531587276d4d12c1dca0ea77",
+  "check.log": "4599f50e979cd02036e5185ce509223bb2286db1584564678477b6930a2079a5",
+  "derived-candidate-vs-recompiled-baseline.patch": "b1d50128dc69f6a5a6b1be2ff1e3b7fc97bbe866a9fd48aa265c674bd3753734",
+  "derived-files.txt": "7a2f50f08f234dadef60f2f67f077861950e4785cfe0fa1b4a7fd53a1df817d6",
+  "intent.yaml": "2213793b0151fd2c704de5e65d7ddf34c03d55f88cf18dfe11fee6d015282393",
+  "orchestrator.patch": "1e8d3b749bbdb052ca0a7b394b22987c99d3af10b4f2454b6b7536a87ab46c5c",
+  "research-new-files/evidence/kv-cache/kvu16a-shape-load-r3-20261104/README.md": "daa648f174603897f0f75bc7e9f0172c39134853e5b100c7270fc2e526e10f7b",
+  "research-new-files/evidence/kv-cache/kvu16a-shape-load-r3-20261104/plan.json": "46c794ad91009e2dc159af531c4ce3572cc5f3ff81b35df6d443bcf201097956",
+  "research-new-files/evidence/kv-cache/kvu16a-shape-load-r3-20261104/result.json": "0330c5682d316ceeac7c39afb27f2946cf23c2fc9fe410faad1a9edcfe479e11",
+  "research-new-files/evidence/kv-cache/kvu16a-shape-load-r3-20261104/samples.jsonl": "c82cbeec6ba87da5b97f1a090e0468c0ea9f5c3f58d06e93d08062b4f6fb7276",
+  "research.patch": "d0671bb41aa8cfd357c4262cf9b4e4c623c38376bd1e9e7c61efb136829cc71a",
+  "seeding-retired-exclusion.patch": "5b390c98aa973e6d9afa9a49f6a38defbb61220ad3fda1f130af5741250a90d8",
+  "seeding-tests.log": "4d73efbaebce4e886b2551f3c9546fc1ef48982670f37c8a1585f41c238e547b",
+  "update.log": "149ecd660f096bd58487819cfdfa12af2745348ac25223ad74f56c7f8e17d043"
+}

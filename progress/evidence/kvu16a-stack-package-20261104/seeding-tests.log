@@ -1,0 +1,8 @@
+...............                                                          [100%]
+=============================== warnings summary ===============================
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 passed, 1 warning in 1.45s

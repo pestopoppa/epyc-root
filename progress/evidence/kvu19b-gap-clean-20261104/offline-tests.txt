@@ -1,0 +1,16 @@
+test_belief_success_binds_raw_hashes_and_one_process (test_producer.Controls.test_belief_success_binds_raw_hashes_and_one_process) ... ok
+test_belief_writer_refuses_qualification_and_missing_warrant (test_producer.Controls.test_belief_writer_refuses_qualification_and_missing_warrant) ... ok
+test_changed_model_refuses (test_producer.Controls.test_changed_model_refuses) ... ok
+test_cleanup_exited_leader_never_signals_group (test_producer.Controls.test_cleanup_exited_leader_never_signals_group) ... ok
+test_cleanup_refuses_reused_pid_without_signal (test_producer.Controls.test_cleanup_refuses_reused_pid_without_signal) ... ok
+test_cleanup_registration_removes_only_verified_identity (test_producer.Controls.test_cleanup_registration_removes_only_verified_identity) ... ok
+test_four_cpu_affinity (test_producer.Controls.test_four_cpu_affinity) ... ok
+test_launcher_selects_four_before_integrity_checks (test_producer.Controls.test_launcher_selects_four_before_integrity_checks) ... ok
+test_native_shape (test_producer.Controls.test_native_shape) ... ok
+test_pair_delta_is_arm_order_independent (test_producer.Controls.test_pair_delta_is_arm_order_independent) ... ok
+test_wrong_grant (test_producer.Controls.test_wrong_grant) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.034s
+
+OK

@@ -1,0 +1,4 @@
+docs/generated/current_stack_summary.md
+orchestration/derived/stack_priors.yaml
+orchestration/model_descriptors.yaml
+orchestration/model_registry.yaml

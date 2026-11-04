@@ -1,0 +1,15 @@
+# KVU-16a isolated stack-change package
+
+Scratch-only candidate from research 1dae4bac89a4a4d23051cf8cc8b97366f36173c8 and orchestrator 326f502759986c9846027f8187972969139c0089. No shared registry, deployment, signature, commit or live process changed.
+
+Master change: existing 38.03 value from the older ubatch-2048 measurement -> 35.06255340576172 GiB, exactly (51338338304 - 13690208256) / 2**30. Preserve structured evidence, two-sample status, peak_claim=false and whole_load_coverage_qualified=false through the generated lean. This sampled maximum is not a startup/runtime/lifetime peak. The existing capacity gate uses the scalar without consulting coverage metadata: arithmetic capacity PASS is not a safety warrant or enablement decision.
+
+`research.patch` is the exact master diff; add `research-new-files/` contents to the research root. `orchestrator.patch` includes the exact generated outputs and separate one-line seeding fix. Generated outputs include existing origin/main synchronization drift and scratch provenance/timestamps; `derived-candidate-vs-recompiled-baseline.patch` isolates the measured-value/metadata delta against fresh baseline recompilation. Regenerate from the master on eventual application; do not apply generated outputs blindly.
+
+Initial update/check both rc1 because the existing seeding exclusion named deleted catalogue model reap_25b. Baseline update reproduces exactly that strict failure. The separate `seeding-retired-exclusion.patch` removes this redundant exclusion; current registry/priors contain no live reap_25b row. Existing seeding state tests: 15 PASS. GitNexus impact returned LOW, but graph is 295 commits stale; direct source callers were read. No production behavior replacement is invented.
+
+Final `check-fixed.log`: all compilation/parity/strict/artifact/capacity/manifest/q_scorer checks PASS. Overall rc1: runtime attestation sees the real :8000 API listener as unmanaged by the isolated scratch checkout, which has no managed live state. Declared environment attestation is COULD-NOT-CHECK. No process state was copied and no service was stopped/reloaded. Parent KVU-16a remains open; the complete pipeline does not pass in this isolated environment.
+
+Commands ran from the isolated orchestrator checkout with `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python scripts/registry/stack_change_pipeline.py {update,check} --repo-root <scratch-orchestrator> --research-registry <scratch-research>/orchestration/model_registry.yaml --allow-stale-research-registry`. The explicit stale allowance is necessary for the deliberately modified offline master and is printed loudly; no known-gap or production-blocker waiver was used. Original combined stdout/stderr is retained in the logs. Tests: same Python `-m pytest -q -o addopts= -p no:cacheprovider tests/unit/test_seeding_types_state.py`.
+
+Production application remains governed by `.claude/skills/stack-change/SKILL.md` phases 6-8 (signature, application, serving proof). This packet supplies no authorization or safety-envelope conclusion.

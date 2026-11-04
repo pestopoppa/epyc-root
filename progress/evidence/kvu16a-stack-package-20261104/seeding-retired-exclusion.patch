@@ -1,0 +1,13 @@
+diff --git a/scripts/benchmark/seeding_types.py b/scripts/benchmark/seeding_types.py
+index 35bcd620..c538263d 100644
+--- a/scripts/benchmark/seeding_types.py
++++ b/scripts/benchmark/seeding_types.py
+@@ -46,7 +46,7 @@ STACK_PRIOR_SEEDING_EXCLUDED_ROLES = frozenset({
+ SEEDING_EXCLUDED_ROLES = frozenset({
+     "voice_server", "document_formalizer",
+     "nextplaid_code", "nextplaid_docs",
+-    "dev", "reap_25b",
++    "dev",
+ })
+ HEAVY_MODEL_MEM_GB_THRESHOLD = 18.0
+ _COST_TIER_1_MAX_MEM_GB = 18.0

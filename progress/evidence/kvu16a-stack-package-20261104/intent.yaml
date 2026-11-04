@@ -1,0 +1,5 @@
+change_id: KVU-16A-SAMPLED-20261104
+mode: scratch_only
+change: replace derived ubatch512 non-KV scalar with measured sampled maximum and preserve limitations
+registry_apply: false
+deploy: false
