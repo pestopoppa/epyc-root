@@ -135,3 +135,7 @@ Filed inf75-p1b-732-hip-configure-20261104 pass for configure only: 572 compile 
 ## 18:23Z — File direct-parent and 1f7 CPU configure prerequisites and repair CH-LB1.1 qualification
 
 Filed the 8f6487f3 direct-parent and 1f7f36e4 CPU configure rows as configure-only passes: respectively 435 and 431 compile entries. Retained and checked cache, compile plan, log, preflight and source manifest for each. Neither result completes the P1b replay. The CH-LB1.1 launcher checksum pin was repaired and publisher smoke started.
+
+## 18:28Z — File P1b configure plans and CH33 CPU identity result
+
+Filed fourteen P1b HIP/CPU configure-only rows with retained digest-verified evidence; no build, workload or replay classification follows. Filed CH33 Q38 CPU greedy identity pass: all three 128-token outputs matched and both arms drained. AKX-P1b and CH-33-MODEL-GATES remain open. CH-LB1.1 successor smoke is running.
