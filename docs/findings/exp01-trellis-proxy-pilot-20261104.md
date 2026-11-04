@@ -17,8 +17,10 @@ All 12 official speed units used CPUs 0-23 and 24 native threads inside the offi
 
 Original records and integrity hashes are in [the evidence bundle](../evidence/exp01-pilot-r3-20261104/FILING.json). Filing is a committed conclusion; it does not invent a retrospective measurement warrant.
 
-## Follow-up decision package
+## Operator-approved speed extension — 2026-11-04
 
-Recommendation: hold the port and close this bounded pilot without further compute. The screen did not establish the required advantage; keep the unresolved formal gates explicit.
+The operator authorized an IQ4_KT versus Q4_K_M extension capped at eight fresh launches per arm. The extension completed with rc=0, 8/8 launches per arm and no quality items. Q4_K_M averaged 35.900 tg128 tokens/s; IQ4_KT averaged 34.213, a ratio of **0.9530** with the predeclared operational band **[0.9373, 0.9687]**. Higher throughput is better. Every planned look remained `continue`: the band was neither wholly above 1.00 nor wholly below 0.95. The eight-launch cap was reached, so the extension is complete and its decision remains inconclusive.
 
-Alternative requiring operator authorization: extend only IQ4_KT versus Q4_K_M to a predeclared cap of eight launches per arm on one CPU quarter, retaining the same proxy identities and declared estimator. Using the observed variability as a planning assumption, eight launches per arm would narrow the speed band enough to investigate the 0.95 boundary if means and variability persist; it is not a power guarantee. Budget at most 10 minutes for this speed-only extension, with incremental results, planned looks and a hard stop. An adequately powered, separately declared paired quality comparison is still needed before a port; the 24-item slice cannot supply it. No successor row or port is authorized by this proposal.
+All 16 official launches used CPUs 0-23 and 24 native threads within the 13:12:44–13:14:38 UTC grant. The extension used fresh output and the same pinned proxy arms; it did not reuse pilot launches. Its operational band is exploratory and is not a formal confidence interval or T3 gate. Its lower bound did not clear 0.95, and it did not establish a speed advantage over the control. **Hold the port**; T2/T3 and the separately required adequately powered paired quality comparison remain open. No permanent-drop conclusion follows from this operational screen.
+
+The original extension records, logs and integrity hashes are in [the extension evidence bundle](../evidence/exp01-trellis-ext-r4-20261104/FILING.json). This filing records the conclusion and does not invent a retrospective measurement warrant.

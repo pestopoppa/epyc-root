@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T13:14:38Z reason=complete
+job_id=brf-exp01-trellis-ext-20261104-r4
+owner=ws58
+step=job-run
+estimated_wall_s=600
+started=2026-11-04T13:12:44Z
+regions=0-23

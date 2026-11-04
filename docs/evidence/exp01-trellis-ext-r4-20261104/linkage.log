@@ -1,0 +1,23 @@
+binary : /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench
+expect : libraries under /mnt/raid0/llm/ik_llama.cpp/build
+
+  OK   libllama.so                  -> /mnt/raid0/llm/ik_llama.cpp/build/src/libllama.so
+  OK   libggml.so                   -> /mnt/raid0/llm/ik_llama.cpp/build/ggml/src/libggml.so
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/ik_llama.cpp/build/ggml/src
+         2	/mnt/raid0/llm/ik_llama.cpp/build/src
+
+FAIL: VACUOUS CHECK — nothing was inspected, so this run proves nothing.
+
+    ggml/whisper/llama libraries inspected : 2
+    libggml-base.so seen                   : 0   (every ggml binary links it)
+
+This is NOT a pass with a caveat. Reporting "no library resolves outside
+/mnt/raid0/llm/ik_llama.cpp/build" after inspecting 2 libraries would be the strongest possible claim
+made from the weakest possible evidence.
+
+Likely causes, in order: /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench is not a ggml binary; it is statically linked; ldd
+failed or was denied; the build directory moved. Point this at the real binary
+(e.g. $BUILD/bin/llama-server) and re-run before measuring anything.
+ACCEPTED: monolithic ik libggml; all inspected libs inside /mnt/raid0/llm/ik_llama.cpp/build

@@ -31,3 +31,7 @@ Duplicate build-r4 receipt acknowledged; its existing inconclusive verdict remai
 ## 15:24Z — Acknowledge already-filed EXP01 pilot-r3 event
 
 Duplicate pilot-r3 event acknowledged; existing inconclusive verdict and completed bounded pilot remain unchanged. IQ4KT/Q4KM 0.9630 [0.9436,0.9824]; the port trigger and futility rule were not met. The concrete follow-up decision package remains in docs/findings/exp01-trellis-proxy-pilot-20261104.md.
+
+## 15:54Z — Preserve the filed EXP01 speed extension
+
+The already-filed, already-ticked EXP01-EXT row brf-exp01-trellis-ext-20261104-r4 completed rc=0 with eight interleaved launches per arm on CPUs 0-23 and 24 native threads. IQ4KT/Q4KM tg128=0.9530, operational band [0.9373,0.9687]; neither declared stop fired and no quality items were run. Extension is inconclusive, port remains on hold and formal T2/T3 gates remain open. Corrected the linked findings report, replacing the now-executed proposal with the actual result, and retained native JSON, logs, end record and manifest with hashes. This is committed-conclusion evidence, not a retroactive measurement tuple. Duplicate FILED receipt acknowledged.
