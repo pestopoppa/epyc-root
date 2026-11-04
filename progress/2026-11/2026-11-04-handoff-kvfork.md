@@ -75,3 +75,7 @@ KPF-18 item 3: the offline manifest rebinder now pins the original manifest dige
 ## 18:09Z — Harden the KPF-18 group-3 offline manifest rebinder
 
 KPF-18 item 3: the offline manifest rebinder now pins the original manifest digest and rejects duplicate destination mappings; ten tests pass, including CLI execution. The disabled launcher is not wired or qualified: independent validation-manifest custody, current lock semantics, cancellation and whole-attempt supervision remain open. No inference or verdict. Root GitNexus is unindexed; graph-based impact was unavailable.
+
+## 18:10Z — Implement exact-inventory custody verification for group 3
+
+KPF-18 group 3: added an offline pinned-manifest verifier requiring nonempty exact path coverage, unique entries and matching regular-file digests; 15 custody tests pass. The disabled launcher remains unwired; current lock semantics, cancellation, full-attempt supervision and GPU qualification remain open. No model inference or verdict. GitNexus could not resolve an index for this lane, so graph-based blast radius is unavailable.
