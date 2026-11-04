@@ -159,3 +159,7 @@ C6-Q4-MMVQ-FIX: c6-n4-b4-qsum-build-20261104 stopped rc75 at disk-floor admissio
 ## 21:06Z — File second C6 correction build admission and ready final permitted successor
 
 C6-Q4-MMVQ-FIX: c6-n4-b4-qsum-build-r2-20261104 stopped rc75 at disk-floor admission without a build result; filed inconclusive after preserving the source packet. Candidate compilation, linkage and GPU correctness remain unproved. Preserved r2 packet and smoke under /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-n4-b4-qsum-build-r2-retained-20261104/; published c6-n4-b4-qsum-build-r3-20261104 after custody-only smoke PASS, with fresh detached source and sealed patches. This is the third attempt; park lineage if it also fails admission.
+
+## 21:10Z — File third C6 n4 correction build admission failure
+
+C6-Q4-MMVQ-FIX: c6-n4-b4-qsum-build-r3-20261104 ended rc75 at disk-floor admission with no BUILD-RESULT.json. Filed inconclusive; retained the source-bound patches, build inputs, launcher and terminal record at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-n4-b4-qsum-build-r3-retained-20261104/. Three consecutive failures park this build lineage; no build or GPU correctness conclusion follows. NEMO-PROF-RESEG: recorded token-boundary events are absent from the historical traces, so the existing motif replay cannot close its criterion. CH-26b: prepared request observer remains unqualified for coverage, placement, contention and overhead; it cannot yet admit a floor.
