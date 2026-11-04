@@ -15,3 +15,7 @@ Finalized integration of the three evidence-backed ticks applied by the first wr
 ## 09:17Z — File MI210 run ends, close completed captures, and ready benchmark prerequisites
 
 Finalized integration of the three evidence-backed ticks applied by the first wrap-up attempt; preserved incoming operator CHAIN window amendment and alternate PF1 packet.
+
+## 14:13Z — Close YARN E1 memory attribution from the completed continuous-chain result
+
+YARN-E1-MEM: closed the parent on the filed single-server A1 128k→240k→400k→500k E1 chain (own-PID KFD peak 47.632 GiB, below the 55 GiB criterion), together with the earlier E1/W split-phase attribution: static A1–A0 KV sizing ~10.5 GiB, no reproduced +15 GiB overshoot or W effect. The original r5 rc75 event was already filed inconclusive and its receipt exists; later shared output is not attributed to r5. The PF1 refinement row is running. Independent CPU/GPU row preparation was delegated with file-triggered completion reports.

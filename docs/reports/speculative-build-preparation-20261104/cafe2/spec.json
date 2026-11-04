@@ -23,5 +23,7 @@
     "*.hpp",
     "*.json",
     "*.sha256"
-  ]
+  ],
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-build-row/proof.py predicate",
+  "first_progress_s": 300
 }

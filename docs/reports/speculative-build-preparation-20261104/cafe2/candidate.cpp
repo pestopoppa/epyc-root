@@ -25,7 +25,7 @@ static llama_token argmax(llama_context *ctx, const llama_vocab *vocab, int row)
 int main(int argc, char **argv) {
     if (argc != 2 || !argv[1][0]) { std::fprintf(stderr, "usage: %s model.gguf\n", argv[0]); return 2; }
     llama_backend_init();
-    auto mp = llama_model_default_params(); mp.n_gpu_layers = 0;
+    auto mp = llama_model_default_params(); mp.n_gpu_layers = 0; mp.load_mtp = true;
     llama_model *model = llama_model_load_from_file(argv[1], mp);
     if (!model) { std::fprintf(stderr, "UNKNOWN model load\n"); llama_backend_free(); return 2; }
     int result = 2;
