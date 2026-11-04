@@ -331,3 +331,7 @@ The KPF-17 oracle r5 event was already filed. Filed kpf60-checked-fixture-202611
 ## 21:37Z — File extended fixture disk-floor interruption
 
 The observer-build event had already been filed. Filed kpf60-checked-extended-20261104 inconclusive: rc75 disk-floor, no full RESULT.json, and no build verdict; preserved its grant-end receipt. The four-CPU publisher smoke is qualification only. Remaining native-byte measurement depends on the full run and source-safety clearance; existing repeated runs have stopped at the disk floor.
+
+## 21:39Z — Assess profiler build disk-floor prerequisite and independent HSF-3 census
+
+Observer-build r2 was already filed inconclusive. KVU-19b profiler full build has repeatedly stopped at the unchanged 150 GiB disk floor; available space was 136 GiB, and no safe substantial lane-owned reclaim was identified. No new timing or build conclusion follows. Independent HSF-3 source-census preparation is in progress, with an awaited result file registered.
