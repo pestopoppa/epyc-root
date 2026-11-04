@@ -127,3 +127,7 @@ Acknowledged the already-filed initial KPF-30 impact rc75 event. Filed the r2 ca
 ## 16:53Z — Published candidate-bound KPF-30 impact successor with native smoke PASS; prior r2 disk-floor result remains inconclusive.
 
 Published `kpf30-impact-8952-20261104-r3` (native smoke PASS) for six source-bound impacts and skipped-file coverage at candidate 8952a0f; full run remains pending, with disk floor unchanged. R2 was already filed INCONCLUSIVE after rc75 disk-floor.
+
+## 16:55Z — Prepare fresh custody build successor and correct the offline exposure replay safety boundary.
+
+Consumed the KPF-17.4d r4 and KVU-12.6 occupancy preparation reports: r4 subsequently failed at disk floor and the occupancy patch remains unapplied pending source-bound impact. Preparing a fresh sealed build row and a fail-closed offline exposure replay correction; results registered for asynchronous continuation.
