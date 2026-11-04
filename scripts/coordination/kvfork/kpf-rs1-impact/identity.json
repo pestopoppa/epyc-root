@@ -1,0 +1,18 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/job.py": "10a3edea14361c8f1307a78fe7109744579e2b117ec40d5104c0976b64e6042c",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/launch.sh": "781e854fe3282191709e756cc4a0c2acc8c747fcb008554bfd9e325fe9565850",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/spec.json": "7b9872aea04153df5b33f9dab83de75ac6f59b80be2cc00bfa73ecd26bf26ff8",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/README.md": "a9695cde2c0a8734808edb47617264bdb5436ad358de052b725492481182bfd4",
+    "/mnt/raid0/llm/tmp/kvfork/kpf-rs1-impact-8952-20261104/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104/src/llama-memory-recurrent.cpp": "4627fcb57f00231466ba45225fd0a8cb40177cc23f5766933a9cbe8234fac0ff",
+    "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104/src/llama-memory-recurrent.h": "2b2b6e8afeab4a13e71409b04df80d16c8f0797667c823e953c88406fc85a02c",
+    "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104/src/models/delta-net-base.cpp": "fd0644467208604bb578ddb4df0c1f967f046ee5a257c90d860c9617aed6bf8d",
+    "/mnt/raid0/llm/worktrees/kpf-rs1-impact-8952-20261104/tests/test-recurrent-state-rollback.cpp": "b200438e63d75b051782b4f2face659d1fb62c4b7da45d2266e2096abe22d3e3"
+  }
+}
