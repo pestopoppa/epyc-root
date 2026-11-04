@@ -35,6 +35,11 @@ def read_samples(path):
         return [], repr(exc)
 
 
+def runtime_library_path(backend):
+    """Use the candidate libraries first, then the host's ROCm dependencies."""
+    return os.pathsep.join((str(pathlib.Path(backend).resolve(strict=True).parent), '/opt/rocm/lib'))
+
+
 def resolve_build_binding(config):
     """Bind configured server/backend to a complete content-checked V4 result.
 
@@ -85,7 +90,7 @@ def main():
     if not c['requests']: raise ValueError('empty request list')
     if not 1 <= c['timeout_seconds'] <= 1800: raise ValueError('invalid timeout')
     if not c['url'].startswith('http://127.0.0.1:'): raise ValueError('loopback URL required')
-    env = os.environ.copy(); env['LD_LIBRARY_PATH'] = str(backend.parent); env['GGML_G3_FATTN_TRACE'] = '1'
+    env = os.environ.copy(); env['LD_LIBRARY_PATH'] = runtime_library_path(backend); env['GGML_G3_FATTN_TRACE'] = '1'
     with (out / 'linkage.txt').open('w') as linkage:
         subprocess.run(['/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh', str(server), str(build)], env=env, stdout=linkage, stderr=subprocess.STDOUT, check=True)
     argv = [str(server), *c['server_args']]
