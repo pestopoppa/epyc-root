@@ -63,3 +63,7 @@ The previously filed KPF-26 CODE-on r2 event was acknowledged: one route HTTP200
 ## 15:40Z — Preserve the scoped CODE-off r2 diagnostic result
 
 Acknowledged the previously filed KPF-26 CODE-off r2 diagnostic: three completed scouts with zero reported fork tokens and true keyword checks, HTTP200 and rc0; top-level effective flags remain unverified and checkpoint witness is null. Preserved the native result, original verdict and end event, and retained raw input and response privately. Added correctly indexed OFF observations alongside ON observations in the current dispatch. Proposed source-grounded outcome labels remain UNKNOWN and the P2 gate and windows remain open.
+
+## 15:42Z — Acknowledge the API-off diagnostic and bind child observations to witnesses
+
+The previously filed API-off diagnostic completed rc0/HTTP200 with two scout calls: child 0 keyword true, zero fork tokens and slot/task 3/3; child 1 keyword false, zero fork tokens and slot/task 2/4. Its top-level flag attestation is unverified, checkpoint witness absent and gate_pass null. Preserved the original scoped result and acknowledged the duplicate event. Corrected current handoff prose to include these indexed observations and the previously completed rubric applicability review; KPF-26 remains open. Quarter and P5 successor preparation is pending.
