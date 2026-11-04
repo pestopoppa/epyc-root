@@ -1,0 +1,3 @@
+# KVU-12.5 quarter r2 precondition failure
+
+The scheduled full row ended rc1 at 2026-11-03 07:19:22Z. Its launcher log shows the pinned checksum of `region_lock_cli.py` failed in the launcher precondition before the target command; the declared `events.jsonl` is absent. The predeclared anchors and np8 arms therefore cannot be judged and the result is UNKNOWN. The retained original input pin, launcher log, spec and end record are copied here. This is a distinct attempt from the earlier disk-floor stop. Requalify any successor with an independently reviewed, content-bound lock implementation and preserve exposure accounting; this diagnostic does not itself establish that any other attempt was unexposed.

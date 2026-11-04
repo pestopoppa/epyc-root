@@ -35,3 +35,7 @@ Acknowledged the previously filed CPU-FA-VKQ-3 calibration: both target arms acc
 ## 15:01Z — File VKQ-2 outcome and correct current CPU attention dispatch
 
 The previously filed full VKQ-2 event was acknowledged: 20 fresh processes, 16k hybrid 19.917212 versus legacy 19.557956 tok/s, +1.84% against 36.39% floor; 64k 13.137735 versus 12.866371, +2.11% against 4.11% floor. Both effects fall within their observed floors; no superiority or deployment claim. Corrected the current CPU attention dispatch, which had still represented both VKQ-2 and the independently completed VKQ-3 calibration as unfinished. A fresh KPF-17.4d build successor is being prepared after the prior disk-floor refusal.
+
+## 15:04Z — Resolve the quarter-r2 precondition failure and preserve its evidence
+
+The repeated KVU-12.5 quarter-r2 event was already filed INCONCLUSIVE and is acknowledged. The retained launcher log establishes a more precise cause: rc1 on the pinned region_lock_cli.py SHA-256 precondition before the target command, with no target events. Preserved the original input pins, launcher log, row spec and end record; no anchor, comparison or deployment verdict follows. A separately pinned successor is in preparation; the parent decision-grade np8 pair remains open.
