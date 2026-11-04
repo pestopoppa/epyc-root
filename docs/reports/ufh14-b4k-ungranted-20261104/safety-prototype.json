@@ -1,10 +1,10 @@
 {
-  "status": "scratch prototype; not installed or qualified",
-  "offline_tests": "3 passed, no job or server launched",
-  "argparse_source_sha256": "d3f9643b74da96359efd519d4e4e72ca289744ce4e1645a5f86d0ea79a052029",
-  "limitations": [
-    "Current COMPLETE producer lacks grant_id and grant_started_at required by prototype; it intentionally refuses current output.",
-    "Grant schema and timezone handling require integration against actual keeper receipts before use.",
-    "No modifications to existing queued packet; select only actual granted run before future filing."
+  "status": "offline scratch prototype; not installed or qualified",
+  "tests": "17 model-free controls passed, no job CLI or server launched",
+  "replay": "test_safety.py requires the prospective patched job.py alongside it; apply prospective-argparse.patch to the source matching the recorded source hash in an isolated directory.",
+  "limits": [
+    "Existing COMPLETE producer lacks the grant binding fields; this selector refuses current output until producer and real keeper receipt integration are implemented.",
+    "Filing-time consistency check, not qualification authority or cryptographic authentication.",
+    "No changes to the existing queued row or production."
   ]
 }
