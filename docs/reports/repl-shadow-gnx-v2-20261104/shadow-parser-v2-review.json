@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.independent-packet-review.v1",
+  "row": "ufh14-repl-emb23a-parse-v2-20261104",
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor",
+  "disposition": "CHANGES REQUIRED before relying on official result",
+  "scope": "Read-only inspection plus 12 pure parser cases; no runtime inference, changes, or test of grant owner.",
+  "findings": [
+    {
+      "severity": "high",
+      "point": "Truncated result is not rejected when it parses as a valid digit. The parser only sees response.content, and pilot.py never inspects native generation stop reason. E.g. model emits 1 with stopped_limit=true and parser returns 1, potentially certifying a truncated selection contrary to row rule. Require proof of actual normal stop, preserve terminal metadata and reject missing/length cutoff."
+    },
+    {
+      "severity": "high",
+      "point": "Pinned source/runtime closure incomplete: launch.sh seals only pilot.py; bridge.py, scratch sink/validator producer files and prepared-inputs.json are not sealed. git rev-parse HEAD proves commit label, not a clean content snapshot of source closure; loaded shared venv may change (publisher warned). Model pins are prepublication digest receipts but launch only rechecks size/inode/mtime and not dev/ctime; production executable SHA is checked but mapped ggml/llama libraries are not content-bound and verify_ggml_linkage.sh explicitly excludes dlopened backends. Seal the full code/data/venv closure, bind actual shared-library contents and process maps, and keep receipt evidence."
+    },
+    {
+      "severity": "medium",
+      "point": "No direct native entry grant validation: pilot.py chooses run whenever FILLER_DRYRUN is absent and falls back to implicit STOP/deadline. Normal published launch is executed through filler_run15 region-lock with declared ports, but direct invocation would not fail closed on a matching FILLER_ID/grant/affinity. Add explicit grant, CPU, deadline and stopfile validation; honor STOP during readiness and cap in-flight request to remaining deadline."
+    },
+    {
+      "severity": "medium",
+      "point": "Smoke proves only one real BGE hybrid search on a private server and process cleanup; it does not cover the Granite arm, frontdoor model, parser, bridge/open, stream validation, or official identity checks. It is real progress for that narrow operation, not end-to-end qualification. The wildcard result_path includes both out/smoke and out/run; filer must restrict to official run, never count qualification row."
+    },
+    {
+      "severity": "medium",
+      "point": "Output strings 01 and 000 are accepted as numeric 1 and 0, despite prompt saying one digit; not out of range but looser than strict single-digit formatting. Decide whether this is intended; reject when enforcing exact formatting."
+    }
+  ],
+  "validated": [
+    {
+      "item": "Parser",
+      "evidence": "12 AST-isolated cases pass, including unclosed, nested, repeated, trailing prose, multi-value, out-of-range; 0 means explicit no-open."
+    },
+    {
+      "item": "Actual open order",
+      "evidence": "pilot.py calls bundles[bge].get, checks returned bytes match immutable section slice, then calls bridge.opened; ShadowSink marks only first later open. Only BGE pointers are sent to model; both searches require actual hybrid mode."
+    },
+    {
+      "item": "Grant launcher",
+      "evidence": "launch.sh invokes canonical filler_run15, declares CPU bench, three ports, 3600s minimum and STOP path; three native servers are checked as owned listeners during official phase."
+    },
+    {
+      "item": "Publisher smoke",
+      "evidence": "PASS.json 2026-11-04T14:15:06Z, native BGE hybrid rank hit, CPU 0-3, rc75 qualification partial; smoke bge.log contains actual model load and requests."
+    }
+  ],
+  "files_changed": [],
+  "status_claim": "Static review; no claim that row is currently ungranted or running."
+}
