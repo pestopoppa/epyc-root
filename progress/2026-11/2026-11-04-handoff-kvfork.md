@@ -51,3 +51,7 @@ KPF-17.4d: disk space recovered sufficiently for the existing r5 successor's unc
 ## 17:50Z — Publish the candidate-bound V11-FA-8 source impact prerequisite
 
 V11-FA-8: declared the existing source-impact packet's stop-on-answer and futility conditions in the handoff and published `v11-fa8-impact-5026470-20261104`. The publisher accepted its four-CPU partial source-reference smoke (rc75 after progress); full native impact and skipped-file coverage remain pending. No source-edit clearance, GPU overflow result or inference follows. KPF-18.1 remains unqualified because its existing provider cannot exclude legacy writers.
+
+## 17:52Z — Investigate readiness of group-3 and alternative inference packets; no qualifying row published
+
+No new row published. The NI-owned group-3 successor is disabled and still lacks complete native source custody, cancellation and whole-attempt output supervision. KVU-19b-gap GPU smoke is already queued. KVU-12.5 has unrecoverable exposed cursor intervals and no frozen replacement rule. HSF-5.P GPU attribution is under the operator hold. KPF-60.GPU-X needs a hybrid-capable source-bound byte counter; the existing export refuses hybrid models. These checks do not complete any box or qualify inference.
