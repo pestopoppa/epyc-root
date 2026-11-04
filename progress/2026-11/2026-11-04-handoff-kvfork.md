@@ -179,3 +179,7 @@ KPF-61: third publisher smoke returned rc75 with a native tiny-model FAIL: 32/32
 ## 22:39Z — File the KPF-50 clock witness disk-floor interruption and remove superseded scratch attempts
 
 KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r3-20261104 ended rc75 disk-floor before native RESULT.json; filed INCONCLUSIVE with filing receipt. No target profile window was exposed. Removed superseded scratch attempts; kvfork scratch was 4.8 GiB on inspection and remains approximately 4.8 GiB after small obsolete attempts were removed. Retained current attempt and cited inputs. RAID had approximately 107 GiB available against the unchanged 150 GiB full-run floor; the existing CPU oracle and GPU clock successors would stop at that floor, so no repeat was published. KPF-61 remains parked after three failed qualifications.
+
+## 22:41Z — Check KPF-17.4d readiness and reclaimable session scratch
+
+KPF-17.4d remains unready: the R5 prospective cell was exposed and invalid and cannot be redrawn; a safe successor needs a source-bound parser impact and a confirmed unexposed input. The prepared CPU and GPU source-impact and native rows share a 150 GiB full-run floor; approximately 107 GiB was available, so repeating their already interrupted attempts would immediately stop. No additional material scratch could be reclaimed without removing cited evidence, retained build inputs, or keeper-owned scratch. No row published and no inference performed.
