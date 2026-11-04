@@ -1,0 +1,9 @@
+# IFBench single-arm measurement contract
+
+Question: on the frozen 300 original prompts, what are the official strict and loose instruction-following outcomes for the named local model and serving configuration? The first arm is descriptive and cannot establish cross-model discrimination, ordering, or adoption. Preserve the official per-prompt and per-instruction results and all exposed errors.
+
+Resolution: one prompt is 1/300 = 0.333 percentage points. For a hypothetical independent Bernoulli sample at the worst-case proportion 0.5, the normal 95% single-arm half-width is about 5.7 percentage points; for two independent arms the difference half-width is about 8.0 points. The fixed benchmark is not itself a random sample, and the uncertainty for a paired comparison depends on the observed discordant pairs. No expected arm effect is assumed and no delta is reported from one arm.
+
+Every exposed prompt has an immutable prompt key, request identity and attempt disposition. Retain successful responses, truncation, invalids, errors and unfinished exposures; do not redraw an exposed incomplete attempt. Checkpoint after every response. Stop after all 300 are accounted for, a request becomes unresolved, STOP, or the declared deadline. The official complete-cohort strict/loose score is available only after 300 valid responses join the original prompts exactly; otherwise report the observed coverage and UNKNOWN score. Run the official scorer offline with pinned NLTK resources.
+
+Any later cross-model comparison must reuse the exact same prompt set and scorer, preserve all-attempt denominators, and use the existing paired test in `epyc-orchestrator/scripts/autopilot/paired_stats.py`; if the pairing is incomplete, report the missing dispositions and no unsupported delta. No suite adoption follows from this contract.

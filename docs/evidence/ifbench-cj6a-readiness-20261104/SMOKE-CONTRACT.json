@@ -1,0 +1,14 @@
+{
+  "kind": "engineering-smoke-only",
+  "prompt": "For this engineering smoke check, reply with the single word moon.",
+  "cohort_member": false,
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "max_tokens": 24,
+  "ctx": 8192,
+  "output": "FILLER_DRYRUN_DIR/ifbench-native/",
+  "score_fixture": [
+    "control/input.jsonl",
+    "control/responses.jsonl"
+  ],
+  "native_result": "TERMINAL.json"
+}

@@ -1,0 +1,2465 @@
+{
+  "schema": "epyc.cj3.bfcl_v3_native_checker_sample.v1",
+  "suite_key": "bfcl_v3",
+  "instrument": "native function-call request/response; checker-only; BFCL-V3",
+  "selection": {
+    "method": "fixed first two original IDs per gold-bearing checker-only category, plus first four simple controls",
+    "seed": null,
+    "n": 26,
+    "categories": {
+      "simple": 4,
+      "multiple": 2,
+      "parallel": 2,
+      "parallel_multiple": 2,
+      "java": 2,
+      "javascript": 2,
+      "sql": 2,
+      "multi_turn_base": 2,
+      "multi_turn_composite": 2,
+      "multi_turn_long_context": 2,
+      "multi_turn_miss_func": 2,
+      "multi_turn_miss_param": 2
+    },
+    "IDs": [
+      "simple_0",
+      "simple_1",
+      "simple_2",
+      "simple_3",
+      "multiple_0",
+      "multiple_1",
+      "parallel_0",
+      "parallel_1",
+      "parallel_multiple_0",
+      "parallel_multiple_1",
+      "java_0",
+      "java_1",
+      "javascript_0",
+      "javascript_1",
+      "sql_0",
+      "sql_1",
+      "multi_turn_base_0",
+      "multi_turn_base_1",
+      "multi_turn_composite_0",
+      "multi_turn_composite_1",
+      "multi_turn_long_context_0",
+      "multi_turn_long_context_1",
+      "multi_turn_miss_func_0",
+      "multi_turn_miss_func_1",
+      "multi_turn_miss_param_0",
+      "multi_turn_miss_param_1"
+    ]
+  },
+  "sources": {
+    "BFCL_v3_simple.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_simple.json",
+      "sha256": "fbc37b2ad252bf9af985582e0e07b456173fe627d957491472ea9cef5fb83158",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_simple.json",
+      "gold_sha256": "2911a2bc00df82c4f999ffa64fedb0164cb88e96212ffa5972087eb91fd496ee"
+    },
+    "BFCL_v3_multiple.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multiple.json",
+      "sha256": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multiple.json",
+      "gold_sha256": "244e00ce9395df948bcafc7bee64e8f9c87ef70887587d83cae45b13699f3047"
+    },
+    "BFCL_v3_parallel.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_parallel.json",
+      "sha256": "fad375d68295776efb63e5aa331dd884f8635e7bb50e05908113c74f14281c3c",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_parallel.json",
+      "gold_sha256": "3af54bf04e5b7640b03a9b6a82440f52474feb24b398f94435fd2b155c7727de"
+    },
+    "BFCL_v3_parallel_multiple.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_parallel_multiple.json",
+      "sha256": "8863ea8433239f55c5f016154cf0830853c89f693c6ea270396a2fa121960579",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_parallel_multiple.json",
+      "gold_sha256": "df4d2c16238c1465dc04697c273cf3ab4a450075fcd274e3dc86ad5bf0049b75"
+    },
+    "BFCL_v3_java.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_java.json",
+      "sha256": "261d327d50c1bb505614dd5f75a29167d5bd9f938e5cefefef989c325cb67848",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_java.json",
+      "gold_sha256": "692c16dac988f24f41e26591b7c7ad9596d0d7f05d3c94d15dbf7de3f48025e5"
+    },
+    "BFCL_v3_javascript.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_javascript.json",
+      "sha256": "b69b6a99548f72e151be7abed4beb0ed70873d3370d5b78feed75b66f33795d3",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_javascript.json",
+      "gold_sha256": "0f5620f298eae6173f5f94d3006d068a2cce4cd7c960c2170d21904ce7b63790"
+    },
+    "BFCL_v3_sql.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_sql.json",
+      "sha256": "2cf021e2e4f81f1097aab31763423b785b3aaa73df8203a4f4ae3900822b0d53",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_sql.json",
+      "gold_sha256": "066ee73429e1d16e0a28ee7f9a7877f313892e94f6b68fb200b14253c8d7c154"
+    },
+    "BFCL_v3_multi_turn_base.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multi_turn_base.json",
+      "sha256": "edaea7666e0089062c30f3ac511914d5c27414dbe9b8214488191980d873b145",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multi_turn_base.json",
+      "gold_sha256": "d03b360939e3ca7fe537016349f84868971340393c3d43c1dd9527b8e43102f2"
+    },
+    "BFCL_v3_multi_turn_composite.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multi_turn_composite.json",
+      "sha256": "1fda0310e176317af7184132ff5fb5daa8ee7984b1cfbf69ce4bfb58c3151ae1",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multi_turn_composite.json",
+      "gold_sha256": "c832f27baaa589b15e1612c7f48d6de169b9cee4cce7ec6c32e78f20c4be6f25"
+    },
+    "BFCL_v3_multi_turn_long_context.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multi_turn_long_context.json",
+      "sha256": "a7c2b44cfe14e243e66acbb0737970f1085460fed5793bfa0137fb4782ff8fc4",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multi_turn_long_context.json",
+      "gold_sha256": "07347ad66e4b304550b5f3b34e5b07864c0f1d738f8b59560fbd3c372255c504"
+    },
+    "BFCL_v3_multi_turn_miss_func.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multi_turn_miss_func.json",
+      "sha256": "e6cfbd225ac1182c82bfcd0a83410babd410a8cf2050942894017829e9a57e23",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multi_turn_miss_func.json",
+      "gold_sha256": "9f5a0ebb3627062be8ecfc0ffa375b4ca3cf15d9a899f3bdedea9588aa5b80eb"
+    },
+    "BFCL_v3_multi_turn_miss_param.json": {
+      "path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/BFCL_v3_multi_turn_miss_param.json",
+      "sha256": "21a850b8bb0b41aba63e0bbcd9b4af6c7997144180eadd4bcdf4bdfd98077c1a",
+      "gold_path": "/workspace/repos/epyc-inference-research/data/bfcl-cj3-2026-08-25/possible_answer/BFCL_v3_multi_turn_miss_param.json",
+      "gold_sha256": "494068e24f5e821818040662efcbb88b15d5e34b98f5d08c62806f1463523dad"
+    }
+  },
+  "scoring": {
+    "status": "NOT IMPLEMENTED / NOT EXECUTED",
+    "authority": "Upstream BFCL official checker only after source/version binding; no local scorer was found. Preserve official gold as raw source; do not infer semantic equivalence or invent normalization.",
+    "acceptance_limit": "This manifest is preparation only; it cannot produce pass/fail or benchmark score until a pinned native-call parser and BFCL checker are implemented/reused and validated against official examples."
+  },
+  "cases": [
+    {
+      "category": "simple",
+      "case": {
+        "id": "simple_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Find the area of a triangle with a base of 10 units and height of 5 units."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "calculate_triangle_area",
+            "description": "Calculate the area of a triangle given its base and height.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "base": {
+                  "type": "integer",
+                  "description": "The base of the triangle."
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "The height of the triangle."
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "The unit of measure (defaults to 'units' if not specified)"
+                }
+              },
+              "required": [
+                "base",
+                "height"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "simple_0",
+        "ground_truth": [
+          {
+            "calculate_triangle_area": {
+              "base": [
+                10
+              ],
+              "height": [
+                5
+              ],
+              "unit": [
+                "units",
+                ""
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "simple",
+      "case": {
+        "id": "simple_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Calculate the factorial of 5 using math functions."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "math.factorial",
+            "description": "Calculate the factorial of a given number.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "The number for which factorial needs to be calculated."
+                }
+              },
+              "required": [
+                "number"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "simple_1",
+        "ground_truth": [
+          {
+            "math.factorial": {
+              "number": [
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "simple",
+      "case": {
+        "id": "simple_2",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Calculate the hypotenuse of a right triangle given the lengths of the other two sides as 4 and 5."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "math.hypot",
+            "description": "Calculate the Euclidean norm, sqrt(sum(squares)), the length of the vector from the origin to point (x, y) which is the hypotenuse of the right triangle.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "x": {
+                  "type": "integer",
+                  "description": "The x-coordinate value."
+                },
+                "y": {
+                  "type": "integer",
+                  "description": "The y-coordinate value."
+                },
+                "z": {
+                  "type": "integer",
+                  "description": "Optional. The z-coordinate value. Default is 0."
+                }
+              },
+              "required": [
+                "x",
+                "y"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "simple_2",
+        "ground_truth": [
+          {
+            "math.hypot": {
+              "x": [
+                4
+              ],
+              "y": [
+                5
+              ],
+              "z": [
+                "",
+                0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "simple",
+      "case": {
+        "id": "simple_3",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Find the roots of a quadratic equation with coefficients a=1, b=-3, c=2."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "algebra.quadratic_roots",
+            "description": "Find the roots of a quadratic equation ax^2 + bx + c = 0.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "a": {
+                  "type": "integer",
+                  "description": "Coefficient of x^2."
+                },
+                "b": {
+                  "type": "integer",
+                  "description": "Coefficient of x."
+                },
+                "c": {
+                  "type": "integer",
+                  "description": "Constant term."
+                }
+              },
+              "required": [
+                "a",
+                "b",
+                "c"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "simple_3",
+        "ground_truth": [
+          {
+            "algebra.quadratic_roots": {
+              "a": [
+                1
+              ],
+              "b": [
+                -3
+              ],
+              "c": [
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "multiple",
+      "case": {
+        "id": "multiple_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Can I find the dimensions and properties of a triangle, if I know its three sides are 5 units, 4 units and 3 units long?"
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "triangle_properties.get",
+            "description": "Retrieve the dimensions, such as area and perimeter, of a triangle if lengths of three sides are given.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "side1": {
+                  "type": "integer",
+                  "description": "The length of first side of the triangle."
+                },
+                "side2": {
+                  "type": "integer",
+                  "description": "The length of second side of the triangle."
+                },
+                "side3": {
+                  "type": "integer",
+                  "description": "The length of third side of the triangle."
+                },
+                "get_area": {
+                  "type": "boolean",
+                  "description": "A flag to determine whether to calculate the area of triangle. Default is true.",
+                  "default": true,
+                  "optional": true
+                },
+                "get_perimeter": {
+                  "type": "boolean",
+                  "description": "A flag to determine whether to calculate the perimeter of triangle. Default is true.",
+                  "default": true,
+                  "optional": true
+                },
+                "get_angles": {
+                  "type": "boolean",
+                  "description": "A flag to determine whether to calculate the internal angles of triangle. Default is true.",
+                  "default": true,
+                  "optional": true
+                }
+              },
+              "required": [
+                "side1",
+                "side2",
+                "side3"
+              ]
+            }
+          },
+          {
+            "name": "circle_properties.get",
+            "description": "Retrieve the dimensions, such as area and circumference, of a circle if radius is given.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "radius": {
+                  "type": "float",
+                  "description": "The length of radius of the circle."
+                },
+                "get_area": {
+                  "type": "boolean",
+                  "description": "A flag to determine whether to calculate the area of circle. Default is true.",
+                  "default": true,
+                  "optional": true
+                },
+                "get_circumference": {
+                  "type": "boolean",
+                  "description": "A flag to determine whether to calculate the circumference of circle. Default is true.",
+                  "default": true,
+                  "optional": true
+                }
+              },
+              "required": [
+                "radius"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "multiple_0",
+        "ground_truth": [
+          {
+            "triangle_properties.get": {
+              "side1": [
+                5
+              ],
+              "side2": [
+                4
+              ],
+              "side3": [
+                3
+              ],
+              "get_area": [
+                "",
+                true
+              ],
+              "get_perimeter": [
+                "",
+                true
+              ],
+              "get_angles": [
+                "",
+                true
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "multiple",
+      "case": {
+        "id": "multiple_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Calculate the area of a triangle, given the lengths of its three sides: 3, 4, and 5."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "math.triangle_area_heron",
+            "description": "Calculates the area of a triangle using Heron's formula, given the lengths of its three sides.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "side1": {
+                  "type": "integer",
+                  "description": "Length of the first side of the triangle."
+                },
+                "side2": {
+                  "type": "integer",
+                  "description": "Length of the second side of the triangle."
+                },
+                "side3": {
+                  "type": "integer",
+                  "description": "Length of the third side of the triangle."
+                }
+              },
+              "required": [
+                "side1",
+                "side2",
+                "side3"
+              ]
+            }
+          },
+          {
+            "name": "math.circle_area",
+            "description": "Calculates the area of a circle given its radius.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "radius": {
+                  "type": "float",
+                  "description": "The radius of the circle."
+                }
+              },
+              "required": [
+                "radius"
+              ]
+            }
+          },
+          {
+            "name": "math.triangle_area_base_height",
+            "description": "Calculates the area of a triangle using the formula (1/2)base*height.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "base": {
+                  "type": "float",
+                  "description": "The base length of the triangle."
+                },
+                "height": {
+                  "type": "float",
+                  "description": "The height of the triangle."
+                }
+              },
+              "required": [
+                "base",
+                "height"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "multiple_1",
+        "ground_truth": [
+          {
+            "math.triangle_area_heron": {
+              "side1": [
+                3
+              ],
+              "side2": [
+                4
+              ],
+              "side3": [
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "parallel",
+      "case": {
+        "id": "parallel_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Play songs from the artists Taylor Swift and Maroon 5, with a play time of 20 minutes and 15 minutes respectively, on Spotify."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "spotify.play",
+            "description": "Play specific tracks from a given artist for a specific time duration.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "artist": {
+                  "type": "string",
+                  "description": "The artist whose songs you want to play."
+                },
+                "duration": {
+                  "type": "integer",
+                  "description": "The duration for which the songs should be played, in minutes."
+                }
+              },
+              "required": [
+                "artist",
+                "duration"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "parallel_0",
+        "ground_truth": [
+          {
+            "spotify.play": {
+              "artist": [
+                "Taylor Swift"
+              ],
+              "duration": [
+                20
+              ]
+            }
+          },
+          {
+            "spotify.play": {
+              "artist": [
+                "Maroon 5"
+              ],
+              "duration": [
+                15
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "parallel",
+      "case": {
+        "id": "parallel_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Calculate the induced electromagnetic force for a magnetic field of 5 Tesla, area of 2 square meters and change in time of 4 seconds, then repeat with a change in time of 10 seconds."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "calculate_em_force",
+            "description": "Calculate the induced electromagnetic force based on Faraday's Law of Electromagnetic Induction, given the magnetic field (in Tesla), change in magnetic field area (in square meters), and the change in time (in seconds).",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "b_field": {
+                  "type": "integer",
+                  "description": "The magnetic field in Tesla."
+                },
+                "area": {
+                  "type": "integer",
+                  "description": "The change in area of magnetic field in square meters."
+                },
+                "d_time": {
+                  "type": "integer",
+                  "description": "The change in time in seconds."
+                }
+              },
+              "required": [
+                "b_field",
+                "area",
+                "d_time"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "parallel_1",
+        "ground_truth": [
+          {
+            "calculate_em_force": {
+              "b_field": [
+                5
+              ],
+              "area": [
+                2
+              ],
+              "d_time": [
+                4
+              ]
+            }
+          },
+          {
+            "calculate_em_force": {
+              "b_field": [
+                5
+              ],
+              "area": [
+                2
+              ],
+              "d_time": [
+                10
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "parallel_multiple",
+      "case": {
+        "id": "parallel_multiple_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Find the sum of all the multiples of 3 and 5 between 1 and 1000. Also find the product of the first five prime numbers."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "math_toolkit.sum_of_multiples",
+            "description": "Find the sum of all multiples of specified numbers within a specified range.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "lower_limit": {
+                  "type": "integer",
+                  "description": "The start of the range (inclusive)."
+                },
+                "upper_limit": {
+                  "type": "integer",
+                  "description": "The end of the range (inclusive)."
+                },
+                "multiples": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "The numbers to find multiples of."
+                }
+              },
+              "required": [
+                "lower_limit",
+                "upper_limit",
+                "multiples"
+              ]
+            }
+          },
+          {
+            "name": "math_toolkit.product_of_primes",
+            "description": "Find the product of the first n prime numbers.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "description": "The number of prime numbers to multiply together."
+                }
+              },
+              "required": [
+                "count"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "parallel_multiple_0",
+        "ground_truth": [
+          {
+            "math_toolkit.sum_of_multiples": {
+              "lower_limit": [
+                1
+              ],
+              "upper_limit": [
+                1000
+              ],
+              "multiples": [
+                [
+                  3,
+                  5
+                ]
+              ]
+            }
+          },
+          {
+            "math_toolkit.product_of_primes": {
+              "count": [
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "parallel_multiple",
+      "case": {
+        "id": "parallel_multiple_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Find the area of a rectangle with length 7 and breadth 3. Also, calculate the area of a circle with radius 5."
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "volume_cylinder.calculate",
+            "description": "Calculate the volume of a cylinder given the radius and the height.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "radius": {
+                  "type": "float",
+                  "description": "The radius of the cylinder."
+                },
+                "height": {
+                  "type": "float",
+                  "description": "The height of the cylinder."
+                }
+              },
+              "required": [
+                "radius",
+                "height"
+              ]
+            }
+          },
+          {
+            "name": "area_rectangle.calculate",
+            "description": "Calculate the area of a rectangle given the length and breadth.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "length": {
+                  "type": "float",
+                  "description": "The length of the rectangle."
+                },
+                "breadth": {
+                  "type": "float",
+                  "description": "The breadth of the rectangle."
+                }
+              },
+              "required": [
+                "length",
+                "breadth"
+              ]
+            }
+          },
+          {
+            "name": "area_circle.calculate",
+            "description": "Calculate the area of a circle given the radius.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "radius": {
+                  "type": "float",
+                  "description": "The radius of the circle."
+                }
+              },
+              "required": [
+                "radius"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "parallel_multiple_1",
+        "ground_truth": [
+          {
+            "area_rectangle.calculate": {
+              "length": [
+                7.0
+              ],
+              "breadth": [
+                3.0
+              ]
+            }
+          },
+          {
+            "area_circle.calculate": {
+              "radius": [
+                5.0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "java",
+      "case": {
+        "id": "java_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Help me initialize the GIS geometry presentation in a user interface, providing a specific result set controller `mapController` and a composite UI element `mapArea` to display the GIS data?"
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "GeometryPresentation.createPresentation",
+            "description": "Initializes the GIS geometry presentation within the provided UI composite, using the given result set controller.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "controller": {
+                  "type": "any",
+                  "description": "The IResultSetController instance responsible for controlling the result set."
+                },
+                "parent": {
+                  "type": "any",
+                  "description": "The Composite UI element where the GIS presentation will be displayed."
+                }
+              },
+              "required": [
+                "controller",
+                "parent"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "java_0",
+        "ground_truth": [
+          {
+            "GeometryPresentation.createPresentation": {
+              "controller": [
+                "mapController"
+              ],
+              "parent": [
+                "mapArea"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "java",
+      "case": {
+        "id": "java_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Help me generate SQL completion proposals for a table named 'Customers' in a database, considering that I prefer using short names and the additional parameters include a limit of '50' and a schema filter set to 'public'?"
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "SQLCompletionAnalyzer.makeProposalsFromObject",
+            "description": "Generates SQL completion proposals based on the given database object, name preference, and additional parameters.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "object": {
+                  "type": "any",
+                  "description": "The database object for which to generate proposals."
+                },
+                "useShortName": {
+                  "type": "boolean",
+                  "description": "Indicates whether to use short names for the proposals."
+                },
+                "params": {
+                  "type": "HashMap",
+                  "description": "A map of additional parameters to customize the proposals."
+                }
+              },
+              "required": [
+                "object",
+                "useShortName",
+                "params"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "java_1",
+        "ground_truth": [
+          {
+            "SQLCompletionAnalyzer.makeProposalsFromObject": {
+              "object": [
+                "Customers"
+              ],
+              "useShortName": [
+                true
+              ],
+              "params": [
+                {
+                  "limit": [
+                    50
+                  ],
+                  "schemaFilter": [
+                    "public"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "javascript",
+      "case": {
+        "id": "javascript_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Help me validate user input in a form field with the ID 'userInputField' after the user has finished typing?"
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "validateUserInput",
+            "description": "This function is called after a user has finished typing in a form field, to validate the input provided.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "inputField": {
+                  "type": "String",
+                  "description": "The form field whose input needs to be validated."
+                },
+                "isComplete": {
+                  "type": "Boolean",
+                  "description": "Indicates if the user has finished typing in the input field."
+                }
+              },
+              "required": [
+                "inputField",
+                "isComplete"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "javascript_0",
+        "ground_truth": [
+          {
+            "validateUserInput": {
+              "inputField": [
+                "userInputField"
+              ],
+              "isComplete": [
+                true
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "javascript",
+      "case": {
+        "id": "javascript_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Help me extract all data entries with the attribute 'data-active' set to true from a list element stored in a variable named 'listElement'?"
+            }
+          ]
+        ],
+        "function": [
+          {
+            "name": "getActiveDataEntries",
+            "description": "This function extracts data entries from a list element based on a specified attribute and its value. It checks for the presence of the 'data-active' attribute and whether it is set to true.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "listElement": {
+                  "type": "any",
+                  "description": "The list element from which to extract active data entries."
+                },
+                "attribute": {
+                  "type": "String",
+                  "description": "The data attribute used to filter entries. Optional parameter with a default value of 'data-active'.",
+                  "default": "data-active"
+                },
+                "value": {
+                  "type": "Boolean",
+                  "description": "The value of the attribute to match. Optional parameter with a default value of true.",
+                  "default": true
+                }
+              },
+              "required": [
+                "listElement"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "javascript_1",
+        "ground_truth": [
+          {
+            "getActiveDataEntries": {
+              "listElement": [
+                "listElement"
+              ],
+              "attribute": [
+                "data-active",
+                ""
+              ],
+              "value": [
+                true,
+                ""
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "sql",
+      "case": {
+        "id": "sql_0",
+        "question": [
+          {
+            "role": "user",
+            "content": "What is the name of the student in the 'students' table with the ID 1234, if we consider the columns 'id' and 'name' and the condition 'id = 1234'?"
+          }
+        ],
+        "function": [
+          {
+            "name": "sql.execute",
+            "description": "Execute SQL queries based on user-defined parameters like SQL keyword, table name, column names, and conditions.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "sql_keyword": {
+                  "type": "string",
+                  "enum": [
+                    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE",
+                    "CREATE"
+                  ],
+                  "description": "The SQL keyword to define the type of operation."
+                },
+                "table_name": {
+                  "type": "string",
+                  "description": "The name of the database table to operate on."
+                },
+                "columns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The column names involved in the SQL operation. If not specified use '*' to represent all columns."
+                },
+                "insert_values": {
+                  "type": "array",
+                  "description": "Values of an INSERT statement.",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "update_values": {
+                  "type": "array",
+                  "description": "Values of an UPDATE statement corresponding to columns to set.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "description": "Conditions for the SQL operation, formatted as a SQL WHERE clause. Put them in the format of ['cond1 > val1', 'cond2 = val2', 'cond3<val3'] and etc.",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "sql_keyword",
+                "table_name"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "sql_0",
+        "ground_truth": [
+          {
+            "sql.execute": {
+              "sql_keyword": [
+                "SELECT"
+              ],
+              "table_name": [
+                "students"
+              ],
+              "columns": [
+                [
+                  "name"
+                ]
+              ],
+              "conditions": [
+                [
+                  "id = 1234"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "sql",
+      "case": {
+        "id": "sql_1",
+        "question": [
+          {
+            "role": "user",
+            "content": "What is the value of the 'result' column in the 'calculations' table for the calculation with the ID 5678."
+          }
+        ],
+        "function": [
+          {
+            "name": "sql.execute",
+            "description": "Execute SQL queries based on user-defined parameters like SQL keyword, table name, column names, and conditions.",
+            "parameters": {
+              "type": "dict",
+              "properties": {
+                "sql_keyword": {
+                  "type": "string",
+                  "enum": [
+                    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE",
+                    "CREATE"
+                  ],
+                  "description": "The SQL keyword to define the type of operation."
+                },
+                "table_name": {
+                  "type": "string",
+                  "description": "The name of the database table to operate on."
+                },
+                "columns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The column names involved in the SQL operation. If not specified use '*' to represent all columns."
+                },
+                "insert_values": {
+                  "type": "array",
+                  "description": "Values of an INSERT statement.",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "update_values": {
+                  "type": "array",
+                  "description": "Values of an UPDATE statement corresponding to columns to set.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "description": "Conditions for the SQL operation, formatted as a SQL WHERE clause. Put them in the format of ['cond1 > val1', 'cond2 = val2', 'cond3<val3'] and etc.",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "sql_keyword",
+                "table_name"
+              ]
+            }
+          }
+        ]
+      },
+      "gold": {
+        "id": "sql_1",
+        "ground_truth": [
+          {
+            "sql.execute": {
+              "sql_keyword": [
+                "SELECT"
+              ],
+              "table_name": [
+                "calculations"
+              ],
+              "columns": [
+                [
+                  "result"
+                ]
+              ],
+              "conditions": [
+                [
+                  "id = 5678"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_base",
+      "case": {
+        "id": "multi_turn_base_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Move 'final_report.pdf' within document directory to 'temp' directory in document. Make sure to create the directory"
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Perform a detailed search using grep to identify sections in the file pertaining to 'budget analysis'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Move 'previous_report.pdf' in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "workspace": {
+                "type": "directory",
+                "contents": {
+                  "document": {
+                    "type": "directory",
+                    "contents": {
+                      "final_report.pdf": {
+                        "type": "file",
+                        "content": "Year2024 This is the final report content including budget analysis and other sections."
+                      },
+                      "previous_report.pdf": {
+                        "type": "file",
+                        "content": "Year203 This is the previous report content with different budget analysis."
+                      }
+                    }
+                  },
+                  "archive": {
+                    "type": "directory",
+                    "contents": {}
+                  }
+                }
+              }
+            }
+          },
+          "TwitterAPI": {
+            "tweet_counter": 3,
+            "tweets": {
+              "0": {
+                "id": 0,
+                "username": "analyst_pro",
+                "content": "Just finished analyzing the reports!",
+                "tags": [
+                  "#analysis",
+                  "#reports"
+                ],
+                "mentions": []
+              },
+              "1": {
+                "id": 1,
+                "username": "analyst_pro",
+                "content": "Budget analysis insights coming soon!",
+                "tags": [
+                  "#budget",
+                  "#analysis",
+                  "#insights"
+                ],
+                "mentions": []
+              },
+              "2": {
+                "id": 2,
+                "username": "analyst_pro",
+                "content": "Stay tuned for more updates!",
+                "tags": [
+                  "#updates",
+                  "#staytuned"
+                ],
+                "mentions": []
+              }
+            },
+            "username": "analyst_pro",
+            "password": "Kj8#mP9$vL2"
+          }
+        },
+        "path": [
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.sort",
+          "GorillaFileSystem.diff",
+          "TwitterAPI.post_tweet"
+        ],
+        "involved_classes": [
+          "TwitterAPI",
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_base_0",
+        "ground_truth": [
+          [
+            "cd(folder='document')",
+            "mkdir(dir_name='temp')",
+            "mv(source='final_report.pdf', destination='temp')"
+          ],
+          [
+            "cd(folder='temp')",
+            "grep(file_name='final_report.pdf',pattern='budget analysis')"
+          ],
+          [
+            "sort('final_report.pdf')"
+          ],
+          [
+            "cd(folder='..')",
+            "mv(source='previous_report.pdf',destination='temp')",
+            "cd(folder='temp')",
+            "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_base",
+      "case": {
+        "id": "multi_turn_base_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "I am alex. Check if the current directory is under my name and list all the visible and hidden contents in the current directory now, please."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Go to workspace directory and move one of the 'log.txt' files into a new directory 'archive'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Finally, show the last 20 lines the file."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "alex": {
+                "type": "directory",
+                "contents": {
+                  "workspace": {
+                    "type": "directory",
+                    "contents": {
+                      "log.txt": {
+                        "type": "file",
+                        "content": "This is a log file. No errors found. Another line. Yet another line. Error: Something went wrong. Final line."
+                      },
+                      "archive": {
+                        "type": "directory",
+                        "contents": {}
+                      },
+                      ".hidden_file": {
+                        "type": "file",
+                        "content": "This is a hidden file."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path": [
+          "GorillaFileSystem.ls",
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.tail"
+        ],
+        "involved_classes": [
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_base_1",
+        "ground_truth": [
+          [
+            "ls(a=True)"
+          ],
+          [
+            "cd(folder='workspace')",
+            "mv(source='log.txt',destination='archive')"
+          ],
+          [
+            "cd(folder='archive')",
+            "grep(file_name='log.txt',pattern='Error')"
+          ],
+          [
+            "tail(file_name='log.txt',lines=20)"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_composite",
+      "case": {
+        "id": "multi_turn_composite_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Move a specific file within the document directory to a new directory in document. Make sure to create the directory."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "The file name is 'final_report.pdf' and the new directory is 'temp'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Perform a detailed search to identify sections in the file pertaining to 'budget analysis'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension."
+            }
+          ],
+          [],
+          [
+            {
+              "role": "user",
+              "content": "Move 'previous_report.pdf' in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "workspace": {
+                "type": "directory",
+                "contents": {
+                  "document": {
+                    "type": "directory",
+                    "contents": {
+                      "final_report.pdf": {
+                        "type": "file",
+                        "content": "Year2024 This is the final report content including budget analysis and other sections."
+                      },
+                      "previous_report.pdf": {
+                        "type": "file",
+                        "content": "Year203 This is the previous report content with different budget analysis."
+                      }
+                    }
+                  },
+                  "archive": {
+                    "type": "directory",
+                    "contents": {}
+                  }
+                }
+              }
+            }
+          },
+          "TwitterAPI": {
+            "tweet_count": 3,
+            "tweet_list": [
+              "Just finished analyzing the reports!",
+              "Budget analysis insights coming soon!",
+              "Stay tuned for more updates!"
+            ]
+          }
+        },
+        "path": [
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.sort",
+          "GorillaFileSystem.diff",
+          "TwitterAPI.post_tweet"
+        ],
+        "involved_classes": [
+          "TwitterAPI",
+          "GorillaFileSystem"
+        ],
+        "missed_function": {
+          "4": [
+            "sort"
+          ]
+        }
+      },
+      "gold": {
+        "id": "multi_turn_composite_0",
+        "ground_truth": [
+          [],
+          [
+            "cd(folder='document')",
+            "mkdir(dir_name='temp')",
+            "mv(source='final_report.pdf', destination='temp')"
+          ],
+          [
+            "cd(folder='temp')",
+            "grep(file_name='final_report.pdf',pattern='budget analysis')"
+          ],
+          [],
+          [
+            "sort('final_report.pdf')"
+          ],
+          [
+            "cd(folder='..')",
+            "mv(source='previous_report.pdf',destination='temp')",
+            "cd(folder='temp')",
+            "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_composite",
+      "case": {
+        "id": "multi_turn_composite_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "I am alex. Go into directory name after my name and list all the visible and hidden contents in the current directory now, please."
+            }
+          ],
+          [],
+          [
+            {
+              "role": "user",
+              "content": "Move one of the 'log.txt' files into a new directory 'archive'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Finally, show the last 20 lines of a specific file for me."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "The file name is 'log.txt'."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "alex": {
+                "type": "directory",
+                "contents": {
+                  "workspace": {
+                    "type": "directory",
+                    "contents": {
+                      "log.txt": {
+                        "type": "file",
+                        "content": "This is a log file. No errors found. Another line. Yet another line. Error: Something went wrong. Final line."
+                      },
+                      "archive": {
+                        "type": "directory",
+                        "contents": {}
+                      },
+                      ".hidden_file": {
+                        "type": "file",
+                        "content": "This is a hidden file."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path": [
+          "GorillaFileSystem.ls",
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.tail"
+        ],
+        "involved_classes": [
+          "GorillaFileSystem"
+        ],
+        "missed_function": {
+          "1": [
+            "ls"
+          ]
+        }
+      },
+      "gold": {
+        "id": "multi_turn_composite_1",
+        "ground_truth": [
+          [],
+          [
+            "cd(folder='workspace')",
+            "ls(a=True)"
+          ],
+          [
+            "mv(source='log.txt',destination='archive')"
+          ],
+          [
+            "cd(folder='archive')",
+            "grep(file_name='log.txt',pattern='Error')"
+          ],
+          [],
+          [
+            "tail(file_name='log.txt',lines=20)"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_long_context",
+      "case": {
+        "id": "multi_turn_long_context_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Move 'final_report.pdf' within document directory to 'temp' directory in document. Make sure to create the directory"
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Perform a detailed search using grep to identify sections in the file pertaining to 'budget analysis'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Move 'previous_report.pdf' in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "workspace": {
+                "type": "directory",
+                "contents": {
+                  "document": {
+                    "type": "directory",
+                    "contents": {
+                      "final_report.pdf": {
+                        "type": "file",
+                        "content": "Year2024 This is the final report content including budget analysis and other sections."
+                      },
+                      "previous_report.pdf": {
+                        "type": "file",
+                        "content": "Year203 This is the previous report content with different budget analysis."
+                      }
+                    }
+                  },
+                  "archive": {
+                    "type": "directory",
+                    "contents": {}
+                  }
+                }
+              }
+            }
+          },
+          "TwitterAPI": {
+            "tweet_counter": 3,
+            "tweets": {
+              "0": {
+                "id": 0,
+                "username": "analyst_pro",
+                "content": "Just finished analyzing the reports!",
+                "tags": [
+                  "#analysis",
+                  "#reports"
+                ],
+                "mentions": []
+              },
+              "1": {
+                "id": 1,
+                "username": "analyst_pro",
+                "content": "Budget analysis insights coming soon!",
+                "tags": [
+                  "#budget",
+                  "#analysis",
+                  "#insights"
+                ],
+                "mentions": []
+              },
+              "2": {
+                "id": 2,
+                "username": "analyst_pro",
+                "content": "Stay tuned for more updates!",
+                "tags": [
+                  "#updates",
+                  "#staytuned"
+                ],
+                "mentions": []
+              }
+            },
+            "username": "analyst_pro",
+            "password": "Kj8#mP9$vL2"
+          }
+        },
+        "path": [
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.sort",
+          "GorillaFileSystem.diff",
+          "TwitterAPI.post_tweet"
+        ],
+        "involved_classes": [
+          "TwitterAPI",
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_long_context_0",
+        "ground_truth": [
+          [
+            "cd(folder='document')",
+            "mkdir(dir_name='temp')",
+            "mv(source='final_report.pdf', destination='temp')"
+          ],
+          [
+            "cd(folder='temp')",
+            "grep(file_name='final_report.pdf',pattern='budget analysis')"
+          ],
+          [
+            "sort('final_report.pdf')"
+          ],
+          [
+            "cd(folder='..')",
+            "mv(source='previous_report.pdf',destination='temp')",
+            "cd(folder='temp')",
+            "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_long_context",
+      "case": {
+        "id": "multi_turn_long_context_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "I am alex. Check if the current directory is under my name and list all the visible and hidden contents in the current directory now, please."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Go to workspace directory and move one of the 'log.txt' files into a new directory 'archive'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Finally, show the last 20 lines the file."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "alex": {
+                "type": "directory",
+                "contents": {
+                  "workspace": {
+                    "type": "directory",
+                    "contents": {
+                      "log.txt": {
+                        "type": "file",
+                        "content": "This is a log file. No errors found. Another line. Yet another line. Error: Something went wrong. Final line."
+                      },
+                      "archive": {
+                        "type": "directory",
+                        "contents": {}
+                      },
+                      ".hidden_file": {
+                        "type": "file",
+                        "content": "This is a hidden file."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path": [
+          "GorillaFileSystem.ls",
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.tail"
+        ],
+        "involved_classes": [
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_long_context_1",
+        "ground_truth": [
+          [
+            "ls(a=True)"
+          ],
+          [
+            "cd(folder='workspace')",
+            "mv(source='log.txt',destination='archive')"
+          ],
+          [
+            "cd(folder='archive')",
+            "grep(file_name='log.txt',pattern='Error')"
+          ],
+          [
+            "tail(file_name='log.txt',lines=20)"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "case": {
+        "id": "multi_turn_miss_func_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Move 'final_report.pdf' within document directory to 'temp' directory in document. Make sure to create the directory"
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Perform a detailed search using grep to identify sections in the file pertaining to 'budget analysis'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension."
+            }
+          ],
+          [],
+          [
+            {
+              "role": "user",
+              "content": "Move 'previous_report.pdf' in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "workspace": {
+                "type": "directory",
+                "contents": {
+                  "document": {
+                    "type": "directory",
+                    "contents": {
+                      "final_report.pdf": {
+                        "type": "file",
+                        "content": "Year2024 This is the final report content including budget analysis and other sections."
+                      },
+                      "previous_report.pdf": {
+                        "type": "file",
+                        "content": "Year203 This is the previous report content with different budget analysis."
+                      }
+                    }
+                  },
+                  "archive": {
+                    "type": "directory",
+                    "contents": {}
+                  }
+                }
+              }
+            }
+          },
+          "TwitterAPI": {
+            "tweet_counter": 3,
+            "tweets": {
+              "0": {
+                "id": 0,
+                "username": "analyst_pro",
+                "content": "Just finished analyzing the reports!",
+                "tags": [
+                  "#analysis",
+                  "#reports"
+                ],
+                "mentions": []
+              },
+              "1": {
+                "id": 1,
+                "username": "analyst_pro",
+                "content": "Budget analysis insights coming soon!",
+                "tags": [
+                  "#budget",
+                  "#analysis",
+                  "#insights"
+                ],
+                "mentions": []
+              },
+              "2": {
+                "id": 2,
+                "username": "analyst_pro",
+                "content": "Stay tuned for more updates!",
+                "tags": [
+                  "#updates",
+                  "#staytuned"
+                ],
+                "mentions": []
+              }
+            },
+            "username": "analyst_pro",
+            "password": "Kj8#mP9$vL2"
+          }
+        },
+        "path": [
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.sort",
+          "GorillaFileSystem.diff",
+          "TwitterAPI.post_tweet"
+        ],
+        "involved_classes": [
+          "TwitterAPI",
+          "GorillaFileSystem"
+        ],
+        "missed_function": {
+          "3": [
+            "sort"
+          ]
+        }
+      },
+      "gold": {
+        "id": "multi_turn_miss_func_0",
+        "ground_truth": [
+          [
+            "cd(folder='document')",
+            "mkdir(dir_name='temp')",
+            "mv(source='final_report.pdf', destination='temp')"
+          ],
+          [
+            "cd(folder='temp')",
+            "grep(file_name='final_report.pdf',pattern='budget analysis')"
+          ],
+          [],
+          [
+            "sort('final_report.pdf')"
+          ],
+          [
+            "cd(folder='..')",
+            "mv(source='previous_report.pdf',destination='temp')",
+            "cd(folder='temp')",
+            "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "case": {
+        "id": "multi_turn_miss_func_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "I am alex. Check if the current directory is under my name and list all the visible and hidden contents in the current directory now, please."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Go to workspace directory and move one of the 'log.txt' files into a new directory 'archive'."
+            }
+          ],
+          [],
+          [
+            {
+              "role": "user",
+              "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Finally, show the last 20 lines the file."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "alex": {
+                "type": "directory",
+                "contents": {
+                  "workspace": {
+                    "type": "directory",
+                    "contents": {
+                      "log.txt": {
+                        "type": "file",
+                        "content": "This is a log file. No errors found. Another line. Yet another line. Error: Something went wrong. Final line."
+                      },
+                      "archive": {
+                        "type": "directory",
+                        "contents": {}
+                      },
+                      ".hidden_file": {
+                        "type": "file",
+                        "content": "This is a hidden file."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path": [
+          "GorillaFileSystem.ls",
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.tail"
+        ],
+        "involved_classes": [
+          "GorillaFileSystem"
+        ],
+        "missed_function": {
+          "2": [
+            "mv"
+          ]
+        }
+      },
+      "gold": {
+        "id": "multi_turn_miss_func_1",
+        "ground_truth": [
+          [
+            "ls(a=True)"
+          ],
+          [],
+          [
+            "cd(folder='workspace')",
+            "mv(source='log.txt',destination='archive')"
+          ],
+          [
+            "cd(folder='archive')",
+            "grep(file_name='log.txt',pattern='Error')"
+          ],
+          [
+            "tail(file_name='log.txt',lines=20)"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "case": {
+        "id": "multi_turn_miss_param_0",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "Move 'final_report.pdf' within document directory to 'temp' directory in document. Make sure to create the directory"
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Perform a detailed search using grep to identify sections in the file pertaining to 'budget analysis'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Move one of the file in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "The specific file is final_report.pdf."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "workspace": {
+                "type": "directory",
+                "contents": {
+                  "document": {
+                    "type": "directory",
+                    "contents": {
+                      "final_report.pdf": {
+                        "type": "file",
+                        "content": "Year2024 This is the final report content including budget analysis and other sections."
+                      },
+                      "previous_report.pdf": {
+                        "type": "file",
+                        "content": "Year203 This is the previous report content with different budget analysis."
+                      }
+                    }
+                  },
+                  "archive": {
+                    "type": "directory",
+                    "contents": {}
+                  }
+                }
+              }
+            }
+          },
+          "TwitterAPI": {
+            "tweet_counter": 3,
+            "tweets": {
+              "0": {
+                "id": 0,
+                "username": "analyst_pro",
+                "content": "Just finished analyzing the reports!",
+                "tags": [
+                  "#analysis",
+                  "#reports"
+                ],
+                "mentions": []
+              },
+              "1": {
+                "id": 1,
+                "username": "analyst_pro",
+                "content": "Budget analysis insights coming soon!",
+                "tags": [
+                  "#budget",
+                  "#analysis",
+                  "#insights"
+                ],
+                "mentions": []
+              },
+              "2": {
+                "id": 2,
+                "username": "analyst_pro",
+                "content": "Stay tuned for more updates!",
+                "tags": [
+                  "#updates",
+                  "#staytuned"
+                ],
+                "mentions": []
+              }
+            },
+            "username": "analyst_pro",
+            "password": "Kj8#mP9$vL2"
+          }
+        },
+        "path": [
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.sort",
+          "GorillaFileSystem.diff",
+          "TwitterAPI.post_tweet"
+        ],
+        "involved_classes": [
+          "TwitterAPI",
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_miss_param_0",
+        "ground_truth": [
+          [
+            "cd(folder='document')",
+            "mkdir(dir_name='temp')",
+            "mv(source='final_report.pdf', destination='temp')"
+          ],
+          [
+            "cd(folder='temp')",
+            "grep(file_name='final_report.pdf',pattern='budget analysis')"
+          ],
+          [
+            "sort('final_report.pdf')"
+          ],
+          [],
+          [
+            "cd(folder='..')",
+            "mv(source='previous_report.pdf',destination='temp')",
+            "cd(folder='temp')",
+            "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+          ]
+        ]
+      }
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "case": {
+        "id": "multi_turn_miss_param_1",
+        "question": [
+          [
+            {
+              "role": "user",
+              "content": "I am alex. Check if the current directory is under my name and list all the visible and hidden contents in the current directory now, please."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Go to workspace directory and move one of the 'log.txt' files into a new directory 'archive'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "Finally, show the last several lines the file."
+            }
+          ],
+          [
+            {
+              "role": "user",
+              "content": "To be exact, it should be last 20 lines."
+            }
+          ]
+        ],
+        "initial_config": {
+          "GorillaFileSystem": {
+            "root": {
+              "alex": {
+                "type": "directory",
+                "contents": {
+                  "workspace": {
+                    "type": "directory",
+                    "contents": {
+                      "log.txt": {
+                        "type": "file",
+                        "content": "This is a log file. No errors found. Another line. Yet another line. Error: Something went wrong. Final line."
+                      },
+                      "archive": {
+                        "type": "directory",
+                        "contents": {}
+                      },
+                      ".hidden_file": {
+                        "type": "file",
+                        "content": "This is a hidden file."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path": [
+          "GorillaFileSystem.ls",
+          "GorillaFileSystem.find",
+          "GorillaFileSystem.mv",
+          "GorillaFileSystem.grep",
+          "GorillaFileSystem.tail"
+        ],
+        "involved_classes": [
+          "GorillaFileSystem"
+        ]
+      },
+      "gold": {
+        "id": "multi_turn_miss_param_1",
+        "ground_truth": [
+          [
+            "ls(a=True)"
+          ],
+          [
+            "cd(folder='workspace')",
+            "mv(source='log.txt',destination='archive')"
+          ],
+          [
+            "cd(folder='archive')",
+            "grep(file_name='log.txt',pattern='Error')"
+          ],
+          [],
+          [
+            "tail(file_name='log.txt',lines=20)"
+          ]
+        ]
+      }
+    }
+  ],
+  "research_checkout_head": "99301fa149af86a6f9743d2b0405c9234ba39586",
+  "source_custody": "Research checkout HEAD is context only: at least BFCL_v3_simple.json is an untracked acquisition, so this commit does not attest the dataset. Per-file SHA-256 and embedded original records bind the local acquisition; the upstream V3 scorer revision is not yet pinned."
+}

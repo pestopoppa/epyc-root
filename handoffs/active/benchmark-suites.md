@@ -146,6 +146,7 @@ both of which are overridden by measured rewards later.
 | tau-bench | **unknown — needs sizing. Nothing on disk** | **unknown — needs determination.** Multi-turn agentic with a simulated user; closest existing substrate is `agentic_swe_harness.py`, but the user-simulator is not built |
 | SWE-bench (already paid for) | repo checkouts **1.3G measured** at `epyc-inference-research/artifacts/architect-code-eval-20260724/swebench_repos`; `swebench_verified.json` 7.8M; `questions_livecodebench_hard.json` 6.3M (materialised LCB-hard n=53); `.venv-swebench` 361M | official docker eval. **Not visible from this devcontainer's docker context** (19 images / 49.66G, none SWE) — the gold images live on the host daemon; confirm before assuming they are still cached |
 | OlympiadBench | **736K measured** (`datasets--math-ai--olympiadbench`) | none — numeric/symbolic checker; `olympiadbench_numeric` / `olympiadbench_hard` adapters already registered |
+| IFBench | **421,499 bytes** raw selected corpus, **412 KiB allocated** in [the pinned archive](../../data/benchmarks/ifbench-1c40f0c/README.md) | Deterministic offline scorer; prepared Python environment **35M** plus NLTK data **52M** separately. Generation requires model compute. |
 
 Headroom read: GPQA-D and OlympiadBench are effectively free. LCB is the only candidate with a
 material disk cost, and one release is already paid for. **BFCL and tau-bench corpus sizes are the
@@ -301,7 +302,15 @@ fleet models.** No inference runs without the standing region claim; no at-scale
         default = native function-call path under key `bfcl_v3` (checker-only; the only path comparable to
         the published keys, which is CJ-3e's purpose); the production REPL path may be added later under its
         own key (e.g. `bfcl_v3_repl_local`). Adoption stays with the operator at CJ-GATE. Rationale: §3 of
-        `docs/design/cj1-gpqa-sample-and-cj1e-gpu-pair.md` (research `b1c7dedb`). Sample still unwired.
+        `docs/design/cj1-gpqa-sample-and-cj1e-gpu-pair.md` (research `b1c7dedb`). The fixed [26-case
+        coverage manifest](../../data/benchmarks/bfcl-v3-cj3d-prep-20261104/README.md) preserves raw
+        case/gold IDs and source hashes. It is not representative or scorable: bind the official V3
+        checker and native-call transport/parser, validate positive and negative controls, and prove
+        any multi-turn state requirements before use. A proposed [response adapter](../../proposed/cj567/openai_tool_calls.py)
+        preserves ordered structured calls and distinguishes parse errors; its twelve synthetic tests pass,
+        but the adapter is not wired to the upstream checker or a live transport. No benchmark result
+        follows from this manifest.
+  - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
       Next-80B reports `bfcl_v3` 0.703 — two keys, no comparison). A single local run under ONE key
@@ -354,8 +363,7 @@ the 0.6B smoke was engineering-only. The 27B cohort and paired comparison remain
 Pinned preparation records and control evidence: [`PLAN.json`](../../artifacts/compute/codex3-ifbench-prep-20261031/PLAN.json),
 [`SNAPSHOT.sha256`](../../artifacts/compute/codex3-ifbench-prep-20261031/SNAPSHOT.sha256),
 and [`OFFLINE-CONTROL.log`](../../artifacts/compute/codex3-ifbench-prep-20261031/OFFLINE-CONTROL.log).
-The prepared scratch copy is not durable corpus storage; preserve its input closure when publishing
-a new owner-controlled row. [no-belief: preparation only]
+The exact selected 300-row corpus and prompt identity manifest are retained in [the pinned corpus archive](../../data/benchmarks/ifbench-1c40f0c/README.md), with upstream blob IDs, SHA-256 and license attribution. The current V7 runner skips the manifest’s empty expected answers; use the prepared direct-corpus generation worker and official offline scorer instead of claiming V7 execution. Preserve its scorer/runtime closure in the owner-controlled row. [no-belief: preparation only]
 
 Same five-step block as CJ-1…CJ-4. **Feeds CJ-GATE; does not bypass it** — adoption as a ranking prior
 and registration as an eval-tower row remain two separate operator decisions.
@@ -371,6 +379,18 @@ our own harness and score offline.
 - [ ] **CJ-6a. Acquire the corpus** — `allenai/IFBench`, Apache-2.0 code, ODC-BY data. 300 prompts / Steps (absorb 6b/6c/6d/6f): record size on disk in the CJ table; scoring is judge-free, network-free, sampling-free (only generation needs the fleet); wire a representative sample through our generation harness handing the scorer prompt-keyed JSONL; pin the repo by commit SHA and pre-seed NLTK data before the first run.
       344 constraint instances / 58 distinct constraint ids (independently re-derived from the
       released data, every registry entry exercised).
+      First wiring arm [inference]: Qwen3.8-27B-Q8_0, model SHA-256
+      `a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348`, official root corpus
+      SHA-256 `d2ada7da94a38cfe406351614c4e686846ed2da6d1b339db95fa5ead19554a4a`, temperature 0,
+      seed 20261031, reasoning off, max 4096 tokens. CPU quarter; est 14400 s is a provisional
+      window budget, not a completion guarantee. Report per-prompt dispositions and strict/loose
+      outcomes; no model delta is claimed from this arm. Stop at 300 accounted prompts, first
+      unresolved exposed request, STOP, or the deadline; never redraw an exposed prompt.
+      Stop-on-answer when all 300 valid prompt responses have exact-joined and both official
+      scorers finish. Stop-on-futility on an unresolved exposed request or insufficient remaining
+      time for the next request and cleanup. Gate-class = futility-only at interim looks; the
+      single arm is descriptive and has no formal promotion gate.
+  - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
       sampling-free; only generation needs the fleet.

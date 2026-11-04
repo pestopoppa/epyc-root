@@ -1,0 +1,81 @@
+{
+  "constraint_ids": 58,
+  "constraint_instances": 344,
+  "files": [
+    {
+      "bytes": 421499,
+      "git_blob": "a8e343ed928d8b4e649b9dba651fed7757ccacc3",
+      "path": "data/IFBench_test.jsonl",
+      "sha256": "d2ada7da94a38cfe406351614c4e686846ed2da6d1b339db95fa5ead19554a4a",
+      "url": "https://raw.githubusercontent.com/allenai/IFBench/1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d/data/IFBench_test.jsonl"
+    },
+    {
+      "bytes": 11357,
+      "git_blob": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "path": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "url": "https://raw.githubusercontent.com/allenai/IFBench/1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d/LICENSE"
+    },
+    {
+      "bytes": 4931,
+      "git_blob": "8f2c4ecfbff0a13a71efa27ab10666bc54eeaa92",
+      "path": "README.md",
+      "sha256": "3aeda5d9691ba92c2439a3ed881c51f342f3e609e997ee66f854f12138f73807",
+      "url": "https://raw.githubusercontent.com/allenai/IFBench/1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d/README.md"
+    }
+  ],
+  "rows": 300,
+  "runtime_scope": "corpus only; offline scorer source/environment and live generation are separate",
+  "selected_upstream_path": "data/IFBench_test.jsonl",
+  "selection_note": "Root data/IFBench_test.jsonl is the selected original; the similarly named ifbench/data file is not byte-identical.",
+  "source": "https://github.com/allenai/IFBench",
+  "source_code_license": "Apache-2.0",
+  "source_commit": "1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d",
+  "source_data_license": "ODC-BY",
+  "source_data_license_url": "https://opendatacommons.org/licenses/by/1-0/",
+  "unique_prompts": 300,
+  "upstream_commit_tree_sha": "6844134893f9bfa2d6663f4b4acf5ecc6a9bf7f7",
+  "upstream_reference_sample": {
+    "exact_prompt_joins_reported": 300,
+    "rows_reported": 300,
+    "scope": "upstream reference output; not a local model or quality result",
+    "source": {
+      "bytes": 621872,
+      "git_blob": "acba40b66032b750dfc9034ceb98e3a6c2d00a2c",
+      "path": "data/sample_output.jsonl",
+      "sha256": "f9ad5227e47b175d91ec18c1b9ae222e71c64c7aaf1696f915e83efc00f62b3a",
+      "url": "https://raw.githubusercontent.com/allenai/IFBench/1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d/data/sample_output.jsonl"
+    },
+    "stored_in_archive": false
+  },
+  "upstream_tree_listing": {
+    "entries": [
+      {
+        "mode": "100644",
+        "path": "LICENSE",
+        "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+        "size": 11357,
+        "type": "blob",
+        "url": "https://api.github.com/repos/allenai/IFBench/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
+      },
+      {
+        "mode": "100644",
+        "path": "README.md",
+        "sha": "8f2c4ecfbff0a13a71efa27ab10666bc54eeaa92",
+        "size": 4931,
+        "type": "blob",
+        "url": "https://api.github.com/repos/allenai/IFBench/git/blobs/8f2c4ecfbff0a13a71efa27ab10666bc54eeaa92"
+      },
+      {
+        "mode": "100644",
+        "path": "data/IFBench_test.jsonl",
+        "sha": "a8e343ed928d8b4e649b9dba651fed7757ccacc3",
+        "size": 421499,
+        "type": "blob",
+        "url": "https://api.github.com/repos/allenai/IFBench/git/blobs/a8e343ed928d8b4e649b9dba651fed7757ccacc3"
+      }
+    ],
+    "truncated": false,
+    "url": "https://api.github.com/repos/allenai/IFBench/git/trees/1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d"
+  }
+}
