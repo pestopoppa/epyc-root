@@ -234,6 +234,15 @@ def bind(spec: dict, model_digest=sha_file, env=None) -> dict:
         if not isinstance(c['entry'], list) or not c['entry']:
             needs.append(f'entries.{c["backend"]}: no launch entry argv bound')
             break
+    # Seal entry source: every argv element naming an existing file is bound by content,
+    # so editing the entry (e.g. fold_entry.py) after bind invalidates the plan.
+    entry_files = {}
+    for b, argv in sorted((spec.get('entries') or {}).items()):
+        for a in argv if isinstance(argv, list) else ():
+            if isinstance(a, str) and '{' not in a and os.path.isabs(a) and Path(a).is_file():
+                p = real(a, errors, f'entries.{b}')
+                if p is not None:
+                    entry_files[a] = sha_file(p)
     pool = spec.get('prompt_pool') or {}
     pp = real(pool.get('path', ''), errors, 'prompt_pool')
     if pp is not None and sha_file(pp) != pool.get('sha256'):
@@ -245,6 +254,7 @@ def bind(spec: dict, model_digest=sha_file, env=None) -> dict:
             'llama_tree': tree, 'images': images, 'models': models, 'cells': cells,
             'prompt_pool': {'path': str(pp) if pp else None, 'sha256': pool.get('sha256')},
             'limits': spec.get('limits', {}), 'decision_rule': rule, 'pairs': pairs,
+            'entry_files': entry_files,
             'arm_order': 'ABBA',
             'result_root': spec.get('result_root'), 'knob_probe': probe,
             'spec_sha256': hashlib.sha256(canon(spec)).hexdigest()}
@@ -274,6 +284,9 @@ def verify(plan: dict, model_digest=sha_file, env=None) -> list[str]:
     for path, d in plan['models'].items():
         if not Path(path).is_file() or model_digest(Path(path)) != d:
             errs.append(f'model changed: {path}')
+    for path, d in (plan.get('entry_files') or {}).items():
+        if not Path(path).is_file() or sha_file(Path(path)) != d:
+            errs.append(f'entry source changed: {path}')
     pp = plan['prompt_pool']
     if pp['path'] and sha_file(Path(pp['path'])) != pp['sha256']:
         errs.append('prompt_pool changed')
