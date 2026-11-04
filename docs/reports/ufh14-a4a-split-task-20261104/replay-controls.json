@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "checks": {
+    "recorded_three_part_match": true,
+    "prefix_tamper": true,
+    "suffix_tamper": true,
+    "metadata_tamper": true,
+    "nontruncation": true,
+    "role_tamper": true,
+    "second_marker": true,
+    "recorded_transform_restores_exact_original": true,
+    "duplicate_candidate_ambiguous_refused": true,
+    "multiple_known_originals_refused": true,
+    "legacy_single_part_retained": true
+  },
+  "wire": "/mnt/raid0/llm/tmp/refactor-a4a-prefix-20261031/runs/native-1793472509/results/C4/cxa+a4a-treatment/r1/wire/wire-bodies.jsonl.gz",
+  "wire_sha256": "82e7f7dd11f7acd2b58c4d43f22ced8f77b14c570d6208d1497c3d06e35a1593",
+  "scope": "offline recorded-wire repair only; no native performance or efficacy conclusion"
+}
