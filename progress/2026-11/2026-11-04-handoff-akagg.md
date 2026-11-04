@@ -99,3 +99,7 @@ Acknowledged CH27 rc70 missing/symlinked CPU lock preflight: no FINAL or sealed 
 ## 15:10Z — Integrate 28 bounded results and supply the existing CH26 calibration stop rule; implement missing successor prerequisites.
 
 Consumed 28 completed bounded reports. CH26 owned capture, CH27 global custody, W5s sealed closure and CH33 discriminating split remain incomplete. Added the existing 24-pair/cmp5 stop rule to CH26 without changing admissibility, and delegated concrete PID custody, source-closure and split-runner implementation. No row is claimed ready from these drafts.
+
+## 15:12Z — Acknowledge GDN HIP build affinity refusal and prepare a safe successor.
+
+Filed already-judged GDN build refusal: rc1 before compilation because the grant affinity contained four cores and their SMT siblings while the job required exactly four logical CPUs. No full-build or native-op result. Preserved native RESULT sha 1c930529313016708a48ca82db8f76b608548732a8e6b1157fc1f0dd2f35f3bc; successor repair and independent controls are in progress.
