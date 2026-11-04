@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T14:18:05Z reason=disk-floor
+job_id=kvu-kpf174-custody-r1-20261104
+owner=h-kvu
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T14:17:58Z
+regions=24-47

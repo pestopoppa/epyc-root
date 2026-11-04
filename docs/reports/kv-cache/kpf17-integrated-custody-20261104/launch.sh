@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+D=/mnt/raid0/llm/tmp/kvfork/kpf17-integrated-custody-20261104
+ID=kvfork17-integrated-custody-20261104
+exec /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id "$ID" --class cpu --role build --gpu-quiet none --min-window 300 --stop "$D/STOP" --workdir "$D" --precond-cmd "printf '%s  %s\n' 58cf5ea74d669ed28e841423e0383b5a2d63f0e18a18802426a5fc972d645b13 '$D/runtime.sha256' | sha256sum -c && sha256sum -c '$D/runtime.sha256'" --complete-cmd "/usr/bin/python3 $D/complete.py $D/RESULT.json" --cmd "sudo -n /usr/bin/nsenter -t 1 -m -- /usr/bin/setpriv --reuid=1000 --regid=1000 --init-groups /usr/bin/env FILLER_ID=\$FILLER_ID FILLER_END=\$FILLER_END FILLER_GRANTS_DIR=\${FILLER_GRANTS_DIR:-/mnt/raid0/llm/tmp/compute-flags/grants} FILLER_CPUS=\$FILLER_CPUS FILLER_PIDFILE=\$FILLER_PIDFILE FILLER_DEADLINE=\$FILLER_DEADLINE FILLER_STOPFILE=\$FILLER_STOPFILE FILLER_DRYRUN=\${FILLER_DRYRUN:-0} FILLER_SMOKE=\${FILLER_SMOKE:-0} FILLER_DRYRUN_RESULT_PATH=\${FILLER_DRYRUN_RESULT_PATH:-} /usr/bin/python3 $D/job.py"

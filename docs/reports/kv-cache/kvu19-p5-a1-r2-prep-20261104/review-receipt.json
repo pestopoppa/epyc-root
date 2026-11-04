@@ -1,0 +1,15 @@
+{
+ "schema": "kvu16h.p3.successor-review.v1",
+ "date": "2026-11-04",
+ "latest_handoff": "handoffs/active/kv-cache-program.md:KVU-19",
+ "predecessor_failure": "none: r3 PASS on production v10; this row changes only the binary (BIN/STORE/LD_LIBRARY_PATH/linkage) to the champion store build",
+ "newer_row_found": false,
+ "full_protocol_unchanged": true,
+ "full_protocol_sha256": "e559549661f33d3c48d25bd16ccaf9218a3c17084585ca13c559bc6564d822af",
+ "private_binding": "Six current upstream lock modules copied byte-for-byte; catalog pins original and private paths; isolated custom loader compiles verified bytes rather than reading shared Python modules or pycache. Optional telemetry is absent and caught by upstream library. Standard library/interpreter remains system-provided.",
+ "lock_semantics": "Current upstream dryrun no-lock policy preserved. No claim of exclusive GPU smoke overlap protection. Full branch still acquires gpu-quiet exclusive and requested CPU admission; lock files use shared host namespace.",
+ "same_uid_caveat": "Private source is checksum-bound, not protected against concurrent same-UID mutation after verification.",
+ "offline_tests": 18,
+ "native_qualification": "required; not run by this preparation",
+ "parking_change": "Existing --park-mode prefill selected; full shapes,20rows,2repetitions,matched occupancy,draft/sampling/cleanup gates unchanged. Failure result serialized before rc1."
+}

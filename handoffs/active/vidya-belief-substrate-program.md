@@ -2107,6 +2107,8 @@ and they are **not** backfilled: a tuple invented on read would claim a warrant 
 Owner: RTG-57 (`kv-unified-stack-rollout.md`).
 
 - [ ] **VB-KVU-1 — write side for the np × ctx `--kv-unified` driver, before the KVU-8 rerun.** REFINE 2026-11-03 (ws58): KEEP as the np-ctx-kvu family survivor (`np_ctx_kvu.py` ingested W2 and KVU-12.1; 236 ledger frames). Members merged here: VB-KVU-1a, VB-KVU-126-OCCUPANCY, VB-KVU-HPR-PREFIX, VB-KVU-125-QUARTER. DONE WHEN each remaining producer (the 2026-09-24 GPU study drivers, m4_np4_concurrent_live.py, the KVU-12.5 quarter successor, KVU-12.6 occupancy, HPR prefix) writes the one schema before its next run, that run ingests via `np-ctx-kvu-measurement` with refused=0, and the AK canary for its model target lists a claim from it.
+  - `KVU-12.6-GAUGE-LIVE`: capture the prospective native pre/post gauge witness, request-window PID/birth and mapped-library hashes, source/build/model and grant plus incomplete/failed outcomes; project under this existing family and prove the planning-context canary. This one-request capability check is not an np8 comparison; no retrospective warrant or new grading rule.
+
   - The drivers (research `artifacts/np_context_kvu_study_20260924/driver/study_*.sh`) write `summary.tsv` plus
     per-cell `r.json` / `pq.jsonl` / `server.stderr`. None of these has a schema version, row hash or binary
     digest.
@@ -2767,6 +2769,8 @@ The 2026-10-31 Research `0e4321f24bae29355333fcf2cb712a41ce080e2f` E1 runner cop
   - KPF-17a prospective FA exactness: project the per-case CPU/GPU native JSONL with source, binary/library, arm, mask and residency warrant; retain incomplete and unsupported cases, validate the producer and planning-context canary before calling it wired. Use the shared grade; no retrospective warrant or new ladder.
 
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers: REFINE 2026-11-03 (ws58): KEEP as the KV prefix-fork family survivor (`kv_prefix_fork.py`, `chunk-kv`, `kpf261-plan-steps` registered; KPF-18 sidecars already give the Qwen3.6-35B target 25 beliefs). Members merged here: VB-KVU-PF.6a, VB-KVU-PF-KPF181-WIRE, VB-KVU-PF-CHAT-TRACE-WIRE, VB-KPF17-PARTIAL, KPF174D-C1-LAYOUT-SOURCE, KPF174D-PROSPECTIVE-SOURCE, VB-KPF18-G3-PHYSICAL-LAYOUT, VB-KVCHUNK-KDEV-WRITE, VB-KPF62-G3-WRITE, VB-KPF623-CORRECTNESS-WRITE, VB-KPF623-AUX-WRITE, VB-KPF30-PHASE, VB-KPF30-WIRE, VB-KPF26-SCOUT-WIRE, VB-KPF26-API-WIRE, VB-HARVEST-1022.c. DONE WHEN the next KPF run after the hook ingests with refused=0 and `loop_beliefs.py prepare` for its model target lists the new claim.
+  - KPF-17.CUSTODY prospective partial-restore rerun: capture source/build/model identities, actual during-process mapped ggml library hashes, both A/A and mutation controls, PID/birth and grant, and all failures/unknowns in the native run. Project under the existing VB-KVU-PF writer/shared grading and prove its planning-context canary; do not invent an original mapping warrant for the 2026-11-02 execution.
+
   [`kv-prefix-fork-and-paged-attention.md`](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) KPF-18 (fork-vs-fresh equivalence + TTFT),
   KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
   Record shape: per-run JSON with binary sha, argv, arm, prompt-set hash, equivalence verdict, TTFT, prefill tokens,

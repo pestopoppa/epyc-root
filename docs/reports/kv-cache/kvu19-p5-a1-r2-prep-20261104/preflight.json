@@ -1,0 +1,14 @@
+{
+  "schema": "kvu16h.p3.preflight.v1",
+  "weight_hashing": "reuses KVU16a anchored receipt; only stat rechecked; no new weight reads",
+  "model_receipt_sha256": "42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078",
+  "inputs_prepared_outside_grant": true,
+  "source_origin": "/mnt/raid0/llm/tmp/kvu/p3-successor",
+  "runtime_manifest_origin": "progress/evidence/kvu16a-load-20261102/runtime.sha256",
+  "status": "champion-binary successor of r3 PASS protocol; new four-CPU native qualification required",
+  "predecessor": "/mnt/raid0/llm/tmp/kvu/p3-row-r3-20261104",
+  "private_lock_catalog": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/lock-catalog.json",
+  "binary": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin (ak/champion/llama-cpp-ffc1bac82eec = c72ec82f5; contains ac97e305a, 1bceceb05; strings show GGML_CUDA_FA_MASK_SKIP, GGML_CUDA_FA_SEQ_ROWS)",
+  "continuation_of": "handoff-kvu19-p5-champion-a1-20261104",
+  "predecessor_end": "rc75 disk-floor; no full result"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "kvu126-live-gauge-20261104",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu126-gauge-live-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu126-gauge-live-20261104/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "One loaded-endpoint capability witness for experimental CPU build cdf1532b993fe58bd57ba53d91659f4bb4ee508f and the sealed Qwen3.6-35B Q8 MTP model. Require clean identical source before/after build; out-of-tree build/linked-library manifest, captured grant, same PID/birth/listener, own mapped ggml/llama DSO device+inode+SHA sampled strictly between completion request dispatch and response, one HTTP200 completion token, and exactly one integer unique-cell gauge increasing from before to after while within context. Captured child must be reaped and ps -p must prove dead. Preserve raw counters and timestamps; absent or changed custody, partial or failure is INCONCLUSIVE. n=1 answers only whether this concrete build/server exhibits an increase; no population, noise, np8 attribution, performance, promotion or generalization claim. Stop on the single witness or first build/server/gauge/custody error, STOP or deadline.",
+  "estimate_s": 3600,
+  "priority_rank": 25,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-12.6-GAUGE-LIVE",
+  "ram_gib": 80,
+  "min_window_s": 600,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 600,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu126-gauge-live-20261104",
+  "keep": [
+    "job.py",
+    "launch.sh",
+    "model.sha256",
+    "test_job.py",
+    "out/**",
+    "build-full/bin/**",
+    "INPUTS.sha256"
+  ],
+  "lineage": "kvu126-live-gauge",
+  "notes": "Source cdf1532b is an experimental gauge on current frozen v10 base. This row builds in scratch and makes one synthetic native target request, not a deployment or capacity measurement. Build smoke compiles real ggml-base on four CPUs and removes its build before publishing the witnessed digest. Full run verifies the whole model SHA before loading."
+}

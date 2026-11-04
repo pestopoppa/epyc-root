@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T14:29:04Z reason=job-rc-1:exited
+job_id=kvu126-live-gauge-20261104
+owner=handoff-kvu
+step=job-run
+estimated_wall_s=3600
+started=2026-11-04T14:27:49Z
+regions=0-23
