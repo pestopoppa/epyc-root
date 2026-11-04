@@ -371,3 +371,7 @@ KPF-60 checked-fixture r9 was already filed inconclusive. Filed kpf64-impact-4f4
 ## 22:02Z — File interrupted KVU-11c HIP build
 
 The KPF-60 extended fixture was already filed inconclusive. Filed kvu11c-hip-build-20261104 inconclusive: rc75 disk-floor before full server build, linkage and digest receipt; preserved the grant end and partial base log. No GPU validation or promotion follows. HSF-3 census preparation remains incomplete; its completion event is registered.
+
+## 22:06Z — Prepare HSF-3 residual source census
+
+The validator guard proposal was already preserved and remains gated on a native source-bound impact result; the impact run ended at the disk floor. Added explicit bounded census stop conditions to HSF-3. Independent review identified malformed-record, oversized-line, two-pass custody and live SQLite WAL hazards; the source census row is being corrected and is not yet published. No distribution or edit clearance follows.
