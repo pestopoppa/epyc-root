@@ -1,0 +1,22 @@
+{
+  "src/models/lsa-screen-reference.h": {
+    "sealed_sha256": "ea64a04e15befeca4b0deb4351d03fb8c564c130d77d6ae5311cade83ed2cc60",
+    "current_sha256": "ea64a04e15befeca4b0deb4351d03fb8c564c130d77d6ae5311cade83ed2cc60",
+    "matches": true
+  },
+  "src/models/qwen35.cpp": {
+    "sealed_sha256": "bf21b2bb8b1a2b5eff909ca300ca90be2e54d573323cf2c69fef835548080171",
+    "current_sha256": "d4fd6835c3809d990c36651abfcd7d47ca0c52405fcfbd2c438f8ea8dc8e9c15",
+    "matches": false
+  },
+  "experiments/lsa-screen/check_logits.py": {
+    "sealed_sha256": "d743c2222bffcb35ec74054e6c3bf23e2c6a1fb6d3d30bfb38d9a038e6737de1",
+    "current_sha256": "d743c2222bffcb35ec74054e6c3bf23e2c6a1fb6d3d30bfb38d9a038e6737de1",
+    "matches": true
+  },
+  "experiments/lsa-screen/test_graph.cpp": {
+    "sealed_sha256": "8ea18da4fda7f1bfac37c69dcb3d21b360ddce13b7a1833922892c1c1c1a4d94",
+    "current_sha256": "8ea18da4fda7f1bfac37c69dcb3d21b360ddce13b7a1833922892c1c1c1a4d94",
+    "matches": true
+  }
+}
