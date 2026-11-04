@@ -1,0 +1,43 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "SHA-256 custody only; no performance or best-recipe measurement Shares host with GPU job (custody only, no timing).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 1800,
+ "gib": 48,
+ "handoff_task": "mi210-serving-program.md:M4-FOLD-GATE",
+ "id": "inf22-q38-custody-r2-20261103",
+ "keep": [
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/inf22-q38-custody-r2-20261103/launch.sh",
+  "sha256": "ac37ab69b8ee9189e9713bfee3a01f75f2384b13b0ecb42981878029ab2ed7ba"
+ },
+ "lineage": "inf22-q38-custody",
+ "min_window_s": 1200,
+ "owner": "codex-inf22-m4",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:557: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:557: untestable prose prerequisite: 'require its valid VRAM samples to overlap the request batch. Old entries are retired, the plan and speed floor are unbou'"
+ ],
+ "published_at": "2026-11-03T16:33:21Z",
+ "published_from": "/mnt/raid0/llm/tmp/main-publish-specs-20261103/custody.json",
+ "regions": "48-71",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-q38-custody-r2-20261103/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/inf22-q38-custody-r2-20261103",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/inf22-q38-custody-r2-20261103/STOP",
+ "supersedes": "inf22-q38-custody-r1-20261102",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/inf22-q38-custody-r2-20261103"
+}

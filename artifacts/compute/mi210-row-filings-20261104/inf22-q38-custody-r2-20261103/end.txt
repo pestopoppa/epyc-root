@@ -1,0 +1,7 @@
+rc=0 time=2026-11-03T16:35:13Z reason=complete
+job_id=inf22-q38-custody-r2-20261103
+owner=codex-inf22-m4
+step=job-run
+estimated_wall_s=1800
+started=2026-11-03T16:34:16Z
+regions=48-71

@@ -1,0 +1,39 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Execution failed rc=1 in nine seconds (16:31:18\u201316:31:27Z). Original runner.log raises FileNotFoundError reading inputs/needles.jsonl before smoke/needle measurement. The shared out/RESULT.json has subsequently been overwritten by later split-group runs and is not attributable to r2. No phase-attribution verdict is warranted. Parent YARN-E1-MEM remains open; original failure preserved in artifacts/compute/yarn-e1-mem-r2-filing-20261104/runner.log.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:08:19+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-03T16:31:27Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T07:08:19+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:YARN-E1-MEM",
+ "id": "codex-ni-yarn-e1-mem-phase-r2-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r2-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "codex-ni",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "Execution failed rc=1 in nine seconds (16:31:18\u201316:31:27Z). Original runner.log raises FileNotFoundError reading inputs/needles.jsonl before smoke/needle measurement. The shared out/RESULT.json has subsequently been overwritten by later split-group runs and is not attributable to r2. No phase-attribution verdict is warranted. Parent YARN-E1-MEM remains open; original failure preserved in artifacts/compute/yarn-e1-mem-r2-filing-20261104/runner.log.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "codex-ni-yarn-e1-mem-phase-r2-20261103",
+ "row_verdict": "inconclusive",
+ "rule": "Historical E1 memory attribution on unchanged 2026-10-04 E1 and W images: own-PID KFD VRAM and hipMalloc shim series joined to the original YaRN E1 smoke and 128k/240k/400k/500k native needle stages for A0/A1. Higher VRAM is worse; identify the first phase with the +15 GiB excess and whether W removes it. Split stage groups are diagnostic and reset the server between groups; no quality or current champion claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

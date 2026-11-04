@@ -1,0 +1,7 @@
+rc=3 time=2026-11-03T16:39:07Z reason=job-rc-3:exited
+job_id=codex-ni-yarn-e1-mem-phase-r3-20261103
+owner=codex-ni
+step=job-run
+estimated_wall_s=6000
+started=2026-11-03T16:38:55Z
+regions=mi210_0,184-191

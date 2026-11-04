@@ -1,0 +1,184 @@
+{
+ "cap": {
+  "cumulative_across_windows": true,
+  "pilot_wall_s": 3600
+ },
+ "cells": {
+  "L": [
+   128,
+   256,
+   512,
+   1024,
+   2048
+  ],
+  "arms": {
+   "A0": "CPU control using enrolled C6 CPU store candidate (-dev none -ngl 0 --no-op-offload 1); diagnostic only.",
+   "A1": "GPU op-offload using enrolled C6 GPU store candidate (-ngl 0 -ub 2048); diagnostic only.",
+   "A1-disabled": "A1 control using enrolled C6 GPU store candidate with GGML_OP_OFFLOAD_MIN_BATCH=2147483647.",
+   "A2": "GPU -ngl 99 -ncmoe 48 -ub 2048 using enrolled C6 GPU store candidate; diagnostic only."
+  },
+  "gpu_microbatch": {
+   "A1": [
+    512,
+    2048,
+    4096
+   ],
+   "A1-disabled": [
+    512,
+    2048,
+    4096
+   ],
+   "A2": [
+    512,
+    2048,
+    4096
+   ]
+  },
+  "launches_per_cell": 5,
+  "n_gen": 0,
+  "order": "five interleaved launch blocks: L, then A0/GPU arms; GPU ub grid 512/2048/4096; reversed arm and ub order only in later holdout",
+  "reps_per_launch": 1
+ },
+ "claim": "engine filler_run15.sh --class cpu+gpu --gpu-quiet exclusive --claim-cpus 0-95 --role bench (whole host + idle MI210); bench_canonical nested region-lock skipped (CANONICAL_SKIP_REGION_LOCK=1) because the engine claim already holds 0-95 + gpu-quiet exclusive",
+ "control": "A0 at L=2048 is the P-BENCH-PREFILL-1 cell; A1-disabled must be ~A0 (within +-10% median ratio) to separate binary from offload",
+ "created_at": "2026-11-02T18:26:28Z",
+ "kernel": {
+  "build_number": 10500,
+  "build_receipt_path": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104/loadthreads-build/BUILD-RECEIPT.json",
+  "commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "note": "C6 store candidate 729599d69; independent C6 CPU/GPU llama-bench outputs with --load-threads, bound to loadthreads-build/BUILD-RECEIPT.json after build. Exploratory candidate, not qualified champion or production.",
+  "offload_knob_witness": {
+   "file": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+   "symbol": "GGML_OP_OFFLOAD_MIN_BATCH",
+   "verification": "symbol present in strings output; library content hash is pinned in kernel.stores.gpu.files"
+  },
+  "release": "authorized C6 candidate for exploratory PF1 full-rigor expansion; not qualified champion / not production",
+  "stores": {
+   "cpu": {
+    "files": {
+     "libggml-base.so.0.16.0": {
+      "sha256": "2d8abefff2ba0dcd4e1080c0268027f0ac5a7331e0aa21d3e265146ba051a1ea"
+     },
+     "libggml-cpu.so.0.16.0": {
+      "sha256": "79e0c13edd0f598f0ce9dbd4311fc20ae2ef8d4494b1a59834e20e9456148cc7"
+     },
+     "libggml.so.0.16.0": {
+      "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a"
+     },
+     "libllama-bench-impl.so": {
+      "sha256": "0568df3524b628964c7ec84837e1fd7eab0340d73cf817ce97c66359baa04931"
+     },
+     "libllama-common.so.0.0.10500": {
+      "sha256": "56221c3974bc0b554e03304bc96f11c147556002bf3edef6ba53928d083ff96f"
+     },
+     "libllama-quantize-impl.so": {
+      "sha256": "3e5bdd436f44febe63f0a83e3253f08c8da706951bb8f8e0805780f1673a1b7f"
+     },
+     "libllama-server-impl.so": {
+      "sha256": "2a404d4c55dd7435053d80544294a98ea5ae9023422b33bf5e35ce7bc8a633fa"
+     },
+     "libllama.so.0.0.10500": {
+      "sha256": "9412c2ba955e6deed0b78035909ec36cedabc194b689de94a7c10f94a8d27627"
+     },
+     "llama-bench": {
+      "sha256": "718faad47abb189f7266c7fd27ee6b10fb47b62bdc019d379acf69190b036476"
+     }
+    },
+    "linkage_out": [
+     "PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin"
+    ],
+    "linkage_rc": 0,
+    "resolves_to": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin",
+    "store_path": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin",
+    "version": [
+     "729599d69 (C6 store build 20261030; no VERSION.txt)"
+    ]
+   },
+   "gpu": {
+    "files": {
+     "libggml-base.so.0.16.0": {
+      "sha256": "29a56498493073a5049661841c71c7571144b4bf639723149a180e804c99db1f"
+     },
+     "libggml-cpu.so.0.16.0": {
+      "sha256": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a"
+     },
+     "libggml-hip.so.0.16.0": {
+      "sha256": "1647ba7d3afffd2f79a8adf6f1213c6fd0bd088779ea73f820df372a10057f54"
+     },
+     "libggml.so.0.16.0": {
+      "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a"
+     },
+     "libllama-bench-impl.so": {
+      "sha256": "4a56044c14ad2bff3367d42cc39ec26a492912ccde61b6ecfdce223c7baf198c"
+     },
+     "libllama-common.so.0.0.10500": {
+      "sha256": "44cc2cf6e1b0101eee0eda37853196385a193ee31515115a9a8a65a3b6ff1f64"
+     },
+     "libllama-quantize-impl.so": {
+      "sha256": "b06695c918c670b33176e9e70b0139761baeb8a157fac1d7c3f9f29f145f7e2a"
+     },
+     "libllama-server-impl.so": {
+      "sha256": "6bfe8c3956bc9f9c8051d36e963c56a54625f9203f9eb8582a8eb9d48a5bdc8b"
+     },
+     "libllama.so.0.0.10500": {
+      "sha256": "dfb13d6c8c5c7198ebbea3fbfa571b077c007e1d187c3659370c69f8bd50490a"
+     },
+     "llama-bench": {
+      "sha256": "d94c4817838918c043ed6505a42863c851d0012a94c89265b86c80e06e06ebe8"
+     }
+    },
+    "linkage_out": [
+     "PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin"
+    ],
+    "linkage_rc": 0,
+    "resolves_to": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+    "store_path": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+    "version": [
+     "729599d69 (C6 store build 20261030; no VERSION.txt)"
+    ]
+   }
+  }
+ },
+ "model": {
+  "load_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "name": "Qwen3.8-Flash-Next UD-IQ4_XS (Q38FN, served)",
+  "shards": [
+   {
+    "hashed_at": "2026-11-02 (full read, brf-exp04 prep)",
+    "ino": 96209037,
+    "mtime_ns": 1787946258053345946,
+    "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+    "sidecar_match": true,
+    "size": 10946624
+   },
+   {
+    "hashed_at": "2026-11-02 (full read, brf-exp04 prep)",
+    "ino": 96209038,
+    "mtime_ns": 1787971384722588539,
+    "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+    "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+    "sidecar_match": true,
+    "size": 49835229856
+   },
+   {
+    "hashed_at": "2026-11-02 (full read, brf-exp04 prep)",
+    "ino": 96209043,
+    "mtime_ns": 1787972823021404632,
+    "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+    "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833",
+    "sidecar_match": true,
+    "size": 43836407744
+   }
+  ]
+ },
+ "note": "C6 store candidate 729599d69, explicitly authorized for this exploratory diagnostic; not a qualified champion or production kernel.",
+ "package": "EXP-04",
+ "placement_rule": {
+  "A0": "strict <=40% maximum node share",
+  "GPU_arms": "valid in-window sample with >=90% RSS coverage; record max node share as covariate under operator amendment 2026-11-03",
+  "sampler_source": "research pin e7f6262b4844f987854c92bc2339bdab7511f237"
+ },
+ "row_id": "brf-exp04-pf1-full-initial-20261104-r7",
+ "schema": "brf-exp04-identity.v1"
+}

@@ -1,0 +1,29 @@
+{
+ "aa_enrollment_proposed": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/aa_enrollment.PROPOSED",
+ "aa_enrollment_sha256": "2a673a6f64374f2f6499a57241c08f6298ec80f442781dce922be4748ada9678",
+ "aa_enrollment_target": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/scripts/champion/m4/aa_enrollment.py",
+ "custody_receipts": [
+  {
+   "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/target-custody.json",
+   "sha256": "ac658ca6aa8a25ec5e63e619be5b58ad8c6af0420007c876eb4163a1dd00da24"
+  },
+  {
+   "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/drafter-custody.json",
+   "sha256": "a03544e7150769a0021588a8a87b6e0c0b7d61eafdd10eb79655327ca918a5ff"
+  }
+ ],
+ "dry_aa_sha256": "a89a6985b671883403263c3d87f0c1a3aac9ad68ec020194b8542077c194da4b",
+ "dry_native_sha256": "4f3758bf15fecfcb65954fb918ffcaa61f8508aa80e1c666ff3c79cae4cff074",
+ "gpu_enrollment_proposed": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r6-20261102/run/gpu_enrollment.PROPOSED",
+ "gpu_enrollment_sha256": "499351eb353691936a162486aaf28fda700cd102565b89a23adca7d13a438df6",
+ "gpu_enrollment_target": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r6-20261102/scripts/benchmark/m4_gpu_speed/enrollment.py",
+ "launcher_sha256": "46627a3e0b1d424c7cfc2604baee07057602907f078eb455c156aa31e327d250",
+ "predeclaration_sha256": "e4c86c07d22d893852924bf0b47718ddd3ecea04ffe160424250ef811bf9c40f",
+ "real_aa_sha256": "4763416ef410db2e26d9ffa6e0aea5092d5d75b51552669a6de7dd3a661e734d",
+ "real_native_sha256": "d4fedc4bd51005308b78ea900b0fa97225e7fe4804fb2d50472f83b4a280b4a8",
+ "row_spec_sha256": "1ff30080475bb6ec62e3b14741143564955f9344657ee35406e4fdaa3a46f057",
+ "schema": "epyc.inf22.m4.aa.enrollment-review.v1",
+ "status": "PROPOSED_UNARMED",
+ "successor_note_20261103": "r8 successor of r7 and r6. r6->r7: run_gpu_aa.py supersedes (renames, never deletes) a stale QUALIFICATION watcher dir (epyc-root 6174d0078). r7->r8: server_np_sweep.py own-PID residency sampler cadence 1.0 s -> 0.1 s because a warm 0.9 s qualification batch got no in-batch sample (epyc-root eca595779); validity requirements unchanged, only sample density. Prior packets and their dry-captures are retained unmodified.",
+ "ws58_engine_note_20261102": "engine copy kept at the reviewed b249a092 (pre-GRANT_CPUS): PREDECLARATION holds physical q3 quiet; with this engine --claim-cpus 72-95 is region-locked with gpu-quiet exclusive and the allocator books q3 + gpu-quiet (rowflow legacy_claim). A brief refresh to b16bc212 (19:0xZ) was reverted before any smoke ran."
+}

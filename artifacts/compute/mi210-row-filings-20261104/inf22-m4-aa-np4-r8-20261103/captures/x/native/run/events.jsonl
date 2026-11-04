@@ -1,0 +1,1 @@
+{"event": "server_stopped", "model": "gate", "np": 4, "port": 18792, "result": {"birth": 185190187, "pid": 2904771, "ps_verified_dead": true, "returncode": 0}, "timestamp": "2026-11-03T18:10:53.130824+00:00"}

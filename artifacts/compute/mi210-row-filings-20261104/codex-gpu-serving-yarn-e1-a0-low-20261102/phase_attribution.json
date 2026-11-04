@@ -1,0 +1,100 @@
+{
+  "schema": "yarn-e1-mem-phase/v1",
+  "scope": "diagnostic split-stage historical replay",
+  "native_calls": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/native/A0/20261102T132639Z/calls.jsonl",
+  "kfd": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/kfd.jsonl",
+  "shim": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/hipmalloc.jsonl",
+  "stages": {
+    "s1": {
+      "start": 1793625999.422,
+      "end": 1793626011.0,
+      "requests": 3,
+      "own_kfd_start_gib": 36.779,
+      "own_kfd_peak_gib": 37.128,
+      "own_kfd_end_gib": 37.128,
+      "shim_live_start_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 68096
+      },
+      "shim_live_end_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_delta_bytes": {
+        "ggml_cuda_pool_leg": 300914176,
+        "rocblas": 33554432,
+        "ggml-hip": 0
+      }
+    },
+    "s2": {
+      "start": 1793626010.29,
+      "end": 1793626020.0,
+      "requests": 3,
+      "own_kfd_start_gib": 37.128,
+      "own_kfd_peak_gib": 37.128,
+      "own_kfd_end_gib": 37.128,
+      "shim_live_start_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_end_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      }
+    },
+    "128k": {
+      "start": 1793626020.328,
+      "end": 1793626352.0,
+      "requests": 6,
+      "own_kfd_start_gib": 37.128,
+      "own_kfd_peak_gib": 37.132,
+      "own_kfd_end_gib": 37.132,
+      "shim_live_start_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_end_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      }
+    },
+    "240k": {
+      "start": 1793626352.206,
+      "end": 1793626993.0,
+      "requests": 6,
+      "own_kfd_start_gib": 37.132,
+      "own_kfd_peak_gib": 37.132,
+      "own_kfd_end_gib": 37.132,
+      "shim_live_start_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_end_bytes": {
+        "ggml-hip": 39005180160,
+        "ggml_cuda_pool_leg": 300982272,
+        "rocblas": 33554432
+      },
+      "shim_live_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      }
+    }
+  }
+}

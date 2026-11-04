@@ -1,0 +1,28 @@
+=== NUMA placement check (pid:3133548, canonical:Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf) at 2026-11-03T21:40:32Z ===
+
+Per-node process memory usage (in MBs) for PID 3133548 (llama-bench)
+                           Node 0          Node 1          Node 2          Node 3           Total
+                  --------------- --------------- --------------- --------------- ---------------
+Huge                         0.00            0.00            0.00            0.00            0.00
+Heap                        22.52           24.54           22.53           18.53           88.11
+Stack                        0.01            0.01            0.01            0.01            0.03
+Private                   6879.17        68764.79         6873.90         6957.24        89475.10
+----------------  --------------- --------------- --------------- --------------- ---------------
+Total                     6901.70        68789.34         6896.44         6975.77        89563.25
+--- /proc/3133548/status + smaps_rollup ---
+VmRSS:	91712772 kB
+RssAnon:	91600664 kB
+RssFile:	  112108 kB
+VmSwap:	       0 kB
+Rss:            91712772 kB
+Anonymous:      91600664 kB
+AnonHugePages:  63393792 kB
+  node 0:    6901.70 MB    7.7%
+  node 1:   68789.34 MB   76.8%
+  node 2:    6896.44 MB    7.7%
+  node 3:    6975.77 MB    7.8%
+--- verdict ---
+nodes=4 total=89563.25MB even_share=25.0% max=node1@76.8% threshold=40%
+SKEW: node1 holds 76.8% of 89563.25 MB (> 40%).
+      --interleave=all was not honoured. Run scripts/utils/numa_evict.py and reload;
+      any timing taken in this window is NOT a valid measurement.

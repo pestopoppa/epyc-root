@@ -1,0 +1,11 @@
+{
+  "verdict": "pass",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Unique row-time epyc.m4.custody.complete.v1 result carries four SHA-256 receipts and plan ff4980a9ab81529c1fce1445f7cb029ba6509402e2ff648ae378576ef0de61a4. Custody completion only: measurement=false, gpu_quiet_held=false and host shared with GPU job. No performance/best-recipe/fold verdict.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r2-20261103/native-result.json": "3671bf14648bd20825b4741f121d5efb7934961859d3501a29bc8bbfb2ac54d2",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r2-20261103/end.txt": "8761a8aa1397760bb51325b333c679f21bbee9cce591a8d82b416b27227f2054",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r2-20261103/manifest.json": "119e7aa1fa64f5eadba6c1ccce39631f4e2a052192374db59526fe1a56decb57"
+  }
+}

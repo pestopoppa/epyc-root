@@ -1,0 +1,11 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc75 at 20:36Z: stopped/partial attempt. Shared COMPLETE result written 21:40Z is later than the grant and cannot establish run ownership. Split-group resets do not exclude cross-chain growth; no close of YARN-E1-MEM.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/native-result.json": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e",
+    "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/end.txt": "8583001e4c7a16de614cdf2203a7031a609815ce8dfc495dad91bd0e05f50031",
+    "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/manifest.json": "7e97214bb4530d546ca4e8358980d0ad809c9a7586daa5fca12ebafb0cdbc031"
+  }
+}

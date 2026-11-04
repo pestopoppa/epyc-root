@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T23:07:38Z reason=complete
+job_id=brf-exp04-pf1-crossover-pilot-20261102-r3
+owner=ws58
+step=job-run
+estimated_wall_s=3600
+started=2026-11-02T22:59:12Z
+regions=mi210_0,0-95

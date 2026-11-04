@@ -1,0 +1,17 @@
+{
+  "schema": "yarn-e1-mem-chain-segment-counts/v1",
+  "source": "inputs/haystack_meta.json:stages_content_tokens",
+  "cumulative_tokens": {
+    "128k": 127000,
+    "240k": 238500,
+    "400k": 398000,
+    "500k": 498000
+  },
+  "segment_tokens": {
+    "128k": 127000,
+    "240k": 111500,
+    "400k": 159500,
+    "500k": 100000
+  },
+  "note": "reuse-bound accounting only; native prompt_n/cache_n remains observed"
+}

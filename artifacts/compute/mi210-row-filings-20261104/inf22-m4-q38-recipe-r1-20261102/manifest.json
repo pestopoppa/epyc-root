@@ -1,0 +1,41 @@
+{
+ "admission_class": "block-timing-pairable",
+ "decision_rule": "descriptive same-frame t48 versus t96 recipe bundles; no best-recipe or fold verdict Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/source/scripts/coordination/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 7200,
+ "gib": 48,
+ "handoff_task": "mi210-serving-program.md:M4-FOLD-GATE",
+ "id": "inf22-m4-q38-recipe-r1-20261102",
+ "keep": [
+  "captures/run-r1/capture/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/launch.sh",
+  "sha256": "304da9a8a3e64ff7c5c0d484624da6539e96ac6e768217c52ab6f83aa8921683"
+ },
+ "min_window_s": 6900,
+ "owner": "codex-inf22-m4",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:558: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:558: untestable prose prerequisite: 'require its valid VRAM samples to overlap the request batch. Old entries are retired, the plan and speed floor are unbou'"
+ ],
+ "published_at": "2026-11-03T07:19:12Z",
+ "published_from": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/row-spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/captures/run-r1/capture/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/STOP",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r1-20261102/source"
+}
