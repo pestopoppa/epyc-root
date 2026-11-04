@@ -379,3 +379,7 @@ Filed sentinel build r22 inconclusive after rc75 disk-floor without a full resul
 ## 23:18Z — Publish source-bound W2 tracer build prerequisite
 
 Published inf75-w2-native-tracer-cpu-build-20261104 after a smoke compiled the real pinned C5-header tracer into a separate ELF and emitted its SHA receipt. The full build and W2 GPU census remain pending. W5s storage admission recovered; repaired publisher-only CPU admission with outside-grant, deadline and missing-ancestor controls, preserving full grant predicates. The fresh W5s publisher smoke was started and its PASS/FAIL events registered; it is not yet claimed qualified. The reported GDN event was already filed.
+
+## 23:26Z — Qualify NEMO marker build successor and repair W2 census custody
+
+Published nemo-server-marker-build-r13-20261104 after publisher smoke PASS; full source-bound build and profiling remain pending. W2 census preparation now binds completion to its own result, requires the full tracer receipt and proves owned-descendant drain; 161 model-free controls passed, but final tracer custody and GPU census remain pending. Prepared a model-free CH31 bridge and an unbuilt source-bound C5 ggml adapter; the short synthetic row was refused under the five-minute floor, and no native model or causation claim follows. The reported C6 diagnostic was already filed.
