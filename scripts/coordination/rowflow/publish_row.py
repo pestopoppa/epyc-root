@@ -33,6 +33,8 @@ the log path); the allocator grants only PASSed rows."""
 import argparse
 import datetime as dt
 import glob
+import hashlib
+import json
 import os
 import re
 import shutil
@@ -308,50 +310,143 @@ def run_gpu_queue(flags):
     return n
 
 
+def completed_result(row, passed):
+    """Resolve the declared result once; a glob never becomes a destination directory."""
+    declared = row.get("declared_result_path", row.get("result_path"))
+    scratch = os.path.realpath(row.get("scratch_root") or "")
+    rf.need(row.get("scratch_root") and isinstance(declared, str) and os.path.isabs(declared),
+            "completed-smoke result needs an absolute declaration and scratch_root")
+    matches = glob.glob(declared, recursive=True) if glob.has_magic(declared) else [declared]
+    rf.need(len(matches) == 1, "completed-smoke result must match exactly one file")
+    source = os.path.realpath(matches[0])
+    rf.need(os.path.isfile(source) and os.path.commonpath([scratch, source]) == scratch
+            and source != scratch, "completed-smoke result is missing or outside scratch_root")
+    recorded = passed.get("result_path")
+    rf.need(recorded == declared or (isinstance(recorded, str) and not glob.has_magic(recorded)
+            and os.path.realpath(recorded) == source), "PASS result differs from the declared result")
+    if passed.get("result_sha256") is not None:
+        rf.need(rf.sha256(source) == passed["result_sha256"], "PASS result content hash changed")
+    return source
+
+
+def completed_bindings(flags, rid, row, passed, source):
+    """Bind filing to the unchanged PASS, published code and current validated result bytes."""
+    rf.need(row.get("schema") == rf.SCHEMA and row.get("id") == rid and passed.get("id") == rid,
+            "completed smoke row/PASS identity mismatch")
+    rf.need(passed.get("result_format") == row.get("result_format"), "PASS result format mismatch")
+    for key in ("launcher", "engine"):
+        item = row.get(key) or {}
+        rf.need(item.get("path") and item.get("sha256") and os.path.isfile(item["path"]),
+                f"completed smoke {key} identity missing")
+        rf.need(rf.sha256(item["path"]) == item["sha256"] == passed.get(key + "_sha256"),
+                f"completed smoke {key} content hash changed")
+    parsed = rf.parse_launcher(row["launcher"]["path"])
+    rf.need(os.path.realpath(parsed["engine"]) == os.path.realpath(row["engine"]["path"]),
+            "completed smoke launcher engine differs")
+    sources = {os.path.realpath(path): rf.sha256(path) for path in rf.referenced_paths(parsed)
+               if os.path.isfile(path)}
+    return {"schema": "epyc.rowflow.completed_smoke_filing.v1", "id": rid,
+            "manifest_sha256": hashlib.sha256(json.dumps(row, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+            "pass_sha256": rf.sha256(rf.pass_path(flags, rid)), "result_path": source,
+            "result_sha256": rf.sha256(source), "sources_sha256": sources,
+            "launcher_sha256": row["launcher"]["sha256"], "engine_sha256": row["engine"]["sha256"]}
+
+
 def file_if_complete(flags, rid, row):
     """ws58 2026-11-02: a smoke that COMPLETED the whole job is the run. Its result already sits where the row writes it
-    (a dryrun_native result is copied there); grants/<id>.ended + .complete are written as a granted run leaves them, so
+    (a declared glob resolves to one literal file); grants/<id>.ended + .complete are written as a granted run leaves them, so
     the row is done (status: grants/<id>.complete) and is never granted."""
     p = rf.load_json(rf.pass_path(flags, rid)) or {}
-    if not p.get("job_complete"):
+    if p.get("job_complete") is not True:
         return False
     # Operator 2026-11-02: never file a row complete because its SMOKE passed. Re-checked here (a PASS.json may predate
     # the check): the launcher must have no FILLER_SMOKE/FILLER_DRYRUN branch and the full-job predicate must hold.
-    ok, why = rf.smoke_completion_check(row)
-    if not ok:
-        print(f"smoke passed but the row is NOT complete ({rid}): {why}; it stays a row")
-        return False
     # Preserve the exact published manifest before removing it from READY. The
     # filer needs its rule and result path even when the entire job ran in the
     # owner smoke. Do not reconstruct those fields after the run.
     try:
-        rf.need(row.get("schema") == rf.SCHEMA and row.get("id") == rid, "completed smoke row identity mismatch")
-        rf.atomic_json(os.path.join(rf.dry_dir(flags, rid), "completed-manifest.json"), row)
-        src = p.get("result_path")
-        rf.need(src and os.path.isfile(src), "completed-smoke native result is missing")
-        if src != row["result_path"]:
-            os.makedirs(os.path.dirname(row["result_path"]), exist_ok=True)
-            shutil.copyfile(src, row["result_path"])
+        ready = rf.ready_path(flags, rid)
+        rf.need(not os.path.exists(ready) or rf.load_json(ready) == row,
+                "ready manifest differs from completed smoke")
+        src = completed_result(row, p)
+        bindings = completed_bindings(flags, rid, row, p, src)
+        dd = rf.dry_dir(flags, rid)
+        receipt_path = os.path.join(dd, "completed-smoke-filing.json")
+        previous = rf.load_json(receipt_path)
+        rf.need(not os.path.exists(receipt_path) or previous == bindings,
+                "completed smoke filing content hash changed")
+        ok, why = rf.smoke_completion_check(row)
+        if not ok:
+            print(f"smoke passed but the row is NOT complete ({rid}): {why}; it stays a row")
+            return False
+        rf.need(bindings == completed_bindings(flags, rid, row, p, src),
+                "completed smoke content changed during full-completion check")
+        rf.atomic_json(os.path.join(dd, "published-manifest.json"), row)
+        archived = dict(row, result_path=src, declared_result_path=row["result_path"],
+                        completed_result_sha256=bindings["result_sha256"])
+        rf.atomic_json(os.path.join(dd, "completed-manifest.json"), archived)
+        rf.atomic_json(receipt_path, bindings)
         g = os.path.join(flags, "grants")
         os.makedirs(g, exist_ok=True)
         dd = rf.dry_dir(flags, rid)
         for term in ("ended", "complete"):
-            src = os.path.join(dd, term)
-            txt = open(src).read() if os.path.exists(src) else (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
-                                                                 else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
+            terminal_src = os.path.join(dd, term)
             dest = os.path.join(g, f"{rid}.{term}")
+            if os.path.exists(terminal_src):
+                with open(terminal_src) as f:
+                    txt = f.read()
+            elif os.path.exists(dest):
+                # A retry must retain the terminal bytes already filed, including their time.
+                with open(dest) as f:
+                    txt = f.read()
+            else:
+                txt = (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
+                       else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
+            if os.path.exists(dest):
+                with open(dest) as f:
+                    rf.need(f.read() == txt, "existing completed-smoke terminal differs")
+                continue
             tmp = dest + ".tmp"
             with open(tmp, "w") as f:
                 f.write(txt)
             os.replace(tmp, dest)
-        os.remove(rf.ready_path(flags, rid))
+        ready = rf.ready_path(flags, rid)
+        if os.path.exists(ready):
+            rf.need(rf.load_json(ready) == row, "ready manifest changed during completed filing")
+            os.remove(ready)
     except Exception:
         # Any failure after completed work must not leave it grantable again.
         # Preserve READY in the existing non-ready repair location, then raise.
         unpublish(flags, rid)
         raise
-    print(f"job completed inside the smoke: no compute row needed; file the result now ({rid}: {row['result_path']})")
+    print(f"job completed inside the smoke: no compute row needed; file the result now ({rid}: {src})")
     return True
+
+
+def resume_complete(flags, rid):
+    """Retry only terminal filing from a prior PASS; never publish, smoke or qualify again."""
+    rf.need(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", rid), "invalid completed row id")
+    dd = rf.dry_dir(flags, rid)
+    candidates = [rf.load_json(os.path.join(dd, name)) for name in
+                  ("unpublished.json", "published-manifest.json")]
+    rows = [row for row in candidates if row is not None]
+    if not rows:
+        archived = rf.load_json(os.path.join(dd, "completed-manifest.json"))
+        if archived is not None:
+            row = dict(archived)
+            if row.get("completed_result_sha256"):
+                rf.need(os.path.isfile(row.get("result_path", ""))
+                        and rf.sha256(row["result_path"]) == row["completed_result_sha256"],
+                        "archived completed result content hash changed")
+            if "declared_result_path" in row:
+                row["result_path"] = row.pop("declared_result_path")
+                row.pop("completed_result_sha256", None)
+            rows = [row]
+    rf.need(rows and all(row == rows[0] for row in rows), "prior completed/unpublished manifest missing or ambiguous")
+    passed = rf.load_json(rf.pass_path(flags, rid))
+    rf.need(passed and passed.get("job_complete") is True, "prior completed PASS missing")
+    rf.need(file_if_complete(flags, rid, rows[0]), "prior smoke no longer satisfies full completion")
+    return 0
 
 
 def publish_smoked(spec, flags, source):
@@ -432,6 +527,7 @@ def main(argv=None):
     ap.add_argument("spec", nargs="?")
     ap.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     ap.add_argument("--repair", metavar="ROW_ID")
+    ap.add_argument("--resume-complete", metavar="ROW_ID", help="retry terminal filing from an unchanged prior completed PASS; no smoke rerun")
     ap.add_argument("--flags", default=rf.FLAGS)
     ap.add_argument("--run-gpu-queue", action="store_true", help="(allocator, detached) run every queued GPU smoke")
     a = ap.parse_args(argv)
@@ -442,6 +538,10 @@ def main(argv=None):
             rf.release_gpu_batch(a.flags)
         return 0
     try:
+        rf.need(sum(bool(x) for x in (a.spec, a.repair, a.resume_complete)) <= 1,
+                "choose spec, --repair or --resume-complete")
+        if a.resume_complete:
+            return resume_complete(a.flags, a.resume_complete)
         if a.repair:
             rc, msg = repair(a.repair, a.flags)
             print(msg)
