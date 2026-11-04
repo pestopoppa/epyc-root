@@ -1,0 +1,12 @@
+{
+ "backend": "cpu",
+ "cpus": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "raw_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/mi210-independent-cpu-20261104/native-attempts/attempt-ntlv7blq/plumbing-cell/raw.log",
+ "response": 16.948,
+ "tps": 16.948
+}
