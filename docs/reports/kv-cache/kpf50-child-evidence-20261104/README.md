@@ -8,3 +8,5 @@ python3 -m unittest -v test_child_evidence.py
 ```
 
 Output includes the raw input SHA-256 and validated structural observations, and is marked `partial_structural_evidence` with `complete_outcome: false`. This is model-free validation only. It does not establish custody or authenticity of the JSONL, independently verify run identity, reconcile the digest to the runner record, assess scientific validity, qualify clocks, prove descendant cleanup, or produce a complete outcome or performance verdict.
+
+**Input preservation:** The current CLI writes `--out` without checking whether it resolves to the source JSONL. Use a separate output path: setting `--out` to the source (including a symlink to it) overwrites the raw evidence. A guard requires an upstream impact check before the validator is edited; the lane was not indexed when this was discovered.
