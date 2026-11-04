@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-geometry-holdout-frozen-build-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T15:22:38Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T15:22:34Z",
+ "id": "cafe4-v10-geometry-holdout-frozen-build-20261104",
+ "launcher_sha256": "62f6b9ae99fc724a96a65b7762011b13000aebd6d70a641a496d5629efff4473",
+ "passed_at": "2026-11-04T15:22:39Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-geometry-holdout-frozen-build-20261104/native-attempts/attempt-4xjsqdye/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

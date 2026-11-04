@@ -1,0 +1,31 @@
+{
+  "id": "cafe4-v10-geometry-holdout-frozen-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only: pinned v10, exact target diagnostic patch, frozen-token matched-geometry V5 candidate/header and source-bound prompt provenance; full CPU executable with CAFE4_GEOMETRY_V5 and existing MTP/load/rewind markers, content hashes and local linkage. No native correctness, fault sensitivity, timing or parent CAFE-4 verdict; incomplete UNKNOWN.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256",
+    "*.patch",
+    "*.md",
+    "*.txt"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/proof.py predicate"
+}

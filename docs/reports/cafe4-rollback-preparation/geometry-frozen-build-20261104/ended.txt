@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T15:23:19Z reason=complete
+job_id=cafe4-v10-geometry-holdout-frozen-build-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T15:22:55Z
+regions=0-23

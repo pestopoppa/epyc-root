@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc0 native mode=build binds v10, exact target patch, V5 source/bridge/frozen token header/manifest, compiled geometry/MTP/load/rewind markers, artifact hashes and local linkage. Build-only; no native matched controls, fault or CAFE-4 conclusion.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:26:39+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:23:19Z reason=complete",
+ "filed_at": "2026-11-04T15:26:39+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-geometry-holdout-frozen-build-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-geometry-holdout-frozen-build-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0 native mode=build binds v10, exact target patch, V5 source/bridge/frozen token header/manifest, compiled geometry/MTP/load/rewind markers, artifact hashes and local linkage. Build-only; no native matched controls, fault or CAFE-4 conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-geometry-holdout-frozen-build-20261104",
+ "row_verdict": "pass",
+ "rule": "Build-only: pinned v10, exact target diagnostic patch, frozen-token matched-geometry V5 candidate/header and source-bound prompt provenance; full CPU executable with CAFE4_GEOMETRY_V5 and existing MTP/load/rewind markers, content hashes and local linkage. No native correctness, fault sensitivity, timing or parent CAFE-4 verdict; incomplete UNKNOWN.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "cbab4fa64b6ea091c0ee9440441ae39e613b786964bed682a7006e1beb047e75",
+  "result": "pass",
+  "status": "filed"
+ }
+}
