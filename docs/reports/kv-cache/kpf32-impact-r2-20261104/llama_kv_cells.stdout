@@ -1,0 +1,304 @@
+{
+  "target": {
+    "id": "Class:src/llama-kv-cells.h:llama_kv_cells",
+    "name": "llama_kv_cells",
+    "type": "Class",
+    "filePath": "src/llama-kv-cells.h"
+  },
+  "direction": "upstream",
+  "impactedCount": 29,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 3,
+    "processes_affected": 0,
+    "modules_affected": 2
+  },
+  "byDepthCounts": {
+    "1": 3,
+    "2": 15,
+    "3": 11
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Tests",
+      "hits": 2,
+      "impact": "direct"
+    },
+    {
+      "name": "Cluster_1180",
+      "hits": 1,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Method:src/llama-kv-cache.cpp:prepare#1",
+        "name": "prepare",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "ACCESSES",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-kv-cache.cpp:set_input_kq_mask_impl~shape:args_set_input_kq_mask:const:lvalue-ref:0|T:none:pointer:1|bool:none:value:0~c:qvwutw",
+        "name": "set_input_kq_mask_impl",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "ACCESSES",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "File:src/llama-kv-cache.h",
+        "name": "llama-kv-cache.h",
+        "filePath": "src/llama-kv-cache.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Method:src/llama-kv-cache.cpp:init_batch#3",
+        "name": "init_batch",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/llama-kv-cache.cpp:set_input_kq_mask#3",
+        "name": "set_input_kq_mask",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:tests/test-qwen4exp-fused-rope.cpp",
+        "name": "test-qwen4exp-fused-rope.cpp",
+        "filePath": "tests/test-qwen4exp-fused-rope.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-model.cpp",
+        "name": "llama-model.cpp",
+        "filePath": "src/llama-model.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-memory-hybrid.h",
+        "name": "llama-memory-hybrid.h",
+        "filePath": "src/llama-memory-hybrid.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-kv-compress.cpp",
+        "name": "llama-kv-compress.cpp",
+        "filePath": "src/llama-kv-compress.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-kv-cache.cpp",
+        "name": "llama-kv-cache.cpp",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-kv-cache-iswa.h",
+        "name": "llama-kv-cache-iswa.h",
+        "filePath": "src/llama-kv-cache-iswa.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-kv-cache-dsv4.h",
+        "name": "llama-kv-cache-dsv4.h",
+        "filePath": "src/llama-kv-cache-dsv4.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-kv-cache-dsa.h",
+        "name": "llama-kv-cache-dsa.h",
+        "filePath": "src/llama-kv-cache-dsa.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/llama-graph.cpp",
+        "name": "llama-graph.cpp",
+        "filePath": "src/llama-graph.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/models/qwen4exp-fused.cpp",
+        "name": "qwen4exp-fused.cpp",
+        "filePath": "src/models/qwen4exp-fused.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/models/dflash.cpp",
+        "name": "dflash.cpp",
+        "filePath": "src/models/dflash.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/models/dflash-dspark41.cpp",
+        "name": "dflash-dspark41.cpp",
+        "filePath": "src/models/dflash-dspark41.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/models/deepseek32.cpp",
+        "name": "deepseek32.cpp",
+        "filePath": "src/models/deepseek32.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "File:src/llama-memory-hybrid.cpp",
+        "name": "llama-memory-hybrid.cpp",
+        "filePath": "src/llama-memory-hybrid.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/llama-memory-hybrid-iswa.h",
+        "name": "llama-memory-hybrid-iswa.h",
+        "filePath": "src/llama-memory-hybrid-iswa.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/llama-memory-hybrid-idx.h",
+        "name": "llama-memory-hybrid-idx.h",
+        "filePath": "src/llama-memory-hybrid-idx.h",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/llama-kv-cache-iswa.cpp",
+        "name": "llama-kv-cache-iswa.cpp",
+        "filePath": "src/llama-kv-cache-iswa.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/llama-kv-cache-dsv4.cpp",
+        "name": "llama-kv-cache-dsv4.cpp",
+        "filePath": "src/llama-kv-cache-dsv4.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/llama-kv-cache-dsa.cpp",
+        "name": "llama-kv-cache-dsa.cpp",
+        "filePath": "src/llama-kv-cache-dsa.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/models/lfm2moe.cpp",
+        "name": "lfm2moe.cpp",
+        "filePath": "src/models/lfm2moe.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/models/lfm2.cpp",
+        "name": "lfm2.cpp",
+        "filePath": "src/models/lfm2.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/models/glm-dsa.cpp",
+        "name": "glm-dsa.cpp",
+        "filePath": "src/models/glm-dsa.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/models/deepseek41.cpp",
+        "name": "deepseek41.cpp",
+        "filePath": "src/models/deepseek41.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/models/deepseek4.cpp",
+        "name": "deepseek4.cpp",
+        "filePath": "src/models/deepseek4.cpp",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ]
+  }
+}
