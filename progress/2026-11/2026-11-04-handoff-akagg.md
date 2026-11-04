@@ -151,3 +151,7 @@ Filed W5s successor rc1 inconclusive: host chroot region-lock shim could not exe
 ## 18:39Z — File CH-LB1.1 ANSI parser failure and prepare isolated successor
 
 Filed CH-LB1.1 successor rc1 as inconclusive: four F32/BF16 guard cases passed, all three corpus logs had 38/38 and BF16 had two added refusals, but the parser rejected ANSI-colored backend OK before strings checks. Preserved 25 evidence files and hash-bound binary artifacts. Fresh ANSI-safe successor is in preparation; full gate and CAS remain open.
+
+## 18:43Z — File 1f7 HIP coverage build and start CH-LB1.1 ANSI successor smoke
+
+Filed 1f7 HIP coverage build pass: 572 compile entries, 141 HIP objects, 292 GNU coverage notes and two binaries; retained 451 digest-verified artifacts and 14 symlinks. This is build-only, not GPU execution or replay. CH-LB1.1 ANSI-safe successor passed nine parser controls and its publisher smoke is in progress; no publication claim yet.
