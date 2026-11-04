@@ -2530,6 +2530,20 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     (`FOLD-CANDIDATE.md`, GPU slot summary). The fold is ledgered in `autokernel-champion-aggregate.md` (root
     `3cef9579`, ak-ds41-main). What remains here for workspace-89: the full-scale P3 27B re-measurement on the folded
     champion (KVU-19b-fold-c1-p3).
+  - [ ] **KVU-19-P5A1 — full-scale parked-neighbour A1 on the champion: does the masked-block skip remove the r3
+    decode tax?** (filed 2026-11-04 from the KVU-16h r3 trigger read-out) `handoff-kvu16h-p3-lifecycle-r3-20261104`
+    re-measured production v10 `ffc1bac82` at 358,838 resident cells (91.3% of the 393216 pool): L3 loss 58.0% drafted
+    / 61.3% no-draft. That meets the P5 trigger (>=5%) again, and this item is what the trigger fires. KVU-19b-fold-c1-p3
+    measured only batched-bench, so the parked-neighbour A1 shape has never been run on the skip build. Run the
+    unchanged r3 A1 protocol (20 decode-only rows, drafted and no-draft dedicated lifetimes, L0/L1/L2/L3/L0 x2,
+    direct-prefill parking, the same gates) with only the binary changed. Model: Qwen3.8-27B-Q8_0 + DFlash2-Q8_0. Build:
+    the champion store build `kernels/builds/gpu-20261024-c72ec82f5-c5` (build 10419; contains `ac97e305a` and
+    `1bceceb05`, and its `strings` show `GGML_CUDA_FA_MASK_SKIP` and `GGML_CUDA_FA_SEQ_ROWS`). Expected effect: the
+    2026-10-03 prediction of L3 drafted >= ~33 tok/s (v10 ~14.9) and no-draft >= ~19 (v10 ~8.58), which is more than 2x
+    and far above the r3 ABA drift of 0.0%. Classify each variant by its L3 loss: <=15% SKIP-RECOVERS, 15-45% PARTIAL,
+    >=45% NO-RECOVERY. Stop on answer after exactly 20 valid rows plus the derived report, with no extension. Stop on
+    futility at the first invalid protocol evidence or unverified cleanup. Done when the per-variant table and its class
+    are recorded here. Row `handoff-kvu19-p5-champion-a1-20261104`.
   - [x] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec;
     operator instruction 2026-10-03, implements KVU-19) IN PROGRESS: an Opus subagent on a new `llama.cpp-experimental`
     branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`).
