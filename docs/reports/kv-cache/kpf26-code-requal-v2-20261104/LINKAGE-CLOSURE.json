@@ -1,0 +1,70 @@
+{
+  "ld-linux-x86-64.so.2": {
+    "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+    "sha256": "1577e4ea35a5574f8172eb5c5ca19932b5bb892dfa90831ac6718cfd12dd9f7d"
+  },
+  "libc.so.6": {
+    "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+    "sha256": "6791cc9bdc08295aafcfae01a7d66d788ee5577cbe94db00ace5f1ee04ef2b09"
+  },
+  "libcrypto.so.3": {
+    "path": "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+    "sha256": "4769ffaae2d5fcb04ab023d06370ee0481f03857de88356f565a85792de39d76"
+  },
+  "libgcc_s.so.1": {
+    "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "sha256": "e21d29dd2609dff45f898b5002c9a2268a0e8eece4eff8417e5087e77d2a136c"
+  },
+  "libggml-base.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libggml-base.so.0",
+    "sha256": "78646b5a15d6c7defedc739c420b4d8290d0dc8ca9d209a10fc5b2a53ad8ada0"
+  },
+  "libggml-cpu.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libggml-cpu.so.0",
+    "sha256": "a4a040447eedf9ab9be8da7a6ebbaef213c01de1aeb164cbb9d5291bb35d309b"
+  },
+  "libggml.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libggml.so.0",
+    "sha256": "7c857a24bb0765d234ed1756027ddee33aa1562447530043cd0213e391eb9f91"
+  },
+  "libgomp.so.1": {
+    "path": "/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0",
+    "sha256": "fa075918dc2eae2dfcaccce487fa65034a9e046d0009cd99c55f0a0cc9314c36"
+  },
+  "libllama-common.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libllama-common.so.0",
+    "sha256": "72278caa75913cba756aed4cdfa57b7368045cfe98d49019d4122ecfa0b834c5"
+  },
+  "libllama-server-impl.so": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libllama-server-impl.so",
+    "sha256": "1ac2e7108c99c41012317e23471314b5a47818d6795fc7cb10e8ff8f6846b0de"
+  },
+  "libllama.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libllama.so.0",
+    "sha256": "28d1169032aa9e1906ac0f44bafe801f8b26c86add1b1145535db04bab5dc2fb"
+  },
+  "libm.so.6": {
+    "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+    "sha256": "ff06daa44363e14ff00c80e28d87a281447f23599bf47c72f4fef0028bc41795"
+  },
+  "libmtmd.so.0": {
+    "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v2-20261104/bin/libmtmd.so.0",
+    "sha256": "865d3c085867412d8eb0f469d9970946456ed75d82760b6fc06f972fe3264c02"
+  },
+  "libssl.so.3": {
+    "path": "/usr/lib/x86_64-linux-gnu/libssl.so.3",
+    "sha256": "e2f779425f91a9bbb2a5817d975b6ddb8f9fec40ad4c060ddae350c4e4986c5d"
+  },
+  "libstdc++.so.6": {
+    "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34",
+    "sha256": "bb7402552b47597383b400450b3bbd13d281ee9050be0215226c361035ded3e6"
+  },
+  "libz.so.1": {
+    "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3.1",
+    "sha256": "a83ec9e0fee275a2c2b1f2b3773fef6277d7d8fa57f6d50bf0806301b438e281"
+  },
+  "libzstd.so.1": {
+    "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.7",
+    "sha256": "f501ac1465c6c254bade367fa5c079b5beb8a6f2c3e9a51da128ce7202f66ca1"
+  }
+}

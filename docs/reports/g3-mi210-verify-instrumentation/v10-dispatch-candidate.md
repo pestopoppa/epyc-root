@@ -1,0 +1,9 @@
+# G3 v10 dispatch instrumentation candidate — incomplete
+
+The adjacent source patch targets `ggml/src/ggml-cuda/fattn.cu` at v10 commit `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; the unmodified file SHA-256 is `2029cf6741771619544d31df024bef74634373b033b42399ba77612e279a3d54`. Apply only to a fresh experimental worktree from that exact source pin; never apply it to the production tree. The patch SHA-256 is `3f34ed004ea76fd092a9d5597ac94c6a76dc4d2d81f92818fa32f5d9764282e6`.
+
+The patch evaluates the existing selector once and passes that same result to the unchanged switch. With `GGML_G3_FATTN_TRACE=1` it prints the selected enum, device and architecture code, tensor identity, Q dimensions and K/V types and dimensions at the actual dispatch. The fixed marker is `G3_FATTN_DISPATCH_V1`; enum values are NONE=0, VEC=100, TILE=200, WMMA_F16=300, MMA_F16=400. The marker appears only in the patched source until a separately authorized experimental build is made and inspected.
+
+This patch is **not sufficient to answer G3**: `correlation=unavailable` explicitly records that the backend event cannot be bound to a particular target verify invocation. It does not identify a layer, prove complete event delivery or validate output; do not feed these records to the correlated-dispatch classifier as verified events. Implement and test invocation propagation, exact server verify-view classification, attention-layer coverage, ordering and capture before any row is published. Record actual HIP backend residency and binary/source digest in the eventual run. No inference, build, result or claim follows from this patch.
+
+Validation so far: `patch --dry-run -p1` succeeded against the exact pinned source extracted into scratch; no production source was modified. This is a structural applicability check, **not compilation or runtime validation**. Recheck the source pin and patch on the candidate branch; any drift requires review.

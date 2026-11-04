@@ -1,6 +1,6 @@
 # CS-6 draft — second MI210 bench window
 
-Status: planning estimate, not a grant, protocol amendment, or measured result. Prepared 2026-11-02 from `handoffs/active/conversation-stack.md` CS-2–CS-10. This plan does not authorize a production change. Rebase device IDs, co-tenant setup and estimates against the actual machine at scheduling time; the 2026-09 assumptions about one GPU and current services may have changed. D4 keeps PyTorch/vLLM as measurement instruments. Run the sequence under the inference-owning session and rowflow/region claims, never by an independent launcher.
+Status: planning estimate, not a grant, protocol amendment, or measured result. Prepared 2026-11-02 from `handoffs/active/speech-and-multimodal.md` CS-2–CS-10. This plan does not authorize a production change. Rebase device IDs, co-tenant setup and estimates against the actual machine at scheduling time; the 2026-09 assumptions about one GPU and current services may have changed. D4 keeps PyTorch/vLLM as measurement instruments. Run the sequence under the inference-owning session and rowflow/region claims, never by an independent launcher.
 
 ## Admission and booking
 

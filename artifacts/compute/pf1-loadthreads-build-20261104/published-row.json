@@ -1,0 +1,40 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "Native dry-run succeeds only if isolated CPU CMake configuration with compile_commands.json compiles the actual patched tools/llama-bench/llama-bench.cpp into an x86-64 ELF relocatable object and writes its actual SHA-256 plus numeric compiled_object_count=1 to FILLER_DRYRUN_RESULT_PATH after success. Full build requires the same one-file patch over exact C6 source/tree, independently preserved CPU and GPU C6 configure identities, successful llama-bench target builds in separate build-cpu/build-gpu directories, compiled --load-threads help acceptance for both, and unchanged CPU/GPU C6 store manifests and linked-library hashes. Build-only; no model run, benchmark, kernel promotion, or production/store mutation.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 10800,
+ "first_progress_s": 1500,
+ "gib": 32,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-LOADTHREADS",
+ "id": "brf-exp04-c6-loadthreads-build-20261104-r1",
+ "keep": [
+  "source/**",
+  "loadthreads-build/**",
+  "loadthreads-build/BUILD-RECEIPT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104/loadthreads-build/launch.sh",
+  "sha256": "237931a5537edfbc466972e43b86295e22bc9e1d41d5d1f7a217db3baa91fb73"
+ },
+ "min_window_s": 9000,
+ "owner": "codex-ni",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T08:39:17Z",
+ "published_from": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104/loadthreads-build/ROW-PROPOSAL.json",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104/loadthreads-build/BUILD-RECEIPT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104/loadthreads-build/STOP",
+ "unit_key": "compiled_object_count",
+ "window_s": 13260,
+ "workdir": "/mnt/raid0/llm/tmp/pf1-loadthreads-build-20261104"
+}

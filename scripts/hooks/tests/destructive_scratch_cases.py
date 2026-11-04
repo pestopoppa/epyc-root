@@ -42,8 +42,9 @@ cases = [
  ("echo mention", "allow", f"echo \"{RF} {T}/x\"", {}),
  ("unknown var", "allow", f"{RF} $UNKNOWN", {}),
  ("rmdir empty", "allow", f"rmdir {fake}/empty", {"EPYC_DESTRUCTIVE_SCRATCH_ROOTS": fake}),
- ("override", "allow", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "operator: dp 2026-10-25: test"}),
- ("bad override", "block", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "yes please"}),
+ # LOOP-53 (operator decision B, 2026-11-02): no override exists; the old env name is ignored.
+ ("former override env ignored", "block", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "operator: dp 2026-10-25: test"}),
+ ("malformed former override ignored", "block", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "yes please"}),
  ("script sans root", "allow", f"python3 {fx}/harmless.py", {}),
  ("tmp-prefix lookalike", "allow", f"{RF} /mnt/raid0/llm/tmp-other/x", {}),
 ]

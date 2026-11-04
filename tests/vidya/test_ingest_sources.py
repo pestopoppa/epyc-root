@@ -20,6 +20,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -207,7 +208,12 @@ def _distillation_pool(tmp: Path) -> Path:
 
 
 def _s4_omega_ab(tmp: Path) -> Path:
-    return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
+    # The fixture runs the actual producer from the pinned orchestrator checkout; absent that
+    # checkout (env-gated like the other cross-repo tests) there is nothing to run.
+    helpers = _helpers("test_s4_omega_ab_adapter")
+    if helpers.producer_path() is None:
+        pytest.skip("s4-omega-ab fixture requires EPYC_ORCHESTRATOR_SOURCE_ROOT or the default orchestrator clone")
+    return helpers.write_fixture(tmp)
 
 
 def _usage_provenance(tmp: Path) -> Path:
@@ -223,6 +229,7 @@ BUILDERS = {
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
     "s4-omega-ab": _s4_omega_ab,
+    "ak-r18-symbols": lambda tmp: _helpers("test_r18_symbol_integration").fixture(tmp)[0] / "terminal.json",
     "usage-provenance": _usage_provenance,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -250,6 +257,8 @@ BUILDERS = {
     "reviewer-fa": _reviewer_fa,
     "typed-decisions-measurement": _typed_decisions,
     "ak-actor-seat": _ak_actor_seat,
+    "ak-actor-wire": lambda tmp: (lambda m: (m.build(tmp), tmp)[1])(
+        _helpers("test_autokernel_actor_wire_adapter")),
     "ufh13-thesis-measurement": _ufh13_thesis,
     "toc-ab": lambda tmp: _helpers("test_prospective_ab_carriers").toc_write(tmp),
     "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
@@ -310,6 +319,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        "kvu16a-sampled-load",  # Original-run synthetic ingest and planning canary: test_kvu16a_native.py.
+        "kvu19a2-native",  # Dedicated positive ingest and tamper/pre-hook controls: test_kvu19a2_native.py.
         "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
@@ -327,8 +338,15 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "m4-cpu-recipe-speed",
         "df2-row-exact-akx",  # synthetic producer to actual registry and planning context: test_df2_native_integration.py
         "ufh12-gs-coverage",  # synthetic producer, registry and planning canary: test_ufh12_gs_coverage.py
+        "repl-trace-coverage",  # synthetic producer, strict adapter and CLI: test_repl_trace_ingest.py
+        "repl-trace-facts",  # explicit sealed event observations: test_repl_trace_facts_ingest.py
         # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
         "hg5-request-event",
+        # Native custody needs the pinned producer/provider/lock/receipt SHA-256s and a hash-chained
+        # journal; no fixture can satisfy those without fabricating the pins. Registry/CLI ingest with
+        # the native reader stubbed, fixture refusal and journal-chain refusals:
+        # test_dtap_crm_pair_refusal.py.
+        "dtap-crm-pair",
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
         # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
         "ak-width-dimension", "ak-width-cells-cpu",
@@ -398,7 +416,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "speech-listen-rating",
         # Full original C6 R2 native run and tamper/missing/qualification/case mismatch controls:
         # test_c6_q4_microbench_adapter.py (component observations only; no historical backfill).
-        "c6-q4-microbench"}
+        "c6-q4-microbench",
+        "inf66-r2364"}  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():

@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "Full rc1: RESULT reports grant file missing before any server/model request. The v1 job looked for grants/<id> while the current filler uses grants/<id>.grant. No native gauge observation exists; build-only progress does not satisfy the live capability rule. Original RESULT and build log preserved; a corrected same-lineage generation is prepared.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

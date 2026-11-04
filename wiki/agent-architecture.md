@@ -5,15 +5,28 @@
 **Last compiled**: 2026-11-02 (ws58 jev + super-agent intake). Earlier: 2026-11-01 (churn pipeline rebuild, ws58 wrap-up). Earlier: 2026-11-01 (intake-2603 dsh-superagent dive). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): EVL-34 REPL vs ReDel pilots (delegation observed, no A/B), PAW compiled-specialist diagnostics, HIL-15b collection exhaustion with unknowns. Earlier: 2026-10-28 (workspace-58 wrap): HIL-15b four-family pilot, HIL-16b isolation repair, agentic-serving live-template run. Earlier: 2026-10-27 (operator full wrap, Codex NI, cutoff 16:26:29Z; owner-watcher incidents and native IPC priority finding). Earlier: 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): the multi-repo refactor program: audit root causes, reviewed packages, the integration candidate gate and the B2 baseline. Earlier: 2026-10-27 (WS58 scoped wrap-up): accepted actor-budget and registration/launch-gate boundaries are recorded. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix. Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 14, 3c4ca599: first mining results over dev-harness traces; HIL-15a flag-on run is a null). Earlier: 2026-10-22 (wrap-up sweep 10: HIL-6 pilot deferred, D1 redesign costed, TRAIL calibration). Earlier: 2026-10-22 (wrap-up sweep 9: HIL-6 option B is built; the pilot costs about 250 whole-host hours). Earlier: 2026-10-22 (wrap-up sweep 7: replay tier and spectrum attribution built, dev-harness mining filed). Earlier: 2026-10-21 (wrap-up sweep 5: L2 scan on real traces, step-event capture, calibration). Earlier: 2026-10-20 (wrap-up sweep 2: AutoKernel history/probes, harness-loop architecture, serving depth sweep). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-10-03 (wrap-up compile: UFH-14 agentic serving harness fixes — eight generic defects D1–D8 from the DS41-C95 27B harness experiment and the prefill-share analysis; the C95 results (capability dominates, harness matters some); OAB-35 `context.get(name, '')` HTTP 500 fixed); previous: 2026-09-29 (wrap-up compile: HS-OD-10 templated `x_disable_repl` direct path live and the planner suffix loss proven harmless; A-5 serial-ness folded into SSU-F17; tap test-event purge and four zero-inference residuals filed); previous: 2026-09-27 late (wrap-up compile: HS-19 stage 2 "Scheduled" designed as gate → plan → size → select → aggregate with an OpenCode v1.18.31 source audit, then P1–P6 frozen behind the UFH-13 thesis experiment); previous: 2026-09-27 (wrap-up compile: HS-19a stage 1 Linked subagents, live PASS 18/18; OAB-33 delegation is instructed; HYG-5 ratified; SSU-F9e live hook deploy; disk-leak ranking and NIB2-84); previous: 2026-09-26 late (workspace-8d final wrap-up: region-lock doctrine wording vs API traffic, SSU-F9d path-string guard defect, HS-19 interface questions); previous: 2026-09-26 (HS-4 P0.4 live acceptance PASS 10/10 with A5 token parity; the pin freeze moves to tag `v1.18.31` = `014614d3`); 2026-09-26 (wrap-up, ak-ds41-main: the ratified actor-seat wire-test rule, the new-actor bring-up checklist, OAB-29..32 gates, and the AutoKernel ScratchRegistry); previous: 2026-09-26 (prepared-action implementation and decision receipts); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (feature isolation and evidence-input integrity); earlier: 2026-09-24 (speech-lane wrap-up compile: per-call efficiency rows for the opencode seat (INF-78 OAB-4m), S4-T1 column comparability, opencode audit rows 8-10 and the seat traps); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: TD-21 complete — TD-21.33c closed the last shared-meta read); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: TD-21 LANDED — every row converted and live-smoked; the repair turn invents required values, so repair now needs evidence; the API's own `/v1` refuses `response_format` by design; a shared inference-meta slot raced under concurrency; TD-21.1 is dormant behind a flag); earlier: 2026-09-24 (wrap-up compile: TD-21 — a 62-consumer audit of every model-output JSON consumer in both stacks, 36 still fishing JSON out of free text; TD-21.0, our own `/v1` payload builder forwards no schema field, gating every `/v1`-lane conversion; the measured two-stage same-server repair idiom and its three refuted abstain designs; MF-VBS-1 — 0/38 edited agent trajectories ever execute anything); earlier: 2026-09-23 (later: NIB2-81 remedy (b) landed — a registry `runtime` field with daemon/scheduled modes, a seven-state `observer_census.py --live` census, `bus_supervisor.sh` restarting only `restart_on_stale` rows, and the operator ruling that `bus_supervisor` stays down so its `not_running` census reading is expected; plus the uutils-`stat`-vs-`os.stat()` inode discrepancy this host's restart path was built around); earlier: 2026-09-23 (evening wrap-up compile: INC-20260917 — a daemon executes the script inode it opened at launch, and git never writes a tracked file in place, so every commit to a tracked script can orphan a live daemon (three shapes observed the same night, incl. a nine-day-stale reaper running 39 VACUUMs on old code while the file census read OK); daemon_provenance.sh refuses a launch from outside canon and logs staleness per iteration; NIB2-80's escalation bypass existed at five sites, not the one reported); earlier: 2026-09-23 (wrap-up compile: SSU-F9 — a correctly acquired push lock did not satisfy the pre-push guard, silently, because the two sides derived different lock directories; the fix makes the guard ASK the writer and makes `--push` verify with `git cherry`; F9b withdrawn — a relayed subagent claim, false in one `cat`; F9c the same defect one lease over in `promote_lane.py`; DS41-C2e — a module that parses `sys.argv` at import answers the importer's flags; a guard's documented override the agent cannot reach; the typed-decision plane is now owned by the research-intake lane); 2026-09-19 (dormant browser-agent-surface stub UFH-10 with the intake-1493 design reference; TD-7/9/10 answer the replay question — enforcement off; TD-6 id_only default); 2026-09-18 (backlog-churn-2 sweep: the `/v1` override contract is role-keyed — `x_force_role` named, `x_force_model` deprecated, unservable roles refused with a 422 (HS-OD-3/7); HS-OD-4/5/6 filed; the operator-directed HS-TD-1..3 leverage rows and the TD-8 fan-out policy; TD-1d's acceptance contested at n=4); 2026-09-17 (wrap-up sweep: the typed-decision plane measured end-to-end — TD-1d id-only 11.98x at 15/16, TD-4 18/18, TD-5 shadow flag-off with TD-7 as the labeled window — plus the FW-1 loop block and NIB2-80, the trace pairing-key producers, and the OpenCode shell pick confirmed); 2026-09-17 (doc audit + restructure: the HS-4 record refreshed to read as decided, FastMCP-3 refuses (P0.3 finding 5 reversed), HS-5c/HS-15 renames, P0-split gated, the fuzzy-node contract and FW-2 placement closed, the improvement loop's mutation object bounded, standing material promoted to `docs/reference/`, and the typed-decision plane measured on the MI210 — 6.25%/37.5% contamination, ECE 0.0625/0.267, 1.54x fan-out, native arm failed closed → TD-1b); earlier 2026-09-17 (research-intake delta: the typed-decision plane, the fuzzy/deterministic authoring GUI, and compiled specialists as loop steps; evening: HS-4 P0-MCP-a applied and the OpenCode 1.18.31 pin installed; the Dockerfile pin is filed); earlier 2026-09-17 (afternoon: every MCP tool accepts the plugin's `session_id`, and the HS-4 P0.4 acceptance runner is built with an offline verdict; the installed OpenCode is behind the audited pin); earlier 2026-09-17 (later pass: HS-4 P0.1/P0.2 tool-mode and session-header code lands on orchestrator main, `/v1` recall is undeleted, the MCP server's venv and `session_id` gaps are filed, and the CORAL/SwarmResearch and harness-null-pool evidence rows arrive; earlier incremental: HS-4 decided — thin OpenCode shell with pi fallback, Hermes features rebuilt inside the orchestrator; `/v1` never emits `tool_calls` (P0.1 blocker); HS-1g call-verb check made a standing instrument and it narrowed Hermes to main-loop-only; OpenCode re-audited at `350c726aa` with plugin merged; Hermes handoff closed); earlier: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 243 native document references (source review 2026-10-07) (sweep 2, 2026-10-20: +5-7 handoff/design/progress sources, see top section)
 
+## Compiled Update — 2026-11-03 (evening): churn-pipeline defects and the coordinator-daemon retirement
+
+**Confidence: verified** (commits cited in the progress log).
+
+- **The coordinator-daemon / tmux delivery plane is retired** (loop-owned fleet Phase 3; `bus_supervisor` stays down); M3-M5, AIR-6/7/9 and related boxes were declined as superseded and their history archived. `coordination-and-churn-pipeline.md` now carries only the churn-pipeline defect list, fan-out measurement (FM-*) and bus/dashboard repairs.
+- **Name-based reaping killed live work**: the rowflow dry-run cleanup killed any process whose argv named the row id, including the agent's own shell (exit 144) and a Q38 custody run. The id-substring/cwd orphan reaper was deleted; smoke teardown now signals tracked descendants only (`b218f699d`).
+- **A smoke must never file a row complete** (ROWFLOW-SMOKE-COMPLETE-GENERAL): EXP-01's measure row was completed by its own 2-unit smoke because the smoke wrote the completion artifact; fix belongs in `publish_row.file_if_complete`.
+- **Grants prove nothing about running**: a row is running only when its job process exists and its CPUs/GPU are measurably busy; added `run_direct.sh` (one command on a free lane), arm-failed rows order last, and a row failing to arm repeatedly is parked.
+- **Keeper reaps only from the disk janitor** (`--reap-now`, every 30 min); a ~100 s reap inside the tick had blocked granting. The dry run now treats low disk as WAIT, and truncates a job ignoring the stop file after a 600 s grace as a warning PASS.
+- **Hardening**: the M4 harness dropped lease_owner/self-hash seal checks and refusal on bare starts; `--load-threads <claimed cpus>` is default and allow-listed.
+
+Sources: [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md) · [backlog-churn-flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [backlog-churn-runbook](../docs/guides/agent-workflows/backlog-churn-runbook.md) · [session progress](../progress/2026-11/2026-11-03.md) · [INF-22 unblock](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
 ## Compiled Update — 2026-11-01 (churn pipeline rebuild, ws58 wrap-up)
 
-- **Pipeline rebuilt as RTG-62** (`handoffs/active/churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
+- **Pipeline rebuilt as RTG-62** (`handoffs/active/coordination-and-churn-pipeline.md`, [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)). rowflow v3 makes the row owner write a launcher plus spec, with a robust dry run and the old gates removed (`d69c6cd4b`); launchers living in lanes are snapshotted into the row's scratch_root so the dry run and the real run execute identical bytes (`8b62499ef`). Keeper v11 is ONE allocator with one snapshot per tick; both grant writers retired (`1a9186e11`). `churn_up.sh` cold-starts the whole pipeline from git (`d095b4a4d`).
 - **Reliability from intake-2603** (`intake-2603#record`): DSH-1..5 landed in the dispatcher (`7259bbdc8`): run-end events acked by receipt, structured `report.json`, transient-failure retry, a reserved filing slot, and a loop-design rule.
 - **AI-free audit** (`research/deep-dives/churn-ai-free-audit-20261101.md`): of 6.43 G handoff-session input tokens, roughly 23% was bookkeeping (monitor/wait, wrap-up mechanics, republish). CAF-1..7 replace those turns with scripts (no-poll resume, `churn/wrapup.py`, `churn/file_result.py`, resume delta, `publish_row --repair`, codex-gen routing). CAF burn effect is NOT yet measured. The headline metric is now tokens per completed task.
 - **Hotfix lessons**: an unbounded drain wait starved the queue (`DRAIN_MAX_WAIT_S` 1 h, backfill by estimate); a gpu-quiet claim on a quarter is quarter+GPU, not quiet-host; a row flagged UNDERUSED is not granted until its owner republishes; a 10-minute resume gap applied to every session throttled productive ones to zero (the fix, gap only after no-effect turns, was installed but not yet on origin/main at wrap time).
 - **Guardrail status**: the deletion-first rule was not met on 2026-11-01; line counts of the pipeline files rose.
 
-Sources: [churn-pipeline handoff](../handoffs/active/churn-pipeline.md) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
+Sources: [churn-pipeline handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-churn-pipeline) · [AI-free audit](../research/deep-dives/churn-ai-free-audit-20261101.md) · [dsh-superagent dive](../research/deep-dives/intake-2603-dsh-superagent-prototype.md) · [ws58 progress](../progress/2026-11/2026-11-01-workspace-58.md) · [churn-up progress](../progress/2026-11/2026-11-01-ws58-churn-up.md) · [rowflow progress](../progress/2026-11/2026-11-01-workspace-58-rowflow.md) · [churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
 
 ## Compiled Update — 2026-11-01 (intake-2603): a ticket executor that refuses to read state from free text
 
@@ -23,7 +36,7 @@ Sources: [churn-pipeline handoff](../handoffs/active/churn-pipeline.md) · [AI-f
 
 ## Compiled Update — 2026-11-01 (qualification output boundaries)
 
-Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/agentic-serving-harness-fixes.md), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/autokernel-cross-workload-keep-gate.md), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
+Row publication, qualification and scientific completion are separate. S18 keeps qualification and production outputs apart, and its production predicate requires the complete 60-item cohort with native timing; an offline fixture verifies that qualification output cannot satisfy it. UFH14's completion repair requires a current two-leg native result instead of an old pointer; its declared q3 claim does not prove historical quiet. INF75's optional native dry-run output channel and packet evidence checks are source preparation only: the r7 row remains parked and no new census is claimed. These are software-contract findings, not qualification or performance results. Sources: [S18 source packet](../artifacts/codex-gen/s18-rowflow-20261101/test_s18_packet_isolation.py), [UFH14 handoff](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [INF75 source review](../artifacts/codex-gen/inf75-r7-source-20261101/README.md), [INF75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate), and [session progress](../progress/2026-11/2026-11-01-codex-gen.md).
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -107,8 +120,8 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-28 workspace-58 wrap)
 
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — HIL-15b/16b results and preparation
-- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md) — live-template run notice
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-15b/16b results and preparation
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — live-template run notice
 - [progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md](../progress/2026-10/2026-10-28-codex-ni-01a16d6b-hil-venv-incident.md) — HIL venv incident record
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): DHM-5.1 measures the real always-on prefix, the embedder ties TF-IDF, and no_final_step is conformance-only
@@ -120,13 +133,13 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
 - **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
 
-Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md), [qwen38-27b-replace-qwen36](../handoffs/active/qwen38-27b-replace-qwen36.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
 
-- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.md)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
-- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md)).
-- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+- Dev-harness mining full run (42,420 units): operator interrupts concentrate in main sessions (Claude 6.30, Codex 6.83 per 1000 turns) versus Claude subagents 0.088. Hooks work where present (`pattern_kill` 1.71 to 0.089 and `llama_cli_unbounded` 0.45 to 0.032 per 1000 tool calls) while prose-only `glob_rm` rose 0.62 to 1.30. Codex and opencode are `harness_uncovered` for nearly every guarded class; `wholesale_git_add` rose after its hook (1.22, k=224), now task DHM-9. TF-IDF baseline recovers 3/5 planted classes ([results](../docs/design/dev-harness-mining-results-20261022.md), [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)). Caveats: would-fire is today's predicate over history, and the always-on prefix figure is a file-size estimate (DHM-5.1 will measure it).
+- OAB-LB1: across 15,144 Codex AK-lane threads exec wall is 0.64% of turn wall, so the lane is model-bound and no tool-latency task is filed ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend)).
+- HIL-15a-RUN-1 (first live flag-on run): 54/56 pass, `auc_table` INSUFFICIENT, reported as a null because the task set is too easy; HIL-15b builds a harder set (pass band unmeasured) and HIL-15c will measure L2 signature precision on passing runs (`premature_wrap_up` fired on 34/54 passes) ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): the HIL-6 pilot is deferred past the second GPU; a coder-child redesign (D1) is costed; the L2 detectors are calibrated on TRAIL
 
@@ -144,7 +157,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 ### Source References (2026-10-22 wrap-up sweep 10)
 
 - [docs/design/hil6i-pilot-redesign-20261022.md](../docs/design/hil6i-pilot-redesign-20261022.md) — options A-D, costed, with the power table and the D1 recommendation
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — the deferral and reopen trigger, HIL-14a/16c/17/LB1 results
 - [handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md](../handoffs/completed/harness-improvement-loop-completed-through-2026-10-22.md) — the TRAIL table, HIL-6a..6i landings
 - [docs/design/hil6-sibling-loop-implementation.md](../docs/design/hil6-sibling-loop-implementation.md) — seam parity evidence and the HIL-2 items map
 - [docs/design/hil6i-pilot-design-first-feature-20261022.md](../docs/design/hil6i-pilot-design-first-feature-20261022.md) — home choice and the prompt-truncation defect
@@ -166,7 +179,7 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 - [progress/2026-10/2026-10-22-hil6-b-seams.md](../progress/2026-10/2026-10-22-hil6-b-seams.md)
 - [progress/2026-10/2026-10-22-hil6j-pilot-wiring.md](../progress/2026-10/2026-10-22-hil6j-pilot-wiring.md)
 - [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): HIL-16/HIL-18 build
 
@@ -182,8 +195,8 @@ Sources: [dev-harness-trace-mining](../handoffs/active/dev-harness-trace-mining.
 ### Source References (2026-10-22 sweep 7)
 
 - [docs/design/harness-improvement-loop-design-20261006.md](../docs/design/harness-improvement-loop-design-20261006.md)
-- [handoffs/active/harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md)
-- [handoffs/active/dev-harness-trace-mining.md](../handoffs/active/dev-harness-trace-mining.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-harness-improvement-loop)
+- [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 - [progress/2026-10/2026-10-21-hil16-18.md](../progress/2026-10/2026-10-21-hil16-18.md)
 - [progress/2026-10/2026-10-21-queue-builders-3.md](../progress/2026-10/2026-10-21-queue-builders-3.md)
 
@@ -211,9 +224,9 @@ The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedde
 
 ### Source References (2026-10-20 sweep 2, architecture)
 
-- [Harness improvement loop handoff](../handoffs/active/harness-improvement-loop.md) — HIL-1 to HIL-8 state and classification table.
+- [Harness improvement loop handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-1 to HIL-8 state and classification table.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — objective axes, substrate extraction plan, option package.
-- [Qwen3.8-27B handoff](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T10 ruling, role table, gaps, T10.1.
+- [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — seam, migration, gates, unknowns.
 - [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — spec-off-judges landing, embedder adoption prep.
 - [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — session lane context.
@@ -223,9 +236,9 @@ The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedde
 
 ## Source synthesis — request state, completion and workflow authority
 
-The accepted non-inference changes make state ownership explicit at several seams. The invocation ring now locks append, snapshot and clear per registry instance, while tool dispatch remains outside that lock. Request-local durable invocation records remain the source for request behavior. QScorer snapshots the existing write-enable and match-k environment settings at construction; later environment changes affect later instances rather than silently changing existing objects. These are source contracts supported by synthetic controls, without establishing live concurrency rates or a serving rollout. The earlier claim that pytest always exercised a false write flag was too broad and is corrected in the [AutoPilot handoff](../handoffs/active/autopilot-continuous-optimization.md).
+The accepted non-inference changes make state ownership explicit at several seams. The invocation ring now locks append, snapshot and clear per registry instance, while tool dispatch remains outside that lock. Request-local durable invocation records remain the source for request behavior. QScorer snapshots the existing write-enable and match-k environment settings at construction; later environment changes affect later instances rather than silently changing existing objects. These are source contracts supported by synthetic controls, without establishing live concurrency rates or a serving rollout. The earlier claim that pytest always exercised a false write flag was too broad and is corrected in the [AutoPilot handoff](../handoffs/active/autopilot-program.md).
 
-Completion has two distinct boundaries. An awaited REPL timeout permanently closes that environment to execution and namespace persistence; the graph prevents a later FINAL rescue or artifact export and retains lease cleanup. The timed-out thread can still finish and cause effects, so refusing reuse does not establish worker termination or effect isolation. Separately, the batch-edit source now asks for acceptance checks and identifies a verifier from one command snapshot. Syntax-only success is explicitly labeled. This closes a source repair while [MF-VBS-2](../handoffs/active/multi-file-coding-completion-capability.md) still requires its BEP inference remeasurement before claiming the model verifies its edits.
+Completion has two distinct boundaries. An awaited REPL timeout permanently closes that environment to execution and namespace persistence; the graph prevents a later FINAL rescue or artifact export and retains lease cleanup. The timed-out thread can still finish and cause effects, so refusing reuse does not establish worker termination or effect isolation. Separately, the batch-edit source now asks for acceptance checks and identifies a verifier from one command snapshot. Syntax-only success is explicitly labeled. This closes a source repair while [MF-VBS-2](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) still requires its BEP inference remeasurement before claiming the model verifies its edits.
 
 The closed agent-run triage vocabulary describes contract format, tool recovery, evidence grounding, artifact commitment and state continuation. Labels can overlap. A classified empty list means a reviewer found no applicable symptom; unknown with an empty list means insufficient evidence or no review. Neither becomes an automatic classifier or substitutes for runtime ErrorCategory. This distinction keeps descriptive diagnosis separate from retry/escalation policy and from the safety of a proposed harness mutation.
 
@@ -233,19 +246,19 @@ Workflow preparation follows the same separation. FW-2 supplies a subsystem cont
 
 ### Source References
 
-- [AutoPilot source boundaries](../handoffs/active/autopilot-continuous-optimization.md) — invocation locking and per-instance settings.
+- [AutoPilot source boundaries](../handoffs/active/autopilot-program.md) — invocation locking and per-instance settings.
 - [Terminal timeout contract](../docs/reference/repl-terminal-timeout-state.md) — environment refusal and remaining worker effects.
-- [Multi-file completion](../handoffs/active/multi-file-coding-completion-capability.md) — verification instruction versus model execution.
+- [Multi-file completion](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — verification instruction versus model execution.
 - [Triage metadata](../docs/reference/agent-run-failure-triage.md) — labels and unknown semantics.
-- [Fuzzy workflow handoff](../handoffs/active/fuzzy-workflow-authoring-gui.md) and [prior art](../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md) — authoring and execution boundaries.
+- [Fuzzy workflow handoff](../handoffs/completed/fuzzy-workflow-authoring-gui.md) and [prior art](../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md) — authoring and execution boundaries.
 
 ## Source References
 
-- [AutoPilot handoff](../handoffs/active/autopilot-continuous-optimization.md)
-- [MF-VBS-2](../handoffs/active/multi-file-coding-completion-capability.md)
+- [AutoPilot handoff](../handoffs/active/autopilot-program.md)
+- [MF-VBS-2](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability)
 - [Terminal timeout contract](../docs/reference/repl-terminal-timeout-state.md)
 - [Triage metadata](../docs/reference/agent-run-failure-triage.md)
-- [Fuzzy workflow handoff](../handoffs/active/fuzzy-workflow-authoring-gui.md)
+- [Fuzzy workflow handoff](../handoffs/completed/fuzzy-workflow-authoring-gui.md)
 - [prior art](../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md)
 
 ## Compiled Update — 2026-09-25: reversible changes need feature-sized commits, travelling tests, and immutable evidence inputs
@@ -278,7 +291,7 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 - [`INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
   `INC-20260925-parallel-repack-lost-in-bundled-revert`, including the commit lineage, missing travelling
   test, measured load cost, and recovery.
-- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — TOC-RD-1b and its
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — TOC-RD-1b and its
   2026-09-25 recurrence, including the negative-control requirement.
 - [`2026-09-25-main-ak-seat.md`](../progress/2026-09/2026-09-25-main-ak-seat.md) — the session record for
   the fourteen rewritten period cells and affected artifact copies.
@@ -322,8 +335,8 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): rows 8–10.
-- [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md): S4-T1 *Comparability target*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §2.
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency): S4-T1 *Comparability target*.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §2.
 
 ## Compiled Update — 2026-09-24 (wrap-up #4): TD-21 is complete — the last residual was the writer itself
 
@@ -341,9 +354,9 @@ same change. Otherwise the guard can silently break the provenance chain it is m
 
 ### Source References (2026-09-24, wrap-up #4)
 
-- [`typed-decision-plane.md`](../handoffs/active/typed-decision-plane.md) — TD-21, TD-21.33, TD-21.33c.
+- [`typed-decision-plane.md`](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21, TD-21.33, TD-21.33c.
 - [`2026-09-24-td21.md`](../progress/2026-09/2026-09-24-td21.md) — *Late (3)*.
-- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-0i.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-0i.
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile): TD-21 landed — and the repair turn needed evidence, not just a schema
 
@@ -386,7 +399,7 @@ landing; that review loop is where most of the findings below came from.
 - **Open, with named blockers:** OP-50 and OP-51 (operator). TD-21.29/21.30 (the AutoKernel actor rows) were
   held while DS41 ran on those actors. The branch `td21/29-30-actors` (`c0a00a8b`) is stacked on the seat
   lane and has been told to rebase onto research main `21ca61b0` and land. TD-1d.2 (a short inference window).
-  ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.0–21.34;
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0–21.34;
   [progress 2026-09-24 td21](../progress/2026-09/2026-09-24-td21.md))
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): 36 of 62 model-output consumers still fish JSON out of free text, and our own `/v1` payload builder forwards no schema field
@@ -404,7 +417,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   **62 consumers classified, 36 still fish structured output out of free text**, 31 of those reachable by
   the same-server repair idiom. Of the 36: **13 write a silent default into persisted state or serve it to
   a user**, 6 retry a full call from zero, 9 score a parse failure as a wrong answer.
-  ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21;
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21;
   audit artifact `artifacts/audits/td-json-consumer-audit-20260924.md`)
 - **TD-21.0 is the prerequisite, and it is three lines.** `src/backends/llama_server.py:607-616` (and the
   streaming variant at `:1397`) builds the `/v1` chat payload with `messages`/`max_tokens`/`stream`/
@@ -415,7 +428,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   own `/v1` **does** honour `response_format json_schema` (proven live on `:8083`), so no declared
   `/completion` lane is needed. Every `/v1`-lane conversion is a no-op until this lands, and it is zero
   inference to decide — but it changes production request semantics for every `/v1` role, so it is a stack
-  change. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.0;
+  change. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0;
   [2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
 - **The repair idiom that works, with three refuted designs recorded.** Landed in
   `epyc-inference-research` `ad2b89ff` (`loop/actors.py` `_parse_reply` / `_schema_repair`): fish first,
@@ -435,7 +448,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   carries no `model` field, so a multi-model endpoint would 400 and degrade silently to `None`; and
   `_schema_repair` returns `None` for non-opencode backends, so **the two DEFAULT actor roles have zero
   repair coverage today** — the idiom is live only on an explicit `provider/model` opt-in.
-  ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.30)
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.30)
 - **The costliest sites are the ones with a silent fallback, not the ones that crash.** Named in the audit:
   the REPL `FINAL()` validator re-runs the whole `run_task` graph from zero twice and then returns the
   invalid answer anyway (TD-21.1); the autopilot ACTION block fails the provider, re-prompts a fallback
@@ -447,7 +460,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   to a heuristic rubric stamped into the eval results (TD-21.15); `vl_describe` sets `structured=None` but
   leaves `result.success` **True**, so downstream cannot distinguish a parse failure from "nothing in the
   image" (TD-21.19); and a reviewer A/B writes `DEFAULT_DECISION` into the very result the script exists to
-  produce (TD-21.24). ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.1–21.28)
+  produce (TD-21.24). ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1–21.28)
 - **Two sequencing rules the audit imposes on itself.** TD-21.31 records the *unreachable* consumers rather
   than converting them (external CLIs with no local server; three arms are already natively constrained via
   `--json-schema` or enum/`const` bindings) — but flags two defects there anyway: an arena fallback that
@@ -455,7 +468,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   drops any `response_format` the vendor supplies. TD-21.32: there is **no declared `judge` role** in the
   registry, so the judge-site conversions must land after or alongside the CJ-17 binding (was CJ-11) at `src/llm.py`,
   or they convert against a moving target.
-  ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.31, TD-21.32)
+  ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.31, TD-21.32)
 - **Agents edit and then stop: 0/38 edited trajectories ever execute anything** (MF-VBS-1, measured, orch
   `86471b1f`). The only corpus with per-turn `file_write_safe`/FINAL granularity is `data/bep_sandbox` —
   62 real trajectories, `coder_escalation` Qwen3.6-35B-A3B, 5 tasks × 2 arms. No edited trajectory calls
@@ -467,7 +480,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   single-turn auto-finalizes, and only one of five tasks ever stops voluntarily — so this measures one
   rider on one role on one day. Verdict: build the gate (MF-VBS-2), and re-measure once the other tasks
   reach a voluntary stop at all.
-  ([multi-file-coding-completion-capability](../handoffs/active/multi-file-coding-completion-capability.md) MF-VBS-1/MF-VBS-2)
+  ([multi-file-coding-completion-capability](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) MF-VBS-1/MF-VBS-2)
 
 ### Open questions
 
@@ -486,14 +499,14 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
 
 ### Source References (2026-09-24 wrap-up compile)
 
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-21 and its 33 sub-rows: the
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-21 and its 33 sub-rows: the
   62-consumer audit, the TD-21.0 payload-builder gap, the per-site classifications, the residuals and the
   explicitly-unreachable set.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C16, the
   schema-constrained repair turn and the intake gap it exposed.
 - [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the three refuted abstain
   designs, the measured shapes and timings, the TD-21 dispatch decision.
-- [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) —
+- [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) —
   MF-VBS-1 measurement and caveats; MF-VBS-2 filed.
 
 **Additional sources (2026-09-24)**: TD-21 consumer census, the audit artifact, and the VB-TD-21-CENSUS prospective evidence gap.
@@ -509,14 +522,14 @@ the audit. This is a software-path audit, not a model-quality benchmark.
   text, and 31 are locally reachable for same-server constrained repair.** Failure paths include silent defaults
   written to persistent state or shown to users, retries restarting the full call graph, and parser failures
   counted as wrong answers in scorers. The full inventory and ranked conversion list are in the audit artifact.
-  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21,
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21,
   [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
 - **The backend's llama-server `/v1` chat payload builder omits `response_format`.** The audit reports that local
   llama-server `/v1` honors `response_format: {type: "json_schema", ...}`; the `/completion` adapter forwards
   the constraint but the `/v1` adapter does not. TD-21.0 tracks this payload fix before conversions in that lane.
   This is distinct from the orchestrator `/v1` API contract documented in the 2026-09-18 section below: that
   role-keyed routing layer intentionally returns 422 for an unavailable forced role.
-  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.0,
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.0,
   [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
 - **Capture the audit and the applied repair prospectively; do not invent retrospective claim tuples.** DS41-C16
   validated same-server repair on five actor-reply shapes; the evidence handoff now separately tracks the future
@@ -537,11 +550,11 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 - **OP-50 (eval-quality scorer boundary) ratified and applied.** `EXCLUDE_UNPARSEABLE_ANSWERS` and
   `CONSTRAIN_JUDGE_OUTPUT` are now both `True` under era `E19-eval-answer-parse-failure-excluded-quality`,
-  post-flip suite 271 passed. ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.EQ1, orch
+  post-flip suite 271 passed. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.EQ1, orch
   `eabc9b44`)
 - **TD-21.29/TD-21.30 landed: the AutoKernel loop's preparation and residual JSON consumers now go through
   repair.** Coordinated directly with the concurrent DS41 campaign session rather than waiting for it to end,
-  merged after their seat branch tip. ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.29,
+  merged after their seat branch tip. ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.29,
   TD-21.30, research `4915220f`, `34373dd8`)
 - **Relaxing a repair schema's `required` constraint does not, by itself, stop the model from inventing
   optional fields — the evidence guard is what does.** TD-21.35 dropped `required` from the repair wire schema
@@ -550,20 +563,20 @@ the audit. This is a software-path audit, not a model-quality benchmark.
   `tier` field for a draft that named none. TD-21.34's `require_evidence` (already landed, unrelated commit)
   is the mechanism that actually catches this — the two are complementary, not redundant, and a design that
   ships one without the other is not protected against invention.
-  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.34, TD-21.35, orch `f09efc64`, research
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.34, TD-21.35, orch `f09efc64`, research
   `34373dd8`)
 - **A production-posture flag flip can surface an unrelated routing defect.** Enabling `final_schema_validation`
   (OP-51) for a live smoke produced HTTP 500 with `Model fallback: coder_escalation → frontdoor
   (connection_error)`, even though the `coder_escalation` backend (:8083) answered health checks — the flag
   exercised an escalation path that a normal request does not take, exposing a defect the flag itself did not
   cause. The operator suspended the flag rather than debug live; root-cause is filed, not fixed.
-  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.1a, orch `98edfeb0` enable, `6b26f3ae`
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.1a, orch `98edfeb0` enable, `6b26f3ae`
   suspend)
 - **Cross-process meta reads across a thread hop need the value returned from the thread, not re-read after
   it.** TD-21.33a's fix (`_call_llm_capturing_meta`) captures inference meta *inside* `asyncio.to_thread` and
   returns it alongside the result, instead of reading a ContextVar set in the child from the parent afterward
   — the general pattern for any per-call state crossing a thread boundary in this codebase.
-  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.33a, orch `f769f3e1`)
+  ([TD-21 handoff](../handoffs/active/routing-program.md#track-typed-decision-plane) TD-21.33a, orch `f769f3e1`)
 
 ### Open question
 
@@ -579,11 +592,11 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 - **INC-20260917-daemon-stale-script-inode: three shapes, all live at once.** (1) **Stale and diverged** — the opencode-event reaper (pid 2873259, started 09-08) held `fd/255` on a lane copy under `worktrees/mains/ak-rebuild-20260828`, 1,802 B against 7,976 B tracked at HEAD; the running code still gated its VACUUM decision on `pgrep -x opencode` and had never sourced `observer_guard.sh`, across **461 iterations and 39 VACUUMs** against the operator's live `opencode.db`. (2) **Orphaned inode** — the hub and bus supervisors both showed `(deleted)` for their own script after an unrelated `git reset --hard origin/main` in the shared clone; content was identical that day, so nothing was visibly broken, but the next commit to either file would have diverged silently. (3) **Orphaned tree** — a hub on `:8101` ran from a worktree directory that no longer existed, with no registry row, pidfile or probe. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260917-daemon-stale-script-inode)
 - **The mechanism is bash plus git, and neither is doing anything wrong.** Bash opens a script's inode once at launch and reads it incrementally for the process's whole life. Git never writes a tracked file in place — checkout, reset and merge unlink and recreate it — so **every commit to a tracked script leaves any already-running daemon on an orphaned inode**. No cron runs in this container, so daemons are hand-launched and inherit the launching session's cwd, which is how a lane cwd produces a lane-pinned daemon. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md))
-- **Nothing existed to move a daemon back, and the guard that looked relevant certifies a different object.** Supervisors restart their charges, never themselves. `scripts/coordination/WORKTREE_MIGRATION.md` pinned runtime **state** to `/workspace` and said nothing about runtime **code**. And `observer_census.py` (Rule A/B over `git ls-files`) certifies the **file**, not a running **instance** — which is how "census OK" coexisted with a nine-day-stale live reaper. A certificate about a path is not a certificate about a process. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), [non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-81)
-- **Remedy (a), landed: `scripts/coordination/daemon_provenance.sh`.** `dp_attest`, called at a daemon's own startup, **refuses to start** when its own script does not resolve under the canonical root — *a lane may develop a daemon, never run it* — **warns loudly but never refuses** on an uncommitted local edit, and records `{pid, script_realpath, inode, blob, started_at}`. `dp_stale_since_start` polls once per loop iteration and **logs, never acts**, that a commit has since replaced the file the process is executing. Wired into the reaper's `run` mode and into `bus_supervisor.sh` / `hub_supervisor.sh`'s own `loop` startup — complementary to bus_supervisor's pre-existing H-4 check, which watches the **separate** daemon it supervises, not its own script. 15-case test; the read-only `/proc` check found no live daemon on stale code that day. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-81/NIB2-81a)
+- **Nothing existed to move a daemon back, and the guard that looked relevant certifies a different object.** Supervisors restart their charges, never themselves. `scripts/coordination/WORKTREE_MIGRATION.md` pinned runtime **state** to `/workspace` and said nothing about runtime **code**. And `observer_census.py` (Rule A/B over `git ls-files`) certifies the **file**, not a running **instance** — which is how "census OK" coexisted with a nine-day-stale live reaper. A certificate about a path is not a certificate about a process. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
+- **Remedy (a), landed: `scripts/coordination/daemon_provenance.sh`.** `dp_attest`, called at a daemon's own startup, **refuses to start** when its own script does not resolve under the canonical root — *a lane may develop a daemon, never run it* — **warns loudly but never refuses** on an uncommitted local edit, and records `{pid, script_realpath, inode, blob, started_at}`. `dp_stale_since_start` polls once per loop iteration and **logs, never acts**, that a commit has since replaced the file the process is executing. Wired into the reaper's `run` mode and into `bus_supervisor.sh` / `hub_supervisor.sh`'s own `loop` startup — complementary to bus_supervisor's pre-existing H-4 check, which watches the **separate** daemon it supervises, not its own script. 15-case test; the read-only `/proc` check found no live daemon on stale code that day. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81/NIB2-81a)
 - **The rule this fed: runtime-plane daemons execute from canon or the read-only view only, never a lane.** Now stated in `WORKTREE_MIGRATION.md` alongside the pre-existing runtime-state rule, which is the gap the class fell through. ([INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md), CLAUDE.md § Working-tree identity)
-- **The reaper was not merely stale — it was dead.** Its pid had gone with the 2026-09-21 host restart (last log line 2026-09-20T00:05Z), so from then on nothing was reaping. Relaunched detached from the **tracked** path `/workspace/scripts/system/opencode_event_reaper.sh` (pid 1833821, `fd/255` verified against the tracked file); first pass at 19:17Z: VACUUM 55 s, integrity ok, db 10.8 GB. Nothing relaunches it after a reboot, which is remedy (b). The orphaned `:8101` hub is moot for the same reason — its pid is gone and nothing listens there. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NI-OC-a.1, NIB2-81b)
-- **NIB2-80: an escalation path that bypassed its own budget gate, at five sites rather than the one reported.** `epyc-orchestrator/src/graph/nodes.py:235-241` bumped `state.escalation_count`, recorded the role change and returned `CoderEscalationNode()` **without calling `_should_escalate`**, while every other escalation site gated on it. Fix (orchestrator `d1f5bf02`): immediate escalation is kept but bounded by `max_escalations` at **all five** early-abort sites; at budget it falls through to the sibling gate/retry/fail chain. Residual: early-abort escalation still skips the role-cycle check. Finding one instance of a defect class is a reason to grep for the rest before fixing. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-80)
+- **The reaper was not merely stale — it was dead.** Its pid had gone with the 2026-09-21 host restart (last log line 2026-09-20T00:05Z), so from then on nothing was reaping. Relaunched detached from the **tracked** path `/workspace/scripts/system/opencode_event_reaper.sh` (pid 1833821, `fd/255` verified against the tracked file); first pass at 19:17Z: VACUUM 55 s, integrity ok, db 10.8 GB. Nothing relaunches it after a reboot, which is remedy (b). The orphaned `:8101` hub is moot for the same reason — its pid is gone and nothing listens there. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NI-OC-a.1, NIB2-81b)
+- **NIB2-80: an escalation path that bypassed its own budget gate, at five sites rather than the one reported.** `epyc-orchestrator/src/graph/nodes.py:235-241` bumped `state.escalation_count`, recorded the role change and returned `CoderEscalationNode()` **without calling `_should_escalate`**, while every other escalation site gated on it. Fix (orchestrator `d1f5bf02`): immediate escalation is kept but bounded by `max_escalations` at **all five** early-abort sites; at budget it falls through to the sibling gate/retry/fail chain. Residual: early-abort escalation still skips the role-cycle check. Finding one instance of a defect class is a reason to grep for the rest before fixing. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-80)
 - **A fan-out pattern that held for a 10-item batch**: four screeners first, then ten implementation subagents, each reviewed on the main thread before anything landed — across three repos in one session, with the operator-only items (a daemon relaunch, a production config change) separated out rather than executed by subagents. ([2026-09-23 progress](../progress/2026-09/2026-09-23.md))
 
 ### Open questions
@@ -594,7 +607,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 ### Source References (2026-09-23 evening wrap-up compile)
 
 - [INCIDENT_LOG.md](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260917-daemon-stale-script-inode: the three shapes, the mechanism, the remedy and the rule fed.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-81/81a/81b (`daemon_provenance.sh`), NI-OC-a.1 (the dead reaper), NIB2-80 (early-abort escalation).
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81/81a/81b (`daemon_provenance.sh`), NI-OC-a.1 (the dead reaper), NIB2-80 (early-abort escalation).
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch and its screener/implementer fan-out.
 
 ## Compiled Update — 2026-09-23 (later): NIB2-81 remedy (b) lands — a live census with a scheduled mode, and an operator ruling that a `not_running` daemon can be the correct state
@@ -603,10 +616,10 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Key findings
 
-- **Remedy (b), landed: a registry `runtime:` field plus a read-only `/proc` census.** Two runtime modes: **daemon** mode (`pidfile`, `expected_path`, `provenance`) for a long-running process, and **scheduled** mode (`log`, `max_age_s`) for a cron-ticked target that has no daemon pidfile by design. `observer_census.py --live` walks `/proc` and reports one of seven states per registered instance — `running_current` / `running_stale` / `running_off_canon` / `not_running` / `cannot_tell` / `scheduled_current` / `scheduled_stale` — feeding the existing `alarm_channel`. `bus_supervisor.sh` restarts only rows flagged `restart_on_stale` (the reaper, today), by the candidate's own pidfile identity, TERM then KILL, rate-limited. Root commits `ddb4d0e9`, `938766ab`. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-81)
+- **Remedy (b), landed: a registry `runtime:` field plus a read-only `/proc` census.** Two runtime modes: **daemon** mode (`pidfile`, `expected_path`, `provenance`) for a long-running process, and **scheduled** mode (`log`, `max_age_s`) for a cron-ticked target that has no daemon pidfile by design. `observer_census.py --live` walks `/proc` and reports one of seven states per registered instance — `running_current` / `running_stale` / `running_off_canon` / `not_running` / `cannot_tell` / `scheduled_current` / `scheduled_stale` — feeding the existing `alarm_channel`. `bus_supervisor.sh` restarts only rows flagged `restart_on_stale` (the reaper, today), by the candidate's own pidfile identity, TERM then KILL, rate-limited. Root commits `ddb4d0e9`, `938766ab`. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
 - **Correction made in review: a two-mode census would have alarmed on its own correct behaviour.** The first version modelled every registered target as a daemon with a pidfile, which would have raised a permanent false CRITICAL for `hub_supervisor` and `fleet_watch` — both cron-ticked, both correctly having no daemon pidfile between ticks. The **scheduled** mode (`eb05724b`) was added specifically so a target's *design* (cron-ticked vs long-running) determines which states are even possible for it, rather than one state machine being asked to explain every target.
-- **Live census, 2026-09-23: reaper `running_current`; `hub_supervisor` and `fleet_watch` `scheduled_current`; `bus_supervisor` `not_running` since 2026-09-20.** The operator ruled explicitly to **leave `bus_supervisor` (and therefore the coordinator-daemon) down** — relaunching it restarts fleet dispatch and nudges, which the operator did not want restarted incidentally as a side effect of closing a hygiene item. Its `not_running` census verdict is therefore an **expected state**, not an outage, and the practical consequence is that the reaper currently has no automatic stale-restart path while `bus_supervisor` stays down. Root commit `10b94f09`. A census state is a fact about a process; whether that fact is a problem is a separate, human call. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-81)
-- **A shell `stat` can report the wrong inode for a `/proc/<pid>/fd/<n>` symlink, on this host specifically.** The restart path was deliberately built on a small `python3` helper rather than bash's own `stat`, because this host's `stat` is uutils-coreutils, measured (while building the restart path) to return a **different, wrong** inode for a `/proc/<pid>/fd/<n>` symlink than for the same file's real path — while `os.stat()` (already used by `observer_census.py`, and used by this helper) resolves both to the identical, correct value. A restart mechanism built on the shell `stat` comparison would have failed closed into `cannot_tell` on **every single call** on this host, which is a worse failure than the gap the remedy exists to close — importing `python3` for a one-line comparison is cheaper than that failure mode. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-81, `scripts/coordination/bus_supervisor.sh`)
+- **Live census, 2026-09-23: reaper `running_current`; `hub_supervisor` and `fleet_watch` `scheduled_current`; `bus_supervisor` `not_running` since 2026-09-20.** The operator ruled explicitly to **leave `bus_supervisor` (and therefore the coordinator-daemon) down** — relaunching it restarts fleet dispatch and nudges, which the operator did not want restarted incidentally as a side effect of closing a hygiene item. Its `not_running` census verdict is therefore an **expected state**, not an outage, and the practical consequence is that the reaper currently has no automatic stale-restart path while `bus_supervisor` stays down. Root commit `10b94f09`. A census state is a fact about a process; whether that fact is a problem is a separate, human call. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81)
+- **A shell `stat` can report the wrong inode for a `/proc/<pid>/fd/<n>` symlink, on this host specifically.** The restart path was deliberately built on a small `python3` helper rather than bash's own `stat`, because this host's `stat` is uutils-coreutils, measured (while building the restart path) to return a **different, wrong** inode for a `/proc/<pid>/fd/<n>` symlink than for the same file's real path — while `os.stat()` (already used by `observer_census.py`, and used by this helper) resolves both to the identical, correct value. A restart mechanism built on the shell `stat` comparison would have failed closed into `cannot_tell` on **every single call** on this host, which is a worse failure than the gap the remedy exists to close — importing `python3` for a one-line comparison is cheaper than that failure mode. ([non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) NIB2-81, `scripts/coordination/bus_supervisor.sh`)
 
 ### Open questions
 
@@ -614,7 +627,7 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-23, NIB2-81 remedy (b))
 
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-81 remedy (b): the registry `runtime` field, the seven-state live census, the `bus_supervisor` restart path, and the operator ruling.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-81 remedy (b): the registry `runtime` field, the seven-state live census, the `bus_supervisor` restart path, and the operator ruling.
 - epyc-root commits `ddb4d0e9` (live census), `938766ab` (registry-flagged restarts), `eb05724b` (scheduled mode correction), `10b94f09` (operator ruling recorded).
 - `scripts/coordination/bus_supervisor.sh` — `registry_script_is_stale`'s uutils-`stat` vs `os.stat()` comment, measured on this host.
 - `scripts/coordination/observer_census.py` — the seven-state `--live` census and its pre-existing `os.stat()` convention.
@@ -630,18 +643,18 @@ the audit. This is a software-path audit, not a model-quality benchmark.
   - **(b) The wrapper's own `--push` could not satisfy its own guard across two tool calls.** The guard accepts a push from a *descendant* of the lock holder. `--acquire` and `--push` are separate processes, and the wrapper exported neither `EPYC_PUSH_LOCK_HOLDER` nor `AGENT_ID` to fall back on.
   - **The silence was the real defect.** git's `failed to push` went to stderr *before* the manifest, and the last line printed was `PUSHING as '<agent>' under the push lock ...`. Then `--release` said `(no push lock held)`, which reads like a normal post-push release. Only `git cherry origin/main main` showed the push had not landed.
 
-  ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F9)
+  ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9)
 - **The fix: one resolver, and verify instead of attempt.**
   - The guard now **asks the writer** (`--print-lock-file`) rather than deriving a second answer, and refuses if the repo keys disagree.
   - The wrapper declares `EPYC_PUSH_LOCK_HOLDER` for its own child push, asserting only what `O_EXCL` just proved.
   - `--push` prints git's output after the manifest, then runs `git cherry`, so a push that exits 0 without landing reports `PUSH FAILED` (exit 4).
 
-  Guard strength is unchanged, and that was proven rather than asserted. With no lock it still refuses, and a mismatched id still refuses. Re-running the suite against the pre-fix guard gave exactly the four new default-location failures. The files sit under `scripts/coordination/**` and `scripts/hooks/**`, which D9 puts behind operator ack, and the owning session cannot self-ack (SSU-F9a). The fix landed as epyc-root `0f9a4ef1`, whose message carries `D9-ack: operator, 2026-09-23`. The SSU-F9a box in the handoff is still unticked. ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F9 outcome, SSU-F9a)
-- **F9b: a relayed subagent claim was false, and checking it took one `cat`.** The task claimed the two sub-repos had LFS-only pre-push hooks with no serialization guard. Both in fact carry the chained hook installed 2026-08-12, byte-identical to epyc-root's, and running the guard in each repo refused as designed. What *was* true is more interesting. Before SSU-F9, the guard hardcoded `/workspace/coordination/push-locks` while the wrapper locked in each repo's own directory. So in the sub-repos every correctly locked push would have been refused, on every attempt. In epyc-root the two derivations happened to produce the same string, which is why the breakage was invisible from there. Pushes to both sub-repos after the fix ended on `PUSH VERIFIED`. ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F9b)
-- **SSU-F9c: the same shape, one lease over, still live.** `promote_lane.py:519` defaults `--lock-dir` to the `__file__`-relative fallback. In a lane worktree that is the lane's *private* directory, so the promote lease serializes nothing across lanes. That is the 2026-09-01 incident that the push lease's git-common-dir derivation was introduced to fix. ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F9c)
+  Guard strength is unchanged, and that was proven rather than asserted. With no lock it still refuses, and a mismatched id still refuses. Re-running the suite against the pre-fix guard gave exactly the four new default-location failures. The files sit under `scripts/coordination/**` and `scripts/hooks/**`, which D9 puts behind operator ack, and the owning session cannot self-ack (SSU-F9a). The fix landed as epyc-root `0f9a4ef1`, whose message carries `D9-ack: operator, 2026-09-23`. The SSU-F9a box in the handoff is still unticked. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9 outcome, SSU-F9a)
+- **F9b: a relayed subagent claim was false, and checking it took one `cat`.** The task claimed the two sub-repos had LFS-only pre-push hooks with no serialization guard. Both in fact carry the chained hook installed 2026-08-12, byte-identical to epyc-root's, and running the guard in each repo refused as designed. What *was* true is more interesting. Before SSU-F9, the guard hardcoded `/workspace/coordination/push-locks` while the wrapper locked in each repo's own directory. So in the sub-repos every correctly locked push would have been refused, on every attempt. In epyc-root the two derivations happened to produce the same string, which is why the breakage was invisible from there. Pushes to both sub-repos after the fix ended on `PUSH VERIFIED`. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9b)
+- **SSU-F9c: the same shape, one lease over, still live.** `promote_lane.py:519` defaults `--lock-dir` to the `__file__`-relative fallback. In a lane worktree that is the lane's *private* directory, so the promote lease serializes nothing across lanes. That is the 2026-09-01 incident that the push lease's git-common-dir derivation was introduced to fix. ([model-stack-single-source-update-pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) SSU-F9c)
 - **A module that parses `sys.argv` at import answers the importer's flags (DS41-C2e).** `autokernel_enrollment.py:276` imports `scripts.server.orchestrator_stack`, which parses `sys.argv` at import time. So it saw the enrollment's flags, printed stack status and exited 0 without writing the output: another success-shaped non-result. The campaign route taken instead is `--registry-snapshot` (an `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities). The import-time argparse is filed to be fixed separately. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C2e)
-- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/loop-owned-fleet-implementation.md), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
-- **Ownership follows the lane, not the session.** The typed-decision plane is now owned by the research-intake lane: the session it was assigned to is closed, and its orchestrator worktree retired after its branch merged. New TD work cuts a fresh lane worktree from origin/main. The `research-intake` skill's Stage 4 now ends with a lane close-out rule. The same cleanup recorded a process miss: worktree and branch removals ran without the operator's per-list delete confirmation. Nothing unique was lost, and every tip is recorded for restore. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
+- **A guard's documented override must be reachable by the party it names.** The commit-hygiene hook reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from its own environment (`check_commit_hygiene.py:504`). So the inline form its refusal text suggests, `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`, never reaches it. It refused twice on 2026-09-23 even after the operator had approved that exact command, because the approval arrived as chat text rather than as a `!` shell line. The same content was then written from `git show HEAD:<path>` after hash-checking each backup. The filed fix is to have the refusal say how the operator applies the override, or to accept a one-shot operator token. As it stands, the text invites an agent to try, fail, and then route around the guard with an equivalent write. ([loop-owned-fleet-implementation](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
+- **Ownership follows the lane, not the session.** The typed-decision plane is now owned by the research-intake lane: the session it was assigned to is closed, and its orchestrator worktree retired after its branch merged. New TD work cuts a fresh lane worktree from origin/main. The `research-intake` skill's Stage 4 now ends with a lane close-out rule. The same cleanup recorded a process miss: worktree and branch removals ran without the operator's per-list delete confirmation. Nothing unique was lost, and every tip is recorded for restore. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [2026-09-23 intake-jev-exl3](../progress/2026-09/2026-09-23-intake-jev-exl3.md))
 
 ### Open questions
 
@@ -650,11 +663,11 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-23 wrap-up compile)
 
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — SSU-F9 (defect and outcome), SSU-F9a, SSU-F9b, SSU-F9c.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9 (defect and outcome), SSU-F9a, SSU-F9b, SSU-F9c.
 - epyc-root commit `0f9a4ef1` — the SSU-F9 fix and its `D9-ack` trailer.
 - [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C2e.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — the owner line.
-- [loop-owned-fleet-implementation.md](../handoffs/active/loop-owned-fleet-implementation.md) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — the owner line.
+- [loop-owned-fleet-implementation.md](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) — the unreachable hygiene-hook override (working-tree edit by the owning session, 2026-09-23).
 - [2026-09-23-intake-jev-exl3.md](../progress/2026-09/2026-09-23-intake-jev-exl3.md) — lane cleanup, the close-out rule and the process miss.
 
 ## Compiled Update — 2026-09-19: a dormant browser-agent surface is filed, and the typed-decision plane's agent-facing results settle
@@ -663,10 +676,10 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Key findings
 
-- **`browser-agent-surface.md` (UFH-10) is a dormant stub by operator steering**, so an interactive, goal-driven browser surface (click/type/select/scroll) is not lost. Its scope boundary: `searxng-search-backend.md` owns *read-only* retrieval (SearXNG → Crawl4AI → Camofox as last-resort browser, CA-6); this stub owns *interactive* browsing, which nothing else does. Its first task is an operator decision — name a workflow that needs it. ([browser-agent-surface](../handoffs/active/browser-agent-surface.md))
-- **The design reference, from the intake-1493 dive:** rebuild the action space each step from one atomic DOM snapshot as an indexed element table; the model picks an index, never a selector, coordinate or code, and the executor re-checks freshness and occlusion before input; one typed call per step for the operation plus per-operation target heads; a generative model only for free-text fields (strict single-key JSON); never retry a mutation, log execution before re-observing, and verify outcomes independently because DONE is not proof of success. The reusable mechanism advances under TD-12..TD-15 regardless — see [tool-implementation](tool-implementation.md). ([browser-agent-surface](../handoffs/active/browser-agent-surface.md), [typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **`browser-agent-surface.md` (UFH-10) is a dormant stub by operator steering**, so an interactive, goal-driven browser surface (click/type/select/scroll) is not lost. Its scope boundary: `searxng-search-backend.md` owns *read-only* retrieval (SearXNG → Crawl4AI → Camofox as last-resort browser, CA-6); this stub owns *interactive* browsing, which nothing else does. Its first task is an operator decision — name a workflow that needs it. ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md))
+- **The design reference, from the intake-1493 dive:** rebuild the action space each step from one atomic DOM snapshot as an indexed element table; the model picks an index, never a selector, coordinate or code, and the executor re-checks freshness and occlusion before input; one typed call per step for the operation plus per-operation target heads; a generative model only for free-text fields (strict single-key JSON); never retry a mutation, log execution before re-observing, and verify outcomes independently because DONE is not proof of success. The reusable mechanism advances under TD-12..TD-15 regardless — see [tool-implementation](tool-implementation.md). ([browser-agent-surface](../handoffs/completed/browser-agent-surface.md), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Answering the 2026-09-17 open question "does TD-7 clear the incumbent comparator?": no.** Once single-token codes let the native arm resolve 200/200 (TD-9), agreement was 93.5% but the counterfactual value delta was −0.0104 (TD-10), so typed routing enforcement stays off; TD-11 iterates through the counterfactual harness. Detail: [routing-intelligence](routing-intelligence.md). For agent design this confirms the HS-TD rows' posture: typed decisions log beside the harness's own decision and gate nothing.
-- **TD-6 flipped the native default to `id_only`** while TD-1d.0 (re-settle the n=1 acceptance) and TD-1d.1 (`/v1` drops `grammar`/`json_schema`) stay open. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **TD-6 flipped the native default to `id_only`** while TD-1d.0 (re-settle the n=1 acceptance) and TD-1d.1 (`/v1` drops `grammar`/`json_schema`) stay open. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 
 ### Open questions
 
@@ -675,8 +688,8 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-19)
 
-- [browser-agent-surface.md](../handoffs/active/browser-agent-surface.md) — UFH-10 stub, scope boundary, design reference.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-6, TD-9, TD-10, TD-11, TD-12..TD-15.
+- [browser-agent-surface.md](../handoffs/completed/browser-agent-surface.md) — UFH-10 stub, scope boundary, design reference.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-6, TD-9, TD-10, TD-11, TD-12..TD-15.
 - [2026-09-19-intake-jev-ultrafast.md](../progress/2026-09/2026-09-19-intake-jev-ultrafast.md) — intake-1493/1494 session record.
 - [intake-1493] Jev Ultrafast — indexed action space and operation × target heads; dive-verified.
 
@@ -686,11 +699,11 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Key findings
 
-- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md), [typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **Fixing the `/v1` schema descriptions exposed the behaviour underneath (HS-OD-3..7).** After `336bd170` fixed one field whose description promised a cap the seam never applied, a sweep over every request field (orchestrator `dadad301`, descriptions only, 13 guard tests) produced five rows that are about code: `x_force_model` cannot force a model (HS-OD-3); `max_tokens` is not a generation cap in REPL mode — it is `max_turns = max_tokens // 500` clamped 1..5 with a hard-coded 1024 per call (HS-OD-4); sampling overrides and `max_tokens` are dropped on the vision path with a 200 (HS-OD-5); `x_disable_repl` + `tools` renders `CALL(...)` instructions for an executor that is off (HS-OD-6); role overrides were never validated (HS-OD-7). Read with HS-OD-1's rule — *a body field that changes output semantics must be refused, not ignored*: 5 and 7 were unfinished applications of it, 4 and 6 mode-dependent contradictions, 3 a name promising a capability the code lacked. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The role is the contract — operator ruling, 2026-09-17** (*"the model role is all that's needed. No need to ping models that aren't part of the orchestration stack."*). HS-OD-3 + HS-OD-7 closed in orchestrator `2a609f5c`: precedence is `x_force_role > x_force_model > x_orchestrator_role > model`; `x_force_model` is a **deprecated alias, not deleted** — identical behaviour, marked in the schema, logged when set, because removing a published field silently is worse than carrying it; the two disagreeing is a 422 naming both. The three override fields are validated after normalization against `available_roles() ∪ server_urls` keys, so a registry model name, a typo, or a `Role` member with no server (`draft_coder`, `thinking_reasoning`) is a 422 naming the field instead of a silent backend miss. Three values `/v1/models` advertised yet died at lookup (`orchestrator`, `architect`, `worker`) now resolve; `gpt-*`/`claude-3` stay `model`-field conveniences and are deliberately not legal override values. 151-case contract test generated from `Role` and the alias maps. Four Hermes skill docs that told authors `x_force_model` "forces a registry model" were corrected (root `697eab92`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **The typed-decision plane reaches the harness as three flag-gated, log-only rows (HS-TD-1..3, operator-directed).** Pre-dispatch risk/intent classification over a closed set, a per-turn `noul` self-check, and context selection as a typed decision — each logs answer + confidence beside the harness's own decision and **gates nothing**, because confidence is not calibrated. **TD-8** landed the fan-out policy helper (`src/typed_decisions/fanout_policy.py`, 18 tests): exactness-required + native-eligible → native id-only per question; stability-tolerant batches ≥ 8 → batched (2.2x at 87.5% agreement); otherwise sequential JSON. Closed-set tool arguments are wired behind `typed_decisions_tool_args` (default off, fail-open to model args). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **TD-1d's "11.98x at parity" in the section below is contested.** A 4-round alternated re-measurement puts id-only at 9.60x (bar ≥10x not cleared); the disagreement is the single-sample JSON baseline, and per decision the lead is 6.40x. TD-8's constants cite the 11.98x figure. The tick stands with the evidence beside it (TD-1d.0, owner's call). Detail: [benchmark-methodology](benchmark-methodology.md), [local-inference](local-inference.md).
-- **Pairing keys can now span two harnesses (UTM-P1a.2), but not yet on real data.** Replay stamps `harness="review_replay"` + `task_key=rr50-NNN`; the delegator stamps only the per-step ordinal it genuinely owns (one-shot RD-10b aggregate and the parallel executor stay NULL rather than carry an invented 0). UTM-P1a.3 names what is still missing: replay unlinks a pre-existing store under the TM-8 fresh-run rule, live tasks carry no corpus id, ordinal alignment differs. ([unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md))
+- **Pairing keys can now span two harnesses (UTM-P1a.2), but not yet on real data.** Replay stamps `harness="review_replay"` + `task_key=rr50-NNN`; the delegator stamps only the per-step ordinal it genuinely owns (one-shot RD-10b aggregate and the parallel executor stay NULL rather than carry an invented 0). UTM-P1a.3 names what is still missing: replay unlinks a pre-existing store under the TM-8 fresh-run rule, live tasks carry no corpus id, ordinal alignment differs. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
 
 ### Open questions
 
@@ -699,9 +712,9 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-18)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-OD-3..7, HS-TD-1..3.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-8 wiring policy, TD-1d.0–1d.4.
-- [unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md) — UTM-P1a.2/P1a.3.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-3..7, HS-TD-1..3.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-8 wiring policy, TD-1d.0–1d.4.
+- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a.2/P1a.3.
 - [2026-09-18-backlog-churn-2.md](../progress/2026-09/2026-09-18-backlog-churn-2.md) — the judgement calls.
 - [2026-09-18-td1d-remeasure.md](../progress/2026-09/2026-09-18-td1d-remeasure.md) — the re-measurement.
 
@@ -711,14 +724,14 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Key findings
 
-- **The typed-decision plane went from stub to measured implementation in one day.** TD-1 (JSON runner), TD-1b (tokenizer-aware native candidates), TD-1c (cue-replay parity), TD-1d (id-only cue 11.98x at 15/16 agreement), TD-3b (batched fan-out 2.2x at 87.5% agreement), TD-4 (closed-set tool arguments 18/18 vs 6/18) and TD-5 (shadow) all landed; TD-6 (adopt `id_only` as native default after review) and TD-7 (labeled routing replay) remain. The native arm **fails closed** (typed errors, never wrong answers); confidence is not calibrated and **no gate may threshold on it**. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
-- **TD-5 shadow is implemented, flag off, awaiting the TD-7 replay.** `src/typed_decisions/shadow.py` at `routing.py` (`_plan_review_gate`): fixed canonical order, bounded non-blocking daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log. Live smoke = one well-formed record (incumbent + decisions + confidences + hashes); no enforcement without operator approval. ([typed-decision-plane](../handoffs/active/typed-decision-plane.md), [routing intelligence](routing-intelligence.md))
-- **FW-1's worked example is worker-failure routing, and the loop block made a real defect visible.** The orchestrator classifies failed-worker errors at six duplicated call sites with a keyword matcher that falls through to `UNKNOWN`; the fuzzy node sits on that residue only — one `choice` over the named `ErrorCategory` set plus one `noul`. The sketch derived the GUI vocabulary (6 node types, 6 edge types, 11 lint rules) and checks its four requirements: every actor's reads, every gate's rejection grounds, every rejection's destination on-canvas, and the one expensive step gated by every gate (or an explicit reason). **NIB2-80 filed: `nodes.py:235-241` escalates on `EARLY_ABORT` without calling `_should_escalate`**, so an early-aborting run can exceed `cfg.max_escalations` and skip the approval check — not fixed; it changes graph control flow on an eval path and wants its own before/after test. ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md), [non-inference-backlog](../handoffs/active/non-inference-backlog.md))
-- **The shadow pattern is now first-class GUI vocabulary (FW-1 §D-2).** A classifier over *every* failure is a separate `shadow`-flagged fuzzy node (emits to the record, no `value` edges); the fuzzy node on the UNKNOWN residue carries no confidence branching. Budget independence is lint rule L5: two gates sharing a budget name is an error, and a fuzzy node whose retry mutates a gate's counter is an error (the `critic_revise` defect is the precedent). ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md))
-- **The trace service's pairing keys now have producers.** UTM-P1a (review plane, orchestrator `9a7181f2`) and P1a.2 (replay + delegator, `7887e7ae`) stamp `harness`/`task_key`/`turn_ordinal`; unset keys stay NULL = "never captured"; `task_key` is never derived from `subtask_id`. UTM-P1a.3 (real-data reachability) and UTM-P1b (Hermes ingest, dropped — Hermes not selected) frame the remainder. ([unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md))
-- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **FW-4 filed the belief-kernel write side before any run** (VB-FW-1): one self-hashed ClaimTuple per workflow run carrying the document hash, executed node types, each fuzzy node's model pin **and** question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
-- **The fuzzy/deterministic authoring GUI has a decided build posture (FW-2).** Workflow document schema + executor + `/dashboard/api/workflows/*` in `epyc-orchestrator`; authoring page, registry row, `health_path` probe and freshness envelope on the hub `:8100`; nothing in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze. ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md))
+- **The typed-decision plane went from stub to measured implementation in one day.** TD-1 (JSON runner), TD-1b (tokenizer-aware native candidates), TD-1c (cue-replay parity), TD-1d (id-only cue 11.98x at 15/16 agreement), TD-3b (batched fan-out 2.2x at 87.5% agreement), TD-4 (closed-set tool arguments 18/18 vs 6/18) and TD-5 (shadow) all landed; TD-6 (adopt `id_only` as native default after review) and TD-7 (labeled routing replay) remain. The native arm **fails closed** (typed errors, never wrong answers); confidence is not calibrated and **no gate may threshold on it**. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [session record](../progress/2026-09/2026-09-17-intake-jev-sageattn.md))
+- **TD-5 shadow is implemented, flag off, awaiting the TD-7 replay.** `src/typed_decisions/shadow.py` at `routing.py` (`_plan_review_gate`): fixed canonical order, bounded non-blocking daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log. Live smoke = one well-formed record (incumbent + decisions + confidences + hashes); no enforcement without operator approval. ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane), [routing intelligence](routing-intelligence.md))
+- **FW-1's worked example is worker-failure routing, and the loop block made a real defect visible.** The orchestrator classifies failed-worker errors at six duplicated call sites with a keyword matcher that falls through to `UNKNOWN`; the fuzzy node sits on that residue only — one `choice` over the named `ErrorCategory` set plus one `noul`. The sketch derived the GUI vocabulary (6 node types, 6 edge types, 11 lint rules) and checks its four requirements: every actor's reads, every gate's rejection grounds, every rejection's destination on-canvas, and the one expensive step gated by every gate (or an explicit reason). **NIB2-80 filed: `nodes.py:235-241` escalates on `EARLY_ABORT` without calling `_should_escalate`**, so an early-aborting run can exceed `cfg.max_escalations` and skip the approval check — not fixed; it changes graph control flow on an eval path and wants its own before/after test. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md))
+- **The shadow pattern is now first-class GUI vocabulary (FW-1 §D-2).** A classifier over *every* failure is a separate `shadow`-flagged fuzzy node (emits to the record, no `value` edges); the fuzzy node on the UNKNOWN residue carries no confidence branching. Budget independence is lint rule L5: two gates sharing a budget name is an error, and a fuzzy node whose retry mutates a gate's counter is an error (the `critic_revise` defect is the precedent). ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+- **The trace service's pairing keys now have producers.** UTM-P1a (review plane, orchestrator `9a7181f2`) and P1a.2 (replay + delegator, `7887e7ae`) stamp `harness`/`task_key`/`turn_ordinal`; unset keys stay NULL = "never captured"; `task_key` is never derived from `subtask_id`. UTM-P1a.3 (real-data reachability) and UTM-P1b (Hermes ingest, dropped — Hermes not selected) frame the remainder. ([unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service))
+- **The shell decision is now explicitly the operator's pick: OpenCode**, with pi as fallback; P0.4 live acceptance (inference) is the gate before the pin freezes, and P0-MCP-a/b landed (every `orchestrator_*` MCP tool declares `session_id`). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **FW-4 filed the belief-kernel write side before any run** (VB-FW-1): one self-hashed ClaimTuple per workflow run carrying the document hash, executed node types, each fuzzy node's model pin **and** question catalogue, and per-gate outcomes with rejection destinations; confidence is recorded and never read by an edge. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+- **The fuzzy/deterministic authoring GUI has a decided build posture (FW-2).** Workflow document schema + executor + `/dashboard/api/workflows/*` in `epyc-orchestrator`; authoring page, registry row, `health_path` probe and freshness envelope on the hub `:8100`; nothing in the shell — HS-4 §2 plus the dashboard plane rule answer it. GUI-authored workflows on `/v1` wait for the P0.4 freeze. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
 
 ### Open questions
 
@@ -727,13 +740,13 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 ### Source References (2026-09-17 wrap-up sweep)
 
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-1…TD-7, the shadow, the measured studies.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-7, the shadow, the measured studies.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the four implementation rounds.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/active/fuzzy-workflow-authoring-gui.md) — FW-1 sketch, node/edge vocabulary, lint rules, NIB2-80.
-- [unified-trace-memory-service.md](../handoffs/active/unified-trace-memory-service.md) — UTM-P1a/P1a.2 pairing-key producers.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1 sketch, node/edge vocabulary, lint rules, NIB2-80.
+- [unified-trace-memory-service.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-P1a/P1a.2 pairing-key producers.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 and VB-FW-1 write-side rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — the OpenCode pick and Phase-0 gates.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-80, NIB2-78/79.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the OpenCode pick and Phase-0 gates.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-80, NIB2-78/79.
 - [2026-09-17-backlog-churn.md](../progress/2026-09/2026-09-17-backlog-churn.md) — the five closures and the FW-1 L2 amendment.
 
 ## Compiled Update — 2026-09-17 (doc audit + restructure): the HS-4 record now reads as decided, one P0.3 finding is reversed, the two agent-loop stubs are hardened, and the typed-decision plane has its first local numbers
@@ -744,16 +757,16 @@ The operator asked "is there anything that could be refined?" over the HS-4 docu
 
 ### Key findings
 
-- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+- **A decision is not recorded until its summary surfaces agree with it.** After the 2026-09-16 ✅, the candidates table still said "selection is OPEN" with OpenCode "TBD (no eval yet)", the Status line said Phase 0 "not started" although P0.1/P0.2/P0.3/P0.5 had landed, and the dependency graph still terminated at "HS-4 selection decision". Fixed: a post-decision candidates table (SELECTED / FALLBACK / Not selected, each with its pointer), a Status line carrying the per-step Phase-0 state, and a graph rooted at the decision. Also fixed: `HS-5` and `HS-6` each named two tasks; the later-born ones are now `HS-5c` (fold omp into the packet) and `HS-15` (rewrite the cooperation contract against the CAPABILITY, not a field name); IDs are stable and never reused ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - **Attribution precision: the operator chose the posture; the design pass settled the shell; the operator confirmed it a day later.** The 2026-09-16 record attributed the OpenCode pick to the operator, who had in fact chosen "thin shell, features in the orchestrator" and named "OpenCode or oh-my-pi". On 2026-09-17 the operator confirmed OpenCode ("flexible enough to mold into what we want"); the gap is closed in root `927d44cb`. pi remains the fallback, invoked only if OpenCode fails P0.4.
 - **CORRECTION to the 2026-09-17 HS-4 section below (finding 5) — FastMCP does not silently drop an undeclared `session_id`; at our pin it REFUSES the call.** The orchestrator pins `fastmcp>=3,<4`; FastMCP 3.x rejects a call carrying an undeclared argument (`tests/unit/test_mcp_undeclared_args_refused.py`). The 2026-09-16 shard reasoned from `mcp` 1.27.0's `ArgModelBase` without `extra="forbid"` — a different package version than the one the server runs. The requirement is unchanged and now met: every `@mcp.tool()` in `src/mcp_server.py` declares `session_id: str = ""` and forwards it (orch `54b6439d`). The lesson is the build-artifact rule applied to a dependency: verify the behaviour against the *pinned* tree, not the version you happen to have read ([sub-hs4-p03 correction](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
 - **Pin drift and two ghosts.** Both HS-4 design docs quoted OpenCode `4bffbb655`; the audited pin is `350c726a` (v1.18.31, 700 commits later) — outcome banners and superseded-pin notes were added rather than rewriting the matrix. Two defects fixed on 2026-09-16 were still described as live: the `/v1` `recall()` failure (orch `83c7ed2f`) and the inert `mempalace:` block (root `91d56181`). Corrections were **appended** to the three dated shards, never rewritten ([sub-hermes-memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md), [sub-hs4-p0](../progress/2026-09/2026-09-16-sub-hs4-p0.md) — whose two pre-rebase hashes exist on no ref; the work is `ed554da2`/`b44ab3a8`).
 - **Phase-0 state of record (2026-09-17).** P0.1 client-executed tool mode and P0.2 typed `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` (422 on bad values, `request_keys` echo, `v1_client_session_guard` tripwire) are on orchestrator main (`ed554da2`, `b44ab3a8`) but **not deployed until the API reloads**; P0.3 is done at the pin with the plugin/template/lint under `harness/opencode-plugin/` (45/45 wire-contract tests after the P0.3b `User-Agent` stamp, root `71569c2c`); P0-MCP-a/b landed (`54b6439d`, root `.mcp.json` on the venv — a container-only path); the P0.4 runner `scripts/harness/hs4_p04_acceptance.py` (root `76917360`, 25 offline tests) carries the SC86 belief-kernel hook as P0.5; OpenCode 1.18.31 is installed but the devcontainer Dockerfile does not install it, so a rebuild drops the pin (follow-up filed). **Boxes are ticked only at the P0.4 live gate — code landed but not reloaded is text evidence, not a tick.** Residuals recorded, not fixed: `x_max_escalation` is described as capping escalation while `/v1` only records it (P4-pre); unknown `x_*` keys outside the typed set are still silently ignored (`extra="ignore"`); `/v1` B2 compression still fails open to the unfolded history.
 - **The Phase-0 split is approved and deliberately gated.** Moving Phase 0 into its own `opencode-shell-integration.md` with a `UFH-NN` row waits for the P0.4 live run to land, because that run is owned by another session and work must not be moved under a new handoff mid-flight (`HS-4 P0-split`).
-- **The fuzzy-workflow handoff named the deterministic/fuzzy boundary without defining it; it now has a contract.** FW-1 opens with the pseudocode loop block `docs/guides/agent-workflows/agent-loop-design.md` requires (every actor and what it reads; every gate and its rejection grounds; where every rejection GOES; the one step that costs real resources; one independent budget per gate), and a **dangling rejection edge is a lint error for the GUI, not a warning**. The fuzzy-node contract: typed output (`choice`/`score`/`null`) plus a probability; **a fuzzy node may not branch on model confidence until TD-2 lands**; schema-invalid output after the declared retry budget routes to a *declared* node (abstain / escalate / deterministic fallback), never off the canvas; every model call goes through `LLMPrimitives`. FW-2's placement question is **closed, not an operator choice**: HS-4 §2 admits shell plugins only for configuration, and the dashboard plane rule puts the page on the hub `:8100` with a registry row, probe and freshness envelope while the data contract (workflow schema, executor, `/dashboard/api/workflows/*`) lives in the orchestrator — nothing in the shell. FW-4 files the write-side belief-kernel row prospectively; the FW-1 harness refuses to run without the hook ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md)).
-- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+- **The fuzzy-workflow handoff named the deterministic/fuzzy boundary without defining it; it now has a contract.** FW-1 opens with the pseudocode loop block `docs/guides/agent-workflows/agent-loop-design.md` requires (every actor and what it reads; every gate and its rejection grounds; where every rejection GOES; the one step that costs real resources; one independent budget per gate), and a **dangling rejection edge is a lint error for the GUI, not a warning**. The fuzzy-node contract: typed output (`choice`/`score`/`null`) plus a probability; **a fuzzy node may not branch on model confidence until TD-2 lands**; schema-invalid output after the declared retry budget routes to a *declared* node (abstain / escalate / deterministic fallback), never off the canvas; every model call goes through `LLMPrimitives`. FW-2's placement question is **closed, not an operator choice**: HS-4 §2 admits shell plugins only for configuration, and the dashboard plane rule puts the page on the hub `:8100` with a registry row, probe and freshness envelope while the data contract (workflow schema, executor, `/dashboard/api/workflows/*`) lives in the orchestrator — nothing in the shell. FW-4 files the write-side belief-kernel row prospectively; the FW-1 harness refuses to run without the hook ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md)).
+- **The improvement loop's mutation object is now bounded.** Mutable arm: the feature prompts and parameters the eval suite measures (summarisation/review/delegation prompts, compaction thresholds, memory-recall knobs). Policy documents — `AGENTS.md`, `SKILL.md` folders, `HARNESS_RUN_POLICY.md` — are proposal-only and human-applied, exactly as P5's skill export is a reviewed commit (HS-7 re-targetability, HS-5b freeze-before-tuning). The HIL-4 decision-package draft is the A/B/C table with **B (sibling loop importing AutoPilot's journal/gate/guards/fingerprints) preferred**; C re-lives the fail-open, stale-frontier, leakage and comparability bugs already fixed. Pure shell surface is out of scope for any loop ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 - **Standing material promoted out of the handoff.** HS-7 re-targetability and HS-10 evaluation-side randomization are now [`harness-doctrine.md`](../docs/reference/harness-candidates/harness-doctrine.md); the two Harness Cards are [`harness-card.md`](../docs/reference/harness-candidates/harness-card.md) (`HARNESS_RUN_POLICY.md` requires a run report to name the applicable card; the two cards answer *what can be changed without code* and *what configuration produced a score*; a model or freeze change refreshes the conformant card before a result is called re-targetable); the HS-1g call-verb matrix joined its instrument in [`client-surface-audit.md`](../docs/reference/harness-candidates/client-surface-audit.md). The restructure pattern itself is compiled in [Knowledge Management](knowledge-management.md).
-- **The typed-decision plane went from filed to measured in one session — and this supersedes "none measured on this host" in the research-intake section below.** TD-1/TD-2/TD-3/TD-4 are implemented in `epyc-orchestrator` (`src/typed_decisions/`: types, Draft 2020-12 schema, JSON runner with typed failures and corrective retry, adapter-verified confidence formulas, native candidate-scoring path, bench harness, closed-set tool-arg mapping; flag `typed_decisions` default off, wired to no route; 87 unit tests). Live on the MI210 against the frozen-v9 HIP server, 24-question decision set: **contamination flip rate 6.25%** (Qwen3.8-27B-Q8_0, 3/48 pairs) vs **37.5%** (LFM2.5-2.6B, 18/48); **calibration 91.7% acc / ECE 0.0625 / Brier 0.078** (27B) vs 50.0% / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty; **fan-out 1.54x** (3 batched vs 12 singleton calls, 100% agreement, LFM) — the saving is per-call overhead at this state size. **The TD-1a native arm failed closed**: 23/24 `native_unknown_candidate` because candidate strings were presumed single-token without tokenizer access (emitted `'fal'`/`'set'`); the JSON arm ran 24/24 in 36.7 s. No speedup number may be claimed until TD-1b (tokenizer-aware candidates via `/tokenize`, explicit JSON fallback for multi-token candidates). The TD-2 gate is SATISFIED for a *first shadow* (TD-5): choose one live surface (routing classifier or judge) with its owning handoff; no enforcement without operator approval. Write side first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` projected 5 receipts → 11 claims / 33 frames, and the bench report was refused as a non-measurement. Caveats: a small window between autokernel CPU runs, one 24-question set, a first measurement rather than a protocol run — the vendor multipliers stay banned, and intake-1486's 24.7% order sensitivity is now bracketed locally at 6.25% (27B) / 37.5% (2.6B), i.e. model-size-dependent ([typed-decision-plane](../handoffs/active/typed-decision-plane.md)).
+- **The typed-decision plane went from filed to measured in one session — and this supersedes "none measured on this host" in the research-intake section below.** TD-1/TD-2/TD-3/TD-4 are implemented in `epyc-orchestrator` (`src/typed_decisions/`: types, Draft 2020-12 schema, JSON runner with typed failures and corrective retry, adapter-verified confidence formulas, native candidate-scoring path, bench harness, closed-set tool-arg mapping; flag `typed_decisions` default off, wired to no route; 87 unit tests). Live on the MI210 against the frozen-v9 HIP server, 24-question decision set: **contamination flip rate 6.25%** (Qwen3.8-27B-Q8_0, 3/48 pairs) vs **37.5%** (LFM2.5-2.6B, 18/48); **calibration 91.7% acc / ECE 0.0625 / Brier 0.078** (27B) vs 50.0% / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty; **fan-out 1.54x** (3 batched vs 12 singleton calls, 100% agreement, LFM) — the saving is per-call overhead at this state size. **The TD-1a native arm failed closed**: 23/24 `native_unknown_candidate` because candidate strings were presumed single-token without tokenizer access (emitted `'fal'`/`'set'`); the JSON arm ran 24/24 in 36.7 s. No speedup number may be claimed until TD-1b (tokenizer-aware candidates via `/tokenize`, explicit JSON fallback for multi-token candidates). The TD-2 gate is SATISFIED for a *first shadow* (TD-5): choose one live surface (routing classifier or judge) with its owning handoff; no enforcement without operator approval. Write side first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` projected 5 receipts → 11 claims / 33 frames, and the bench report was refused as a non-measurement. Caveats: a small window between autokernel CPU runs, one 24-question set, a first measurement rather than a protocol run — the vendor multipliers stay banned, and intake-1486's 24.7% order sensitivity is now bracketed locally at 6.25% (27B) / 37.5% (2.6B), i.e. model-size-dependent ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane)).
 
 ### Open questions
 
@@ -763,12 +776,12 @@ The operator asked "is there anything that could be refined?" over the HS-4 docu
 
 ### Source References (2026-09-17 doc audit + restructure)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — post-decision record, Phase-0 state, HS-5c/HS-15 renames, P0-split, P4-pre, the history/promotion table.
 - [2026-09-17-harness-doc-audit.md](../progress/2026-09/2026-09-17-harness-doc-audit.md) — the four audit findings, what was applied, the operator decisions and the restructure.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the typed-decision implementation round and MI210 measurements.
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-1..TD-5 state, TD-1b, the TD-2 gate verdict.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/active/fuzzy-workflow-authoring-gui.md) — fuzzy-node contract, FW-2 placement, FW-4.
-- [harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — bounded mutation object, HIL-4 draft.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1..TD-5 state, TD-1b, the TD-2 gate verdict.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — fuzzy-node contract, FW-2 placement, FW-4.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — bounded mutation object, HIL-4 draft.
 - [harness-doctrine.md](../docs/reference/harness-candidates/harness-doctrine.md), [harness-card.md](../docs/reference/harness-candidates/harness-card.md), [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the promoted standing material.
 - [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md), [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — outcome banners and superseded-pin notes.
 - [2026-09-16-sub-hs4-p03.md](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md), [2026-09-16-sub-hermes-memory.md](../progress/2026-09/2026-09-16-sub-hermes-memory.md) — the appended 2026-09-17 corrections.
@@ -781,11 +794,11 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 ### Key findings
 
-- **The typed-decision plane is filed as the orchestrator's one-pass decision primitive (RTG-56).** Declared typed questions (`choice` / `score` / `noul`) in; per-question values, probabilities and a caller-computed confidence statistic out; no autoregressive JSON generation. Operator steering: "extremely relevant for the orchestrator where json schemas are passed and tool use is important … guarantees exact tool use and also a pretty large overall speed boost … may also be relevant for fast routing and episodic memory writing." TD-1 implements the call path over frozen v9; TD-2 measures cross-question contamination and confidence calibration; **TD-5's shadow integration is BLOCKED until TD-2 lands.** ([typed-decision-plane](../handoffs/active/typed-decision-plane.md))
+- **The typed-decision plane is filed as the orchestrator's one-pass decision primitive (RTG-56).** Declared typed questions (`choice` / `score` / `noul`) in; per-question values, probabilities and a caller-computed confidence statistic out; no autoregressive JSON generation. Operator steering: "extremely relevant for the orchestrator where json schemas are passed and tool use is important … guarantees exact tool use and also a pretty large overall speed boost … may also be relevant for fast routing and episodic memory writing." TD-1 implements the call path over frozen v9; TD-2 measures cross-question contamination and confidence calibration; **TD-5's shadow integration is BLOCKED until TD-2 lands.** ([typed-decision-plane](../handoffs/active/routing-program.md#track-typed-decision-plane))
 - **Calibration, not speed, is the gap.** Candidate-softmax confidence is uncalibrated — 65% of a 7B's wrong fields scored >0.90 (intake-1474) — and guarantees are not quality: an independent rerank reproduction ties Cohere Pro (nDCG 0.692 vs 0.691, CI crosses 0) with **24.7% order sensitivity** (intake-1486). The measured local speedup is **3.4–7.9x** over same-model JSON, not the 40–200x the vendor material implies (intake-1474/1487). No gate may consume the confidence until TD-2 produces our own ECE/reliability numbers.
-- **The authoring GUI (UFH-09) separates deterministic code nodes from fuzzy nodes whose runtime is RTG-56 or a compiled program.** Operator: "a GUI for designing high level processes that clearly separate deterministic flow from fuzzy LLM work in a meaningful way." FW-2 is an operator decision against HS-4's thin-shell verdict: orchestrator page vs harness plugin vs deferred. ([fuzzy-workflow-authoring-gui](../handoffs/active/fuzzy-workflow-authoring-gui.md))
-- **PAW compiled specialists are the fuzzy-node implementation candidate (INF-76).** Compile recurring fuzzy subtasks (tool-output classification, log filtering, JSON repair, routing predicates) into tiny local specialists; the intake-811 re-open trigger is MET on artifact availability (weights 2026-06-07, FuzzyBench data 2026-02-17, both predating the 2026-07-11 blocker) and NOT met on capability (no official self-hosted compile; an unofficial MIT server works for the default Qwen3 compiler, intake-1481#record). Independent eval reports 94–97% on **one adversarial task, n=100, author labels** (intake-1482). License scope resolved by operator ruling: **internal research use only** (OP-43 closed). ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md))
-- **The closed-set tool-argument arm is the tool-use expression of the same primitive.** Literal→Choice, list[Literal]→multi-choice, bool→Noul, with per-argument confidence, scored on exact-match argument correctness against the free-form path (TU-TD-1 / TD-4). ([tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md))
+- **The authoring GUI (UFH-09) separates deterministic code nodes from fuzzy nodes whose runtime is RTG-56 or a compiled program.** Operator: "a GUI for designing high level processes that clearly separate deterministic flow from fuzzy LLM work in a meaningful way." FW-2 is an operator decision against HS-4's thin-shell verdict: orchestrator page vs harness plugin vs deferred. ([fuzzy-workflow-authoring-gui](../handoffs/completed/fuzzy-workflow-authoring-gui.md))
+- **PAW compiled specialists are the fuzzy-node implementation candidate (INF-76).** Compile recurring fuzzy subtasks (tool-output classification, log filtering, JSON repair, routing predicates) into tiny local specialists; the intake-811 re-open trigger is MET on artifact availability (weights 2026-06-07, FuzzyBench data 2026-02-17, both predating the 2026-07-11 blocker) and NOT met on capability (no official self-hosted compile; an unofficial MIT server works for the default Qwen3 compiler, intake-1481#record). Independent eval reports 94–97% on **one adversarial task, n=100, author labels** (intake-1482). License scope resolved by operator ruling: **internal research use only** (OP-43 closed). ([paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
+- **The closed-set tool-argument arm is the tool-use expression of the same primitive.** Literal→Choice, list[Literal]→multi-choice, bool→Noul, with per-argument confidence, scored on exact-match argument correctness against the free-form path (TU-TD-1 / TD-4). ([tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract))
 - **Verification discipline rides with the mechanism.** The independent audit of the reference implementation (intake-1490) found its shipped shuffled-context control defective; the informed-vs-blind lift was ~25 points only after correction. The same discipline is filed for new judge instruments as CJ-14 (hashed manifests, blind probe as the lower bound, pre-registered per-item distributions).
 
 ### Open questions
@@ -796,10 +809,10 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 ### Source References (2026-09-17 research-intake delta)
 
-- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-1…TD-5, the operator steering, and the calibration blocker.
-- [fuzzy-workflow-authoring-gui.md](../handoffs/active/fuzzy-workflow-authoring-gui.md) — FW-1…FW-3 and the HS-4 build-posture decision.
-- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — the re-open trigger status, OP-43 scope ruling, and PAW-2…PAW-5.
-- [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md) — TU-TD-1 closed-set tool-argument arm.
+- [typed-decision-plane.md](../handoffs/active/routing-program.md#track-typed-decision-plane) — TD-1…TD-5, the operator steering, and the calibration blocker.
+- [fuzzy-workflow-authoring-gui.md](../handoffs/completed/fuzzy-workflow-authoring-gui.md) — FW-1…FW-3 and the HS-4 build-posture decision.
+- [paw-compiled-specialists.md](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) — the re-open trigger status, OP-43 scope ruling, and PAW-2…PAW-5.
+- [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — TU-TD-1 closed-set tool-argument arm.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
 
 ## Compiled Update — 2026-09-17 (evening): the HS-4 P0.4 preflight is green, and a container rebuild would undo it
@@ -810,7 +823,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 - **P0-MCP-a is done.** The operator applied the root `.mcp.json` edit (root `ed1dfd57`). It takes effect
   for Claude Code sessions started after the edit. This supersedes the afternoon line "prepared but not
-  applied". [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+  applied". [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - **The audited OpenCode pin is installed.** The operator ran
   `sudo npm install -g --prefix /usr/local/share/npm-global opencode-ai@1.18.31`, and `opencode --version`
   prints 1.18.31 (root `de71a69a`).
@@ -822,7 +835,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 
 ### Source References (2026-09-17 evening)
 
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md): P0-MCP-a, P0.4 preflight and its follow-up.
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0-MCP-a, P0.4 preflight and its follow-up.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): landing table and state at close.
 - [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md): the preflight that found 1.18.18.
 
@@ -842,7 +855,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 - **Launchers must name the venv.** The script-registry launcher used a bare `python3`, and it now uses the
   venv (P0-MCP-a). The root `.mcp.json` still names `/home/daniele/miniforge3/bin/python3`, which does not
   exist in the container. That edit is harness configuration, so it is prepared but not applied.
-  [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+  [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - **P0.4's acceptance verdict is offline, and its token count has to undo two OpenCode conventions.**
   `scripts/harness/hs4_p04_acceptance.py` works in four stages (25 tests):
   - `plan` gates the run.
@@ -862,7 +875,7 @@ The 2026-09-17 intake batch re-opens three loop-robustness lines at once, all op
 ### Source References (2026-09-17 afternoon)
 
 - [sub-hs4-mcp](../progress/2026-09/2026-09-17-sub-hs4-mcp.md)
-- [harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md)
+- [harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): SC86 tick condition.
 
 ## Compiled Update — 2026-09-17 (later): the HS-4 seam closes on main, and two swarm-research mechanisms get rows
@@ -873,12 +886,12 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 
 ### Key findings
 
-- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
-- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/agent-collab-rnd-harness.md))
-- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-selection-and-integration.md))
+- **P0.1/P0.2 are on orchestrator main (`ed554da2`, review fixes `b44ab3a8`) and not yet deployed.** `x_tool_mode="client"` forwards tools, `tool_choice` and structured tool history to llama-server `/v1/chat/completions` and returns `tool_calls` with `finish_reason:"tool_calls"` in both stream and non-stream modes; the REPL bridge stays the default and is golden-pinned. The typed headers `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` are validated (422) and echoed in `x_orchestrator_metadata.request_keys` and the inference-tap metadata, with `x_memory` recorded only until P2. Flag `v1_client_session_guard` (default on) returns 422 for OpenCode-UA or client-mode requests without `x_session_id`. Client-mode routing reuses the same role resolution and `_real_call` admission/locks/fallback/tap, and escalation is unchanged (P4). Remaining for P0.1: the live OpenCode read→edit→bash loop (P0.4). ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **P0.3b: the session-stamping marker is in the template and lint-enforced (`71569c2c`).** The OpenCode config template sets `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` and the lint requires it (45/45 wire-contract tests). The v2 session runner path remains uncovered. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **`/v1` `recall()` was silently dead (`83c7ed2f`).** `/v1` REPLs now get the shared retriever and `hybrid_router`; the legacy fallback uses the real `retrieve_by_similarity` instead of a no-op; failures log at ERROR and return `status:"unavailable"`, and `STUCK()` skips unavailable payloads. Live after the next API reload. A separate inert config block was removed: `scripts/hermes/hermes-config.yaml` had a `mempalace:` block Hermes never reads (MCP servers come only from `mcp_servers:`), commented out on root `91d56181`. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Two MCP-server gaps are filed.** HS-4 P0-MCP-a: root `.mcp.json` launches the orchestrator MCP server with a miniforge `python3` whose fastmcp version is unverified, while the project venv (fastmcp 3.3.1) refuses undeclared arguments — pinned by `tests/unit/test_mcp_undeclared_args_refused.py` — so `orchestrator.command` should point at the venv interpreter. HS-4 P0-MCP-b: `orchestrator_*` and `memory_*` declare `session_id: str = ""` but never carry it, a silent drop now visible because `ChatRequest.session_id` exists. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
+- **Two swarm-research mechanisms are filed under AC-CORAL and AC-branch-per-agent.** AC-CORAL pins CORAL v0.7.20 (`bbae4f72`) and spikes its shared-state design (`.coral/public` attempts/notes/skills plus heartbeat reflect-1/consolidate-10/pivot-5) against orchestrator `/v1`, with opencode/codex as runtimes and an equal-spend control per the fan-out A/B constraints. AC-branch-per-agent drafts the SwarmResearch-pattern search harness: branch+worktree per search agent, fresh-context explorers, lineage `findings.md`, a shepherd holding global context, and width/depth adaptation with explicit spawn telemetry. ([agent-collab-rnd-harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness))
+- **The harness-null-pool evidence packet (HS-E1) is filed for HS-4.** It collects intake-1444 (30 budget-matched harnesses, 3.1M rollouts, no universally superior harness; checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (an independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable count (intake-1450) as evidence rows only. ([harness-selection-and-integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration))
 
 ### Open questions
 
@@ -888,8 +901,8 @@ The previous pass decided HS-4's shape (thin OpenCode shell, features inside the
 
 ### Source References (2026-09-17 later pass)
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
-- [agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md): AC-CORAL and AC-branch-per-agent.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration): P0.1/P0.2 (`ed554da2`, `b44ab3a8`), P0.3b (`71569c2c`), the `/v1` recall fix (`83c7ed2f`), the mempalace removal (`91d56181`), P0-MCP-a/b, and the HS-E1 packet.
+- [agent-collab-rnd-harness.md](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness): AC-CORAL and AC-branch-per-agent.
 - [2026-09-16-research-intake-dreamrsi.md](../progress/2026-09/2026-09-16-research-intake-dreamrsi.md): the intake batch behind the HS-E1 rows.
 - [2026-09-16-sub-hs4-p0.md](../progress/2026-09/2026-09-16-sub-hs4-p0.md): the P0 lane record the filed items reference.
 
@@ -1005,7 +1018,7 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
 ### Key findings
 
 - Operator decision: OpenCode shell (pi fallback), Hermes-style features inside the orchestrator, one memory
-  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
   [hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
 - The package recommends A OpenCode, with pi as the minimal-import alternative and a native-MCP tie-break. The
   live requests are acceptance checks for the chosen harness, not discriminators between candidates
@@ -1015,7 +1028,7 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
   P0.1 for every shell ([hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
 - HS-1g call-verb matrix: Hermes main loop only (six bypass paths once the memory audit is counted), which
   corrects HS-1b's "≈0 patch"; the dsh pi-ai pin bump is already upstream, which corrects HS-1e
-  ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration),
   [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md),
   [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md)).
 - OpenCode at `350c726aa`: 15 paths audited, with two silent no-ops (E11 `agent create`, E12 v2 runner) that are
@@ -1033,9 +1046,9 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
   [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md)).
 - HS-13 two-layer structured-output record and the kernel-README silent no-op; HS-6c conformant card with 13
   named gaps; HS-6b one-row correction
-  ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+  ([harness-selection](../handoffs/active/harness-program.md#track-harness-selection-and-integration)).
 - Harness-improvement loop: option B (sibling loop on the shared AutoPilot substrate) is preferred; HIL-1..5
-  are not started ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+  are not started ([harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop)).
 
 ### Open questions
 
@@ -1049,14 +1062,14 @@ fail-open, stale-frontier, leakage and comparability bugs already fixed.
 
 ### Sources
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
 - [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md) — options, evidence matrix, sandboxing, recommendation and tie-break.
 - [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — shell choice, the `tool_calls` blocker, feature map, phased plan.
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 15-path re-audit, P0 findings, plugin tests, P0.3b User-Agent marker.
 - [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the reusable instrument and design rules.
 - [hermes-evaluation-20260916.md](../docs/reference/harness-candidates/hermes-evaluation-20260916.md) — Hermes bypass paths, plugin behaviour, config lessons.
 - [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) — closure note and box dispositions.
-- [harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — improvement-loop options.
+- [harness-improvement-loop.md](../handoffs/active/harness-program.md#track-harness-improvement-loop) — improvement-loop options.
 - [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md), [sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md), [sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md) — session records for the above.
 
 ## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
@@ -1136,9 +1149,9 @@ summary carries only species/action type.
 
 ### Source References (2026-09-14 harness selection and hand-off fidelity)
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
-- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-13 code facts, fixes and residuals.
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-53 measurement note.
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13 code facts, fixes and residuals.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-53 measurement note.
 - [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — stage record and the rank-tracks-model-class finding.
 - intake-1352#record and intake-1352#02 — the ten-harness grid, rank non-transfer and the thinking-off arm.
 - intake-1363#record, intake-1363#02 and intake-1363#04 — the Muse-Glimmer TB2.1 grid, input-token cost claims and the derived cross-grid rank correlation.
@@ -1238,7 +1251,7 @@ docstring.
 
 ### Source References (2026-09-14 per-request scope, noninf sweep)
 
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — RTG-02: the paired boxes at `:1787` (`assigned_role` still 0 / 59,337) and `:1793` (0 rows carry a top-level `work` key), the latter naming all three holes including the double sanitize.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — RTG-02: the paired boxes at `:1787` (`assigned_role` still 0 / 59,337) and `:1793` (0 rows carry a top-level `work` key), the latter naming all three holes including the double sanitize.
 - [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record: the four pre-fix reader sites, the measured 11x update-to-create ratio, and the non-vacuity checks.
 - `epyc-orchestrator` `d65a4e93` — per-request tool telemetry via `REPLEnvironment._invoked_tools`, the bounded diagnostic ring, the `ast` guard, and `merge_row_metadata()` called from all four update branches. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests), `test_q_scorer_update_path_preserves_work.py` (5 tests)]
 - `epyc-orchestrator` `b69bda61` — idempotent `sanitize_work_text` / `sanitize_work_items`. [confidence: verified — `test_memory_record.py::TestSanitizeIsIdempotent` (5 tests)]
@@ -1255,7 +1268,7 @@ by this compilation; the existing implementation task remains open.
 
 ### Source References (September 8 end-to-end qualification)
 
-- [Wrap-up division-of-labor handoff](../handoffs/active/wrap-up-division-of-labor-policy.md) — reported reproductions and outstanding task.
+- [Wrap-up division-of-labor handoff](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) — reported reproductions and outstanding task.
 
 ## Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
 
@@ -1427,10 +1440,10 @@ compiled on [Knowledge Management](knowledge-management.md)).
 
 ### Source References (2026-09-08 fleet-coordination compile)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the AIR-11
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the AIR-11
   censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
   with their C39/C49 preconditions and intake anchors.
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — the FM-5/FM-6
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — the FM-5/FM-6
   result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
   FM-6 reconnection requirement, and the corpus reproducibility caveat.
 - [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
@@ -1438,11 +1451,11 @@ compiled on [Knowledge Management](knowledge-management.md)).
 - [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the AIR-12/13/14 landing
   record (`945c8820`, 719 coordination tests) and the wave-2 RTG-51 manifest-preservation fix
   (`af4c5c63`).
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the P5-1/P5-2/P5-3 trust-boundary riders.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
   — the F-33(a) evidence note WS-1 mechanises.
-- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-68/OBS-13, the
+- [`non-inference-backlog.md`](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-68/OBS-13, the
   scanner-side half of the same content-hash migration.
 
 ## Compiled Update — 2026-09-07: a frozen served model is structurally immune to tool-environment shift — and one engineer update costs a full eval sweep
@@ -1646,7 +1659,7 @@ wins**, and it costs one `tail` to find out.
 
 ### Source References (2026-08-30 kernel surface merge)
 
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66, phase P6:
+- [AutoKernel rebuild program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — INF-66, phase P6:
   what landed (P6.1–P6.4), what is knowingly open (P6.5–P6.8), and the *Declined 2026-08-30* block.
 - [Surface and CI session record](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
   commit-by-commit account, the mutation results and the route sweep.
@@ -1732,7 +1745,7 @@ easily as it fails a working one.
 
 ### Source References (2026-08-19)
 
-- [`handoffs/active/loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+- [`handoffs/active/coordination-and-churn-pipeline.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
   — the closed `test_hook_worktree_resolution.py` task and its pre-existence check.
 - Commit `25726a78` — "worktree-resolution tests: the fixtures were stale, the cascade was fine".
 - Commit `e8e93262` — the task closure.
@@ -1843,15 +1856,15 @@ only per-message reading produced:
 
 ### Source References (2026-08-18 reconciliation close-out)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the wrap-up findings block: the two guards as built, the OP-11 `-s ours` refutation with the
   103-both-changed table, the merge policy, and the full bus-triage disposition list.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
   `INC-20260816-git-clean-shared-clone`: both dated events, the forensic commits, and the rule fed.
-- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) —
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-handoff-index-and-backlog-graph) —
   the duplicate-task detector requirement with its 14-pair validation set, and the `_OWNER_PREFIX`
   false-negative with the measured precision constraint.
-- [`canonical-judge-suite-revamp.md`](../handoffs/active/canonical-judge-suite-revamp.md) — the
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/benchmark-suites.md) — the
   CJ-1c paraphrase-screening artifact: the park, the verbatim re-resolution, and the RTG-52 filing.
 - [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the live
   reproduction of the mid-text owner miss during a 60-row premise screen (19 VERIFIED / 41 REJECT).
@@ -1869,7 +1882,7 @@ The coordination layer was restructured on 2026-08-15 (decisions ratified) and i
 2026-08-16 (20 commits). Its thesis is one sentence, and it is a subtraction: **code owns the loop;
 models judge at choke points; workers run in visible panes the operator can steer — but the
 machine's only channel to a worker is spawn-args in, report file and exit status out**
-([`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)).
+([`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)).
 Everything below follows from taking that channel seriously.
 
 ### The machine stopped reading panes — the three-state liveness problem was deleted, not classified
@@ -1885,7 +1898,7 @@ heartbeat written once is a birth certificate, not a liveness signal, and **a st
 worse than no heartbeat** — the stall ladder reads it as a stall and nudges a healthy agent.
 
 The failure record shows the instrument failing in *every* direction, which is what rules out a
-threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)):
+threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)):
 
 - **Compacting read as idle, twice** (F-07) — the coordinator's own admission at 10:28:19Z, and the
   second misread happened *between* its first and second corrections. Closed by `83f204cf`, which
@@ -1933,7 +1946,7 @@ The sharpest statement of the boundary is the dispatcher ledger's, and it is a w
 guarantee gets *read*: `repos/epyc-orchestrator` and `repos/epyc-inference-research` are symlinks
 **out of** every lane worktree, so lane isolation covers `epyc-root` only — *"anyone reading 'mains
 are isolated' must read it as **epyc-root is isolated**"*
-([`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md)). Six further
+([`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md)). Six further
 surfaces stay shared, each with its own remedy rather than a per-lane copy:
 
 1. **The child repos' index and sequencer state** (DP-4, open, HIGH). A main sitting in its own
@@ -2136,10 +2149,10 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 
 ### Source References (2026-08-16 loop-owned fleet)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
   record and pilot table, and open defect PD-1.
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
   the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
   (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
   identity-is-not-session correction.
@@ -2148,14 +2161,14 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 - [`agents/shared/SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another
   session's liveness* — the three-state model, the authoritative instrument, and the measured
   446-second stale heartbeat.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor)
   — F-07 (compacting read as idle, twice), F-15 (the fan-out detector gap and its 1,070-item cost),
   F-37/H-3 (redrawing panes defeat the quiet-check), F-43 (a SIGSTOPped session reading idle), and
   the 12:37Z handover heartbeat-staleness table.
 - [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
   the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
   `git worktree prune` rule.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the
   epyc-root-only scope of lane isolation, DP-4's shared child index and its 42-file cherry-pick
   contamination, WT-1's backup-pointer aliasing, the uninstalled `serialized_push` decision, and the
   header-versus-checkbox count discrepancy.
@@ -2181,9 +2194,9 @@ does not license a reviewer rollout or performance claim.
 
 ### Source References (2026-08-14 reviewer materialization)
 
-- [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) — full RCP-W2 paired
+- [`bulk-inference-campaign.md`](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign) — full RCP-W2 paired
   replay contract and completion gate.
-- [`inference-batch-loop.md`](../handoffs/active/inference-batch-loop.md) — RCP prologue ordering and
+- [`inference-batch-loop.md`](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — RCP prologue ordering and
   existing materializer/ledger bridge.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — current-store
   counts, join result, output location, and operator disposition.
@@ -2210,7 +2223,7 @@ instruction acknowledgments, and canaries are not. Rollout therefore remains `of
 
 ### Source References (2026-08-13 RTG-51 implementation)
 
-- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-wrap-up-division-of-labor-policy) —
   authority table, state machine, implementation phases, acceptance matrix, and live gaps.
 - [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
   failure loops, authority boundaries, implementation evidence, and deployment status.
@@ -2240,7 +2253,7 @@ reloading the live control plane.
 
 ### Source References (2026-08-13 role-admission canary)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-6 failed
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-6 failed
   canary evidence/retry gate and AIR-10 disposition.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
   source, queue, and role-contract audit.
@@ -2272,7 +2285,7 @@ the rework contract without editing the control-plane implementation.
 
 - [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
   contract.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-8
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR-8
   independent audit and AIR-9 fail-closed repair task.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
   probes, test result, and dependency blast radius.
@@ -2314,7 +2327,7 @@ checks.
 
 ### Source References (2026-08-13 dedicated roles)
 
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — AIR
   implementation checklist, rollout posture, and remaining canary gate.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
   implementation and verification record.
@@ -2375,10 +2388,10 @@ The retracted "4,602 pending picks" number (carried in corrected form in the pas
 ### Source References (2026-08-12, second pass)
 
 - [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
-- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
 - [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
-- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
 
 ## Compiled Update — 2026-08-12: a retracted scheduling narrative, a bus wipe, and the four nested restarts it took to make one check fire
 
@@ -2561,10 +2574,10 @@ an archive/fallback hypothesis and precise tools are a control-plane hypothesis,
 
 ### Source References
 
-- [REPL Session Memory](../handoffs/active/repl-session-memory-maturity.md) — D-f/D-g lease fencing and uncertain-effect journal
-- [AutoPilot Continuous Optimization](../handoffs/active/autopilot-continuous-optimization.md) — AP-CH-1/AP-CH-2 shadow proposal boundary
-- [Tool-Use Eval Contract](../handoffs/active/tool-use-eval-contract.md) — bounded repetition, privilege, and typed-failure fixtures
-- [RLM Contested Claims](../handoffs/active/rlm-contested-claims-self-evaluation.md) — matched direct-context versus REPL/data-by-reference arm
+- [REPL Session Memory](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) — D-f/D-g lease fencing and uncertain-effect journal
+- [AutoPilot Continuous Optimization](../handoffs/active/autopilot-program.md) — AP-CH-1/AP-CH-2 shadow proposal boundary
+- [Tool-Use Eval Contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) — bounded repetition, privilege, and typed-failure fixtures
+- [RLM Contested Claims](../handoffs/active/benchmark-suites.md#track-rlm-contested-claims-self-evaluation) — matched direct-context versus REPL/data-by-reference arm
 - Intakes 1009/1010, 1012, 1016, and 1020/1021 in [the research index](../research/intake_index.yaml) — pinned Prime, Pokee, Continual, and DTAP evidence
 
 ## Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
@@ -2699,7 +2712,7 @@ before filing, and every fix was validated by the (newly hardened) validators.
   edit that fixed one); the reference validator gained `#anchor` slug checking
   (GitHub-style, including the double-hyphen-for-`&` subtlety) and caught four
   latent bad references on its first run.
-  [agent-file-prose-compression](../handoffs/active/agent-file-prose-compression.md)
+  [agent-file-prose-compression](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
 - **The compliance suite is a deployment-gate instrument and drifts like one.**
   Restructuring the source file silently invalidated 29% of the suite's tasks
   (they probed content that moved out) — caught in zero-inference prep, fixed as
@@ -2707,7 +2720,7 @@ before filing, and every fix was validated by the (newly hardened) validators.
   pools) with a mechanical anchor invariant: the perfect-fake must score 1.0 at
   every compression level, so a live failure measures the model, never anchor
   availability.
-  [agent-file-prose-compression](../handoffs/active/agent-file-prose-compression.md)
+  [agent-file-prose-compression](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
 
 ## Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
 
@@ -2734,7 +2747,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   code cannot draft decisions or merge. The bright line is that the daemon "never
   analyzes, reviews, or edits work products — queue/routing/watchdog only", because
   the moment it reviews, it is a second main.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 - **Single-writer ownership is structural, not conventional.** `queue.jsonl` and
   `inbox/*` belong to the daemon, `outbox/<agent>` to that agent, and token-queue
@@ -2743,7 +2756,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   roster row plus four files. Authority is matched to the writer: mains reprioritize
   their own lane only, cross-main sequencing belongs to the coordinator-agent and the
   operator, and the daemon never sets priorities.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 - **Routing intent became a structural message field, after prose routing lost real
   findings.** `needs_routing_to` and `action_required` are now schema fields with
@@ -2755,7 +2768,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   made *evident* rather than silent, via numbered fences with byte counts and a
   completion trailer. The machinery caught real traffic immediately, surfacing findings
   that no relay had yet delivered.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **The recurring defect class: a state that could not be determined was treated as a
@@ -2768,7 +2781,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   ownership and unparseable rows all now refuse. The corollary warning is filed with the
   blocking item — do not "fix" an unreadable tmux by counting it as zero mains, because
   that hands out occupied slots.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **A merged fix and a running fix are different states, and only the process owner can
@@ -2778,7 +2791,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   activation gap of the same shape is still open. Reachability is now **observed, not
   declared** — liveness is tested rather than read off roster metadata — and the policy
   is deliver-plus-warn, never refuse.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **The delivery plane can be entirely healthy while coordination fails at the last
@@ -2794,7 +2807,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   through or which gate a campaign is parked behind — so a fresh coordinator correctly
   reports an empty queue while a campaign sits one command from resuming. The mechanism
   makes a coordinator addressable; the brief makes it useful.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md),
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 - **A test suite can be green because it cannot fail.** A standalone adapter suite shared
@@ -2820,7 +2833,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
   A nine-agent specification effort consumed ~919k tokens over ~43 minutes to produce a
   ~113k-character spec, which was rejected as disproportionate to the problem. The recorded
   process lesson is that a panel of that shape needs a fourth lens whose job is to *delete*.
-  [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md)
+  [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md)
 
 ### Open Questions (2026-07-29)
 
@@ -2843,13 +2856,13 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
 
 ### Source References (2026-07-29)
 
-- [session-bus-thin-dispatcher.md](../handoffs/active/session-bus-thin-dispatcher.md) — the
+- [session-bus-thin-dispatcher.md](../handoffs/active/coordination-and-churn-pipeline.md) — the
   daemon/agent nomenclature split and bright line, single-writer ownership, authority matrix,
   structural routing fields, milestone acceptance state, rider status, and the C-series ledger.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
   subsystems, the activation-gap repetition, the coordinator-agent instantiation and close,
   the invisible-suite and whole-repo-pytest findings, and the bus-noise diagnosis.
-- [gpu-serving-tie-in-program.md](../handoffs/active/gpu-serving-tie-in-program.md) — an
+- [gpu-serving-tie-in-program.md](../handoffs/active/mi210-serving-program.md) — an
   operator decision (activation sequencing) routed and recorded *through* the bus as a task
   id, demonstrating the decision-package path the coordination plane exists to carry.
 
@@ -2865,36 +2878,36 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-07-08 — local-first authority restart with process-relative planner freshness)
 
-- **The routing plane now runs through a fresh local-first authority wrapper instead of the older cloud-default restart target.** AutoPilot restarted as PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. That is an architecture-level shift: the planner path now prefers the local stack by default while still preserving a distinct critic role and explicit restart boundary. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+- **The routing plane now runs through a fresh local-first authority wrapper instead of the older cloud-default restart target.** AutoPilot restarted as PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. That is an architecture-level shift: the planner path now prefers the local stack by default while still preserving a distinct critic role and explicit restart boundary. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
-- **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+- **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
-- **Planner prompt hygiene is now enforced as a separate containment rule.** `b7518da0` keeps `StrategyStore` hints in planner-context only, ignores legacy `strategy_hints` on Seeder, and quarantines the contaminated `1257-1263` trials append-only with `bug_corrupted_by=b7518da0`. Architecturally, that separates durable evidence from mutable prompt assembly, which is the right boundary if the routing plane is going to keep learning from its own history without replaying corrupted history into new actions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md).
+- **Planner prompt hygiene is now enforced as a separate containment rule.** `b7518da0` keeps `StrategyStore` hints in planner-context only, ignores legacy `strategy_hints` on Seeder, and quarantines the contaminated `1257-1263` trials append-only with `bug_corrupted_by=b7518da0`. Architecturally, that separates durable evidence from mutable prompt assembly, which is the right boundary if the routing plane is going to keep learning from its own history without replaying corrupted history into new actions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05).
 
-- **The live loop now has explicit supervision and attestation surfaces, not just "start" and "restart" paths.** The orchestration robustness wrap-up landed a supervisor/death ledger wrapper for autopilot launches plus startup attestation that records config digests, a combined config hash, gate-environment capture, mismatch reporting, and phase-health flags for tool/planner state. The planner spend breaker is intentionally visible but not required: the local-planner authority daemon runs with `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, and phase health reports that state so future sessions do not infer the wrong contract from a stale test. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
+- **The live loop now has explicit supervision and attestation surfaces, not just "start" and "restart" paths.** The orchestration robustness wrap-up landed a supervisor/death ledger wrapper for autopilot launches plus startup attestation that records config digests, a combined config hash, gate-environment capture, mismatch reporting, and phase-health flags for tool/planner state. The planner spend breaker is intentionally visible but not required: the local-planner authority daemon runs with `AUTOPILOT_PLANNER_SPEND_BREAKER=0`, and phase health reports that state so future sessions do not infer the wrong contract from a stale test. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
-- **The REPL/tool surface now exposes a compatibility layer for the exact failure modes the audit measured.** `FINAL(...)` keyword aliases (`answer`/`result`/`secret`/`value`/`response`) are accepted and unsupported kwargs fail loudly, while builtin compatibility tools (`search_files`, `get_time`, `fetch_stock_price`, `translate_text`, `start_service`) are registered with safe/read-only behavior. That reduces the chance that tool availability diverges from prompt expectations and silently wastes trials. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
+- **The REPL/tool surface now exposes a compatibility layer for the exact failure modes the audit measured.** `FINAL(...)` keyword aliases (`answer`/`result`/`secret`/`value`/`response`) are accepted and unsupported kwargs fail loudly, while builtin compatibility tools (`search_files`, `get_time`, `fetch_stock_price`, `translate_text`, `start_service`) are registered with safe/read-only behavior. That reduces the chance that tool availability diverges from prompt expectations and silently wastes trials. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
-- **PromptForge's code-mutation surface now has a safer new-file primitive instead of a generic write hatch.** MH-9 landed bounded `new_file` proposals under `src/` with absolute/traversal rejection, parent-directory existence checks, collision checks, syntax/import validation, dirty-fence coverage for parent directories, and fresh-file apply/revert handling for no-index diffs. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md).
+- **PromptForge's code-mutation surface now has a safer new-file primitive instead of a generic write hatch.** MH-9 landed bounded `new_file` proposals under `src/` with absolute/traversal rejection, parent-directory existence checks, collision checks, syntax/import validation, dirty-fence coverage for parent directories, and fresh-file apply/revert handling for no-index diffs. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11).
 
 ### New (2026-07-14, process-attested autonomy boundary)
 
-- **The architecture now makes process identity and gate state part of the agent contract.** A fresh authority daemon replaced a stale supervisor/child pair after SIGKILL verification, and the live phase health exposed `planner_prompt_build`, `code_stale=false`, `tool_sentinels=true`, `w6_audit=true`, and `AUTOPILOT_PLANNER_SPEND_BREAKER=0`. That turns restart hygiene into an architectural concern: agents are only meaningful when their current code and gate-set are known, not merely when the PID exists. Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
-- **The dashboard-facing lock view now exposes the full configured topology, not only the active-runtime subset.** The 2026-07-14 region-lock topology sidecar teaches the display to keep configured quarter instances visible under `stack_numa_mode=full`, mark `launch_selected`, and label all configured NUMA ports independently of the expected launch mode. That is an architectural correction because the operator view now reflects the configured launch topology directly instead of collapsing it to whatever happens to be active at the moment. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md), `epyc-orchestrator` `774fed69`.
+- **The architecture now makes process identity and gate state part of the agent contract.** A fresh authority daemon replaced a stale supervisor/child pair after SIGKILL verification, and the live phase health exposed `planner_prompt_build`, `code_stale=false`, `tool_sentinels=true`, `w6_audit=true`, and `AUTOPILOT_PLANNER_SPEND_BREAKER=0`. That turns restart hygiene into an architectural concern: agents are only meaningful when their current code and gate-set are known, not merely when the PID exists. Sources: [orchestration robustness audit](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md).
+- **The dashboard-facing lock view now exposes the full configured topology, not only the active-runtime subset.** The 2026-07-14 region-lock topology sidecar teaches the display to keep configured quarter instances visible under `stack_numa_mode=full`, mark `launch_selected`, and label all configured NUMA ports independently of the expected launch mode. That is an architectural correction because the operator view now reflects the configured launch topology directly instead of collapsing it to whatever happens to be active at the moment. Sources: [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11), [Progress 2026-07-14](../progress/2026-07/2026-07-14.md), `epyc-orchestrator` `774fed69`.
 
-- **The web/tool boundary now records evidence quality separately from tool availability.** Gate-3 showed the tool-sentinel lane healthy (`get_eval_secret` 7/7, no-tool isolation passed) while `web_research` failed closed as `search_failed`; a fallback DDG hit can still be surfaced as a relevant result, but it no longer upgrades the failed search into a fake success. That is the correct agent-architecture split between "tool path worked" and "evidence was good." Sources: [orchestration robustness audit](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
+- **The web/tool boundary now records evidence quality separately from tool availability.** Gate-3 showed the tool-sentinel lane healthy (`get_eval_secret` 7/7, no-tool isolation passed) while `web_research` failed closed as `search_failed`; a fallback DDG hit can still be surfaced as a relevant result, but it no longer upgrades the failed search into a fake success. That is the correct agent-architecture split between "tool path worked" and "evidence was good." Sources: [orchestration robustness audit](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11), [HALO Spike Results](../research/deep-dives/halo-spike-results-2026-07-14.md).
 
 ### New Findings (2026-07-16 — open-source harness selection became a first-class architecture gate)
 
-- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
+- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
 
 ## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
 
-- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md).
-- The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
-- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md).
+- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [reviewer model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations).
+- The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [reviewer model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
+- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/reviewer-control-plane.md#track-glm52-reviewer-capability-gates), [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md).
 
 ## Key Findings
 
@@ -2917,11 +2930,11 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 #### Source References
 
-- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — M3
+- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — M3
   decision-property acceptance, C7/C8 coverage, and guard self-idiom regression.
 - [Hermes/OpenGauss as Outer Shell](../handoffs/completed/hermes-outer-shell.md) — reference-client
   parser and payload contract regression.
-- [Repo-Readiness Scorer](../handoffs/active/repo-readiness-scorer.md) — file-level evidence
+- [Repo-Readiness Scorer](../handoffs/active/engineering-hygiene-backlog.md#track-repo-readiness-scorer) — file-level evidence
   requirement and empty-directory regression.
 - [Progress 2026-07-28](../progress/2026-07/2026-07-28.md) — focused validation outcomes and
   remaining C6 limitation.
@@ -2932,25 +2945,25 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-07-06 — operator-facing optimization brief now explains rejected search space)
 
-- **The optimization brief is now a better steering surface because it surfaces what the planner has already ruled out, not just what it is still exploring.** `scripts/autopilot/optimization_brief.py` now emits a `ruled_out_experiments` block that separates critic-rejected fenced proposals from malformed-surface churn, and `src/api/routes/dashboard.html` renders that data under the operator brief as a compact "what's been ruled out (and why)" section. That makes the dashboard's optimization view closer to an operator summary: current levers, fence reasons, and invalid-surface hotspots are visible together. Sources: `scripts/autopilot/optimization_brief.py`, `src/api/routes/dashboard.html`, [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [2026-07-06 progress](../progress/2026-07/2026-07-06.md).
+- **The optimization brief is now a better steering surface because it surfaces what the planner has already ruled out, not just what it is still exploring.** `scripts/autopilot/optimization_brief.py` now emits a `ruled_out_experiments` block that separates critic-rejected fenced proposals from malformed-surface churn, and `src/api/routes/dashboard.html` renders that data under the operator brief as a compact "what's been ruled out (and why)" section. That makes the dashboard's optimization view closer to an operator summary: current levers, fence reasons, and invalid-surface hotspots are visible together. Sources: `scripts/autopilot/optimization_brief.py`, `src/api/routes/dashboard.html`, [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [2026-07-06 progress](../progress/2026-07/2026-07-06.md).
 
 ### New Findings (2026-07-05 — consult v1 wired default-off, BEP verifier gate, DCP J7 hold, MindDR parked at its A/B gate)
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. Several numbers below (J7 latency/token deltas, bake counters) are observations without decision-gating protocol citations.
 
-- **The internal consult primitive went from design to a fully staged, default-off v1 in one week — every layer shipped behind flags while live behavior stays locked on the P1 bake.** IIL P1 (the `Interaction` lifecycle substrate) landed 2026-06-28 in orchestrator `18956892` as a proven no-behavior-change refactor: `delegation_diagnostics` byte-equal regression test, additive `interaction_type="delegate"` field (no rename of `DelegationEvent`/`delegation_events`), and a clean affinity-preflight artifact (22 instances across 6 roles, `live_affinity_verified=true`, 0 memory mismatches). The P2 consult scaffold then staged 2026-07-04 with zero inference: `orchestration/interaction_skills.yaml` (`architect_general.review_before_commit`, JSON output schema, background priority, 400 max output tokens, 0 tools budget, 1800s TTL), `src/orchestration/consultation.py` with schema-constrained `consult()` + `ConsultationDenied` + contention-to-`contention_skip` translation, consult namespacing on `DelegationCache.make_key()` preserving legacy delegate keys, and `ProgressLogger.log_consult()`. On 2026-07-05, `0e555822` wired the first consult site at the P2-0 seam (`run_edit_transaction()`, `force_mode="edit"` route) behind a new `review_before_commit_consult` flag: at most one requester rerun on high-confidence blocking advice, consult events surfaced in response diagnostics, flag-off preserves one-shot edit behavior exactly. The remaining gate is purely evidential: bake readouts advanced 28.96h→38.04h of the required 48h with 3 delegation-cache lookups / 0 hits / 0 ContentionDenied — blockers `window_too_short` and `delegation_cache_split_comparison_unavailable`, not instrumentation absence. [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) P1/P2; [progress 2026-07-04](../progress/2026-07/2026-07-04.md) §IIL P2 scaffold; [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §Prompt-and-BEP-verifier `verified`
+- **The internal consult primitive went from design to a fully staged, default-off v1 in one week — every layer shipped behind flags while live behavior stays locked on the P1 bake.** IIL P1 (the `Interaction` lifecycle substrate) landed 2026-06-28 in orchestrator `18956892` as a proven no-behavior-change refactor: `delegation_diagnostics` byte-equal regression test, additive `interaction_type="delegate"` field (no rename of `DelegationEvent`/`delegation_events`), and a clean affinity-preflight artifact (22 instances across 6 roles, `live_affinity_verified=true`, 0 memory mismatches). The P2 consult scaffold then staged 2026-07-04 with zero inference: `orchestration/interaction_skills.yaml` (`architect_general.review_before_commit`, JSON output schema, background priority, 400 max output tokens, 0 tools budget, 1800s TTL), `src/orchestration/consultation.py` with schema-constrained `consult()` + `ConsultationDenied` + contention-to-`contention_skip` translation, consult namespacing on `DelegationCache.make_key()` preserving legacy delegate keys, and `ProgressLogger.log_consult()`. On 2026-07-05, `0e555822` wired the first consult site at the P2-0 seam (`run_edit_transaction()`, `force_mode="edit"` route) behind a new `review_before_commit_consult` flag: at most one requester rerun on high-confidence blocking advice, consult events surfaced in response diagnostics, flag-off preserves one-shot edit behavior exactly. The remaining gate is purely evidential: bake readouts advanced 28.96h→38.04h of the required 48h with 3 delegation-cache lookups / 0 hits / 0 ContentionDenied — blockers `window_too_short` and `delegation_cache_split_comparison_unavailable`, not instrumentation absence. [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) P1/P2; [progress 2026-07-04](../progress/2026-07/2026-07-04.md) §IIL P2 scaffold; [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §Prompt-and-BEP-verifier `verified`
 
-- **Consult deliberately reuses the DCP seed-context packer instead of growing a second one.** Orchestrator `4183522f` added a default-off `dcp_for_consult` flag (requires `dcp_pre_assembly`) so `consult()` packages context via the existing `_maybe_dcp_seed_context()` ranking/rendering when a caller supplies `code_search_fn` and both flags are on. This enforces the architectural rule stated in both handoffs: DCP owns context packaging, IIL owns consult lifecycle — no parallel packers. [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md); [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md) cross-cutting `verified`
+- **Consult deliberately reuses the DCP seed-context packer instead of growing a second one.** Orchestrator `4183522f` added a default-off `dcp_for_consult` flag (requires `dcp_pre_assembly`) so `consult()` packages context via the existing `_maybe_dcp_seed_context()` ranking/rendering when a caller supplies `code_search_fn` and both flags are on. This enforces the architectural rule stated in both handoffs: DCP owns context packaging, IIL owns consult lifecycle — no parallel packers. [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle); [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) cross-cutting `verified`
 
-- **The batch-edit (BEP) safety arc closed a full transactional-apply story between 2026-06-28 and 2026-07-05, all while the flag stays default-off.** Five hardening steps landed on the legacy think-then-act patchset path: (1) sandbox promotion now refuses live-tree promotion unless verification explicitly passed; (2) the runner fail-closes under-evidenced edits — a patch touching a file in the DCP bundle's `omitted_context_paths` blocks the whole set pre-sandbox (the first live BEP↔DCP manifest coupling from audit item #6); (3) live promotion is transactional across copy/delete phases with backup-and-restore on failure; (4) deterministic BEP-4 fan-out is real — independent files within a dependency stage apply concurrently in the sandbox while declared stages serialize; (5) sandbox apply is atomic on stage failure (snapshot + restore, apply metadata cleared so callers can't mistake a restored sandbox for a partial diff). Then `8fb8f69a` (2026-07-05) added the missing whole-repo accept gate: setting `ORCHESTRATOR_BATCH_EDIT_VERIFY_CMD` stages a lightweight full-tree snapshot with touched-file overlay and runs the command in the sandbox before any promotion; unset preserves touched-file py_compile. GitNexus marked `_maybe_batch_edit_turn` CRITICAL blast radius, which is why the live hook change stayed default-off and env-gated. The strategic status is unchanged: the edit transaction remains the production multi-file fix, and BEP-2/J8 stays an optional decision experiment for whether `batch_edit_mode` is kept, retired, or scoped. [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md); [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §Prompt-and-BEP-verifier `verified`
+- **The batch-edit (BEP) safety arc closed a full transactional-apply story between 2026-06-28 and 2026-07-05, all while the flag stays default-off.** Five hardening steps landed on the legacy think-then-act patchset path: (1) sandbox promotion now refuses live-tree promotion unless verification explicitly passed; (2) the runner fail-closes under-evidenced edits — a patch touching a file in the DCP bundle's `omitted_context_paths` blocks the whole set pre-sandbox (the first live BEP↔DCP manifest coupling from audit item #6); (3) live promotion is transactional across copy/delete phases with backup-and-restore on failure; (4) deterministic BEP-4 fan-out is real — independent files within a dependency stage apply concurrently in the sandbox while declared stages serialize; (5) sandbox apply is atomic on stage failure (snapshot + restore, apply metadata cleared so callers can't mistake a restored sandbox for a partial diff). Then `8fb8f69a` (2026-07-05) added the missing whole-repo accept gate: setting `ORCHESTRATOR_BATCH_EDIT_VERIFY_CMD` stages a lightweight full-tree snapshot with touched-file overlay and runs the command in the sandbox before any promotion; unset preserves touched-file py_compile. GitNexus marked `_maybe_batch_edit_turn` CRITICAL blast radius, which is why the live hook change stayed default-off and env-gated. The strategic status is unchanged: the edit transaction remains the production multi-file fix, and BEP-2/J8 stays an optional decision experiment for whether `batch_edit_mode` is kept, retired, or scoped. [batched-edit-parallel-apply.md](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply); [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §Prompt-and-BEP-verifier `verified`
 
-- **DCP's first live J7 A/B is a self-classified `hold`: it won on tokens, lost on latency, and was never quality-scored.** The n=3/arm run (orchestrator `56a72f6`, artifact `benchmarks/results/runs/dcp_j7/20260619T113143Z/`) completed cleanly (6/6 HTTP-200, zero errors) with ON cutting average generated tokens 352.0→247.3 but worsening p50 latency 20.2s→32.6s; `dcp_pre_assembly` stays default-off. Two governance mechanics are the durable lesson: the runner summary now emits a `decision` block (`dcp_j7_decision.v1`, blockers `latency_not_improved` + `quality_not_scored`) so future clean-window runs are self-classifying, and `c3b2514e` added a read-only DCP/J7 section to `generate_attestation.py` so running-state attestation surfaces the latest artifact status without launching inference — the eval verdict and its visibility are both artifacts, not tribal memory. Separately, DCP-5's non-prescriptive discovery prompt landed 2026-07-05 in `b7ba6265` (`architect_investigate` reframed as evidence-bundle/open-questions-first), prompt-surface-only with DCP-6 still the enablement gate. [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md) DCP-5/DCP-6 `observed`
+- **DCP's first live J7 A/B is a self-classified `hold`: it won on tokens, lost on latency, and was never quality-scored.** The n=3/arm run (orchestrator `56a72f6`, artifact `benchmarks/results/runs/dcp_j7/20260619T113143Z/`) completed cleanly (6/6 HTTP-200, zero errors) with ON cutting average generated tokens 352.0→247.3 but worsening p50 latency 20.2s→32.6s; `dcp_pre_assembly` stays default-off. Two governance mechanics are the durable lesson: the runner summary now emits a `decision` block (`dcp_j7_decision.v1`, blockers `latency_not_improved` + `quality_not_scored`) so future clean-window runs are self-classifying, and `c3b2514e` added a read-only DCP/J7 section to `generate_attestation.py` so running-state attestation surfaces the latest artifact status without launching inference — the eval verdict and its visibility are both artifacts, not tribal memory. Separately, DCP-5's non-prescriptive discovery prompt landed 2026-07-05 in `b7ba6265` (`architect_investigate` reframed as evidence-bundle/open-questions-first), prompt-surface-only with DCP-6 still the enablement gate. [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) DCP-5/DCP-6 `observed`
 
-- **MindDR `deep_research_mode` is the page's one fully-built-but-never-measured pipeline: Phase-1 scaffold complete since 2026-04-22, parked at the inference-gated MD-9 A/B ever since.** The three-agent role-specialization pattern (PlanningNode → DeepSearchFanOutNode with bounded asyncio fan-out → ReportSynthesisNode) is implemented as a standalone `src/graph/minddr/` subpackage deliberately decoupled from production dispatch — wiring is an intentional 1-line check deferred until evidence exists. The promotion rule is crisp: default-on only if rubric uplift ≥+5pp on the 20-query sentinel suite, no eval-tower regression, and tool calls ≤2× baseline; structural-`expected_contains` scoring alone cannot promote (EV-9 rubric is the required scorer), and MD-9 must hold if no web/search backend is live (a research pipeline without retrieval is not the paper's claim). Phase 2 (four-stage RL: SFT → Search-RL → Report-RL → DPO) is GPU-gated — its "DGX Spark" wording is stale post-MI210 pivot and needs re-basing before any Phase-2 planning. Contradicting-evidence flags stand: MindDR Bench 51.8 is self-curated Li Auto data (deployment evidence, not generalization); public anchors are BrowseComp-ZH 45.7 / WideSearch 46.5 / xbench-DS 75.0. [minddr-deep-research-mode.md](../handoffs/active/minddr-deep-research-mode.md) `planning`
+- **MindDR `deep_research_mode` is the page's one fully-built-but-never-measured pipeline: Phase-1 scaffold complete since 2026-04-22, parked at the inference-gated MD-9 A/B ever since.** The three-agent role-specialization pattern (PlanningNode → DeepSearchFanOutNode with bounded asyncio fan-out → ReportSynthesisNode) is implemented as a standalone `src/graph/minddr/` subpackage deliberately decoupled from production dispatch — wiring is an intentional 1-line check deferred until evidence exists. The promotion rule is crisp: default-on only if rubric uplift ≥+5pp on the 20-query sentinel suite, no eval-tower regression, and tool calls ≤2× baseline; structural-`expected_contains` scoring alone cannot promote (EV-9 rubric is the required scorer), and MD-9 must hold if no web/search backend is live (a research pipeline without retrieval is not the paper's claim). Phase 2 (four-stage RL: SFT → Search-RL → Report-RL → DPO) is GPU-gated — its "DGX Spark" wording is stale post-MI210 pivot and needs re-basing before any Phase-2 planning. Contradicting-evidence flags stand: MindDR Bench 51.8 is self-curated Li Auto data (deployment evidence, not generalization); public anchors are BrowseComp-ZH 45.7 / WideSearch 46.5 / xbench-DS 75.0. [minddr-deep-research-mode.md](../handoffs/active/model-evaluation-queue.md#track-minddr-deep-research-mode) `planning`
 
 - **AutoPilot planner drafting moved from cloud-only to local-first (2026-07-05).** Orchestrator `7036630c` added `LocalPlannerProvider` calling the orchestrator's own OpenAI-compatible `/v1/chat/completions` with role aliases (`local`, `local_worker`, `local_ingest`), `x_orchestrator_role` + `x_disable_repl=true`; the Fable authority launcher now defaults `AUTOPILOT_PLANNER_PRIMARY=local_ingest` with `AUTOPILOT_PLANNER_CRITIC=codex`. Operator-decided fallback semantics: if the local drafter fails and Codex emits a schema-valid fallback draft, dispatch proceeds without pausing, with provider/fallback recorded in planner-archive telemetry. Queued next: a two-stage local provider (`ingest_long_context` produces a bounded planner brief → `frontdoor`/`worker_general` drafts) with Codex retained as critic/escalation. This is the meta-loop eating its own dogfood — the optimizer's planning inference migrating onto the stack it optimizes. [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §AutoPilot local planner provider `verified`
 
-- **Parallel tool-call batching already exists; the real bottleneck is that tool use is barely exercised.** A read-only sidecar investigation found the orchestrator already has a conservative parallel path for multiple independent read-only structured REPL calls in one model response (`REPLEnvironment._execute_structured()` + `execute_parallel_calls()`). Recent AutoPilot windows still show near-zero live `total_tool_calls`, and a 2026-07-06 diagnostics refresh confirmed only `30/807` REPL rows with multiple tools and `0` recorded `parallel_tools_used=True` rows, so batching remains a measurement follow-up (measure `len(tools_called) >= 2`, read-only eligibility, `parallel_tools_used`) before touching HIGH/CRITICAL executor paths — recorded in [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md). [progress 2026-07-05](../progress/2026-07/2026-07-05.md); [progress 2026-07-06](../progress/2026-07/2026-07-06.md) §REPL multi-tool batching telemetry `observed`
+- **Parallel tool-call batching already exists; the real bottleneck is that tool use is barely exercised.** A read-only sidecar investigation found the orchestrator already has a conservative parallel path for multiple independent read-only structured REPL calls in one model response (`REPLEnvironment._execute_structured()` + `execute_parallel_calls()`). Recent AutoPilot windows still show near-zero live `total_tool_calls`, and a 2026-07-06 diagnostics refresh confirmed only `30/807` REPL rows with multiple tools and `0` recorded `parallel_tools_used=True` rows, so batching remains a measurement follow-up (measure `len(tools_called) >= 2`, read-only eligibility, `parallel_tools_used`) before touching HIGH/CRITICAL executor paths — recorded in [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract). [progress 2026-07-05](../progress/2026-07/2026-07-05.md); [progress 2026-07-06](../progress/2026-07/2026-07-06.md) §REPL multi-tool batching telemetry `observed`
 
 - **The self-running lab split agent-safe monitoring from quiet-window inference — deterministic read-only jobs now run while AutoPilot and 30 llama-servers are active.** Orchestrator `0f7252bb` + `4829028d` added guarded `deterministic_command` lab jobs (`risk=read_only`, argv list, JSON-schema-validated stdout) with mutually exclusive `--active-safe-only` / `--quiet-window-only` selection, and the nightshift wrapper now runs active-safe deterministic jobs first, then model-backed shadow jobs only when inference is quiet. First enabled job: `autopilot_authority_watch` wrapping the phase-health report, so AutoPilot code-staleness monitoring no longer needs a quiet window. This is a clean two-tier agent-autonomy taxonomy: deterministic observation is always-safe; model-backed judgment is contention-gated. [progress 2026-07-05](../progress/2026-07/2026-07-05.md) §Self-running lab `verified`
 
@@ -2958,17 +2971,17 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. J17 quality deltas and bake counters are observations without decision-gating protocol citations.
 
-- **The Internal Interaction P1 bake gate is now cleared.** Quiet-window probe issued two real delegated `/chat` requests (`mock_mode=false`, `force_role=architect_general`, `force_mode=delegated`) to generate delegation-cache observations in the bake's second half. `orchestration/reports/internal_interaction_bake_report_20260707T005105Z.{json,md}` reports `gate_ready=true`, blockers `none`, full-window lookups/hits/misses `4/0/4`, split miss rates `1.0/1.0`, and `0` ContentionDenied events. The P1 regression/contention bake no longer blocks Internal Interaction work. Sources: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **The Internal Interaction P1 bake gate is now cleared.** Quiet-window probe issued two real delegated `/chat` requests (`mock_mode=false`, `force_role=architect_general`, `force_mode=delegated`) to generate delegation-cache observations in the bake's second half. `orchestration/reports/internal_interaction_bake_report_20260707T005105Z.{json,md}` reports `gate_ready=true`, blockers `none`, full-window lookups/hits/misses `4/0/4`, split miss rates `1.0/1.0`, and `0` ContentionDenied events. The P1 regression/contention bake no longer blocks Internal Interaction work. Sources: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **J17's first live A/B was a blanket-negative, but a targeted rerun showed real consult value.** The initial 5-task BEP sandbox repeated 10x showed zero quality delta (`0.800/0.800`) and `+22.58%` latency. A second targeted 10-task high-risk slice (parser edge cases, data-contract edits, transaction rollback, etc.) scored baseline `35/50` (`quality=0.70`) vs consult `40/50` (`quality=0.80`), a `+10.0pp` quality lift. Consult rescued the parser/comment/value edge case from `0/5` to `5/5` but failed on transaction-rollback and plugin-registry verifier. Coder wall p50 rose `5.093s` to `5.831s` (`+14.49%`). **Decision**: J17 updated from blanket HOLD to **targeted-positive / default-off** — consult gates should fire only on high-risk task shapes, parser/data-contract edits, high blast radius, or known hidden-verifier-risk patterns. Sources: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **J17's first live A/B was a blanket-negative, but a targeted rerun showed real consult value.** The initial 5-task BEP sandbox repeated 10x showed zero quality delta (`0.800/0.800`) and `+22.58%` latency. A second targeted 10-task high-risk slice (parser edge cases, data-contract edits, transaction rollback, etc.) scored baseline `35/50` (`quality=0.70`) vs consult `40/50` (`quality=0.80`), a `+10.0pp` quality lift. Consult rescued the parser/comment/value edge case from `0/5` to `5/5` but failed on transaction-rollback and plugin-registry verifier. Coder wall p50 rose `5.093s` to `5.831s` (`+14.49%`). **Decision**: J17 updated from blanket HOLD to **targeted-positive / default-off** — consult gates should fire only on high-risk task shapes, parser/data-contract edits, high blast radius, or known hidden-verifier-risk patterns. Sources: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **The targeted consult gate is implemented and default-off.** `src/orchestration/review_consult_gate.py` triggers on parser/data-contract terms, compatibility/fallback terms, hidden-verifier or transaction-risk terms, deletes, multi-file edits, and public API/registry/config paths; skips unparsed drafts and plain single-file edits. Flag `review_before_commit_targeted_gate` (`ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`) is inert unless `review_before_commit_consult` is also enabled. Skipped consults are `targeted_gate_skip` events with `gate_reasons`. Focused pytest `86 passed`. Sources: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **The targeted consult gate is implemented and default-off.** `src/orchestration/review_consult_gate.py` triggers on parser/data-contract terms, compatibility/fallback terms, hidden-verifier or transaction-risk terms, deletes, multi-file edits, and public API/registry/config paths; skips unparsed drafts and plain single-file edits. Flag `review_before_commit_targeted_gate` (`ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`) is inert unless `review_before_commit_consult` is also enabled. Skipped consults are `targeted_gate_skip` events with `gate_reasons`. Focused pytest `86 passed`. Sources: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **F2 quiet-window lab produced real gold tuples.** `scripts/lab/run_job.py` resolves lab roles to live orchestrator roles and rejects mock responses. `handoff_freshness_lint` passed as real `worker_general`; `attestation_watch` required reduced context budget then passed. One positive `lab_gold_tuple.v1` accepted, one negative rejected after review caught a false attestation-empty claim. `review_queue_report.py` reports `pending_reviews=0`, `verdicts=12`. Sources: [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **F2 quiet-window lab produced real gold tuples.** `scripts/lab/run_job.py` resolves lab roles to live orchestrator roles and rejects mock responses. `handoff_freshness_lint` passed as real `worker_general`; `attestation_watch` required reduced context budget then passed. One positive `lab_gold_tuple.v1` accepted, one negative rejected after review caught a false attestation-empty claim. `review_queue_report.py` reports `pending_reviews=0`, `verdicts=12`. Sources: [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **F3 trusted-label gate cleared and baseline acceptance passed.** Four prompt-free review packets applied to reach `100` trusted labels. Baseline report: `80` train rows, `20` held-out, `18` correct, `0.90` accuracy, threshold `0.85`. F3 W2 satisfied; remaining blockers: F2 tuple evidence and gfx90a training-viability. Sources: [frontier-f3-data-flywheel.md](../handoffs/active/frontier-f3-data-flywheel.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **F3 trusted-label gate cleared and baseline acceptance passed.** Four prompt-free review packets applied to reach `100` trusted labels. Baseline report: `80` train rows, `20` held-out, `18` correct, `0.90` accuracy, threshold `0.85`. F3 W2 satisfied; remaining blockers: F2 tuple evidence and gfx90a training-viability. Sources: [frontier-f3-data-flywheel.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-**Sources**: handoffs [internal-interaction-lifecycle](../handoffs/active/internal-interaction-lifecycle.md), [batched-edit-parallel-apply](../handoffs/active/batched-edit-parallel-apply.md), [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md), [minddr-deep-research-mode](../handoffs/active/minddr-deep-research-mode.md), [frontier-f2-self-running-lab](../handoffs/active/frontier-f2-self-running-lab.md), [frontier-f3-data-flywheel](../handoffs/active/frontier-f3-data-flywheel.md) · progress [2026-07-04](../progress/2026-07/2026-07-04.md), [2026-07-05](../progress/2026-07/2026-07-05.md), [2026-07-06](../progress/2026-07/2026-07-06.md), [2026-07-07](../progress/2026-07/2026-07-07.md) · orchestrator commits `18956892`, `0e555822`, `4183522f`, `8fb8f69a`, `b7ba6265`, `7036630c`, `0f7252bb`, `56a72f6`, `c3b2514e`
+**Sources**: handoffs [internal-interaction-lifecycle](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply), [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [minddr-deep-research-mode](../handoffs/active/model-evaluation-queue.md#track-minddr-deep-research-mode), [frontier-f2-self-running-lab](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [frontier-f3-data-flywheel](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) · progress [2026-07-04](../progress/2026-07/2026-07-04.md), [2026-07-05](../progress/2026-07/2026-07-05.md), [2026-07-06](../progress/2026-07/2026-07-06.md), [2026-07-07](../progress/2026-07/2026-07-07.md) · orchestrator commits `18956892`, `0e555822`, `4183522f`, `8fb8f69a`, `b7ba6265`, `7036630c`, `0f7252bb`, `56a72f6`, `c3b2514e`
 
 ### New Findings (2026-07-02 — fixed-model harness evolution + Fable 5 window-2 architecture co-leads)
 
@@ -2990,9 +3003,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-06-25 — REPL delegation patterns audit + Fugu/Trinity/Conductor architecture)
 
-- **Three REPL delegation patterns have distinct context policies — isolation for workers already implemented (2026-06-25).** `routing.py` audit reveals three interaction patterns with different correct context policies: (1) **Consultation** (frontdoor → architect): full context correct; implemented via escalation + IIL `consult` kind (P2 in progress); (2) **Worker execution** (frontdoor → coder): isolation already implemented in `_delegate_single` — workers see `self.context[:4000]` + brief only, NOT frontdoor scratchpad; (3) **Fan-out + synthesis** (N workers → synthesizer): `_delegate_parallel` handles homogeneous same-role fan-out (up to 4 concurrent, isolated) — synthesis done by calling model reading result list. These patterns were confirmed through a Fugu Ultra / Conductor architecture deep-dive. Source: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) P3.
+- **Three REPL delegation patterns have distinct context policies — isolation for workers already implemented (2026-06-25).** `routing.py` audit reveals three interaction patterns with different correct context policies: (1) **Consultation** (frontdoor → architect): full context correct; implemented via escalation + IIL `consult` kind (P2 in progress); (2) **Worker execution** (frontdoor → coder): isolation already implemented in `_delegate_single` — workers see `self.context[:4000]` + brief only, NOT frontdoor scratchpad; (3) **Fan-out + synthesis** (N workers → synthesizer): `_delegate_parallel` handles homogeneous same-role fan-out (up to 4 concurrent, isolated) — synthesis done by calling model reading result list. These patterns were confirmed through a Fugu Ultra / Conductor architecture deep-dive. Source: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) P3.
 
-- **Heterogeneous structured delegation chains are P3 scope (post-P2 gate) — autopilot can explore homogeneous fan-out now (2026-06-25).** The gap vs. Conductor's access_list pattern: `_delegate_parallel` dispatches to one role only; no explicit per-step context routing exists. The heterogeneous chain (coder isolated → architect sees coder output → synthesize) needs `delegate_chain(steps)` (P3, gated on P2 A/B). However, autopilot can explore the homogeneous fan-out + synthesis pattern TODAY via PromptForge mutations on `resolver.py` — teaching frontdoor to use `delegate(brief, parallel=True)` + explicit synthesis. Two strategy store entries seeded (2026-06-25) to prime this exploration. Source: [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) P3.
+- **Heterogeneous structured delegation chains are P3 scope (post-P2 gate) — autopilot can explore homogeneous fan-out now (2026-06-25).** The gap vs. Conductor's access_list pattern: `_delegate_parallel` dispatches to one role only; no explicit per-step context routing exists. The heterogeneous chain (coder isolated → architect sees coder output → synthesize) needs `delegate_chain(steps)` (P3, gated on P2 A/B). However, autopilot can explore the homogeneous fan-out + synthesis pattern TODAY via PromptForge mutations on `resolver.py` — teaching frontdoor to use `delegate(brief, parallel=True)` + explicit synthesis. Two strategy store entries seeded (2026-06-25) to prime this exploration. Source: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) P3.
 
 - **Fugu / Trinity / Conductor architecture deep-dive: 7 mechanism insights, 2 new for EPYC (2026-06-25).** Comprehensive reading of all three Sakana AI papers (Trinity ICLR 2026 arxiv:2512.04695, Conductor ICLR 2026 arxiv:2512.04388, Fugu Technical Report arxiv:2606.21228). Five findings already covered in existing handoffs (penultimate-token probe in LRC P4.1, Verifier-ACCEPT gate in TR-4.4, sep-CMA-ES in LRC P4.4, Trinity/Conductor already in outer-coordinator). Two genuinely new: (1) **Fugu Ultra's intra-workflow isolation** (workers see only original task + designated prior outputs — orchestration collapse prevention) is already implemented in our `_delegate_single`; (2) **Conductor's access_list selective context injection** is the P3 design target for IIL. Competitive intelligence: Fugu Ultra achieves frontier-equivalent benchmarks but with real-world ~30-minute latency — confirms multi-agent orchestration has substantial overhead that single-dispatch (Fugu, Trinity lineage) avoids. Sources: intake-474, intake-493, intake-728.
 
@@ -3004,31 +3017,31 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **ruflo (intake-700) is a maturity datapoint, not a new mechanism; its sole net-new element (zero-trust cross-machine federation) is out-of-scope on single-host EPYC.** The ex-Claude-Flow swarm meta-harness (~60k stars) re-packages primitives EPYC already has: `strategy_store` + 4-tier ReasoningBank trajectory memory, SiliconSwarm-style cross-species sharing (Applied) and BT consensus (killed in autopilot), and pi-agent-core-style hooks. The only fresh element — zero-trust cross-machine federation (mTLS / ed25519 / PII-gating) — is out-of-scope for a single-host single-user box. Its self-published 1.3×–1953× benchmark range is vendor-reported (observations, not decision-gating per MEASUREMENT.md); note its recent CWE-78 (OS command injection) patch if its hook-shell surface is ever inspected. [intake-700] `external`
 
-- **The OpenRouter subagent server tool (intake-705) confirms EPYC already ships its core primitive — the real remaining delta is a cost-aware capable→cheaper-worker delegation mode.** OpenRouter's `openrouter:subagent` is a provider-hosted, stateless, scoped delegation primitive (worker sees only `task_description`, no parent conversation; worker model and per-request task cap pinned at configure time). EPYC already has a server-side delegate that does this in software: `src/api/routes/chat_delegation.py` performs architect→specialist delegation with role pinning (`_valid_delegate_roles`/`_normalize_delegate_role`), per-request loop caps (`DELEGATION_MAX_SAME_TARGET`, `DELEGATION_MAX_TOTAL_TOKENS`, per-turn token caps), and a re-entrance/depth guard. The genuinely-missing feature is OpenRouter's *cost-aware delegation direction*: a capable model spending input-only tokens to hand a self-contained subtask down to a cheaper/faster worker, bounded by a per-request task-execution cap. [intake-705 → [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md) 2026-06-20 update; verified against `chat_delegation.py`] `verified`
+- **The OpenRouter subagent server tool (intake-705) confirms EPYC already ships its core primitive — the real remaining delta is a cost-aware capable→cheaper-worker delegation mode.** OpenRouter's `openrouter:subagent` is a provider-hosted, stateless, scoped delegation primitive (worker sees only `task_description`, no parent conversation; worker model and per-request task cap pinned at configure time). EPYC already has a server-side delegate that does this in software: `src/api/routes/chat_delegation.py` performs architect→specialist delegation with role pinning (`_valid_delegate_roles`/`_normalize_delegate_role`), per-request loop caps (`DELEGATION_MAX_SAME_TARGET`, `DELEGATION_MAX_TOTAL_TOKENS`, per-turn token caps), and a re-entrance/depth guard. The genuinely-missing feature is OpenRouter's *cost-aware delegation direction*: a capable model spending input-only tokens to hand a self-contained subtask down to a cheaper/faster worker, bounded by a per-request task-execution cap. [intake-705 → [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) 2026-06-20 update; verified against `chat_delegation.py`] `verified`
 
-- **The child structured-return contract is already shipped for the batched and single-delegate REPL paths.** Re-reading intake-693 (RLM schema-constrained subagent returns as an "external attention mask") against the code confirms the *parent* contract (schema-normalize → contract-at-step-0 → validate-on-`FINAL` → retry-with-errors) shipped 2026-05-20 under flag `final_schema_validation`, the *batched child* path shipped in commit `18b5ceb` ("Validate batched child LLM schemas", 2026-06-14), and the single-delegate REPL path shipped in commit `6426dd4` ("Add schema validation for single delegates", 2026-06-27). This supersedes the earlier "~30–40 LoC still-open" framing for child schemas; remaining deltas are parallel-delegation schema support only if a fan-out-heavy eval proves a gap, plus native-tools sentinel/parity and cost-aware cheaper-worker delegation. [commits `18b5ceb`/`6426dd4`, intake-693, [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md)] `verified`
+- **The child structured-return contract is already shipped for the batched and single-delegate REPL paths.** Re-reading intake-693 (RLM schema-constrained subagent returns as an "external attention mask") against the code confirms the *parent* contract (schema-normalize → contract-at-step-0 → validate-on-`FINAL` → retry-with-errors) shipped 2026-05-20 under flag `final_schema_validation`, the *batched child* path shipped in commit `18b5ceb` ("Validate batched child LLM schemas", 2026-06-14), and the single-delegate REPL path shipped in commit `6426dd4` ("Add schema validation for single delegates", 2026-06-27). This supersedes the earlier "~30–40 LoC still-open" framing for child schemas; remaining deltas are parallel-delegation schema support only if a fan-out-heavy eval proves a gap, plus native-tools sentinel/parity and cost-aware cheaper-worker delegation. [commits `18b5ceb`/`6426dd4`, intake-693, [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract)] `verified`
 
-**Sources**: [intake-696](https://centaur.run/) Centaur (paradigmxyz, MIT) · [intake-697](https://vercel.com/eve) eve · [intake-700](https://github.com/ruvnet/ruflo) ruflo · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter subagent server tool · handoffs [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster), [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md) (intake-705 update) · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`)
+**Sources**: [intake-696](https://centaur.run/) Centaur (paradigmxyz, MIT) · [intake-697](https://vercel.com/eve) eve · [intake-700](https://github.com/ruvnet/ruflo) ruflo · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter subagent server tool · handoffs [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster), [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) (intake-705 update) · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`)
 
 ### New Findings (2026-05-31 — A2A semantics adopted internally, transport deferred)
 
-- **The Agent2Agent (A2A) protocol's *lifecycle model* is adopt-worthy internally even though its wire transport is not.** A2A's primitives — `Message | Task`, states (working / input_required / completed / failed / cancelled), artifacts, terminal-state guarantees, Agent Card-style skill contracts — model both `delegate` and a new `consult` interaction kind cleanly. Adopting them as an internal `Interaction` abstraction over the existing delegation substrate (`_architect_delegated_answer`, `DelegationEvent`, `delegation_cache`, contention gate, DCP) gives the architectural discipline (forced context packaging, declared advisory skills per role, bounded budget, terminal advisory state) without paying for opacity that would break our cross-role region-lock visibility (`project_cross_role_contention_placement_blind`), shared-backend `topology_role` aliasing, and contention gating. External A2A wire adapter (inbound at hermes-outer-shell / outbound for cross-vendor consult) remains deferred. [intake-655 → handoff [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md)] `adopt_patterns (narrow)`
+- **The Agent2Agent (A2A) protocol's *lifecycle model* is adopt-worthy internally even though its wire transport is not.** A2A's primitives — `Message | Task`, states (working / input_required / completed / failed / cancelled), artifacts, terminal-state guarantees, Agent Card-style skill contracts — model both `delegate` and a new `consult` interaction kind cleanly. Adopting them as an internal `Interaction` abstraction over the existing delegation substrate (`_architect_delegated_answer`, `DelegationEvent`, `delegation_cache`, contention gate, DCP) gives the architectural discipline (forced context packaging, declared advisory skills per role, bounded budget, terminal advisory state) without paying for opacity that would break our cross-role region-lock visibility (`project_cross_role_contention_placement_blind`), shared-backend `topology_role` aliasing, and contention gating. External A2A wire adapter (inbound at hermes-outer-shell / outbound for cross-vendor consult) remains deferred. [intake-655 → handoff [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle)] `adopt_patterns (narrow)`
 
 - **Consultation is a distinct interaction shape from delegation and deserves a first-class primitive.** Delegation = callee finishes & returns; consult = caller integrates advice & finishes itself; bounded sub-question vs whole-task; often multi-turn vs one-shot; pays input-only tokens vs full callee inference. Today this pattern (e.g., a coder role drafts → `architect_general` reviews → coder finalizes) gets kludged as full delegation we under-utilize. The new four-phase plan adds a typed-output `consult()` entrypoint with skill registry, `kind="consult"` namespacing on `delegation_cache.make_key()` additively, scheduler-policy default to `priority=background` + `max_queue_wait_ms=0` (skip-or-admit semantics verified native in `epyc-orchestrator/src/scheduling/contention_gate.py:346-399` — the `is None` check at `:366` does NOT catch `0`, so the loop runs one `evaluate()` then admits-or-times-out with `waited_s ≈ 0`), and `ConsultationDenied` internal exception (no HTTP/503 mapping in v1). First consult site = code-edit drafting requester → `architect_general` `review_before_commit`, with the exact attach point gated on a P2-0 discovery subtask (candidates: `force_mode="edit"`, batched-edit pipeline, REPL final-answer hook, `worker_coder`, `coder_escalation`). [internal-interaction-lifecycle.md P2] `planning`
 
-**Sources**: [intake-655](https://github.com/a2aproject/A2A) A2A Protocol v1.0.1 LF · [intake-318] Agentnetes (uses A2A Agent Card) · [intake-394] Evolver (uses A2A hub) · [intake-145] Agent Protocol (alternative interop standard) · handoffs [internal-interaction-lifecycle](../handoffs/active/internal-interaction-lifecycle.md) · [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) Path-A external exposure · [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md) (DCP-4 reused for P2 consult context packaging)
+**Sources**: [intake-655](https://github.com/a2aproject/A2A) A2A Protocol v1.0.1 LF · [intake-318] Agentnetes (uses A2A Agent Card) · [intake-394] Evolver (uses A2A hub) · [intake-145] Agent Protocol (alternative interop standard) · handoffs [internal-interaction-lifecycle](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) · [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) Path-A external exposure · [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) (DCP-4 reused for P2 consult context packaging)
 
 ### New Findings (2026-05-27 - edit-transaction protocol fix)
 
-- **The multi-file coding failure was an agentic protocol failure, not a model capability failure.** The deployed `coder_escalation` role (`Qwen3.6-35B-A3B Q8`) solved the exact five BEP scratch coding tasks **5/5** in a single direct prompt with full file contents and the same verifiers, including every read-first task that failed the REPL/BEP read→peek→edit→FINAL loop. The remediation is therefore an interaction-contract change, not a model swap: a first-class `force_mode="edit"` path asks once for complete file replacements and applies them transactionally. [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) `verified`
+- **The multi-file coding failure was an agentic protocol failure, not a model capability failure.** The deployed `coder_escalation` role (`Qwen3.6-35B-A3B Q8`) solved the exact five BEP scratch coding tasks **5/5** in a single direct prompt with full file contents and the same verifiers, including every read-first task that failed the REPL/BEP read→peek→edit→FINAL loop. The remediation is therefore an interaction-contract change, not a model swap: a first-class `force_mode="edit"` path asks once for complete file replacements and applies them transactionally. [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) `verified`
 
-- **For routine file edits, one-shot full-file edit transactions are the safe alternative to free-form tool choreography.** The shipped edit path is default-off and requires both `ORCHESTRATOR_EDIT_TRANSACTION=1` and a scoped `ORCHESTRATOR_EDIT_ROOT`; explicit `force_mode="edit"` fails closed with HTTP 412 if either precondition is missing. The transaction preserves nested paths, rejects absolute/escape paths all-or-nothing, bounds unscoped context at 50 files / 400 KB via `stat()` before reading, syntax-checks with `compile()` to avoid `__pycache__` side effects, rolls back on failure, and auto-finalizes in one turn. Validation: 21 edit/cc-role unit tests, module 5/5 through the real coder, live server 3/3, plus 55 chat route/endpoint/canary tests. [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) `verified`
+- **For routine file edits, one-shot full-file edit transactions are the safe alternative to free-form tool choreography.** The shipped edit path is default-off and requires both `ORCHESTRATOR_EDIT_TRANSACTION=1` and a scoped `ORCHESTRATOR_EDIT_ROOT`; explicit `force_mode="edit"` fails closed with HTTP 412 if either precondition is missing. The transaction preserves nested paths, rejects absolute/escape paths all-or-nothing, bounds unscoped context at 50 files / 400 KB via `stat()` before reading, syntax-checks with `compile()` to avoid `__pycache__` side effects, rolls back on failure, and auto-finalizes in one turn. Validation: 21 edit/cc-role unit tests, module 5/5 through the real coder, live server 3/3, plus 55 chat route/endpoint/canary tests. [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) `verified`
 
-- **BEP-2's practical remediation is no longer the Repo Prompt-style batch-vs-interleaved A/B.** The edit transaction is a third path that bypasses both the legacy REPL loop and the older batch-edit proposal, so Package J now treats J8 as an optional decision experiment: run it only if the answer would change whether `batch_edit_mode` is kept, retired, or scoped to large-repo/provenance/task-class cases. DCP-6 is likewise no longer blocked by the BEP read-loop; DCP-4 advisory attach is already wired/default-off, and only the DCP-6 replay/eval remains. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md), [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [progress/2026-05-27](../progress/2026-05/2026-05-27.md) `verified`
+- **BEP-2's practical remediation is no longer the Repo Prompt-style batch-vs-interleaved A/B.** The edit transaction is a third path that bypasses both the legacy REPL loop and the older batch-edit proposal, so Package J now treats J8 as an optional decision experiment: run it only if the answer would change whether `batch_edit_mode` is kept, retired, or scoped to large-repo/provenance/task-class cases. DCP-6 is likewise no longer blocked by the BEP read-loop; DCP-4 advisory attach is already wired/default-off, and only the DCP-6 replay/eval remains. [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [batched-edit-parallel-apply.md](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply), [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [progress/2026-05-27](../progress/2026-05/2026-05-27.md) `verified`
 
 ### New Findings (2026-04-26 — Trinity deep-dive)
 
-- **The lightweight-learned-coordinator-over-heterogeneous-pool thesis has direct prior art in Trinity (intake-474, ICLR 2026, Sakana AI).** Trinity is a 0.6B SLM (Qwen3-0.6B) + 10K-parameter linear head, trained with sep-CMA-ES against terminal binary task fitness, that picks `(LLM, role)` per turn from a pool of 7 LLMs and 3 roles {Thinker, Worker, Verifier}; multi-turn protocol up to K=5 with Verifier-acceptance termination. Achieves 86.2% on LiveCodeBench v6 and 21.9% mean relative-error reduction over the 2nd-best multi-agent baseline. Trinity is core to Sakana's commercial Sakana-Fugu product — open code release is unlikely. **Standing comparative context** for all EPYC orchestrator and routing work: even where our final architecture differs, Trinity attempts to build around the same thesis we are building around. Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md). Spawned new handoffs [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) and [`outer-coordinator-learned-head.md`](../handoffs/completed/outer-coordinator-learned-head.md), plus tasks across `learned-routing-controller.md` Phase 4 + `decision-aware-routing.md` DAR-1.5 + `routing-and-optimization-index.md` P19. [intake-474, deep-dive] `verified`
+- **The lightweight-learned-coordinator-over-heterogeneous-pool thesis has direct prior art in Trinity (intake-474, ICLR 2026, Sakana AI).** Trinity is a 0.6B SLM (Qwen3-0.6B) + 10K-parameter linear head, trained with sep-CMA-ES against terminal binary task fitness, that picks `(LLM, role)` per turn from a pool of 7 LLMs and 3 roles {Thinker, Worker, Verifier}; multi-turn protocol up to K=5 with Verifier-acceptance termination. Achieves 86.2% on LiveCodeBench v6 and 21.9% mean relative-error reduction over the 2nd-best multi-agent baseline. Trinity is core to Sakana's commercial Sakana-Fugu product — open code release is unlikely. **Standing comparative context** for all EPYC orchestrator and routing work: even where our final architecture differs, Trinity attempts to build around the same thesis we are building around. Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md). Spawned new handoffs [`tri-role-coordinator-architecture.md`](../handoffs/active/routing-program.md#track-tri-role-coordinator-architecture) and [`outer-coordinator-learned-head.md`](../handoffs/completed/outer-coordinator-learned-head.md), plus tasks across `learned-routing-controller.md` Phase 4 + `decision-aware-routing.md` DAR-1.5 + `routing-and-optimization-index.md` P19. [intake-474, deep-dive] `verified`
 
 - **Per-call role assignment (Thinker / Worker / Verifier) is an architectural axis orthogonal to model selection — and currently absent from our orchestrator.** Trinity's ablation evidence: removing the tri-role decomposition costs −5 to −8 points across all four benchmarks (LCB / Math500 / MMLU / RLPR); removing Thinker alone costs −6.0 on Math500 and −4.57 on RLPR. The tri-role lever is the second-largest empirical effect in the paper after feature-position. Our orchestrator collapses every dispatch to model-selection only; review/escalation lives at the pipeline layer outside the routing policy. Roles in our system today (`frontdoor`, `architect_general`, `coder`, `reviewer`, `worker`) are *attached to models* — a model permanently has a role. Trinity's insight is that role is a *per-turn property of the dispatch*, not of the model: the same Qwen-3-32B can be Thinker on turn 1, Worker on turn 3, Verifier on turn 5. New handoff `tri-role-coordinator-architecture.md` (TR-1..TR-5) isolates this architectural change so it can ship under any optimizer choice. [intake-474, tri-role-coordinator-architecture.md] `verified`
 
@@ -3112,7 +3125,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ## 2026-06-15 Update — Edit Transactions Beat Tool Choreography
 
-- **One-shot edit transactions are now the practical fix for multi-file coding.** The BEP-2 follow-up showed that the deployed coder role solved the scratch tasks directly when asked for full-file replacements, so the old read→peek→edit→FINAL REPL choreography is no longer the blocker; it is now an optional decision experiment. Sources: [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md), [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md), [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).
+- **One-shot edit transactions are now the practical fix for multi-file coding.** The BEP-2 follow-up showed that the deployed coder role solved the scratch tasks directly when asked for full-file replacements, so the old read→peek→edit→FINAL REPL choreography is no longer the blocker; it is now an optional decision experiment. Sources: [multi-file-coding-completion-capability.md](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability), [batched-edit-parallel-apply.md](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply), [tool-use-eval-contract.md](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract).
 - **The agent stack is moving toward explicit interaction kinds rather than looser prompt discipline.** The security-review skill scaffold, along with the edit-transaction path, shows the direction of travel: bounded tool surfaces, explicit contracts, and reviewable outputs instead of open-ended tool choreography. Source: [security-review-skill.md](../handoffs/completed/security-review-skill.md).
 - **The same pattern applies to broader delegation surfaces.** The architectural lesson is to treat complex interactions as typed primitives first and only then choose the transport or UI, because the hidden cost is usually in the protocol, not the model. Source: [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
 
@@ -3180,7 +3193,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- cost governance model (3-tier enforcement), ticket system with atomic checkout, shared knowledge accumulation, request depth tracking, heartbeat-driven invocation
 - [LangGraph ecosystem comparison](../research/deep-dives/langgraph-ecosystem-comparison.md) -- checkpoint granularity gap, subgraph composition need, interrupt() flexibility, state immutability + reducers, domain advantages assessment (EPYC leads in 7 categories)
 - [OpenGauss architecture analysis](../research/deep-dives/opengauss-architecture-analysis.md) -- tool-pair sanitization, protected-zone context compression, multi-backend abstraction, ACP server, prompt injection scanning, session analytics, trajectory export
-- [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md) -- supervisor/death ledger, startup attestation, loop supervision, REPL/tool compatibility layer
+- [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/autopilot-program.md#track-orchestration-robustness-audit-2026-07-11) -- supervisor/death ledger, startup attestation, loop supervision, REPL/tool compatibility layer
 - [progress 2026-07-11](../progress/2026-07/2026-07-11.md) -- wrap-up checkpoint for landed docs-only changes and verification results
 - [intake-103](https://arxiv.org/abs/2603.09906) Thinking to Recall -- CoT reasoning expands factual recall via computational buffer and factual priming; hallucination risk from generative self-retrieval
 - [intake-105](https://arxiv.org/abs/2603.08640) PostTrainBench -- agents can surpass official baselines in targeted scenarios (BFCL 89% vs 67%) but substantially underperform on general post-training (23.2% vs 51.1%)
@@ -3196,9 +3209,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [intake-272#00](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md (current arXiv v3): developer-written files show an author-reported +2.4% average resolution-rate difference (p=.21, not significant; authored percent, not a percentage-point conversion). [intake-272#01](https://arxiv.org/abs/2602.11988) separately reports cost increases of 20% and 23% for LLM-generated files and about 19% for developer-written files. The earlier v2 reading remains dated entry history.
 - [intake-312](https://alexzhang13.github.io/blog/2026/mgh/) Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
 - [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) -- execution trace feedback (+15pts), code mutation search space, GEPA integration
-- [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression, 60-90% token reduction per tool output
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- 4-species architecture, safety gates, evolution manager, GEPA optimizer
+- [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) -- 7-handler output compression, 60-90% token reduction per tool output
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) -- 4-species architecture, safety gates, evolution manager, GEPA optimizer
 - [claude-code-local-constellation-routing.md](../handoffs/archived/claude-code-local-constellation-routing.md) -- MCP tool delegation, deterministic routing overrides
 - [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) -- two-layer architecture with deterministic routing override flags, cross-layer preference propagation; 2026-04-17 update cross-references open-agents intake-397
 - [claude-mem-persistent-memory.md](../research/deep-dives/claude-mem-persistent-memory.md) -- observer-sidecar pattern, 7-hook lifecycle taxonomy, structured XML observation schema with mode-defined taxonomy, `<private>` tag edge-layer stripping, six-field Stop-hook summary schema, batched-ID MCP tool for progressive disclosure; AGPL-3.0, no code adoption
@@ -3219,7 +3232,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [intake-450](https://github.com/veniceai/skills) veniceai/skills -- canonical reference implementation of cross-runtime SKILL.md (Claude Code + Codex + OpenCode + Hermes + Cursor + Cline). MIT licensed.
 - [pi-agent-core deep-dive](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md) -- 2026-04-26: source-level review of `@mariozechner/pi-agent-core` (`badlogic/pi-mono/packages/agent`). 5 named primitives worth lifting into EPYC orchestrator vocabulary: two-stage message pipeline (`transformContext` + `convertToLlm`), `beforeToolCall`/`afterToolCall` hooks with field-replace + throw-isolation, steering-vs-follow-up split with `one-at-a-time`/`all` queue modes, per-tool `executionMode` override + batch fallback, terminate-unanimous-batch rule. 80+ contributors (Armin Ronacher top-5), 3,805 commits, formal CHANGELOG with `closes #N`, ~1:1 test/src ratio. Initial intake mis-estimated credibility from README alone — captured as feedback memory.
 - [intake-473](https://github.com/badlogic/pi-mono/tree/main/packages/agent) `@mariozechner/pi-agent-core` — Stateful TypeScript Agent Runtime. Verdict: `adopt_patterns`. 6 handoffs updated 2026-04-26 with pattern lifts.
-- [intake-474](https://arxiv.org/abs/2512.04695) TRINITY: An Evolved LLM Coordinator (ICLR 2026, Sakana AI). Verdict: `new_opportunity`. **Standing comparative context** for all orchestrator/routing work. Spawned [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) and [`outer-coordinator-learned-head.md`](../handoffs/completed/outer-coordinator-learned-head.md), plus tasks across `learned-routing-controller.md` Phase 4 + `decision-aware-routing.md` DAR-1.5 + `routing-and-optimization-index.md` P19.
+- [intake-474](https://arxiv.org/abs/2512.04695) TRINITY: An Evolved LLM Coordinator (ICLR 2026, Sakana AI). Verdict: `new_opportunity`. **Standing comparative context** for all orchestrator/routing work. Spawned [`tri-role-coordinator-architecture.md`](../handoffs/active/routing-program.md#track-tri-role-coordinator-architecture) and [`outer-coordinator-learned-head.md`](../handoffs/completed/outer-coordinator-learned-head.md), plus tasks across `learned-routing-controller.md` Phase 4 + `decision-aware-routing.md` DAR-1.5 + `routing-and-optimization-index.md` P19.
 - [Trinity deep-dive](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — methodology cross-check vs our stack, portable-vs-not split, replication budget estimate, 9 refined recommended actions.
 - [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (Chu et al., 42 authors HKUST/NUS/Oxford/CUHK/NTU/HKU/UW; cs.AI 2026-04-24). Survey introducing **Levels × Laws** taxonomy: capability levels L1 Predictor / L2 Simulator / L3 Evolver × four governing-law regimes physical/digital/social/scientific. Synthesizes 400+ works, 100+ representative systems. Verdict: `adopt_patterns` (vocabulary + four-principle rubric, NOT full framework). EPYC stack mapping: autopilot = L3-Evolver / Digital, agent-world ETD = L2-Simulator → L3-Evolver bridge / Digital, meta-harness = L3-Evolver / Digital, q-scorer = L1-Predictor / Digital. Section 5.4 governance recipe (regression / robustness / rollback / canary gates) maps line-for-line onto autopilot SafetyGate. Section 6.1 four evaluation principles (long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use) testable in existing AR-3 today. MREP (Section E.6) proposed but not released; companion repo `matrix-agent/awesome-agentic-world-modeling` is bibliography-only.
 - [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy with EPYC-stack mapping, governance recipe alignment, four-principle rubric, Beyond-L3 framing for Species 3 with closure-inflation guard, MREP watch.
@@ -3231,12 +3244,12 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [intake-772#record](https://arxiv.org/abs/2505.22954) Darwin Gödel Machine (Zhang/Hu/Lu/Lange/Clune) — self-referential self-improving coding agent (SWE-bench 20→50%, Polyglot 14.2→30.7%); distinctive triad vs. our corpus: self-rewrite of the editing agent, open-ended keep-all-stepping-stones tree archive (opposite of our greedy Pareto pruning), performance×fecundity parent sampling; both self-improvement and open-ended-exploration ablations load-bearing. Expanded from intake-753. Harvestable as a bounded QD lane + fecundity sampling, gated on resolution-aware verdicts + single-host compute. `adopt_patterns`
 - [fable5-architecture-review-2.md](../handoffs/archived/fable5-architecture-review-2.md) — window-2 entry brief for the `claude-fable-5` one-shot strategic-architecture consult; codifies the review-agent contract (full-agent GitNexus-grounded, read-only subagents, adversarial synthesis, cheapest-decisive-experiment guardrail, standing unprompted portfolio-audit + self-critique deliverables) and frames two co-leads: 4A self-optimizer integrity guarantee (evidence plane live-authority 2026-07-02, W6 clear, W7 shipped, W5 `core_v2` no-go held) and 4B heterogeneous CPU+GPU serving (MI210/gfx90a; A/B/C architecture families; α(drafter→target) still unmeasured).
 - [2026-07-02-fable5-window2-brief.md](../progress/2026-07/2026-07-02-fable5-window2-brief.md) — session log reconstructing the 2026-06-12 window-1 (~500 KB / 17 files, MEASUREMENT.md adopted as instrument constitution), assessing the operator's draft prompt, and hardening the window-2 brief; documents the live-tree preflight (W6 clear not firing; MI210/ROCm 6.2 present; evidence plane live; α unmeasured; W5 33/40) and the read-only-subagent / proposed-not-in-place index write authority.
-- [internal-interaction-lifecycle.md](../handoffs/active/internal-interaction-lifecycle.md) — A2A-semantics `Interaction` lifecycle over the existing delegation substrate; P1 substrate landed 2026-06-28 (`18956892`), P2 consult v1 staged default-off through 2026-07-05 (`interaction_skills.yaml`, `consultation.py`, `review_before_commit_consult` flag at the `run_edit_transaction()` seam, `0e555822`); invariants table (region-lock visibility, topology_role aliasing, enable_thinking flags, DCP-advisory, telemetry compat); live J17 gated on the ≥48h delegation-cache/ContentionDenied bake.
-- [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md) — think-then-act batch editing + parallel apply fan-out (intake-605); 2026-06-28→07-05 hardening arc: verified-only promotion, DCP `omitted_context_paths` fail-close preflight, transactional backup/restore promotion, deterministic stage-local BEP-4 fan-out, atomic sandbox restore, and the `ORCHESTRATOR_BATCH_EDIT_VERIFY_CMD` full-tree verifier gate (`8fb8f69a`); flag default-off, BEP-2/J8 an optional decision experiment post-edit-transaction.
-- [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md) — budget-bounded proactive context assembly for delegation (intake-605); DCP-1..5 built, DCP-4 advisory attach wired default-off; first live J7 A/B self-classified `hold` (`dcp_j7_decision.v1`: tokens 352→247.3 avg but p50 latency 20.2s→32.6s, quality unscored); attestation now surfaces DCP/J7 status read-only (`c3b2514e`); DCP-5 non-prescriptive discovery prompt landed `b7ba6265`.
-- [minddr-deep-research-mode.md](../handoffs/active/minddr-deep-research-mode.md) — three-agent Planning/DeepSearch/Report `deep_research_mode` (intake-438, Li Auto MindDR); Phase-1 scaffold complete 2026-04-22 (`src/graph/minddr/`, flag, classifier, prompts, 20-query sentinel suite), parked at inference-gated MD-9 A/B with a ≥+5pp / no-regression / ≤2×-tool-calls promotion rule; Phase 2 RL GPU-gated (DGX wording stale post-MI210); MindDR Bench treated as deployment, not generalization, evidence.
+- [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) — A2A-semantics `Interaction` lifecycle over the existing delegation substrate; P1 substrate landed 2026-06-28 (`18956892`), P2 consult v1 staged default-off through 2026-07-05 (`interaction_skills.yaml`, `consultation.py`, `review_before_commit_consult` flag at the `run_edit_transaction()` seam, `0e555822`); invariants table (region-lock visibility, topology_role aliasing, enable_thinking flags, DCP-advisory, telemetry compat); live J17 gated on the ≥48h delegation-cache/ContentionDenied bake.
+- [batched-edit-parallel-apply.md](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) — think-then-act batch editing + parallel apply fan-out (intake-605); 2026-06-28→07-05 hardening arc: verified-only promotion, DCP `omitted_context_paths` fail-close preflight, transactional backup/restore promotion, deterministic stage-local BEP-4 fan-out, atomic sandbox restore, and the `ORCHESTRATOR_BATCH_EDIT_VERIFY_CMD` full-tree verifier gate (`8fb8f69a`); flag default-off, BEP-2/J8 an optional decision experiment post-edit-transaction.
+- [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — budget-bounded proactive context assembly for delegation (intake-605); DCP-1..5 built, DCP-4 advisory attach wired default-off; first live J7 A/B self-classified `hold` (`dcp_j7_decision.v1`: tokens 352→247.3 avg but p50 latency 20.2s→32.6s, quality unscored); attestation now surfaces DCP/J7 status read-only (`c3b2514e`); DCP-5 non-prescriptive discovery prompt landed `b7ba6265`.
+- [minddr-deep-research-mode.md](../handoffs/active/model-evaluation-queue.md#track-minddr-deep-research-mode) — three-agent Planning/DeepSearch/Report `deep_research_mode` (intake-438, Li Auto MindDR); Phase-1 scaffold complete 2026-04-22 (`src/graph/minddr/`, flag, classifier, prompts, 20-query sentinel suite), parked at inference-gated MD-9 A/B with a ≥+5pp / no-regression / ≤2×-tool-calls promotion rule; Phase 2 RL GPU-gated (DGX wording stale post-MI210); MindDR Bench treated as deployment, not generalization, evidence.
 - [progress 2026-07-04](../progress/2026-07/2026-07-04.md) / [progress 2026-07-05](../progress/2026-07/2026-07-05.md) — IIL P2 scaffold + bake readouts; consult/BEP/DCP-prompt wiring commits; AutoPilot `LocalPlannerProvider` (`7036630c`, local_ingest primary / Codex critic); tool-call batching investigation (parallel read-only REPL path exists, near-zero live tool use); self-running lab active-safe vs quiet-window job split (`0f7252bb`, `4829028d`).
-- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) — RTG-02 (2026-09-14 noninf sweep): the paired `:1787`/`:1793` boxes on process-global tool telemetry read as per-request state, the find-or-update path that dropped `assigned_role`/`work`, and the non-idempotent work sanitizer.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md) — RTG-02 (2026-09-14 noninf sweep): the paired `:1787`/`:1793` boxes on process-global tool telemetry read as per-request state, the find-or-update path that dropped `assigned_role`/`work`, and the non-idempotent work sanitizer.
 - [progress 2026-09-14 (noninf backlog)](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record for RTG-02: four pre-fix reader sites, the 11x update-to-create ratio (668,070 updates vs 59,337 rows), and the neutered-fix non-vacuity check.
 - `epyc-orchestrator` `d65a4e93` and `b69bda61` — request-scoped `_invoked_tools` telemetry with a bounded `get_invocation_log()` diagnostic ring plus an `ast` guard against request-scoped callers; `merge_row_metadata()` on all four update branches; idempotent work sanitization. [confidence: verified — code + 25 new unit tests, assigned suite 1131 → 1146 passed]
 
@@ -3258,7 +3271,7 @@ This update consolidates the Trinity-derived tri-role architecture (intake-474),
 
 ### Trinity-derived tri-role architecture (intake-474)
 
-Per [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) and the Trinity deep-dive (`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`, intake-474, ICLR 2026, Sakana AI):
+Per [`tri-role-coordinator-architecture.md`](../handoffs/active/routing-program.md#track-tri-role-coordinator-architecture) and the Trinity deep-dive (`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`, intake-474, ICLR 2026, Sakana AI):
 
 - **Decouple role from model.** Today every EPYC role (`frontdoor`, `architect_general`, `coder`, `reviewer`, `worker`) is *attached to a model* — a model permanently has a role. Trinity's insight: role is a *per-turn property of the dispatch*. The same model can serve as Thinker on turn 1, Worker on turn 3, Verifier on turn 5. The dispatch policy decides per-turn role assignment, independent of which weights run that turn.
 - **Empirical evidence.** Trinity ablation: removing the tri-role decomposition costs −5 to −8 points across all four benchmarks (LCB / Math500 / MMLU / RLPR). Removing Thinker alone costs −6.0 on Math500 and −4.57 on RLPR. The tri-role lever is the **second-largest empirical effect** in the paper after feature-position. This is the single most surprising finding: an architectural split below the model layer can dominate model selection.
@@ -3315,7 +3328,7 @@ Cross-links to current handoffs (`hermes-outer-shell.md`, `handoffs/completed/me
 
 - [intake-474](https://arxiv.org/abs/2512.04695) TRINITY: An Evolved LLM Coordinator (ICLR 2026, Sakana AI)
 - [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
-- [`handoffs/active/tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) — TR-1..TR-5
+- [`handoffs/active/routing-program.md`](../handoffs/active/routing-program.md#track-tri-role-coordinator-architecture) — TR-1..TR-5
 - [`handoffs/completed/outer-coordinator-learned-head.md`](../handoffs/completed/outer-coordinator-learned-head.md) — OC-0.6 design-space reference
  - [`handoffs/completed/meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — Conductor/Flywheel competitive intelligence, Tier 3 deferred
 - intake-492 (Flywheel — durable memory + atomic-undo write contract; Node/MCP/Obsidian runtime non-portable, abstract contract portable)
@@ -3337,7 +3350,7 @@ Findings independently verified against source trace files per repo claim. Singl
 
 ### Net-new patterns worth lifting (3)
 
-1. **Six-tool trace-query analyzer surface** (`get_dataset_overview`, `query_traces`, `count_traces`, `view_trace`, `search_trace`, `view_spans`) backed by a two-file JSONL+byte-offset trace store. Lands in [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) T1+T5 (~230 LoC).
+1. **Six-tool trace-query analyzer surface** (`get_dataset_overview`, `query_traces`, `count_traces`, `view_trace`, `search_trace`, `view_spans`) backed by a two-file JSONL+byte-offset trace store. Lands in [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) T1+T5 (~230 LoC).
 2. **dev/test_normal split discipline** as anti-overfitting guard. Cleaner than Pareto-archive replacement alone for both `handoffs/completed/meta-harness-optimization.md` Tier 3 and `autopilot-continuous-optimization.md` species frontier (cross-ref `feedback_checkpoint_pareto_state.md`). ~50 LoC + methodology change.
 3. **Concrete failure-mode taxonomy** (4 labels: hallucinated tool calls / redundant args / refusal loops / semantic correctness). Complementary to intake-509 Pocock 4-mode taxonomy already in meta-harness scope; serves as seed labels for trace-clustering.
 
@@ -3412,10 +3425,10 @@ Three new agent-file-specific risks: (a) directive polarity (`must`/`must not`/`
 - [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers — Matt Pocock's Claude Code skills collection (`/caveman`, `/grill-with-docs`, `/setup-matt-pocock-skills`, `/write-a-skill`)
 - intake-450 — veniceai/skills sibling cross-runtime SKILL.md authoring rubric
 - intake-301 — AXI: Agent eXperience Interface (TOON encoding — orthogonal layer)
-- [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
-- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) Research Intake Update 2026-04-30 — persistence-clause caveat
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
+- [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) Research Intake Update 2026-04-30 — persistence-clause caveat
 - [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
-- [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate
+- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
 
 ## DeepSeek-TUI vocabulary + snapshot-store port recipe (2026-04-30)
 
@@ -3474,7 +3487,7 @@ Per-model compression-tolerance curve becomes a **deployment gate** via `agent_f
 
 Pilot finding (2026-05-06, `agents/shared/ENGINEERING_STANDARDS.md`): file is unusually compression-resistant (12 RFC-2119 directives in 696 words — 1.7% density — plus 27% non-prose content). Achieved reductions: mild 12.4%, medium 21.8%, aggressive 28.4% (vs band targets 20%/40%/60%). All 12 directives preserved exactly. Useful empirical signal that the band targets are calibrated for narrative-prose files, not directive-dense policy files; the per-model curve must be measured per-file-class.
 
-Sources: [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md), `.claude/skills/agent-file-compress/SKILL.md`, `tests/compliance/agent_file/` (15+12+15 task pool + runner harness), `.claude/commands/new-model.md` (Step 6.5).
+Sources: [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression), `.claude/skills/agent-file-compress/SKILL.md`, `tests/compliance/agent_file/` (15+12+15 task pool + runner harness), `.claude/commands/new-model.md` (Step 6.5).
 
 ## RAO + RLM substrate cluster (2026-05-19)
 
@@ -3482,7 +3495,7 @@ May 2026 brought a coherent cluster of papers on recursive-agent training, RLM r
 
 **RAO** (intake-536, arxiv:2605.06639, CMU — Gandhi/Chakraborty/Wang/Kumar/Neubig) is the **training-side complement** to RLM's inference-time orchestration paradigm. It trains an LLM agent via RL to dynamically spawn and coordinate recursive copies of itself. The three load-bearing mechanisms: (1) **mean-of-children delegation bonus** (NOT sum — explicitly prevents the trivial-spawn exploit); (2) **multi-task objective sampled across execution-tree depths** providing an automatic curriculum from model-generated sub-tasks; (3) **leave-one-out (LOO) baseline shared across rollout group** + **depth-level inverse-frequency weighting** preventing leaf-trajectory domination. Headline empirical: TextCraft-Synth hard 0.88 (recursive) vs ~0 (single-agent); Oolong-Real (10–12pg D&D, 32K ctx) 30B recursive ≈ frontier Claude/o3/GPT-5-mini.
 
-**ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demos) is the **working open-source harness substrate** RAO presumes. MIT + Commons Clause licensed (research use OK, resale blocked). 98.9 KB Python core, Python ≥3.10, last push 2026-05-11. Built on `kani`; backend swappable to local llama-server via `OPENAI_BASE_URL` env var. Two delegation primitives: `DelegateOne` (blocking) and `DelegateWait` (non-blocking with `asyncio.gather`). First-class event-stream logger and web debugger. Lifts cleanly onto EPYC; substrate spike at [`rao-redel-substrate-spike.md`](../handoffs/active/rao-redel-substrate-spike.md) covers a 3-step gated rollout (1-day pre-flight → 1-week paired A/B vs in-house `repl_executor` → 2-3 week feature-flagged substrate replacement).
+**ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demos) is the **working open-source harness substrate** RAO presumes. MIT + Commons Clause licensed (research use OK, resale blocked). 98.9 KB Python core, Python ≥3.10, last push 2026-05-11. Built on `kani`; backend swappable to local llama-server via `OPENAI_BASE_URL` env var. Two delegation primitives: `DelegateOne` (blocking) and `DelegateWait` (non-blocking with `asyncio.gather`). First-class event-stream logger and web debugger. Lifts cleanly onto EPYC; substrate spike at [`rao-redel-substrate-spike.md`](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) covers a 3-step gated rollout (1-day pre-flight → 1-week paired A/B vs in-house `repl_executor` → 2-3 week feature-flagged substrate replacement).
 
 **Wang RLM reproduction** (intake-547#01, arxiv:2603.02615) is the **load-bearing depth caveat**: independently reproduces the Zhang/Kraska/Khattab RLM framework on DeepSeek v3.2 and Kimi K2. **Direction-of-effect is model-dependent** — Kimi K2 OOLONG depth-0 (86.6%) BEATS depth-1 RLM (60.0%). Depth=2 inflates DeepSeek v3.2 S-NIAH wall-clock 96× (3.6s → 89.3s → 344.5s). `max_depth=1` is now the load-bearing default for any RAO/RLM-style integration on EPYC unless we explicitly train a depth-controller.
 
@@ -3490,13 +3503,13 @@ May 2026 brought a coherent cluster of papers on recursive-agent training, RLM r
 
 **Tree-GRPO** (intake-549, arxiv:2509.21240, ICLR 2026): methodological alternative to RAO's LOO baseline. Each tree node is a complete agent interaction step; prefix-sharing across siblings increases rollout count under fixed token+tool-call budgets. Proof: intra-tree group-relative optimization is equivalent to step-level direct preference learning — derives dense step-wise process signal from outcome-only rewards.
 
-**Sources**: [intake-536](https://arxiv.org/abs/2605.06639) RAO · [intake-547#record](https://arxiv.org/abs/2603.02615) Wang RLM reproduction · [intake-548](https://arxiv.org/abs/2605.02801) Orchestration-trace survey · [intake-549](https://arxiv.org/abs/2509.21240) Tree-GRPO · [intake-550](https://arxiv.org/abs/2408.02248) ReDel · [Deep-dive](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) · [Substrate spike](../handoffs/active/rao-redel-substrate-spike.md)
+**Sources**: [intake-536](https://arxiv.org/abs/2605.06639) RAO · [intake-547#record](https://arxiv.org/abs/2603.02615) Wang RLM reproduction · [intake-548](https://arxiv.org/abs/2605.02801) Orchestration-trace survey · [intake-549](https://arxiv.org/abs/2509.21240) Tree-GRPO · [intake-550](https://arxiv.org/abs/2408.02248) ReDel · [Deep-dive](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) · [Substrate spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike)
 
 ## Latent multi-agent systems cluster — heterogeneity actionable; latent handoff blocked (2026-05-19)
 
 Five papers spanning training-free latent collaboration, theoretical identifiability, heterogeneous text-MAS, and cross-architecture frozen-LLM composition. Deep-dive verdict: **only X-MAS is actionable today on EPYC**; the latent-handoff entries (RMAS / LatentMAS / Dead Weights) are blocked on llama.cpp HTTP server fork work (4-8 weeks + 2× rebase debt vs ik_llama PR #1744 worker_pool branch).
 
-**X-MAS** (intake-557, arxiv:2505.16997) — empirical (5-domain × 5-function × 27-LLM) sweep with 1.7M evals. Heterogeneous MAS significantly outperforms homogeneous MAS with no structural change. Reported magnitudes: MATH +8.4% (heterogeneous chatbot-only), AIME +47% (mixed chatbot-reasoner). Text-mediated, zero llama.cpp changes. Spike at [`x-mas-text-routing.md`](../handoffs/active/x-mas-text-routing.md) builds a 5×5 (domain × function) → winner-model lookup on our 4-model production stack. Cheap-kill failure mode: if gemma4-26B-A4B wins ~all cells (per its `project_worker_general_swap_2026_05_08` tool_compliance dominance), heterogeneity doesn't apply and the spike aborts.
+**X-MAS** (intake-557, arxiv:2505.16997) — empirical (5-domain × 5-function × 27-LLM) sweep with 1.7M evals. Heterogeneous MAS significantly outperforms homogeneous MAS with no structural change. Reported magnitudes: MATH +8.4% (heterogeneous chatbot-only), AIME +47% (mixed chatbot-reasoner). Text-mediated, zero llama.cpp changes. Spike at [`x-mas-text-routing.md`](../handoffs/active/routing-program.md#track-x-mas-text-routing) builds a 5×5 (domain × function) → winner-model lookup on our 4-model production stack. Cheap-kill failure mode: if gemma4-26B-A4B wins ~all cells (per its `project_worker_general_swap_2026_05_08` tool_compliance dominance), heterogeneity doesn't apply and the spike aborts.
 
 **RMAS** (intake-544, arxiv:2604.25917, Yang et al.) — extends RLM to multi-agent via unified latent-space recursive computation. RecursiveLink modules (two-layer residual projections, inner+outer); inner-outer loop training. Reported +8.3% avg accuracy, 1.2-2.4× inference speedup, 34.6-75.6% token reduction across 9 benchmarks. Requires fine-tuning shared embedding spaces across roles — heavyweight for frozen GGUF mixed-architecture (Qwen/Gemma/Llama) stack.
 
@@ -3506,7 +3519,7 @@ Five papers spanning training-free latent collaboration, theoretical identifiabi
 
 **Thought Communication** (intake-556, arxiv:2510.20733) — theoretical identifiability framework: nonparametric recoverability of shared vs private thoughts between agent pairs. No engineering hook yet.
 
-**Sources**: [intake-544](https://arxiv.org/abs/2604.25917) RMAS · [intake-555](https://arxiv.org/abs/2511.20639) LatentMAS · [intake-556](https://arxiv.org/abs/2510.20733) Thought Communication · [intake-557](https://arxiv.org/abs/2505.16997) X-MAS · [intake-558](https://arxiv.org/abs/2604.08335) Dead Weights · [Deep-dive](../research/deep-dives/2026-05-19-latent-mas-cluster.md) · [X-MAS spike](../handoffs/active/x-mas-text-routing.md)
+**Sources**: [intake-544](https://arxiv.org/abs/2604.25917) RMAS · [intake-555](https://arxiv.org/abs/2511.20639) LatentMAS · [intake-556](https://arxiv.org/abs/2510.20733) Thought Communication · [intake-557](https://arxiv.org/abs/2505.16997) X-MAS · [intake-558](https://arxiv.org/abs/2604.08335) Dead Weights · [Deep-dive](../research/deep-dives/2026-05-19-latent-mas-cluster.md) · [X-MAS spike](../handoffs/active/routing-program.md#track-x-mas-text-routing)
 
 ## Code-as-Agent-Harness survey + Repo Prompt harness analysis (2026-05-25)
 
@@ -3516,11 +3529,11 @@ Deep dive of intake-607 (*Code as Agent Harness* survey, arxiv:2605.18747) + int
 - **Behavior-signature versioning for regression-safe self-improvement (§5.2.3 / §5.2.4).** We are *ahead* on scalar regression gating (quality floor, per-suite guard, auto-rollback, git reverts) but merge improvements *syntactically* — a new autopilot config can silently break a prior Pareto win. Prescription: attach a behavior signature (per-sentinel outcome hash/vector) to each archive member; differential-test new-vs-old in parallel and compare *behavior* not just aggregate score; flag semantic conflicts when two mutations touch the same subsystem. → autopilot `BSV-1/2/3`.
 - **Uncertainty-routed escalation with approval as harness state (§5.2.5).** A second escalation axis orthogonal to our quality Q-values: quantify decision *uncertainty*, route high-uncertainty decisions up, persist the approval/escalation decision as auditable harness state. → decision-aware-routing `URE-1/2/3`.
 - **Experiential memory = index *failed* trajectories for avoidance (§3.2.1 / §3.2.3).** Failures should be stored and *retrieved for pattern-matched avoidance*, not just logged (ExpeL / Evo-Memory / MemGovern); and working state should be *externalized* because LLMs fail at latent-state persistence. → unified-trace-memory `EXM-1/2/3`. The memory taxonomy (working / semantic / experiential / long-term / multi-agent) is a useful coverage checklist.
-- **Repo Prompt as a harness competitor (intake-605).** Reactive-vs-proactive context (see [context-management.md](context-management.md)) plus two edit-pipeline patterns sharp on CPU: **think-then-act batch editing** (emit one structured edit set, no interleaved tool calls → fewer prefill+decode round-trips) and **parallel apply fan-out** (cheap workers apply per-file concurrently, maps to our 32×6t NUMA split, +44–58%). → handoff [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) (BEP-1..5). **2026-05-27 update:** BEP-2's production fix shipped through edit-transaction mode, so the original batch-vs-interleaved A/B is optional provenance rather than the critical falsification gate. RP also exposes its MCP tools to *both* its own Context Builder sub-agent and external agents (one tool surface, two consumers), ships a first-class `oracle_send` escalation primitive (modes chat/plan/edit/review), and sandbox-before-disk reviewable patches with granular accept/reject.
+- **Repo Prompt as a harness competitor (intake-605).** Reactive-vs-proactive context (see [context-management.md](context-management.md)) plus two edit-pipeline patterns sharp on CPU: **think-then-act batch editing** (emit one structured edit set, no interleaved tool calls → fewer prefill+decode round-trips) and **parallel apply fan-out** (cheap workers apply per-file concurrently, maps to our 32×6t NUMA split, +44–58%). → handoff [`batched-edit-parallel-apply.md`](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) (BEP-1..5). **2026-05-27 update:** BEP-2's production fix shipped through edit-transaction mode, so the original batch-vs-interleaved A/B is optional provenance rather than the critical falsification gate. RP also exposes its MCP tools to *both* its own Context Builder sub-agent and external agents (one tool surface, two consumers), ships a first-class `oracle_send` escalation primitive (modes chat/plan/edit/review), and sandbox-before-disk reviewable patches with granular accept/reject.
 
 A concurrent competing survey ("Agent Harness for LLM Agents", Preprints 202604.0428, 110+ papers) confirms 607 `novelty:low` — the harness-survey cluster is saturated; the value is the actionable framings above, not the taxonomy itself.
 
-**Sources**: [intake-607](https://arxiv.org/abs/2605.18747) Code as Agent Harness · [intake-605](https://repoprompt.com/) Repo Prompt · [intake-244] Meta-Harness (in-flight) · handoffs [meta-harness-optimization](../handoffs/completed/meta-harness-optimization.md) HLE · [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) HLE-4/BSV · [decision-aware-routing](../handoffs/active/decision-aware-routing.md) URE · [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md) EXM · [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md) · [batched-edit-parallel-apply](../handoffs/active/batched-edit-parallel-apply.md) · intake_index.yaml intake-605/607 `deep_dive`
+**Sources**: [intake-607](https://arxiv.org/abs/2605.18747) Code as Agent Harness · [intake-605](https://repoprompt.com/) Repo Prompt · [intake-244] Meta-Harness (in-flight) · handoffs [meta-harness-optimization](../handoffs/completed/meta-harness-optimization.md) HLE · [autopilot-continuous-optimization](../handoffs/active/autopilot-program.md) HLE-4/BSV · [decision-aware-routing](../handoffs/active/routing-program.md) URE · [unified-trace-memory-service](../handoffs/active/memory-program.md#track-unified-trace-memory-service) EXM · [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) · [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) · intake_index.yaml intake-605/607 `deep_dive`
 
 ## Internal interaction lifecycle: A2A semantics, not transport (2026-05-31)
 
@@ -3534,7 +3547,7 @@ P2-0 discovery is complete: the first consult seam is `epyc-orchestrator/src/edi
 
 **2026-07-05 update**: P1 landed 2026-06-28 (`18956892`, byte-equal diagnostics proof + clean affinity preflight), and the whole P2 consult v1 — skill spec, schema-constrained `consult()`, cache-key namespacing, `log_consult()`, DCP-packer reuse via `dcp_for_consult` (`4183522f`), and the wired edit-transaction consult site behind `review_before_commit_consult` (`0e555822`) — is staged default-off. Live J17 behavior stays locked on the ≥48h bake (38.04h/48h as of 2026-07-05). Full detail in the 2026-07-05 New Findings section above.
 
-**Sources**: [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) · [`hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) intake-655 update · [`routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) subsystem row · `research/intake_index.yaml` intake-655 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+**Sources**: [`internal-interaction-lifecycle.md`](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) · [`hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) intake-655 update · [`routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) subsystem row · `research/intake_index.yaml` intake-655 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
 
 ## Intake deep-dives: Economy of Minds & RLM structured-output contracts (2026-06-12)
 
@@ -3544,7 +3557,7 @@ Two agent-architecture intake entries (intake-692, intake-693) were deep-dived; 
 
 **RLM structured-output contracts (intake-693, AVB/fast-rlm) — parent, batched-child, and single-delegate REPL schema contracts are shipped.** The pattern: forcing each subagent to return a JSON-Schema-constrained value (validated on `FINAL`) so the parent reads a typed flag instead of parsing prose — booleans act as an "external attention mask," cutting aggregator hallucination on fan-out. Mapping it to our code: the **parent** mechanism (schema-normalize → contract-at-REPL-step-0 → validate-on-`FINAL` → retry-with-errors) was already lifted from the same fast-rlm commits on **2026-05-20** under flag `final_schema_validation` (`src/features.py:134`; `_render_schema_preamble`/`_validate_final_answer`/`_format_validation_failure_message` in `src/graph/helpers.py:1266-1316`; 2-attempt retry at `repl_executor.py:549-565`). The batched child path shipped in `18b5ceb`, and the single-delegate REPL path shipped in `6426dd4`. Parallel delegation still rejects `schema=`, so any future child-schema work should be justified by fan-out-heavy eval evidence rather than reopening the shipped single-delegate/batch contract.
 
-Sources: [`research/deep-dives/2026-06-12-economy-of-minds.md`](../research/deep-dives/2026-06-12-economy-of-minds.md), [`research/deep-dives/2026-06-12-rlm-structured-output-contracts.md`](../research/deep-dives/2026-06-12-rlm-structured-output-contracts.md), [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md), [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md), intake-692/693.
+Sources: [`research/deep-dives/2026-06-12-economy-of-minds.md`](../research/deep-dives/2026-06-12-economy-of-minds.md), [`research/deep-dives/2026-06-12-rlm-structured-output-contracts.md`](../research/deep-dives/2026-06-12-rlm-structured-output-contracts.md), [`handoffs/active/autopilot-program.md`](../handoffs/active/autopilot-program.md), [`handoffs/active/benchmark-suites.md`](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract), intake-692/693.
 
 ## Agent-harness intake cluster — mostly-covered, three net-new deltas (2026-06-20)
 
@@ -3557,7 +3570,7 @@ A 2026-06-19 research-intake batch surfaced four agent-harness/delegation produc
 - **ruflo (intake-700, ex-Claude-Flow)** — every named primitive already covered (`strategy_store` + ReasoningBank memory, SiliconSwarm sharing, BT consensus, pi-agent-core hooks). Only net-new = zero-trust cross-machine federation (mTLS / ed25519 / PII-gating), **out-of-scope** for single-host single-user EPYC. Self-published 1.3×–1953× benchmarks are vendor observations, not decision-gating. Note the recent CWE-78 patch if its hook-shell surface is ever inspected.
 - **OpenRouter subagent server tool (intake-705)** — provider-hosted stateless scoped delegation (worker sees only `task_description`; model + per-request task cap pinned at configure time). EPYC's `src/api/routes/chat_delegation.py` already does this server-side in software (architect→specialist, role pinning, per-request loop/token caps, depth guard), and the batched structured-return contract shipped in commit `18b5ceb` (2026-06-14). **Real remaining delta: a cost-aware capable→cheaper-worker delegation MODE** — a capable model spending input-only tokens to hand a self-contained subtask *down* to a cheaper/faster worker under a per-request task cap. This is the one feature-mine worth carrying forward from the cluster.
 
-Sources: [intake-696](https://centaur.run/) · [intake-697](https://vercel.com/eve) · [intake-700](https://github.com/ruvnet/ruflo) · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) · [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster) · [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) (intake-705 / 18b5ceb update) · `research/intake_index.yaml` intake-696/697/700/705 · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`).
+Sources: [intake-696](https://centaur.run/) · [intake-697](https://vercel.com/eve) · [intake-700](https://github.com/ruvnet/ruflo) · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) · [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster) · [`handoffs/active/benchmark-suites.md`](../handoffs/active/benchmark-suites.md#track-tool-use-eval-contract) (intake-705 / 18b5ceb update) · `research/intake_index.yaml` intake-696/697/700/705 · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`).
 
 ## Architect→Reviewer control plane — dormant-machinery activation + 13-dive evidence base (2026-07-16)
 
@@ -3579,9 +3592,9 @@ Sources: [`handoffs/active/reviewer-control-plane-index.md`](../handoffs/active/
 
 Two adversarial-audit findings from the inference-batch campaign. Both are failure modes that PASSED the obvious validators (schema, lint, freshness) and were only caught by a second, deliberately-adversarial pass — so both generalize into standing gates for any agent-produced artifact.
 
-- **Command-fabrication: sub-agents that author execution commands from *semantic intent* produce plausible-but-ungrounded commands, and schema+lint cannot catch it — only `--help`/execution grounding can.** The consolidated inference-batch manifest (52 entries authored by four sub-agents) passed schema+lint, yet an adversarial command-audit found a large fraction of `execution.command` strings cited runners/flags/recipes that exist nowhere on disk (no `eval_tower.py replay` CLI = ~11 entries, no `bench_canonical.sh --recipe` flag = ~6, 7 missing helper scripts). Root cause: the agents wrote commands in a *plausible naming convention* from intent without grounding a single flag against `--help`; the YAML is well-formed, so structural validators are blind to it. The durable rule: **adversarial command-audit (execute or `--help`-check every authored command) is a required gate before an agent-generated command manifest is trusted** — an authored command is a hypothesis until a real binary accepts its flags. Companion rule: a **5-pass ground-truth-on-disk re-audit** (commands / provenance / preconditions / graph / committed-code) *localizes* fabrication rather than discarding all authoring work — here it confirmed the damage was confined to leaf command-strings (provenance ~98% grounded, 0 fabricated files, committed modules 0 stubs / ~440 tests green). Sources: [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
+- **Command-fabrication: sub-agents that author execution commands from *semantic intent* produce plausible-but-ungrounded commands, and schema+lint cannot catch it — only `--help`/execution grounding can.** The consolidated inference-batch manifest (52 entries authored by four sub-agents) passed schema+lint, yet an adversarial command-audit found a large fraction of `execution.command` strings cited runners/flags/recipes that exist nowhere on disk (no `eval_tower.py replay` CLI = ~11 entries, no `bench_canonical.sh --recipe` flag = ~6, 7 missing helper scripts). Root cause: the agents wrote commands in a *plausible naming convention* from intent without grounding a single flag against `--help`; the YAML is well-formed, so structural validators are blind to it. The durable rule: **adversarial command-audit (execute or `--help`-check every authored command) is a required gate before an agent-generated command manifest is trusted** — an authored command is a hypothesis until a real binary accepts its flags. Companion rule: a **5-pass ground-truth-on-disk re-audit** (commands / provenance / preconditions / graph / committed-code) *localizes* fabrication rather than discarding all authoring work — here it confirmed the damage was confined to leaf command-strings (provenance ~98% grounded, 0 fabricated files, committed modules 0 stubs / ~440 tests green). Sources: [inference-batch-loop.md](../handoffs/active/eval-tower-program.md#track-inference-batch-loop), [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [progress 2026-07-17](../progress/2026-07/2026-07-17.md).
 
-- **Derived-view incoherence: a freshness/age contract detects staleness but is structurally blind to VALUE-divergence, and atomic writes stop torn reads but NOT lost updates under concurrent read-modify-write.** After a prior "freshness contract" fix, the `:8000` autopilot dashboard went incoherent again. A 5-hypothesis adversarial root-cause found the freshness contract is only a read-layer AGE detector — it never compares source *values*, so two disagreeing-but-fresh representations both read "fresh" (H5, confirmed). The real divergence sources were concurrency, not staleness: **H4** — `autopilot_state.json` is rewritten by 5+ processes with per-write atomicity (`tmp`+`os.replace`) but ZERO mutual exclusion, so concurrent read-modify-write silently *loses updates* and state drifts from the append-only journal; **H2** — the earlier coherent-snapshot fix covered only the live-inference plane, so the four autopilot panels shared no snapshot epoch. Fixes: a `state_lock` cross-process **flock** + daemon control-field merge (H4), a shared `state_generation` **snapshot epoch** + `/autopilot_snapshot` endpoint (H2), and a **value-consistency divergence axis** added alongside the age axis (H5). H1 (non-atomic writes) and H3 (shard race) were refuted. Generalizable lesson: **coherence of derived views needs three independent guarantees — atomicity (torn-read safety), cross-process mutual exclusion (lost-update safety), and a shared snapshot epoch — plus a value-divergence check; an age/freshness contract supplies none of them.** Sources: [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md).
+- **Derived-view incoherence: a freshness/age contract detects staleness but is structurally blind to VALUE-divergence, and atomic writes stop torn reads but NOT lost updates under concurrent read-modify-write.** After a prior "freshness contract" fix, the `:8000` autopilot dashboard went incoherent again. A 5-hypothesis adversarial root-cause found the freshness contract is only a read-layer AGE detector — it never compares source *values*, so two disagreeing-but-fresh representations both read "fresh" (H5, confirmed). The real divergence sources were concurrency, not staleness: **H4** — `autopilot_state.json` is rewritten by 5+ processes with per-write atomicity (`tmp`+`os.replace`) but ZERO mutual exclusion, so concurrent read-modify-write silently *loses updates* and state drifts from the append-only journal; **H2** — the earlier coherent-snapshot fix covered only the live-inference plane, so the four autopilot panels shared no snapshot epoch. Fixes: a `state_lock` cross-process **flock** + daemon control-field merge (H4), a shared `state_generation` **snapshot epoch** + `/autopilot_snapshot` endpoint (H2), and a **value-consistency divergence axis** added alongside the age axis (H5). H1 (non-atomic writes) and H3 (shard race) were refuted. Generalizable lesson: **coherence of derived views needs three independent guarantees — atomicity (torn-read safety), cross-process mutual exclusion (lost-update safety), and a shared snapshot epoch — plus a value-divergence check; an age/freshness contract supplies none of them.** Sources: [inference-batch-loop.md](../handoffs/active/eval-tower-program.md#track-inference-batch-loop), [progress 2026-07-17](../progress/2026-07/2026-07-17.md), [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign).
 
 
 ## Adapter-protocol dispatch: presence vs None-ness (2026-07-25)
@@ -3609,8 +3622,8 @@ unroutable to a local endpoint. GEPA's string path builds its own wrapper callin
 litellm's resolution order falls through to `https://api.openai.com/v1`. Pass a **callable**
 carrying `api_base` instead.
 
-_Sources: `handoffs/active/autopilot-continuous-optimization.md` § 2026-07-25;
-`handoffs/active/intake-derived-work-2026-07-25.md` ID-1; `progress/2026-07/2026-07-25.md`._
+_Sources: `handoffs/active/autopilot-program.md` § 2026-07-25;
+`handoffs/active/frontier-lab-automation.md` ID-1; `progress/2026-07/2026-07-25.md`._
 
 ## Driving another agent's TUI is a transport with no delivery receipt (2026-07-28)
 
@@ -3656,7 +3669,7 @@ C9) were all the same shape: a query that could not be answered was treated as a
 missing inbox → drain succeeded, unreadable pane → nudge confirmed, failed window list → zero mains
 live. "I could not determine X" must return unknown and refuse, never an empty set or a zero.
 
-_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10–C15;
+_Sources: `handoffs/active/coordination-and-churn-pipeline.md` § M5 → C6, C9, C10–C15;
 `progress/2026-07/2026-07-28.md`; `scripts/coordination/tmux_adapter.py` (commits `8033f039`,
 `e0deeaf7`, `8cbe50c0`); `coordination/session-bus/tasks/bus-c6-verification-followup.md`._
 
@@ -3706,7 +3719,7 @@ fail. For each of the three: delete the echo → the predicate still passes (bad
 False → the test still passes (bad); run from the other path → the count changes (bad). Each was
 found by asking that question, not by reading the tests.
 
-_Sources: `handoffs/active/session-bus-thin-dispatcher.md` § M5 → C6, C9, C10, C14, C16, C19;
+_Sources: `handoffs/active/coordination-and-churn-pipeline.md` § M5 → C6, C9, C10, C14, C16, C19;
 `progress/2026-07/2026-07-28.md`; `progress/2026-07/2026-07-29.md`; commits `bf1adb94`, `536839d3`,
 `42884724`, `97955ac8`._
 
@@ -3741,7 +3754,7 @@ dimension, which parts of our Layer-B surface are **editable** versus
 > so "both propose a Harness Card" is a misattribution, and a misattribution in
 > the compiled KB is what a future reader will cite. `intake-1344#record`
 
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-6
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-6
 
 ### Re-targetability outranks per-model tuning (operator, 2026-07-29)
 
@@ -3751,7 +3764,7 @@ expresses run-level policy as an **editable natural-language document** with
 mechanisms in code ranks **above** a model-specific experience bank, even when
 the latter has the stronger headline numbers. Anything proposing to bake
 per-model behaviour into the harness is measured against this criterion first.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-7
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-7
 
 The measured reductions attached to the policy-as-document pattern —
 60.10k→2.90k tokens / 68→3 files; 47.50k→1.40k / 5→1; 10.50k→0.80k / 3→1 — are
@@ -3764,7 +3777,7 @@ score, so drift is measurable on saved traces and is deterministic-replay
 eligible. Their own red flag: **Information Handoff Recall drops to 0.32/0.55
 under parent-child execution even on a frontier model** — the exact topology our
 sub-agent delegation uses.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
 
 ### Capability versus harness — both halves or neither
 
@@ -3777,7 +3790,7 @@ support for the re-targetability position above. The previously relayed "~6×
 more bought by capability than architecture" reading was **wrong** — the figure
 behind it was the verification-minus-simplification margin, **one rung of the
 ladder**, not the architecture axis.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-12;
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-12;
 [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) §Records corrected
 
 ### "Present-but-uninstructed": a mechanism in a repo carries no measured result
@@ -3793,7 +3806,7 @@ its `config.json` is (see [Speculative Decoding](speculative-decoding.md)):
 **presence is not participation**. The pattern is still worth mining — pure
 Python, no GPU, no Docker — but as an implementable design we would have to
 measure ourselves.
-[`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) §Research Intake Update 2026-07-29
+[`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) §Research Intake Update 2026-07-29
 
 ### A merged fix and a running fix are different states
 
@@ -3825,7 +3838,7 @@ Corollaries recorded from the same arc:
   The wrong "fix" — treating an unreadable tmux as zero mains — hands out
   occupied slots.
 
-[`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) §C15/C17/C18/C20 and the post-reboot handover block
+[`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) §C15/C17/C18/C20 and the post-reboot handover block
 
 ### Model choice is not the lever for a protocol gap
 
@@ -3835,14 +3848,14 @@ the model-swap question on its back; the only thing pinned is *which artifact*
 to use **if** a coder-role A/B is ever authorized for other reasons — and even
 then, a spec-dec variant must not be bundled into a quality A/B, because that
 confounds two axes.
-[`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) §2026-07-29 rider
+[`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) §2026-07-29 rider
 
 ### Source References
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
-- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
-- [`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
-- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-6 (six/seven-dimension decomposition, Harness Card), HS-7 (re-targetability as a standing criterion), HS-8/HS-9 (policy-as-document reductions; open-weight interpretation unestablished), HS-12 (both halves of the capability-vs-harness figure)
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/coordination-and-churn-pipeline.md) — C18 liveness/observability polarity and the "warning needs a reader" second half; C20 fail-closed reboot dependency; C15 key-conflation hazard; C17 scope resolution
+- [`agent-world-env-synthesis.md`](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/benchmark-suites.md#track-multi-file-coding-completion-capability) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard
 
 ## A correct guard whose answer is discarded: composition, not the check, is the defect (2026-08-03)
@@ -3887,7 +3900,7 @@ untracked in a repo root where they read as authoritative. **The artifact that p
 the one most likely to be missing from version control**, because it is written in the moment of
 proving and never treated as deliverable.
 
-_Sources: `handoffs/active/contention-model-device-and-load-axes-rider.md`;
+_Sources: `handoffs/active/numa-placement-and-contention.md`;
 `progress/2026-08/2026-08-02.md`; epyc-root `scripts/hooks/install_git_hooks.sh` +
 `scripts/hooks/tests/test_precommit_wrapper.sh`; epyc-orchestrator `9e14c069`, `93e7f5a2`,
 `cd76de50`._
@@ -3987,8 +4000,8 @@ row ever written.
 nothing, and the only way to get one trial was to pass 1460 and already know the count. A
 too-small bound should be conservative, never a no-op.
 
-_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
-`handoffs/active/episodic-memory-integrity.md`; epyc-orchestrator `bc1da61f`, `5acd7214`,
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-program.md`;
+`handoffs/active/memory-program.md`; epyc-orchestrator `bc1da61f`, `5acd7214`,
 `c05bc415`._
 
 ## The defect class reproduces itself inside the sweep sent to fix it
@@ -4036,7 +4049,7 @@ A parallel sweep's reports are evidence to be checked, not results to be banked.
 (`"is the sole live writer"`) that was false. Reading the diff rather than the report is not
 pedantry — it is the only way the report's own defect class gets caught.
 
-_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-program.md`
 (§"Backlog sweep 2026-08-03"); epyc-orchestrator `7fd2dde5`, `8b79026e`; workflow run
 `wf_a44f600b-c02` (21 agents, 8 PARTIAL / 1 CONFIRMED)._
 
@@ -4077,7 +4090,7 @@ claim* usually is not.
   at the instant it printed. "I did X" and "X is true now" are different claims, and for shared
   mutable state only the second one matters.
 
-_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-program.md`;
 `scripts/autopilot/autopilot.py:5998-6037` (`save_state`, `_EXTERNAL_CONTROL_FIELDS`);
 `scripts/autopilot/state_lock.py`._
 
@@ -4106,7 +4119,7 @@ confirming the tests actually exercise the guard.
 **Generalizes past this one daemon**: whenever a violator's write path cannot be patched (untrusted
 caller, copied script, external process), put the check in the victim instead — a state-change-since
 comparison keyed to *this process's last write*, not to a static disk/memory diff.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the closed daemon-owned-state row.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the closed daemon-owned-state row.
 
 ## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
 
@@ -4114,8 +4127,8 @@ comparison keyed to *this process's last write*, not to a static disk/memory dif
 
 **Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
 adversarial audit of that catalogue, and an eight-phase implementation whose claims were
-mutation-tested. Sources: `handoffs/active/coordinator-role-failure-modes-and-refactor.md`,
-`handoffs/active/session-bus-thin-dispatcher.md`,
+mutation-tested. Sources: `handoffs/active/coordination-and-churn-pipeline.md`,
+`handoffs/active/coordination-and-churn-pipeline.md`,
 `progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
 
 ### The finding that reprices every "write it down better" fix
@@ -4241,9 +4254,9 @@ missing mechanism wearing a decision's clothes). The check that catches both is 
 
 ### Sources
 
-- `handoffs/active/coordinator-role-failure-modes-and-refactor.md` — the catalogue, the
+- `handoffs/active/coordination-and-churn-pipeline.md` — the catalogue, the
   adversarial audit, and the per-item closure evidence
-- `handoffs/active/session-bus-thin-dispatcher.md` — addressing, dispatch typing, worktree rider
+- `handoffs/active/coordination-and-churn-pipeline.md` — addressing, dispatch typing, worktree rider
 - `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
 - `progress/2026-08/2026-08-12-mainC.md` — an independent lane's account of the shared-clone cost
 
@@ -4269,10 +4282,10 @@ collapsing into one self-justifying channel.
 
 ### Source References
 
-- [AgentWorld environment synthesis](../handoffs/active/agent-world-env-synthesis.md)
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
-- [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
+- [AgentWorld environment synthesis](../handoffs/active/benchmark-suites.md#track-agent-world-env-synthesis)
+- [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Reviewer-model ablations](../handoffs/active/reviewer-control-plane.md#track-reviewer-model-ablations)
 - Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
 
 ## Compiled Update — 2026-08-13: our own fan-out doctrine has no negative condition, and neither does the literature that inspired it
@@ -4298,12 +4311,12 @@ that decomposition-by-role, rather than by context boundary, measurably shifts s
 coordination, none of which our rule encoded. **The operator ratified and applied the negative-condition
 amendment on 2026-08-13** (commit `541d5d4c`) — the rule now states when NOT to fan out, sourced to
 intake-1121, with width 3–5 unchanged. What remains open is the second half of the gap: (per
-`handoffs/active/session-bus-thin-dispatcher.md`'s own item) there is still no way to tell a main that
+`handoffs/active/coordination-and-churn-pipeline.md`'s own item) there is still no way to tell a main that
 actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
 (intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
 citable, the measurement is not — that detector is the open work in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md). Separately, a
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement). Separately, a
 controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
 returns from adding agents go structurally negative once a single agent already clears roughly 45%
 accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
@@ -4334,16 +4347,16 @@ success/failure oracle to do it: its induction pipeline is deliberately outcome-
 specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
 utilization, workflow depth) built from real transcript timestamps rather than the simulated,
 duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) rather than adopted
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) rather than adopted
 sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
 
 ### Source References
 
-- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
-- [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
-- [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — new stub filed this round to own the collector and grading work
+- [Session Bus + Thin Coordinator](../handoffs/active/coordination-and-churn-pipeline.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
+- [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — new stub filed this round to own the collector and grading work
 - [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
-- [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
+- [REPL Turn Efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
 
@@ -4358,7 +4371,7 @@ theorised.
 ### The compression metric was measuring the wrong unit — and the "we exceed the corpus maximum" claim is withdrawn
 
 Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
-[`agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md)):
+[`agent-file-prose-compression.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)):
 
 - **Denominate in WORDS, not lines.** External corpus evidence (intake-1199#record, re-derived from the
   authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
@@ -4433,7 +4446,7 @@ every invocation for every session, and it cannot express "self-runner ON PURPOS
 
 ### Source References (2026-08-23 compression + test conventions)
 
-- [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md)
+- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
   — AFC-P5.E5/E6: the words-not-lines correction and the exceeds-corpus-maximum withdrawal (measured
   2026-08-20).
 - [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
@@ -4455,7 +4468,7 @@ The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer
 
 ### Source References (2026-08-23 evening)
 
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
 
 ## Compiled Update — 2026-08-25: the fan-out doctrine gets its first measured number
 
@@ -4465,7 +4478,7 @@ The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows
 
 ### Source References (2026-08-25)
 
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
 
 ## Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
@@ -4490,24 +4503,24 @@ Both are now green, in both repos.
 - **A permanently-red check is worse than an absent one, because it occupies the slot where a working
   check would go.** The cost is not the red X; it is that the check's output is uncorrelated with the
   code, so nobody can learn anything from either state of it.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **When a check fails, ask what input it was given before asking what it found.** In both cases the
   assertion logic was correct and the subject was healthy; the defect was upstream, in what CI handed
   the check — a truncated clone in one, a missing interpreter dependency in the other. A shallow
   clone is the specific trap for any tool that reads git *history* rather than the working tree, and
   pickaxe-based freshness generators are exactly that class.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 - **Closing the hole is not the same as closing its shape.** Installing pytest fixed the red; it did
   not fix the fact that a suite running *fewer* assertions reports the same green. pytest exits 5 on
   zero collected, but a **partial** collapse exits 0. The follow-on was a declared per-suite floor
   asserted with `>=` rather than `==`, so the guard does not become a second thing to update on every
   added test — and the floor guard found two defects in itself on first run, including laundering a
   collection error into a plausible count by reading a number off a line it had not validated.
-  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ### Source References (2026-08-30, CI inputs)
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
 
 ## Compiled Update — 2026-08-31: a dashboard that remembers is a dashboard that lies later
@@ -4541,7 +4554,7 @@ source of truth had moved on — and were replaced with resolution (root `2a3881
 
 Sources:
 
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L4 and R21-1.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L4 and R21-1.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).
 
 ---
@@ -4575,7 +4588,7 @@ invoker's discipline.
 ### Source References (2026-08-31 evening)
 
 - Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
-- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L7, R21-L9.
+- [`handoffs/active/autokernel-loop.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-L7, R21-L9.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.
 
 
@@ -4624,7 +4637,7 @@ Key findings:
 
 ### Source References (2026-09-01)
 
-- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
   §OP-11 — the original options table and the 2026-09-01 closing banner.
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
   conflict-by-conflict resolution record and the push-guard mechanics.
@@ -4670,7 +4683,7 @@ state of that day. Re-verify before executing, because the safe command and the 
 differ by a flag that only becomes necessary once the tree has drifted dirty.
 
 **Sources**
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-3 (the
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — R21-3 (the
   retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record.
@@ -4736,7 +4749,7 @@ it — and what the clause adds is a **diagnosis order**: when a fan-out looks e
 measure the share of subagents whose output was never used, and only then consider the number of
 subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
 measurement is FM-5 (discarded-work accounting) in
-[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md).
+[`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement).
 
 **Sources**
 - [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
@@ -4749,7 +4762,7 @@ measurement is FM-5 (discarded-work accounting) in
   ratified width, and the ablation caveats.
 - [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
   bottleneck.
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-5, FM-6.
+- [`fleet-fanout-measurement.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-5, FM-6.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record and the ratification (`fb755192`).
 ## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
@@ -4825,10 +4838,10 @@ cheaper than the proof apparatus built to avoid it.
 - [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
   — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
   90-second / 3,869-line comparison, and the A/A noise-floor measurement.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-VIS-1 and
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-VIS-1 and
   AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
   `critic_revise` budget split.
-- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — P4.1 (2026-08-28),
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — P4.1 (2026-08-28),
   where the loop block was adopted as the program's normative spec, with the ratification recorded inline.
 - [`progress/2026-09/2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md)
   — the run-27 planner transient storm and the stdout/stderr capture fix in the addendum.
@@ -4844,7 +4857,7 @@ working tree the branch history never saw. The served dashboard tree produced a 
 
 **The mechanism.** The dashboard hub's served `main` was **45 commits behind and 1 ahead** of
 `origin/main`. Because it predates the origin commit that added
-`handoffs/active/autokernel-champion-aggregate.md`, that path existed on the served tree only as an
+`handoffs/active/kernel-champion-and-promotion.md`, that path existed on the served tree only as an
 **untracked, superseded 144-line draft**, while origin/main's tracked version had grown to **465 lines**.
 Git's own status vocabulary offers no way to tell that apart from a session's genuine work-in-progress
 sitting uncommitted at the same path: both render identically as "untracked file present."
@@ -4870,9 +4883,9 @@ happens to sit on.
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
   "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
   144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
-- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-DEPLOY-2,
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip) — AK-DEPLOY-2,
   filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+- [`autokernel-champion-aggregate.md`](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — the
   cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
   findings on that page.
 
@@ -4886,11 +4899,11 @@ Provider-owned inner loops remain provider-owned unless the protocol exposes a c
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md)
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md)
-- [Decision-aware routing](../handoffs/active/decision-aware-routing.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
-- [Autopilot continuous optimization](../handoffs/active/autopilot-continuous-optimization.md)
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration)
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane)
+- [Decision-aware routing](../handoffs/active/routing-program.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
+- [Autopilot continuous optimization](../handoffs/active/autopilot-program.md)
 
 **Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
 
@@ -4910,10 +4923,10 @@ never grants permission, and a valid model choice cannot execute a changed or un
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 owner and consumer boundary.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — deterministic conformance and receipt requirements.
-- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — selector and shadow consumers.
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md) — review-side prepared-action consumer.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 owner and consumer boundary.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and receipt requirements.
+- [Typed decision plane](../handoffs/active/routing-program.md#track-typed-decision-plane) — selector and shadow consumers.
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts) — review-side prepared-action consumer.
 
 **Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
 
@@ -4935,7 +4948,7 @@ planner's prior session.
 
 ### Source References
 
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — deployed components, direct-context measurement, scout gap, and store incident.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — deployed components, direct-context measurement, scout gap, and store incident.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign boundary and pending A/B.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — lifecycle and dedicated-worktree conventions.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — deployment chronology and measured timings.
@@ -4959,8 +4972,8 @@ contract therefore remains useful even if every learned selector eventually lose
 
 ### Source References
 
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 implementation and consumer map.
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — deterministic conformance and evidence-consumer boundary.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-TD-4 implementation and consumer map.
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md) — deterministic conformance and evidence-consumer boundary.
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective receipt projection without authority.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — landed orchestrator commit and 40-test validation.
 
@@ -5024,7 +5037,7 @@ because records bind it by digest.
 - [agent-loop-design → *Bringing up a new actor model or backend* and *Scratch disk is the flow's job*](../docs/guides/agent-workflows/agent-loop-design.md) — the checklist and the registry contract.
 - [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — §5/§6, the prevention list and where each is filed.
 - [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the rules the incident fed.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-29..OAB-32 acceptance criteria.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-29..OAB-32 acceptance criteria.
 - [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the ratify bundle and the decline of a second in-loop gate (INF-78 moves actors behind the orchestrator, which already gates agentic local-model use).
 
 
@@ -5043,7 +5056,7 @@ Two failed attempts earlier the same day each left a lesson:
 The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (the pin freeze), then the Phase-0 split into its own handoff, whose trigger is now met.
 
 ### Source References
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — P0.1–P0.5 closure, P0.4b/c, P0-split.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — P0.1–P0.5 closure, P0.4b/c, P0-split.
 - [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the §1 tag/pin correction.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the r1/r2/r3 narrative.
 
@@ -5080,9 +5093,9 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 ### Source References
 
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final: lessons and the derived-actionables sweep.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — HYG-5 (region-lock wording).
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — SSU-F9d.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 (region-lock wording).
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19 a/b/c, HS-1c, HS-4 P0.4 r1.
 - [master-handoff-index.md](../handoffs/active/master-handoff-index.md) — OP-63, OP-64, OP-65.
 
 
@@ -5105,11 +5118,11 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 ### Source References
 
 - [HS-19a linked subagents spec](../docs/design/hs19a-linked-subagents-20260927.md) — operator decisions, identity resolution, refusals, profile rules.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19a.1–.6, the live PASS and the S6 flush fix.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19a.1–.6, the live PASS and the S6 flush fix.
 - [2026-09-27 HS-19a progress](../progress/2026-09/2026-09-27-hs19a.md) — the stage-1 build record and test counts.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-33.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — SSU-F9d, SSU-F9e.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — HYG-5 ratified, NIB2-84.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-33.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — SSU-F9d, SSU-F9e.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-5 ratified, NIB2-84.
 - [2026-09-27 ak-ds41-main progress](../progress/2026-09/2026-09-27-ak-ds41-main.md) — § Disk, § Coordination.
 
 
@@ -5136,7 +5149,7 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 ### Source References
 
 - [HS-19 stage-2 dispatch design](../docs/design/hs19-stage2-dispatch-20260927.md) — §1 pipeline, §2 reuse table, §3 evidence, §4 OpenCode audit, §5–§10 the steps, §15 prior art.
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-19b/c/d boxes and their freeze markers.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-19b/c/d boxes and their freeze markers.
 - [Thesis experiment handoff](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the frozen list and the A0/A1/A2 arms.
 - [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the freeze decision.
 
@@ -5156,11 +5169,11 @@ The remaining Phase-0 steps are P0.4b (republish the Harness Card) and P0.4c (th
 
 ### Source References
 
-- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
+- [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-10 defect, fix, closure and planner check; HS-4 P4-pre tick and TE-1 progress; the P0.4b → P0.4c → P0-split queue.
 - [Harness selection completed sibling](../handoffs/completed/harness-selection-completed-through-2026-09-27.md) — where HS-1/2/3, Phase 0, HS-TD-4, HS-18 and HS-19a stage 1 now live.
-- [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md) — A-5 folded into SSU-F17, the RI-23a reconciliation note, SSU-F18, surface-manifest counts.
+- [model-stack-single-source-update-pipeline.md](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) — A-5 folded into SSU-F17, the RI-23a reconciliation note, SSU-F18, surface-manifest counts.
 - [Model-stack completed sibling](../handoffs/completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md) — closed SSU-F2/F3/F5/F9a/b/d/e/F12/F14/F15.
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-86..91, the renumbering, the tap purge record.
+- [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-86..91, the renumbering, the tap purge record.
 - [Non-inference backlog completed ledger](../handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md) — Round 1 and Round 2 closed items through 2026-09-27.
 
 
@@ -5229,11 +5242,11 @@ OAB-35 is verified: a regression test reproduces the crash on the old code.
 
 ### Source References
 
-- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — UFH-14: evidence, D1–D8, phases A-C.
+- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — UFH-14: evidence, D1–D8, phases A-C.
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C83, C95, C102, C103.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the C95 arm table, reasoning carry-over, the proxy defect.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
-- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35 root cause and fix, OAB-36.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-35 root cause and fix, OAB-36.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the serving evidence behind D5–D8.
 
 
@@ -5292,13 +5305,13 @@ The orchestrator added a FIFO ticket queue across role and global region locks p
 
 ### Source References
 
-- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — F12 results, contamination, offline A3/A4 status.
+- [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) — F12 results, contamination, offline A3/A4 status.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — observed arm counts and limits.
-- [Agent-collaboration R&D harness](../handoffs/active/agent-collab-rnd-harness.md) — proposed checkpoint-pruned allocation and support constraints.
+- [Agent-collaboration R&D harness](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness) — proposed checkpoint-pruned allocation and support constraints.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — shared-window interference and cleanup incidents; operational rules remain distinct from measured model results.
-- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
+- [Harness selection and integration](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — pinned OpenCode lifecycle signal behavior.
-- [AutoKernel unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — FIFO region-lock implementation status and gates.
+- [AutoKernel unified-surface program](../handoffs/active/autokernel-loop.md#track-autokernel-unified-surface-program) — FIFO region-lock implementation status and gates.
 - [AutoKernel disk hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md) — harness transcript/state retention boundary.
 
 ## Compiled Update — 2026-10-06: future launcher references and retained reports cross ownership boundaries
@@ -5314,11 +5327,11 @@ Delegation's compact loop telemetry and user-visible report are separate product
 - [Cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) — future references, protected harness state and the narrow exception.
 - [Handoff index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives) — scratch boundaries and load-bearing markers.
 - [GitNexus compute claims](../docs/reference/gitnexus-compute-claims.md) — point-in-time admission and original native control counts.
-- [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP-13a/b source acceptance and remaining inference arms.
+- [Delegation context preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — DCP-13a/b source acceptance and remaining inference arms.
 
 ## Source update — 2026-10-06: detector/fixer topology design
 
-[HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-escalation-and-human-gate-policy.md).
+[HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy).
 
 
 ## 2026-10-06 provisional conversation shadow contract
@@ -5410,7 +5423,7 @@ The [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) re
 
 ### Source References
 
-- [Integration coverage](../handoffs/active/integration-test-coverage.md) — focused slices and standing-rule scope.
+- [Integration coverage](../handoffs/active/engineering-hygiene-backlog.md#track-integration-test-coverage) — focused slices and standing-rule scope.
 - [Registry source/attestation](../artifacts/ni08/registry-banner-override-source-20261007/README.md) — exact97-case evidence and narrower accepted tasks.
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current boundaries and free-work queue.
 
@@ -5429,19 +5442,19 @@ Four further harness-evolution papers sit in a primary-read queue with only Stag
 
 ### Source References (2026-10-20 agent-architecture delta)
 
-- [Harness improvement loop](../handoffs/active/harness-improvement-loop.md) — HIL-7, HIL-8 and the primary-read queue.
-- [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md) — the DCP-6 matched on/off design HIL-7 mirrors, and its default-off status.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
+- [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-7, HIL-8 and the primary-read queue.
+- [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — the DCP-6 matched on/off design HIL-7 mirrors, and its default-off status.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — a second harness-adjacent consumer of pre-declared bake-off rules.
 - [Wrap-up intake progress note](../progress/2026-10/2026-10-20-wrapup-intake-20261020.md) — verification that the filed IDs resolve and that HIL-8 is the only flip.
 
 ## Compiled Update — 2026-10-21 (sweep 3): the harness-cluster intake adds an isolation and reporting contract to the improvement loop
 
-- The 2026-10-20 harness-cluster intake (operator-approved; plan sha256 `1dc83054...3f3967`, applied 2026-10-21) extended the HIL-2 pre-first-suite-run checklist from six to twenty-two items. Item 7 requires executor and proposer isolation from answer keys and labels: egress blocked to answer-key and benchmark-data hosts (or a no-egress sandbox), the AP-54 eval fence armed on both arms, a marker/path tripwire on every context handed to the proposer and every persisted lesson, a seeded decoy-rubric canary that must never reach proposer context, and a proposer trajectory view that carries no success, score or judge claim. Item 12 requires that every model-invoked feature record a mechanical invocation rate per consuming model (a null is evidence about content only when the feature was invoked) and that arms containing deterministic code report the share answered with no model call and be labelled solver/router arms, not model-capability claims. Item 10 holds the "peak and rollback" harness-growth criterion as a hypothesis until a powered run exists. ([design doc](../docs/design/harness-improvement-loop-design-20261006.md), [HIL handoff](../handoffs/active/harness-improvement-loop.md), HIL-9, 2026-10-20)
-- HIL-11 records the HIL-6 pilot requirements as design text only (the 2026-09-16 deferment on running a loop stands): at least two cycles with an arriving split between them, a stalled round 2 counted as a KEEP_BASE outcome rather than a failure, and a one-cycle gain explicitly not evidence that the loop compounds. HIL-10 adds an evidence note to the HIL-4 decision package without selecting an option; the primary-read queue was closed for intake-1995, 1999 and 2008, while intake-1992 stays Stage-1-only by operator ruling. ([HIL handoff](../handoffs/active/harness-improvement-loop.md), HIL-10/11, M14)
-- Delegation: DCP-14 is a zero-inference propagation audit joining parent and child prompts on `parent_request_id` in the inference-tap events, reporting per role the share of parent format constraints, option lists, ids and output schema that reach the worker input with a rule-based detector fixed before the run; delegation-arm tuning (M12) waits for it. ([DCP handoff](../handoffs/active/delegation-context-preassembly.md), 2026-10-20)
-- PromptForge: MHS-13/14 specify (spec only, no run) a scoped-propose-plus-KEEP_BASE composer and optional falsifiability fields on the `PromptMutation` record (trigger condition, predicted fixed/at-risk tasks, attribution signature, no-trigger control slice, activation beacon). ([MHS contract](../handoffs/active/promptforge-mutation-safety-contract.md), 2026-10-20)
+- The 2026-10-20 harness-cluster intake (operator-approved; plan sha256 `1dc83054...3f3967`, applied 2026-10-21) extended the HIL-2 pre-first-suite-run checklist from six to twenty-two items. Item 7 requires executor and proposer isolation from answer keys and labels: egress blocked to answer-key and benchmark-data hosts (or a no-egress sandbox), the AP-54 eval fence armed on both arms, a marker/path tripwire on every context handed to the proposer and every persisted lesson, a seeded decoy-rubric canary that must never reach proposer context, and a proposer trajectory view that carries no success, score or judge claim. Item 12 requires that every model-invoked feature record a mechanical invocation rate per consuming model (a null is evidence about content only when the feature was invoked) and that arms containing deterministic code report the share answered with no model call and be labelled solver/router arms, not model-capability claims. Item 10 holds the "peak and rollback" harness-growth criterion as a hypothesis until a powered run exists. ([design doc](../docs/design/harness-improvement-loop-design-20261006.md), [HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-9, 2026-10-20)
+- HIL-11 records the HIL-6 pilot requirements as design text only (the 2026-09-16 deferment on running a loop stands): at least two cycles with an arriving split between them, a stalled round 2 counted as a KEEP_BASE outcome rather than a failure, and a one-cycle gain explicitly not evidence that the loop compounds. HIL-10 adds an evidence note to the HIL-4 decision package without selecting an option; the primary-read queue was closed for intake-1995, 1999 and 2008, while intake-1992 stays Stage-1-only by operator ruling. ([HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop), HIL-10/11, M14)
+- Delegation: DCP-14 is a zero-inference propagation audit joining parent and child prompts on `parent_request_id` in the inference-tap events, reporting per role the share of parent format constraints, option lists, ids and output schema that reach the worker input with a rule-based detector fixed before the run; delegation-arm tuning (M12) waits for it. ([DCP handoff](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), 2026-10-20)
+- PromptForge: MHS-13/14 specify (spec only, no run) a scoped-propose-plus-KEEP_BASE composer and optional falsifiability fields on the `PromptMutation` record (trigger condition, predicted fixed/at-risk tasks, attribution signature, no-trigger control slice, activation beacon). ([MHS contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract), 2026-10-20)
 
-Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md); [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md); [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md); [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md); [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md).
+Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md); [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop); [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly); [promptforge-mutation-safety-contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract); [stage-4 progress](../progress/2026-10/2026-10-21-harness-intake-stage4.md).
 
 ## Compiled Update — 2026-10-21 (sweep 5): the L2 failure scan meets real traces, and the traces turn out to lack steps
 
@@ -5470,7 +5483,7 @@ Sources: [design doc](../docs/design/harness-improvement-loop-design-20261006.md
   The AHE evidence row (`intake-1132#record`) was corrected in two places. Its regression prediction is about 2x random (precision 11.8% and recall 11.1%, against random 5.6% and 5.4%), not "near random". The k=2 pass rule was added to its caveats.
 - **Smaller closures.** DCP-17 adds report-only sub-ask enumeration columns to the DCP-14 detector; the fixture reads 3 / 2 / 2. CME-7's CL-Bench local-endpoint adapter is built (research `b4c0c6b48`). The same-shape shims for SkillGenBench, AutoSkill, AgentBreeder and the safety-under-scaffolding repository are recorded as M27 build-cost items. A missing local-endpoint path is a build cost, not a reason to decline.
 
-Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.md), [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md), [Progress dpf-hil](../progress/2026-10/2026-10-21-dpf-hil.md), [Progress hil13a](../progress/2026-10/2026-10-21-hil13a.md), [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
+Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md), [Progress dpf-hil](../progress/2026-10/2026-10-21-dpf-hil.md), [Progress hil13a](../progress/2026-10/2026-10-21-hil13a.md), [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [Conversational memory eval instrument](../handoffs/completed/conversational-memory-eval-instrument.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 
@@ -5482,33 +5495,33 @@ Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.
 - **Turn-1 grammar default `off` is live** since the 14:59:25Z API reload; the 14-day classification clock earliest ends 2026-11-06T15:00Z.
 - **Dev-harness mining DHM-4: operator chose a 30-item pilot first**, then the remaining 70 only if categories separate (`REVISE_CATEGORIES` if `other` > 25% or any label used < 2 times).
 
-Sources: [Harness improvement loop](../handoffs/active/harness-improvement-loop.md), [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [Dev-harness trace mining](../handoffs/active/dev-harness-trace-mining.md)
+Sources: [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [Dev-harness trace mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 
 
 ## Compiled Update — 2026-10-27: separate merged actor guards from registration-only recovery
 
 **Confidence: verified** for the owner-confirmed source merges and native registration record. OAB-30's continuation-after-keep fixture and INF78's per-file code-budget ratchet are merged and owner-confirmed. Separately, the ORCH recovery result proves native registration only (20 entries, 19 unchanged, 3,804 hashes, 0 mismatches); consumer query was NOT_RUN and risk NOT_ASSESSED. T1-A's same-entry process-limit gate is accepted on a private pushed branch, not canonically merged or deployed. Keep these as separate gates: code merge, native registration, and same-entry launch acceptance do not imply consumer execution or deployment.
 
-Sources: [actor-backend handoff](../handoffs/active/autokernel-orchestrator-actor-backend.md); [non-inference WS58 checkpoints](../handoffs/active/non-inference-backlog.md); [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md).
+Sources: [actor-backend handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend); [non-inference WS58 checkpoints](../handoffs/active/engineering-hygiene-backlog.md); [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [WS58 results harvest](../progress/2026-10/2026-10-27-workspace-58.md).
 
 
 ## Compiled Update — 2026-10-27: resource admission evidence
 
 A focused process-limit proof distinguishes the process address-space ceiling from the row RAM reservation: the same-entry fixture passed with a 176 GiB process limit against a 192 GiB reservation, refused an 8 GiB ceiling for the declared 176 GiB process limit, and refused 193 GiB above the 192 GiB reservation. These are separate checks; a focused preflight pass establishes readiness only for its scoped entry and does not book or replay a workload. The KPF R14 attempt also exposed ordering: the grant must exist before creating the writer/arm, otherwise the writer can wait on a grant that the same transaction has not yet created; at the 08:32Z cutoff the first armed attempt was unplaceable and recovery was still required. The later scoped C5 checks establish row validation and grant admission only; no graph query or full CPU replay is claimed.
 
-Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [C5 graph handoff](../handoffs/active/speculative-decoding-mtp-refresh.md).
+Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention); [C5 graph handoff](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for test counts and accepted sources; nothing here is merged-to-main or deployed unless stated.
 
-- **The audit's root causes (17 units, 382 findings).** First, there was no feedback loop: the orchestrator suite could only run on the production host, there was no orchestrator CI, and the AutoKernel guards workflow was disabled after 168 red runs (476 failed + 87 errors on 2026-10-07, about 42% real regressions). Second, growth without deletion: insertions outran deletions about 10:1, and AutoKernel grew from a 3,450-LOC loop budget to 95,260 code lines. Third, copy-paste drift: duplicated lanes and helpers had already diverged into real bugs. ([audit progress](../progress/2026-10/2026-10-24-refactor-audit.md); [audit checkpoint](../progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md); [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md))
-- **Reviewed source packages (private branches, candidate review only):** O3 config/registry (548 checks; concurrent registry-load backoff 12 attempts -> 1); O4 REPL correctness (557 tests, 8 parent negative controls fail as expected); O6 scripts cleanup (190 launcher + 395 coverage tests, four 100% floors); P1 autopilot loop (19 focused / 561 broad); P2 safety gate (1,018 tests); P3 actions/planner/journal; K2 AutoKernel guards C4-08 (fail-closed resolved-path containment), C4-16 (exact Fraction quantile ceiling: legacy Decimal 11 vs exact 12) and C3-02 (no stdlib `resource` shadowing). ([refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md); [REPL validation](../progress/2026-10/2026-10-25-repl-validation-01a16fc3.md); [K2 guards](../progress/2026-10/2026-10-25-k2-guards-01a16fc3.md); [O6 checkpoint](../progress/2026-10/2026-10-25-cleanup-validation-01a16fc3.md))
-- **Integration candidate `85195511`:** 2,897 passed, 8 skipped, 0 failed of 2,905 against immutable base `84f6f6f1`, with all four coverage floors at 100%. The O8 CI strict-collection parity proof is 20,658 baseline / 20,666 candidate (0 removed, 8 intended additions). The B2 full baseline is 31 failed / 20,517 passed. These validate one private candidate, not a merge. ([10-26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md); [10-25 checkpoint](../progress/2026-10/2026-10-25-refactor-next-packages-checkpoint-01a16fc3.md); [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md))
+- **The audit's root causes (17 units, 382 findings).** First, there was no feedback loop: the orchestrator suite could only run on the production host, there was no orchestrator CI, and the AutoKernel guards workflow was disabled after 168 red runs (476 failed + 87 errors on 2026-10-07, about 42% real regressions). Second, growth without deletion: insertions outran deletions about 10:1, and AutoKernel grew from a 3,450-LOC loop budget to 95,260 code lines. Third, copy-paste drift: duplicated lanes and helpers had already diverged into real bugs. ([audit progress](../progress/2026-10/2026-10-24-refactor-audit.md); [audit checkpoint](../progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md); [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10))
+- **Reviewed source packages (private branches, candidate review only):** O3 config/registry (548 checks; concurrent registry-load backoff 12 attempts -> 1); O4 REPL correctness (557 tests, 8 parent negative controls fail as expected); O6 scripts cleanup (190 launcher + 395 coverage tests, four 100% floors); P1 autopilot loop (19 focused / 561 broad); P2 safety gate (1,018 tests); P3 actions/planner/journal; K2 AutoKernel guards C4-08 (fail-closed resolved-path containment), C4-16 (exact Fraction quantile ceiling: legacy Decimal 11 vs exact 12) and C3-02 (no stdlib `resource` shadowing). ([refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10); [REPL validation](../progress/2026-10/2026-10-25-repl-validation-01a16fc3.md); [K2 guards](../progress/2026-10/2026-10-25-k2-guards-01a16fc3.md); [O6 checkpoint](../progress/2026-10/2026-10-25-cleanup-validation-01a16fc3.md))
+- **Integration candidate `85195511`:** 2,897 passed, 8 skipped, 0 failed of 2,905 against immutable base `84f6f6f1`, with all four coverage floors at 100%. The O8 CI strict-collection parity proof is 20,658 baseline / 20,666 candidate (0 removed, 8 intended additions). The B2 full baseline is 31 failed / 20,517 passed. These validate one private candidate, not a merge. ([10-26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md); [10-25 checkpoint](../progress/2026-10/2026-10-25-refactor-next-packages-checkpoint-01a16fc3.md); [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10))
 - **Validation runners can fail on their own ordering.** P1's record says `hash=1` FAIL because `run-validation.sh` compared hashes before writing the after-hash; acceptance used independent unchanged-byte proof instead of a rerun. Three earlier scorer failures were a test-fixture `sys.modules` leak, not a production defect. ([loop acceptance](../progress/2026-10/2026-10-25-loop-acceptance-closeout.md); [O6 checkpoint](../progress/2026-10/2026-10-25-cleanup-validation-01a16fc3.md))
-- **Retirements on the candidate branch:** the orchestrator `question_pool.py` shadow plus its v1 importer, and the deprecated orchestrator v1 tree; research stays canonical. ([eval-tower-architecture-audit-2026-07-20](../handoffs/active/eval-tower-architecture-audit-2026-07-20.md); [learned-routing-controller](../handoffs/active/learned-routing-controller.md); [root integration](../progress/2026-10/2026-10-24-root-integration-01a16fc3.md))
+- **Retirements on the candidate branch:** the orchestrator `question_pool.py` shadow plus its v1 importer, and the deprecated orchestrator v1 tree; research stays canonical. ([eval-tower-architecture-audit-2026-07-20](../handoffs/active/eval-tower-program.md#track-eval-tower-architecture-audit-2026-07-20); [learned-routing-controller](../handoffs/active/routing-program.md#track-learned-routing-controller); [root integration](../progress/2026-10/2026-10-24-root-integration-01a16fc3.md))
 
-Sources: [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md), [audit progress](../progress/2026-10/2026-10-24-refactor-audit.md), [resume](../progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md), [10-25 checkpoint](../progress/2026-10/2026-10-25-refactor-checkpoint-01a16fc3.md), [10-26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md), [Codex NI 0758](../progress/2026-10/2026-10-26-codex-ni-01a16d6b-0758.md)
+Sources: [refactoring-multirepo-2026-10](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [audit progress](../progress/2026-10/2026-10-24-refactor-audit.md), [resume](../progress/2026-10/2026-10-24-refactor-resume-01a16fc3.md), [10-25 checkpoint](../progress/2026-10/2026-10-25-refactor-checkpoint-01a16fc3.md), [10-26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md), [Codex NI 0758](../progress/2026-10/2026-10-26-codex-ni-01a16d6b-0758.md)
 
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
@@ -5516,13 +5529,13 @@ Sources: [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirep
 
 HIL-15b’s native pilot had started by 14:07Z and remained partial at the cutoff, with no aggregate verdict. UFH-12 R3 validated a private copy with 65,942 vectors and 32 TaskEmbedder queries (minimum cosine 1.0 against strict 0.99999), but no production adoption occurred.
 
-Sources: [HIL-15](../handoffs/active/harness-improvement-loop.md) · [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [HIL-15](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [UFH-12](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
 
 ## Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): owner-watcher handoffs and IPC priority
 
 The 16:20Z owner close recorded four queue/placement misses: a DF2 resume watcher left the FILLERS PID stale; a Q38 admission used a global checker with a local engine; a CT21-after-R15 watcher exited before updating FILLERS and the queue; and the quarter writer placed the INF-75 canary on 48–71 while a DF2 download held q2. These are observed incident details, not a ratified process change. Separately, native inspection of the running Claude Code 2.1.306 binary verified that routine approved notices sent with priority `now` can interrupt an active tool, while `next` queues. The tested v2 helper sent one notice with `next`; its local receipt is socket-sent, while consumption remains pending. This does not establish the cause of every prior cancellation or authorize altering operator STOP instructions.
 
-Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md); [owner watcher notes](../.claude/skills/inference-backlog-scheduling/references/owner-watchers.md); [non-inference backlog](../handoffs/active/non-inference-backlog.md)
+Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md); [owner watcher notes](../.claude/skills/inference-backlog-scheduling/references/owner-watchers.md); [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-27)
 
@@ -5532,32 +5545,32 @@ Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [C
 - **Parallel parser dispatch:** twenty PIP-02 ODL replacement shards request up to twelve workers (two distinct CPUs and a sidecar port each) with a 96 GiB RSS guard and owned-subtree cleanup; a control drained in 29.92 s. This proves launcher entry and cleanup, not twelve-worker throughput.
 - **PROFILE-6 stayed unrun:** free space fell below the 150 GiB floor and the native profiler has no verified aggregate write cap, so no smoke reservation was qualified.
 
-Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md).
+Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/coordination-and-churn-pipeline.md).
 
 ## Compiled Update — 2026-10-30 (operator wiki sweep, workspace-58): worktree disk emergency and agent-side repairs
 
 **Confidence: verified** (progress records and checked backlog boxes); causal remarks are marked inferred.
 
-- **Disk fell to the 150 GiB floor and every run was held; the root cause was git worktrees.** 561 trees held 471 GiB because Codex sessions create one checkout per task or smoke and rarely land or remove them. The `.partial` files were hardlinks, so deleting them freed only 1 GiB. Triage removed 4 trees and promoted 4 docs-only branches; `worktree_gate.py` removed 66 clean+landed trees at a 1-day idle threshold; renaming 61 obsolete launchers to `*.sh.retired-20261030` (operator-approved) freed 9 more. Free space went from 151 to 371 GiB. About 67 content-safe trees stay blocked by `.env`/`.bash`/campaign-input references and age out around 11-20 to 11-27. Per-owner split: refactor 60 trees / 42 GiB, NI 35 / 23.5 GiB, other 318 / 264 GiB. ([workspace-58 log](../progress/2026-10/2026-10-30-workspace-58.md); [non-inference-backlog](../handoffs/active/non-inference-backlog.md) LOOP-35, LOOP-39, LOOP-41)
+- **Disk fell to the 150 GiB floor and every run was held; the root cause was git worktrees.** 561 trees held 471 GiB because Codex sessions create one checkout per task or smoke and rarely land or remove them. The `.partial` files were hardlinks, so deleting them freed only 1 GiB. Triage removed 4 trees and promoted 4 docs-only branches; `worktree_gate.py` removed 66 clean+landed trees at a 1-day idle threshold; renaming 61 obsolete launchers to `*.sh.retired-20261030` (operator-approved) freed 9 more. Free space went from 151 to 371 GiB. About 67 content-safe trees stay blocked by `.env`/`.bash`/campaign-input references and age out around 11-20 to 11-27. Per-owner split: refactor 60 trees / 42 GiB, NI 35 / 23.5 GiB, other 318 / 264 GiB. ([workspace-58 log](../progress/2026-10/2026-10-30-workspace-58.md); [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) LOOP-35, LOOP-39, LOOP-41)
 - **Codex lane retirements preserved evidence before removal.** The NI worktree retirement removed 10 task trees (~3.30 GiB by `du`; paired `df` deltas are shared-volume samples, not exclusive attribution); the ROOT NI pass removed 68/68 `codex-ni*` trees, all through `worktree_gate.py` with no force/prune/gc. Original heads are kept under `refs/retirement/20261030-root-ni/*`, branch refs are retained, and dirty/untracked bytes are archived with hashes. A separate pass sparsely omitted duplicate tracked artifact views from 33 clean, landed NI worktrees (11,195,887,616 bytes reclaimed on the 30 sampled), leaving 157.3 GiB free. ([worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md); [root legacy retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md); [daily log](../progress/2026-10/2026-10-30.md))
 - **Idle Codex sessions ("Goal stalled") were reached through tmux send-keys** (windows agent:2 NI, agent:3 refactor, agent:4 codex3) and all returned to "Pursuing goal". The standing order is that each session cleans its own worktrees when its task lands. Automating detection and nudging is open (LOOP-38), as is a per-owner worktree-size scoreboard (LOOP-37).
 - **Keeper v6 is live** (relocatable rows plus code-vaulting idle reap; pin committed on main, 49ec30c39). INF-12 r11 had been blocked by the reap gate's `log_consumer` rule; the field was added and the row armed (LOOP-36). ai-sessions backups (3 x ~9 GB nightly) await an operator retention decision (LOOP-40).
 - **Scorer quality priors are live-only.** `_baseline_quality_by_role()` excludes records not marked `live_stack` (one measured non-live record, `qwen36_35b_a3b_mtp_q8_local`, was affected); direction and 0.75 reference unchanged, 102 q_scorer/q_reward tests passed, no live reload. ([daily log](../progress/2026-10/2026-10-30.md), orchestrator commit 0815be05e)
 - **P6.7 closed:** `/api/loop/health` now folds the loop verdict with the operator-gate bundle's five-state verdict (`relevant`->ok, `absent`->absent, others->degraded); the global `/api/health` is unchanged and nothing was deployed. **D-f3a** graph-snapshot retention (100 runs x 100 rows) is implemented and published but stays unchecked pending live-volume confirmation with D-f1.
 
-Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [NI worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md), [ROOT NI retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md), [non-inference-backlog](../handoffs/active/non-inference-backlog.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md)
+Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [NI worktree retirement](../progress/2026-10/2026-10-30-codex-ni-worktree-retirement.md), [ROOT NI retirement](../progress/2026-10/2026-10-30-codex-ni-root-legacy-retirement.md), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md), [autokernel-rebuild-program](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the recorded native counts (small, partial diagnostics); no EVL-34 Step 3, PAW-3 or HIL-15b parent gate closed, and every comparison below is descriptive.
 
-- **REPL vs ReDel: naturally unforced delegation is real, but no completed delegation-positive A/B exists.** R10 (20 cells) gave exact match REPL 4/10, ReDel 3/10 with zero delegation, verdict INCONCLUSIVE_NO_DELEGATION. In the R11 v6 pilot the registered delegation predicate held in 7/10 ReDel cases (OBSERVED_DELEGATION_NEEDS_AB), but ReDel completed only 4/10 (EM 0/4 known, bounds 0-6/10) and REPL 0/10. Four cases exhausted the aggregate child reservation, one hit a 2 MiB journal bound, one had invalid tool-call JSON. Unknown is not wrong; Step 3 stays open. ([source](../handoffs/active/rao-redel-substrate-spike.md))
-- **R11 cannot be called single-source.** The shared orchestrator checkout fast-forwarded mid-pilot (22:32:07Z during a 21:54-22:36 run) and per-cell imported code versions were not captured, so EM and event counts are located observations, not a reproducible comparison. The v7 successor (DeepDive 39-48) binds an independent lane and rechecks the readset before each exposure; budget is 128 root plus 256 child calls with 4096 reserved output tokens per call, READY only. ([source](../handoffs/active/rao-redel-substrate-spike.md))
-- **PAW compiled specialists: standard arm scores higher than compact on matched A, descriptively.** On the same 64 task/case inputs, exact decoded-output match was 57/64 standard vs 48/64 compact (both right 45, standard only 12, compact only 3, neither 4); standard B alone scored 61/72 and the superlative control binary 8/8, semantic 7/8. All SDK finish reasons are UNKNOWN (truncation not excluded) and the standard-A run's final source check failed (rc1) before offline finalization, so provenance is limited; no PAW-3 or significance verdict. ([source](../handoffs/active/paw-compiled-specialists.md))
+- **REPL vs ReDel: naturally unforced delegation is real, but no completed delegation-positive A/B exists.** R10 (20 cells) gave exact match REPL 4/10, ReDel 3/10 with zero delegation, verdict INCONCLUSIVE_NO_DELEGATION. In the R11 v6 pilot the registered delegation predicate held in 7/10 ReDel cases (OBSERVED_DELEGATION_NEEDS_AB), but ReDel completed only 4/10 (EM 0/4 known, bounds 0-6/10) and REPL 0/10. Four cases exhausted the aggregate child reservation, one hit a 2 MiB journal bound, one had invalid tool-call JSON. Unknown is not wrong; Step 3 stays open. ([source](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike))
+- **R11 cannot be called single-source.** The shared orchestrator checkout fast-forwarded mid-pilot (22:32:07Z during a 21:54-22:36 run) and per-cell imported code versions were not captured, so EM and event counts are located observations, not a reproducible comparison. The v7 successor (DeepDive 39-48) binds an independent lane and rechecks the readset before each exposure; budget is 128 root plus 256 child calls with 4096 reserved output tokens per call, READY only. ([source](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike))
+- **PAW compiled specialists: standard arm scores higher than compact on matched A, descriptively.** On the same 64 task/case inputs, exact decoded-output match was 57/64 standard vs 48/64 compact (both right 45, standard only 12, compact only 3, neither 4); standard B alone scored 61/72 and the superlative control binary 8/8, semantic 7/8. All SDK finish reasons are UNKNOWN (truncation not excluded) and the standard-A run's final source check failed (rc1) before offline finalization, so provenance is limited; no PAW-3 or significance verdict. ([source](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists))
 - **Most PAW launches failed as harness/admission, not capability.** Compact A/B and the superlative control hit rc127 (host could not exec the region-lock path); standard A lost admission after 7 of 8 program checkpoints; compact B lost admission with task 18's generation outcome unknown. The failed predicate is unrecorded in every admission case, and host-qualified successors followed. ([source](../progress/2026-10/2026-10-31-paw-host-qualified.md))
-- **HIL-15b collections end with unknowns preserved.** HIL-15b heavy units 05-20 exhausted as 44 known / 4 unknown / 0 unexposed of 48 (25 observed passes, descriptive bounds 25-29/48); S0 ended 41 known / 4 unknown of 45 and S2 sits at 18/2/25. The R9 rc1 was a validator bug (it demanded dependency-bearing AUC tables from cases that correctly report n_runs=0), repaired offline. Dependency efficacy, difficulty band and HIL-16a/18a gates remain open. ([source](../handoffs/active/harness-improvement-loop.md))
+- **HIL-15b collections end with unknowns preserved.** HIL-15b heavy units 05-20 exhausted as 44 known / 4 unknown / 0 unexposed of 48 (25 observed passes, descriptive bounds 25-29/48); S0 ended 41 known / 4 unknown of 45 and S2 sits at 18/2/25. The R9 rc1 was a validator bug (it demanded dependency-bearing AUC tables from cases that correctly report n_runs=0), repaired offline. Dependency efficacy, difficulty band and HIL-16a/18a gates remain open. ([source](../handoffs/active/harness-program.md#track-harness-improvement-loop))
 
-Sources: [rao-redel-substrate-spike](../handoffs/active/rao-redel-substrate-spike.md) · [paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) · [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
+Sources: [rao-redel-substrate-spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike) · [paw-compiled-specialists](../handoffs/active/model-evaluation-queue.md#track-paw-compiled-specialists) · [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
@@ -5574,34 +5587,34 @@ Sources: [rao-redel-substrate-spike](../handoffs/active/rao-redel-substrate-spik
 - Agent-run qualification remains staged: a small endpoint smoke may establish a transport path while leaving the actual model request and the historical multi-leg result open. Likewise, RUS-3 and F2 watcher failures remain preparation failures, with their terminal metadata retained and no experiment verdict invented.
 - These controls keep the checklist state aligned with what the owning task's acceptance rule actually requires; they do not themselves qualify an agent loop.
 
-Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [REPL turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
+Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [serving-harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) · [REPL turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
-- PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/promptforge-mutation-safety-contract.md); [tool compression](../handoffs/active/tool-output-compression.md); [REPL replay](../handoffs/active/repl-turn-efficiency.md))
-- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/session-bus-thin-dispatcher.md); [loop fleet](../handoffs/active/loop-owned-fleet-implementation.md); [fleet backlog](../handoffs/active/non-inference-backlog.md))
+- PromptForge source now isolates mutation work and screens added evaluation-identity reads and force-role removal; static limits remain and live activation is not shown. TOC source implements default-off A/B history and trajectory fields; no A/B result follows. ([mutation contract](../handoffs/active/autopilot-program.md#track-promptforge-mutation-safety-contract); [tool compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [REPL replay](../handoffs/active/harness-program.md#track-repl-turn-efficiency))
+- The session-bus source binds spawn notices to a specific usable generation; missing/conflicting legacy evidence stays unknown. A successful local control is not a live delivery claim. ([session bus](../handoffs/active/coordination-and-churn-pipeline.md); [loop fleet](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation); [fleet backlog](../handoffs/active/engineering-hygiene-backlog.md))
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/agent-collab-rnd-harness.md)
-- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/fleet-fanout-measurement.md)
-- HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-improvement-loop.md)
+- Planner/critic read-only allowlist is default-off; six focused controls passed. Host failure behavior was simulated and no live enablement or general security claim follows; root 9414032c. [Source](../handoffs/active/autokernel-loop.md#track-agent-collab-rnd-harness)
+- Delegation accounting instrumentation is filed; FM-8/9 and large-read/advisor/local-worker changes are conditional proposed work, with no measured trigger outcome asserted here. [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement)
+- HIL15b v2 source and frozen-receipt fixtures are published; qualification uses a noncohort control. The 20-task x 3 replay live cohort, empirical difficulty band and parent acceptance remain open; no adaptive redraw or efficacy is claimed. [Source](../handoffs/active/harness-program.md#track-harness-improvement-loop)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- OBS-1: `bus_supervisor.sh` folds heartbeat PID identity with an independent proc-argv observation into `present|absent|unobservable` (exit 0/1/3); unknown or disagreeing observations suppress both corrective signal and launch (hosted run 41279642985, 38 passed). The same battery caught and fixed the identical partial-blindness action in `backfill_supervisor.sh`. [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md), [session bus](../handoffs/active/session-bus-thin-dispatcher.md)
+- OBS-1: `bus_supervisor.sh` folds heartbeat PID identity with an independent proc-argv observation into `present|absent|unobservable` (exit 0/1/3); unknown or disagreeing observations suppress both corrective signal and launch (hosted run 41279642985, 38 passed). The same battery caught and fixed the identical partial-blindness action in `backfill_supervisor.sh`. [progress](../progress/2026-11/2026-11-01-codex-ni-01a16d6b.md), [session bus](../handoffs/active/coordination-and-churn-pipeline.md)
 - DP-3 (stale-source check by mtime) is superseded by H-4: the daemon compares its startup-captured committed coordination tree with current HEAD. WS-1: the coordinator's non-peek drain reads worker-checkpoint journals independently of bus delivery and needs an explicit terminal disposition to suppress a notice (36 controls, including the scan-cap starvation case). [progress](../progress/2026-11/2026-11-01.md)
-- D-3/OBS-2 hub_supervisor "cannot tell" was implemented 10-31 (ROOT `1b9130e9`); the 11-01 tick is hygiene closure. [dashboard](../handoffs/active/dashboard-architecture-restructure.md)
-- SSU-F11: the registry `recipe:` block was decorative; it now reaches launch env construction, shape/thread mismatches refuse, and `--recipe-process ROLE=PID` compares declared vs actual env/threads (83 + 31 controls). No live attestation. [model-stack pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md)
-- The D1-D4 HARD qualification gate is live (LOOP-51): at swap 0 of 23 READY rows were qualified, so new grants stopped until rows migrate to `epyc.ready.v2` (LOOP-52). LOOP-53: the scratch-delete hook advertises an `EPYC_ALLOW_SCRATCH_DELETE` override it never reads. [non-inference backlog](../handoffs/active/non-inference-backlog.md), [codex-ni](../progress/2026-11/2026-11-01-codex-ni.md)
-- CI: main was red since 10-27 (vidya `usage-provenance` fixture) and is repaired with no tests disabled; 730 merged stale branches deleted (LOOP-55), 43 pre-existing test failures remain (LOOP-57). [refactoring](../handoffs/active/refactoring-multirepo-2026-10.md), [codex-refactor](../progress/2026-11/2026-11-01-codex-refactor-01a16fc3.md)
+- D-3/OBS-2 hub_supervisor "cannot tell" was implemented 10-31 (ROOT `1b9130e9`); the 11-01 tick is hygiene closure. [dashboard](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
+- SSU-F11: the registry `recipe:` block was decorative; it now reaches launch env construction, shape/thread mismatches refuse, and `--recipe-process ROLE=PID` compares declared vs actual env/threads (83 + 31 controls). No live attestation. [model-stack pipeline](../handoffs/active/stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline)
+- The D1-D4 HARD qualification gate is live (LOOP-51): at swap 0 of 23 READY rows were qualified, so new grants stopped until rows migrate to `epyc.ready.v2` (LOOP-52). LOOP-53: the scratch-delete hook advertises an `EPYC_ALLOW_SCRATCH_DELETE` override it never reads. [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [codex-ni](../progress/2026-11/2026-11-01-codex-ni.md)
+- CI: main was red since 10-27 (vidya `usage-provenance` fixture) and is repaired with no tests disabled; 730 merged stale branches deleted (LOOP-55), 43 pre-existing test failures remain (LOOP-57). [refactoring](../handoffs/active/engineering-hygiene-backlog.md#track-refactoring-multirepo-2026-10), [codex-refactor](../progress/2026-11/2026-11-01-codex-refactor-01a16fc3.md)
 - Lane watchdogs by construction (AKX-AUTO-8) and the CJ-7c paired-edit instrument are source-only. [auto8](../progress/2026-11/2026-11-01-auto8-watchdogs.md), [cj7c](../progress/2026-11/2026-11-01-cj7c-paired-edit.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
@@ -5710,19 +5723,19 @@ Sources: [tick-science audit](../docs/reports/tick-science-audit-20261031.md) ·
 
 - Codex workers now follow one five-step loop: prioritize inference rows and their blockers; complete non-inference blockers independent of compute; prepare realistic launchers; let the keeper qualify them with READY-QUAL; then continue until non-inference blockers are exhausted and inference rows are armed. The backlog generator nests declared unblocks under the affected READY row and refreshes the worker views every ten minutes. The flow scoreboard tracks armed rows, blocker closures and idle compute time. The prior 50-tick quota is retired. Workers do not self-qualify: a worker smoke is preparation, while the keeper receipt is the qualification boundary. ([canonical flow](../docs/guides/agent-workflows/backlog-churn-flow.md); [compute-fillers contract](../docs/guides/agent-workflows/compute-fillers.md); [ws58 implementation checkpoint](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md); [NI owner-boundary checkpoint](../progress/2026-11/2026-11-01-codex-ni.md))
 
-Sources: [backlog churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [compute fillers](../docs/guides/agent-workflows/compute-fillers.md) · [ws58 churn-flow progress](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md) · [non-inference backlog](../handoffs/active/non-inference-backlog.md)
+Sources: [backlog churn flow](../docs/guides/agent-workflows/backlog-churn-flow.md) · [compute fillers](../docs/guides/agent-workflows/compute-fillers.md) · [ws58 churn-flow progress](../progress/2026-11/2026-11-01-workspace-58-churn-flow.md) · [non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-11-01 (keeper refusal handling and DF2 proof status)
 
 Keeper v9 changes qualification scheduling so a pre-run refusal does not consume the one native qualification slot per 120-second tick. Unchanged refusals are memoized against the manifest, reviewed row and FILLERS row; the backlog counts a row as qualified-armed only when its receipt file exists. A worker breaker blocks arming but not keeper qualification. Separately, the backlog generator recognizes `.ended` and `.FILED` terminal receipts for priority-only entries when the READY manifest is absent; its 13 focused tests passed and read-only generation classified four stale DF2 preparation entries as done. These scheduling and task-display changes do not close the underlying science task.
 
-Corrected same-image dirty-replay controls now pass for the small Qwen3.5 0.8B Q8 model on CPU and GPU. The test-only oracle correction preserves both FULL and PARTIAL reference vectors; an omitted-restore negative control still fails. The GPU smoke recorded KFD membership and 2.14 GB sampled VRAM with the frozen v10 libraries. This is a small-model unit gate, not 27B/35B serving parity. DF2-12.1 still needs full-resource calibration, keeper HARD qualification and the 304-identity parity experiment; SL-4's GPU long-context and sustained C8 coverage also remain open. ([DF2 corrected-proof record](../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md); [DF2 session record](../progress/2026-11/2026-11-01-handoff-df2.md); [DF2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md); [keeper v9 flow](../docs/guides/agent-workflows/backlog-churn-flow.md))
+Corrected same-image dirty-replay controls now pass for the small Qwen3.5 0.8B Q8 model on CPU and GPU. The test-only oracle correction preserves both FULL and PARTIAL reference vectors; an omitted-restore negative control still fails. The GPU smoke recorded KFD membership and 2.14 GB sampled VRAM with the frozen v10 libraries. This is a small-model unit gate, not 27B/35B serving parity. DF2-12.1 still needs full-resource calibration, keeper HARD qualification and the 304-identity parity experiment; SL-4's GPU long-context and sustained C8 coverage also remain open. ([DF2 corrected-proof record](../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md); [DF2 session record](../progress/2026-11/2026-11-01-handoff-df2.md); [DF2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build); [keeper v9 flow](../docs/guides/agent-workflows/backlog-churn-flow.md))
 
-Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md) · [DF2 session record](../progress/2026-11/2026-11-01-handoff-df2.md) · [DF2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) · [keeper v9 flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
+Sources: [DF2 corrected-proof record](../artifacts/coordination/df2-12-1-corrected-native-20261101/README.md) · [DF2 session record](../progress/2026-11/2026-11-01-handoff-df2.md) · [DF2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) · [keeper v9 flow](../docs/guides/agent-workflows/backlog-churn-flow.md)
 
 ## Compiled Update — 2026-11-01 (NI qualification preparation and wrap)
 
-The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/autokernel-restart-and-strip.md); [FA handoff](../handoffs/active/kv-unified-stack-rollout.md))
+The NI D1 legacy-conflict fix is published but awaits the keeper owner installation. INF-12 and SPEC-GRAM.3 native-qualifier successors remain source drafts without keeper receipts; the W5s row was withdrawn before qualification because its fixture omitted the full 4,096-token prefill. The AK-INST-3 audit found current instrument lineage but no qualifying scientific screen, while the old FA4 OFF build row is superseded by a completed build; their broader gates remain open. A source-only stack-priors proposal preserves WARM `live_stack` consumers while excluding non-default roles from seeding; the derived stack-change package remains unsigned. The long-CPU qualifier is an unreviewed draft. A trust-checker false positive on an archived Python docstring was corrected without changing protected boundary files or the archived source. ([NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [checkpoint evidence](../artifacts/coordination/ni-post-a2-wrap-20261101/README.md); [AK-INST handoff](../handoffs/active/autokernel-loop.md#track-autokernel-restart-and-strip); [FA handoff](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 
 ## Compiled Update — 2026-11-02 (ws58 intake: Jev harness engineering, Super-agent essay, loop GUI)
 
@@ -5734,3 +5747,13 @@ The NI D1 legacy-conflict fix is published but awaits the keeper owner installat
 - Prepared, unapproved task lines JEV-1..6 and SA-1..4: [ws58 jev README](../research/deep-dives/ws58-jev-20261102/README.md).
 
 Sources: [Jev dive](../research/deep-dives/ws58-jev-20261102/intake-2604-jev-harness-engineering.md) · [selective prediction](../research/deep-dives/ws58-jev-20261102/selective-prediction-wave1-dives.md) · [GUI survey](../research/deep-dives/ws58-jev-20261102/agent-loop-gui-survey.md) · [wave 2](../research/deep-dives/ws58-jev-20261102/wave2-dives.md) · [Super-agent essay](../research/deep-dives/ws58-jev-20261102/intake-2615-superagent-essay.md) · [digest 2604-2614](../research/deep-dives/intake-digests/2026-11-02-ids-2604-2614.md) · [digest 2615-2616](../research/deep-dives/intake-digests/2026-11-02-ids-2615-2616.md)
+
+## Compiled Update — 2026-11-04 (REPL harness filings)
+
+- **S4 Omega arm differs from baseline by a turn floor and mandated procedure**: a 10-round hard limit with an aim of 5-7, a gather, expand, verify, answer sequence, same-block causality (never `FINAL()` in a block whose tool result is needed), one block and no comments. Default-OFF via `PROMPT_VARIANT__root_lm_system=s4_omega`; adopted from the SkyRL multipaper child prompt.
+- **S4-OMEGA-PILOT-V2 filed FUTILITY**: 1/16 complete pairs, 7 incomplete, 8 not_run, tool liveness not met. It is not an A/B result on the arm.
+- **RTE-PFX2-QN-V3**: 15 complete arm-trials; no sibling reached the 90% hit threshold (one 4504/6542 partial hit per hold-first-end trial).
+- **Bounded G-S private rehearsal passed** (64,514 episodic and 1,428 strategy rows, min cosine 1.0 over 16 samples per store) without closing full G-S.
+- **A launcher script may start a dispatcher as a side effect**: `churn_up.sh` did so on 2026-11-04 and resumed 11 sessions nobody asked for (CHURN-UP-NO-DISPATCHER).
+
+Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-20261104/s4/) · [harness-program](../handoffs/active/harness-program.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)

@@ -1,0 +1,21 @@
+{
+  "source_commit": "981ef5ba9ad1476bdb0d7feb84067f4fac074776",
+  "method": "read-only GitNexus impact on same pinned index after row completion",
+  "targets": [
+    {
+      "symbol": "validate",
+      "file": "scripts/vidya/producers/ufh12_gs_frozen_contract.py",
+      "risk": "LOW",
+      "impactedCount": 0,
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "_validate",
+      "file": "scripts/vidya/adapters/ufh12_gs_coverage.py",
+      "risk": "LOW",
+      "impactedCount": 0,
+      "epistemic": "exact"
+    }
+  ],
+  "limitation": "Indexed caller counts can omit dynamic imports."
+}

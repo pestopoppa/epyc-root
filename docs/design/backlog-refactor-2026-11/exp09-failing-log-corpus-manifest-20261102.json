@@ -1,0 +1,289 @@
+{
+ "schema": "brf-exp09.corpus.v1",
+ "selection": "EXP-09 frozen failing-log corpus builder (ws58, 2026-11-02). Deterministic: same disk -> same 12 items.\n\nSelection: real pytest logs already on disk under /mnt/raid0/llm/tmp (prior CI/test runs), each\n  * UTF-8 text, 9,000..120,000 chars (above the 8,192-char spill threshold, so _spill_output really spills),\n  * a pytest terminal summary line with >=1 failed, and >=1 `FAILED <nodeid>` line,\n  * no credential-like content, unique content sha, at most one log per top-level scratch dir (diversity).\nGold facts are extracted deterministically from the FULL log (never from any arm's view).\nCopies go to corpus/item-NN.log (chmod a-w); manifest corpus/MANIFEST.json carries source path, sha256, gold.",
+ "n": 12,
+ "items": [
+  {
+   "id": "item-01",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-01.log",
+   "source": "/mnt/raid0/llm/tmp/ak-codex-handover-20261007/focused-timeout-fix/survivor-invariant-control.log",
+   "sha256": "e7ec108fc0cc7771a201c4712269246e37937d81f0990c93a2dd5420a7b4e265",
+   "chars": 85442,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 6,
+    "summary_line": "================== 6 failed, 1 passed, 8 deselected in 9.47s ===================",
+    "failed_ids": [
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[survivor_retry-ordinary]",
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[survivor_retry-author]",
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[census_retry-ordinary]",
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[census_retry-author]",
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[live_diagnostic_failure-ordinary]",
+     "../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[live_diagnostic_failure-author]"
+    ],
+    "n_failed_ids_total": 6,
+    "first_exception": null,
+    "first_exception_offset_frac": null
+   }
+  },
+  {
+   "id": "item-02",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-02.log",
+   "source": "/mnt/raid0/llm/tmp/archswap-20260927/work/orch_tests_final.txt",
+   "sha256": "ecac80e1bb9deaece59bbeafee1cdbeaeeb9f103f39c5b441afd2b61a4967b81",
+   "chars": 26734,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 1,
+    "summary_line": "= 1 failed, 15623 passed, 57 skipped, 6 xfailed, 25 warnings in 762.16s (0:12:42) =",
+    "failed_ids": [
+     "tests/unit/test_check_shared_with_derivations.py::test_live_models_py_table_agrees_with_the_live_registry"
+    ],
+    "n_failed_ids_total": 1,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.672
+   }
+  },
+  {
+   "id": "item-03",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-03.log",
+   "source": "/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/programmatic-feedback-r6/attempt-hosted-41279888248/ni-code-contracts-41279888248-1/pytest.stdout.txt",
+   "sha256": "8dfee961e8514e8ecaf929925dff486a6d3c1ea8841f533948832b118b2cb1b7",
+   "chars": 29132,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 28,
+    "summary_line": "================= 28 failed, 186 passed, 29 warnings in 5.79s ==================",
+    "failed_ids": [
+     "tests/integration/test_execute_turn.py::test_final_answer_extraction",
+     "tests/integration/test_execute_turn.py::test_final_numeric_answer",
+     "tests/integration/test_execute_turn.py::test_final_with_computation",
+     "tests/integration/test_execute_turn.py::test_non_final_turn",
+     "tests/integration/test_execute_turn.py::test_turn_counter_increments",
+     "tests/integration/test_execute_turn.py::test_programmatic_tool_facts_reach_next_prompt_once",
+     "tests/integration/test_execute_turn.py::test_programmatic_feedback_prompt_path_is_inert_when_step_logging_off",
+     "tests/integration/test_execute_turn.py::test_loop_guard_fires_after_repeated_no_progress",
+     "tests/integration/test_execute_turn.py::test_refused_tool_echo_marker_does_not_count_as_progress[FINAL(]",
+     "tests/integration/test_execute_turn.py::test_refused_tool_echo_marker_does_not_count_as_progress[file_write_safe(]"
+    ],
+    "n_failed_ids_total": 28,
+    "first_exception": null,
+    "first_exception_offset_frac": null
+   }
+  },
+  {
+   "id": "item-04",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-04.log",
+   "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-embedder-fallback-fix/normal-validation/poller.log",
+   "sha256": "b2dc3bf683aae8ca95ccf3498b8655c1d7b5d84dddfcd9d9930b55e91a1ef007",
+   "chars": 27598,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 6,
+    "summary_line": "============ 6 failed, 374 passed, 15 warnings in 351.83s (0:05:51) ============",
+    "failed_ids": [
+     "tests/unit/test_retrieval_prefix_convention.py::test_fresh_index_stamps_the_current_convention_and_encodes_documents",
+     "tests/unit/test_retrieval_prefix_convention.py::test_query_against_a_prefixed_index_uses_the_query_role",
+     "tests/unit/test_retrieval_prefix_convention.py::test_legacy_index_is_queried_prefix_free",
+     "tests/unit/test_retrieval_prefix_convention.py::test_legacy_index_keeps_its_convention_under_force_rebuild",
+     "tests/unit/test_retrieval_prefix_convention.py::test_incremental_update_follows_the_stored_convention",
+     "tests/unit/test_retrieval_prefix_convention.py::test_unknown_stored_convention_fails_closed"
+    ],
+    "n_failed_ids_total": 6,
+    "first_exception": "RuntimeError",
+    "first_exception_offset_frac": 0.329
+   }
+  },
+  {
+   "id": "item-05",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-05.log",
+   "source": "/mnt/raid0/llm/tmp/codex-ni-ci-app-20261101/artifacts/engineering/w4-recipe-swap-20261101/materialized.log",
+   "sha256": "7e2c9775751837f52cc366caa3099d3c1e5724029a886ad9837a8f083ad00473",
+   "chars": 14856,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 11,
+    "summary_line": "=================== 11 failed, 6 passed, 1 warning in 18.76s ===================",
+    "failed_ids": [
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_check_runs_promotion_gate_when_requested",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_check_fails_when_promotion_gate_fails",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_update_does_not_write_real_operator_summary",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_frontdoor_swap_updates_generated_consumers_with_approval",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_worker_swap_updates_generated_consumers_with_approval",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_vision_swap_updates_generated_consumers_with_approval",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_ingest_swap_updates_generated_consumers_with_approval",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_shared_runtime_aliases_compile_as_one_runtime_descriptor",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_retired_role_enum_is_removed_by_update",
+     "tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_runtime_requirement_drift_fails_until_regenerated"
+    ],
+    "n_failed_ids_total": 11,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.072
+   }
+  },
+  {
+   "id": "item-06",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-06.log",
+   "source": "/mnt/raid0/llm/tmp/codex-ni-thinkprm-t2-20261030/compat-r2.log",
+   "sha256": "51875c3091a046cacf90f2e5cf02ec55fb6c5c3615decf64e74bff487fc03c94",
+   "chars": 31619,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 17,
+    "summary_line": "======================= 17 failed, 219 passed in 36.29s ========================",
+    "failed_ids": [
+     "tests/unit/test_eval_tower_concurrency_metrics.py::test_live_safe_concurrency_uses_quarter_mode_live_ports",
+     "tests/unit/test_eval_tower_concurrency_metrics.py::test_live_safe_concurrency_falls_back_when_manifest_is_phantom",
+     "tests/unit/test_eval_tower_concurrency_metrics.py::test_eval_concurrency_falls_back_to_serial_when_matrix_stale",
+     "tests/unit/test_eval_tower_concurrency_metrics.py::test_eval_concurrency_allows_stale_global_matrix_with_fresh_role_cert",
+     "tests/unit/test_eval_tower_concurrency_metrics.py::test_eval_concurrency_rejects_role_cert_when_live_ports_drift",
+     "tests/unit/test_eval_tower_ev11_stats.py::test_math_adapter_flips_both_suites_to_math_verify",
+     "tests/unit/test_eval_tower_fanout_numa_mode.py::test_quarter_mode_uses_largest_disjoint_live_subset",
+     "tests/unit/test_eval_tower_fanout_numa_mode.py::test_full_mode_is_one_live_instance",
+     "tests/unit/test_eval_tower_fanout_numa_mode.py::test_both_mode_is_bounded_by_the_full_first_topology_cap",
+     "tests/unit/test_eval_tower_fanout_numa_mode.py::test_recognised_modes_are_never_loud[quarter]"
+    ],
+    "n_failed_ids_total": 17,
+    "first_exception": "FileNotFoundError",
+    "first_exception_offset_frac": 0.111
+   }
+  },
+  {
+   "id": "item-07",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-07.log",
+   "source": "/mnt/raid0/llm/tmp/codex3-toc-mp2i-20261031/check1.log",
+   "sha256": "7817c9267ca612972c34455433b94814b1cc26c09811003d916b7125201ebe61",
+   "chars": 11483,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 12,
+    "summary_line": "============= 12 failed, 90 passed, 1 skipped, 1 warning in 9.77s ==============",
+    "failed_ids": [
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_skips_when_compaction_disabled",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_skips_when_no_primitives",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_skips_when_too_few_turns",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_compacts_when_context_exceeds_threshold",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_compacts_when_recompaction_interval_reaches_threshold",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_compacts_when_session_token_budget_requests_compaction",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_skips_when_to_externalize_section_is_empty",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_falls_back_to_default_compaction_index_on_llm_failure",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_session_token_budget_errors_dont_force_compaction",
+     "tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_write_failure_aborts_compaction"
+    ],
+    "n_failed_ids_total": 12,
+    "first_exception": "ValueError",
+    "first_exception_offset_frac": 0.142
+   }
+  },
+  {
+   "id": "item-08",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-08.log",
+   "source": "/mnt/raid0/llm/tmp/f8-fillers-20261022/rng/out/srv-test_poskey_depth0_equals_depth3.log",
+   "sha256": "a22b912c40e44a197e7da10411ef4a4dfae72b664ccf9bebe26c0c4647aac951",
+   "chars": 74727,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 1,
+    "summary_line": "============================== 1 failed in 41.98s ==============================",
+    "failed_ids": [
+     "unit/test_rng_poskey.py::test_poskey_depth0_equals_depth3"
+    ],
+    "n_failed_ids_total": 1,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.014
+   }
+  },
+  {
+   "id": "item-09",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-09.log",
+   "source": "/mnt/raid0/llm/tmp/inf70/agents/c7-finish/orch-full-suite.log",
+   "sha256": "f75b17f36d1f20dee17218bb0920241d8bcc17b09d293307ae017d144e803630",
+   "chars": 71411,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 35,
+    "summary_line": "= 35 failed, 14129 passed, 83 skipped, 10 xfailed, 28 warnings in 438.22s (0:07:18) =",
+    "failed_ids": [
+     "tests/unit/test_baseline_ledger.py::test_apply_baseline_ledger_authority_removes_matching_state_cache",
+     "tests/unit/test_baseline_authority_report.py::test_report_marks_matching_baseline_fold_ok",
+     "tests/unit/test_baseline_authority_report.py::test_render_markdown_uses_baseline_ledger_summary",
+     "tests/test_trace_review_plane.py::test_tm1_materialized_db_smoke",
+     "tests/unit/test_debug_scorer_code_execution.py::test_bcb190_sqlite_answer_still_scores_true",
+     "tests/unit/test_e8_final_c1_retry.py::test_historical_receipts_build_planning_only_plans[ORIGINAL_RECEIPT]",
+     "tests/unit/test_e8_final_c1_retry.py::test_historical_receipts_build_planning_only_plans[SUPERSEDING_RECEIPT]",
+     "tests/unit/test_e8_quality_baseline_reseed.py::test_runtime_binding_pins_full_cmdline_model_flags_and_state_path",
+     "tests/unit/test_e8_quality_baseline_reseed.py::test_receipt_requires_canonical_path_and_current_runner_hash",
+     "tests/unit/test_e8_quality_baseline_reseed.py::test_legacy_t1_migration_reuses_clean_rows_and_seals_two_attempt_judge_history"
+    ],
+    "n_failed_ids_total": 35,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.238
+   }
+  },
+  {
+   "id": "item-10",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-10.log",
+   "source": "/mnt/raid0/llm/tmp/kpf-p1-20261004/smoke-20261004T062909Z/pytest-qwen25-0.5b.log",
+   "sha256": "4a5642791f659d3794bc646dff96b3affff387006a378c8e1b5aaebd7bf40084",
+   "chars": 117557,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 2,
+    "summary_line": "=================== 2 failed, 4 passed, 1 skipped in 11.62s ====================",
+    "failed_ids": [
+     "unit/test_slot_fork.py::test_second_child_after_source_purge",
+     "unit/test_slot_fork.py::test_no_cache_idle_slots_keeps_trunk_shared"
+    ],
+    "n_failed_ids_total": 2,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.99
+   }
+  },
+  {
+   "id": "item-11",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-11.log",
+   "source": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf-19-1-17-3/queue-results/28-kpf-19-1-17-3/173-mut-pin_cap_off.log",
+   "sha256": "1c5162cdb6d766e4ced75382b656f65941ca4831731cfbeb80c87e4247e4f932",
+   "chars": 62377,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 1,
+    "summary_line": "======================= 1 failed, 23 deselected in 1.46s =======================",
+    "failed_ids": [
+     "unit/test_slot_fork.py::test_kpf173_pinned_cap_per_slot"
+    ],
+    "n_failed_ids_total": 1,
+    "first_exception": "AssertionError",
+    "first_exception_offset_frac": 0.028
+   }
+  },
+  {
+   "id": "item-12",
+   "file": "/mnt/raid0/llm/tmp/brf-exp09/corpus/item-12.log",
+   "source": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/attempt2-receipts/expanded-selection/pytest.log",
+   "sha256": "05aa91bac15dc90c5487d453c67777c1e8c1107d570d00d9bf91df89a84de083",
+   "chars": 19416,
+   "gold": {
+    "exit_status": "fail",
+    "n_failed": 11,
+    "summary_line": "====== 11 failed, 1917 passed, 2 skipped, 4 warnings in 600.13s (0:10:00) ======",
+    "failed_ids": [
+     "tests/unit/test_autopilot_actions.py::test_numeric_trial_records_applied_optuna_params",
+     "tests/unit/test_autopilot_actions.py::test_numeric_trial_unmeasured_rate_fails_the_trial_instead_of_killing_it",
+     "tests/unit/test_autopilot_actions.py::test_numeric_trial_explicit_no_changes_skips_eval",
+     "tests/unit/test_autopilot_actions.py::test_numeric_trial_suggested_no_changes_marks_failed_and_skips_eval",
+     "tests/unit/test_autopilot_actions.py::test_numeric_trial_normalizes_short_explicit_surface_param",
+     "tests/unit/test_autopilot_recovery.py::test_archive_for_read_command_defaults_to_journal_snapshot",
+     "tests/unit/test_autopilot_recovery.py::test_archive_for_read_command_can_use_journal_snapshot",
+     "tests/unit/test_autopilot_recovery.py::test_archive_for_read_command_falls_back_when_journal_empty",
+     "tests/unit/test_autopilot_recovery.py::test_cmd_plot_uses_journal_archive_snapshot",
+     "tests/unit/test_mutation_diagnostics.py::test_real_prompt_boundary_unchanged_and_capture_failure_cannot_mask_author[prompt]"
+    ],
+    "n_failed_ids_total": 11,
+    "first_exception": "TypeError",
+    "first_exception_offset_frac": 0.52
+   }
+  }
+ ],
+ "corpus_sha256": "f3a8342c24a32c05f5d93be54d5dbc7c85a75faf85a444e89686a2c36a2331e4"
+}

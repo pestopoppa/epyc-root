@@ -153,7 +153,7 @@ Prefer `pause`, then let them drain.
 > them restarts automatic dispatch, nudges and window grants, which changes fleet behaviour; the
 > operator did not want that. Run the *status* and *alarm* checks below and record the answers, but
 > **do not run the two `nohup` launches without a fresh operator go** (recorded in
-> `handoffs/active/non-inference-backlog.md` → NIB2-81). While the daemon is down nothing grants
+> `handoffs/active/engineering-hygiene-backlog.md` → NIB2-81). While the daemon is down nothing grants
 > compute windows by rule: the compute-calendar owner does, under
 > `.claude/skills/inference-backlog-scheduling` (Phase 3 step 5).
 

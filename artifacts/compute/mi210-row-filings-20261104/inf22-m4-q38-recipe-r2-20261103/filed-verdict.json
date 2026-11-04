@@ -1,0 +1,43 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r2-20261103/end.txt": "21e6d68d11d4b009d1913201dee34f509c5e785940ddec03415c36df74680e1c",
+   "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r2-20261103/manifest.json": "8109325a7a77d465a4a6a64edeee38b20a947129f3bb2f64b5812d7b0e5762e0"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc143 signalled run, declared native result absent. No complete sealed-harness recipe comparison or fold evidence.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:04+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=143 time=2026-11-03T17:53:54Z reason=job-rc-143:exited",
+ "filed_at": "2026-11-04T07:10:04+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:M4-FOLD-GATE",
+ "id": "inf22-m4-q38-recipe-r2-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/inf22-m4-q38-recipe-r2-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/captures/run-r1/capture/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "codex-inf22-m4",
+ "phase": "filing",
+ "rc": 143,
+ "reason": "rc143 signalled run, declared native result absent. No complete sealed-harness recipe comparison or fold evidence.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/captures/run-r1/capture/RESULT.json",
+ "root_cause_family": null,
+ "row": "inf22-m4-q38-recipe-r2-20261103",
+ "row_verdict": "inconclusive",
+ "rule": "descriptive same-frame t48 versus t96 recipe bundles; no best-recipe or fold verdict Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

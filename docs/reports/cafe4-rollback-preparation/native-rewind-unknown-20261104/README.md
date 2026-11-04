@@ -1,0 +1,5 @@
+# CAFE-4 native rewind diagnostic: UNKNOWN
+
+Scheduled cafe4-v10-native-rollback-fault-20261104 ended rc2 at 2026-11-04T14:29:08Z; native result status UNKNOWN, controls=null and child reaped. The source-native diagnostic log records a strict partial (width 3, accepted 1) and target-state fault witnesses, but its nonfault cold-prefix control failed the predeclared numerical rule: off/observe maximum error 1.78499126 exceeded tolerance 1.63498925; fault versus observe difference was 20.6693268. These figures are raw one-prompt diagnostic fields, not an accepted rollback or fault-sensitivity verdict. No post-run tolerance change is authorized.
+
+The launcher checked a mutable runtime.sha256 without independently pinning that manifest; this is an additional input-binding limitation. Qualification had one prior failed attempt, followed by smoke PASS. Native partial rollback correctness, the numerical reference and full CAFE-4 remain unresolved. The predeclared diagnostic threshold is not replaced using this observed prompt.

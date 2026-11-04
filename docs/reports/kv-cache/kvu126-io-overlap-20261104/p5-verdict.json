@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "Original target runner ended rc75 disk-floor at 14:17:49Z, about three seconds after the retained keeper GRANT. The declared full result.json is absent, and no official native A1 run directory was found. The prior qualification is not the full 20-row drafted/no-draft protocol. No occupancy, L3-loss, recovery, or performance conclusion. A separate model SHA-read began at approximately 14:17:48Z; actual measured-window overlap is unproven and no causal effect is asserted. The end and keeper excerpt are retained in docs/reports/kv-cache/kvu126-io-overlap-20261104/.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

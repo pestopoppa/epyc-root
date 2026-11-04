@@ -1,0 +1,13 @@
+{
+  "row_id": "codex-ufh12-shadow-gnx-v2-20261104",
+  "state": "published_smoke_pass",
+  "spec": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/spec.json",
+  "job": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/job.py",
+  "launcher": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/launch.sh",
+  "source": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/source",
+  "source_commit": "f58d0bf7668147b5aa142ade921b7b86ece35ec0",
+  "changes": "Absolute --repo selector, existing index metadata check, strict exact symbol and path validation, HIGH/CRITICAL immediate recorded stop, separate smoke and official outputs; source and existing index reused. No expensive indexing.",
+  "validation": "py_compile, bash -n, pinned clean checkout/index check, synthetic LOW/HIGH/wrong-target tests passed.",
+  "risk": "Smoke validates source-scan progress only; official context/impact outcome remains pending.",
+  "publication_evidence": "successors/gnx-PASS.json"
+}

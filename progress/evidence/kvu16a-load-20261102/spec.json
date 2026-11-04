@@ -1,0 +1,31 @@
+{
+  "id": "handoff-kvu-16a-load-20261102",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu16a-load-20261102/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/kvu16a-load-20261102/result.json",
+  "result_format": "json",
+  "decision_rule": "Only full mode: require two own-PID post-health MI210 KFD samples with HIP resident, target 393216-cell Q8 KV allocation parsed from the server load log, pinned model/runtime/linkage proof and verified cleanup. Report maximum sampled load GiB minus observed target KV GiB. Confirm production shape and identity before registry use; no inference, deployment or registry update is implied.",
+  "estimate_s": 1200,
+  "min_window_s": 600,
+  "ram_gib": 128,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:KVU-16a",
+  "priority_rank": 13,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu16a-load-20261102",
+  "keep": [
+    "result.json",
+    "model.sha256",
+    "model-receipt.json",
+    "runtime.sha256",
+    "source.sha256",
+    "run-*/**",
+    "launch.sh",
+    "*.py",
+    "linkage-*.txt",
+    "region-lock",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt"
+  ],
+  "dryrun_native_result": true
+}

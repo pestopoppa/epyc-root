@@ -1,0 +1,48 @@
+{
+ "decision_rule": "Accept only pinned v10 plus corrected candidate enabling load_mtp, bridge and build integration patch, full CPU lifecycle executable, compiled MTP_LOAD_ENABLED and MTP_LIFECYCLE markers, content hashes and local llama-common linkage. Build-only; no model, MTP execution, rollback or fault verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-lifecycle-build-v2-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2/launch.sh",
+  "sha256": "92e7da07d8c585c4acd28dde8b737f07e4d734a0e128889cb2d273523001ce58"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:461: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:461: identity fields incomplete: ['metric', 'region'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better); region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T07:30:41Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-v2"
+}

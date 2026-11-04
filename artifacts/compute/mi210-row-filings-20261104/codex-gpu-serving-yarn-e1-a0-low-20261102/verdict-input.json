@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Historical E1 A0 low-phase capture complete, row-time report with smoke and 128k/240k plus own-PID KFD/shim phase attribution preserved. Peak 37.132 GiB, first smoke pool allocation 300914176 B and rocBLAS 33554432 B; no additional live-byte delta at 128k/240k. Completion of A0 capture only; no standalone causal or production verdict and no A1 unbroken-chain conclusion.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/codex-gpu-serving-yarn-e1-a0-low-20261102/report.json": "a3064509f013af564886bd286ee86deefe9f47a5f0bedb4880779b5eafacddfe",
+    "artifacts/compute/mi210-row-filings-20261104/codex-gpu-serving-yarn-e1-a0-low-20261102/native-result.json": "d2e18f0aa449ae957ab7839d2852eadadd5625410c59600b0439193b2cbadb4b",
+    "artifacts/compute/mi210-row-filings-20261104/codex-gpu-serving-yarn-e1-a0-low-20261102/end.txt": "e9c87a60d7fd82e78bdb754f25d0e8f6083abe122be08e032882acce2b2c23d0",
+    "artifacts/compute/mi210-row-filings-20261104/codex-gpu-serving-yarn-e1-a0-low-20261102/phase_attribution.json": "30df3f06d7bc172073f1335aebcfebf81b5ccb16260870ebeaf938efc2694c08",
+    "artifacts/compute/mi210-row-filings-20261104/codex-gpu-serving-yarn-e1-a0-low-20261102/manifest.json": "b52e4c002dd449a51726a92961b10b5f5974cfe6312da1c6241e63a8fefcdea7"
+  }
+}

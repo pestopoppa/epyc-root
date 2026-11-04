@@ -573,6 +573,9 @@ EPYC context:
 5. Apply the six-control minimum-rigor floor to immediate empirical experiments or replays. For
    deterministic infrastructure, explain inapplicable controls and name replacement conformance
    and provenance checks.
+6. Draft every measurement task with a sufficiency block: question/decision, expected effect versus
+   sample-size error, checkpoints, stop-on-answer and stop-on-futility rules, evidence reused first
+   (`docs/guides/agent-workflows/measurement-sufficiency.md`; formal-gate cells are futility-only).
 6. Choose the execution posture after this review. For `monitor`, `knowledge-only` and `decline`, explicitly
    explain why no useful immediate operational step remains, citing current implementation and
    execution conditions. Nondeployment, absence of full reproduction, or a HIGH/CRITICAL graph

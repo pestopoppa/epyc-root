@@ -52,6 +52,8 @@ production does not deliver. **Name both artifacts, always.**
 
 ## Producing new numbers
 
+- **Stop rule (every run)**: declare question/decision, expected effect vs sample-size error, checkpoints, stop-on-answer and stop-on-futility before launch; reuse valid evidence first; write incremental records; stop when the scoped question is answered (`docs/guides/agent-workflows/measurement-sufficiency.md`). **Formal-gate cells (promotion/ratification) are futility-only at interim looks** (no interim pass verdict) until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN.
+
 - **Throughput**: only via the codified recipes — `bench_canonical.sh` / `canonical_recipe.py` (epyc-inference-research). Never hand-typed bench commands. Reps: ≥5 for ≥5% claims, ≥10 for ≤2%. `-fa 1` explicit. Binary-resolution check is part of the recipe.
 - **Before any bench**: hold the region claim for the run's footprint via `region-lock` (`bench_canonical.sh` acquires it automatically and refuses to run unlocked). Concurrency alone is never grounds for a human gate — operator approval only where `operator_gates[]` names a trust boundary (`OPERATING_CONSTRAINTS.md` → Inference and Benchmarks, amended 2026-07-27). Host-health preflight (uptime ≤1wk → drop_caches + NUMA-interleave rewarm; ≥1wk → reboot required); no-concurrent-inference precondition per Annex B §E — `WITNESS` (claim + own-scope + residual-load witness) or `LEGACY`; **never a name-pattern process read** (`CLAUDE.md:84`).
 - **Quality**: the autopilot eval tower is a versioned instrument (core id, n, quantum, MDE) — single-trial deltas below 2 question-flips are never conclusions; see MEASUREMENT.md P-QUAL-*. Known-dead instrument items are listed in `instrument_eras.yaml`.

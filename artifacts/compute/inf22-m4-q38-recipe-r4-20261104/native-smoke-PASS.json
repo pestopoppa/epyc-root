@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/inf22-m4-q38-recipe-r4-20261104/launcher.out",
+ "elapsed_s": 87,
+ "ended": "rc=75 time=2026-11-04T08:12:08Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/inf22-m4-q38-recipe-r4-20261104/native-attempts/attempt-2g6giaqo/native-result.json (unit_key native_response_count set)",
+ "first_progress_s": 600,
+ "first_unit_at": "2026-11-04T08:12:06Z",
+ "id": "inf22-m4-q38-recipe-r4-20261104",
+ "launcher_sha256": "ff72f5251c16a65444d683afe7784d164ec6178b62d70849b9d2c1ba9b2f009e",
+ "passed_at": "2026-11-04T08:12:11Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/inf22-m4-q38-recipe-r4-20261104/native-attempts/attempt-2g6giaqo/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

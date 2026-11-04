@@ -1,0 +1,3 @@
+# Unapplied first-progress predicate corrections
+
+CAFE-2 and CAFE-4 build smoke writers emit receipts composed of strings and digests. Generic FirstProgress needs a finite non-bookkeeping numeric cell; both original specs omitted a smoke_predicate. These proposed patches add explicit content-validating compiled-object predicates and update their seals. Active publishers and packages were not changed. Apply only after the current smoke is terminal and requalify; AST/JSON parsing is the only validation so far. CAFE-2 SOURCE.json also carries stale launch metadata, whose original full validity is not established by this patch.

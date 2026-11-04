@@ -53,7 +53,7 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 
 ### CoT-Scaffold Injection: transplanted reasoning is a COST lever, not a capability transplant (2026-07-06) — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
 
-> **Review flag (project-wiki writer-evidence policy):** model-compiled from the GPU CoT-scaffold study close-out; **not adopted until human or measured review**. Every accuracy/token number is an **OBSERVATION** (single MI210, single-sample seed 42, n=10–48 cells, no protocol-id per MEASUREMENT.md). Sources: [GPU CoT-scaffold sidecar (full arc)](../handoffs/active/gpu-cot-scaffold-sidecar.md), [scaffold autopilot cost-lever deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md), [progress 2026-07-06 CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md).
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the GPU CoT-scaffold study close-out; **not adopted until human or measured review**. Every accuracy/token number is an **OBSERVATION** (single MI210, single-sample seed 42, n=10–48 cells, no protocol-id per MEASUREMENT.md). Sources: [GPU CoT-scaffold sidecar (full arc)](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar), [scaffold autopilot cost-lever deployment (DESIGN)](../handoffs/active/autopilot-program.md#track-scaffold-autopilot-cost-lever-deployment), [progress 2026-07-06 CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md).
 
 The completed study asked whether a small, fast reasoner's chain-of-thought, **injected into a larger worker's prompt** (as an assistant-prefix continuation or a context-advisory plan), raises the worker's answer quality more per token than the worker's own thinking. The result cleanly separates three distinct claims:
 
@@ -116,7 +116,7 @@ The completed study asked whether a small, fast reasoner's chain-of-thought, **i
 
 - [FlowSteer Concise Reasoning](../research/deep-dives/flowsteer-concise-reasoning.md) -- Nonlinear activation steering via flow matching; SEAL linear baseline; llama.cpp `--control-vector` compatibility; Qwen3.5 `build_cvec()` blocker; intervention layer selection
 - [Reasoning Recall + CoT Controllability](../research/deep-dives/reasoning-recall-cot-controllability.md) -- Computational buffer (21-27% from dummy tokens); factual priming mechanism; hallucination cascade (41.4% vs 26.4%); Omega metric; controllability spectrum (0.1-15.4%); suppression vs stylistic cost gap
-- [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- Conciseness prompt upgrades to explicit word limits; GEPA integration; TrimR evaluation; SEAL control vector prep
+- [Reasoning Compression handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- Conciseness prompt upgrades to explicit word limits; GEPA integration; TrimR evaluation; SEAL control vector prep
 - [intake-196](https://arxiv.org/abs/2307.11760) EmotionPrompt -- Emotional stimuli for LLMs (not applicable to our task types)
 - [intake-197](https://arxiv.org/abs/2405.02814) NegativePrompt -- Negative emotional stimuli (not applicable)
 - [intake-200](https://arxiv.org/abs/2602.21223) Pragmatic Influence -- Hierarchical framing shifts behavior; no clear production application
@@ -128,8 +128,8 @@ The completed study asked whether a small, fast reasoner's chain-of-thought, **i
 - [intake-225](https://arxiv.org/abs/2311.10054) Personas Do Not Help -- 162 roles, no improvement on factual questions
 - [intake-226](https://arxiv.org/abs/2408.08631) Persona Double-Edged Sword -- Role-playing degrades 7/12 datasets for Llama3
 - [intake-240](https://arxiv.org/abs/2507.19457) GEPA -- Genetic-Pareto prompt evolution, 35x fewer rollouts, outperforms MIPROv2 by 10%+
-- [GPU CoT-Scaffold Sidecar (full arc)](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- G1/G2/verifier/dense-generalization arc; single-shot capability-transplant falsified both regimes; scaffold = 20–50× CPU-token cost lever; quality headroom-conditional; format-native-slot injection required cross-family; distilled>vanilla generator; verifier/selector marginal (systematic-not-stochastic errors)
-- [Scaffold Autopilot Cost-Lever Deployment (DESIGN)](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) -- episodic-memory-gated deployment of the scaffold as a `capability_registry` cost lever inside autopilot's 4D Pareto (quality/speed/−cost/reliability); blended GPU+CPU cost accounting; NOT implemented
+- [GPU CoT-Scaffold Sidecar (full arc)](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar) -- G1/G2/verifier/dense-generalization arc; single-shot capability-transplant falsified both regimes; scaffold = 20–50× CPU-token cost lever; quality headroom-conditional; format-native-slot injection required cross-family; distilled>vanilla generator; verifier/selector marginal (systematic-not-stochastic errors)
+- [Scaffold Autopilot Cost-Lever Deployment (DESIGN)](../handoffs/active/autopilot-program.md#track-scaffold-autopilot-cost-lever-deployment) -- episodic-memory-gated deployment of the scaffold as a `capability_registry` cost lever inside autopilot's 4D Pareto (quality/speed/−cost/reliability); blended GPU+CPU cost accounting; NOT implemented
 - [Progress 2026-07-06 — CoT study complete](../progress/2026-07/2026-07-06-cot-study-complete.md) -- three-arch × three-lever close-out (GPQA scaffold quality +25pp/−0/no-op table; verifier 3-bench marginal; deployment implication)
 - [Reasoning that Travels (arXiv:2605.28913)](https://arxiv.org/abs/2605.28913) -- transplanted reasoning is a capability amplifier not substitute; success tracks the receiver's latent capability (the literature match for the scaffold headroom-conditionality)
 - [GenRM / GenPRM verifier literature](https://arxiv.org/abs/2408.15240) -- generative verifier best-of-N (GenRM 2408.15240; GenPRM 2504.00891 — a 1.5B PRM beats GPT-4o as a judge); the "reasoner does its own task" mode, marginal on our systematic-error workloads
@@ -150,7 +150,7 @@ host — the compile does not have to run against the deployment target.
 Correspondingly, **BootstrapFewShot\*** is marked **superseded** for 2026-era
 instruct models, and **MIPROv2** buys only **+2.6** on Qwen3-8B while
 **regressing** on AIME/LiveBench.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29c
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29c
 
 ### The standing cost line for any prompt-program compilation
 
@@ -159,7 +159,7 @@ LM calls** (independently cross-checked at 1,839–7,051 rollouts). On this host
 that is **hours to days per compile**, so a compile is budgeted as a
 **region-locked campaign** and **never** as a background task. Any proposal that
 treats prompt optimization as free is priced against this line.
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-11
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-11
 
 ### Prompt text is where the effect lives — a measured 19× over the training objective
 
@@ -171,7 +171,7 @@ different from ours but the ordering is the finding — when an approach couples
 prompting change to an algorithmic change, attribute carefully before adopting
 the algorithm. Full context in
 [Training & Distillation](training-distillation.md).
-[`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) §Premise correction
+[`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) §Premise correction
 
 ### Run-level policy as an editable natural-language document
 
@@ -188,7 +188,7 @@ so drift is measurable on **saved traces** and is deterministic-replay eligible 
 a probe that costs no new inference. Their own red flag travels with it:
 **Information Handoff Recall drops to 0.32/0.55 under parent-child execution even
 on a frontier model.**
-[`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-8, §HS-9
+[`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) §HS-8, §HS-9
 
 ### A judge prompt's accuracy has a plateau — budget it accordingly
 
@@ -199,13 +199,13 @@ the **cheapest adequate local model** on judge prompts of this shape rather than
 escalating to a frontier call. This does **not** generalize to every gate — where
 an admission test is genuinely load-bearing the budget argument reverses, so the
 plateau finding is scoped to the gate it was measured on.
-[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) §AP-29a
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) §AP-29a
 
 ### Source References
 
-- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
-- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
-- [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29c (GEPA-class optimizer of record; cross-model transfer; MIPROv2/BootstrapFewShot superseded) and AP-29a (judge-accuracy plateau and the cheapest-adequate-judge rule)
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-11 compile cost line; HS-8/HS-9 policy-as-document reductions, the open-weight interpretation gap, and the replay-eligible adherence metrics
+- [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the ~2pp objective vs ~38pp teacher-prompting decomposition
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — session record of the dive that produced the prompting-over-objective correction
 
 ## Compiled Update — 2026-08-23: prompt construction and sampling are deterministic by design — and a chat template is executable code in the prompt-construction position
@@ -214,26 +214,26 @@ plateau finding is scoped to the gate it was measured on.
 
 ### The sampling side of determinism is closed except for its certification (D1–D2 done, D3–D4 open)
 
-The determinism audit split the question cleanly: **prompt *construction* was deterministic; generation *sampling* was not** — and the sampling gaps were masked by an accidental fallback (roles declared `generation_defaults.temperature` 0.1–0.3 but the payload builders read only an unset `acceleration.temperature`, so the whole stack ran **accidental greedy 0.0**; no seed anywhere; `/completion` and the chat path ran different sampler defaults). Fixed 2026-06-26 by one `_apply_deterministic_sampling()` helper across all three payload sites: temperature precedence `acceleration.temperature` → `generation_defaults.temperature` → `request.temperature`; pinned `seed=42` (per-request override); unified `top_k=40/top_p=0.95/repeat_penalty=1.1` on both endpoints. D1 (commit) is done (`f4a8a3ca`, with regression coverage in `ab75b5ae`); D2 — the J12 clean-window think-loop probe — passed 2026-07-06 (`frontdoor` 15/15, `architect_general` 14/15, 0 empty outputs, 0 `<think>` leaks, 0 repetition loops). **D3 (canonical-bench certification of greedy→sampled) and D4 (the `autopilot_quality` instrument-era row, using DEMOTE-TO-PRIOR for pre-boundary numbers) remain open**, co-scheduled with the N13 v6-iqk clean window — the behavior change is real and must not be certified before the revert-gate resolved. The 2026-07-04 OpenAI-compatible propagation (`fe390e5a`) closed the caller surface: explicit `temperature`/`seed`/`top_p`/`top_k` now flow `/v1/chat/completions` → `LLMPrimitives.llm_call()` → `InferenceRequest` → llama-server payloads, and *omitted* temperature means "use the role registry/defaults" (the caching backend no longer manufactures a synthetic `temperature=0.0` config). [`prompt-construction-determinism.md`](../handoffs/active/prompt-construction-determinism.md)
+The determinism audit split the question cleanly: **prompt *construction* was deterministic; generation *sampling* was not** — and the sampling gaps were masked by an accidental fallback (roles declared `generation_defaults.temperature` 0.1–0.3 but the payload builders read only an unset `acceleration.temperature`, so the whole stack ran **accidental greedy 0.0**; no seed anywhere; `/completion` and the chat path ran different sampler defaults). Fixed 2026-06-26 by one `_apply_deterministic_sampling()` helper across all three payload sites: temperature precedence `acceleration.temperature` → `generation_defaults.temperature` → `request.temperature`; pinned `seed=42` (per-request override); unified `top_k=40/top_p=0.95/repeat_penalty=1.1` on both endpoints. D1 (commit) is done (`f4a8a3ca`, with regression coverage in `ab75b5ae`); D2 — the J12 clean-window think-loop probe — passed 2026-07-06 (`frontdoor` 15/15, `architect_general` 14/15, 0 empty outputs, 0 `<think>` leaks, 0 repetition loops). **D3 (canonical-bench certification of greedy→sampled) and D4 (the `autopilot_quality` instrument-era row, using DEMOTE-TO-PRIOR for pre-boundary numbers) remain open**, co-scheduled with the N13 v6-iqk clean window — the behavior change is real and must not be certified before the revert-gate resolved. The 2026-07-04 OpenAI-compatible propagation (`fe390e5a`) closed the caller surface: explicit `temperature`/`seed`/`top_p`/`top_k` now flow `/v1/chat/completions` → `LLMPrimitives.llm_call()` → `InferenceRequest` → llama-server payloads, and *omitted* temperature means "use the role registry/defaults" (the caching backend no longer manufactures a synthetic `temperature=0.0` config). [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism)
 
 ### A chat template is executable code in the prompt-construction position (PCD-T1, 2026-08-21)
 
-The 2026-08-21 chat-template intake round established a constraint any prompt-side change must now respect: the frozen production kernel (`production-consolidated-v9`, `0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the tree are a stale TODO comment at `common/chat.cpp:749`, a test, and a doc. That engine implements **input marking**: `jinja::string` carries an `is_input` flag through one-to-one, one-to-many and many-to-one transformations specifically so user content cannot forge special tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision to run a third-party or vendor-refreshed template must be checked against that input-marking path before it routes through the cc-set gate — neither community template repository mentions it. (Engine detail and the `/completion` vs `/v1/chat/completions` routing surface are compiled in [Chat Templates](chat-templates.md); the operative task gate is CT-3 in [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md).) [`prompt-construction-determinism.md`](../handoffs/active/prompt-construction-determinism.md) §PCD-T1
+The 2026-08-21 chat-template intake round established a constraint any prompt-side change must now respect: the frozen production kernel (`production-consolidated-v9`, `0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the tree are a stale TODO comment at `common/chat.cpp:749`, a test, and a doc. That engine implements **input marking**: `jinja::string` carries an `is_input` flag through one-to-one, one-to-many and many-to-one transformations specifically so user content cannot forge special tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision to run a third-party or vendor-refreshed template must be checked against that input-marking path before it routes through the cc-set gate — neither community template repository mentions it. (Engine detail and the `/completion` vs `/v1/chat/completions` routing surface are compiled in [Chat Templates](chat-templates.md); the operative task gate is CT-3 in [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation).) [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism) §PCD-T1
 
 ### The body→template route is exactly one field wide: `chat_template_kwargs` (PRB-T3, 2026-08-21)
 
-Static analysis of the frozen v9 tree is decisive: a top-level `reasoning_effort` is **neither server-consumed nor template-visible** — 0 occurrences tree-wide; the jinja globals are a closed literal (`common/chat.cpp:883-895`); `extra_context` is date helpers plus `chat_template_kwargs` and nothing else (`:2714-2717`); and `chat_template_kwargs` is the **only** body→template route (`server-common.cpp:1073-1077`, a two-layer merge with server-launch defaults). There is no unknown-field rejection anywhere on the path — an unrecognised top-level key is a **silent no-op**, the same shape intake-946 records for a top-level `enable_thinking`. Live confirmation the same day: `/apply-template` on a real v9 server renders a top-level `reasoning_effort: low` **byte-identical to a no-kwargs request (59 B both)**, while `chat_template_kwargs: {reasoning_effort: low}` renders the steering instruction (225 B). Consequence: any orchestrator code setting a top-level `reasoning_effort` is a no-op today, and the Qwen3.8 template's `raise_exception` on out-of-range `reasoning_effort` can only fire through `chat_template_kwargs`. The registry already expresses `enable_thinking: false` as a kwarg — that is the only working channel. [`per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md) §PRB-T3
+Static analysis of the frozen v9 tree is decisive: a top-level `reasoning_effort` is **neither server-consumed nor template-visible** — 0 occurrences tree-wide; the jinja globals are a closed literal (`common/chat.cpp:883-895`); `extra_context` is date helpers plus `chat_template_kwargs` and nothing else (`:2714-2717`); and `chat_template_kwargs` is the **only** body→template route (`server-common.cpp:1073-1077`, a two-layer merge with server-launch defaults). There is no unknown-field rejection anywhere on the path — an unrecognised top-level key is a **silent no-op**, the same shape intake-946 records for a top-level `enable_thinking`. Live confirmation the same day: `/apply-template` on a real v9 server renders a top-level `reasoning_effort: low` **byte-identical to a no-kwargs request (59 B both)**, while `chat_template_kwargs: {reasoning_effort: low}` renders the steering instruction (225 B). Consequence: any orchestrator code setting a top-level `reasoning_effort` is a no-op today, and the Qwen3.8 template's `raise_exception` on out-of-range `reasoning_effort` can only fire through `chat_template_kwargs`. The registry already expresses `enable_thinking: false` as a kwarg — that is the only working channel. [`per-request-reasoning-budget.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget) §PRB-T3
 
 ### A template swap invalidates certified effort levels (E-7 amendment, 2026-08-21/22)
 
-The same round extended the reasoning-effort certification contract: the chat template is a **calibration-voiding axis** a model/quant swap was already known to trigger — the 2026-08-21 fleet sweep found **three distinct embedded templates across four production models**, and `architect-model-selection-bench.md:267` had already ruled the prompt-template axis a per-model property. The effort-level stamp therefore extends to `(model, quant, kernel/era, template_sha)`, and the amendment is already **practiced**: the 2026-08-22 terse-pilot recalibration voided `frontdoor` + `architect_general` and re-measured both on the live path with template `1443ea9ab4bb` in the stamp (CT-E7). The validator extension itself remains open. [`reasoning-effort-levels.md`](../handoffs/active/reasoning-effort-levels.md) §E-7
+The same round extended the reasoning-effort certification contract: the chat template is a **calibration-voiding axis** a model/quant swap was already known to trigger — the 2026-08-21 fleet sweep found **three distinct embedded templates across four production models**, and `architect-model-selection-bench.md:267` had already ruled the prompt-template axis a per-model property. The effort-level stamp therefore extends to `(model, quant, kernel/era, template_sha)`, and the amendment is already **practiced**: the 2026-08-22 terse-pilot recalibration voided `frontdoor` + `architect_general` and re-measured both on the live path with template `1443ea9ab4bb` in the stamp (CT-E7). The validator extension itself remains open. [`reasoning-effort-levels.md`](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) §E-7
 
 ### Source References (2026-08-23)
 
-- [`prompt-construction-determinism.md`](../handoffs/active/prompt-construction-determinism.md) — the D1–D4 determinism arc (sampling fixes, J12 probe, open certification), the `fe390e5a` OpenAI-compatible propagation, and the PCD-T1 chat-template-executable-code constraint
-- [`per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md) — PRB-T3: top-level `reasoning_effort` dropped, `chat_template_kwargs` the only body→template route, live `/apply-template` confirmation
-- [`reasoning-effort-levels.md`](../handoffs/active/reasoning-effort-levels.md) — E-7: the chat template as a calibration-voiding axis and the `template_sha` stamp (first applied CT-E7, 2026-08-22)
-- [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-3 (the input-marking gate for any template substitution) and CT-E7 (the template-stamped recalibration)
+- [`prompt-construction-determinism.md`](../handoffs/active/eval-tower-program.md#track-prompt-construction-determinism) — the D1–D4 determinism arc (sampling fixes, J12 probe, open certification), the `fe390e5a` OpenAI-compatible propagation, and the PCD-T1 chat-template-executable-code constraint
+- [`per-request-reasoning-budget.md`](../handoffs/active/context-and-token-economy.md#track-per-request-reasoning-budget) — PRB-T3: top-level `reasoning_effort` dropped, `chat_template_kwargs` the only body→template route, live `/apply-template` confirmation
+- [`reasoning-effort-levels.md`](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — E-7: the chat template as a calibration-voiding axis and the `template_sha` stamp (first applied CT-E7, 2026-08-22)
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-3 (the input-marking gate for any template substitution) and CT-E7 (the template-stamped recalibration)
 - [Chat Templates](chat-templates.md) — the compiled engine finding (`common/jinja/` with input marking, NOT minja) and the endpoint routing surface
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the chat-template intake round (commit `612fbd99`, 12 closed tasks via 5-agent fan-out) that produced PCD-T1, PRB-T3 and the E-7 amendment
 - [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — the CT-E7 terse-pilot recalibration
@@ -261,7 +261,7 @@ for the prescriptions, which have not been A/B'd (INF-78 OAB-9).
 ### Source References (2026-09-24 speech-lane)
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files* and its *Traps*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (*Avoid*
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §1 (*Avoid*
   list).
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 6 (restrict agents through `permission`, not through a flag that only looks restrictive).
 

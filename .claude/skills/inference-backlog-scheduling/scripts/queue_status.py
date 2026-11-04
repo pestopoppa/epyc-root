@@ -87,6 +87,39 @@ def live_writers(flags: str) -> dict[str, set[str]]:
     return out
 
 
+def _hostutil():
+    """scripts/coordination/rowflow/hostutil.py: the ONE measured-utilisation reading (2026-11-03 item 2)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    root = os.path.abspath(os.path.join(here, "..", "..", "..", ".."))
+    d = os.path.join(root, "scripts", "coordination", "rowflow")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    import hostutil
+    return hostutil
+
+
+def measure_util():
+    """Measured per-quarter CPU% + GPU%/VRAM, or None when unavailable (patched in tests)."""
+    try:
+        return _hostutil().measure()
+    except Exception:  # noqa: BLE001 - a status page never fails on its sensor
+        return None
+
+
+def _grant_covers(regions: str, q: str) -> bool:
+    """True when a grant's regions string ('0-95', '24-47', 'mi210_0,88-91') covers the whole quarter q."""
+    lo = int(q[1]) * 24
+    want = set(range(lo, lo + 24))
+    have: set[int] = set()
+    for t in regions.split(","):
+        if "-" in t and t.replace("-", "").isdigit():
+            a_, b_ = t.split("-", 1)
+            have |= set(range(int(a_), int(b_) + 1))
+        elif t.isdigit():
+            have.add(int(t))
+    return want <= have
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--flags", default=DEFAULT_FLAGS)
@@ -154,19 +187,33 @@ def main(argv=None) -> int:
         rec["blocker"] = m.group(1).strip()[:90] if m else "(none stated)"
         buckets["BACKLOG"].append(rec)
 
+    util = measure_util()
+    hu = _hostutil() if util else None
+    for r in buckets["RUNNING"]:   # measured, beside the grant: a grant file is never reported as work
+        if util and r.get("regions"):
+            toks = [t for t in ("q0", "q1", "q2", "q3") if _grant_covers(r["regions"], t)]
+            if "mi210" in r["regions"] or "gpu" in r["regions"]:
+                toks.append("gpu-quiet")
+            r["util"] = hu.regions_pct(util, toks)
+            idle = hu.idle_regions(util, toks)
+            if idle:
+                r["idle_held"] = idle
     if a.json:
-        json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "writers": {k: sorted(v) for k, v in writers.items()},
+        json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "writers": {k: sorted(v) for k, v in writers.items()},
                    "buckets": buckets}, sys.stdout, indent=1)
         print()
         return 0
     print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; {len(rows)} rows; "
           f"{len(writers)} live writers)")
+    print(hu.line(util) if util else "util: unavailable (hostutil could not read /proc/stat or sysfs)")
     for name, recs in buckets.items():
         print(f"\n{name} ({len(recs)})")
         for r in sorted(recs, key=lambda r: (r['owner'], r['id'])):
             extra = {
                 "COMPLETE": r.get("ended", ""),
-                "RUNNING": f"{r.get('regions','?')} {r.get('start','?')}->{r.get('end','?')} ({r.get('ends_in_min','?')} min left)",
+                "RUNNING": f"{r.get('regions','?')} {r.get('start','?')}->{r.get('end','?')} ({r.get('ends_in_min','?')} min left)"
+                           + (" measured " + " ".join(f"{k}={'?' if v is None else f'{v:.0f}%'}" for k, v in r["util"].items()) if r.get("util") else "")
+                           + (f" IDLE-HELD {','.join(r['idle_held'])}" if r.get("idle_held") else ""),
                 "BOOKED": f"in {r.get('writer')}",
                 "ARMED-UNBOOKED": f"{r['resources']} | min {r['min_window']} | {r['ram_gib']} GiB | {r['class']}",
                 "STALE-ARMED": f"launcher pid={r.get('pid')} dead/absent -> fix the row",

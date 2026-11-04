@@ -1,0 +1,26 @@
+{
+ "at": "2026-11-03T17:59:45Z",
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-parity-r3-20261103/launcher.out",
+ "elapsed_s": 5,
+ "ended": null,
+ "engine_sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c",
+ "first_unit_at": null,
+ "fix_task": "fix dry-run failure of lsa-screen-1-cpu-parity-r3-20261103: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/RESULT.json (json) [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (see compute-flags/dryrun/lsa-screen-1-cpu-parity-r3-20261103/launcher.out; the keeper retries as soon as the launcher file changes)",
+ "id": "lsa-screen-1-cpu-parity-r3-20261103",
+ "launcher_out_tail": [
+  "",
+  "==== dry run 2026-11-03T17:59:39Z regions=0-3 launcher_sha=af8834614be79626e08ac95489be3ecf1b3107edd24358eeeab1c48797efee79 units_before=0",
+  "requires a publisher four-core mask",
+  "==== dry run FAIL: job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/RESULT.json (json) [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-03T17:59:45Z)"
+ ],
+ "launcher_sha256": "af8834614be79626e08ac95489be3ecf1b3107edd24358eeeab1c48797efee79",
+ "reason": "job ended (rc=? (no ended record)) before writing a unit to /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/RESULT.json (json) [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/RESULT.json",
+ "row_sha256": "397d510fae93723589eaabfa93932569ed3da0763ce74bf27bdae770e6f819d2",
+ "rowflow_sha256": "19d7fbc990aa8b38d5cca1ecbf326bd0131c7347cf7c33cd2958c4704eab1f87",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

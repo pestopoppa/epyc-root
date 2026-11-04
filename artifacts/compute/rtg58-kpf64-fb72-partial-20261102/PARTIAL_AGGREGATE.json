@@ -1,0 +1,37 @@
+{
+  "recorded_at_utc": "2026-11-02T17:15:52.409840+00:00",
+  "description": "Stopped FB72 partial vs F24 on identical session/turn keys, nonrandom completed subset; descriptive only. FB72 was intentionally stopped by operator and has no full coverage.",
+  "fb_exit_code": 143,
+  "f24_source_sha256": "e93f77a536c152f90d3ca07a853955677e380117081929e3e1733d9416722017",
+  "fb72_source_sha256": "dce4775159e50dc34b1b253df1fe07f47c3815f7d60619ab47a7ff038535116e",
+  "fb_rows": 49,
+  "paired": 49,
+  "f24_paired": {
+    "requests": 49,
+    "uncached_tokens": 242314,
+    "cached_tokens": 606899,
+    "cached_share": 0.7146605150886762,
+    "uncached_per_request": 4945.183673469388,
+    "mean_service_seconds": 180.69488175510205,
+    "mean_prompt_seconds": 47.66217720408164
+  },
+  "fb72_paired": {
+    "requests": 49,
+    "uncached_tokens": 848297,
+    "cached_tokens": 0,
+    "cached_share": 0.0,
+    "uncached_per_request": 17312.183673469386,
+    "mean_service_seconds": 326.9266821632653,
+    "mean_prompt_seconds": 107.67775736734693
+  },
+  "families": {
+    "claude-01": 14,
+    "claude-00": 25,
+    "opencode-01": 5,
+    "opencode-00": 5
+  },
+  "different_total_prompt_tokens": 26,
+  "model_histories": "live regenerated; inspect before causal attribution",
+  "fb_idle_cache_disabled_with_ram_zero": true,
+  "timing_claim": "descriptive co-tenant; 24 vs 72 threads"
+}

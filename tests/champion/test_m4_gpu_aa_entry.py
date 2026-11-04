@@ -1,0 +1,294 @@
+import copy
+import importlib.util
+import sys
+import types
+from pathlib import Path
+import pytest
+
+ROOT = Path(__file__).parents[2]
+sys.path.insert(0, str(ROOT / 'scripts/champion/m4'))
+_saved = {k: sys.modules.get(k) for k in ('write_capture','m4_gpu_speed_v2')}
+sys.modules['write_capture'] = types.ModuleType('write_capture')
+v2 = types.ModuleType('m4_gpu_speed_v2')
+v2.validate_capture = lambda *args, **kwargs: None
+sys.modules['m4_gpu_speed_v2'] = v2
+spec = importlib.util.spec_from_file_location('aa_entry', ROOT/'scripts/champion/m4/run_gpu_aa.py')
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+for _key, _value in _saved.items():
+    if _value is None: sys.modules.pop(_key, None)
+    else: sys.modules[_key] = _value
+
+
+def fixture():
+    sweep = {'question_pool':'/prompts', 'prompt_limit':8, 'prompt_seed':42, 'tier':1, 'threads':8,
+             'context_size':65536, 'ubatch_size':512, 'kv_type':'q8_0', 'n_predict':256,
+             'warmup_prompts':2, 'warmup_n_predict':32, 'startup_timeout':900, 'request_timeout':900,
+             'port_base':18070, 'extra_server_args':[], 'no_mlock':True,'no_ttft':True,'allow_host_health_warning':True,'skip_clean_check':False}
+    cell = {'role':'critic','arm':'BASELINE','source_commit':'c'*40,'model':'/model', 'recipe':{},
+            'argv':['/bin/server','-m','/model'], 'environment':{},'device':'gpu0','np':4,
+            'files':{'binary':{'path':'/bin/server','sha256':'a'},'model':{'path':'/model','sha256':'b'},'prompt':{'path':'/prompts','sha256':'c'}},
+            'ggml':{},'grant':{},'request_count':8,'vram_limit_bytes':10,'kfd_vram_file':'vram_0',
+            'device_vram_path':'/sys/vram','watch_result_path':'/run/a/watch-result.json'}
+    other = copy.deepcopy(cell); other['watch_result_path']='/run/b/watch-result.json'
+    native={'cells':{'x':cell,'y':other}}
+    aa={'schema':'epyc.m4.gpu.aa.execution.v1','intent':'descriptive_only','cells':[
+       {'id':'a','native_cell':'x','arm':'A1','pair':0,'sweep':sweep},
+       {'id':'b','native_cell':'y','arm':'A2','pair':0,'sweep':copy.deepcopy(sweep)}]}
+    return aa,native
+
+
+def test_pair_is_two_independent_off_processes():
+    aa,native=fixture(); selected=mod.validate_plans(aa,native)
+    assert len(selected)==2
+    assert all(c['arm']=='BASELINE' for _,c in selected)
+    cmd=mod.command(*selected[0],Path('/out'))
+    assert '--dry-run' not in cmd and '--skip-clean-check' not in cmd
+
+@pytest.mark.parametrize('mutate', [
+ lambda a,n: n['cells']['y'].update(arm='CANDIDATE'),
+ lambda a,n: n['cells']['y']['argv'].extend(['--prefill-order','srpf']),
+ lambda a,n: n['cells']['y']['argv'].append('--prefill-order=srpf'),
+ lambda a,n: a['cells'][0]['sweep']['extra_server_args'].append('--prefill-contend-cap=512'),
+ lambda a,n: n['cells']['y'].update(watch_result_path=n['cells']['x']['watch_result_path']),
+ lambda a,n: n['cells']['y'].update(source_commit='other'),
+ lambda a,n: a['cells'][1]['sweep'].update(n_predict=500),
+ lambda a,n: a['cells'][1].update(arm='A1'),
+ lambda a,n: a['cells'][1].update(native_cell='x'),
+ lambda a,n: a['cells'][1]['sweep'].update(question_pool='/other'),
+ lambda a,n: a.update(intent='gate'),
+])
+def test_refuse_unmatched_or_changed_cells(mutate):
+    aa,native=fixture(); mutate(aa,native)
+    with pytest.raises((ValueError,KeyError)):
+        mod.validate_plans(aa,native)
+
+
+def test_default_enrollment_refuses():
+    with pytest.raises(RuntimeError, match='not configured'):
+        mod.main()
+
+
+def test_entry_orchestrates_validated_native_pairs(tmp_path, monkeypatch):
+    import hashlib
+    import json
+    aa,native=fixture()
+    capture_root = tmp_path / 'capture'; capture_root.mkdir()
+    for key in ('x','y'):
+        native['cells'][key]['watch_result_path'] = str(capture_root / key / 'watch-result.json')
+    aa['row']={'champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
+    monkeypatch.setattr(mod, 'check_champion', lambda unused:'c'*40)
+    aa['native_plan_sha256'] = 'f'*64
+    aa['result_path'] = str(capture_root / 'result.json')
+    raw=json.dumps(aa, sort_keys=True).encode(); plan=tmp_path/'plan.json'; plan.write_bytes(raw)
+    monkeypatch.setattr(mod.aa_enrollment,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(mod.aa_enrollment,'PLAN_PATH',str(plan))
+    monkeypatch.setattr(mod.aa_enrollment,'PLAN_SHA256',hashlib.sha256(raw).hexdigest())
+    seals=[]
+    for name in ('run_gpu_aa.py','aa_enrollment.py','calibrate_gpu_aa.py','launch_gpu_aa.py'):
+        p=mod.HERE/name; seals.append((p, hashlib.sha256(p.read_bytes()).hexdigest()))
+    engine=mod.ROOT/'scripts/coordination/rowflow/filler_run15.sh'
+    seals.append((engine, hashlib.sha256(engine.read_bytes()).hexdigest()))
+    class Trust:
+        sources=tuple(seals)
+        plan_sha256='f'*64
+        def plan(self): return native
+    trust=Trust(); trust.capture_root=capture_root
+    monkeypatch.setattr(mod.write_capture,'enrolled',lambda:trust,raising=False)
+    runs=[]
+    def fake_run(cmd, env, check):
+        assert check and env['M4_PLAN_CELL'] in ('x','y')
+        runs.append(env['M4_PLAN_CELL'])
+        path=Path(env['M4_WATCH_DIR'])/'native/run'; path.mkdir(parents=True)
+        requests=path/'requests.jsonl'
+        requests.write_text('\n'.join(json.dumps({'request_index':i,'stream_id':i%4,'success':True,'http_status':200,'predicted_tokens':100,'predicted_ms':1000}) for i in range(8)))
+        (path/'capture-v2-0.json').write_text(str(requests))
+    def fake_validate(path, actual_trust):
+        assert actual_trust is trust
+        return {'requests_path':Path(path).read_text()}, {}, 400.0
+    monkeypatch.setattr(mod.subprocess,'run',fake_run)
+    monkeypatch.setattr(mod,'validate_capture',fake_validate)
+    assert mod.main()==0
+    result=json.loads((capture_root/'result.json').read_text())
+    assert runs==['x','y'] and len(result['pairs'])==1
+    assert result['pairs'][0]['a2_over_a1']==1 and result['gate_authorized'] is False
+
+
+def test_launcher_binds_actual_row_and_fails_changed_grant(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
+    spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
+    launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
+    aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup','champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
+    aa.update(row=row,result_path=str(cap/'result.json'))
+    for cell in native['cells'].values():
+        cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
+    trust=types.SimpleNamespace(capture_root=cap)
+    args=launch.launch_spec(aa,native,trust)
+    assert args[args.index('--gpu-quiet')+1]=='exclusive'
+    assert args[args.index('--claim-cpus')+1]=='72-95'
+    assert args[args.index('--port')+1]=='18070'
+    native['cells']['y']['grant']['id']='other'
+    with pytest.raises(ValueError):
+        launch.launch_spec(aa,native,trust)
+
+
+def test_default_launcher_enrollment_refuses(monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
+    spec=importlib.util.spec_from_file_location('aa_launch',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
+    launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
+    with pytest.raises(RuntimeError, match='not configured'):
+        launch.load()
+
+
+def test_qualification_plan_has_independent_binding(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','/fixture')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','fixture-seal')
+    monkeypatch.setenv('FILLER_DRYRUN','0')
+    assert e.selected()==('/actual','actual-seal',False)
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    assert e.selected()==('/fixture','fixture-seal',True)
+    monkeypatch.setenv('FILLER_DRYRUN','invalid')
+    with pytest.raises(RuntimeError): e.selected()
+
+
+def test_missing_qualification_binding_refuses(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','')
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    with pytest.raises(RuntimeError, match='not configured'): e.selected()
+
+
+def test_qualification_cannot_reuse_real_binding(monkeypatch):
+    e=mod.aa_enrollment
+    monkeypatch.setattr(e,'EXECUTION_ENABLED',True)
+    monkeypatch.setattr(e,'PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'PLAN_SHA256','actual-seal')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_PATH','/actual')
+    monkeypatch.setattr(e,'DRYRUN_PLAN_SHA256','fixture-seal')
+    monkeypatch.setenv('FILLER_DRYRUN','1')
+    with pytest.raises(RuntimeError, match='differ'): e.selected()
+
+
+def test_controlled_qualification_stop_and_failure_propagation(tmp_path, monkeypatch):
+    import subprocess
+    stop=tmp_path/'stop'
+    env={'FILLER_STOPFILE':str(stop)}
+    stop.touch()
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw: (_ for _ in ()).throw(AssertionError('must not run')))
+    assert mod.execute_cell(['cmd'],env,True)==75
+    stop.unlink()
+    def stopped(*args,**kwargs):
+        stop.touch()
+        raise subprocess.CalledProcessError(75,['cmd'])
+    monkeypatch.setattr(mod.subprocess,'run',stopped)
+    assert mod.execute_cell(['cmd'],env,True)==75
+    with pytest.raises(subprocess.CalledProcessError):
+        mod.execute_cell(['cmd'],env,False)
+
+
+def test_keeper_nonce_unit_is_qualification_only_and_exclusive(tmp_path):
+    import json
+    dd=tmp_path/'dryrun'; attempt=dd/'native-attempts'/'attempt-test'; attempt.mkdir(parents=True)
+    capture=tmp_path/'capture.json'; capture.write_text('{"native":true}')
+    env={'FILLER_DRYRUN_DIR':str(dd),'FILLER_DRYRUN_RESULT_PATH':str(attempt/'native-result.json')}
+    mod.qualification_unit(env,capture,{'plan_sha256':'native-seal'},'aa-seal')
+    out=json.loads((attempt/'native-result.json').read_text())
+    assert out['qualification_only'] is True and out['native_plan_sha256']=='native-seal'
+    with pytest.raises(FileExistsError):
+        mod.qualification_unit(env,capture,{'plan_sha256':'native-seal'},'aa-seal')
+    with pytest.raises(RuntimeError, match='invalid keeper'):
+        mod.qualification_unit({**env,'FILLER_DRYRUN_RESULT_PATH':str(tmp_path/'native-result.json')},capture,{'plan_sha256':'native-seal'},'aa-seal')
+
+
+def test_generated_launcher_is_rowflow_parseable(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, 'run_gpu_aa', mod)
+    spec=importlib.util.spec_from_file_location('aa_launch_parse',ROOT/'scripts/champion/m4/launch_gpu_aa.py')
+    launch=importlib.util.module_from_spec(spec); spec.loader.exec_module(launch)
+    aa,native=fixture(); cap=tmp_path/'capture'; cap.mkdir(); stop=tmp_path/'STOP'
+    row={'id':'m4-aa','regions':'mi210_0,184-191','stopfile':str(stop),'min_window_s':3600,'port':18070,'dryrun_native_result':True,'cgroup_parent':'/sys/fs/cgroup','champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}
+    aa.update(row=row,result_path=str(cap/'result.json'))
+    for cell in native['cells'].values(): cell['grant']={'id':row['id'],'regions':row['regions'],'stopfile':str(stop)}
+    command=launch.launch_spec(aa,native,types.SimpleNamespace(capture_root=cap))
+    shell=tmp_path/'launch.sh'; shell.write_text(launch.render_launcher(command, '/sys/fs/cgroup'))
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    import rowflow
+    parsed=rowflow.parse_launcher(str(shell))
+    assert parsed['id']=='m4-aa' and parsed['class']=='gpu'
+    assert parsed['min_window']==3600 and parsed['claim_cpus']=='72-95'
+    assert parsed['gpu_quiet']=='exclusive' and parsed['complete_cmd'] and parsed['cmd']
+
+
+def test_champion_binding_refuses_ref_movement(monkeypatch):
+    aa={'row':{'champion_git':'/mnt/raid0/llm/llama.cpp','champion_ref':'refs/heads/ak/champion/llama-cpp-ffc1bac82eec','champion_commit':'c'*40}}
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw:types.SimpleNamespace(stdout='c'*40+'\n'))
+    assert mod.check_champion(aa)=='c'*40
+    monkeypatch.setattr(mod.subprocess,'run',lambda *a,**kw:types.SimpleNamespace(stdout='d'*40+'\n'))
+    with pytest.raises(RuntimeError,match='moved'): mod.check_champion(aa)
+
+
+def test_targeted_watch_audit_rejects_missing_or_live(tmp_path,monkeypatch):
+    import os
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    spec=importlib.util.spec_from_file_location('aa_targeted',ROOT/'scripts/champion/m4/targeted_smoke.py')
+    target=importlib.util.module_from_spec(spec);spec.loader.exec_module(target)
+    wd=tmp_path/'watch';wd.mkdir()
+    plan={'cells':{'x':{'watch_result_path':str(wd/'watch-result.json')}}}
+    with pytest.raises(FileNotFoundError):target.audit_watches(plan)
+    import json
+    (wd/'watch-result.json').write_text(json.dumps({'status':'closed','containment_empty':True}))
+    (wd/'server-pids.txt').write_text('')
+    assert target.audit_watches(plan)==1
+    birth=Path('/proc/self/stat').read_text().rsplit(')',1)[1].split()[19]
+    (wd/'server-pids.txt').write_text(f'{os.getpid()} {birth}\n')
+    with pytest.raises(RuntimeError,match='still alive'):target.audit_watches(plan)
+
+
+def test_targeted_smoke_requires_claimed_parent_not_dryrun(monkeypatch):
+    sys.path.insert(0,str(ROOT/'scripts/coordination/rowflow'))
+    spec=importlib.util.spec_from_file_location('aa_targeted_claim',ROOT/'scripts/champion/m4/targeted_smoke.py')
+    target=importlib.util.module_from_spec(spec);spec.loader.exec_module(target)
+    raw_read=Path.read_bytes
+    def read(path):
+        if str(path).endswith('/cmdline'):
+            return b'\0'.join([b'python',b'-m',b'src.runtime.region_lock_cli',b'run',b'--cpu-list',b'72-95',b'--gpu-quiet',b'exclusive',b''])
+        if str(path).endswith('/environ'):
+            return b'FILLER_DRYRUN=1\0'
+        return raw_read(path)
+    monkeypatch.setattr(Path,'read_bytes',read)
+    with pytest.raises(RuntimeError,match='no-lock'):
+        target.parent_claim()
+
+
+def test_clean_runtime_bypass_is_qualification_only():
+    aa,native=fixture()
+    for e in aa['cells']:e['sweep']['skip_clean_check']=True
+    pairs=mod.validate_plans(aa,native)
+    with pytest.raises(RuntimeError,match='qualification'):mod.validate_runtime_mode(pairs,False)
+    mod.validate_runtime_mode(pairs,True)
+
+
+def test_stale_watch_dir_blocks_real_run_but_is_superseded_in_qualification(tmp_path):
+    watch = tmp_path / 'dry-captures' / 'x'; watch.mkdir(parents=True)
+    (watch / 'watch-result.json').write_text('evidence')
+    with pytest.raises(FileExistsError):  # the pre-fix dry-run failure; real runs stay strict
+        mod.prepare_watch_dir(watch, False)
+    assert (watch / 'watch-result.json').read_text() == 'evidence'
+    moved = mod.prepare_watch_dir(watch, True)
+    assert moved.parent == tmp_path / 'dry-captures' / 'superseded'
+    assert (moved / 'watch-result.json').read_text() == 'evidence'
+    assert watch.is_dir() and not any(watch.iterdir())
+    (watch / 'second').write_text('2')
+    moved2 = mod.prepare_watch_dir(watch, True)
+    assert moved2 != moved and (moved2 / 'second').exists() and (moved / 'watch-result.json').exists()
+    other = tmp_path / 'dry-captures' / 'y'
+    assert mod.prepare_watch_dir(other, True) is None and other.is_dir()
+    with pytest.raises(FileExistsError):
+        mod.prepare_watch_dir(other, False)

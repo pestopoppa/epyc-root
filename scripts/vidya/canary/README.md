@@ -5,8 +5,14 @@ These scripts replay the 2026-10-25 harness documented in
 The unchanged historical scripts remain in its accompanying harness directory.
 They execute no inference: B uses the strategy store hash fallback, which changes
 semantic rankings. B therefore reports UNKNOWN even if its visible checks pass;
-it cannot certify full-fidelity wiring. A reports FAIL if either its exact
-belief-section conclusion or the actual formation-guard refusal is absent.
+it cannot certify full-fidelity wiring. A reports FAIL if any of three pins fails
+(operator decision 2026-11-03: the dispatch guard's design is kept): (1) row 337 is in the
+belief section; (2) the guard refuses when 3 comparable same-epoch measured-null answers
+whose research_scope matches the live regime exist (synthetic control built in the canary's
+scratch from copies of row 337; canonical stores untouched); (3) the guard does NOT refuse on
+row 337's real situation, a single unscoped answer (also checked: 2 scoped answers and 3
+mismatched-scope answers stay silent). Pin 3 guards the design against silent regression;
+a live refusal on row 337 is deliberately not expected.
 
 Set `CANARY_SCRATCH` to a new private path under /mnt/raid0/llm/tmp and run
 `python3 setup_scratch.py` under the site's resource admission supervisor. Set
@@ -30,3 +36,21 @@ missing inputs or a crash produce UNKNOWN through `run.py` (exit 2); FAIL exits 
 and PASS exits 0. Inspect the full summary and provenance before treating a
 replay as evidence. The historical replays do not reproduce live profile/launch
 sections and no planner or model is invoked.
+
+Observation (2026-11-03 run): the canary's live-built regime has `quant=None` (census
+`dominant_quant` unresolved for the IQ4_XS GGUF), and the guard fails closed on any None facet,
+so a live refusal is impossible from this regime regardless of row count. The synthetic
+controls therefore use a fully populated regime; `live_regime_quant_resolved` is reported
+informationally and does not gate.
+
+## Canary B with the live embedder (2026-11-03)
+
+Set `CANARY_EMBED_URL=http://127.0.0.1:<port>` (port >= 10000) to a canary-owned BGE-large-en-v1.5
+llama-server (`--embeddings --pooling cls`, production CPU kernel store). The audit guard then
+permits socket connects to exactly that loopback host:port and nothing else; the strategy-store copy
+embeds its planner queries through it and fails closed on any error or degenerate vector (no hash
+degrade). With the URL set, B asserts the known conclusion: trial 1472's keep with `2.025` and
+`ingest_triviality_guard` in the assembled prompt, and an assembled frontier section. The T1 count is
+recorded; an empty frontier is the intended post-rebase state and is not a failure. PASS exits 0,
+a missing conclusion exits 1, a dead embedder, assembly error or changed protected state is UNKNOWN
+(exit 2). Without the URL, B is unchanged (UNKNOWN, hash-only).

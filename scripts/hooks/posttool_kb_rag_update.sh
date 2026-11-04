@@ -5,7 +5,7 @@ set -euo pipefail
 # then delegates to .claude/hooks/post_commit_kb_rag_update.sh which incrementally
 # refreshes the KB-RAG index for changed markdown files.
 #
-# Per handoffs/active/internal-kb-rag.md K5 + .claude/skills/kb-search/SKILL.md.
+# Per handoffs/active/knowledge-pipelines.md K5 + .claude/skills/kb-search/SKILL.md.
 #
 # Hook protocol: receives JSON on stdin with shape:
 #   {"tool_input": {"command": "..."}, "tool_response": {...}, ...}
@@ -31,7 +31,7 @@ source "${_KBH_DIR}/../lib/env.sh"
 # ONE designated rebuilder, mirroring the `index_state.py` restriction that
 # resolved the same collision for the generated index files (four sessions each
 # rewrote a 137 KB + 114 KB pair they did not author; the fix was to let exactly
-# one main run it — handoffs/active/handoff-index-and-backlog-graph.md).
+# one main run it — handoffs/active/coordination-and-churn-pipeline.md).
 # `AGENT_ID` is the fleet roster-id convention (scripts/utils/agent_log.sh:27,
 # scripts/hooks/pre_push_serialization_guard.sh:293).
 KB_RAG_REBUILDER="${KB_RAG_REBUILDER:-mainC}"

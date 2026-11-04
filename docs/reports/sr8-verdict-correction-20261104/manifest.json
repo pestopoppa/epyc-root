@@ -1,0 +1,49 @@
+{
+ "decision_rule": "Five predeclared interleaved BEP edit pairs, three arms each, one fresh private server per request, greedy sampling. Require canonical fixed BEP verifier PASS, full native counts and two in-request per-PID KFD/loaded HIP samples for each arm. Paired geometric mean prompt-lookup / DFlash2 decode speed >=1.5 is a bounded candidate signal; otherwise no signal. Missing/incomplete/failed evidence is UNKNOWN. NP4 server with one active request; no concurrency throughput or automatic routing proof. Exact native pre-rendered prompt bytes and target-tokenizer repeated-5gram metrics are frozen before publication; no in-grant model hashing or prep. No claim of a 1.5 threshold above a statistical noise floor, only bounded candidate signal.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 1200,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:SR-8",
+ "id": "sr8-bep-lookup-gpu-sealed-20261104",
+ "keep": [
+  "live/**",
+  "smoke/**",
+  "*.json",
+  "*.sha256",
+  "*.py",
+  "*.sh",
+  "*.txt",
+  "live/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/launch.sh",
+  "sha256": "2cf38628d09dbaabcc89d7469c25c437ef0427c360bb221e6d5944260db5017c"
+ },
+ "min_window_s": 7200,
+ "owner": "handoff-speculative-decoding-mtp",
+ "ports": [
+  18433
+ ],
+ "priority_rank": 30.0,
+ "publish_warnings": [
+  "speculative-decoding.md:242: identity fields incomplete: ['estimate'] \u2014 add estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)"
+ ],
+ "published_at": "2026-11-04T07:23:23Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/spec.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/live/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104/STOP",
+ "unit_key": "observation.decode_tps",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-gpu-sealed-20261104"
+}

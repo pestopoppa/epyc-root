@@ -1,0 +1,39 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "codex-handoff-canonical-judge-suite-revamp",
+  "rationale": "Scheduled full unit.jsonl mode=full, pytest_rc=0, exact source commit 64a96b58b5054a54a2efae416ae25908d0f13dbe. Full pytest log records 7 passed. The captured job emits this receipt only after source-manifest _source recheck succeeds, so rc0 plus the emitted receipt meets that limb. Synthetic reader/source/custody and CLI/planning controls only; no live CRM or live wiring claim.",
+  "tick_text": null,
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:09:19+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T21:18:19Z reason=complete",
+ "filed_at": "2026-11-04T07:09:19+00:00",
+ "filed_by": "codex-handoff-canonical-judge-suite-revamp",
+ "handoff_task": "handoffs/active/benchmark-suites.md",
+ "id": "evl46-crm-reader-64-tests-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/evl46-crm-reader-64-tests-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/results/*/unit.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "codex-evl46",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled full unit.jsonl mode=full, pytest_rc=0, exact source commit 64a96b58b5054a54a2efae416ae25908d0f13dbe. Full pytest log records 7 passed. The captured job emits this receipt only after source-manifest _source recheck succeeds, so rc0 plus the emitted receipt meets that limb. Synthetic reader/source/custody and CLI/planning controls only; no live CRM or live wiring claim.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/results/*/unit.jsonl",
+ "root_cause_family": null,
+ "row": "evl46-crm-reader-64-tests-20261102",
+ "row_verdict": "pass",
+ "rule": "pytest rc0 for source commit 64a96b58b5054a54a2efae416ae25908d0f13dbe and native source-manifest recheck; synthetic custody and CLI/planning controls only. A dry-run result is not a scheduled full run and neither is a live CRM result.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "19bcbd55c7d2f8bde9e96e9805415067d79bd146ff712a2b720c3112de3c4357",
+  "result": "pass",
+  "status": "filed"
+ }
+}

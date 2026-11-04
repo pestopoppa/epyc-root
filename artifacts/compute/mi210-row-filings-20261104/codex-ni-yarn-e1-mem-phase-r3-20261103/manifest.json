@@ -1,0 +1,73 @@
+{
+ "admission_class": "diagnostic",
+ "decision_rule": "Historical E1 memory attribution on unchanged 2026-10-04 E1 and W images: own-PID KFD VRAM and hipMalloc shim series joined to the original YaRN E1 smoke and 128k/240k/400k/500k native needle stages for A0/A1. Higher VRAM is worse; identify the first phase with the +15 GiB excess and whether W removes it. Split stage groups are diagnostic and reset the server between groups; no quality or current champion claim.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 1500,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 6000,
+ "gib": 64,
+ "handoff_task": "mi210-serving-program.md:YARN-E1-MEM",
+ "id": "codex-ni-yarn-e1-mem-phase-r3-20261103",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "*.sha256",
+  "*.log",
+  "helper/*.py",
+  "helper/*.sh",
+  "helper/*.so",
+  "out/*/complete.json",
+  "out/*/runtime-proof.json",
+  "out/*/launch.json",
+  "out/*/phase-attribution.json",
+  "out/*/native/*/*/*.json",
+  "out/*/native/*/*/*.jsonl",
+  "out/*/kfd.jsonl",
+  "out/*/hipmalloc.jsonl",
+  "out/*/server.log",
+  "out/*/runner.log",
+  "out/superseded/*/*/*.json",
+  "out/superseded/*/*/*.jsonl",
+  "out/superseded/*/*/*.log",
+  "out/superseded/*/*/*.txt",
+  "job.v15.sh",
+  "launch.v15.sh",
+  "helper/*.json",
+  "inputs/*",
+  "inputs/**",
+  "vendor/**",
+  "out/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/launch.v15.sh",
+  "sha256": "087703cb9e4d5c4e9fa7b8d517d59c9ae5fc2c2a55ef7e2959da3e0d2c2d88f2"
+ },
+ "lineage": "codex-ni-yarn-e1-mem-phase",
+ "min_window_s": 5700,
+ "owner": "codex-ni",
+ "ports": [
+  18437
+ ],
+ "priority_rank": 80.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:317: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:317: untestable prose prerequisite: 'parked under our own gpu-quiet exclusive hold, so the executor refuses to stop the server. Attempt 2: `gpu_window park` '"
+ ],
+ "published_at": "2026-11-03T16:36:37Z",
+ "published_from": "/mnt/raid0/llm/tmp/main-publish-specs-20261103/yarn-r3.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/STOP",
+ "supersedes": "codex-ni-yarn-e1-mem-phase-r2-20261103",
+ "window_s": 7500,
+ "workdir": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031"
+}

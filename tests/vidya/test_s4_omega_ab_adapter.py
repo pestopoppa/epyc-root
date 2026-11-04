@@ -1,7 +1,8 @@
 """S4 Omega's ROOT reader is exercised against the producer's controlled live path.
 
 The producer is a separate repository. The focused launcher must set
-``EPYC_ORCHESTRATOR_SOURCE_ROOT`` to its pinned clean checkout (or
+``EPYC_ORCHESTRATOR_SOURCE_ROOT`` to its pinned clean checkout (default when unset:
+``/workspace/repos/epyc-orchestrator``, only if HEAD == origin/main and scripts/benchmark is clean) (or
 ``S4_OMEGA_RUNNER_PATH`` to the exact runner file). Missing producer code fails
 the test instead of skipping it. The runner gets a fake OpenAPI client and local
 fake call function; no API, model, or inference request is made.
@@ -29,20 +30,67 @@ from ledger import Ledger  # noqa: E402
 
 AS_OF = "2026-10-24T12:00:00Z"
 
-def _producer():
+# Fallback when neither env var is set: the shared orchestrator clone, but ONLY when it can stand
+# in for a pinned clean checkout -- HEAD equals its origin/main ref and scripts/benchmark/ has no
+# uncommitted changes. Other sessions edit that clone, so anything else would test unpinned code.
+DEFAULT_ORCHESTRATOR_ROOT = Path("/workspace/repos/epyc-orchestrator")
+_PRODUCER_REL = "scripts/benchmark/s4_omega_ab.py"
+
+
+def _git(root: Path, *args: str) -> str | None:
+    import subprocess  # noqa: PLC0415
+    try:
+        out = subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out.stdout.strip() if out.returncode == 0 else None
+
+
+def default_producer_status(root: Path = DEFAULT_ORCHESTRATOR_ROOT) -> tuple[Path | None, str]:
+    """(producer path, reason). Path is None unless the default clone is pinned and clean."""
+    path = root / _PRODUCER_REL
+    if not path.is_file():
+        return None, f"default {root} has no producer"
+    import importlib.util as _ilu  # noqa: PLC0415
+    if _ilu.find_spec("httpx") is None:
+        return None, (f"default {root} needs the orchestrator's deps (httpx); run under "
+                      f"{root}/.venv/bin/python")
+    head, upstream = _git(root, "rev-parse", "HEAD"), _git(root, "rev-parse", "origin/main")
+    if not head or head != upstream:
+        return None, f"default {root} HEAD {(head or '?')[:9]} != origin/main {(upstream or '?')[:9]}"
+    dirty = _git(root, "status", "--porcelain", "--", "scripts/benchmark")
+    if dirty is None or dirty:
+        return None, f"default {root} has uncommitted changes under scripts/benchmark"
+    return path, f"default {root} @ {head[:9]} (clean scripts/benchmark)"
+
+
+def producer_path() -> Path | None:
+    """S4_OMEGA_RUNNER_PATH > EPYC_ORCHESTRATOR_SOURCE_ROOT > pinned-clean default clone > None."""
     runner_pin = os.environ.get("S4_OMEGA_RUNNER_PATH")
     source_root = os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT")
     if runner_pin:
-        path = Path(runner_pin)
-    elif source_root:
-        path = Path(source_root) / "scripts/benchmark/s4_omega_ab.py"
-    else:
-        raise RuntimeError("set EPYC_ORCHESTRATOR_SOURCE_ROOT to the pinned producer checkout")
+        return Path(runner_pin)
+    if source_root:
+        return Path(source_root) / _PRODUCER_REL
+    path, reason = default_producer_status()
+    print(f"s4-omega producer: {reason}", file=sys.stderr)
+    return path
+
+
+def _producer():
+    path = producer_path()
+    if path is None:
+        pytest.skip("S4 Omega producer needs EPYC_ORCHESTRATOR_SOURCE_ROOT (or S4_OMEGA_RUNNER_PATH); "
+                    + default_producer_status()[1])
     if not path.is_file():
         raise FileNotFoundError(f"pinned S4 Omega producer is missing: {path}")
     benchmark_dir = str(path.parent)
     if benchmark_dir not in sys.path:
         sys.path.insert(0, benchmark_dir)
+    # The producer imports `src.*` (e.g. seeding_scoring), so its repository root must resolve too.
+    source_root = str(path.parents[2])
+    if source_root not in sys.path:
+        sys.path.append(source_root)
     spec = importlib.util.spec_from_file_location("s4_omega_ab_producer_test", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

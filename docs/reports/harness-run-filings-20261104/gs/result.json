@@ -1,0 +1,287 @@
+{
+  "argv": [
+    "numactl",
+    "--membind=1",
+    "--",
+    "taskset",
+    "-c",
+    "24,25,26,27",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-server",
+    "-m",
+    "/proc/self/fd/3",
+    "--alias",
+    "/mnt/raid0/llm/tmp/repl-emb-211-20261024/gguf/embeddinggemma-2-BF16.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "19159",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "-t",
+    "4",
+    "--embeddings",
+    "--pooling",
+    "mean",
+    "--embd-normalize",
+    "2",
+    "--no-mmap"
+  ],
+  "manifest": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/runs/official-bcd49c57d51b4fe6ade76520b32e2e66/migration/manifest-20261102T221727Z-4c6520.json",
+  "manifest_sha256": "b19c76138371bb5a8c85895f5a2d16248f5d140bc94c4ed6b7b049da2d7a3e1d",
+  "native": {
+    "episodic": {
+      "archive": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/prepared-20261102/input/sessions.pre-eg2-20261102T221727Z-4c6520",
+      "dim": 256,
+      "rows": 64514
+    },
+    "strategy": {
+      "archive": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/prepared-20261102/input/strategies.pre-eg2-20261102T221727Z-4c6520",
+      "dim": 256,
+      "rows": 1428
+    }
+  },
+  "prepared": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/prepared-20261102/input",
+  "production_parity": {
+    "config": {
+      "allow_subprocess": false,
+      "side": "document",
+      "truncate_dim": 256,
+      "use_fallback": false,
+      "use_parallel": false,
+      "use_server": true
+    },
+    "consumer_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-snapshot-gate/calibration-controller-r2/run-source/orchestration/repl_memory/embedder.py",
+    "consumer_source_sha256": "e541765522564c373153dbef4d5be2e352b402a09495c00422ada500d3bf0b0e",
+    "endpoint_calls": "/embedding",
+    "migration_endpoint": "/v1/embeddings",
+    "server_model_api": "/v1/models",
+    "server_pid": 458920,
+    "stores": {
+      "episodic": {
+        "min_cosine": 1.0,
+        "records": [
+          {
+            "cosine": 1.0,
+            "id": "cadeccc4-ebfe-4d59-a8b3-7d8cd29943ed",
+            "position": 0,
+            "text_sha256": "7f0b2fa20d528413513029029bafc637633ccb5e5d4f7a35ffb01198f10b6023"
+          },
+          {
+            "cosine": 1.0,
+            "id": "8ad7b937-0883-4a6a-af4b-a775a7b79148",
+            "position": 4301,
+            "text_sha256": "1aab070249cac13ce4656a0ce909aff285c15baacf6b15bbf6fcdaf4ed77d408"
+          },
+          {
+            "cosine": 1.0,
+            "id": "6af8b7b2-958e-413f-a090-8d898b6ec35c",
+            "position": 8602,
+            "text_sha256": "3e76d4bee296847e3aaeb5a84b07c0e336ebb5b5e5c7fa998635b4982f7b70c9"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "c198cdb0-e8c1-4091-8f27-6f86d6612a66",
+            "position": 12903,
+            "text_sha256": "82a2e5f6f1b75c0aff11ddbb182a0195de12d5569cae405a60e6fe2fe26cf356"
+          },
+          {
+            "cosine": 1.0,
+            "id": "2e4a2b0b-29e3-4e30-bfb7-2b4ada7b581c",
+            "position": 17203,
+            "text_sha256": "4ba334474bb48fcadfb58ecccc6f2063c66fd42f337d153d47e34973ba69fabf"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "6c3ed3b9-bc0d-4a91-bf8e-5a26082fcb75",
+            "position": 21504,
+            "text_sha256": "27c1ce8358b983cc7029e63145bbdc702a3331dcb84e4fcbc814bcc42a96a4fd"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "44064fbf-24a9-476e-b080-65720074ee30",
+            "position": 25805,
+            "text_sha256": "2b9cb09d8c6409416e0b3e45061c1df73000be8cb14d55f7d094a7d40a7b4a56"
+          },
+          {
+            "cosine": 1.0,
+            "id": "457f8392-a3e4-4f85-b4e9-a6500a38bcc8",
+            "position": 30106,
+            "text_sha256": "ef5ce4bc83c52bf802473ef3ad53daa01eeeed286d2edb2347ca9c36ba065c09"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "13376e26-263e-4ea1-b3d2-15329d067d36",
+            "position": 34407,
+            "text_sha256": "bd78eee22b1063fc9b366d90740bfde78207182eca775aacb12ae95105d71a8f"
+          },
+          {
+            "cosine": 1.0,
+            "id": "6f086c60-669f-4282-aea0-f523192668ae",
+            "position": 38708,
+            "text_sha256": "82943dda25fe883386ef4c02f4a346a5ff3798ad893cc85bb4f11ae42bec7e92"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "7788b530-8267-42d3-94e7-2642c0ca5110",
+            "position": 43009,
+            "text_sha256": "f8f33681d64d60b3067922fe8d0d4bf4b93a77d0542b756bc7a1b20c1f9e3933"
+          },
+          {
+            "cosine": 1.0,
+            "id": "bea1ee3c-a5e1-4fdc-9ed9-549357be1515",
+            "position": 47310,
+            "text_sha256": "d131ba2336946f4058a5a3a03ac7c814cf2fe9b4a6334b39d3c4c8a29f46b6f6"
+          },
+          {
+            "cosine": 1.0,
+            "id": "0a845580-9b84-40a8-adda-ee5d9f0be94e",
+            "position": 51610,
+            "text_sha256": "d5398320c744af1b5d19b206a92557a9c362ff37264e61718aa14ca9bb115902"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "87bfe4a5-52f6-488b-a492-d3585f3491aa",
+            "position": 55911,
+            "text_sha256": "e09a9a6ee33588dd73911fcaed327804dc4d5e12e3134c03dfafce93a4d8917b"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "73146577-d2a5-4eb0-9f3d-713357b81497",
+            "position": 60212,
+            "text_sha256": "105c4671c215c2d173334a9a7912ae405dde5911aa2ef9d4a19dad6cd8a48513"
+          },
+          {
+            "cosine": 1.0,
+            "id": "a546ad6f-3fe1-4593-96ff-c491335eed53",
+            "position": 64513,
+            "text_sha256": "f7de5afc9c984556fa018dc4373113206cd387462959dad6367b36df38d70bd4"
+          }
+        ],
+        "sampled": 16
+      },
+      "strategy": {
+        "min_cosine": 1.0,
+        "records": [
+          {
+            "cosine": 1.0000001192092896,
+            "id": "f87813e4-23ec-4340-9b4e-c30f75eda40a",
+            "position": 0,
+            "text_sha256": "cf0cd21d21c99dfb4a10b923ee056c67900c0a4137afa52fa70b6a46d3221906"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "a6c40e19-a32b-424f-8b85-7665593c5bed",
+            "position": 95,
+            "text_sha256": "ee89e06996a7790db619c225729a51f2f7115be31f55b7901c3b2444fb13f695"
+          },
+          {
+            "cosine": 1.0,
+            "id": "8ec9adc0-1612-476f-a242-6aba6869c3a7",
+            "position": 190,
+            "text_sha256": "ddef33d5a53b249a620e603cae9c8213423c8e8427690baeb3ccdca404afa1d6"
+          },
+          {
+            "cosine": 1.0,
+            "id": "6fb1fa7a-1493-49c9-aeb2-abb7f6efff4e",
+            "position": 285,
+            "text_sha256": "40ba8cd73510c318cd78b6fc44d9b5da52411beda5250fa713e703c13ab9099b"
+          },
+          {
+            "cosine": 1.0,
+            "id": "f16f080f-8f78-439d-8c67-d06c67f66151",
+            "position": 381,
+            "text_sha256": "498129dccc7aed275f2c63e613c7bd9aaa1aa5782292b34d3948e4fb2c426d60"
+          },
+          {
+            "cosine": 1.0000001192092896,
+            "id": "42be2629-c32a-4f49-a36f-39e23696e58b",
+            "position": 476,
+            "text_sha256": "953684a68ff69d5c44d37c2e08fece67f1a6c3b3f85c4c8af4422121a47d9bcb"
+          },
+          {
+            "cosine": 1.0,
+            "id": "b115a6ec-f324-4c83-8d8b-9a7dfd3ed987",
+            "position": 571,
+            "text_sha256": "803a4aebb1e39c2c36604ddd0734e246913495f000f67758aba525f210618bf2"
+          },
+          {
+            "cosine": 1.0,
+            "id": "932435f6-e60b-4c24-8ad7-da830e61eeac",
+            "position": 666,
+            "text_sha256": "c47704e1f21785bb7c0fef1c6bb45c985d4d0f229255593925cdda0c0257b040"
+          },
+          {
+            "cosine": 1.0,
+            "id": "dfd0f17a-d0de-4092-bf04-67f557c4b878",
+            "position": 761,
+            "text_sha256": "fd054b8bdd7c020e510dafe7bb63c74198e0cd5f93f0ec3e3e5911ae468a57b5"
+          },
+          {
+            "cosine": 1.0,
+            "id": "7b257691-9868-4509-9681-d7df489bff2f",
+            "position": 856,
+            "text_sha256": "e523235b0cb18f08ee7dda29a10e5cb3bd9350ab16c3de874ba3dc043a13ca69"
+          },
+          {
+            "cosine": 1.0,
+            "id": "9d2b5c20-0a91-4fa8-a63f-f2ed43fa4777",
+            "position": 951,
+            "text_sha256": "abfd4709eba5f7414d2877bfa14dffb75cb5ee29d479c195a145d3b778c04f09"
+          },
+          {
+            "cosine": 1.0,
+            "id": "a994cd04-e228-4bb7-9d8a-da3b6e12bd08",
+            "position": 1046,
+            "text_sha256": "5e056013c0e4427cd379b56ec7d732000f0aa1ed797fb30e053dec957b22fa4d"
+          },
+          {
+            "cosine": 1.0,
+            "id": "d91986b0-82a4-4815-9625-893b47ab34a2",
+            "position": 1142,
+            "text_sha256": "af7a4bacf234077c57eff66495370a56cdfb88373d4de7c8d02ff7cb836ce5d3"
+          },
+          {
+            "cosine": 1.0,
+            "id": "51e247cd-e310-4a7c-a7cd-76e2da6309af",
+            "position": 1237,
+            "text_sha256": "7953750ec03139dcf89e99cc76110e8937f8039ae6cff35e8e36a43bcfc42f31"
+          },
+          {
+            "cosine": 1.0,
+            "id": "journal-frontier-trial-76",
+            "position": 1332,
+            "text_sha256": "a1c07d2ad271ebbad788b8d54710316c2f61e3433c6fde207b07001ff7bab4d5"
+          },
+          {
+            "cosine": 1.0,
+            "id": "journal-frontier-trial-1467",
+            "position": 1427,
+            "text_sha256": "3514c654e5801c2ae445e30c717f1af801bc95bb712d9329e5cbea596241ccf1"
+          }
+        ],
+        "sampled": 16
+      }
+    }
+  },
+  "server_reaped_and_absent": true,
+  "smoke": false,
+  "status": "FULL_PRIVATE_APPLY_PARITY_PASS",
+  "swap_receipt": {
+    "kind": "swap-receipt",
+    "manifest_sha256": "b19c76138371bb5a8c85895f5a2d16248f5d140bc94c4ed6b7b049da2d7a3e1d",
+    "post_swap_problems": [],
+    "run_id": "20261102T221727Z-4c6520",
+    "schema": "reembed-stores-eg2/v1",
+    "swap_methods": [
+      "exchange",
+      "exchange"
+    ],
+    "swapped_utc": "2026-11-02T22:52:48Z"
+  }
+}

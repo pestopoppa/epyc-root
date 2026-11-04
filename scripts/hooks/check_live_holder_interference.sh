@@ -2,7 +2,7 @@
 set -euo pipefail
 # Hook: PreToolUse → Bash | Write | Edit
 #
-# Rider R10 (handoffs/active/session-bus-thin-dispatcher.md §Rider) — refuse the
+# Rider R10 (handoffs/active/coordination-and-churn-pipeline.md §Rider) — refuse the
 # one failure class that dominates this project's recorded incidents: touching a
 # system while it is running.
 #

@@ -1,7 +1,7 @@
 # NEMO-LILI-2 retained trace attribution
 
 Accepted diagnostic closure for the original `NEMO-LILI-2` row in
-[`autokernel-champion-aggregate.md`](../../../../handoffs/active/autokernel-champion-aggregate.md).
+[`autokernel-champion-aggregate.md`](../../../../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 This is a source-bounded analysis of an existing MI210 rocprof trace. It is not a new run,
 low-bit adoption decision, keep result, or deployment warrant.
 

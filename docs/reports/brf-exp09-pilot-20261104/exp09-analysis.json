@@ -1,0 +1,143 @@
+{
+  "source_jsonl": "/mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl",
+  "job_py": "/mnt/raid0/llm/tmp/brf-exp09/job.py",
+  "counts": {
+    "records": 40,
+    "cell_records": 37,
+    "distinct_items": 12
+  },
+  "arms": {
+    "control": {
+      "n": 12,
+      "parsed": 12,
+      "parse_failures": 0,
+      "accuracy_mean": 0.8097,
+      "retention_mean": 0.4166,
+      "completion_tokens_mean": 81.75,
+      "completion_tokens_median": 73.0,
+      "completion_tokens": [
+        72,
+        84,
+        92,
+        133,
+        67,
+        77,
+        47,
+        68,
+        141,
+        74,
+        71,
+        55
+      ]
+    },
+    "verified_quote": {
+      "n": 9,
+      "parsed": 8,
+      "parse_failures": 1,
+      "accuracy_mean": 0.7324,
+      "retention_mean": 0.7297,
+      "completion_tokens_mean": 186.67,
+      "completion_tokens_median": 196,
+      "completion_tokens": [
+        178,
+        95,
+        186,
+        208,
+        244,
+        249,
+        256,
+        68,
+        196
+      ],
+      "accepted": 9,
+      "planted_mismatch_rejected": 9
+    },
+    "shape_header": {
+      "n": 8,
+      "parsed": 4,
+      "parse_failures": 4,
+      "accuracy_mean": 0.5,
+      "retention_mean": 1.0,
+      "completion_tokens_mean": 194,
+      "completion_tokens_median": 232.0,
+      "completion_tokens": [
+        178,
+        74,
+        256,
+        208,
+        256,
+        256,
+        256,
+        68
+      ]
+    },
+    "pointer_only": {
+      "n": 8,
+      "parsed": 8,
+      "parse_failures": 0,
+      "accuracy_mean": 0.2707,
+      "retention_mean": 0.0,
+      "completion_tokens_mean": 66.25,
+      "completion_tokens_median": 69.0,
+      "completion_tokens": [
+        68,
+        70,
+        70,
+        68,
+        46,
+        70,
+        68,
+        70
+      ]
+    }
+  },
+  "exact_matched_parsed_pairs_vs_control": {
+    "verified_quote": {
+      "n_common_items": 8,
+      "all_fields_exact_matches": 1,
+      "field_matches": {
+        "exit_status": 8,
+        "n_failed": 8,
+        "failed_ids": 2,
+        "first_exception": 7,
+        "need_fetch": 3
+      }
+    },
+    "shape_header": {
+      "n_common_items": 4,
+      "all_fields_exact_matches": 1,
+      "field_matches": {
+        "exit_status": 4,
+        "n_failed": 4,
+        "failed_ids": 2,
+        "first_exception": 3,
+        "need_fetch": 2
+      }
+    },
+    "pointer_only": {
+      "n_common_items": 8,
+      "all_fields_exact_matches": 0,
+      "field_matches": {
+        "exit_status": 8,
+        "n_failed": 0,
+        "failed_ids": 1,
+        "first_exception": 1,
+        "need_fetch": 0
+      }
+    }
+  },
+  "futility": {
+    "triggered": true,
+    "vq_cells": 9,
+    "vq_accuracy_sum": 6.592,
+    "control_accuracy_total": 9.716999999999999,
+    "remaining_items": 3,
+    "best_case_vq_total_if_all_remaining_accuracy_1": 9.591999999999999,
+    "strictly_below_control": true
+  },
+  "mechanism": {
+    "description": "For each verified_quote case, job.py flips the last byte of a real FAILED line (or final line fallback), then passes that planted string to verify_quotes; the quote is rejected when it is not a substring of the full log, detected by an unverified-quotes reason.",
+    "observed_test_count": 9,
+    "rejected_count": 9
+  }
+}

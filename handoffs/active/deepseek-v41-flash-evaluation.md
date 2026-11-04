@@ -39,7 +39,7 @@
   calibrating), DS41 parked 06:03:08Z with `WATCHDOG3_HOLD` set. Shared schedule
   `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`; :8083 stays parked until the backlog is exhausted (operator's
   final word). Restart plan: DS41-C121.
-- **2026-10-04 all-keeps fold** (fold ledger: [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) →
+- **2026-10-04 all-keeps fold** (fold ledger: [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) →
   *all-keeps fold (candidate "Y")*): the DS41 port and the 7 serving-gated keeps (bundles `a1faab471` +7.113% and COR
   `053c3bd82` +11.18%) are in the global champion, now `b0ba1d427` after three more folds the same day. The 14 held
   keeps failed two bundle gates and stay off it (rebased as Z' `70e7133a1`, DS41-C125). C112 resolved (culprit
@@ -57,8 +57,8 @@ target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
 - [`../completed/glm53-flash-evaluation.md`](../completed/glm53-flash-evaluation.md) — predecessor (INF-69), closed when its subject was deleted; the gate structure below is translated from it
 - [GLM-5.3 AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-handoff.md) — MTP rollback/replay gate contract and the lessons that transfer (row-exact verify, per-depth parity, multi-ubatch MTP width, cross-model regression)
 - [`../completed/deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) and [`../completed/deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md) — V4 port history; the quality-gate runner and comparator carry forward
-- [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (INF-31) — owns the generic sparse-attention gates; do not duplicate them here
-- [`engram-conditional-memory.md`](engram-conditional-memory.md) (INF-13) — Engram research context; this model is the first production-scale Engram checkpoint on this host
+- [`llama-cpp-dsa-contribution.md`](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) (INF-31) — owns the generic sparse-attention gates; do not duplicate them here
+- [`engram-conditional-memory.md`](model-architecture-readiness.md#track-engram-conditional-memory) (INF-13) — Engram research context; this model is the first production-scale Engram checkpoint on this host
 - [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) — VB-DSV41 write-side hook
 
 ## Artifact identity
@@ -343,7 +343,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     assert mismatch refusal text or acceptance without an override. The refusal offers original
     `--cor-build` / `--resume-run`, not the requested fresh-store / rebind-anchor remedies. Keep C27
     open for the missing diagnostic guidance and focused regression cases; the core guard exists.
-- [ ] DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
+- **[declined: ws58 2026-11-03 content-review: superseded — runs 10m and later ran on newer anchors; the first-results read has no consumer now]** DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
   - The half-screen floor is written. Compare its interval and between-launch SD with `5a60152ae`'s 5.789%
     (2.91-9.55%): the loader changed, the decode kernels did not.
   - Record the mean launch time over the whole series and the calibration's total wall, against run 9's ~4 h.
@@ -360,6 +360,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C34 — **Delete the partial build dir left by the re-anchor, once the operator confirms.**
   `/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925/build-cpu-cc-partial-20260925` is not used by run
   10 (its binary is `build-cpu/`). Deleting it needs an explicit operator confirmation.
+  - 2026-11-02 operator decision: Delete (decisions-batch2-4-20261102.json)
 - [ ] DS41-C41 — **25 dirty REVIEW worktrees from the 2026-09-26 inventory need an operator look.**
   - They are listed in `/mnt/raid0/llm/tmp/worktree-inventory-20260926.md` (REVIEW class).
   - Per worktree: keep, commit and push, or remove.
@@ -399,7 +400,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     bundle). Libs: `libggml-base` SAME; `libggml-cpu`, `libggml`, `libllama` EXPLAINED (code identical, build-path/build-id
     only) via libcmp. Closes the "holds under concurrent lane-build load" clause; `-j64` CPU anchor builds stay valid
     (`anchor_build_jobs`, research `f1bf8d17d`). HIP stays `-j1` until R23-41.
-- [ ] DS41-C47 — **Confirm the first keep at the serving gate.**
+- **[declined: ws58 2026-11-03 content-review: resolved — the DS41 AK keeps (+7.11% serving) were confirmed at the serving gate (project record 2026-09-26)]** DS41-C47 — **Confirm the first keep at the serving gate.**
   - Operator 2026-09-27: let the loop's serving gate decide (fires at 13.81% compounded or every 4 keeps); no early
     confirmation run. The keep's commit `cafb59c3` is now durable on `fork/experimental/fastload-ds41-20260925`
     (it was local-only). Not in `ak/champion` / v10.
@@ -583,7 +584,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     **re-authored** patch of the mechanism (batch 2 loaded the fixed witness), not the resumed build-stage
     checkpoint of the earlier refused patch (`43982b2b` / `e4ce1b1f`), passed the corrected Q4/Q5 dot witness at
     20:08Z and was measured and kept as `47b6865de` (+5.683%, DS41-C68 keep 3).
-  - [ ] Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
+  - **[declined: ws58 2026-11-03 content-review: merged into DS41-C11 (same pre-existing failure triage)]** Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
     caused by `1f7979d4`): wider than first scoped — 72 failures across 22 files in the autokernel loop suite
     (e.g. `test_serial_roster`, `test_serving::LifecycleObservationHook`, `test_validation_semantic_adapter`,
     `test_gpu_runtime` x2, `test_seed` x3, `test_aggregate_feedback` x2, `test_native_server_t0_witness` errors).
@@ -738,7 +739,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     salvage turn `23305d81`), effective from the next batch.
   - Note: routing Q8_0 into iqk changes the activation quantization, so outputs are not bit-identical to
     tinyBLAS (the route's own documented caveat) — the correctness gates will judge it.
-  - [ ] Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch with no trigger]** Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
     (dense Q8_0 is the largest single lever, ~40% of cycles).
 - [x] DS41-C74 — **Two lanes, lane 1 on an external planner/author model (deepseek/deepseek-flash).**
   ✅ 2026-09-29 (~01:30-03:25Z), `ak-ds41-main`. Operator decision (AskUserQuestion): second lane on an
@@ -766,10 +767,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     lane 1 is deepseek authoring + deepseek critic (self-review); lane-1 prompts (up to ~100-170k tokens)
     egress to the external provider; `_last_call_evidence` may attribute authoring-failure evidence to the
     other lane's row.
-  - [ ] Follow-up: confirm lane 1 (deepseek) produces proposals/patches that reach measurement and that the
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch]** Follow-up: confirm lane 1 (deepseek) produces proposals/patches that reach measurement and that the
     shared tail serializes measurements (no overlap).
-  - [ ] Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
-  - [ ] Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
+  - **[declined: ws58 2026-11-03 content-review: no decision rule; the loop's own metrics (LOOP-5) report measurements per hour]** Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
+  - **[declined: ws58 2026-11-03 content-review: unbounded watch]** Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
 - [x] DS41-C75 — **Batch size 6, dead-end steering, planner context arms (arm B live).** ✅ 2026-09-29
   (~07:30-11:31Z), `ak-ds41-main`. With `--batch-iterations 2`, each child gave each lane one iteration, so
   fast lane 1 (deepseek, ~15-20 min/iteration) idled while lane 0 (27B, 1-2 h/iteration) finished — the pool
@@ -821,11 +822,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     context (`context_max_tokens`), compactions, output-capped steps vs arm A baseline (runs 10n/10o lane-0
     sessions). ✅ 2026-09-29 — arm B 0/3 valid; superseded by arm C (DS41-C76).
   - [x] Follow-up: then run arm C for ≥3 sessions. (Tracked as DS41-C77.) ✅ 2026-09-30 — arm C 5/5 valid.
-  - [ ] Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
+  - **[declined: ws58 2026-11-03 content-review: conditional ("if arms hold") with no trigger evidence]** Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
     worst case, over the 196,608 pool — needs C≈77k and author output under 40,960, or lane-0-only limits via
     `lane_actors.seat_for`).
-  - [ ] Follow-up: planner effort "high" arm, later.
-  - [ ] Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
+  - **[declined: ws58 2026-11-03 content-review: "later" with no trigger]** Follow-up: planner effort "high" arm, later.
+  - **[declined: ws58 2026-11-03 content-review: "consider" with no decision]** Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
     wanted.
 - [x] DS41-C76 — **Escape mandate confined the search to four closed categories → abstention storm; fixed.**
   ✅ 2026-09-29, `ak-ds41-main`. Experiments rows 134-143 (14:18-14:53Z) were all
@@ -911,6 +912,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     parked candidate is not auto-revived; 36 integrity tests.
 - [ ] DS41-C91 — planner "formed but never measured — consider FIRST" list should drop superseded ideas already re-proposed/queued on the new champion (contradicts "do NOT re-propose"; invited both lanes to re-propose at once).
 - [ ] DS41-C92 — floor selection prefers the COR exact floor (4.533%, contaminated) over the cleaner carried lineage floor after each anchor advance; quarantine the 4.533 record or re-order selection (operator decision pending).
+  - 2026-11-02 operator decision: Re-order selection (carried lineage floor first after an anchor advance) (decisions-batch2-4-20261102.json)
 - [ ] DS41-C93 — reconstruct the fold receipt for bscale-cvtph 6f8e232aa41f (lost when run10s stopped mid-batch) before the C47/C68 fold.
   2026-10-04: `6f8e232aa` is one of the 14 held keeps (fold inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv`, now `853a1a00e` on Z'); it was not folded, so the receipt matters only if Z' is re-gated (DS41-C125).
 - [ ] DS41-C94 — C84 remaining gap: per-call cgroup v2 scopes so a SIGKILLed run.py's cookie-less children (llama-server, builds) are killed, not just flagged.
@@ -925,7 +927,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     3880 s; cxf1 (F1 only) 0.50 (2 partial), 4/4 answered, 1 call contaminated (C2/cxf1/r2 browsed the live store anchor-gen-007);
     unfixed cx 0.50 with 2/4 answered; DeepSeek as-ran 0.75 (3 exact, 0 errors). The fixes recover the no-reply calls but not
     exactness: the 27B still finds no exact keep and makes 2-2.25 factual errors per answer against DeepSeek's 0. Detail and the
-    sandbox fix: [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md) UFH14-A1/A6.
+    sandbox fix: [`agentic-serving-harness-fixes.md`](harness-program.md#track-agentic-serving-harness-fixes) UFH14-A1/A6.
 - [x] DS41-C96 — graph-sync gate fault: `GLU`/`UNARY` passed to `test-backend-ops -o` match no `op_desc()`, so the suite was always 0/0; `backend_ops_selector` expands them to sub-ops (e29dca63). ✅ 2026-10-01
   - Route now 29 ops (incl. TOPK_MOE chain; EXP/EXPM1 excluded, fail on anchor); empty suite still fails
     closed. Caused the run 10w abstention storm (rows 203-224). Shared-walk-defect caveat → DS41-C99.
@@ -952,11 +954,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C100 — UFH-12 context.search (hybrid lexical+dense, rrf_fuse, pointers only) in the orchestrator REPL; add an orsv arm to C95 once deployed (coordinate the API reload with workspace-8d).
   - 2026-10-01: built and live (orch `b384cdbb`; branch d02942f7 + 002b6fc4, dense-index timeout fix by workspace-8d →
     `lexical_fallback:index_timeout`). `repl_embedding_pool` is runtime-only: any API reload resets it. orsv pending C102.
-- [ ] DS41-C101 — wire the C95 graded results into the belief kernel (source row in scripts/vidya/adapters/README.md + task in vidya-belief-substrate-program.md), per CLAUDE.md.
+- **[declined: ws58 2026-11-03 content-review: duplicate — vidya-belief-substrate-program VB-DS41-C95 carries this wiring]** DS41-C101 — wire the C95 graded results into the belief kernel (source row in scripts/vidya/adapters/README.md + task in vidya-belief-substrate-program.md), per CLAUDE.md.
   - 2026-10-01: graded results `/mnt/raid0/llm/tmp/ds41-c95/grading/report.json` (+ `report.md`, `grades/`, `key.json`);
     source row and task drafted in the C95 wrap-up, applied by the owning session. Copy the dir durably first (`tmp` is scratch).
 - [ ] DS41-C102 — orv/orsv arms (27B via orchestrator REPL; + UFH-12 context.search) orchestrator 500 int('') bug FIXED 2026-10-01 (orch 2d97ade2: context.get dict-style default; root cause model wrote context.get('inbox','')); operator chose a DS41 pause to run them 2026-10-01; needs frontdoor quiet (REPL delegates to worker roles on :8070) and repl_embedding_pool re-enabled after any API reload.
-- [ ] DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
+- **[declined: ws58 2026-11-03 content-review: conditional on a reconsideration nobody has filed]** DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
 - [x] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling. ✅ 2026-10-29 (audit: research 9299b0a6f (2026-10-07, on origin/main) 'Require decisive comparisons for verified keep effects': claims.py + test_claims.py +33; re-projection of existing rows not evidenced) [no-belief: audit-reconciliation]
 - [x] DS41-C105 — ✅ 2026-10-04 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
   - 2026-10-03: **fixed, pending deploy.** Research main `4a815f00` adds `--cpu-measurement-gpu-quiet {off,q3}`, default `off`. Root cause: `loop/run.py:124-153` `_q3_cpu_gpu_quiet_window` took the claim on purpose — measurement hygiene from INF-70 (2026-09-08) to keep GPU work off the CPU floor — and it never excluded production :8083 anyway. It deploys through the DS41 boundary swap already armed (`/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_noclaim_10aa.log`; at 15:23Z it showed only the run 10z pause request). Flip when that log shows run 10aa alive and a live run holds no `mi210_0` claim.
@@ -1072,10 +1074,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
   watchdog from falling to fallback args on a missing-dependency death. Robustness work in progress by another ak-ds41-main subagent; close when the relaunched loop runs on the new path.
   - [x] DS41-C113a — declare the two load-bearing worktrees. ✅ 2026-10-04 — `root-main-epyc-root-repo` is git-locked as "load-bearing: DS41 EPYC_ROOT_REPO (INC-20261004)" and `research-ds41-run10` as "load-bearing: DS41 live loop worktree". `scripts/system/worktree_gate.py` (root `837ebf6f`) refuses locked trees and trees named by a live process environment or launcher.
-  - [ ] DS41-C113b — the launchers still hardcode the path (`ds41_watchdog{,2,3}.sh`, `swap_*.sh`, `pause_probe_restart.sh`), and none of them fails fast when it is missing. Do the fail-fast check and the watchdog no-fallback change at the next DS41 relaunch. Never edit a running script; copy it to a new name.
-- [ ] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
+  - **[declined: ws58 2026-11-03 content-review: merged into C113 (the same hardcoded-path fix)]** DS41-C113b — the launchers still hardcode the path (`ds41_watchdog{,2,3}.sh`, `swap_*.sh`, `pause_probe_restart.sh`), and none of them fails fast when it is missing. Do the fail-fast check and the watchdog no-fallback change at the next DS41 relaunch. Never edit a running script; copy it to a new name.
+- [x] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
   2026-10-04: gate (i), the MXFP4-vs-Q4_K microbench, is a step in CPU window 2 (armed, waiting).
-  2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`).
+  2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`). [declined: operator 2026-11-03 model-audit: superseded by DS41-W5 (vendor 1017 release ships native MXFP4 routed experts (artifact on disk, load validated in DS41-W5))]
   - [x] DS41-C114a — **gate (i) measured: no speed case, quality only.** ✅ 2026-10-04 — c2
     (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/runs/`, MUL_MAT_ID microbench at DS41 expert shapes, t48): MXFP4
     (CPU_REPACK) vs Q4_K (iqk) **×1.00 at N=1, ×1.04 at N=3**. The −2.0%/−3.5% byte saving does not show up as speed;
@@ -1158,7 +1160,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
       `EC_8083_RELAUNCH_DONE`; 120-min bound). Structural follow-up, still open: the loop should schedule a
       newcomer lane's calibration ahead of the incumbent's next batch automatically, rather than needing this
       per-incident watcher.
-    - [ ] **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
+    - **[declined: ws58 2026-11-03 content-review: duplicate — kernel-champion-and-promotion AKX-AUTO-7 owns the drained-lane resume]** **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
 - [x] DS41-C127 — **served-shape calibration landed and applied on both lanes; new anchors.** ✅
   2026-10-06/07 Research commits, in order: `9a548baf` (`--timeout-s`, calibration exceeds 1h on
   DS41), `bed81e59` (three-regime NMSE cap: keep the old served-shape bound wherever the old policy
@@ -1432,6 +1434,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
         - 2026-10-27 harvest (ds41-w5d-baseline-mmid, ended 2026-10-24T06:37Z rc 0 complete): predeclared sha `fd6a3ab8…`, `/mnt/raid0/llm/tmp/ds41-1017-baseline-mmid-20261023/out/RESULT.json`. (b) MXFP4 CPU_REPACK (served) vs Q4_K iqk MUL_MAT_ID layer-time ratio at N=512: gm 1.783 (95% CI 1.778-1.789), >1 in 6/6 rounds vs the 1.03 bar: **PREMISE_STANDS** (N=1024 1.785, N=4096 4.07; native MXFP4 arm 2.448x; S5 ceiling about 22.2% of the pp512 wall, MMID share about 50.6%; arm CV 0.15-0.18%). (a) absolute 1017 baseline: pp512 mean 103.55 t/s (CI 100.55-106.56, CV 2.8%), tg128 mean 15.22 t/s (CI 13.32-17.11, CV 11.87% > 4.0% cap): **INVALID_NOISY**, so no baseline is quotable. Classification: performance premise (microbench, uncalibrated ratio), baseline invalid. The (b) number is already quoted in W5e below. [belief: cc]
         - [ ] **DS41-W5d.1 — re-run part (a) only (6 llama-bench processes of the 1017, quiet whole host) to get a tg128 baseline under the 4.0% process-CV cap; the 10-24 run's tg128 values drifted 11.75 -> 16.65 t/s across processes (first process lowest), so check warm-up/page-cache residency before the re-run.** (filed 2026-10-27, harvest of ds41-w5d-baseline-mmid)
           - *(2026-10-31, READY preparation.)* `codex3-ds41-w5d1-r1-20261031` predeclares one warmup and six fixed fresh 1017 CPU processes, original strict pp512/tg128 process/within-process CV rules, 0–95 CPUs plus exclusive GPU quiet, 739 GiB, minimum 13,500s / window 14,400s. Actual 1017 full run remains unrun. Same-launcher public 0.8B native control rc0 in 5.161s, sampled 974,184,448 bytes; active STOP rc75 partial and drained. Static normal R13 assembly includes role, exclusive quiet and completion checker; it is not a real full grant. Existing prospective writer has native capture-start; strict reader/canary pending. [Evidence](../../artifacts/compute/codex3-ds41-w5d1-ready-20261031/SHA256SUMS). [no-belief: preparation only]
+          - Identity: model DeepSeek-V4.1-Flash-1017-MXFP4-experts (nine GGUF shards, first `DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf`; identity = size plus first and last 64 MiB SHA-256, captured before compute), quant_build MXFP4 experts with Q8_0 non-experts on `kernels/builds/cpu-20261023-141e4bcf5-lbh` (llama-bench binary 141e4bcf5, SHA-256 `f78b8ba80b76a215caca66dfd04119c56aa4ef864e0ea9978ef1b9234b5b0214`; GGML_IQK=1, OMP_PROC_BIND=spread, OMP_PLACES=cores, OMP_WAIT_POLICY=active, OMP_DYNAMIC=false), harness llama-bench `-t 48 -fa 1 -mmp 0 -p 512 -n 128 -r 3` under `numactl --interleave=all`, one full-protocol warmup then six fresh processes (predeclared `PREDECLARED.md`, source protocol SHA-256 `fd6a3ab8ad7e7007eeef7b062308257882724ddd19a9aeb953fff86b6cb1b835`), metric pp512 and tg128 tokens/s (higher is better) with process CV (lower is better), rule original strict validity: process CV <= 4% for each metric and at most one process per metric with within-process CV > 4%; the requested condition tg128 process CV <= 4% is reported separately, and no valid-baseline claim is made if strict validity fails, region cpus 0-95 whole host with exclusive GPU quiet (739 GiB admitted per process), est: provisional 14400 s (minimum 13500 s), pilot: bounded to one warmup plus six processes (7 x 1800 s plus 900 s reserve). Stop rule: stop-on-answer (the six process values and CVs are the answer); futility-only stop on a protocol mismatch or an interrupted unit (rc75 keeps partial work, the unit restarts in full), never on a performance result.
       - [ ] **DS41-W5e — annotate the live campaign inbox note `ak-ds41-1017-cpu-decode-20261021/store/inbox/30-ds41-1017-mxfp4-seeds-20261021.md`: its -29.9% pp512 premise for seed S5 is INVALID (cross-protocol, LBH-2 item 1).** The campaign store is the campaign owner's single-writer surface, so the owner writes the note; a wrap-up subagent does not. (derived 2026-10-23 from the LBH-2 W5 note above; filed by the workspace-f8 midday wrap-up)
         - *(2026-10-24, workspace-f8 vidya batch; box stays open, per this task's own rule.)* The annotation text is prepared: `/mnt/raid0/llm/tmp/f8-vb-batch-20261024/ds41-w5e/ANNOTATION-for-inbox-30.md` (sha256 `4a42eb55...`). It marks -29.9% INVALID and unrecoverable, and replaces it with the DS41-W5d result from 06:37Z today: (b) the MXFP4 CPU_REPACK MUL_MAT_ID takes 1.783x the Q4_K iqk per-layer time at the pp512 shapes (95% CI 1.778-1.789, PREMISE_STANDS, S5 ceiling about 22% of the pp512 wall); (a) the absolute baseline is INVALID_NOISY. The campaign `ak-ds41-1017-cpu-decode-20261021` has never launched, so no planner has read the note yet. Named event: the campaign owner appends it (or adds it as note `32-...`) before the first launch.
   - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
@@ -1487,7 +1490,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - *(2026-10-21.)* `models/deepseek-ai/DeepSeek-V4.1-Flash-1017-DSpark.gguf` (10,004,006,720 B, sha256
     d9ddd4be…4ebd), converted by research `c11c512f2`; B13 checks pass; loads and spec-decodes on 1017; alpha
     1017 0.582/0.476 vs Sept 0.609/0.486 (blocks 2/3, 16 prompts).
-  - [ ] **DS41-W6.2 — Confirm the 1017-vs-Sept drafter alpha gap with more pairs.** (Numbered W6.2 because
+  - [x] **DS41-W6.2 — Confirm the 1017-vs-Sept drafter alpha gap with more pairs.** (Numbered W6.2 because
     DS41-W6.1 already exists below.) Partial result: n=2 pairs block 2, A−B −1.9 pp, CI [−4.2, −0.0]; n=1 block 3,
     −0.9 pp; research `37cc352cc`. Needs ≥3 more pairs, run one server at a time, plus a greedy identity pass.
     The Sept DSpark drafter is kept until then.
@@ -1507,7 +1510,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       - Dry run PASS.
       - Post-run: `analyze_post.py --agent <id> --commit --push` (paired-t CI over all complete pairs, old plus
         new; it reproduces W6.1 exactly on the old rows; greedy identity p3A vs p3B; it also writes the producer
-        belief rows).
+        belief rows). [declined: operator 2026-11-03 model-audit: run cancelled 2026-10-22; Sept DSpark drafter arm no longer on disk]
 - [ ] DS41-W7 — **Cut over and retire the Sept artifacts.**
   - Update `epyc-inference-research/scripts/lib/deepseek_v41_flash_recipe.py`. The trunk is now a
     9-shard split, so `TRUNK_GGUF` becomes shard 1 plus a shard/sha256 list, following the
@@ -1523,6 +1526,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - The Sept DSpark drafter (9.4 GiB) goes once the W6 drafter passes. That deletion is not yet
     approved; confirm it with the operator.
   - [ ] **DS41-W7.2 — delete the Sept DSpark drafter `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10,004,008,256 B), then record its graveyard row. PENDING OPERATOR.** No longer needed since DS41-W6.2 was cancelled 2026-10-22. Unmapped, with no live references (checked 2026-10-22). workspace-58's `rm` was BLOCKED by the auto-mode classifier, so the operator runs or approves it. Write no graveyard row until the file is gone. (filed 2026-10-22, workspace-58)
+    - 2026-11-02 operator decision: Approve the delete (decisions-batch2-4-20261102.json)
 - [ ] DS41-W8 — **Re-point AutoKernel at the MXFP4 expert path.** The DS41 keeps (+7.11% serving;
   keeps 3 and 4 target the Q4_K X4_T kernel) do not apply to MXFP4 experts. After W5, re-anchor the
   DS41 AK campaign on the 1017 MXFP4 artifact and seed the AVX2 `mxfp4_8x8_q8_0` repack GEMV/GEMM as
@@ -1582,8 +1586,8 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - [ ] **DS41-W8b — in-place / mmap-friendly MXFP4 CPU repack (non-AK engineering).** The repack copies all experts into ~276 GiB of anonymous RAM per server (INC-20261021-earlyoom-session-kills); `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so the repack only reorders bytes and could run in place. AK's `capacity` dimension is a pass/fail guard, so a memory-only win can never be kept by AK. First verify the RssFile figure with `smaps_rollup` (the target runs `--no-mmap`). Experimental branch only; a fold is a champion-owner decision. (filed 2026-10-21)
   - [x] **DS41-W8c — CPU_REPACK correctness gate; NO DS41 keep may land before it is live.** The served-shape layer (a) runs through test-backend-ops, which never runs the repacked `mxfp4_8x8_q8_0` expert kernel (its MXFP4 NMSE = 0.0 is vacuous), and seeds S1–S5 all change that path. Code: research branch `ak-ds41-repack-gate-20261021` @ `63d7b920e` (worktree `/mnt/raid0/llm/tmp/ak-repack-gate-20261021/research`, not yet on main): `autokernel/loop/cpu_repack_cases.py` + `cpu_repack_probe.cpp`, `gates.check_cpu_repack_case_set` (ppl_contract layer (a), the bundle, and every other DS41 CPU keep), new route `cpu_repack_gemv`. It fails closed without `<store>/cpu_repack/manifest.json`. Next: land the branch on research main, then run FILLERS row `ak-ds41-repack-gate` (block-correctness, one quarter): it compiles the probe, calibrates on anchor `06b169e27`, runs the broken-kernel fixture regression, and installs the manifest. Progress: `progress/2026-10/2026-10-21-ak-repack-gate.md`. (filed 2026-10-21, operator "act on this advice")
     ✅ 2026-10-22 — gate ran on q1 (09:57–10:01Z, research 42daa0ac9): calibrate 8 cases / 72 rows OK (max anchor NMSE 2.93e-5, max rel 0.052); anchor check PASS (repack engaged on every case); fixture regression PASS (both broken fixtures caught, engagement negative fired); 43 pytest pass. Manifest installed at `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-1017-cpu-decode-20261021/store/cpu_repack/manifest.json`. Run dir `/mnt/raid0/llm/tmp/ak-repack-gate-20261021/runner/results/`.
-- [ ] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
-  repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log.
+- [x] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
+  repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log. [declined: operator 2026-11-03 model-audit: superseded by DS41-W5 (box written for the deleted Sept Q4 file; 1017 MXFP4 load + coherence smoke already SMOKE_OK 2026-10-21)]
 - [ ] DS41-T2 — Sparse-attention disposition: dense-mask vs sparse gather, and a top-k /
   candidate-block cap semantics probe **before** any quality run (findings 1-2). Correctness
   findings also update INF-31.
@@ -1746,6 +1750,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
   - *(2026-10-21.)* `test-dsv41-engram-gate` pass=14 fail=0 (graph-level, small tensors: exact at +0.0, bit-identical elsewhere) on `experimental/intake-fixes-20261020` @ 6b8291de5.
   - [x] **DS41-B3.1.1 — T1 smoke decode-logit bit-identity on the real model, and decide the −0.0 case** (it still yields +1 where torch copysign gives −1). ✅ 2026-10-21: bit-identical logits/tokens/top-10 on 4 prompts × 65 rows, research `48ee3b970`.
     - *(2026-10-21.)* The −0.0 case was decided: it does not matter. dot = sum·rstd·dim^-0.5 has positive scales, and RN summation from a +0 accumulator never yields −0.0, so the fix's +1 matches torch copysign. Only the T1 real-model smoke remains.
+  - 2026-11-02 operator decision: Accept +1 at -0.0 (decisions-batch2-4-20261102.json)
 - [x] **DS41-B12.1 — Cite-and-close DS41-B12 (a)(b)(c) and anchor DS41-B11 from source (intake-2116#record).** Head collapse = last FFN sub-layer pre-mix (official model.py:1268; DeepInfer deepseek.py:229-232; ours deepseek41.cpp:1372); layer-20 compressor gate absent because the single-token softmax is 1 (model.py:461-462); ratio 1/2 non-overlapping APE-free geometry; RoPE per intake-2116#record. Tick DS41-B12 with these anchors; DS41-B11 stays open only for the top-k renorm epsilon (dormant trigger below). No compute. ✅ 2026-10-20 — B12 (a) head collapse, (b) layer-20 ungated compressor, (c) ratio 1/2 geometry all MATCH official model.py vs champion dd3d9721c deepseek41.cpp; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-B12.1/REPORT.md.
 - [ ] **DS41-T3.3 — Token-id parity of the DS41 serving path against two official renderers (intake-2118#record, intake-2121#record).** Oracles: the 1017 encoding/encoding.py (it differs from the September copy: tool-result-only user turns no longer start a turn) and deepseek-recipe @ 935817c. Render the 5 goldens plus tool, thinking, effort, mid-system and reasoning-retention cases (the second reader found the recipe drops reasoning for non-prefix assistant turns where encoding.py keeps it), tokenize with the DS41 GGUF vocab and diff against llama-server /apply-template + /tokenize as served; report the first divergence per case and which oracle disagrees. Host-side only, no inference.
   - [x] **DS41-T3.3 first run (job 60) — harness finding, not a parity result** ✅ 2026-10-20: 0/14 token-identical vs both encodings because neither DS41 GGUF (Sept Q4, 1017 shard 1) carries `tokenizer.chat_template` and llama.cpp has no V4/V4.1 built-in (`src/llama-chat.cpp` stops at deepseek3/deepseek-ocr), so the server rendered its ChatML fallback. Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t33-token-parity/`.
@@ -1756,7 +1761,8 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
       - *(2026-10-21 note)* Harness fixed in `lib/t33.py` v2: explicit `enable_thinking` per case, served prompt saved, object-arguments probe, golden5 = SKIP(no mmproj) kept in the denominator, add_special false/true both reported (BOS undecided); template v1 confirmed chat-by-default when `enable_thinking` is false (no v2 needed). Jobs `62-ds41-t33c-sept` / `-1017` queued (first attempts killed rc=125 by the pairguard, requeued). Still open: (3) golden1 divergence location and (6) BOS decision, from the rerun.
       - *(2026-10-21, workspace-58 queue prep, no inference run; offline analysis of `ds41-t33c-1017b`)* Findings: **(6) BOS decided** = `add_special=true`: the template emits no BOS, the server adds it; 9/13 evaluated cases are token-identical with it, 0/13 without. **(3) golden1 localized**: the residual divergence of golden1 (id 586/622) and golden2/3/4 is in the FINAL assistant turn only (<= 165 chars from the end): golden1 served `<think><think>` where encoding.py has one; golden2/3 re-render the final assistant reasoning as `<think>..</think>` in chat mode where encoding.py drops it; golden4 loses the `<｜action｜>` task marker (the `task` field does not reach the template). **(4) arguments probe still UNDETERMINED** in v2 (the call was the last message; both forms rendered neither form). (1), (2), (5), (7) done earlier. What still needs running: ONE rerun, `t33.py` v3 (round-trip probe + reasoning_content/task variants for golden1-4; ~0.5 h, one load, no generation); the residual divergences themselves need a template/server fix first (not made here), then a second rerun to close. Analysis `t33c/analyze_t33c.py`, result `/mnt/raid0/llm/tmp/ds41-queue-20261021/t33c_offline_analysis.json`; research `2a40ce4b4`, `artifacts/ds41_queue_20261021/` and `artifacts/ds41_w6_dspark_1017_20261021/w6.1c/`; queue row in `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (launcher armed, idles until a grant; DS41-class, refuses via ps scan if another DS41 server is live), id `ds41-t33c`.
     - [x] **DS41-T3.3 1017 shard rerun (job 60-ds41-t33-token-parity-1017)** ✅ 2026-10-21: ran without the template; 0/14 vs both encodings with the ChatML fallback — the same artefact as the Sept run, not a parity result. Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t33-token-parity-1017/`.
-  - [ ] **DS41-T3a note — Sept vs 1017 encoding differ** in `find_last_user_index` under thinking mode: Sept counts a tool-result-only user turn as the last user turn (dropping the earlier assistant reasoning), 1017 does not. The cutover checkpoint must be served with the 1017 rule; add a T3.3 case for a trailing tool-result-only turn in thinking mode.
+    - 2026-11-02 operator decision: Adopt after parity results (decisions-batch2-4-20261102.json)
+  - **[declined: ws58 2026-11-03 content-review: a note, not a task; T3.3c carries the divergence closure]** **DS41-T3a note — Sept vs 1017 encoding differ** in `find_last_user_index` under thinking mode: Sept counts a tool-result-only user turn as the last user turn (dropping the earlier assistant reasoning), 1017 does not. The cutover checkpoint must be served with the 1017 rule; add a T3.3 case for a trailing tool-result-only turn in thinking mode.
 - [ ] **DS41-T4.1 — Golden-forced exactness driver for DS41-T4/T5 (intake-2116#record).** Force one fixed token sequence (>=8 prompts, 2 context lengths) through the DS41 server once batched-with-DSpark and once single-plain, diff (token id, logprob, top-5) per row at zero tolerance and report the first diverging row with its top-1/top-2 margin; reuse the LLAMA_SPEC_EXACT modes. Observation grade until the unit and noise floor are named.
   - *(2026-10-21, job 60-ds41-t41-golden-exactness, sept-q4, n=1 per cell.)* The zero-tolerance diff's "16/16 diverge" is dominated by missing logprobs: the speculative serial path returned no logprob/top-5 for 491/512 rows (ids identical). At token-id level, serial is 16/16 identical to plain; batched 11/16 (first id divergences ctx512 p6 row 10, p7 row 22; ctx2048 p0 row 14, p1 row 29, p4 row 13). Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t41-golden-exactness/`.
   - [ ] **DS41-T4.1.1 — obtain logprobs/top-5 on the speculative serial path** (the server returns none for accepted tokens), then rerun the logprob/top-5 diff; until then only the token-id result stands.
@@ -1795,7 +1801,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-005 (intake-2117): monitor: re-open if KPF/KVU prefix-store memory for DS41 sessions exceeds ~10% of host RAM or checkpoint save/restore time shows up in the TTFT budget; the encoder-variant replay (last 128 tokens, global KV untouched) would then be the drop-in fallback, gated by A2.
 - DI-006 (intake-2117): monitor: when the DS41 DSpark gate tuning reopens block size beyond 2 or concurrency>1, measure the verify-cost curve first and implement the survival-times-curve policy per intake-738/2607.05147; no task now because this report adds no numbers.
 - DI-012 (intake-2118): monitor: when DS41 gets an orchestrator registry role (DS41-W swap lands), check that the role config sets max_tokens against the served -c value; no task before then.
-- DI-021 (intake-2120): monitor: A1 result shows GGML_OP_TOP_K above the AutoKernel noise floor of the step, then open an AutoKernel op lane (AKX-ALL) for it; draft line: **AKX-ALL-<next> — GGML_OP_TOP_K CPU single-pass threshold-filter kernel, parity with partial_sort set semantics** @ handoffs/active/autokernel-all-devices-all-dimensions.md
+- DI-021 (intake-2120): monitor: A1 result shows GGML_OP_TOP_K above the AutoKernel noise floor of the step, then open an AutoKernel op lane (AKX-ALL) for it; draft line: **AKX-ALL-<next> — GGML_OP_TOP_K CPU single-pass threshold-filter kernel, parity with partial_sort set semantics** @ handoffs/active/kernel-champion-and-promotion.md
 - DI-022 (intake-2120): monitor: a DSA/DS41 model is scheduled onto MI210 with ncols>1024 per row (op unsupported -> CPU fallback or full argsort)
 - DI-034 (intake-2122): monitor: DS41 weight swap to the 1017 finetune changes projection quantization, or MI210/CPU FP8 emulation shows attention small-op overhead in the DS41-C8 profile
 - DI-042 (intake-2124): monitor: a DS41 or other MXFP4 requantisation step is planned with llama-quantize (then compare NMSE of ceil-pow2 vs floor scale recipes on the same tensor before choosing)

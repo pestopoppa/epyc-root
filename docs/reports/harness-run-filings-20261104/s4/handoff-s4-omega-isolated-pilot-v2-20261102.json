@@ -1,0 +1,63 @@
+{
+ "decision_rule": "File only actual run-phase records from the granted invocation with capture.json, completed process drain, successful per-batch request-to-owned-backend correlation, and verified source/model/kernel/suite/prompt pins. Preserve and ingest the native self-hashed manifests and records with the enrolled S4 Omega adapter, including partial/refused captures. An incomplete or escalated question is a measured outcome: record it INCOMPLETE with its reason in pairs.jsonl, COUNT IT IN THE DENOMINATOR of 16 pairs, never drop it, and continue with the next question. Futility rule (predeclared, descriptive pilot): at least 10 of 16 pairs must be complete for a usable comparison; when incomplete pairs exceed 6 (more than 6 of 16) that floor is unreachable, so stop cleanly and record outcome FUTILITY (remaining pairs not_run). A keeper stop or deadline is outcome STOPPED, an interruption and not evidence. Report paired complete records out of 16 (with incomplete pairs and their reasons), turns, native prompt tokens, legacy generated tokens and native reported output tokens with missingness, pass discordances, and elapsed time per arm. Tool-liveness passes only on outcome COMPLETE (all 32 records complete) with at least one nonzero turn; an INCOMPLETE question is reported with its reason, never silently dropped, and any incomplete pair means tool-liveness is not met (partial capture is incomplete). This is a convenience-panel pilot, not non-inferiority, efficacy, deployment or production-placement evidence. Qualification and actual output live in separate phase directories. The dry-run smoke covers exactly one question (first durable record, complete or incomplete, correlated to the owned backend).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 4800,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 12000,
+ "gib": 80,
+ "handoff_task": "handoffs/active/harness-program.md:S4-OMEGA-PILOT-V2",
+ "id": "handoff-s4-omega-isolated-pilot-v2-20261102",
+ "keep": [
+  "*.json",
+  "*.md",
+  "*.py",
+  "*.c",
+  "*.so",
+  "*.sh",
+  "*.sha256",
+  "run/**/*.json",
+  "run/**/*.jsonl",
+  "run/**/*.md",
+  "run/**/*.txt",
+  "run/**/*.log",
+  "dryrun/**/*.json",
+  "dryrun/**/*.jsonl",
+  "dryrun/**/*.md",
+  "dryrun/**/*.txt",
+  "dryrun/**/*.log",
+  "root_snapshot/scripts/vidya/adapters/s4_omega_ab.py",
+  "root_snapshot/scripts/vidya/adapters/README.md",
+  "root_snapshot/handoffs/active/vidya-belief-substrate-program.md",
+  "run/*/driver/native/*.records.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor/launch.sh",
+  "sha256": "bbac7eaf7ed415659bfedb8b26f586353e190c0b69a50e0dcd4f6f44c9069e1c"
+ },
+ "lineage_reset": 3,
+ "min_window_s": 12000,
+ "owner": "handoff-repl-turn-efficiency",
+ "ports": [
+  19531,
+  19532,
+  19533,
+  19534
+ ],
+ "priority_rank": 35.0,
+ "published_at": "2026-11-02T20:56:33Z",
+ "published_from": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor/run/*/driver/native/*.records.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor/STOP",
+ "supersedes": "handoff-s4-omega-isolated-pilot-v1-20261101",
+ "window_s": 14700,
+ "workdir": "/mnt/raid0/llm/tmp/repl-turn-efficiency/omega-successor"
+}

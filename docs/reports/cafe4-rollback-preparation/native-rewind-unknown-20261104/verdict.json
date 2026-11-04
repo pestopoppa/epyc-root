@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc2 and native UNKNOWN with controls null. Raw strict-partial/fault marker exists, but the predeclared nonfault cold-prefix comparison failed (1.78499126 > 1.63498925); launcher did not pin transitive runtime manifest. No rollback/fault or numerical conclusion.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T14:31:23+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=2 time=2026-11-04T14:29:08Z reason=job-rc-2:exited",
+ "filed_at": "2026-11-04T14:31:23+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-native-rollback-fault-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-native-rollback-fault-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 2,
+ "reason": "Scheduled rc2 and native UNKNOWN with controls null. Raw strict-partial/fault marker exists, but the predeclared nonfault cold-prefix comparison failed (1.78499126 > 1.63498925); launcher did not pin transitive runtime manifest. No rollback/fault or numerical conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-native-rollback-fault-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "One-prompt CPU real-MTP rollback/fault diagnostic only. PASS requires pinned v10 source/build/model/actual mapped libraries, positive native strict partial acceptance, distinct matched off/observe/target-fault controls, nonfault cold-prefix and batched comparisons within declared baseline plus 1e-5, both native recurrent-state mode witnesses, fault deviation greater than ten times diagnostic tolerance, no cutoff and reaped child. Any missing or invalid control is UNKNOWN. One prompt and diagnostic-capped acceptance cannot establish full CAFE-4 or performance; candidate lacks -ngl and arbitrary verify-width CLI. Corrected V4 draft-context rewind build; requalification retains original native lineage and first failed qualification.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "5df21c2603b8318884ad300da8481fff08f37874adabc0c1b0c5db5333453534",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

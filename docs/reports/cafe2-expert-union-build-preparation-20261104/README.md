@@ -1,0 +1,5 @@
+# CAFE-2 expert-union build qualification
+
+`cafe2-v10-expert-union-build-20261104` was published and passed four-CPU object smoke on 0–3 at 2026-11-04T14:38:21Z; content predicate rc0 and clean STOP rc75. This is a build prerequisite only; the scheduled executable build and native callback coverage remain unproven.
+
+The isolated v10 candidate binds pre-tokenized IDs created before the grant with the pinned vocab-only store tokenizer, explicitly sets and checks effective context thread counts, and proposes fail-closed per-layer routed-expert capture while keeping the timing arm callback-free. It records raw selected IDs and requires unique 40-layer coverage. The VIEW callback source analysis is specific to the pinned CPU scheduler; actual callback execution, shape/coverage, negative controls, matched token plan, runtime floor and the CAFE-2 cost verdict remain open. The existing VB-INF50-DRAFT-WIDTH family carries prospective native-source capture; no measurement is retroactively warranted.

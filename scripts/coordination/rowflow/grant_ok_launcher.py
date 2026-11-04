@@ -132,7 +132,7 @@ def parse_engine(argv: list[str]) -> dict | None:
     idx = next((i for i, a in enumerate(argv) if ENGINE_RE.match(os.path.basename(a))), None)
     if idx is None:
         return None
-    o = {"engine": os.path.basename(argv[idx]), "inner": False, "id": "", "class": "", "min_window": 0,
+    o = {"engine": os.path.basename(argv[idx]), "engine_path": argv[idx], "inner": False, "id": "", "class": "", "min_window": 0,
          "claim_cpus": "", "gpu_quiet": "", "nofold": False, "self_claim": False, "gpu_threads": "184-191",
          "role": "", "workdir": "/workspace", "precond_cmd": ""}
     rest = argv[idx + 1:]
@@ -159,7 +159,10 @@ def parse_engine(argv: list[str]) -> dict | None:
             o[{"--self-claim": "self_claim", "--no-fold-siblings": "nofold"}.get(a, a[2:])] = True
             i += 1
         else:
-            return None  # the engine exits 64 on an unknown arg: this argv is not a live engine
+            # 2026-11-03 session review item 7: an unknown flag is the PARSER lagging the engine, not proof that this is
+            # no engine (the live poller already logged 'launcher up pid='); recorded, skipped, never a rc=15 refusal.
+            o.setdefault("unknown", []).append(a)
+            i += 1
     return o
 
 
@@ -265,7 +268,20 @@ def claim_of(o: dict, cpus: str | None) -> tuple[str, str]:
         gmode = "" if gq == "none" else (gq or "shared")
     if o["nofold"] and cls == "gpu":
         cpu_list, gmode = "", gmode or "shared"
+    if cls == "gpu" and _grant_cpus_engine(o):
+        # ws58 2026-11-02 GRANT_CPUS engine: a gpu claim is the grant's PRIMARY cpus only (host threads 184-191 unlocked);
+        # --claim-cpus / --no-fold-siblings no longer widen it
+        cpu_list = ",".join(str(c) for c in sorted(set(expand(cpus or ""))) if c < 96)
+        gmode = "" if gq == "none" else (gq or "shared")
     return cpu_list, gmode
+
+
+def _grant_cpus_engine(o: dict) -> bool:
+    try:
+        with open(o.get("engine_path") or "", errors="replace") as f:
+            return "GRANT_CPUS" in f.read()
+    except OSError:
+        return False
 
 
 def cpu_regions(lst: str, fold: bool = True) -> set[str]:

@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T14:28:00Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 600,
+ "first_unit_at": "2026-11-04T14:27:56Z",
+ "id": "cafe4-v10-native-rollback-fault-20261104",
+ "launcher_sha256": "79120033489bc7e8547a0a5a96373a537e59536d2e654785fa3dd9138e77860b",
+ "passed_at": "2026-11-04T14:28:01Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "24-27",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/native-attempts/attempt-v5xcjd01/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

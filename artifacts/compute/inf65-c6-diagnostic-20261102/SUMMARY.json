@@ -1,0 +1,128 @@
+{
+  "custody": "Original untracked workspace files; not a durable native custody transfer.",
+  "files": [
+    {
+      "relative_path": "Q4-FIX-RESULT.json",
+      "sha256": "093285de4757d1233a17738164a5ebf7fe8d9ed935730d7d9e880b23d8a12ed9"
+    },
+    {
+      "relative_path": "Q4K-HOST-CONTROL.md",
+      "sha256": "78bda9ac7a0d368c1cd98e2c0a7183d78704d8bf115853bb4fa8dda7c9158fe1"
+    },
+    {
+      "relative_path": "Q4K-RESULT.json",
+      "sha256": "a425b393da783e23ece7f673b1f7393c0da6ce9a62873250961d9af5ddf6332f"
+    },
+    {
+      "relative_path": "QUANT-ANALYSIS.json",
+      "sha256": "5ab6ceae3bbd1916c10dcc754c66014bae19d2d93698c297e025e74b3bea02be"
+    },
+    {
+      "relative_path": "RESULT.json",
+      "sha256": "ca9bd6c32b18aa6db90531c3f2386d0932ec2ae271c15972dbdea71f6fb5f51a"
+    },
+    {
+      "relative_path": "ROUTE-RESULT.json",
+      "sha256": "796a31e7b9622cf48817d42dcf0c18c6eb0c0240f42fd7e57c6975efffc1b921"
+    },
+    {
+      "relative_path": "capture.patch",
+      "sha256": "900bd962d758f157cbd1903fe40f3e8fea7046cdac7f0dd72c6ba7fd064fb142"
+    },
+    {
+      "relative_path": "compare_capture.py",
+      "sha256": "08dd41db180739a6242fa102ac48f201c9597462d7fc667a520142beaa05e211"
+    },
+    {
+      "relative_path": "q4-fix-packed-test.py",
+      "sha256": "b17866a510c90eea5a0ec1ef7e6a4d49292a77b8b380765f8e9d4d53fd8cfa61"
+    },
+    {
+      "relative_path": "q4k-hardened-job/INPUTS.sha256",
+      "sha256": "353642fadf8390fdf0013d930e72f2e3a065164e69532ffeecdf6c043d99b35c"
+    },
+    {
+      "relative_path": "q4k-hardened-job/README.md",
+      "sha256": "740370194e54b99c062ec661bcd77b19f2fc87dbc7f7f0220171888a774e4043"
+    },
+    {
+      "relative_path": "q4k-hardened-job/compare_capture.py",
+      "sha256": "08dd41db180739a6242fa102ac48f201c9597462d7fc667a520142beaa05e211"
+    },
+    {
+      "relative_path": "q4k-hardened-job/complete.py",
+      "sha256": "645fbf8eaf81d9751c783c14e929d4c216974a1c92e66238724573a5ee7aa8d5"
+    },
+    {
+      "relative_path": "q4k-hardened-job/custody.py",
+      "sha256": "b6e0ca5824ca7ef3b12d9e228d08427f1a071f10c8975a27b8dfa8e17b1ca912"
+    },
+    {
+      "relative_path": "q4k-hardened-job/filler_lib.sh",
+      "sha256": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c"
+    },
+    {
+      "relative_path": "q4k-hardened-job/filler_run15.sh",
+      "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+    },
+    {
+      "relative_path": "q4k-hardened-job/job.py",
+      "sha256": "c3a2025da094fac362434aac34169c7d4a5455584286a849fe08e187e371b33b"
+    },
+    {
+      "relative_path": "q4k-hardened-job/launch.sh",
+      "sha256": "156723a3310d0bf7926df5a87b8bfa2d42418ceeef5275f744da48421b66f53c"
+    },
+    {
+      "relative_path": "q4k-hardened-job/region-lock-real.sh",
+      "sha256": "8aac835c0ce0d7377774d2e07248dd8a14e3ec4b920f0db373f57020023bd7c0"
+    },
+    {
+      "relative_path": "q4k-hardened-job/residency.py",
+      "sha256": "7040d7029ef3099684870271eb7f6fa1d3523f583aff0f689ac2739f37040723"
+    },
+    {
+      "relative_path": "q4k-hardened-job/test_custody.py",
+      "sha256": "c45f45025f30ccc6b79b76ebe12689a04ee4cda884b66572eadb0c1cc91b92f6"
+    },
+    {
+      "relative_path": "q4k-instrument-c5.patch",
+      "sha256": "02043713b7641553bb2c29399f28f3aaf86e6afc8508c8928b2afd5d7e3f2518"
+    },
+    {
+      "relative_path": "q4k-instrument-c6.patch",
+      "sha256": "f4b6d9d8d3b1c052c2f3eaf6b017a56d4fd2d2fa7adeee3475a2ae06c0b15251"
+    },
+    {
+      "relative_path": "q4k_mmvq_host_control.py",
+      "sha256": "6cf86bb1c69444a35ef63ae0c4c29336d625245941be1d7db321820804929d49"
+    },
+    {
+      "relative_path": "quant_analysis.py",
+      "sha256": "60d18b93a2be03ff1602f697d97a6e4127e98db398e7646f666e20bdd380df98"
+    }
+  ],
+  "kind": "selected original-data summary and raw file digest inventory",
+  "raw_evidence_root": "/workspace/artifacts/compute/inf65-c6-diagnostic-20261102",
+  "selected_original_fields": {
+    "Q4-FIX-RESULT.json": {
+      "full_gak_pass": null,
+      "native_rc": 0,
+      "original_case": "^type_a=q4_0,type_b=f32,m=16,n=3,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "status": "COMPLETE_SINGLE_CASE_ONLY"
+    },
+    "Q4K-RESULT.json": {
+      "case": "^type_a=q4_K,type_b=f32,m=16,n=3,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "full_gak_pass": null,
+      "status": "COMPLETE_DIAGNOSTIC_ONLY"
+    },
+    "RESULT.json": {
+      "case": "^type_a=q4_0,type_b=f32,m=16,n=3,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "full_gak_pass": null,
+      "gate_pass": null,
+      "input_bytes_equal": true,
+      "outputs_equal": true,
+      "status": "COMPLETE_DIAGNOSTIC_ONLY"
+    }
+  }
+}

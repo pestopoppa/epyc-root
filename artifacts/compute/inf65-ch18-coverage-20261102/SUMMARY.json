@@ -1,0 +1,15 @@
+{
+  "custody": "Original untracked workspace files; not a durable native custody transfer.",
+  "files": [
+    {
+      "relative_path": "ch18b-c5-coverage.patch",
+      "sha256": "d59b1f5d63562803a12cfd386011bb46f020760a1b0c953baa908b4a2d94b992"
+    },
+    {
+      "relative_path": "test-ch18b-cells.cpp",
+      "sha256": "d69821b0eb0b5dd254be708ef596c26f6a74e5135519f74f7a258e3d3419ed03"
+    }
+  ],
+  "kind": "selected original-data summary and raw file digest inventory",
+  "raw_evidence_root": "/workspace/artifacts/compute/inf65-ch18-coverage-20261102"
+}

@@ -1,0 +1,1279 @@
+{
+ "files": {
+  "agent-collab-rnd-harness.md": {
+   "target": "autokernel-loop.md",
+   "track": "agent-collab-rnd-harness"
+  },
+  "agent-file-prose-compression.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "agent-file-prose-compression"
+  },
+  "agent-world-env-synthesis.md": {
+   "target": "benchmark-suites.md",
+   "track": "agent-world-env-synthesis"
+  },
+  "agentic-rocm-kernel-authoring.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "agentic-rocm-kernel-authoring"
+  },
+  "agentic-serving-harness-fixes.md": {
+   "target": "harness-program.md",
+   "track": "agentic-serving-harness-fixes"
+  },
+  "amd-ai-lab-website-publication.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "amd-ai-lab-website-publication"
+  },
+  "angelslim-techniques-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "angelslim-techniques-evaluation"
+  },
+  "architect-model-selection-bench.md": {
+   "target": "model-evaluation-queue.md",
+   "track": null
+  },
+  "attention-matching-kv-compaction.md": {
+   "target": "long-context-program.md",
+   "track": "attention-matching-kv-compaction"
+  },
+  "autokernel-all-devices-all-dimensions.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-all-devices-all-dimensions"
+  },
+  "autokernel-champion-aggregate.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-champion-aggregate"
+  },
+  "autokernel-concurrent-target-coordination.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-concurrent-target-coordination"
+  },
+  "autokernel-cross-workload-keep-gate.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "autokernel-cross-workload-keep-gate"
+  },
+  "autokernel-orchestrator-actor-backend.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-orchestrator-actor-backend"
+  },
+  "autokernel-rebuild-program.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-rebuild-program"
+  },
+  "autokernel-research-loop.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-research-loop"
+  },
+  "autokernel-restart-and-strip.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-restart-and-strip"
+  },
+  "autokernel-unified-surface-program.md": {
+   "target": "autokernel-loop.md",
+   "track": "autokernel-unified-surface-program"
+  },
+  "autopilot-continuous-optimization.md": {
+   "target": "autopilot-program.md",
+   "track": null
+  },
+  "autopilot-dashboard-fidelity-audit-2026-07-22.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-dashboard-fidelity-audit-2026-07-22"
+  },
+  "autopilot-decision-plane-audit-2026-07-22.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-decision-plane-audit-2026-07-22"
+  },
+  "autopilot-sequential-allocation.md": {
+   "target": "autopilot-program.md",
+   "track": "autopilot-sequential-allocation"
+  },
+  "batched-decode-measurement.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "batched-decode-measurement"
+  },
+  "batched-edit-parallel-apply.md": {
+   "target": "autopilot-program.md",
+   "track": "batched-edit-parallel-apply"
+  },
+  "bep-dcp-falsification-harness.md": {
+   "target": "autopilot-program.md",
+   "track": "bep-dcp-falsification-harness"
+  },
+  "bulk-inference-campaign.md": {
+   "target": "eval-tower-program.md",
+   "track": "bulk-inference-campaign"
+  },
+  "canonical-judge-suite-revamp.md": {
+   "target": "benchmark-suites.md",
+   "track": null
+  },
+  "capability-registry-and-promotion.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "capability-registry-and-promotion"
+  },
+  "churn-pipeline.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "churn-pipeline"
+  },
+  "colbert-reranker-web-research.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "colbert-reranker-web-research"
+  },
+  "contention-model-device-and-load-axes-rider.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "contention-model-device-and-load-axes-rider"
+  },
+  "context-folding-progressive.md": {
+   "target": "context-and-token-economy.md",
+   "track": null
+  },
+  "conversation-stack.md": {
+   "target": "speech-and-multimodal.md",
+   "track": null
+  },
+  "coordinator-role-failure-modes-and-refactor.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "coordinator-role-failure-modes-and-refactor"
+  },
+  "cpu-fused-decoder-blocks.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "cpu-fused-decoder-blocks"
+  },
+  "cpu-prefill-compute-large-models.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "cpu-prefill-compute-large-models"
+  },
+  "dashboard-architecture-restructure.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "dashboard-architecture-restructure"
+  },
+  "decision-aware-routing.md": {
+   "target": "routing-program.md",
+   "track": null
+  },
+  "delegation-context-preassembly.md": {
+   "target": "context-and-token-economy.md",
+   "track": "delegation-context-preassembly"
+  },
+  "delta-mem-reproduction.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "delta-mem-reproduction"
+  },
+  "dev-harness-trace-mining.md": {
+   "target": "memory-program.md",
+   "track": "dev-harness-trace-mining"
+  },
+  "dflash2-block-drafter-experimental-build.md": {
+   "target": "speculative-decoding.md",
+   "track": "dflash2-block-drafter-experimental-build"
+  },
+  "document-parser-table-bench.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "document-parser-table-bench"
+  },
+  "dynamic-stack-concurrency.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "dynamic-stack-concurrency"
+  },
+  "engram-conditional-memory.md": {
+   "target": "model-architecture-readiness.md",
+   "track": "engram-conditional-memory"
+  },
+  "episodic-memory-integrity.md": {
+   "target": "memory-program.md",
+   "track": null
+  },
+  "ernie-image-turbo-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "ernie-image-turbo-evaluation"
+  },
+  "eval-benchmark-cost-reduction.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-benchmark-cost-reduction"
+  },
+  "eval-tower-architecture-audit-2026-07-20.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-tower-architecture-audit-2026-07-20"
+  },
+  "eval-tower-loop-robustness-audit-2026-07-20.md": {
+   "target": "eval-tower-program.md",
+   "track": "eval-tower-loop-robustness-audit-2026-07-20"
+  },
+  "eval-tower-verification.md": {
+   "target": "eval-tower-program.md",
+   "track": null
+  },
+  "evidence-plane-event-sourcing-and-narrative.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-event-sourcing-and-narrative"
+  },
+  "evidence-plane-instrument-repair.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-instrument-repair"
+  },
+  "evidence-plane-ledger-and-sequential-verdicts.md": {
+   "target": "autopilot-program.md",
+   "track": "evidence-plane-ledger-and-sequential-verdicts"
+  },
+  "exl3-cpu-mi210-implementation.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": null
+  },
+  "fable5-window2-findings-01-optimizer-integrity.md": {
+   "target": "eval-tower-program.md",
+   "track": "fable5-window2-findings-01-optimizer-integrity"
+  },
+  "fable5-window2-findings-02-heterogeneous-gpu.md": {
+   "target": "mi210-serving-program.md",
+   "track": "fable5-window2-findings-02-heterogeneous-gpu"
+  },
+  "fable5-window2-findings-03-portfolio-and-master-queue.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "fable5-window2-findings-03-portfolio-and-master-queue"
+  },
+  "fable5-window2-findings-05c-mi210-lever-category-matrix.md": {
+   "target": "mi210-serving-program.md",
+   "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
+  },
+  "fleet-fanout-measurement.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "fleet-fanout-measurement"
+  },
+  "frontier-f2-self-running-lab.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "frontier-f2-self-running-lab"
+  },
+  "frontier-f3-data-flywheel.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "frontier-f3-data-flywheel"
+  },
+  "frontier-f4-continuity-backup.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "frontier-f4-continuity-backup"
+  },
+  "frontier-f6-upstream-publication.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "frontier-f6-upstream-publication"
+  },
+  "gemma-challenge-kernel-techniques-v7.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "gemma-challenge-kernel-techniques-v7"
+  },
+  "glm52-reviewer-capability-gates.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "glm52-reviewer-capability-gates"
+  },
+  "gpu-acceleration-path.md": {
+   "target": "mi210-serving-program.md",
+   "track": "gpu-acceleration-path"
+  },
+  "gpu-candidates-surface-qwen38-update.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "gpu-candidates-surface-qwen38-update"
+  },
+  "gpu-cot-scaffold-sidecar.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "gpu-cot-scaffold-sidecar"
+  },
+  "gpu-serving-tie-in-program.md": {
+   "target": "mi210-serving-program.md",
+   "track": null
+  },
+  "handoff-index-and-backlog-graph.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "handoff-index-and-backlog-graph"
+  },
+  "harness-improvement-loop.md": {
+   "target": "harness-program.md",
+   "track": "harness-improvement-loop"
+  },
+  "harness-selection-and-integration.md": {
+   "target": "harness-program.md",
+   "track": "harness-selection-and-integration"
+  },
+  "heterogeneous-slot-fabric-residency.md": {
+   "target": "kv-cache-program.md",
+   "track": "heterogeneous-slot-fabric-residency"
+  },
+  "inference-batch-loop.md": {
+   "target": "eval-tower-program.md",
+   "track": "inference-batch-loop"
+  },
+  "intake-derived-work-2026-07-25.md": {
+   "target": "frontier-lab-automation.md",
+   "track": null
+  },
+  "integration-test-coverage.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "integration-test-coverage"
+  },
+  "internal-interaction-lifecycle.md": {
+   "target": "routing-program.md",
+   "track": "internal-interaction-lifecycle"
+  },
+  "internal-kb-rag.md": {
+   "target": "knowledge-pipelines.md",
+   "track": null
+  },
+  "iqk-iquant-enablement.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": "iqk-iquant-enablement"
+  },
+  "kv-prefix-fork-and-paged-attention.md": {
+   "target": "kv-cache-program.md",
+   "track": "kv-prefix-fork-and-paged-attention"
+  },
+  "kv-unified-stack-rollout.md": {
+   "target": "kv-cache-program.md",
+   "track": "kv-unified-stack-rollout"
+  },
+  "laguna-s21-cpu-port.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "laguna-s21-cpu-port"
+  },
+  "large-moe-expert-parallelism.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "large-moe-expert-parallelism"
+  },
+  "learned-routing-controller.md": {
+   "target": "routing-program.md",
+   "track": "learned-routing-controller"
+  },
+  "lightning-attention-port.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "lightning-attention-port"
+  },
+  "llama-cpp-dsa-contribution.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "llama-cpp-dsa-contribution"
+  },
+  "log-linear-gated-deltanet-readiness.md": {
+   "target": "model-architecture-readiness.md",
+   "track": "log-linear-gated-deltanet-readiness"
+  },
+  "loop-owned-fleet-implementation.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "loop-owned-fleet-implementation"
+  },
+  "loop-state-offraid-backup.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "loop-state-offraid-backup"
+  },
+  "loops-and-dashboards-audit-2026-07-05.md": {
+   "target": "autopilot-program.md",
+   "track": "loops-and-dashboards-audit-2026-07-05"
+  },
+  "mathsmith-hc-formalizer-eval.md": {
+   "target": "benchmark-suites.md",
+   "track": "mathsmith-hc-formalizer-eval"
+  },
+  "memento-block-reasoning-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "memento-block-reasoning-compression"
+  },
+  "mi210-big-model-and-acceleration-roadmap.md": {
+   "target": "mi210-serving-program.md",
+   "track": "mi210-big-model-and-acceleration-roadmap"
+  },
+  "mi210-q8-dequant-gemv-roofline.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "mi210-q8-dequant-gemv-roofline"
+  },
+  "minddr-deep-research-mode.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "minddr-deep-research-mode"
+  },
+  "minimax-h3-video-generation-evaluation.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "minimax-h3-video-generation-evaluation"
+  },
+  "model-artifact-integrity.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-artifact-integrity"
+  },
+  "model-capability-descriptors.md": {
+   "target": "routing-program.md",
+   "track": "model-capability-descriptors"
+  },
+  "model-exec-containment.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-exec-containment"
+  },
+  "model-stack-change-standardization-audit.md": {
+   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
+  },
+  "model-stack-single-source-update-pipeline.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-stack-single-source-update-pipeline"
+  },
+  "model-stack-update-pipeline-audit.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "model-stack-update-pipeline-audit"
+  },
+  "moe-routing-tap-and-locality-measurement.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "moe-routing-tap-and-locality-measurement"
+  },
+  "moe-spec-cpu-spec-dec-integration.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "moe-spec-cpu-spec-dec-integration"
+  },
+  "multi-file-coding-completion-capability.md": {
+   "target": "benchmark-suites.md",
+   "track": "multi-file-coding-completion-capability"
+  },
+  "multimodal-pipeline.md": {
+   "target": "speech-and-multimodal.md",
+   "track": "multimodal-pipeline"
+  },
+  "multiscreen-attention-evaluation.md": {
+   "target": "long-context-program.md",
+   "track": "multiscreen-attention-evaluation"
+  },
+  "non-inference-backlog.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": null
+  },
+  "numa-placement-defect-20260730.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "numa-placement-defect-20260730"
+  },
+  "numa-prefill-decode-disaggregation.md": {
+   "target": "mi210-serving-program.md",
+   "track": "numa-prefill-decode-disaggregation"
+  },
+  "numa-topology-cutover-resume-20260730.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": null
+  },
+  "objective-task-rate-goodput.md": {
+   "target": "autopilot-program.md",
+   "track": "objective-task-rate-goodput"
+  },
+  "opencode-shell-integration.md": {
+   "target": "harness-program.md",
+   "track": "opencode-shell-integration"
+  },
+  "opendataloader-pipeline-integration.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "opendataloader-pipeline-integration"
+  },
+  "orchestration-robustness-audit-2026-07-11.md": {
+   "target": "autopilot-program.md",
+   "track": "orchestration-robustness-audit-2026-07-11"
+  },
+  "paw-compiled-specialists.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "paw-compiled-specialists"
+  },
+  "per-request-reasoning-budget.md": {
+   "target": "context-and-token-economy.md",
+   "track": "per-request-reasoning-budget"
+  },
+  "prompt-construction-determinism.md": {
+   "target": "eval-tower-program.md",
+   "track": "prompt-construction-determinism"
+  },
+  "promptforge-mutation-safety-contract.md": {
+   "target": "autopilot-program.md",
+   "track": "promptforge-mutation-safety-contract"
+  },
+  "qwen-chat-template-evaluation.md": {
+   "target": "harness-program.md",
+   "track": "qwen-chat-template-evaluation"
+  },
+  "qwen-mtp-llamacpp-port.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "qwen-mtp-llamacpp-port"
+  },
+  "qwen38-27b-replace-qwen36.md": {
+   "target": "mi210-serving-program.md",
+   "track": "qwen38-27b-replace-qwen36"
+  },
+  "rao-redel-substrate-spike.md": {
+   "target": "context-and-token-economy.md",
+   "track": "rao-redel-substrate-spike"
+  },
+  "re4-protocol-redesign.md": {
+   "target": "eval-tower-program.md",
+   "track": "re4-protocol-redesign"
+  },
+  "reasoning-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "reasoning-compression"
+  },
+  "reasoning-effort-levels.md": {
+   "target": "context-and-token-economy.md",
+   "track": "reasoning-effort-levels"
+  },
+  "reboot-gated-inventory-and-staging.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "reboot-gated-inventory-and-staging"
+  },
+  "refactoring-multirepo-2026-10.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "refactoring-multirepo-2026-10"
+  },
+  "repl-embedding-retrieval.md": {
+   "target": "harness-program.md",
+   "track": "repl-embedding-retrieval"
+  },
+  "repl-session-memory-maturity.md": {
+   "target": "memory-program.md",
+   "track": "repl-session-memory-maturity"
+  },
+  "repl-turn-efficiency.md": {
+   "target": "harness-program.md",
+   "track": "repl-turn-efficiency"
+  },
+  "repo-readiness-scorer.md": {
+   "target": "engineering-hygiene-backlog.md",
+   "track": "repo-readiness-scorer"
+  },
+  "retrain-routing-models.md": {
+   "target": "routing-program.md",
+   "track": "retrain-routing-models"
+  },
+  "reviewer-calibration-accounting.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-calibration-accounting"
+  },
+  "reviewer-escalation-and-human-gate-policy.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-escalation-and-human-gate-policy"
+  },
+  "reviewer-latency-and-sampling-budget.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-latency-and-sampling-budget"
+  },
+  "reviewer-model-ablations.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-model-ablations"
+  },
+  "reviewer-typed-artifacts.md": {
+   "target": "reviewer-control-plane.md",
+   "track": "reviewer-typed-artifacts"
+  },
+  "rlm-contested-claims-self-evaluation.md": {
+   "target": "benchmark-suites.md",
+   "track": "rlm-contested-claims-self-evaluation"
+  },
+  "rocm-verify-profile-backend.md": {
+   "target": "rocm-kernel-authoring.md",
+   "track": "rocm-verify-profile-backend"
+  },
+  "routing-intelligence.md": {
+   "target": "routing-program.md",
+   "track": "routing-intelligence"
+  },
+  "sarathi-serve-cpu-evaluation.md": {
+   "target": "cpu-decode-roofline-program.md",
+   "track": "sarathi-serve-cpu-evaluation"
+  },
+  "scaffold-autopilot-cost-lever-deployment.md": {
+   "target": "autopilot-program.md",
+   "track": "scaffold-autopilot-cost-lever-deployment"
+  },
+  "scoring-infra-standardization.md": {
+   "target": "eval-tower-program.md",
+   "track": "scoring-infra-standardization"
+  },
+  "searxng-search-backend.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "searxng-search-backend"
+  },
+  "session-bus-thin-dispatcher.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": null
+  },
+  "shape-keyed-contention-gating.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "shape-keyed-contention-gating"
+  },
+  "sliders-local-validation.md": {
+   "target": "knowledge-pipelines.md",
+   "track": "sliders-local-validation"
+  },
+  "speculative-decoding-mtp-refresh.md": {
+   "target": "speculative-decoding.md",
+   "track": "speculative-decoding-mtp-refresh"
+  },
+  "stack-change-governance-pipeline.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": null
+  },
+  "stale-open-audit-2026-07-18.md": {
+   "target": "frontier-lab-automation.md",
+   "track": "stale-open-audit-2026-07-18"
+  },
+  "standardized-stack-update-pipeline-finalization.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "standardized-stack-update-pipeline-finalization"
+  },
+  "strand-rust-coder-rustevo2-verification.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "strand-rust-coder-rustevo2-verification"
+  },
+  "streaming-llm-baseline.md": {
+   "target": "long-context-program.md",
+   "track": "streaming-llm-baseline"
+  },
+  "summary-token-attention-readiness.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "summary-token-attention-readiness"
+  },
+  "swarm-dataset-distillation.md": {
+   "target": "handoffs/completed/swarm-dataset-distillation.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
+  },
+  "tidar-one-pass-variant-b.md": {
+   "target": "model-evaluation-queue.md",
+   "track": "tidar-one-pass-variant-b"
+  },
+  "tool-output-compression.md": {
+   "target": "context-and-token-economy.md",
+   "track": "tool-output-compression"
+  },
+  "tool-use-eval-contract.md": {
+   "target": "benchmark-suites.md",
+   "track": "tool-use-eval-contract"
+  },
+  "tq3-quantization-evaluation.md": {
+   "target": "quantization-and-low-bit.md",
+   "track": "tq3-quantization-evaluation"
+  },
+  "tri-role-coordinator-architecture.md": {
+   "target": "routing-program.md",
+   "track": "tri-role-coordinator-architecture"
+  },
+  "triattention-kv-selection.md": {
+   "target": "long-context-program.md",
+   "track": "triattention-kv-selection"
+  },
+  "typed-decision-plane.md": {
+   "target": "routing-program.md",
+   "track": "typed-decision-plane"
+  },
+  "unified-trace-memory-service.md": {
+   "target": "memory-program.md",
+   "track": "unified-trace-memory-service"
+  },
+  "v9-kernel-per-request-speculative-params.md": {
+   "target": "kernel-champion-and-promotion.md",
+   "track": "v9-kernel-per-request-speculative-params"
+  },
+  "within-role-placement-state-machine.md": {
+   "target": "numa-placement-and-contention.md",
+   "track": "within-role-placement-state-machine"
+  },
+  "wp12-fleet-layer-design.md": {
+   "target": "stack-lifecycle-program.md",
+   "track": "wp12-fleet-layer-design"
+  },
+  "wrap-up-division-of-labor-policy.md": {
+   "target": "coordination-and-churn-pipeline.md",
+   "track": "wrap-up-division-of-labor-policy"
+  },
+  "x-mas-text-routing.md": {
+   "target": "routing-program.md",
+   "track": "x-mas-text-routing"
+  },
+  "yarn-context-extension-research.md": {
+   "target": "long-context-program.md",
+   "track": "yarn-context-extension-research"
+  }
+ },
+ "ids": {
+  "EVL-01": {
+   "target": "EVL-29",
+   "track": "agent-file-prose-compression"
+  },
+  "EVL-03": {
+   "target": "RTG-02",
+   "track": "autopilot-decision-plane-audit-2026-07-22"
+  },
+  "EVL-04": {
+   "target": "RTG-02",
+   "track": "autopilot-sequential-allocation"
+  },
+  "EVL-07": {
+   "target": "EVL-14",
+   "track": "bulk-inference-campaign"
+  },
+  "EVL-11": {
+   "target": "EVL-14",
+   "track": "eval-benchmark-cost-reduction"
+  },
+  "EVL-12": {
+   "target": "EVL-14",
+   "track": "eval-tower-architecture-audit-2026-07-20"
+  },
+  "EVL-13": {
+   "target": "EVL-14",
+   "track": "eval-tower-loop-robustness-audit-2026-07-20"
+  },
+  "EVL-15": {
+   "target": "RTG-02",
+   "track": "evidence-plane-instrument-repair"
+  },
+  "EVL-16": {
+   "target": "RTG-02",
+   "track": "evidence-plane-ledger-and-sequential-verdicts"
+  },
+  "EVL-19": {
+   "target": "EVL-14",
+   "track": "fable5-window2-findings-01-optimizer-integrity"
+  },
+  "EVL-20": {
+   "target": "INF-22",
+   "track": "fable5-window2-findings-02-heterogeneous-gpu"
+  },
+  "EVL-21": {
+   "target": "INF-65",
+   "track": "fable5-window2-findings-03-portfolio-and-master-queue"
+  },
+  "EVL-24": {
+   "target": "EVL-29",
+   "track": "frontier-f2-self-running-lab"
+  },
+  "EVL-25": {
+   "target": "EVL-29",
+   "track": "frontier-f3-data-flywheel"
+  },
+  "EVL-26": {
+   "target": "RTG-22",
+   "track": "frontier-f4-continuity-backup"
+  },
+  "EVL-27": {
+   "target": "INF-48",
+   "track": "frontier-f6-upstream-publication"
+  },
+  "EVL-30": {
+   "target": "RTG-22",
+   "track": "integration-test-coverage"
+  },
+  "EVL-31": {
+   "target": "EVL-08",
+   "track": "mathsmith-hc-formalizer-eval"
+  },
+  "EVL-32": {
+   "target": "EVL-02",
+   "track": "minimax-h3-video-generation-evaluation"
+  },
+  "EVL-33": {
+   "target": "RTG-08",
+   "track": "per-request-reasoning-budget"
+  },
+  "EVL-34": {
+   "target": "RTG-08",
+   "track": "rao-redel-substrate-spike"
+  },
+  "EVL-35": {
+   "target": "EVL-14",
+   "track": "re4-protocol-redesign"
+  },
+  "EVL-36": {
+   "target": "EVL-10",
+   "track": "repl-session-memory-maturity"
+  },
+  "EVL-37": {
+   "target": "UFH-01",
+   "track": "repl-turn-efficiency"
+  },
+  "EVL-38": {
+   "target": "RTG-22",
+   "track": "repo-readiness-scorer"
+  },
+  "EVL-39": {
+   "target": "EVL-08",
+   "track": "rlm-contested-claims-self-evaluation"
+  },
+  "EVL-42": {
+   "target": "EVL-14",
+   "track": "scoring-infra-standardization"
+  },
+  "EVL-43": {
+   "target": "PIP-04",
+   "track": "sliders-local-validation"
+  },
+  "EVL-44": {
+   "target": "EVL-29",
+   "track": "stale-open-audit-2026-07-18"
+  },
+  "EVL-45": {
+   "target": "EVL-02",
+   "track": "strand-rust-coder-rustevo2-verification"
+  },
+  "EVL-46": {
+   "target": "EVL-08",
+   "track": "tool-use-eval-contract"
+  },
+  "EVL-48": {
+   "target": "INF-22",
+   "track": "fable5-window2-findings-05c-mi210-lever-category-matrix"
+  },
+  "EVL-49": {
+   "target": "INF-45",
+   "track": "reboot-gated-inventory-and-staging"
+  },
+  "EVL-52": {
+   "target": "EVL-10",
+   "track": "dev-harness-trace-mining"
+  },
+  "INF-02": {
+   "target": "INF-06",
+   "track": "agent-collab-rnd-harness"
+  },
+  "INF-03": {
+   "target": "INF-48",
+   "track": "agentic-rocm-kernel-authoring"
+  },
+  "INF-04": {
+   "target": "EVL-02",
+   "track": "angelslim-techniques-evaluation"
+  },
+  "INF-05": {
+   "target": "INF-59",
+   "track": "attention-matching-kv-compaction"
+  },
+  "INF-07": {
+   "target": "INF-45",
+   "track": "batched-decode-measurement"
+  },
+  "INF-09": {
+   "target": "INF-70",
+   "track": "cpu-prefill-compute-large-models"
+  },
+  "INF-12": {
+   "target": "EVL-02",
+   "track": "delta-mem-reproduction"
+  },
+  "INF-13": {
+   "target": "INF-33",
+   "track": "engram-conditional-memory"
+  },
+  "INF-16": {
+   "target": "INF-48",
+   "track": "gemma-challenge-kernel-techniques-v7"
+  },
+  "INF-18": {
+   "target": "INF-22",
+   "track": "gpu-acceleration-path"
+  },
+  "INF-19": {
+   "target": "EVL-02",
+   "track": "gpu-cot-scaffold-sidecar"
+  },
+  "INF-23": {
+   "target": "RTG-58",
+   "track": "heterogeneous-slot-fabric-residency"
+  },
+  "INF-24": {
+   "target": "EVL-14",
+   "track": "inference-batch-loop"
+  },
+  "INF-26": {
+   "target": "INF-80",
+   "track": "iqk-iquant-enablement"
+  },
+  "INF-28": {
+   "target": "INF-65",
+   "track": "laguna-s21-cpu-port"
+  },
+  "INF-29": {
+   "target": "INF-70",
+   "track": "large-moe-expert-parallelism"
+  },
+  "INF-30": {
+   "target": "EVL-02",
+   "track": "lightning-attention-port"
+  },
+  "INF-31": {
+   "target": "INF-48",
+   "track": "llama-cpp-dsa-contribution"
+  },
+  "INF-34": {
+   "target": "INF-22",
+   "track": "mi210-big-model-and-acceleration-roadmap"
+  },
+  "INF-37": {
+   "target": "INF-48",
+   "track": "mi210-q8-dequant-gemv-roofline"
+  },
+  "INF-40": {
+   "target": "INF-65",
+   "track": "moe-spec-cpu-spec-dec-integration"
+  },
+  "INF-41": {
+   "target": "INF-79",
+   "track": "multimodal-pipeline"
+  },
+  "INF-42": {
+   "target": "INF-59",
+   "track": "multiscreen-attention-evaluation"
+  },
+  "INF-43": {
+   "target": "INF-45",
+   "track": "numa-placement-defect-20260730"
+  },
+  "INF-44": {
+   "target": "INF-22",
+   "track": "numa-prefill-decode-disaggregation"
+  },
+  "INF-46": {
+   "target": "EVL-02",
+   "track": "qwen-mtp-llamacpp-port"
+  },
+  "INF-49": {
+   "target": "INF-70",
+   "track": "sarathi-serve-cpu-evaluation"
+  },
+  "INF-51": {
+   "target": "INF-59",
+   "track": "streaming-llm-baseline"
+  },
+  "INF-52": {
+   "target": "EVL-02",
+   "track": "summary-token-attention-readiness"
+  },
+  "INF-53": {
+   "target": "EVL-02",
+   "track": "tidar-one-pass-variant-b"
+  },
+  "INF-54": {
+   "target": "INF-80",
+   "track": "tq3-quantization-evaluation"
+  },
+  "INF-56": {
+   "target": "INF-59",
+   "track": "triattention-kv-selection"
+  },
+  "INF-58": {
+   "target": "INF-65",
+   "track": "v9-kernel-per-request-speculative-params"
+  },
+  "INF-60": {
+   "target": "INF-22",
+   "track": "qwen38-27b-replace-qwen36"
+  },
+  "INF-61": {
+   "target": "EVL-02",
+   "track": "gpu-candidates-surface-qwen38-update"
+  },
+  "INF-62": {
+   "target": "INF-50",
+   "track": "dflash2-block-drafter-experimental-build"
+  },
+  "INF-64": {
+   "target": "INF-06",
+   "track": "autokernel-restart-and-strip"
+  },
+  "INF-66": {
+   "target": "INF-06",
+   "track": "autokernel-rebuild-program"
+  },
+  "INF-67": {
+   "target": "INF-65",
+   "track": "cpu-fused-decoder-blocks"
+  },
+  "INF-72": {
+   "target": "INF-70",
+   "track": "moe-routing-tap-and-locality-measurement"
+  },
+  "INF-73": {
+   "target": "INF-06",
+   "track": "autokernel-unified-surface-program"
+  },
+  "INF-74": {
+   "target": "INF-06",
+   "track": "autokernel-concurrent-target-coordination"
+  },
+  "INF-75": {
+   "target": "INF-65",
+   "track": "autokernel-cross-workload-keep-gate"
+  },
+  "INF-76": {
+   "target": "EVL-02",
+   "track": "paw-compiled-specialists"
+  },
+  "INF-78": {
+   "target": "INF-06",
+   "track": "autokernel-orchestrator-actor-backend"
+  },
+  "INF-81": {
+   "target": "INF-65",
+   "track": "autokernel-all-devices-all-dimensions"
+  },
+  "PIP-01": {
+   "target": "PIP-04",
+   "track": "colbert-reranker-web-research"
+  },
+  "PIP-02": {
+   "target": "PIP-04",
+   "track": "document-parser-table-bench"
+  },
+  "PIP-03": {
+   "target": "EVL-02",
+   "track": "ernie-image-turbo-evaluation"
+  },
+  "PIP-05": {
+   "target": "PIP-04",
+   "track": "opendataloader-pipeline-integration"
+  },
+  "REV-03": {
+   "target": "REV-02",
+   "track": "reviewer-calibration-accounting"
+  },
+  "REV-05": {
+   "target": "REV-02",
+   "track": "reviewer-escalation-and-human-gate-policy"
+  },
+  "REV-06": {
+   "target": "REV-02",
+   "track": "reviewer-latency-and-sampling-budget"
+  },
+  "REV-07": {
+   "target": "REV-02",
+   "track": "reviewer-model-ablations"
+  },
+  "REV-09": {
+   "target": "REV-02",
+   "track": "reviewer-typed-artifacts"
+  },
+  "RTG-01": {
+   "target": "EVL-08",
+   "track": "agent-world-env-synthesis"
+  },
+  "RTG-03": {
+   "target": "RTG-02",
+   "track": "autopilot-dashboard-fidelity-audit-2026-07-22"
+  },
+  "RTG-04": {
+   "target": "RTG-02",
+   "track": "batched-edit-parallel-apply"
+  },
+  "RTG-05": {
+   "target": "RTG-02",
+   "track": "bep-dcp-falsification-harness"
+  },
+  "RTG-06": {
+   "target": "RTG-36",
+   "track": "capability-registry-and-promotion"
+  },
+  "RTG-07": {
+   "target": "INF-45",
+   "track": "contention-model-device-and-load-axes-rider"
+  },
+  "RTG-10": {
+   "target": "RTG-08",
+   "track": "delegation-context-preassembly"
+  },
+  "RTG-11": {
+   "target": "INF-45",
+   "track": "dynamic-stack-concurrency"
+  },
+  "RTG-13": {
+   "target": "RTG-02",
+   "track": "evidence-plane-event-sourcing-and-narrative"
+  },
+  "RTG-14": {
+   "target": "RTG-09",
+   "track": "internal-interaction-lifecycle"
+  },
+  "RTG-15": {
+   "target": "RTG-09",
+   "track": "learned-routing-controller"
+  },
+  "RTG-16": {
+   "target": "RTG-02",
+   "track": "loops-and-dashboards-audit-2026-07-05"
+  },
+  "RTG-17": {
+   "target": "RTG-09",
+   "track": "model-capability-descriptors"
+  },
+  "RTG-18": {
+   "target": "handoffs/completed/model-stack-change-standardization-audit.md",
+   "track": null,
+   "retired": "D4 2026-11-02",
+   "checklist": "docs/guides/agent-workflows/stack-change-checklist.md"
+  },
+  "RTG-19": {
+   "target": "RTG-36",
+   "track": "model-stack-single-source-update-pipeline"
+  },
+  "RTG-20": {
+   "target": "RTG-36",
+   "track": "model-stack-update-pipeline-audit"
+  },
+  "RTG-21": {
+   "target": "EVL-08",
+   "track": "multi-file-coding-completion-capability"
+  },
+  "RTG-23": {
+   "target": "RTG-02",
+   "track": "objective-task-rate-goodput"
+  },
+  "RTG-24": {
+   "target": "RTG-02",
+   "track": "orchestration-robustness-audit-2026-07-11"
+  },
+  "RTG-27": {
+   "target": "EVL-14",
+   "track": "prompt-construction-determinism"
+  },
+  "RTG-28": {
+   "target": "RTG-08",
+   "track": "reasoning-effort-levels"
+  },
+  "RTG-29": {
+   "target": "RTG-09",
+   "track": "retrain-routing-models"
+  },
+  "RTG-30": {
+   "target": "RTG-09",
+   "track": "routing-intelligence"
+  },
+  "RTG-32": {
+   "target": "RTG-02",
+   "track": "scaffold-autopilot-cost-lever-deployment"
+  },
+  "RTG-33": {
+   "target": "PIP-04",
+   "track": "searxng-search-backend"
+  },
+  "RTG-35": {
+   "target": "INF-45",
+   "track": "shape-keyed-contention-gating"
+  },
+  "RTG-38": {
+   "target": "RTG-36",
+   "track": "standardized-stack-update-pipeline-finalization"
+  },
+  "RTG-39": {
+   "target": "handoffs/completed/swarm-dataset-distillation.md",
+   "track": null,
+   "retired": "D4 2026-11-02"
+  },
+  "RTG-40": {
+   "target": "RTG-09",
+   "track": "tri-role-coordinator-architecture"
+  },
+  "RTG-41": {
+   "target": "EVL-10",
+   "track": "unified-trace-memory-service"
+  },
+  "RTG-42": {
+   "target": "INF-45",
+   "track": "within-role-placement-state-machine"
+  },
+  "RTG-43": {
+   "target": "RTG-36",
+   "track": "wp12-fleet-layer-design"
+  },
+  "RTG-45": {
+   "target": "RTG-09",
+   "track": "x-mas-text-routing"
+  },
+  "RTG-46": {
+   "target": "RTG-34",
+   "track": "handoff-index-and-backlog-graph"
+  },
+  "RTG-47": {
+   "target": "RTG-34",
+   "track": "dashboard-architecture-restructure"
+  },
+  "RTG-48": {
+   "target": "RTG-34",
+   "track": "coordinator-role-failure-modes-and-refactor"
+  },
+  "RTG-49": {
+   "target": "RTG-34",
+   "track": "fleet-fanout-measurement"
+  },
+  "RTG-51": {
+   "target": "RTG-34",
+   "track": "wrap-up-division-of-labor-policy"
+  },
+  "RTG-52": {
+   "target": "RTG-34",
+   "track": "loop-owned-fleet-implementation"
+  },
+  "RTG-54": {
+   "target": "UFH-01",
+   "track": "qwen-chat-template-evaluation"
+  },
+  "RTG-55": {
+   "target": "RTG-02",
+   "track": "promptforge-mutation-safety-contract"
+  },
+  "RTG-56": {
+   "target": "RTG-09",
+   "track": "typed-decision-plane"
+  },
+  "RTG-57": {
+   "target": "RTG-58",
+   "track": "kv-unified-stack-rollout"
+  },
+  "RTG-59": {
+   "target": "RTG-36",
+   "track": "model-artifact-integrity"
+  },
+  "RTG-60": {
+   "target": "RTG-22",
+   "track": "loop-state-offraid-backup"
+  },
+  "RTG-61": {
+   "target": "RTG-22",
+   "track": "refactoring-multirepo-2026-10"
+  },
+  "RTG-62": {
+   "target": "RTG-34",
+   "track": "churn-pipeline"
+  },
+  "UFH-03": {
+   "target": "RTG-08",
+   "track": "memento-block-reasoning-compression"
+  },
+  "UFH-04": {
+   "target": "EVL-02",
+   "track": "minddr-deep-research-mode"
+  },
+  "UFH-05": {
+   "target": "RTG-08",
+   "track": "reasoning-compression"
+  },
+  "UFH-07": {
+   "target": "RTG-08",
+   "track": "tool-output-compression"
+  },
+  "UFH-08": {
+   "target": "UFH-01",
+   "track": "harness-improvement-loop"
+  },
+  "UFH-11": {
+   "target": "RTG-22",
+   "track": "amd-ai-lab-website-publication"
+  },
+  "UFH-12": {
+   "target": "UFH-01",
+   "track": "repl-embedding-retrieval"
+  },
+  "UFH-14": {
+   "target": "UFH-01",
+   "track": "agentic-serving-harness-fixes"
+  },
+  "UFH-15": {
+   "target": "UFH-01",
+   "track": "opencode-shell-integration"
+  },
+  "UFH-16": {
+   "target": "RTG-36",
+   "track": "model-exec-containment"
+  }
+ }
+}

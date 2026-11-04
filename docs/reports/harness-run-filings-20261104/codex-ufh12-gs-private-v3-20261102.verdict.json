@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Bounded official rehearsal PASS only: rc=0, FULL_PRIVATE_APPLY_PARITY_PASS, episodic 64514/64514 rows, strategy 1428/1428, 16 production-client parity samples per store min cosine 1.0 >=0.99999, server reaped. No production swap. Full G-S and REPL-EMB-2.11 remain open pending other gates. Evidence docs/reports/harness-run-filings-20261104/gs.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:16:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T22:52:53Z reason=complete",
+ "filed_at": "2026-11-04T07:16:58+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11",
+ "id": "codex-ufh12-gs-private-v3-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ufh12-gs-private-v3-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-repl-embedding-retrieval",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Bounded official rehearsal PASS only: rc=0, FULL_PRIVATE_APPLY_PARITY_PASS, episodic 64514/64514 rows, strategy 1428/1428, 16 production-client parity samples per store min cosine 1.0 >=0.99999, server reaped. No production swap. Full G-S and REPL-EMB-2.11 remain open pending other gates. Evidence docs/reports/harness-run-filings-20261104/gs.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/results.jsonl",
+ "root_cause_family": null,
+ "row": "codex-ufh12-gs-private-v3-20261102",
+ "row_verdict": "pass",
+ "rule": "Bounded private-copy rehearsal only: smoke PASS proves pinned CPU server returns one finite 256-d embedding from a fresh private copy. Official rehearsal PASS requires rc=0, native FULL_PRIVATE_APPLY_PARITY_PASS, equal rows in/out, production-client cosine >=0.99999, and server reaped. Qualification smoke is not this verdict. The official attempt retains live-grant fail-closed checks and may stop on grant revocation; do not claim G-S completion. Full G-S remains open pending full private apply, equal rows in/out, sampled production-client parity >=0.99999, token-length distribution and top-k cosine-drift percentiles for ~500 queries, and B1-B5 closure. No production swap.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a81e8a04417b71e5cece1ae9c314dc001538aba2dde3d8c7a41ed0af10afaff9",
+  "result": "pass",
+  "status": "filed"
+ }
+}

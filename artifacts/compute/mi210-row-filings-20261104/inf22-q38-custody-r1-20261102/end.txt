@@ -1,0 +1,1 @@
+rc=143 time=2026-11-03T07:19:22Z reason=launcher-signalled

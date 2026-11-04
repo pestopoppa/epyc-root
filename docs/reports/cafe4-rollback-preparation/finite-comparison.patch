@@ -1,0 +1,18 @@
+--- a/candidate.cpp
++++ b/candidate.cpp
+@@ -352,7 +352,14 @@
+                 }
+                 out.push_back(sampled); ++n_pos; ++n_rollbacks;
+                 double err = 0;
+-                if (!logit_error(llama_get_logits_ith(ctx, -1), out.size(), err) || err > 1e-5) {
++                if (!logit_error(llama_get_logits_ith(ctx, -1), out.size(), err)) {
++                    fprintf(stderr, "UNKNOWN next-token logits unavailable or nonfinite\n");
++                    llama_free(ctx); return false;
++                }
++                fprintf(stderr, "CAFE4_NEXT_COMPARISON mode=%s index=%zu finite=1 max_abs=%.17g threshold=1e-5 selected=%llu faulted=%llu\n",
++                        inject_fault ? "fault" : "observe", out.size(), err,
++                        (unsigned long long) target_selected, (unsigned long long) target_faulted);
++                if (err > 1e-5) {
+                     fprintf(stderr, "UNKNOWN next-token logits differ from serial oracle\n");
+                     llama_free(ctx); return false;
+                 }

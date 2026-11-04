@@ -1,0 +1,45 @@
+{
+ "decision_rule": "PF1-EXPAND-2 fresh three-block r3 retry, same source pins, arms and L={384,448,512,768}, 5 timed reps per launch, cap2400s. Previous r2 ended disk-floor after two blocks with control medians 0.8975/0.8820/0.8597/0.9004; first three fail original 0.90\u20131.10 guard. A0 hot bias is unresolved, not claimed repaired. Question: reproduce guard-passing paired ratios and first L >=1.00 sustained at larger L, per A1/A2; expected crossover within grid, paired noise ~5\u20139%, within 1.00+-0.07 remains at crossover. Fresh complete three-block rerun replaces failing blocks/L without pooling or dropping r2 observations. Original A0 strict40% node cap, HIP residency, capture1.0 and disabled/A0 median within +-10% at EVERY L remain mandatory. Stop only for >=2 GPU launch RUN/residency/placement failures, >25% disabled/A0 divergence at every L after block2, cumulative2400s cap, or engine safety/window stops; never stop on answer. Report incomplete/guard-failing results as inconclusive. Exploratory, never a PF1 gate.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1900,
+ "first_progress_s": 1500,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r3-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/launch.sh",
+  "sha256": "16fdb9cc77c902c5a3449af276ea21105716b24b0228fd67b080836de341c133"
+ },
+ "min_window_s": 1800,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T14:29:35Z",
+ "published_from": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/spec.json",
+ "regions": "mi210_0,0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/STOP",
+ "supersedes": "pf1-expand-r2-20261104",
+ "window_s": 2580,
+ "workdir": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104"
+}

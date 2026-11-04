@@ -83,5 +83,15 @@
   "expect": 2,
   "why": "write in the second segment of a chain",
   "cmd": "sync && echo 3 > /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "a quoted <<ZQ opens no heredoc, so the next line runs (shell_scan.lex, 2026-10-07)",
+  "cmd": "echo \"<<ZQ\"\necho 3 > /proc/sys/vm/drop_caches\nZQ"
+ },
+ {
+  "expect": 2,
+  "why": "a command substitution inside double quotes runs (shell_scan.lex, 2026-10-07)",
+  "cmd": "echo \"$(echo 3 > /proc/sys/vm/drop_caches)\""
  }
 ]

@@ -231,7 +231,7 @@ records `transferred_from` in the registry.
 | **Remove every gate that is not indispensable.** The dry run on the real lane is the only proof a row needs. | `rowflow.py`, keeper v11 step 5 ("Retired" lists above) |
 | **One allocator, one snapshot per tick** (2026-11-01 evening: "compute keeps idling because of scheduling races"): dry runs and grants compete fairly from one snapshot, a region is never handed twice, invariants self-heal and alert on the 3rd repeat. | `rowflow.py allocate`, keeper v11, "The allocator" above, `test_allocator.py` |
 | **The owner writes only a launcher and a spec**; publishing derives everything else. | `publish_row.py`, "The row flow" above |
-| **The dry run is robust**: a disk floor below `dryrun_disk_policy.json` is a WAIT, never a FAIL; a job that ignores the stop file after 600 s grace is truncated by signal and PASSES with a warning (the engine hard-end is production's own truncation path); directory results count as units; a FAIL is retried only when launcher, spec or rowflow change (sha-keyed). | `rowflow.py` (`dryrun-run`), `bin/rowflow/dryrun_disk_policy.json` |
+| **The dry run is robust**: free disk below the engine floor (`FILLER_DISK_FLOOR_GIB`, 150 GiB; 20 GiB in a smoke) is a WAIT, never a FAIL; a job that ignores the stop file after 600 s grace is truncated by signal and PASSES with a warning (the engine hard-end is production's own truncation path); directory results count as units; a FAIL is retried only when launcher, spec or rowflow change (sha-keyed). | `rowflow.py` (`dryrun-run`), `filler_run15.sh` (`FILLER_DISK_FLOOR_GIB`) |
 | **The owner files its own results** (`filing-done/<id>.FILED`) when the dispatcher resumes it with `result_path` + `decision_rule`; the sonnet filing subagent is retired. | "end" row above, `handoff_sessions.py`, `filing_watch.sh` (writes `filing-due.jsonl`, raises the takeover alarm) |
 | **Session per handoff, at most 5 live, auto-started in rank order (rows unblocked), inference first.** | "Session per handoff" above, `handoff-sessions.json` knobs `max_live`/`auto_start` |
 | **codex-gen takes small tasks only.** | `/mnt/raid0/llm/tmp/compute-flags/GOAL-codex-gen.md` (git: `scripts/coordination/churn/GOAL-codex-gen.md`) |
@@ -240,68 +240,12 @@ records `transferred_from` in the registry.
 | **Sessions launch inside `/workspace`** (or one of its worktrees). | `project_cwd()` in `handoff_sessions.py`, `REFUSED-CWD` |
 | **tmux windows are addressed by NAME, never by index; every handoff session has its own window `h-<slug>` in session `agent`; `renumber-windows` is off** on that session (window numbers must not shift when a window closes). Operator windows: `claude` (ws58) and `codex-gen`. Nobody sends keys to an agent pane. | `handoff_sessions.py` (tmux section), `churn_up.sh` (`ensure_tmux`, `--status` warns when renumber-windows is not off) |
 
-## Reboot / cold start (one command; nothing depends on any session's memory)
+## Reboot / cold start, stop, audit
 
-Everything the pipeline executes is in git — `scripts/coordination/churn/` (keeper watchdog, `GOAL-codex-gen.md`, the
-zero-token watchers), `scripts/coordination/rowflow/` (keeper v11, rowflow with the allocator, engine, the one
-`grant_ok_launcher.py`, disk policy) and `scripts/coordination/`
-(`backlog_gen.py`, `handoff_sessions.py`, `flow_scoreboard.py`, `filing_watch.sh`, `filing_takeover_alarm.py`,
-`validate_fillers.py`). `compute-flags/` holds only installed copies plus state. The installed copy of every file must equal
-the git copy (`--status` prints `ok`/`DIFFERS` per file); a hot-fix in `compute-flags/` that is not committed is a defect, not a
-state.
+Moved to the runbook: [`backlog-churn-runbook.md`](backlog-churn-runbook.md) (component inventory, preconditions,
+`churn_up.sh` spin-up / `--dry-run` / `--status` / `--stop`, measured verification, audit checklist, open defects).
 
-**Order after a reboot** (`/mnt/raid0/llm` mounted, orchestrator venv present; the compute stack itself is the inference
-main's business, not this page's):
-
-```bash
-cd /workspace && git pull --ff-only                       # the pipeline code is whatever origin/main says
-scripts/coordination/churn/churn_up.sh --dry-run          # read what it would do
-scripts/coordination/churn/churn_up.sh                    # the one command
-scripts/coordination/churn/churn_up.sh --status           # every loop UP, no DIFFERS, no DEAD grant, renumber-windows off
-```
-
-`churn_up.sh` is idempotent: (1) installs the git copies into `compute-flags/` (temp file + `mv`, never an in-place edit of a
-running script; a running copy that differs is reported, never restarted); (2) clears reboot residue — open `grants/*.grant`
-whose poller/dry-run pid is gone are moved (never deleted) to `grants/stale-reboot-<ts>/` with their `.wsq/.wsg` stamps so
-the row is re-armed, and `handoff-sessions.json` entries whose pid is gone become `suspended` (wrap-up landed) or `unpushed`
-(only while the dispatcher is not running; region-lock claims clear themselves — the library drops dead-pid records on
-read); (3) starts, only if its pidfile pid is not alive with the expected argv (never `pgrep`): the keeper **watchdog**
-(which starts `ws58-calendar-keeper.current` = v11 within 120 s), `ws58-backlog-gen-v1.sh`, `ws58-flow-scoreboard-v1.sh`,
-the dispatcher (`handoff_sessions.py dispatch --loop --interval 60`), `ws58-disk-trend.sh`, `filing_watch.sh`; (4) refuses
-to leave a legacy grant writer (`grant-*.pid` alive) beside the allocator — `--status` fails on it; (5) recreates tmux session `agent`
-with windows `claude` and `codex-gen` by name and sets `renumber-windows off`; (6) prints the two things it never does.
-
-**By hand, in the two windows** (never via `send-keys`): `claude` → `cd /workspace && claude`, first message *"You are ws58,
-owner of the EPYC compute calendar. Run `scripts/coordination/churn/churn_up.sh --status`, then follow
-`docs/guides/agent-workflows/backlog-churn-flow.md` (Roles → ws58)…"*; `codex-gen` → `cd /workspace && codex`, first message
-*"Read `/mnt/raid0/llm/tmp/compute-flags/GOAL-codex-gen.md` and follow it exactly. Your backlog is
-`/mnt/raid0/llm/tmp/compute-flags/BACKLOG-codex-gen.md`."* Per-handoff sessions need nothing by hand: the dispatcher
-auto-starts them in `h-<slug>` windows.
-
-**Expected `--status`** (healthy):
-
-```
-== install state (installed sha16 vs git sha16)
-  ws58-calendar-keeper-v11.sh          ok <sha16>
-  …                                    ok …                       (every line ok; DIFFERS = install not applied or uncommitted hot-fix)
-== loops (pidfile -> pid, alive+argv, started)
-  watchdog         <pid>    UP   since <lstart>
-  backlog-gen      <pid>    UP   …      flow-scoreboard … UP      dispatcher … UP      disk-trend … UP      filing-watch … UP
-  keeper           <pid>    UP   since <lstart> (ws58-calendar-keeper-v11.sh)
-  legacy-writers   none     (any live grant-*.pid process = double-booking risk -> FAIL)
-== tmux
-  window 1 claude: claude …   window 2 codex-gen: node …   window N h-<slug>: … (one per live handoff session)
-  renumber-windows (effective): off
-== lanes / grants / handoff sessions / backlog freshness / disk      (BACKLOG-codex-gen.md and FLOW-SCOREBOARD.md < 15 min old)
-churn_up status: OK                                                 (exit 0; any DOWN/DIFFERS/DEAD/WARN line -> exit 1)
-```
-
-Pidfiles the status reads: `ws58-keeper-watchdog.pid`, `ws58-calendar-keeper.pid`, `ws58-backlog-gen.pid`,
-`ws58-flow-scoreboard.pid`, `handoff-sessions.dispatcher.pid`, `ws58-disk-trend.pid`, `ws58-filing-watch.pid` — all under
-`compute-flags/`. A loop started by hand must write its
-pidfile or `--status` reports it DOWN and a later `churn_up.sh` would start a second copy.
-
-## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/churn-pipeline.md`)
+## AI-free mechanization (CAF, 2026-11-01; `handoffs/active/coordination-and-churn-pipeline.md`)
 
 **Mechanized wrap-up (CAF-2, 2026-11-01).** A session ends a task by writing the turn record (`{slug, state, task_text,
 ticks: [text], progress_md, paths, belief, message, question, rows_published, trailers?}`) and running

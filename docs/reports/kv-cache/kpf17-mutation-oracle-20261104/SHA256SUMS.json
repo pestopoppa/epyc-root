@@ -1,0 +1,7 @@
+{
+  "README.md": "c6ccc3d285de6bb987bcd0bd59c85be59b185b88003bb67010c01e63ff029b7d",
+  "historical-excerpt.txt": "60efca32de0e3df44a27665d37d0fff2a416696df28e53c9f43f98a14eb07a4a",
+  "kpf17-mutation-oracle.h": "90787c4a526d2dedd3d3d11bf944ea81eeb1c2efd77e5e6862e8e69a57b26249",
+  "model_free_control.cpp": "4de2356c398981a5b3607301b859c7eacfeaf1a9a319e4fe53a3a3caa0a5c441",
+  "test-only.patch": "b7eb4cabacadb7378bd1bcc8af4532f71ce39c751b5d0f11ce4abe96b010eac6"
+}

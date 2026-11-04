@@ -1,0 +1,14 @@
+{
+ "schema": "kvu19.p5.measurement-sufficiency.v1",
+ "question": "Does the champion's masked-block skip (KVU-19a + KVU-19b commit 1, champion c72ec82f5 build 10419) remove the parked-neighbour decode tax that production v10 shows under the identical r3 A1 protocol (L3 loss 58.0% drafted / 61.3% no-draft at 358,838 resident cells)?",
+ "metric_direction": "decode_tps higher is better; loss_pct higher means greater slowdown",
+ "baseline": "within-run: mean L0_base/L0_after per variant on the champion binary; cross-run reference: r3 production v10 result /mnt/raid0/llm/tmp/kvu/p3-row-r3-20261104/result.json (same protocol, contexts, argv, host CPUs)",
+ "reuse": "r3 production-v10 full A1 PASS (handoff-kvu16h-p3-lifecycle-r3-20261104) is the reference arm and is not re-run; only the binary changes.",
+ "expected_effect_vs_sample_error": "KVU-19 predeclared expectation (2026-10-03): at L3 drafted >= ~33 tok/s (r3 v10: ~14.9) and no-draft >= ~19 tok/s (r3 v10: ~8.58); L0 within noise of v10 (35.56 / 22.17). Effect (>2x) is far above r3 ABA drift (0.0%) and per-repetition spread, so one fixed 20-row run answers it. Classification: L3 loss <=15% on both variants = SKIP-RECOVERS; 15-45% = PARTIAL; >=45% = NO-RECOVERY (skip does not reach the parked-neighbour path at scale). Descriptive, not a formal gate.",
+ "sample_plan": "Fixed full protocol: drafted and no-draft independent lifetimes,5levels L0/L1/L2/L3/L0,2requests each;20rows total. No interim efficacy acceptance.",
+ "checkpoints": "Save partial capture after each measurement row and arm. Refuse on missing decode-only/cache witness, <2identified-busy samples, occupancy absent/unmatched, invalid draft count, HIP/VRAM custody failure or unverified cleanup.",
+ "stop_on_answer": "Stop after exactly 20 valid full rows and derived report; no expansion, no follow-up phases.",
+ "stop_on_futility": "Stop immediately on invalid protocol evidence or cleanup; STOP/deadline aborts without completion result. No threshold-based early acceptance or adaptive extension.",
+ "qualification_scope": "4CPUs184-187,4096cells,16generated-token cap,2native lifetimes. Tests lifecycle, mapping, own-PID residency and cleanup only. Does not imply full occupied-pool equivalence or performance.",
+ "parking": "All three neighbours prefilled with existing per-slot distinct texts; slot save/restore optimization disabled for this attempt."
+}

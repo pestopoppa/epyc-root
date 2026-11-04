@@ -1,0 +1,18 @@
+{
+  "BINARIES-COMPLETE.sha256": "6c983698459ab8d920420577e82cb328b6b3e3dc912527cec90decc884065d34",
+  "BINARIES.sha256": "18b5468cf9b4865baf071e1dc7f2867130baa7bf57f33f23492e75d0ff5a0dfd",
+  "KEEP": "9857cc9590393f2cd36bec59d81c874cd37547223a4066efd8cff6c9d1efb4fb",
+  "README.md": "adc4d81662535b6e080123568d570c0aa6356a77ffdc7feb379e598dcc6c7afd",
+  "binary-check.txt": "8a1556803a2834a3402a9f4f66a36a3c0ca0d2e1773e64b4cc40136d1fedd61c",
+  "identity.json": "3b5a21df3a6f582df121835ff00a08763925f49368d24bc9dbf600e267a72d15",
+  "job.sh": "33e67364c3618abf9c6546f627cfcddd8e56e20e8c0f15eb686cb59b94b4fb8e",
+  "long-scope-path.txt": "3cd8f74349179ad1a2276396362eb7396908bd0312d10ca0df5cd0b186efeb06",
+  "native_smoke.py": "ef886b4ff0641eee6f842e58a1cea4cbcb0ec1220329cf61c2fd3891a5eebb38",
+  "off-launch.sh": "02f472ed9ad3301a46e8b5bef5ffed89295d94835d9ccc09390b64a1b6f076cd",
+  "off-spec.json": "017677a11a063358bdab32f24d8b7b4f045cb233136743882acfa33f0eb5d177",
+  "on-launch.sh": "b4ee1ecfb1959085c9582e555e4e807c0a9370dc411ccf75b4c8c447ec29c201",
+  "on-spec.json": "21d0e390430bfd0fce61bbe977866dee7fd56f8820f56b1027bf15ee0f48f21e",
+  "private_api.py": "44cc3b05ff110d3117f088d25e482464f58a0129547ca508bd9ac73eb809d0e6",
+  "rebind_packet.py": "7236df5d0b648054456d2597bad2812f267ae206c43ad4c1e35ad17924bffddc",
+  "test_native_smoke.py": "8ba992141e883cbd06acd283fe0fe54c869db4268e4f2685acc1a029408a0f96"
+}

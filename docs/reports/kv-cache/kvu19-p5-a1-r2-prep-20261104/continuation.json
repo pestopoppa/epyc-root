@@ -1,0 +1,10 @@
+{
+  "schema": "kvu19.p5.continuation.v1",
+  "predecessor": "handoff-kvu19-p5-champion-a1-20261104",
+  "predecessor_end": "rc75 disk-floor",
+  "protocol": "unchanged full 20-row A1; separate no-draft/drafted lifetimes; prefill parking",
+  "runtime_sha256": "676a7e693566f1e82ba7427543b531d1e26881cd34147ecdca21e146341998c3",
+  "model_receipt_sha256": "42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078",
+  "source_review": "historical original review retained; only paths and continuation metadata changed",
+  "operator_disk_floor_gib": 150
+}

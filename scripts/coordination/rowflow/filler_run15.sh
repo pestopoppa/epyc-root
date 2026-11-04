@@ -12,7 +12,9 @@
 # keeper-launched job never sees it (class-A launch failures 2026-11-01: `region-lock: No such file or directory`).
 # --- original header (filler_run2.sh) ---
 # filler_run2.sh = filler_run.sh + exclusive-GPU mode + precondition gate (2026-10-21, v11-drivers). filler_run.sh is left untouched (it is RUNNING).
-#   NEW  --gpu-quiet shared|exclusive|none  claim mode of the region-lock wrapper. Defaults reproduce filler_run.sh exactly (cpu: none, gpu/cpu+gpu: shared).
+#   NEW  --gpu-quiet shared|exclusive|none  claim mode of the region-lock wrapper. Default none for EVERY class (2026-11-03 session
+#                                           review item 6: gpu-quiet is opt-in for decision-grade/quiet rows only; a gpu row left at
+#                                           `none` runs on the MI210 beside other work under the 2026-10-22 co-residency policy).
 #   NEW  --role ROLE                        region-lock --role (default build; timing items use bench).
 #   NEW  --no-fold-siblings                 gpu class: claim gpu-quiet only, no CPU region (host threads tasksetted by the job); cpu class: region-lock --no-fold-siblings
 #   NEW  --claim-cpus LIST                  region-lock --cpu-list override (default = grant cpus). Timing items: 0-95. With --gpu-quiet exclusive on a
@@ -71,7 +73,7 @@ if [ -n "$CLAIM_CPUS" ] && ! [[ $CLAIM_CPUS =~ ^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+
 FLAGS=${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}
 GRANTS=${FILLER_GRANTS_DIR:-$FLAGS/grants}
 FILLERS_MD=${FILLERS_MD:-$FLAGS/FILLERS.md}
-POLL=${FILLER_POLL:-45}
+POLL=${FILLER_POLL:-5}   # ws58 2026-11-02: a granted quarter starts within seconds, not 45 s
 STATE=${FILLER_STATE_DIR:-$HERE/state}
 GPU_LOCK=${FILLER_GPU_LOCK:-/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock}
 RL=${FILLER_RL:-/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock}
@@ -88,6 +90,14 @@ if [ "$DRYRUN" = 1 ]; then
   # allocator 2026-11-01: a multi-quarter row is dry-run on ONE quarter - the region-lock claim is the grant's own cpus
   # (gpu class: its host threads, folding onto q3), so a dry run never holds more than it needs.
   if [ "${FILLER_DRYRUN_ONE_QUARTER:-0}" = 1 ]; then if [ "$CLASS" = gpu ]; then CLAIM_CPUS=$GPUTHR; else CLAIM_CPUS=""; GPUQ=none; fi; fi  # quiet-host rows: plumbing only
+  # ws58 2026-11-02: publish_row's smoke (FILLER_SMOKE=1) is always small and must NEVER wait on a held region (a real
+  # whole-host run held q0 and every smoke blocked on its full 0-95 claim). Its claim is exactly the smoke's cpus
+  # (WS58_REGIONS), taken by taskset, not region-lock; it never takes gpu-quiet exclusive (gpu rows: shared gpu lock only).
+  SMOKE_NOLOCK=0
+  if [ "${FILLER_SMOKE:-0}" = 1 ]; then
+    SMOKE_NOLOCK=1; CLAIM_CPUS=${WS58_REGIONS:-$CLAIM_CPUS}; NOFOLD=0
+    if [ "$CLASS" = gpu ]; then GPUQ=shared; else GPUQ=none; fi
+  fi
 fi
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
@@ -161,6 +171,18 @@ kill_group() { # captured pgid + birth: TERM, wait, KILL - only when the leader'
   gone "$g" && { log "group $g killed"; return 0; }
   log "REFUSED: group $g survives KILL"; return 1
 }
+INNERPG=$STATE/$ID.inner.pgid
+kill_job() { # ws58 2026-11-02: the launcher's setsid group AND the inner engine's group (region_lock_cli may start the inner
+  # engine in a session of its own, out of reach of the launcher-group kill); the inner records "pgid birth" at start
+  local r=0 g b
+  kill_group "$CUR" "$CUR_BIRTH" || r=1
+  if [ -f "$INNERPG" ]; then
+    read -r g b < "$INNERPG" || true
+    if [[ ${g:-} =~ ^[0-9]+$ ]] && [ "$g" != "$CUR" ]; then kill_group "$g" "$b" || r=1; fi
+    [ $r = 1 ] || rm -f "$INNERPG"
+  fi
+  return $r
+}
 kill_pidfile() { # pids the job registered (fl_register_pid); TERM then KILL; never a pid that is already gone
   local p
   [ -f "$PIDFILE" ] || return 0
@@ -190,7 +212,8 @@ if [ $INNER = 1 ]; then
     flock -w $(( END - $(date -u +%s) - 60 )) 9 || { echo "GPU flock busy"; exit 9; }
     echo "$(ts) mi210_0 flock held"
   fi
-  export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh FILLER_DISK_POLICY=$HERE/dryrun_disk_policy.json
+  export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh
+  mkdir -p "$STATE"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
   # The hard end is enforced by the launcher (TERM, wait, KILL on the whole setsid group); the job also honours FILLER_DEADLINE.
@@ -209,7 +232,7 @@ sleep_poll() { sleep "$1" 7>&- 8>&- & SLP=$!; wait $SLP 2>/dev/null; }
 on_term() {
   log "launcher signalled"
   if [ -n "$CUR" ]; then
-    kill_group "$CUR" "$CUR_BIRTH" && kill_pidfile || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
+    kill_job && kill_pidfile || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
   fi
   [ -e "$GRANT" ] && write_ended 143 launcher-signalled
   exit 143
@@ -234,7 +257,10 @@ run_one() {
   [ ! -e "$ENDED" ] || { log "REFUSED: .ended exists; use new id"; return 66; }
   if ! parse_regions "$regions"; then write_ended 2 "regions-unusable-for-$ID($CLASS):$regions"; return; fi
   if [ $(( e - now )) -lt "$MINWIN" ]; then write_ended 3 "window-$(( e - now ))s-below-min-$MINWIN"; return; fi
-  if [ -e "$STOPFILE" ]; then write_ended 0 "stop-file-before-start"; return; fi
+  # 2026-11-03 session review item 7: a STOP file at grant time is RETRYABLE - the grant is released and the id stays
+  # usable (the allocator shows the row as `held` and does not re-grant it while the STOP file exists); it used to write
+  # .ended, which burned the id and left the poller spinning on "REFUSED: .ended exists" (85k lines).
+  if [ -e "$STOPFILE" ]; then rm -f "$GRANT"; log "STOP present before start: grant released, id kept; fix: rm $STOPFILE"; GRANT_WAIT=$POLL; return 9; fi
   if [ -n "$PRECOND_CMD" ]; then
     local pout prc; pout=$( cd "$WORKDIR" && bash -c "$PRECOND_CMD" 2>&1 ); prc=$?
     if [ $prc -ne 0 ]; then write_ended 5 "build-missing:$(printf '%s' "$pout" | head -n1 | tr -c '[:print:]' ' ' | cut -c1-160)"; return; fi
@@ -263,27 +289,45 @@ run_one() {
   case $CLASS in
     cpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ -n "$gq" ] && [ "$gq" != none ] && rlargs+=(--gpu-quiet "$gq");;
     gpu) if [ "$gq" = exclusive ]; then rlargs=(--cpu-list "$cc" --gpu-quiet exclusive)
-         elif [ "$gq" = none ]; then rlargs=()
-         else rlargs=(--gpu-quiet "${gq:-shared}"); [ -n "$cc" ] && rlargs=(--cpu-list "$cc" --gpu-quiet "${gq:-shared}"); fi;;
-    cpu+gpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ "$gq" != none ] && rlargs+=(--gpu-quiet "${gq:-shared}");;
+         elif [ -z "$gq" ] || [ "$gq" = none ]; then rlargs=()
+         else rlargs=(--gpu-quiet "$gq"); [ -n "$cc" ] && rlargs=(--cpu-list "$cc" --gpu-quiet "$gq"); fi;;
+    cpu+gpu) rlargs=(--cpu-list "${cc:-$CPUS}"); [ -n "$gq" ] && [ "$gq" != none ] && rlargs+=(--gpu-quiet "$gq");;
   esac
+  # GRANT_CPUS (ws58 2026-11-02): a gpu-class grant locks ONLY the cpus the grant names (its cpus= field, else its
+  # regions list): primary cpus (0-95) as an exact --cpu-list claim, SMT-sibling host threads (184-191) unlocked and
+  # pinned by the inner taskset (FILLER_CPUS). --claim-cpus / --no-fold-siblings no longer widen a gpu claim: the
+  # allocator booked gpu-quiet + exactly these cpus, so the GPU runs beside a whole-q3 / host row.
+  local gcl="" gprim=""
+  if [ "$CLASS" = gpu ]; then
+    gcl=$(sed -n 's/.* cpus=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n'); valid_list "$gcl" || gcl=$CPUS
+    gprim=$(expand "$gcl" | awk '$1<96' | sort -un | paste -sd, -)
+    case $gq in exclusive|shared) rlargs=(--gpu-quiet "$gq");; *) rlargs=();; esac   # opt-in only (2026-11-03 item 6)
+    [ -n "$gprim" ] && rlargs=(--cpu-list "$gprim" --no-fold-siblings "${rlargs[@]}")
+  fi
   # --no-fold-siblings (2026-10-22): a GPU job's host threads 184-191 must not fold into a whole-q3 claim (MI210 sat idle behind a q3 build)
   # filler_run6 (2026-10-22): region-lock REFUSES --no-fold-siblings for an SMT-only list ("maps to no regions"), so for a
   # GPU job --no-fold-siblings means: claim gpu-quiet ONLY (no CPU region) and let the job taskset its host threads (184-191).
-  if [ $NOFOLD = 1 ]; then
+  if [ $NOFOLD = 1 ] && [ "$CLASS" != gpu ]; then   # GRANT_CPUS: a gpu claim is the grant's cpus (above)
     if [ "$CLASS" = gpu ]; then
       _n=(); _skip=0; for a in "${rlargs[@]}"; do if [ $_skip = 1 ]; then _skip=0; continue; fi; [ "$a" = --cpu-list ] && { _skip=1; continue; }; _n+=("$a"); done
-      rlargs=("${_n[@]}"); [[ " ${rlargs[*]} " == *" --gpu-quiet "* ]] || rlargs+=(--gpu-quiet shared)
+      rlargs=("${_n[@]}")   # 2026-11-03 item 6: no implicit --gpu-quiet shared
     elif [[ " ${rlargs[*]} " == *" --cpu-list "* ]]; then rlargs+=(--no-fold-siblings); fi
+  fi
+  if [ "${SMOKE_NOLOCK:-0}" = 1 ]; then
+    if [ "$CLASS" = gpu ]; then rlargs=(--gpu-quiet shared); else rlargs=(); fi
   fi
   snapshot_overrun "$regions"
   if [ -n "${FILLER_STUB_CMD:-}" ]; then
     setsid bash -c "$FILLER_STUB_CMD" 7>&- &
-  elif [ $SELFCLAIM = 1 ]; then
+  elif [ "${SMOKE_NOLOCK:-0}" = 1 ] && [ ${#rlargs[@]} = 0 ]; then
+    setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+        --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
+  elif [ $SELFCLAIM = 1 ] || [ ${#rlargs[@]} = 0 ]; then   # nothing to lock (gpu row, gpu-quiet none, host threads only): no region-lock call
     setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   else
-    setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s $(( e - $(date -u +%s) )) --tag "filler-$ID" -- \
+    local rl_to=$(( e - $(date -u +%s) )); [ "$rl_to" -ge 1 ] || rl_to=1   # region-lock: 0 = wait forever; never that
+    setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
       /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   fi
@@ -294,15 +338,15 @@ run_one() {
   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
   reason=exited
   while kill -0 "$CUR" 2>/dev/null; do
-    if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_group "$CUR" "$CUR_BIRTH" || reason=cleanup-failed; break; fi
+    if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_job || reason=cleanup-failed; break; fi
     if [ "$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9)" -lt "${FILLER_DISK_FLOOR_GIB:-150}" ] 2>/dev/null; then
-      reason=disk-floor; kill_group "$CUR" "$CUR_BIRTH" || reason=cleanup-failed; break; fi
+      reason=disk-floor; kill_job || reason=cleanup-failed; break; fi
     sleep 3 7>&- 8>&-
   done
   wait "$CUR" 2>/dev/null; rc=$?
   case $reason in hard-end|disk-floor) rc=75;; esac
   local cleanup_bad=0
-  kill_group "$CUR" "$CUR_BIRTH" || cleanup_bad=1
+  kill_job || cleanup_bad=1
   kill_pidfile || cleanup_bad=1
   CUR=""
   CUR_BIRTH=""
@@ -344,6 +388,9 @@ while :; do
   lm_attempt_end "$rc"
   [ "$rc" = 70 ] && exit 70
   [ $rc = 20 ] && exit 0
+  # 2026-11-03: rc=66 means the id is terminal (.ended exists); the grant can never be consumed - release it and exit
+  # instead of re-reading it every poll (r3 poller: 85,235 REFUSED lines, ~10% of a core, grant shown as held).
+  [ "$rc" = 66 ] && { rm -f "$GRANT"; log "terminal id (.ended exists): grant released, poller exiting; fix: publish a new row id"; exit 66; }
   if [ "${STARTED_ONE:-0}" = 1 ] && [ $REPEAT = 0 ]; then log "one window done; exiting (no --repeat)"; exit 0; fi
   if [ $rc = 9 ]; then w=$GRANT_WAIT; [ "$w" -gt "$POLL" ] && w=$POLL; sleep_poll "$w"; fi
 done

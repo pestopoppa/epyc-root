@@ -121,6 +121,28 @@ def load_manifest(flags, rid):
         if os.path.isfile(p):
             with open(p) as fh:
                 return p, json.load(fh)
+    # A complete-in-smoke row is deliberately removed from READY. Accept its
+    # archived manifest only with the matching completed-smoke receipt and
+    # terminal grant, never an unpublished/failed qualification manifest.
+    archive = os.path.join(flags, "dryrun", rid, "completed-manifest.json")
+    receipt = os.path.join(flags, "dryrun", rid, "PASS.json")
+    complete = os.path.join(flags, "grants", rid + ".complete")
+    try:
+        with open(archive) as fh:
+            m = json.load(fh)
+        with open(receipt) as fh:
+            p = json.load(fh)
+        if (os.path.isfile(complete) and isinstance(m, dict) and isinstance(p, dict)
+                and m.get("schema") == "epyc.row.v3" and m.get("id") == rid
+                and p.get("id") == rid and p.get("job_complete") is True
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("launcher_sha256") or ""))
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("engine_sha256") or ""))
+                and (m.get("launcher") or {}).get("sha256") == p["launcher_sha256"]
+                and (m.get("engine") or {}).get("sha256") == p["engine_sha256"]
+                and m.get("result_format") == p.get("result_format")):
+            return archive, m
+    except (OSError, ValueError, TypeError, AttributeError):
+        pass
     return None, None
 
 
@@ -178,6 +200,21 @@ def tick_line(rid, rc, verdict, values, filed_by):
             f"[no-belief: row verdict filed by {filed_by}]").replace("  ", " ")
 
 
+def handoff_path(lane, hpath):
+    """Resolve manifest basename aliases without allowing a tick outside the lane."""
+    if not hpath or os.path.isabs(hpath) or ".." in hpath.split("/"):
+        raise ValueError("handoff path must be lane-relative without parent traversal")
+    if not hpath.endswith(".md"):
+        raise ValueError("handoff path must name a Markdown file")
+    if "/" not in hpath:
+        hpath = os.path.join("handoffs", "active", hpath)
+    root = os.path.realpath(lane)
+    target = os.path.realpath(os.path.join(root, hpath))
+    if os.path.commonpath((root, target)) != root:
+        raise ValueError("handoff path resolves outside the lane")
+    return target
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("row_id")
@@ -189,7 +226,7 @@ def main(argv=None):
     rid, flags = a.row_id, a.flags
     mp, m = load_manifest(flags, rid)
     if not m:
-        print(f"ERROR {rid}: no manifest in {flags}/ready/ or ready/*/", file=sys.stderr); return 2
+        print(f"ERROR {rid}: no manifest in {flags}/ready/ or eligible completed-smoke archive", file=sys.stderr); return 2
     ep, rc, endline = load_end(flags, rid)
     if ep is None:
         print(f"ERROR {rid}: no grants/{rid}.ended|.complete in {flags}", file=sys.stderr); return 2
@@ -234,10 +271,10 @@ def main(argv=None):
         import flip_checkbox
         hpath, token = task.rsplit(":", 1)
         try:
-            flip_checkbox.flip(os.path.join(a.lane, hpath), token, datetime.date.today().isoformat(),
+            flip_checkbox.flip(handoff_path(a.lane, hpath), token, datetime.date.today().isoformat(),
                                f"rc={rc} {verdict}; {tick}", dry_run=False)
             print(f"TICKED {token} in {hpath}")
-        except flip_checkbox.CheckboxFlipError as e:
+        except (flip_checkbox.CheckboxFlipError, ValueError) as e:
             print(f"ERROR tick failed: {e}", file=sys.stderr); return 5
     else:
         print("TICK " + tick_line(rid, rc, verdict, values, filed_by))

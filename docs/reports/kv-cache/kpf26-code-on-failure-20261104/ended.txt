@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T07:38:35Z reason=job-rc-1:exited
+job_id=rtg58-kpf26-code-on-diag-20261102
+owner=rtg58-codex
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T07:32:46Z
+regions=48-71

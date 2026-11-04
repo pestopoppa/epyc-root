@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """compute_ready_daemon.py — the reconstructible compute-ready projection writer.
 
-Owning handoff: handoffs/active/wrap-up-division-of-labor-policy.md,
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md,
 "Compute-blocker intake and graded window contract". The source of truth for
 compute-ready work is the accepted `task-checkpoint` receipt, its typed
 compute request, and Inference's append-only intake dispositions. This daemon

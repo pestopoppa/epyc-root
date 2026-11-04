@@ -1,0 +1,66 @@
+{
+  "status": "found",
+  "symbol": {
+    "uid": "Class:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink",
+    "name": "ShadowSink",
+    "kind": "Class",
+    "filePath": "scripts/vidya/producers/repl_shadow_sink.py",
+    "startLine": 32,
+    "endLine": 130
+  },
+  "epistemic": "exact",
+  "incoming": {
+    "imports": [
+      {
+        "uid": "File:tests/vidya/test_repl_shadow_validate.py",
+        "name": "test_repl_shadow_validate.py",
+        "filePath": "tests/vidya/test_repl_shadow_validate.py"
+      },
+      {
+        "uid": "File:tests/vidya/test_repl_shadow_sink.py",
+        "name": "test_repl_shadow_sink.py",
+        "filePath": "tests/vidya/test_repl_shadow_sink.py"
+      },
+      {
+        "uid": "File:scripts/vidya/producers/repl_shadow_validate.py",
+        "name": "repl_shadow_validate.py",
+        "filePath": "scripts/vidya/producers/repl_shadow_validate.py"
+      }
+    ]
+  },
+  "outgoing": {
+    "has_method": [
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink.__init__#5",
+        "name": "__init__",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink._write#1",
+        "name": "_write",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink._emit_pending#2",
+        "name": "_emit_pending",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink.search#3",
+        "name": "search",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink.opened#1",
+        "name": "opened",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink.close#0",
+        "name": "close",
+        "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+      }
+    ]
+  },
+  "processes": []
+}

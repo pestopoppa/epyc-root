@@ -1,6 +1,6 @@
 # Dev-harness lesson efficacy: interrupted-time-series pilot spec (DHM-3)
 
-**Status**: spec + pilot code, 2026-10-22. Owner: `handoffs/active/dev-harness-trace-mining.md` (DHM-3).
+**Status**: spec + pilot code, 2026-10-22. Owner: `handoffs/active/memory-program.md` (DHM-3).
 Code: `scripts/dev_harness/m2_lessons.py` (registry + pilot), `m2_guards.py` (detectors), `mine_m2.py`
 (driver). Registry: `scripts/dev_harness/lesson_registry.json`. Sources: intake-2395#record, intake-2396#record,
 intake-2426#record, intake-2429#record.

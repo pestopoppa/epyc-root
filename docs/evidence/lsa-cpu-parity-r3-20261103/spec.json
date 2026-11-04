@@ -1,0 +1,27 @@
+{
+  "id": "lsa-screen-1-cpu-parity-r3-20261103",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/launcher.sh",
+  "lane": "cpu",
+  "regions": "24-27",
+  "ram_gib": 48,
+  "min_window_s": 900,
+  "estimate_s": 900,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3",
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "One 45-ID prefill pair on Qwen3.8-27B-Q8_0: all vocabulary logits finite, max absolute dense/all difference <=1e-5, exact argmax equality, exactly the 16 global layers observed with unchanged all-key masks. Stop on completed pair or first failed check; no timing or quality claim.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 22,
+  "admission_class": "diagnostic",
+  "dryrun_timeout_s": 900,
+  "keep": [
+    "*.json",
+    "*.sh",
+    "*.py",
+    "ATTEMPT_FENCE/*",
+    "ATTEMPT_FENCE/*"
+  ],
+  "smoke_timeout_s": 600,
+  "notes": "Approved one all-only continuation against retained R2 dense; cross-build comparator is limited to this 45-token conformance question."
+}

@@ -1,0 +1,22 @@
+{
+  "id": "kvfork17-partial-v2-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Diagnostic only: OBSERVED_PASS requires rc=0 on the identified hybrid model and explicit Test 6 PASS, with no SKIP. Fixed 1e-3 tolerance and missing mutation control cannot establish a fork defect or close KPF-17; other outcomes INVALID.",
+  "estimate_s": 2400,
+  "ram_gib": 16,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "priority_rank": 45,
+  "dryrun_timeout_s": 1500,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-partial-row-v2",
+  "keep": [
+    "**"
+  ],
+  "supersedes": "kvfork17-partial-20261102",
+  "notes": "Preparation and publication required; diagnostic only, prior row untouched; source checked before and after execution, not protected from same-UID mutate-and-restore."
+}

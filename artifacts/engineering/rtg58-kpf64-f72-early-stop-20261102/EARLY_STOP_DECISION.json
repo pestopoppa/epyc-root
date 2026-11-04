@@ -1,0 +1,27 @@
+{
+  "paired_requests": 20,
+  "families": {
+    "claude-00": 10,
+    "claude-01": 6,
+    "opencode-00": 2,
+    "opencode-01": 2
+  },
+  "decision": "broadly_consistent",
+  "reason": "exploratory family-resampling interval compared with +/-5pp practical band",
+  "prompt_token_abs_drift_fraction": 0.0013786620711264295,
+  "f24_cached_share": 0.345542848190506,
+  "f72_cached_share": 0.3450828813415088,
+  "delta_pp": -0.04599668489972397,
+  "descriptive_family_resample_interval_pp": [
+    -0.07975307884041105,
+    0.015893705106873046
+  ],
+  "classification": "exploratory operational stopping; not a gate or formal confidence interval",
+  "source_limitations": "nonrandom completion order, only four families, repeated looks; similar token counts do not prove identical histories",
+  "baseline_sha256": "e93f77a536c152f90d3ca07a853955677e380117081929e3e1733d9416722017",
+  "fb_partial_sha256": "dce4775159e50dc34b1b253df1fe07f47c3815f7d60619ab47a7ff038535116e",
+  "f72_complete_lines_sha256": "e1c5f2b23d4ebe7bc34f4f64558cb3542c68617a654ed1e7d68aa7968024675e",
+  "driver_pid": 1458625,
+  "driver_birth_ticks": "176221002",
+  "recorded_unix": 1793640645.0172477
+}

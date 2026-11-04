@@ -1,0 +1,47 @@
+{
+ "admission_class": "block-timing-pairable",
+ "decision_rule": "capture only: one serving.compare A/A (same C5 image both arms, no floor, decisive None) so the sealed belief_capture carries target_sample_steps_est; no performance or best-recipe claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 5400,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-SL2-STEPS-LIVE",
+ "id": "vb-sl2-steps-r1-20261103",
+ "keep": [
+  "KEEP",
+  "run_ab.py",
+  "job.sh",
+  "launch.sh",
+  "complete.py",
+  "inputs/**",
+  "store/**",
+  "compare-row.json",
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/launch.sh",
+  "sha256": "3712e245e22b8afb2ecc568788b340944e61a3ab45a53be65535740078b8eae3"
+ },
+ "min_window_s": 3600,
+ "owner": "vidya-belief-substrate-program",
+ "ports": [
+  18651
+ ],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-04T00:05:51Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/row-spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/STOP",
+ "window_s": 6780,
+ "workdir": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103"
+}

@@ -1,0 +1,41 @@
+{
+ "decision_rule": "pytest rc0 for source commit 64a96b58b5054a54a2efae416ae25908d0f13dbe and native source-manifest recheck; synthetic custody and CLI/planning controls only. A dry-run result is not a scheduled full run and neither is a live CRM result.",
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/benchmark-suites.md",
+ "id": "evl46-crm-reader-64-tests-20261102",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "results/**",
+  "results/*/unit.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/launch.sh",
+  "sha256": "6d45dcd961c4eafc2c459e7df2a4075ab041e42c16509a1f8117f456b11fd907"
+ },
+ "min_window_s": 120,
+ "notes": "300 seconds is a conservative scheduler reservation, not an observed elapsed time; the previous smaller test set ran in under one second on this host.",
+ "owner": "codex-evl46",
+ "ports": [],
+ "priority_rank": 30.0,
+ "published_at": "2026-11-02T13:33:53Z",
+ "published_from": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/results/*/unit.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row/STOP",
+ "supersedes": "evl46-crm-reader-b5-tests-20261102",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/evl46-crm-reader-64-row"
+}

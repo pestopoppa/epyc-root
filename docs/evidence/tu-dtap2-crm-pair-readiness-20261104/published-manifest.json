@@ -1,0 +1,49 @@
+{
+ "decision_rule": "One source-pinned live matched CRM pair with both arms complete, native delivery outcomes retained (including attack nondelivery), genuine provider claim and runtime model mapping. Diagnostic evidence only for this matched case; no security pass or general security claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 300,
+ "gib": 8,
+ "handoff_task": "handoffs/active/benchmark-suites.md:TU-DTAP-2-CRM-PAIR",
+ "id": "tu-dtap-2-live-crm-pair-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "run/**",
+  "run/pair-seal.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/launch.sh",
+  "sha256": "7600cfea5be9de4dd45660d44cd541fcf5e7627cc491b2784b52069fedeaeb9a"
+ },
+ "min_window_s": 900,
+ "notes": "Smoke qualifies only the source-pinned synthetic pair fixture via an explicit predicate; no numeric measurement is fabricated and no live model is invoked in smoke. Full scheduled diagnostic retains provider, runtime, native per-arm outcomes and cleanup; posthash remains a separate follow-up.",
+ "owner": "codex-evl46",
+ "ports": [
+  19186
+ ],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "benchmark-suites.md:2337: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "benchmark-suites.md:2337: identity fields incomplete: ['metric'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better)",
+  "benchmark-suites.md:2337: untestable prose prerequisite: 'after each arm; stop after the pair, first typed error, STOP or deadline; retain every exposed partial arm without redra'"
+ ],
+ "published_at": "2026-11-04T07:38:57Z",
+ "published_from": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/run/pair-seal.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/smoke_complete.py",
+ "stop_file": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104"
+}

@@ -2,7 +2,7 @@
 
 **Status**: PROPOSAL. Nothing is wired. Hook edits are human-applied (operator 2026-10-22); this document
 is the package an operator applies or rejects.
-**Task**: DHM-6 in [`handoffs/active/dev-harness-trace-mining.md`](../../handoffs/active/dev-harness-trace-mining.md)
+**Task**: DHM-6 in [`handoffs/active/memory-program.md`](../../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 (intake-2387#record, Beacon cross-harness trace capture).
 **Consumers**: DHM-2 (guard audit: would-fire / blocked / slipped-through), DHM-3 (lesson ITS: hook-enforced
 versus prose-only violation rates), the belief kernel (a source with `fidelity=observed`).

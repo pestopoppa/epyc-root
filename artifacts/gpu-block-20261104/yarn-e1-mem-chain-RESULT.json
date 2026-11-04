@@ -1,0 +1,36 @@
+{
+  "status": "COMPLETE",
+  "single_server": true,
+  "steps": [
+    [
+      "E1",
+      "A1",
+      "128k"
+    ],
+    [
+      "E1",
+      "A1",
+      "240k"
+    ],
+    [
+      "E1",
+      "A1",
+      "400k"
+    ],
+    [
+      "E1",
+      "A1",
+      "500k"
+    ]
+  ],
+  "memory_criterion": {
+    "criterion": "continuous-chain own-PID peak <=55 GiB",
+    "pass": true,
+    "peak_gib": 47.632,
+    "first_phase_over_55_gib": null,
+    "excess_gib": 0,
+    "safety_ceiling_gib": 63.8
+  },
+  "complete": "/mnt/raid0/llm/tmp/yarn-e1-mem-chain-20261104/out/chain-E1-A1/complete.json",
+  "at": 1793797417.0058222
+}

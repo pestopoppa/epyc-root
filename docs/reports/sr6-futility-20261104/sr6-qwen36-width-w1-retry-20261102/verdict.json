@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "UNKNOWN under sealed stop-on-futility rule: native RESULT absent after rc1. No width comparison, registry change, adaptive extension or rerun is authorized by this packet.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:08:43+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-03T07:35:45Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T07:08:43+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "speculative-decoding.md:SR-6",
+ "id": "sr6-qwen36-width-w1-retry-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/sr6-qwen36-width-w1-retry-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "UNKNOWN under sealed stop-on-futility rule: native RESULT absent after rc1. No width comparison, registry change, adaptive extension or rerun is authorized by this packet.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/RESULT.json",
+ "root_cause_family": null,
+ "row": "sr6-qwen36-width-w1-retry-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "Retry of W1 using the exact predeclared W1 prompt/seed partition after the prior launcher failed its region-lock input checksum before worker start. Capture into the existing shared output root, with server evidence isolated under output/servers-w1-retry. Preserve every exposure, response, placement and terminal; interrupted, incomplete, or missing provenance is UNKNOWN. This row does not replace or add an independent planned window and makes no registry or performance claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

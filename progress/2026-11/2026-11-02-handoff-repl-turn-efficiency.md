@@ -143,3 +143,31 @@ Reviewed the GitNexus admission and Omega fix reports. The lane-specific index a
 ## 09:41Z — Prepare main-model token efficiency reporting contract
 
 Prepared a zero-inference reporting definition for Main Model Token Efficiency: mean reward divided by mean main-model trajectory tokens, normalized to the matched no-scaffold arm, alongside reward, total tokens and wall clock. Missing counts are incomplete and zero-token cases must not be divided. This is a proposed reporting contract, not evidence of runner adoption or a measurement; the handoff box remains open. Independent row readiness, implementation and owner routing investigations have completion events registered.
+
+## 09:42Z — Add scaffold token efficiency reporting contract
+
+Added the Main Model Token Efficiency reporting contract to the handoff: normalize mean reward divided by mean main-model trajectory tokens against the matched no-scaffold arm; include total tokens and wall-clock, scope and missing/zero count handling. The reporting task remains open until a scaffold A/B report actually uses it. No inference result is claimed. Delegated independent row readiness, owner routing and implementation work; registered completion events.
+
+## 09:44Z — Document the RLM fan-out prefill and decode caution
+
+Added workload-specific guidance to agent-loop-design: intake-803 reports a shift from mostly prefill to decode and longer wall clock in its tested environments; evaluate our workloads with prefill/decode and wall-clock reporting rather than generalizing the result. No model execution or measurement was performed.
+
+## 11:24Z — File refused owner-check run
+
+Filed handoff-rte-log1-ownercheck-20261101 inconclusive: rc=4, own-port-8070-already-listening before launch; available result records are dryrun=true only. The live acceptance item remains open. The separate override row has a different scratch root.
+
+## 11:25Z — Compare RLM and EPYC REPL budgets
+
+Compared recursion, output cap, timeout, root tool exposure, termination, and turn-token budget against orchestrator source commit 9e138e3a3e22ecf8c57cd5bf50beed571d107b54; documented differences and separate timeout configuration surfaces in docs/design/repl-prefix-experiment/rlm-budget-comparison.md. Source comparison only; no live settings or performance claims.
+
+## 11:27Z — File override diagnostic and correct budget comparison scope
+
+Filed override row inconclusive after real-phase rc=1 and HTTP 429; drained with no survivors, no diagnostic or normal-routing acceptance established. Restored the RLM budget comparison checkbox to open: the source comparison was documented, but its explicit handoff checkpoint also requires a designed and validated policy decision.
+
+## 11:29Z — Integrate RLM budget source comparison
+
+Integrated the independent source comparison with the existing pinned-source report. The source comparison is complete; the checkbox remains open for its explicitly recorded policy decision and validation. Strategy row publication still requires trusted producer and capture integration. Independent critical-path work is in progress.
+
+## 11:30Z — Verify RLM budget comparison against primary source
+
+Checked the original Prime Intellect article against the RLM comparison and linked the primary source. It reports the depth, root output cap, tool scope, completion state and default REPL timeout; the 300/600-second ablation is plotted and its outcome was not independently extracted, so qualified the table. The box remains open for its recorded policy decision and validation.

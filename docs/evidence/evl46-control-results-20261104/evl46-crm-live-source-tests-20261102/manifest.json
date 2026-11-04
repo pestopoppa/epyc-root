@@ -1,0 +1,48 @@
+{
+ "decision_rule": "Pass iff schema dtap.crm_live_source_tests.v1, capture_kind source-test, passed >=30 and model_invoked false. Deterministic source/fixture verification only; no live model, timing, security or post-hash claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 600,
+ "first_progress_s": 300,
+ "gib": 4,
+ "handoff_task": "benchmark-suites.md:TU-DTAP-2-SOURCE",
+ "id": "evl46-crm-live-source-tests-20261102",
+ "keep": [
+  "source.json",
+  "job.sh",
+  "result.py",
+  "complete.py",
+  "launch.sh",
+  "pytest.log",
+  "result.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/launch.sh",
+  "sha256": "ef3ef5a497d0aba5598eb6209dc87be92ea4312b723d02a464975386b4048620"
+ },
+ "min_window_s": 600,
+ "notes": "Owner handoff moved from tool-use-eval-contract to benchmark-suites; repair only the retired task pointer. Existing source test launcher and exact source commit remain pinned. Qualification is model-free.",
+ "owner": "codex-evl46",
+ "ports": [],
+ "priority_rank": 113.0,
+ "publish_warnings": [
+  "benchmark-suites.md:2332: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "benchmark-suites.md:2332: identity fields incomplete: ['metric', 'region', 'estimate'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better); region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210); estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "benchmark-suites.md:2332: untestable prose prerequisite: 'Require native source verification, schema `dtap.crm_live_source_tests.v1`, at least 30 passing tests and model_invoked='"
+ ],
+ "published_at": "2026-11-04T07:09:55Z",
+ "published_from": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/evl46-source-republish-20261104.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/result.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/STOP",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102"
+}

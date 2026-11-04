@@ -1,0 +1,8 @@
+802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server
+c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama-server-impl.so
+d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama.so.0
+23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-hip.so.0
+bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml.so.0
+1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c  /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0
+1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551  /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh

@@ -8,14 +8,21 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                result_path (what the filer reads), decision_rule, estimate_s, handoff_task
                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
-                               ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs),
-                               dryrun_timeout_s (900 cpu / 1500 gpu), dryrun_native_result (count a unique per-attempt native JSON unit
-                               without touching result_path), lineage, lineage_reset, supersedes, snapshot (true forces the snapshot below)
+                               busy_fraction (0..1: share of its claimed cpus the job keeps busy; unset = 1.0; below
+                               0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
+                               ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
+                               ADD reaper protection; empty = inputs (older than the first job start) + result_path),
+                               first_progress_s (300; aliases smoke_timeout_s, dryrun_timeout_s), smoke_predicate (shell; exit 0 =
+                               the job's first real progress), unit_key (the field a real record must carry), dryrun_native_result
+                               (count a unique per-attempt native JSON unit without touching result_path), lineage, lineage_reset,
+                               supersedes, snapshot (true forces the snapshot below)
 
-    SNAPSHOT RULE   a launcher, engine or job file under worktrees/ or /workspace (or a /workspace/repos/<x> target) is
-                    copied at publish time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the
-                    worktree is clean, else a working-tree copy with dirty=true), paths rewritten, files chmod a-w; the
-                    row's launcher/engine/result paths point INTO the snapshot. Row field `snapshot` records it.
+    SNAPSHOT RULE   OPT-IN (operator 2026-11-03): only with `"snapshot": true` is the launcher's directory, and every
+                    engine/job file under worktrees/ or /workspace (or a /workspace/repos/<x> target), copied at publish
+                    time into <scratch_root>/snapshot/ (git archive HEAD of its directory when the worktree is clean, else
+                    a working-tree copy with dirty=true), paths rewritten, files chmod a-w; the row's launcher/engine/
+                    result paths point INTO the snapshot. Row field `snapshot` records it. Default: nothing is copied; a
+                    launcher outside the job-dir root is refused in one line naming both fixes.
 
     published row    compute-flags/ready/<id>.json  schema epyc.row.v3 (derived: engine, min_window_s, window_s,
                      ports, gib, launcher sha256, scratch_root/keep for the reaper)
@@ -23,21 +30,18 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
 KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
     allocate                  THE allocator (2026-11-01, operator "compute keeps idling because of scheduling races"): ONE
                               snapshot per tick (region-lock, open grants' holds=, live dry runs); dry runs and grants are
-                              assigned together from it (starved lane first, then priority_rank, a grantable row before a
-                              dry run; a region is never handed twice; any-cpu-quarter is resolved only here); it arms the
-                              poller, admits through grant_ok_launcher (the one parser), WRITES the grant, spawns the dry
-                              runs. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
+                              assigned together from it (an operator rank < URGENT_RANK first, by rank; then starved
+                              lane, then priority_rank, a grantable row before a dry run; a region is never handed twice; any-cpu-quarter is resolved only here); it arms the
+                              poller, admits through grant_ok_launcher (the one parser), WRITES the grant. Self-healing every tick: HEAL stale-grant / HEAL conflict (re-assigned) / CONFLICT,
                               IDLE-WHY <region>: <reason>, UNDERUSED (<5 % of a held quarter for 10 min -> owner fix task,
-                              never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl). A multi-quarter row is
-                              dry-run on ONE quarter (FILLER_DRYRUN_ONE_QUARTER) unless the spec says dryrun_whole_host.
-    dryrun-run <id> --regions THE dry run: the exact launcher, through its engine, under the real region-lock on the real
-                              lane, with a real short grants/<id>.grant. PASS only when the first unit of measured output
-                              lands in result_path in the filer's format AND the job then exits or stops cleanly on the
-                              stop file (rc 0/75). GPU rows must also show VRAM in use. Records
-                              compute-flags/dryrun/<id>/PASS.json {launcher_sha256, result_path, units, vram...} or
-                              FAIL-<n>.json {reason, launcher.out tail}. A FAIL is the owner's one fix task; it is not
-                              retried until the launcher changes (sha). 3 FAILs in a lineage -> parked + escalation note.
+                              never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
+    gpu-batch                 run the queued GPU smokes (publish_row's GPU-busy queue) NOW if the GPU is free; any session
+                              may call it, and allocate does the same on every GPU-free tick
+    (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant. PASS = the job's
+     FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
+                              (parked: MAX_FAILS failed dry runs in the lineage, OR MAX_FAILS consecutive arming/launch
+                              failures since the row's PASS - a PASS alone no longer keeps an unarmable row grantable)
 
 Nothing here writes FILLERS.md, nonces, receipts or breakers. Removed with this flow: epyc.ready.v2 manifests,
 ready/<id>.row.md, the 18-cell FILLERS.md row, keeper_qual_gate/qualify_launcher (nonce, receipt, fixture, cutoff proof),
@@ -59,6 +63,11 @@ import subprocess
 import sys
 import time
 
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
+    sys.path.insert(0, _HERE)
+import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
+
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
                      "block-timing-pairable", "block-timing-quiet", "filler"}
@@ -71,7 +80,6 @@ ENGINE_RE = re.compile(r"filler_run(\d+)\.sh$")
 CANONICAL_ENGINE = "filler_run15.sh"
 MAX_FAILS = 3
 STOP_GRACE_S = 600  # a job may finish its current item before honouring the stop file
-DEFAULT_KEEP = ["**/*.json", "**/*.jsonl", "**/*.md", "**/*.txt", "**/*.csv", "**/*.tsv", "**/*.sh", "**/*.py"]
 _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
 SNAPSHOT_MAX_BYTES = 256 << 20  # a snapshot copies a directory; a launcher that lives next to models is a spec defect
 
@@ -155,6 +163,30 @@ def pass_path(flags, rid): return os.path.join(dry_dir(flags, rid), "PASS.json")
 def armed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "ARMED.json")
 def running_path(flags, rid): return os.path.join(dry_dir(flags, rid), "RUNNING.json")
 def fail_paths(flags, rid): return sorted(glob.glob(os.path.join(dry_dir(flags, rid), "FAIL-*.json")))
+def granted_path(flags, rid): return os.path.join(dry_dir(flags, rid), "GRANTED.json")
+
+
+ARM_FAIL_KINDS = ("arm", "launch")
+_LEGACY_ARM_FAIL = "poller did not log 'launcher up pid='"
+
+
+def is_arm_fail(f):
+    """A FAIL record written by the allocator (arming: no 'launcher up pid=' in 30 s; launch: admission refused the
+    armed poller), not by a dry run. Records before 2026-11-03 carry no kind: matched by the arm_one reason."""
+    return (f or {}).get("kind") in ARM_FAIL_KINDS or str((f or {}).get("reason", "")).startswith(_LEGACY_ARM_FAIL)
+
+
+def arm_fails_since_pass(flags, rid, p=None):
+    """[FAIL records] of the consecutive arming/launch failures since the row's PASS and its last successful grant
+    (ws58 2026-11-03: yarn-e1-a2-gpu failed to arm 172 times after its PASS and stayed grantable all night)."""
+    p = load_json(pass_path(flags, rid)) if p is None else p
+    t0 = max(iso_epoch((p or {}).get("passed_at")) or 0.0, iso_epoch((load_json(granted_path(flags, rid)) or {}).get("at")) or 0.0)
+    out = []
+    for fp in fail_paths(flags, rid):
+        f = load_json(fp) or {}
+        if is_arm_fail(f) and (iso_epoch(f.get("at")) or 0.0) >= t0:
+            out.append(dict(f, fail_file=fp))
+    return sorted(out, key=lambda f: iso_epoch(f.get("at")) or 0.0)
 
 
 def row_sha(flags, rid):
@@ -404,6 +436,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              "admission_class must be one of " + ", ".join(sorted(ADMISSION_CLASSES)))
     if spec.get("dryrun_native_result") is not None:
         need(isinstance(spec["dryrun_native_result"], bool), "dryrun_native_result must be boolean")
+    check_busy_fraction(spec)
     launcher = os.path.abspath(str(spec["launcher"]))
     need(os.path.isfile(launcher), f"launcher {launcher} missing")
     for term in (".ended", ".complete"):
@@ -421,11 +454,16 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     result_path = str(spec["result_path"])
     need(os.path.isabs(result_path), "result_path must be absolute")
     # rows are independent of lanes: a launcher / engine / job file under a worktree or /workspace changes under the keeper's
-    # feet (lane merges before every resume, removal at session end), so it is snapshotted into the row's own scratch_root
-    # and the row points INTO the snapshot - the dry run and the real run execute the same bytes by construction
-    volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
+    # feet (lane merges before every resume, removal at session end). Operator 2026-11-03 (session review §5 item 8): the
+    # snapshot into the row's own scratch_root is OPT-IN (`"snapshot": true`); by default nothing is copied.
     snap = None
-    if volatile or spec.get("snapshot") is True:
+    vr = volatile_root(launcher)
+    if spec.get("snapshot") is not True and (vr or not launcher.startswith(TMP)):
+        where = f"under the lane/worktree path {vr}" if vr else f"outside the job-dir root {TMP}"
+        raise Refused(f"launcher {launcher} is {where}: copy its job dir to {TMP}{rid}/ and publish that launcher, or set "
+                      f"\"snapshot\": true in the spec")
+    if spec.get("snapshot") is True:
+        volatile = [p for p in [launcher] + referenced_paths(o) if volatile_root(p)]
         scratch = os.path.normpath(spec.get("scratch_root") or TMP + rid)
         need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
              f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
@@ -446,13 +484,26 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
          f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
     need(launcher.startswith(scratch + "/"), f"launcher {launcher} is not inside scratch_root {scratch}")
-    keep = list(spec.get("keep") or DEFAULT_KEEP)
+    keep = list(spec.get("keep") or [])   # operator 2026-11-03: empty = inputs + result (the reaper protects every input)
     if result_path.startswith(scratch + "/"):
         rel = os.path.relpath(result_path, scratch)
         if rel not in keep:
             keep.append(rel)
     fmt = str(spec.get("result_format") or guess_format(result_path))
     need(fmt in ("jsonl", "json", "csv", "tsv", "text-lines", "markdown-table") or fmt.startswith("custom:"), f"unknown result_format {fmt}")
+    # operator 2026-11-03: the smoke's PASS is the job's FIRST REAL PROGRESS within first_progress_s (FirstProgress)
+    try:
+        fps = int(spec.get("first_progress_s") or spec.get("smoke_timeout_s") or spec.get("dryrun_timeout_s") or FIRST_PROGRESS_S)
+    except (TypeError, ValueError):
+        raise Refused("first_progress_s must be whole seconds (e.g. \"first_progress_s\": 900)")
+    need(fps > 0, "first_progress_s must be positive seconds")
+    for k in ("smoke_predicate", "unit_key"):
+        need(spec.get(k) is None or (isinstance(spec[k], str) and spec[k].strip()), f"{k} must be a non-empty string")
+    if spec.get("unit_key") and fmt == "text-lines":
+        try:
+            re.compile(spec["unit_key"])
+        except re.error as e:
+            raise Refused(f"unit_key is a regex for text-lines results and does not compile: {e}")
     regions = str(spec.get("regions") or ("mi210_0,184-191" if lane == "gpu" else ("0-95" if o["claim_cpus"] == "0-95" else "any-cpu-quarter")))
     if lane == "gpu":
         need("mi210_0" in regions, "gpu regions must name mi210_0")
@@ -469,18 +520,24 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "launcher": {"path": launcher, "sha256": sha256(launcher)}, "engine": {"path": eng, "sha256": sha256(eng)},
         "result_path": result_path, "result_format": fmt, "decision_rule": spec["decision_rule"],
         "handoff_task": spec["handoff_task"], "estimate_s": est, "min_window_s": minwin, "window_s": window,
-        "gib": int(spec.get("ram_gib") or 48), "ports": o["ports"], "priority_rank": rank,
+        "gib": int(spec.get("ram_gib") or 48), "ports": sorted(set(o["ports"]) | {int(x) for x in (spec.get("ports") or [])}),
+        "priority_rank": rank,
         "scratch_root": scratch, "keep": keep, "stop_file": o["stop"], "workdir": o["workdir"],
-        "dryrun_timeout_s": int(spec.get("dryrun_timeout_s") or (1500 if lane == "gpu" else 900)),
+        "first_progress_s": fps,
         "published_at": now_iso(), "published_from": source or "spec",
     }
+    if spec.get("total_units") is not None:
+        row["total_units"] = int(spec["total_units"])
     if spec.get("admission_class") is not None:
         row["admission_class"] = spec["admission_class"]
+    if spec.get("busy_fraction") is not None:
+        row["busy_fraction"] = float(spec["busy_fraction"])
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
-    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_whole_host", "dryrun_native_result"):
+    for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
+              "smoke_predicate", "unit_key"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     if spec.get("shape") is not None:
@@ -585,6 +642,211 @@ def count_units(result_path, fmt, workdir=None):
     return n
 
 
+# ---------------------------------------------------------------- first real progress (operator 2026-11-03, session review §3.1)
+# A smoke PASSes only when the ACTUAL job makes its first REAL step within first_progress_s (default 300; spec may set it).
+# "A JSON appeared" is not progress: 2026-11-03 three rows passed on qualification-only records and their real runs died
+# in 9 s, 12 s and 3 s. The contract, in order (no judgment left to the reader):
+#   1. spec.smoke_predicate (shell, run in --workdir with the smoke's FILLER_* env + FILLER_SMOKE_T0=<epoch at launch>):
+#      exit 0 = progress. It must exit non-0 BEFORE the launch (else it cannot see this run) -> FAIL at once.
+#   2. result_format custom:<cmd>: the same rule with <cmd> as the predicate.
+#   3. otherwise a NEW real record in result_path (one not present, byte-identical, before the launch) that parses under
+#      result_format and is not a placeholder:
+#        - a PLACEHOLDER_MARKERS key/value (qualification_only:true, measurement:false, placeholder:true, smoke_only:true)
+#          makes a record a placeholder, always;
+#        - spec.unit_key given: the record has a non-null, non-empty value at that dotted key (csv/tsv/markdown: that
+#          column; text-lines: the line matches unit_key as a regex);
+#        - else json/jsonl: a finite number (not a bool) at depth <= 2 under a key outside BOOKKEEPING_KEYS;
+#          csv/tsv/markdown-table: a numeric cell in a column outside BOOKKEEPING_KEYS; text-lines: any non-empty line;
+#          a result directory: each new file, parsed by its extension (other files: non-empty = real).
+FIRST_PROGRESS_S = 300
+PLACEHOLDER_MARKERS = (("qualification_only", True), ("measurement", False), ("placeholder", True), ("smoke_only", True))
+BOOKKEEPING_KEYS = re.compile(r"(?i)^(?:id|\w*_id|uuid|schema\w*|version|ts|t0?|time|timestamp|epoch|at|\w+_at|started\w*|ended\w*|"
+                              r"pid|pgid|ppid|rc|exit\w*|returncode|seq|idx|index|attempt\w*|mtime|size|bytes|port|status|state|phase|"
+                              r"ok|\w+_ok|elapsed\w*|wall\w*|duration\w*)$")
+
+
+def _is_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v and v not in (float("inf"), float("-inf"))
+
+
+def _num(s):
+    try:
+        return float(s)
+    except (TypeError, ValueError):
+        return None
+
+
+def _has_measurement(v, depth=0):
+    if _is_num(v):
+        return True
+    if isinstance(v, dict) and depth < 2:
+        return any(_has_measurement(x, depth + 1) for k, x in v.items() if not BOOKKEEPING_KEYS.match(str(k)))
+    if isinstance(v, list) and depth < 2:
+        return any(_has_measurement(x, depth + 1) for x in v[:1000])
+    return False
+
+
+def _dotted(rec, key):
+    for part in str(key).split("."):
+        if not isinstance(rec, dict) or part not in rec:
+            return None
+        rec = rec[part]
+    return rec
+
+
+def record_verdict(rec, unit_key=None):
+    """(real, why) for one parsed json/jsonl record (contract above)."""
+    if isinstance(rec, dict):
+        for k, v in PLACEHOLDER_MARKERS:
+            if k in rec and rec[k] is v:
+                return False, f"placeholder ({k}: {json.dumps(v)})"
+        if unit_key:
+            ok = _dotted(rec, unit_key) not in (None, "", [], {})
+            return ok, f"unit_key {unit_key} " + ("set" if ok else "missing/empty")
+        ok = _has_measurement(rec)
+        return ok, "measurement field" if ok else "no numeric field outside the bookkeeping keys"
+    if unit_key:
+        return False, f"not an object, so no unit_key {unit_key}"
+    ok = _is_num(rec) or (isinstance(rec, list) and _has_measurement(rec))
+    return ok, "bare number" if ok else "bare non-numeric value"
+
+
+def _table_records(lines, sep, unit_key):
+    """[(text, real, why)] per data row of a csv/tsv/markdown table (first row = header)."""
+    if not lines:
+        return []
+    hdr = [h.strip() for h in lines[0].split(sep)]
+    out = []
+    for l in lines[1:]:
+        row = dict(zip(hdr, [c.strip() for c in l.split(sep)]))
+        if unit_key:
+            real = bool(row.get(unit_key))
+            why = f"column {unit_key} " + ("set" if real else "missing/empty")
+        else:
+            real = any(not BOOKKEEPING_KEYS.match(h) and _is_num(_num(c)) for h, c in row.items())
+            why = "numeric cell" if real else "no numeric cell outside the bookkeeping columns"
+        out.append((l, real, why))
+    return out
+
+
+def _file_records(p, fmt, unit_key):
+    try:
+        text = open(p, errors="replace").read()
+    except OSError:
+        return []
+    recs = []
+    if fmt in ("jsonl", "json"):
+        vals = []
+        if fmt == "jsonl":
+            for l in text.splitlines():
+                if l.strip():
+                    try:
+                        vals.append(json.loads(l))
+                    except ValueError:
+                        pass
+        else:
+            try:
+                v = json.loads(text)
+            except ValueError:
+                return []
+            lst = v if isinstance(v, list) else None
+            if isinstance(v, dict):
+                lst = next((v[k] for k in ("results", "items", "records", "rows", "samples") if isinstance(v.get(k), list)), None)
+            vals = lst if lst is not None else [v]
+        for v in vals:
+            real, why = record_verdict(v, unit_key)
+            recs.append((json.dumps(v, sort_keys=True), real, why))
+    elif fmt in ("csv", "tsv"):
+        recs = _table_records([l for l in text.splitlines() if l.strip()], "," if fmt == "csv" else "\t", unit_key)
+    elif fmt == "markdown-table":
+        rows_ = [l.strip().strip("|") for l in text.splitlines() if l.startswith("|") and not re.match(r"^\|[\s:|-]+\|$", l)]
+        recs = _table_records(rows_, "|", unit_key)
+    else:
+        rx = re.compile(unit_key) if unit_key else None
+        for l in text.splitlines():
+            if l.strip():
+                hit = bool(rx.search(l)) if rx else True
+                recs.append((l, hit, "non-empty line" if not rx else f"{'matches' if hit else 'does not match'} unit_key /{unit_key}/"))
+    return [(p + "\0" + fp, real, why) for fp, real, why in recs]
+
+
+def result_records(result_path, fmt, unit_key=None):
+    """Every record now in result_path: [(fingerprint, real, why)]. A directory result: each regular file under it is
+    parsed by its extension (guess_format); any other file is one record, real when non-empty."""
+    paths = glob.glob(result_path) if any(c in result_path for c in "*?[") else ([result_path] if os.path.exists(result_path) else [])
+    out = []
+    for p in paths:
+        if not os.path.isdir(p):
+            out += _file_records(p, fmt, unit_key)
+            continue
+        for root, _, fns in os.walk(p):
+            for fn in sorted(fns):
+                fp = os.path.join(root, fn)
+                f2 = guess_format(fp)
+                if f2 in ("json", "jsonl", "csv", "tsv", "markdown-table"):
+                    out += _file_records(fp, f2, unit_key)
+                    continue
+                try:
+                    sz = os.path.getsize(fp)
+                    out.append((fp + "\0" + sha256(fp), sz > 0, "non-empty file" if sz else "empty file"))
+                except OSError:
+                    continue
+    return out
+
+
+class FirstProgress:
+    """The smoke's progress probe. Construct it BEFORE the launch (baseline), then .check() -> (progress, detail)."""
+
+    def __init__(self, d, result_path, fmt, env, workdir=None):
+        self.result_path, self.fmt, self.env = result_path, fmt, env
+        self.workdir = workdir if workdir and os.path.isdir(workdir) else None
+        self.unit_key = d.get("unit_key")
+        self.pred = d.get("smoke_predicate") or (fmt[len("custom:"):] if fmt.startswith("custom:") else None)
+        self.kind = "smoke_predicate" if d.get("smoke_predicate") else ("result_format custom:" if self.pred else "record")
+        self.base, self.placeholders, self.stale = {}, [], False
+        if self.pred:
+            self.stale = self._pred()
+        else:
+            for fp, _, _ in result_records(result_path, fmt, self.unit_key):
+                self.base[fp] = self.base.get(fp, 0) + 1
+
+    def _pred(self):
+        try:
+            return subprocess.run(["bash", "-c", self.pred], cwd=self.workdir, env=self.env, stdout=subprocess.DEVNULL,
+                                  stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=60).returncode == 0
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+
+    def check(self):
+        if self.pred:
+            return (True, f"{self.kind} exited 0") if self._pred() else (False, f"{self.kind} still exits non-0")
+        seen = dict(self.base)
+        self.placeholders = []
+        for fp, real, why in result_records(self.result_path, self.fmt, self.unit_key):
+            if seen.get(fp, 0) > 0:
+                seen[fp] -= 1
+            elif real:
+                return True, f"new record in {self.result_path} ({why})"
+            else:
+                self.placeholders.append(why)
+        return False, "no new real record"
+
+    def what(self):
+        """What never happened, for the one-line FAIL."""
+        if self.pred:
+            return f"{self.kind} `{self.pred[:80]}` never exited 0"
+        ph = f"; {len(self.placeholders)} new record(s) ignored: {self.placeholders[0]}" if self.placeholders else ""
+        return f"no unit in {self.result_path} ({self.fmt}): no new real record{ph}"
+
+    def fix(self, n):
+        if self.pred:
+            return (f"fix: make the job reach the step {self.kind} tests within first_progress_s={n} (or raise first_progress_s "
+                    "in the spec), then re-run publish_row.py <spec.json>")
+        return (f"fix: make the job write its first measured record to {self.result_path} within first_progress_s={n} (a numeric "
+                "field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or "
+                "unit_key in the spec, then re-run publish_row.py <spec.json>")
+
+
 # ---------------------------------------------------------------- lane state (one snapshot per tick)
 QUARTERS = ("q0", "q1", "q2", "q3")
 GPU = "gpu-quiet"
@@ -629,6 +891,94 @@ def ws58_cpus(regions):
 
 
 
+CORES = tuple(f"c{n}" for n in range(96))   # ws58 2026-11-02 sub-quarter packing: one token per physical core
+
+
+THREADS = tuple(f"t{n}" for n in range(96, 192))   # ws58 2026-11-02 18:30Z: one token per SMT-sibling thread
+GRANT_CPUS_MARKER = "GRANT_CPUS"   # an engine containing it locks a GPU grant's own cpus (not --claim-cpus): see engine_grant_cpus
+
+
+def qcores(q):
+    lo = int(q[1]) * 24
+    return {f"c{n}" for n in range(lo, lo + 24)}
+
+
+def qthreads(q, n=16):
+    """The SMT siblings a whole-quarter grant runs on: the engine's quarter list is a-b,s-(s+15), so the last 8 siblings
+    of a quarter (q3: 184-191, the MI210 host threads) stay outside it. n=24: every sibling (a foreign region-lock hold)."""
+    lo = 96 + int(q[1]) * 24
+    return {f"t{k}" for k in range(lo, lo + n)}
+
+
+def expand(tokens):
+    """A whole quarter also holds its 24 core tokens and the 16 sibling threads it runs on, so it is free only when no
+    sub-quarter row holds any of them. Idempotent."""
+    out = set(tokens)
+    for t in tokens:
+        if t in QUARTERS:
+            out |= qcores(t) | qthreads(t)
+    return out
+
+
+def compress(tokens):
+    """Grant/log form: core/thread tokens of a whole quarter folded away; partial cores/threads kept (c48,t144,...)."""
+    qs = {t for t in tokens if t in QUARTERS}
+    cov = set().union(*[qcores(q) | qthreads(q) for q in qs]) if qs else set()
+    return sorted(t for t in tokens if t not in cov)
+
+
+def cpu_tokens(cpus, gpu_threads=False):
+    """Tokens of a cpu list: a quarter covered fully -> qN, partly -> its core tokens plus the sibling threads a
+    sub-quarter grant pins (cN + t(N+96)). gpu_threads=True (a GPU row's explicit host threads): siblings are thread
+    tokens of their own (184-191 -> t184..t191), never folded onto their core / quarter."""
+    cores, sibs = set(), set()
+    for tok in str(cpus or "").split(","):
+        tok = tok.strip()
+        if re.fullmatch(r"\d+(-\d+)?", tok):
+            a, b = (tok.split("-") + [tok])[:2]
+            for c in range(int(a), min(int(b), 191) + 1):
+                if c >= 96 and gpu_threads:
+                    sibs.add(c)
+                else:
+                    cores.add(c % 96)
+    out = {f"t{c}" for c in sibs}
+    for q in QUARTERS:
+        cs = {c for c in cores if f"q{c // 24}" == q}
+        if len(cs) >= 24:
+            out.add(q)
+        else:
+            out |= {f"c{c}" for c in cs} | {f"t{c + 96}" for c in cs}
+    return out
+
+
+def engine_grant_cpus(o):
+    """True when the row's engine snapshot locks a GPU grant's own cpus (content check, never a path/version guess)."""
+    try:
+        with open(o.get("engine") or "", errors="replace") as f:
+            return GRANT_CPUS_MARKER in f.read()
+    except OSError:
+        return False
+
+
+def grant_cpus(regions):
+    """The exact cpu list a grant's regions pin (cpus= field): explicit cpus as given, qN as the engine's a-b,s-(s+15)."""
+    out = []
+    for t in str(regions or "").split(","):
+        t = t.strip()
+        if re.fullmatch(r"\d+(-\d+)?", t):
+            out.append(t)
+        elif re.fullmatch(r"q[0-3]", t):
+            a = int(t[1]) * 24
+            out.append(f"{a}-{a + 23},{a + 96}-{a + 111}")
+    return ",".join(out)
+
+
+def tokens_cpus(tokens):
+    """The exact cpu list (cores + their SMT siblings) of a sub-quarter option."""
+    cs = sorted(int(t[1:]) for t in tokens if re.fullmatch(r"c\d+", t))
+    return ",".join(str(c) for c in cs + [c + 96 for c in cs])
+
+
 def cpu_list(q):
     lo = int(q[1]) * 24
     return f"{lo}-{lo + 23}"
@@ -644,6 +994,7 @@ def open_grants(flags):
         kv = dict(re.findall(r"(\w+)=(\S+)", first))
         regions = kv.get("regions", "")
         holds = set(kv["holds"].split(",")) if kv.get("holds") else quarters_of(regions) | ({GPU} if "mi210" in regions else set())
+        holds = expand(holds)
         run = load_json(running_path(flags, rid))
         arm = load_json(armed_path(flags, rid))
         dry = bool(run)
@@ -708,9 +1059,24 @@ def row_shape(d):
         extra.add(GPU)
         if not cc and cls == "gpu":
             cc = "0-95"
-    if cc and not (nofold and cls == "gpu"):
-        extra |= quarters_of(cc, fold=True)
-    if regs == "any-cpu-quarter":
+    gpu_row = cls == "gpu" and "mi210" in regs
+    # ws58 2026-11-02 18:30Z: a GPU row holds gpu-quiet + ONLY the cpus its regions name (184-191 -> threads t184..t191,
+    # free beside a whole-q3 / host row; 0-23 -> q0). Its launcher's --claim-cpus books cpus only while the engine
+    # snapshot still locks that claim (pre-GRANT_CPUS engines; a --no-fold-siblings / claim-less one locks no cpu).
+    legacy_claim = gpu_row and cc and not nofold and not engine_grant_cpus(o)
+    if gpu_row and not legacy_claim:
+        extra |= cpu_tokens(ws58_cpus(regs) or "184-191", gpu_threads=True)
+        cc = ""
+    elif cc and not (nofold and cls == "gpu"):
+        extra |= cpu_tokens(cc)   # ws58 sub-quarter: a claim covering < 24 cores of a quarter holds only those cores
+    if not cc and cls == "cpu" and ws58_cpus(regs) and "mi210" not in regs:
+        rt = cpu_tokens(ws58_cpus(regs))
+        if not (rt & set(QUARTERS)):
+            extra |= rt; cc = ws58_cpus(regs)   # concrete sub-quarter regions (e.g. 0-3): only those cores
+    sub = cc and not (extra & set(QUARTERS)) and any(t in CORES for t in extra)
+    if sub or (cls == "gpu" and "mi210" in regs):
+        bases = [set()]   # the claim pins the cpus: no extra quarter (whole-quarter/host shapes still add theirs below)
+    elif regs == "any-cpu-quarter":
         bases = [{q} for q in QUARTERS]
     elif regs.startswith("any-of"):
         bases = [{x.strip()} for x in regs[len("any-of"):].split(",") if re.fullmatch(r"q[0-3]", x.strip())]
@@ -728,50 +1094,21 @@ def row_shape(d):
             bases = [set(c) for c in __import__("itertools").combinations(QUARTERS, n)]
     opts = []
     for b in bases:
-        fs = frozenset(b | extra)
+        fs = frozenset(compress(expand(b | extra)))
         if fs and fs not in opts:
             opts.append(fs)
     return opts, (gq == "exclusive" or o.get("role") == "bench")
 
 
-def dryrun_shape(d, opts, flags=None):
-    """A dry run never holds more than it needs: a row booking several quarters is dry-run on ONE quarter (the engine
-    claims the grant's cpus under FILLER_DRYRUN_ONE_QUARTER=1) unless the spec says dryrun_whole_host. Only the INSTALLED
-    engine honours that env (a private engine copy, or a wrapper that re-execs its own engine, cannot be constrained), so
-    any other engine keeps its whole shape and waits until all of it is free."""
-    eng = d.get("engine", {}).get("path") if isinstance(d.get("engine"), dict) else None
-    installed = os.path.join(flags or FLAGS, "bin", "rowflow", CANONICAL_ENGINE)
-    constrainable = not (eng and os.path.realpath(eng) != os.path.realpath(installed))
-    shape = shape_of(d)
-    fits_quarter = int(d.get("gib") or 0) <= QUARTER_RAM_GIB
-    # by shape: quarter -> one quarter; multi-quarter/host -> one quarter only when constrainable AND the model fits a
-    # quarter's RAM, else the real shape (the reservation is capped to first unit + dryrun_timeout_s by dryrun_run);
-    # quiet-host -> correctness-only on one quarter (the dry run proves plumbing, not timing; gpu-quiet is not needed)
-    if d.get("dryrun_whole_host") or not constrainable or (shape != "quarter" and shape != "quiet-host" and not fits_quarter):
-        return opts, False
-    out = []
-    for o in opts:
-        qs = sorted(q for q in o if q in QUARTERS)
-        if len(qs) <= 1:
-            out.append(o)
-            continue
-        if shape == "quiet-host":
-            o = frozenset(q for q in o if q != GPU)
-        keep = {GPU} if GPU in o else set()
-        for q in (["q3"] if GPU in o else qs):
-            fs = frozenset(keep | {q})
-            if fs not in out:
-                out.append(fs)
-    return out, any(len([q for q in o if q in QUARTERS]) > 1 for o in opts)
-
-
-def grant_regions(d, option, one_quarter):
+def grant_regions(d, option):
     """The regions= string of a grant for `option`: the row's own regions when concrete, else the chosen quarter."""
     regs = str(d.get("regions") or "")
     if "mi210" in regs:
         return regs
-    if regs == "any-cpu-quarter" or regs.startswith("any-of") or one_quarter:
-        qs = sorted(q for q in option if q in QUARTERS)
+    qs = sorted(q for q in option if q in QUARTERS)
+    if not qs and any(t in CORES for t in option):
+        return tokens_cpus(option)   # sub-quarter grant: the exact cpu list
+    if regs == "any-cpu-quarter" or regs.startswith("any-of"):
         return cpu_list(qs[0]) if qs else regs
     return regs
 
@@ -779,51 +1116,210 @@ def grant_regions(d, option, one_quarter):
 DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
+URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
+                          # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
+
+
+DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whose spec says it keeps < half its claim busy
+                          # (a ~4%-busy row) is never promoted to a host/quiet-host drain; it still takes free regions
+
+
+def check_busy_fraction(spec):
+    """Publish gate (operator 2026-11-03): optional spec busy_fraction must be a number in 0..1."""
+    bf = spec.get("busy_fraction")
+    need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
+         f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
+         f"omit it when unknown (= 1.0)")
+
+
+def row_busy(d):
+    """A row's / candidate's busy_fraction as a float in 0..1; absent or invalid = unknown = 1.0 (never demoted)."""
+    b = (d or {}).get("busy_fraction")
+    try:
+        b = float(b)
+    except (TypeError, ValueError):
+        return 1.0
+    return b if 0.0 <= b <= 1.0 and not isinstance((d or {}).get("busy_fraction"), bool) else 1.0
+
+
+def row_rank(d):
+    """A row's priority_rank as a float; absent/blank -> 100. (`or 100` turned an explicit rank 0 into 100.)"""
+    r = (d or {}).get("priority_rank")
+    try:
+        return 100.0 if r is None or r == "" else float(r)
+    except (TypeError, ValueError):
+        return 100.0
+
+
+def plan_order(c):
+    """Candidate order. Rows that failed to arm/launch since their PASS (arm_fails > 0) go LAST, behind every healthy
+    row, so they can never idle a region another row could take (2026-11-03 session review item 7: a rank-7 row that
+    could not arm was planned first every tick and nothing else was placed); they are still retried when nothing
+    healthy fits, so they reach MAX_FAILS and park instead of lingering forever. Then urgent rows (rank < URGENT_RANK)
+    by rank; within a rank, and for every other row, the starved lane (fewest live rows) goes first, then rank, then a
+    grantable row before a dry run."""
+    r = float(c["rank"])
+    return (1 if int(c.get("arm_fails") or 0) > 0 else 0, min(r, URGENT_RANK), c["lane_count"], r, 0 if c["kind"] == "grant" else 1, c["id"])
+
+
+def placeable(x, free, ram, gpu_grant_open=False, held_ports=()):
+    """x could be placed on this snapshot: an option fits the free regions and RAM, its ports are not held, and it is
+    not failing to arm (cand["arm_fails"] > 0: its last arming/launch attempts since the PASS failed)."""
+    if int(x.get("arm_fails") or 0) > 0:
+        return False
+    if {int(p) for p in held_ports} & {int(p) for p in (x.get("ports") or [])}:
+        return False
+    return bool(_fits(x, free, ram, gpu_grant_open))
+
+
+def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_ports=()):
+    """The best-ranked pending row (strictly better rank than c) that wants any region c's drain would hold, or None.
+    A drain is never set for c while such a row is runnable: rank decides who gets the regions when they free.
+    ws58 2026-11-03: with a snapshot (free, ram) only a blocker that is placeable THIS tick and not failing to arm
+    holds c (yarn-e1-a2-gpu, rank 7, failed to arm 172 times and held every quiet-host row for 7 h on an idle host)."""
+    need = set().union(*c["options"]) if c["options"] else set()
+    better = [x for x in pending if x is not c and float(x["rank"]) < float(c["rank"]) and any(o & need for o in x["options"])]
+    if free is not None:
+        better = [x for x in better if placeable(x, free, ram, gpu_grant_open, held_ports)]
+    return min(better, key=plan_order) if better else None
 
 
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
     if c.get("bench") and gpu_grant_open:
-        opts = [o for o in opts if "q3" not in o]
+        opts = [o for o in opts if not (o & expand({"q3"}))]
     if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
         return []
     return opts
 
 
-def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True):
+def own_block(h, free, ram, gpu_grant_open, ports):
+    """Why better-ranked row h cannot be placed this tick when the cause is its OWN constraint (arming failures, a held
+    port, RAM, the timing-row q3 rule), or None when it is blocked only because some of its regions are busy."""
+    if int(h.get("arm_fails") or 0) > 0:
+        return f"failing to arm (arm_fails={int(h.get('arm_fails') or 0)})"
+    clash = ports & {int(x) for x in (h.get("ports") or [])}
+    if clash:
+        return f"port {','.join(map(str, sorted(clash)))} held"
+    if ram - float(h.get("gib") or 0) < RAM_MARGIN_GIB:
+        return f"RAM: {h.get('gib')} GiB would leave {ram - float(h.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin"
+    if any(o and o <= free for o in h["options"]):
+        return "timing row keeps off q3 while a GPU grant is open"   # fits on regions, filtered only by the bench rule
+    if row_busy(h) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row takes only regions that are free anyway
+        return f"busy_fraction {row_busy(h):g} < {DRAIN_MIN_BUSY:g}: runs only when its regions are free"
+    return None
+
+
+def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain):
+    """ws58 2026-11-04 (rank inversion): the regions c may NOT take because a strictly better-ranked pending row that
+    cannot be placed yet needs them and is blocked only by busy regions that free within DRAIN_MAX_WAIT_S (T = latest
+    running-grant end); c may still take them when it ends by T. Returns (reserved regions, [(h, T)], [(h, reason)]) -
+    the holds that bind c, and the better rows that bind nothing because they are blocked by their own constraint."""
+    reserved, holds, skips = set(), [], []
+    later = [float(e) for e in grant_ends if float(e) > now]
+    dur = float(c.get("estimate_s") or c.get("window_s") or 0)
+    for h in pending:
+        if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
+            continue
+        need = set().union(*h["options"]) if h["options"] else set()
+        if not any(o & need for o in c["options"]):
+            continue
+        why = own_block(h, free, ram, gpu_grant_open, ports)
+        if why is None:
+            if not later:
+                why = "needs busy regions with no grant end (foreign hold)"
+            elif max(later) - now > DRAIN_MAX_WAIT_S:
+                why = f"needs busy regions until {dt.datetime.fromtimestamp(max(later), dt.timezone.utc):%H:%MZ} (> {DRAIN_MAX_WAIT_S}s)"
+        if why is not None:
+            skips.append((h, why))
+            continue
+        T = max(later)
+        if now + dur > T:
+            reserved |= need
+            holds.append((h, T))
+    return reserved, holds, skips
+
+
+def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
-    Order: starved lane (fewest live rows) first, then rank, then a grantable row before a dry run. Fixpoint: as long as
+    Order: plan_order (rank < URGENT_RANK first by rank, then starved lane, then rank, then a grantable row before a dry
+    run). Fixpoint: as long as
     any pending candidate fits the remaining free regions and RAM it is placed, so no region stays idle while a fitting
     row waits. Never hands a region twice.
     DRAIN (never preempt): the top quiet-host row, or the top multi-quarter/host row that has waited DRAIN_AFTER_S, that
     cannot be placed now sets T = the latest end among the running grants; only rows that END before T are backfilled, so
     nothing idles while the host drains and nothing delays T; at T its whole shape is free and it is placed first.
+    A row is neither promoted nor drained for while a better-ranked pending row that is placeable this tick and not
+    failing to arm wants any of its regions (drain_blocker); plan.drain_held = [(row, blocker)] names those rows for the log.
+    BUSY (operator 2026-11-03): a row with busy_fraction < DRAIN_MIN_BUSY (unset = 1.0) is never promoted or drained
+    for; it is placed only when its regions are free anyway. plan.drain_lowbusy names those rows for the log.
+    PORTS (ws58 2026-11-02): a candidate whose cand["ports"] meet held_ports (running grants) or a port placed this tick
+    waits; two rows declaring the same port are never co-scheduled.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
-    pending = sorted(cands, key=lambda c: (c["lane_count"], float(c["rank"]), 0 if c["kind"] == "grant" else 1, c["id"]))
+    free = set(free)
+    if not any(t in CORES or t in THREADS for t in free):
+        # abstract caller (regions only): a free quarter's cores/threads are free, and so are the MI210's host threads
+        free = expand(free) | ({f"t{k}" for k in range(184, 192)} if GPU in free else set())
+    else:   # token-level caller: a quarter is free for a whole-quarter row only when every core/thread it runs on is
+        free = {t for t in free if t not in QUARTERS or expand({t}) <= free}
+    for c in cands:   # ws58 sub-quarter: a whole quarter also holds its core tokens
+        c["options"] = [frozenset(expand(o)) for o in c["options"]]
+    pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
     free, ram, out = set(free), float(ram_gib), []
+    ports = {int(x) for x in held_ports}
     drain, T = None, None
+    plan.drain_held = []
+    plan.drain_lowbusy = []
+    plan.rank_holds = []   # [(lower row, better row, T)]: the lower row was kept off the better row's regions
+    plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
+            if row_busy(c) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
+                plan.drain_lowbusy.append(c)
+                continue
+            blocker = drain_blocker(c, pending, free, ram, gpu_grant_open, ports)
+            if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
+                plan.drain_held.append((c, blocker))
+                continue
             pending.remove(c); pending.insert(0, c)   # the drain row goes FIRST: at T it takes the host before any quarter row
             if not _fits(c, free, ram, gpu_grant_open):
                 later = [float(e) for e in grant_ends if float(e) > now]
                 drain, T = c, (max(later) if later else now + DRAIN_UNKNOWN_S)
-                if T - now > DRAIN_MAX_WAIT_S:   # ws58 hotfix 2026-11-01: never hold the host empty for hours
-                    drain, T = None, None
+                prev = (drain_prev or {}).get(c["id"])
+                if prev:   # ws58 2026-11-02: a drain's T never moves later (11:28Z akx-auto10 slid 11:53 -> 12:00)
+                    T = min(T, float(prev))
+                # ws58 2026-11-02: a far T no longer drops the drain (that left the "needs all regions, some busy" hold
+                # with no T and nothing backfilled); free regions are backfilled by any row that ends by T, so the
+                # host is never held empty, and T is persisted so it never slides later.
             break
     plan.last_drain = (drain, T) if drain else None
+    need_r = set().union(*drain["options"]) if drain is not None else set()
+    if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
+        dur = lambda c: float(c.get("estimate_s") or c.get("window_s") or 0)  # noqa: E731
+        pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (now + dur(c) > T, -dur(c)))
     while pending:
         placed = None
         for c in pending:
-            if drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T:
-                continue  # backfill only with rows that end before T
+            late = drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T
             opts = _fits(c, free, ram, gpu_grant_open)
+            if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
+                opts = [o for o in opts if not (o & need_r)]
+            if ports & {int(x) for x in (c.get("ports") or [])}:
+                continue  # its port is held by a running grant: it waits
+            if opts:   # ws58 2026-11-04: never hand a lower-ranked row regions a better-ranked row is waiting for
+                reserved, holds, skips = rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_ends, drain)
+                kept = [o for o in opts if not (o & reserved)]
+                if len(kept) < len(opts):
+                    plan.rank_holds += [(c, h, T) for h, T in holds if (c, h, T) not in plan.rank_holds]
+                opts = kept
+                if opts:
+                    plan.rank_skips += [(c, h, why) for h, why in skips]
             if not opts:
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
@@ -834,9 +1330,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         if not placed:
             break
         c, o = placed
-        out.append(placed); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
+        out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
+        ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
-    for r in sorted(free):
+    for r in sorted(x for x in free if x in REGIONS):
         want = [c for c in pending if any(r in o for o in c["options"])]
         if not want:
             idle[r] = "no runnable row needs it (every grantable/dry-runnable row is placed, running, failed or parked)"
@@ -844,11 +1341,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         c = want[0]; why = []
         if drain is not None:
             why.append(f"draining for {drain.get('shape', 'host')} {drain['id']} until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}")
+        clash = ports & {int(x) for x in (c.get("ports") or [])}
+        if clash:
+            why.append(f"port {','.join(map(str, sorted(clash)))} held by a running grant; waits")
         for o in c["options"]:
-            if r in o:
+            if r in o and not clash:
                 miss = o - free
                 if miss:
-                    why.append(f"needs {','.join(sorted(o))}: {','.join(sorted(miss))} busy")
+                    why.append(f"needs {','.join(compress(o))}: {','.join(compress(miss))} busy")
                 elif c.get("bench") and gpu_grant_open and "q3" in o:
                     why.append("timing row keeps off q3 while a GPU grant is open")
                 elif ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
@@ -858,6 +1358,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
 
 
 plan.last_drain = None
+plan.drain_held = []
+plan.drain_lowbusy = []
 
 
 def quiet_ok_now(flags, now=None):
@@ -914,7 +1416,77 @@ def lineage_fails(flags, rid, allrows):
     return lin, max(0, n - reset)
 
 
-def status(flags, rid, allrows=None):
+RUN_DIRECT = os.path.join(_HERE, "run_direct.sh")
+
+
+def next_action(st, flags, rid):
+    """DETERMINISTIC one-line next action per state (2026-11-03: an agent reads it, never infers it)."""
+    rp = ready_path(flags, rid)
+    s = st["state"]
+    if s in ("done", "running", "dryrun-running"):
+        return "-"
+    if s == "held":
+        return st.get("fix") or "-"
+    if s in ("failed", "parked"):
+        return (st.get("fix_task") or "fix the launcher") + f"; then republish: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+    if s in ("grantable", "armed"):
+        return f"wait for a keeper tick, or run it now on a free lane: {RUN_DIRECT} {rp}"
+    if s in ("stale", "needs-dryrun"):
+        return f"re-run the smoke: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+    return f"publish the row: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
+
+
+def direct_path(flags, rid):
+    return os.path.join(dry_dir(flags, rid), "DIRECT.json")
+
+
+def direct_run(flags, rid):
+    """The run_direct.sh record while its supervisor is alive and the id is not terminal, else None."""
+    rec = load_json(direct_path(flags, rid))
+    if rec and alive(rec.get("pid")) and not rec.get("ended"):
+        return rec
+    return None
+
+
+def regions_held(regions):
+    """Region tokens a regions string books: quarters it covers (whole) plus gpu-quiet for mi210 rows."""
+    return sorted(quarters_of(regions) | ({GPU} if "mi210" in str(regions) else set()))
+
+
+def status(flags, rid, allrows=None, util=None):
+    """Row state + the fixed companions every surface prints: `next` (one deterministic action), `logs` (the row's
+    dry-run dir: poller.out / launcher.out), `held` (regions its open grant books) and, when the caller passes a
+    hostutil measurement, `util` (measured % of those regions). A grant is never reported as work: only `util` is."""
+    st = _status_raw(flags, rid, allrows)
+    st["next"] = next_action(st, flags, rid)
+    st["logs"] = dry_dir(flags, rid)
+    if st["state"] == "running":
+        held, g = None, None
+        if st.get("direct"):
+            rec = direct_run(flags, rid) or {}
+            held = regions_held(rec.get("regions", ""))
+            st["held"] = held
+            st["logs"] = rec.get("out") or st["logs"]
+            st["grant_age_s"] = int(time.time() - (iso_epoch(rec.get("started_at")) or time.time()))
+        else:
+            g = next((g for g in open_grants(flags) if g["id"] == rid), None)
+        if g:
+            held = sorted(r for r in compress(g["holds"]) if r in REGIONS)
+            st["held"] = held
+            try:
+                st["grant_age_s"] = int(time.time() - os.path.getmtime(g["path"]))
+            except OSError:
+                pass
+        if held is not None:
+            if util is not None:
+                st["util"] = hostutil.regions_pct(util, held)
+                idle = hostutil.idle_regions(util, held)
+                if idle and st.get("grant_age_s", 0) > IDLE_HELD_AFTER_S:
+                    st["blocker"] = f"IDLE-HELD {','.join(idle)}: measured <{hostutil.IDLE_PCT:g}% busy {st['grant_age_s']}s into the grant"
+    return st
+
+
+def _status_raw(flags, rid, allrows=None):
     allrows = rows(flags) if allrows is None else allrows
     d = allrows.get(rid)
     if not d:
@@ -934,6 +1506,9 @@ def status(flags, rid, allrows=None):
         out.update(state="failed", reason="spec incomplete: the legacy manifest had no result_path; publish a spec with result_path (+ result_format, decision_rule)",
                    fix_task=f"publish a complete spec for {rid}: result_path/result_format/decision_rule were missing in the migrated manifest "
                             f"(python3 scripts/coordination/rowflow/publish_row.py <spec.json>)"); return out
+    drec = direct_run(flags, rid)
+    if drec:   # 2026-11-03 item 1: a live run_direct.sh supervisor holds the row (never granted while it lives)
+        out.update(state="running", reason=f"direct run pid {drec.get('pid')} since {drec.get('started_at')}", direct=True); return out
     if os.path.exists(os.path.join(G, rid + ".grant")) and not os.path.exists(running_path(flags, rid)):
         out.update(state="running", reason="grants/<id>.grant open"); return out
     run = load_json(running_path(flags, rid))
@@ -943,9 +1518,20 @@ def status(flags, rid, allrows=None):
     fails = [load_json(x) or {} for x in fail_paths(flags, rid)]
     last_fail = fails[-1] if fails else None
     if p and p.get("launcher_sha256") == cur:
+        sf = str(d.get("stop_file") or "")
+        if sf and os.path.exists(sf):   # 2026-11-03: a STOP file holds the row; it is never granted and never burns the id
+            out.update(state="held", reason=f"STOP file present: {sf}", fix=f"rm {sf}"); return out
         a = load_json(armed_path(flags, rid))
         if a and alive(a.get("pid")):
-            out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+            if armed_engine_ok(a.get("pid"), rid):
+                out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+            out["rearm"] = f"ARMED pid {a['pid']} runs no filler_run*.sh engine for this row; re-armed on the next tick"
+        af = arm_fails_since_pass(flags, rid, p)
+        out["arm_fails"] = len(af)
+        if len(af) >= MAX_FAILS:   # ws58 2026-11-03: a PASS no longer keeps a row that cannot be armed grantable
+            out.update(state="parked", reason=f"{len(af)} consecutive arming/launch failures since the PASS of {p.get('passed_at')} "
+                                              f"(last: {str(af[-1].get('reason'))[:160]}); operator-escalations/{rid}.arming.md",
+                       fail_file=af[-1]["fail_file"], fix_task=af[-1].get("fix_task")); return out
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS:
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md"); return out
@@ -997,23 +1583,50 @@ def kill_group(pid, grace=20):
         pass
 
 
-_ACQ = re.compile(r"\[region-lock\] acquiring regions \[([^\]]*)\]")
-_HELD = re.compile(r"\[region-lock\] held \[([^\]]*)\]")
+# region-lock's real stderr lines (epyc-orchestrator src/runtime/region_lock_cli.py):
+#   [region-lock] acquiring regions ['q1'] as role='build' (timeout_s=10.0) …
+#   [region-lock] acquiring gpu-quiet exclusive + regions ['q0'] as role='bench' (timeout_s=600.0) …
+#   [region-lock] waiting 15.0s for q0 (q0.lock) as role='bench' tag='t': held by pid N role=... tag=... age=...
+#   [region-lock] held ['q1'] after 0.0s wait; running: ...      /  held gpu-quiet exclusive + regions ['q0'] after ...
+#   [region-lock] TIMEOUT acquiring regions ['q1']: ...
+_RL_ACQ = re.compile(r"\[region-lock\] acquiring (.+?) as role=")
+_RL_WAIT = re.compile(r"\[region-lock\] waiting [\d.]+s for (\S+) \(")
+_RL_HELD = re.compile(r"\[region-lock\] held (.+?) after [\d.]+s wait")
+_RL_TIMEOUT = re.compile(r"\[region-lock\] TIMEOUT acquiring (.+?):")
+
+
+def _rl_regions(what):
+    """{regions} named by an acquire/held phrase: `regions ['q0', 'q1']`, `['q1']`, `gpu-quiet <mode> [+ regions [...]]`."""
+    what = what.strip()
+    m = re.search(r"regions \[([^\]]*)\]", what) or re.fullmatch(r"\[([^\]]*)\]", what)
+    got = {x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()} if m else set()
+    if what.startswith("gpu-quiet"):
+        got.add(GPU)
+    return got
 
 
 def lock_waits(lines, holds):
-    """Region sets a job asked region-lock for and has NOT been granted (acquire lines without a matching held line)."""
-    asked = []
+    """Region sets the job asked region-lock for and has NOT been granted: an `acquiring` line with no later `held` (or
+    TIMEOUT) line covering it, or a `waiting Ns for <region>` line outside every open acquire. `holds` is unused here;
+    the caller compares."""
+    pending = []
     for l in lines:
-        m = _ACQ.search(l)
+        m = _RL_ACQ.search(l)
         if m:
-            asked.append({x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()})
+            got = _rl_regions(m.group(1))
+            if got:
+                pending.append(got)
             continue
-        m = _HELD.search(l)
+        m = _RL_WAIT.search(l)
         if m:
-            got = {x.strip().strip("'\"") for x in m.group(1).split(",") if x.strip()}
-            asked = [a for a in asked if a != got]
-    return asked
+            if not any(m.group(1) in a for a in pending):
+                pending.append({m.group(1)})
+            continue
+        m = _RL_HELD.search(l) or _RL_TIMEOUT.search(l)
+        if m:
+            got = _rl_regions(m.group(1))
+            pending = [a for a in pending if not a <= got]
+    return pending
 
 
 def busy_pct(s0, s1, cpus):
@@ -1036,6 +1649,72 @@ def row_orphans(rid):
     return out
 
 
+def _proc_stat(pid):
+    """(ppid, pgid, starttime) from /proc/<pid>/stat, or None when gone/zombie."""
+    try:
+        f = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()
+    except (OSError, IndexError):
+        return None
+    if f[0] == "Z":
+        return None
+    return int(f[1]), int(f[2]), f[19]
+
+
+def harness_tree(root, tracked):
+    """ws58 2026-11-02: accumulate {pid: starttime} of root and every live descendant (setsid'd ones included: a new session
+    keeps its ppid until the parent dies, so sampling during the run captures them before they are reparented)."""
+    kids = {}
+    for q in os.listdir("/proc"):
+        if q.isdigit():
+            st = _proc_stat(int(q))
+            if st:
+                kids.setdefault(st[0], []).append((int(q), st[2]))
+    st = _proc_stat(root)
+    todo = [root]
+    if st:
+        tracked.setdefault(root, st[2])
+    while todo:
+        for c, birth in kids.get(todo.pop(), []):
+            if c not in tracked:
+                tracked[c] = birth
+                todo.append(c)
+    return tracked
+
+
+def _same(pid, birth):
+    st = _proc_stat(pid)
+    return st is not None and st[2] == birth
+
+
+def reap_pids(tracked, grace=20):
+    """TERM every still-same process (and every process group one of them leads), wait up to grace s, KILL, verify via
+    /proc. Only pids this harness started (tracked by harness_tree: pid + start time) are signalled; nothing is ever
+    selected by name, argv or cwd (2026-11-03 session review). Returns (reaped, survivors)."""
+    live = {p: b for p, b in tracked.items() if _same(p, b) and p != os.getpid()}
+    if not live:
+        return [], []
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        for p, b in live.items():
+            st = _proc_stat(p)
+            if st and st[2] == b:
+                if st[1] == p:
+                    try:
+                        os.killpg(p, sig)
+                    except (ProcessLookupError, PermissionError):
+                        pass
+                try:
+                    os.kill(p, sig)
+                except (ProcessLookupError, PermissionError):
+                    pass
+        for _ in range(grace * 4 if sig == signal.SIGTERM else 20):
+            if not any(_same(p, b) for p, b in live.items()):
+                break
+            time.sleep(0.25)
+        if not any(_same(p, b) for p, b in live.items()):
+            break
+    return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
+
+
 def record_fail(flags, rid, d, reason, extra):
     n = len(fail_paths(flags, rid)) + 1
     rec = {"id": rid, "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
@@ -1044,6 +1723,31 @@ def record_fail(flags, rid, d, reason, extra):
            **extra}
     atomic_json(os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json"), rec)
     return rec
+
+
+def record_arm_fail(flags, rid, d, kind, reason, log=print):
+    """An arming (kind=arm) or launch (kind=launch: admission refused the armed poller) failure of a PASSed row. The
+    MAX_FAILS-th consecutive one since the PASS parks the row (status) and writes operator-escalations/<id>.arming.md."""
+    pol = os.path.join(dry_dir(flags, rid), "poller.out")
+    record_fail(flags, rid, d, reason, {"kind": kind, "launcher_out_tail": tail(pol), "tail_of": pol,
+                                        "fix_task": f"fix the {kind} failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/poller.out); "
+                                                    f"after {MAX_FAILS} in a row the row is parked until it is republished"})
+    af = arm_fails_since_pass(flags, rid)
+    if len(af) < MAX_FAILS:
+        return len(af)
+    out = os.path.join(flags, "operator-escalations", rid + ".arming.md")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    L = [f"# PARKED NEEDS-OPERATOR - row `{rid}` ({len(af)} consecutive arming/launch failures since its PASS; written {now_iso()} by rowflow)", "",
+         "The row passed its dry run but its poller cannot be armed or launched, so the allocator no longer grants it "
+         "(a PASS alone used to keep it grantable forever). Last failures:", ""]
+    L += [f"- {f.get('at')} [{f.get('kind') or 'arm'}] {str(f.get('reason'))[:300]}" for f in af[-5:]]
+    L += ["", "Poller output tail:", "", "```"] + [str(x) for x in (af[-1].get("launcher_out_tail") or [])[-15:]] + ["```", "",
+          "Options: 1. fix the launcher and republish (a new PASS clears the count); 2. drop (remove ready/<id>.json).", ""]
+    with open(out, "w") as f:
+        f.write("\n".join(L))
+    if len(af) == MAX_FAILS:
+        log(f"PARK {rid}: {len(af)} consecutive {kind} failures since its PASS; operator-escalations/{rid}.arming.md")
+    return len(af)
 
 
 def write_escalation(flags, rid, allrows):
@@ -1096,8 +1800,70 @@ def new_dryrun_native_result_path(dd):
     return os.path.join(attempt, "native-result.json")
 
 
-def dryrun_run(flags, rid, regions, one_quarter=False):
-    """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT."""
+SMOKE_BRANCH_RE = re.compile(r"\bFILLER_(?:SMOKE|DRYRUN)\w*")
+SMOKE_SCAN_MAX_BYTES = 2 << 20
+
+
+def smoke_branch_files(d):
+    """The row's own launcher and every regular file its engine line runs (--cmd / --complete-cmd tokens) that names
+    FILLER_SMOKE* or FILLER_DRYRUN*: a job that branches on them does something else under a smoke than in its grant.
+    The engine itself (which honours them by design) is not scanned. An unreadable launcher counts as branching."""
+    lp = d["launcher"]["path"]
+    try:
+        o = parse_launcher(lp)
+    except (Refused, OSError, StopIteration, ValueError) as e:
+        return [f"{lp} (unparsable: {e})"]
+    eng = os.path.realpath(o["engine"])
+    hits, seen = [], set()
+    for f in [lp] + [x for x in referenced_paths({"cmd": o["cmd"], "complete_cmd": o["complete_cmd"]}) if os.path.isfile(x)]:
+        rp = os.path.realpath(f)
+        if rp in seen or rp == eng:
+            continue
+        seen.add(rp)
+        try:
+            if os.path.getsize(rp) > SMOKE_SCAN_MAX_BYTES:
+                hits.append(f"{f} (too large to scan)")
+                continue
+            txt = open(rp, errors="replace").read()
+        except OSError as e:
+            hits.append(f"{f} (unreadable: {e})")
+            continue
+        if SMOKE_BRANCH_RE.search(txt):
+            hits.append(f)
+    return hits
+
+
+def smoke_completion_check(d):
+    """Operator 2026-11-02 (ws58): a smoke/dry-run PASS may file a row COMPLETE only when (1) the launcher has no smoke
+    branch (no FILLER_SMOKE*/FILLER_DRYRUN* in it or in the files its --cmd/--complete-cmd run), (2) the result is not a
+    dry-run-native isolated result, and (3) the engine's --complete-cmd, re-run in --workdir with every FILLER_SMOKE*/
+    FILLER_DRYRUN* variable removed, passes on the artifacts the full job writes. Returns (ok, reason)."""
+    if d.get("dryrun_native_result"):
+        return False, "dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts"
+    hits = smoke_branch_files(d)
+    if hits:
+        return False, "launcher branches on FILLER_SMOKE/FILLER_DRYRUN (" + ", ".join(hits[:4]) + "): a smoke is not the job"
+    o = parse_launcher(d["launcher"]["path"])
+    env = {k: v for k, v in os.environ.items() if not SMOKE_BRANCH_RE.fullmatch(k)}
+    wd = o.get("workdir") or d.get("workdir") or "/"
+    try:
+        r = subprocess.run(["bash", "-c", o["complete_cmd"]], cwd=wd, env=env, stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL, timeout=120)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return False, f"full-job --complete-cmd could not run outside the smoke: {e}"
+    if r.returncode != 0:
+        return False, f"full-job --complete-cmd rc={r.returncode} outside the smoke: the full job's artifacts do not satisfy it"
+    return True, "no smoke branch; full-job --complete-cmd passes on the job's own artifacts"
+
+
+def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
+    """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
+    Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (FILLER_SMOKE=1 /
+    FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count). Its admission token lives in the row's private
+    dryrun dir, never in grants/: nothing is scheduled around a dry run.
+    Operator 2026-11-03 (session review §3.1): PASS = FIRST REAL PROGRESS of the job (FirstProgress: smoke_predicate, or
+    a new non-placeholder record) within first_progress_s (smoke_s, else the row's first_progress_s, else 300 s), then a
+    clean stop (rc 0/75). rc 0/75 with no progress is a FAIL."""
     allrows = rows(flags)
     d = allrows.get(rid)
     need(d, "no v3 row")
@@ -1106,19 +1872,13 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
         return "WAIT", f"state {st}; nothing to do"
     dd = dry_dir(flags, rid)
     os.makedirs(os.path.join(dd, "state"), exist_ok=True)
-    need(regions, "dryrun-run needs --regions (the allocator assigns them from its snapshot)")
-    G = os.path.join(flags, "grants")
+    G = os.path.join(dd, "grants")
+    os.makedirs(G, exist_ok=True)
     grant = os.path.join(G, rid + ".grant")
-    if os.path.exists(grant):
-        return "WAIT", "grant already open"
     holds = quarters_of(regions) | ({GPU} if "mi210" in regions else set())
-    rl = rl_status()
-    taken = [r for r in holds if rl.get(r, ("free",))[0] != "free"] + [g["id"] for g in open_grants(flags) if g["holds"] & holds]
-    if taken:
-        return "WAIT", f"regions {regions} taken since the snapshot: {taken}"
     lp = d["launcher"]["path"]
     lsha = sha256(lp)
-    timeout = int(d.get("dryrun_timeout_s") or 900)
+    timeout = int(smoke_s or d.get("first_progress_s") or d.get("dryrun_timeout_s") or FIRST_PROGRESS_S)
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
@@ -1134,72 +1894,87 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
-               WS58_REGIONS=ws58_cpus(regions))  # ws58 2026-11-01: launchers written for the v8 keeper read it
+               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1", "FILLER_DISK_FLOOR_GIB": "20"} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
+    env["FILLER_SMOKE_T0"] = str(int(time.time()))
+    probe = FirstProgress(d, result_path, result_format, env, d.get("workdir"))
+    if probe.stale:
+        reason = (f"no first progress possible: {probe.kind} `{probe.pred[:80]}` already exits 0 BEFORE the launch, so it cannot "
+                  "see this run; fix: make it test this run's own output (e.g. a record newer than $FILLER_SMOKE_T0), then re-run "
+                  "publish_row.py <spec.json>")
+        record_fail(flags, rid, d, reason, {"regions": regions, "result_path": result_path, "result_format": result_format,
+                                            "first_unit_at": None, "elapsed_s": 0})
+        write_escalation(flags, rid, allrows)
+        return "FAIL", reason
     with open(grant, "w") as f:
         f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
     out = open(os.path.join(dd, "launcher.out"), "a")
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
+    lout = os.path.join(dd, "launcher.out")
+    out_lines0 = len(tail(lout, 10**6))  # counted BEFORE the launch: a region-lock line the job prints at once is this run's
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
-    atomic_json(running_path(flags, rid), {"pid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
+    tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
+    atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
     t0 = time.time()
     vram_max = None
     gpu = "mi210_0" in regions
     first_unit_at = None
+    progress = None
     stop_requested = None
     warning = None
     ended = os.path.join(dd, "ended")
     verdict, reason = None, None
-    lout = os.path.join(dd, "launcher.out")
-    out_lines0 = len(tail(lout, 10**6))
-    cpu0 = cpu_sample()
-    hold_cpus = [c for q in holds if q in QUARTERS for lo in [int(q[1]) * 24] for c in list(range(lo, lo + 24)) + list(range(lo + 96, lo + 120))]
     try:
         while True:
-            time.sleep(5)
+            for _ in range(5):
+                time.sleep(1)
+                harness_tree(p.pid, tracked)
             if gpu:
                 v = vram_used_bytes()
                 if v is not None:
                     vram_max = max(vram_max or 0, v)
             # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
-            # not satisfied within 60 s, is the row's defect (whole-host claim on a one-quarter dry run)
+            # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
             waits = lock_waits(tail(lout, 10**6)[out_lines0:], holds)
             if waits and (waits[0] - holds or time.time() - t0 > 60):
-                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the dry run holds "
-                                           f"{','.join(sorted(holds))}: whole-host claim; cannot dry-run on one quarter (constrain "
-                                           "--claim-cpus / the job's own claim, or set dryrun_whole_host: true in the spec)")
+                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the smoke holds "
+                                           f"{','.join(sorted(holds)) or '-'} (a smoke never waits on a held region); fix: make "
+                                           "the job's own region-lock claim use $WS58_REGIONS under FILLER_SMOKE, then re-run "
+                                           "publish_row.py <spec.json>")
                 break
-            if first_unit_at is None and hold_cpus and not gpu and time.time() - t0 > 300:
-                pct = busy_pct(cpu0, cpu_sample(), hold_cpus)
-                if pct < UNDERUSED_PCT:
-                    verdict, reason = "FAIL", (f"single-threaded preflight: job used {pct:.1f}% of its {len(hold_cpus)} claimed cpus for "
-                                               f"{int(time.time() - t0)}s with no unit (a quarter row must use the quarter: shrink its regions or fix the launcher)")
-                    break
-            units = count_units(result_path, result_format, d.get("workdir"))
-            new_units = units - units0
-            if new_units > 0 and first_unit_at is None:
-                first_unit_at = now_iso()
-                out.write(f"==== first unit at {first_unit_at}: {new_units} new unit(s) in {result_path}\n"); out.flush()
-                if not os.path.exists(ended):
-                    open(os.path.join(dd, "stop"), "w").close()
-                    stop_requested = time.time()
+            if first_unit_at is None:
+                hit, why = probe.check()
+                if hit:
+                    first_unit_at, progress = now_iso(), why
+                    out.write(f"==== first progress at {first_unit_at} (+{int(time.time() - t0)}s): {why}\n"); out.flush()
+                    if not os.path.exists(ended):
+                        open(os.path.join(dd, "stop"), "w").close()
+                        stop_requested = time.time()
             if os.path.exists(ended) or p.poll() is not None:
                 rc_line = (head1(ended) or "rc=? (no ended record)")
                 m = re.match(r"rc=(\d+)", rc_line)
                 rc = int(m.group(1)) if m else -1
-                units = count_units(result_path, result_format, d.get("workdir")) - units0
-                if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and units <= 0 and time.time() - t0 < 60:
+                if first_unit_at is None:
+                    hit, why = probe.check()
+                    if hit:
+                        first_unit_at, progress = now_iso(), why
+                if "reason=disk-floor" in rc_line or "reason=hard-end" in rc_line and not first_unit_at and time.time() - t0 < 60:
                     verdict, reason = "WAIT", f"host condition, not the row: {rc_line[:100]} (free disk under the 150 GiB floor); retried later, no FAIL recorded"
                     break
-                if units <= 0:
-                    verdict, reason = "FAIL", f"job ended ({rc_line[:120]}) before writing a unit to {result_path} ({d['result_format']})"
+                if not first_unit_at and rc not in (0, 75):
+                    verdict, reason = "FAIL", (f"job ended {rc_line[:80]} after {int(time.time() - t0)}s, before its first "
+                                               f"progress ({probe.what()}); fix: the job's own error is in {lout}; fix it, "
+                                               "then re-run publish_row.py <spec.json>")
+                elif not first_unit_at:
+                    verdict, reason = "FAIL", (f"no first progress within {timeout} s: job ended {rc_line[:80]} after "
+                                               f"{int(time.time() - t0)}s; {probe.what()}; {probe.fix(timeout)}")
                 elif rc not in (0, 75):
                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
                 elif gpu and (vram_max is None or vram_max < 64 << 20):
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
-                    verdict, reason = "PASS", f"{units} unit(s), {rc_line[:80]}"
+                    verdict, reason = "PASS", f"first progress: {progress}; {rc_line[:80]}"
                 break
             if stop_requested and time.time() - stop_requested > STOP_GRACE_S:
                 # the engine's hard-end kill is production's truncation path too: PASS with a warning, then stop the group
@@ -1207,13 +1982,14 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                 if gpu and (vram_max is None or vram_max < 64 << 20):
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
-                    verdict, reason = "PASS", f"{count_units(result_path, result_format, d.get('workdir')) - units0} unit(s); {warning}"
+                    verdict, reason = "PASS", f"first progress: {progress}; {warning}"
                 break
-            if time.time() - t0 > timeout:
+            if first_unit_at is None and time.time() - t0 > timeout:
                 started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400))
-                verdict, reason = "FAIL", f"no unit in {result_path} ({d['result_format']}) within dryrun_timeout_s={timeout}" + \
-                                 (" (the job ran: if result_path is only a completion marker, point the spec at the job's per-item output, or raise dryrun_timeout_s)" if started
-                                  else " and the engine never reached START (admission/precond/port refusal; see launcher.out)")
+                verdict, reason = "FAIL", (f"no first progress within {timeout} s; {probe.what()}; " +
+                                           (probe.fix(timeout) if started else
+                                            "the engine never reached START (admission/precond/port refusal): fix what "
+                                            f"{os.path.join(dd, 'launcher.out')} names, then re-run publish_row.py <spec.json>"))
                 break
     finally:
         if p.poll() is None:  # poll(), not ps: an exited-but-unreaped launcher is a zombie that ps still lists
@@ -1229,9 +2005,25 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
                     p.wait(timeout=30)
                 except subprocess.TimeoutExpired:
                     pass
-        orphans = row_orphans(rid)
-        if orphans:  # a sudo/chroot/setsid wrapper detached them from the launcher's group; reported, never killed by pattern
-            warning = (warning + "; " if warning else "") + f"ORPHANS {orphans}: processes still naming this row after the dry run ended (a wrapper detached them; the owner stops them by pid)"
+        # ws58 2026-11-02: the harness owns every process it started, PASS, FAIL or timeout alike (a private engine copy
+        # included): TERM the group + tracked descendants, 20 s, KILL, verify. ONLY tracked descendants (pid + start
+        # time captured while the run was live) are ever signalled. 2026-11-03 (session review, DELETE verdict): the
+        # argv/cwd "still naming the row" sweep is gone - on a shared host a row id in another process's command line
+        # is not ownership (it killed the publisher's own tool shells 3x, exit 144, and an armed sibling launcher,
+        # rc=143). Anything it would have found is reported read-only by row_orphans() in the record, never killed.
+        harness_tree(p.pid, tracked)
+        reaped, surv = reap_pids(tracked)
+        try:
+            p.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
+        if reaped:
+            out.write(f"==== REAPED {reaped}\n")
+        leftover = sorted(set(row_orphans(rid)) - set(tracked))
+        if leftover:
+            out.write(f"==== NOTE {leftover} name this row but were not started by this dry run; left alone (never kill by name)\n")
+        if surv:
+            warning = (warning + "; " if warning else "") + f"UNREAPED {sorted(set(surv))}: survived TERM+KILL"
             out.write(f"==== {warning}\n")
         try:
             os.remove(grant)
@@ -1241,16 +2033,30 @@ def dryrun_run(flags, rid, regions, one_quarter=False):
             os.remove(running_path(flags, rid))
         except OSError:
             pass
+        if verdict == "FAIL" and one_quarter and (not reason.startswith("no first progress") or "never reached START" in reason):
+            reason += (f" [dry run held ONE quarter, WS58_REGIONS={ws58_cpus(regions)}; a launcher whose own taskset/claim "
+                       "hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]")
         out.write(f"==== dry run {verdict}: {reason} ({now_iso()})\n"); out.close()
     cur_sha = sha256(lp) if os.path.isfile(lp) else None
     if verdict == "PASS" and cur_sha != lsha:
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
     rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
-           "result_format": result_format, "first_unit_at": first_unit_at, "vram_used_max_bytes": vram_max,
+           "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
+           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     if verdict == "WAIT":
         return verdict, reason
+    # ws58 2026-11-02: a smoke that finished the WHOLE job (complete marker, or units reached the declared total) is done,
+    # but only when the smoke WAS the job: no smoke branch, and the full-job completion predicate holds (smoke_completion_check)
+    if verdict == "PASS" and (os.path.exists(os.path.join(dd, "complete"))
+                              or (d.get("total_units") and rec["units"] >= int(d["total_units"]))):
+        ok, why = smoke_completion_check(d)
+        rec["job_complete"] = ok
+        rec["job_complete_reason"] = why
+        if not ok:
+            with open(os.path.join(dd, "launcher.out"), "a") as lo:
+                lo.write(f"==== smoke completion NOT filed: {why}\n")
     if verdict == "PASS":
         atomic_json(pass_path(flags, rid), {"id": rid, "passed_at": now_iso(), "launcher_sha256": lsha, **rec})
         for fp in fail_paths(flags, rid):
@@ -1270,14 +2076,14 @@ def lane_counts(flags, allrows):
 
 
 # ---------------------------------------------------------------- arm + grant (the allocator writes grants itself)
-def arm_one(flags, rid, d, regions=None):
+def arm_one(flags, rid, d, regions=None, log=print):
     """Start the row's poller (the exact launcher through its engine, polling grants/<id>.grant). Regions are NOT
     resolved here: the grant the allocator writes later carries them."""
     dd = dry_dir(flags, rid)
     os.makedirs(os.path.join(dd, "state"), exist_ok=True)
     log = os.path.join(dd, "poller.out")
     before = sum(1 for l in tail(log, 100000) if "launcher up pid=" in l)
-    env = dict(os.environ, FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
+    env = dict(os.environ, FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_STATE_DIR=os.path.join(dd, "state"), FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(flags, "grants"))
     if regions and ws58_cpus(regions):
         env["WS58_REGIONS"] = ws58_cpus(regions)
@@ -1293,8 +2099,8 @@ def arm_one(flags, rid, d, regions=None):
         if len(pids) > before:
             pid = pids[-1]; break
     if not pid:
-        record_fail(flags, rid, d, "poller did not log 'launcher up pid=' within 30 s of arming", {})
-        return None, "fail: no launcher pid within 30 s"
+        n = record_arm_fail(flags, rid, d, "arm", "poller did not log 'launcher up pid=' within 30 s of arming", log)
+        return None, f"fail: no launcher pid within 30 s ({n} consecutive since the PASS; parked at {MAX_FAILS})"
     with open(os.path.join(flags, "ws58-armed.queue"), "a") as f:   # id|pid|window_s|gib|regions: backlog_gen's pid lookup
         f.write(f"{rid}|{pid}|{d['window_s']}|{d['gib']}|{d['regions']}\n")
     atomic_json(armed_path(flags, rid), {"id": rid, "pid": pid, "regions": d["regions"], "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"])})
@@ -1321,14 +2127,32 @@ def mem_available_gib():
     return 0.0
 
 
-def admit(flags, rid, d, pid, regions, window_s):
-    """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
-    regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
-    import argparse as _ap
+def _gate():
     here = os.path.dirname(os.path.abspath(__file__))
     if here not in sys.path:  # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
         sys.path.insert(0, here)
     import grant_ok_launcher as gate
+    return gate
+
+
+def armed_engine_ok(pid, rid, proc="/proc"):
+    """True when the ARMED pid is alive AND it (or a descendant, depth <= 6) runs a filler_run*.sh engine with --id rid.
+    2026-11-03 session review item 7: an ARMED.json whose pid was a grant_supervisor.py (no engine under it) was planned
+    first every tick, refused by admission (rc=15) and never re-armed; a pid that is not an engine is not armed."""
+    try:
+        if not alive(pid):
+            return False
+        o, _epid, _own = _gate().find_launcher(proc, int(pid), rid)
+    except Exception:  # noqa: BLE001 - Refuse (another row's engine), OSError, UnicodeDecodeError: not this row's engine
+        return False
+    return bool(o)
+
+
+def admit(flags, rid, d, pid, regions, window_s):
+    """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
+    regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
+    import argparse as _ap
+    gate = _gate()
     cls = "gpu" if "mi210" in regions else ("whole-host" if regions == "0-95" else "block-correctness")
     # ws58 23:56Z: a cpu job with --gpu-quiet holds the GPU through the allocator's holds=, not a mi210 token in regions=
     a = _ap.Namespace(row=rid, pid=int(pid), window_s=int(window_s), regions=regions,
@@ -1344,22 +2168,19 @@ def admit(flags, rid, d, pid, regions, window_s):
 def write_grant(flags, rid, regions, holds, window_s):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
-    line = f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(sorted(holds))}\n"
+    cpus = grant_cpus(regions)   # ws58 2026-11-02: the exact cpu list (a GRANT_CPUS engine locks + pins a GPU grant to it)
+    # Written only when it adds something: for regions that already spell explicit cpus (mi210_0,184-191) the engine's
+    # fallback (cpus= else regions) gives the same list, and sealed jobs that parse their grant strictly (inf22 M4:
+    # exactly regions/start/end/holds) keep working.
+    if cpus == ws58_cpus(regions):
+        cpus = ""
+    line = (f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}"
+            + (f" cpus={cpus}" if cpus else "") + "\n")
     p = os.path.join(flags, "grants", rid + ".grant")
     with open(p + ".tmp", "w") as f:
         f.write(line)
     os.replace(p + ".tmp", p)
     return line.strip()
-
-
-def spawn_dryrun(flags, rid, regions, one_quarter, keeper_log):
-    dd = dry_dir(flags, rid)
-    os.makedirs(dd, exist_ok=True)
-    q = shlex.quote
-    cmd = (f"r=$(python3 -I {q(os.path.abspath(__file__))} --flags {q(flags)} dryrun-run {q(rid)} --regions {q(regions)}"
-           f"{' --one-quarter' if one_quarter else ''} 2>>{q(os.path.join(dd, 'keeper.err'))}); "
-           f"echo \"$(date -u +%FT%TZ) DRYRUN-RESULT $r\" >> {q(keeper_log)}")
-    subprocess.Popen(["bash", "-c", cmd], cwd=flags, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
 
 
 # ---------------------------------------------------------------- invariants (self-healing, every tick)
@@ -1397,7 +2218,7 @@ def heal_grants(flags, grants, rl, log, seen):
             log(f"HEAL stale-grant {rid}: poller pid {g['pid']} dead, no .ended; grant moved to {os.path.basename(stale_dir)}/ (row re-granted when free)")
             seen.add(f"stale-grant:{id_stem(rid)}")
             continue
-        foreign = [r for r in g["holds"] if r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
+        foreign = [r for r in g["holds"] if r in REGIONS and r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
         if foreign:
             holder = ",".join(f"{r}={rl[r][1]}" for r in foreign)
             if not g["started"] and not g["dryrun"]:
@@ -1462,6 +2283,38 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
     return out
 
 
+IDLE_HELD_AFTER_S = 60   # a grant older than this whose regions measure < hostutil.IDLE_PCT busy is IDLE-HELD
+
+
+def measure_util(sample_s=hostutil.SAMPLE_S):
+    """One measured utilisation reading per tick (patched in tests)."""
+    return hostutil.measure(sample_s)
+
+
+def idle_held(flags, grants, holders, util, log, seen, now=None):
+    """2026-11-03 session review item 2: every held region is judged by MEASUREMENT, not by its grant file - a grant
+    older than IDLE_HELD_AFTER_S whose region reads < IDLE_PCT busy logs IDLE-HELD (one line: region, row, %, age,
+    where the logs are). Never kills, never de-grants; the 3rd consecutive tick raises the repeat ALERT. Returns the
+    [(region, rid, pct)] list."""
+    now = time.time() if now is None else now
+    age = {}
+    for g in grants:
+        try:
+            age[g["id"]] = int(now - os.path.getmtime(g["path"]))
+        except OSError:
+            continue
+    out = []
+    for r, rid in sorted(holders.items()):
+        if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
+            continue
+        v = hostutil.regions_pct(util, [r]).get(r)
+        if v is not None and v < hostutil.IDLE_PCT:
+            out.append((r, rid, v))
+            seen.add(f"idle-held:{r}:{rid}")
+            log(f"IDLE-HELD {r} {rid}: measured {v:.0f}% busy, grant {age[rid]}s old; logs {dry_dir(flags, rid)}")
+    return out
+
+
 # ---------------------------------------------------------------- allocate: ONE snapshot, dry runs + grants together
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
@@ -1472,88 +2325,266 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     allrows = rows(flags)
     rl = rl_status()
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen)
-    busy = {r for r, (s, _) in rl.items() if s != "free"}
-    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-")}
+    # a quarter held in region-lock by sub-quarter grants (LOCK_SH + per-core locks) is busy only on those cores
+    subq = {q for g in grants for q in QUARTERS if q not in g["holds"] and g["holds"] & qcores(q)}
+    busy = expand({r for r, (s, _) in rl.items() if s != "free" and r not in subq})
+    gids = {g["id"] for g in grants}
+    for r, (s, t) in rl.items():   # a foreign (non-grant) region-lock hold folds SMT siblings: all 24 of its threads
+        if s != "free" and r in QUARTERS and r not in subq and t[len("filler-"):] not in gids:
+            busy |= qthreads(r, 24)
+    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
     for g in grants:
         busy |= g["holds"]
         for r in g["holds"]:
-            holders.setdefault(r, g["id"])
-    free = set(REGIONS) - busy
+            if r in REGIONS:
+                holders.setdefault(r, g["id"])
+    busy |= {q for q in QUARTERS if expand({q}) & busy}   # a quarter with any held core/thread is not whole-free
+    free = (set(REGIONS) | set(CORES) | set(THREADS)) - busy
     gpu_open = any(GPU in g["holds"] for g in grants)
+    if GPU in free and not dry and start_gpu_batch(flags, log):
+        free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     counts = lane_counts(flags, allrows)
-    cands, shapes = [], {}
+    cands = []
     for rid, d in allrows.items():
-        st = status(flags, rid, allrows)["state"]
-        if st in ("grantable", "armed"):
-            kind = "grant"
-        elif st in ("needs-dryrun", "stale"):
-            kind = "dryrun"
-        else:
-            continue
-        # ws58 2026-11-01: a row flagged UNDERUSED is never granted again until its owner republishes it (a single-core
-        # prep step inside a quarter/host grant idles compute; kvu-vkq3 took the whole host to run llama-tokenize).
-        uu = os.path.join(flags, "dryrun", rid, "UNDERUSED.json")
-        mf = os.path.join(flags, "ready", rid + ".json")
-        if os.path.exists(uu) and os.path.exists(mf) and os.path.getmtime(uu) >= os.path.getmtime(mf):
-            continue
+        sd = status(flags, rid, allrows)
+        st = sd["state"]
+        if st not in ("grantable", "armed"):
+            continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
+        kind = "grant"
+        # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
         opts, bench = row_shape(d)
-        one_q = False
-        if kind == "dryrun":
-            opts, one_q = dryrun_shape(d, opts, flags)
-        shapes[rid] = (opts, one_q)
-        since = (load_json(pass_path(flags, rid)) or {}).get("passed_at") if kind == "grant" else d.get("published_at")
-        window = int(d["window_s"]) if kind == "grant" else max(int(d["min_window_s"]) + 300, int(d.get("dryrun_timeout_s") or 900) + STOP_GRACE_S + 300)
-        cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": float(d.get("priority_rank") or 100), "lane_count": counts[d["lane"]],
+        since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
+        window = int(d["window_s"])
+        cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
-                      "since": iso_epoch(since)})
+                      "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
+                      "busy_fraction": d.get("busy_fraction")})
+    dfile = os.path.join(flags, "drain_state.json")
+    drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
+    held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
-    assigned, idle, pending = plan(free, cands, mem_available_gib(), gpu_open, grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags))
-    if plan.last_drain:
-        dc, T = plan.last_drain
-        log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
-    log(f"SNAPSHOT free={','.join(sorted(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in sorted(busy)) or '-'} "
-        f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']}")
-    out = []
-    for c, opt in assigned:
-        rid, d = c["id"], allrows[c["id"]]
-        regions = grant_regions(d, opt, shapes[rid][1])
-        if dry:
-            log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(sorted(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
-        if c["kind"] == "dryrun":
-            spawn_dryrun(flags, rid, regions, shapes[rid][1], keeper_log)
-            log(f"DRYRUN-START {rid} regions={regions} holds={','.join(sorted(opt))}{' one-quarter' if shapes[rid][1] else ''}")
-            out.append(("dryrun", rid, regions)); continue
-        try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
-            a = load_json(armed_path(flags, rid))
-            if not (a and alive(a.get("pid"))):
-                pid, msg = arm_one(flags, rid, d, regions)
-                log(f"ROW-ARM {msg}")
-                if not pid:
-                    continue
-            else:
-                pid = a["pid"]
-            ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
-            if not ok:
-                log(f"SKIP {rid}: {line[:200]}"); continue
-            gl = write_grant(flags, rid, regions, opt, d["window_s"])
-            log(f"GRANT {rid} {gl} ({line[:160]})")
-            out.append(("grant", rid, regions))
-        except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
-            log(f"ERROR {rid}: {type(e).__name__}: {e}")
-            seen.add(f"error:{rid}")
+    out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
+    util = measure_util()
+    idle_held(flags, grants, holders, util, log, seen)
+    # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
+    # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
+    # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
+    for _pass in range(len(cands) + 1):
+        assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
+                                        grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags), held_ports=held_ports,
+                                        drain_prev=drain_prev)
+        if not dry:
+            atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
+        for hc, bc in plan.drain_held:
+            log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
+        for lc in plan.drain_lowbusy:
+            log(f"NO-DRAIN {lc['id']} ({lc.get('shape')}): busy_fraction {row_busy(lc):g} < {DRAIN_MIN_BUSY:g}, so it never books a "
+                f"quiet/whole host and runs only when its regions are free; fix (if it really keeps its claim busy): set "
+                f"busy_fraction >= {DRAIN_MIN_BUSY:g} in its spec and republish with publish_row.py")
+        for lc, hc, T in plan.rank_holds:
+            log(f"RANK-HOLD {lc['id']} (rank {lc['rank']:g}): better-ranked {hc['id']} (rank {hc['rank']:g}) waits for its "
+                f"regions until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}; only rows ending by then may take them")
+        for lc, hc, why in plan.rank_skips:
+            log(f"RANK-SKIP {hc['id']} (rank {hc['rank']:g}) blocked by its own constraint: {why}; lower-ranked {lc['id']} "
+                f"(rank {lc['rank']:g}) may take its regions")
+        if plan.last_drain:
+            dc, T = plan.last_drain
+            log(f"DRAIN {dc['id']} ({dc.get('shape')}) until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%Y-%m-%dT%H:%MZ}: new rows only if they end before then")
+        if _pass == 0:
+            log(f"SNAPSHOT free={','.join(compress(free)) or '-'} busy={','.join(f'{r}:{holders.get(r, '?')}' for r in compress(busy)) or '-'} "
+                f"cands={len(cands)} assigned={len(assigned)} lanes cpu={counts['cpu']} gpu={counts['gpu']} {hostutil.line(util)}")
+        failed = []
+        for c, opt in assigned:
+            rid, d = c["id"], allrows[c["id"]]
+            regions = grant_regions(d, opt)
+            if dry:
+                log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(compress(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
+            try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
+                a = load_json(armed_path(flags, rid))
+                if a and alive(a.get("pid")) and not armed_engine_ok(a.get("pid"), rid):
+                    log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row (not killed; re-armed)")
+                    a = None
+                if not (a and alive(a.get("pid"))):
+                    pid, msg = arm_one(flags, rid, d, regions, log=log)
+                    log(f"ROW-ARM {msg}")
+                    if not pid:
+                        failed.append(rid); continue
+                else:
+                    pid = a["pid"]
+                ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
+                if not ok:
+                    n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
+                    log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
+                    failed.append(rid); continue
+                gl = write_grant(flags, rid, regions, opt, d["window_s"])
+                atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
+                log(f"GRANT {rid} {gl} ({line[:160]})")
+                out.append(("grant", rid, regions))
+                plan_free -= expand(set(opt)); ram -= float(c.get("gib") or 0)
+            except Exception as e:  # noqa: BLE001 - logged, counted, alerted on repeat
+                log(f"ERROR {rid}: {type(e).__name__}: {e}")
+                seen.add(f"error:{rid}"); failed.append(rid)
+        if dry or not failed:
+            break
+        excluded |= set(failed)
+        plan_free = {t for t in plan_free if t not in QUARTERS or expand({t}) <= plan_free}
+        if not any(c["id"] not in excluded for c in pending):
+            break
+        log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
     for r, why in idle.items():
         log(f"IDLE-WHY {r}: {why}")
-    left = free - set().union(*[o for _, o in assigned]) if assigned else free
+    left = plan_free - expand(set().union(*[o for _, o in assigned])) if assigned else plan_free
     for c in pending:
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
-            seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(sorted(free))} but was not placed")
+            seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
     if not dry:
+        idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
 
 
+IDLE_VIOLATION_TICKS = 2
+
+
+ALARM_CHANNEL = os.environ.get("ROWFLOW_ALARM_CHANNEL", os.path.join(os.path.dirname(os.path.dirname(_HERE)), "coordination", "alarm_channel.py"))
+
+
+def route_alert(kind, message, evidence, log=print):
+    """Push an allocator alert to the operator-reachable alarm channel (alarm_channel.py raise: emits once per state
+    change). 2026-11-03 item 2: the IDLE-VIOLATION alert was the one signal that was right all afternoon, and it went
+    to a log nobody reads. Best effort: a missing channel is logged, never fatal."""
+    if not os.path.isfile(ALARM_CHANNEL):
+        log(f"ALERT-ROUTE {kind}: alarm channel {ALARM_CHANNEL} missing; alert only in ws58-keeper-alerts.jsonl")
+        return False
+    try:
+        r = subprocess.run([sys.executable, ALARM_CHANNEL, "raise", "--severity", "warning", "--key", f"rowflow-{kind}",
+                            "--message", message, "--evidence", json.dumps(evidence)], capture_output=True, text=True, timeout=30)
+        log(f"ALERT-ROUTE {kind}: rc={r.returncode} {(r.stdout or r.stderr).strip()[:160]}")
+        return r.returncode == 0
+    except (OSError, subprocess.TimeoutExpired) as e:
+        log(f"ALERT-ROUTE {kind}: {type(e).__name__}: {e}")
+        return False
+
+
+def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_ports=(), log=print, util=None):
+    """ws58 2026-11-03 (the yarn-e1-a2 deadlock: 7 h with every region free and nothing granted). Free regions + a
+    grantable row that fits them + no grant written this tick, IDLE_VIOLATION_TICKS ticks in a row -> IDLE-VIOLATION
+    alert (log every such tick, one ws58-keeper-alerts.jsonl record per episode). Returns the consecutive tick count."""
+    p = os.path.join(state_dir(flags), "idle_violation.json")
+    old = load_json(p) or {}
+    fr = {r for r in free if r in REGIONS}
+    if fr and not granted:
+        tok = set(free) if any(t in CORES or t in THREADS for t in free) else \
+            expand(fr) | ({f"t{k}" for k in range(184, 192)} if GPU in fr else set())
+        fit = [c for c in cands if _fits(dict(c, options=[frozenset(expand(o)) for o in c["options"]]), tok, float(ram_gib), gpu_open)
+               and not ({int(x) for x in held_ports} & {int(x) for x in (c.get("ports") or [])})]
+    else:
+        fit = []
+    if not fit:
+        if old:
+            atomic_json(p, {})
+        return 0
+    n = int(old.get("ticks") or 0) + 1
+    since = old.get("since") or now_iso()
+    atomic_json(p, {"ticks": n, "since": since, "alerted": bool(old.get("alerted")) or n >= IDLE_VIOLATION_TICKS})
+    if n >= IDLE_VIOLATION_TICKS:
+        ids = ",".join(c["id"] for c in fit[:6]) + (f",+{len(fit) - 6}" if len(fit) > 6 else "")
+        msg = (f"IDLE-VIOLATION ALERT {n} ticks since {since}: free {','.join(compress(fr))}, {len(fit)} grantable row(s) fit "
+               f"({ids}), nothing granted" + (f"; {hostutil.line(util)}" if util else ""))
+        log(msg)
+        if not old.get("alerted"):
+            rec = {"ts": now_iso(), "from": "rowflow-allocator", "kind": "idle-violation", "ticks": n, "since": since,
+                   "free": sorted(fr), "grantable_fit": [c["id"] for c in fit], "util": util}
+            with open(os.path.join(flags, "ws58-keeper-alerts.jsonl"), "a") as f:
+                f.write(json.dumps(rec) + "\n")
+            route_alert("idle-violation", msg, rec, log)
+    return n
+
+
+# ---------------------------------------------------------------- queued GPU smokes (operator 2026-11-02)
+def gpu_batch_lock(flags): return os.path.join(flags, "dryrun", "GPU-SMOKE-BATCH.lock")
+
+
+def gpu_batch_running(flags):
+    """A detached queued-GPU-smoke batch is alive (its lock names a live pid); a dead lock is removed."""
+    lk = gpu_batch_lock(flags)
+    pid = (load_json(lk) or {}).get("pid")
+    if pid and alive(pid):
+        return True
+    if os.path.exists(lk):
+        try:
+            os.remove(lk)
+        except OSError:
+            pass
+    return False
+
+
+def release_gpu_batch(flags):
+    try:
+        os.remove(gpu_batch_lock(flags))
+    except OSError:
+        pass
+
+
+def start_gpu_batch(flags, log):
+    """GPU free + queued smokes: start ONE detached batch (publish_row.py --run-gpu-queue) under a lock. True = the
+    batch owns the GPU this tick (running or just started), so no GPU grant is assigned."""
+    if gpu_batch_running(flags):
+        return True
+    if not glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        return False
+    os.makedirs(os.path.join(flags, "dryrun"), exist_ok=True)
+    out = open(os.path.join(flags, "dryrun", "GPU-SMOKE-BATCH.out"), "a")
+    p = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "publish_row.py"),
+                          "--run-gpu-queue", "--flags", flags], stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                         start_new_session=True)
+    atomic_json(gpu_batch_lock(flags), {"pid": p.pid, "started": now_iso()})
+    log(f"GPU-SMOKE-BATCH started pid={p.pid}")
+    return True
+
+
+def gpu_batch(flags, log=print):
+    """`rowflow.py gpu-batch` (session review 2026-11-03 §5 item 8): ANY session runs the queued GPU smokes on a GPU-free
+    tick - the same start_gpu_batch the allocator calls on every allocate tick (that path is unchanged). One line out.
+    Returns 0 (started / already running / nothing queued) or 3 (HOLD present or GPU busy: re-run later)."""
+    me = f"python3 {os.path.abspath(__file__)} gpu-batch"
+    queued = glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))
+    holds = glob.glob(os.path.join(flags, "HOLD_*"))
+    if holds:
+        log(f"HOLD present ({os.path.basename(holds[0])}): {len(queued)} queued GPU smoke(s) not started; re-run `{me}` after the HOLD is removed")
+        return 3
+    if gpu_batch_running(flags):
+        log(f"GPU-SMOKE-BATCH already running pid={(load_json(gpu_batch_lock(flags)) or {}).get('pid')}; "
+            f"log {os.path.join(flags, 'dryrun', 'GPU-SMOKE-BATCH.out')}")
+        return 0
+    if not queued:
+        log("no queued GPU smokes; nothing to do")
+        return 0
+    rl = rl_status().get(GPU, ("free", ""))
+    holder = f"region-lock {GPU} {rl[0]} {rl[1]}".strip() if rl[0] != "free" else \
+        next((f"grant {g['id']}" for g in open_grants(flags) if GPU in g["holds"]), None)
+    if holder:
+        log(f"GPU busy ({holder}): {len(queued)} queued GPU smoke(s) wait for the next GPU gap; re-run `{me}` then "
+            "(the allocator also runs them on its next GPU-free tick)")
+        return 3
+    start_gpu_batch(flags, lambda m: log(f"{m}; log {os.path.join(flags, 'dryrun', 'GPU-SMOKE-BATCH.out')}"))
+    return 0
+
+
 # ---------------------------------------------------------------- cli
+def status_text(st):
+    """The fixed <= 8-line form (2026-11-03 operator design goal): state, measured util, blocker, next, logs."""
+    L = [f"id:      {st['id']}", f"state:   {st['state']} - {str(st.get('reason', ''))[:160]}"]
+    if st.get("held") is not None:
+        u = st.get("util") or {}
+        L.append("util:    " + (" ".join(f"{r}={hostutil.pct(u.get(r))}" for r in st["held"]) or "-") + f"  (held {','.join(st['held']) or '-'}, grant {st.get('grant_age_s', '?')}s old, measured now)")
+    L.append(f"blocker: {st.get('blocker') or '-'}")
+    L.append(f"next:    {st.get('next', '-')}")
+    L.append(f"logs:    {st.get('logs', '-')}")
+    return "\n".join(L)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--flags", default=FLAGS)
@@ -1561,10 +2592,10 @@ def main(argv=None):
     s = sub.add_parser("publish"); s.add_argument("spec"); s.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     s = sub.add_parser("status"); s.add_argument("id"); s.add_argument("--json", action="store_true")
     sub.add_parser("list")
-    s = sub.add_parser("dryrun-run"); s.add_argument("id"); s.add_argument("--regions", required=True); s.add_argument("--one-quarter", action="store_true")
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
+    sub.add_parser("gpu-batch", help="run the queued GPU smokes now if the GPU is free (any session; the allocator does the same every tick)")
     a = ap.parse_args(argv)
     try:
         if a.cmd == "publish":
@@ -1575,22 +2606,24 @@ def main(argv=None):
             print(published_line(publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
             return 0
         if a.cmd == "status":
-            st = status(a.flags, a.id)
-            print(json.dumps(st, indent=1) if a.json else f"{st['state']}\t{st.get('reason', '')}")
+            st = status(a.flags, a.id, util=measure_util())
+            print(json.dumps(st, indent=1) if a.json else status_text(st))
             return 0 if st["state"] != "unknown" else 2
         if a.cmd == "list":
             allrows = rows(a.flags)
-            for rid in sorted(allrows, key=lambda r: float(allrows[r].get("priority_rank") or 100)):
-                st = status(a.flags, rid, allrows)
-                print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  {st.get('reason', '')[:100]}")
+            util = measure_util()
+            print(hostutil.line(util))
+            for rid in sorted(allrows, key=lambda r: row_rank(allrows[r])):
+                st = status(a.flags, rid, allrows, util=util)
+                u = " ".join(f"{r}={hostutil.pct(v)}" for r, v in (st.get("util") or {}).items())
+                print(f"{st['state']:15} {allrows[rid]['lane']:3} rank={allrows[rid].get('priority_rank')} {rid}  "
+                      f"{(u + '  ') if u else ''}{st.get('blocker') or st.get('reason', '')[:100]}")
             return 0
-        if a.cmd == "dryrun-run":
-            v, msg = dryrun_run(a.flags, a.id, a.regions, a.one_quarter)
-            print(f"{v}\t{a.id}\t{msg}")
-            return {"PASS": 0, "WAIT": 1}.get(v, 2)
         if a.cmd == "allocate":
             allocate(a.flags, a.log, dry=a.plan)
             return 0
+        if a.cmd == "gpu-batch":
+            return gpu_batch(a.flags)
     except Refused as e:
         print(f"REFUSED: {e}")
         return 2

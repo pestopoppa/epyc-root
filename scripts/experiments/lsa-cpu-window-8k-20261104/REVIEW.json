@@ -1,0 +1,7 @@
+{
+  "approved": true,
+  "scope": "One four-core CPU Q8-KV window-control diagnostic; same fixture as dense; native first-progress smoke and no speed comparison",
+  "manifest_sha256": "71d5a5bba6fc0579ae8dacaf164f6f70d136888e58d8096a7b82305f85abf18d",
+  "job_sha256": "315e09cdf5442af99d1a9902ea98230565756bad44d4b8bc6a2176242c240729",
+  "reviewer": "owning session"
+}

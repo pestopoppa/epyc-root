@@ -1,0 +1,47 @@
+{
+  "schema": "kvu16h.k35.lifecycle.validation.v1",
+  "source_result": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/RESULT.json",
+  "verdict": "pass",
+  "measurement_claim": false,
+  "arms": [
+    {
+      "scenario": "kvu16h_35b_no_spec",
+      "pid": 4020185,
+      "birth_ticks": 177720388,
+      "tokens": 16,
+      "spec_type": "none",
+      "request_speculative_override": false,
+      "sample_phases": [
+        "before_launch",
+        "after_health",
+        "after_request",
+        "before_cleanup",
+        "after_cleanup"
+      ],
+      "cleanup_dead": true,
+      "cleanup_rc": 0,
+      "before_launch_at": "2026-11-02T21:25:30.602320+00:00",
+      "after_cleanup_at": "2026-11-02T21:25:44.607220+00:00"
+    },
+    {
+      "scenario": "kvu16h_35b_native_mtp",
+      "pid": 4023919,
+      "birth_ticks": 177721977,
+      "tokens": 16,
+      "spec_type": "draft-mtp",
+      "request_speculative_override": false,
+      "sample_phases": [
+        "before_launch",
+        "after_health",
+        "after_request",
+        "before_cleanup",
+        "after_cleanup"
+      ],
+      "cleanup_dead": true,
+      "cleanup_rc": 0,
+      "before_launch_at": "2026-11-02T21:25:46.488185+00:00",
+      "after_cleanup_at": "2026-11-02T21:26:00.668830+00:00"
+    }
+  ],
+  "first_dead_before_second_launch": true
+}

@@ -200,7 +200,7 @@ it.
   STATE header (unit = LAUNCH, the conditions clause, the supersession block) and CLOSE-1 (a floor
   carries its unit), CLOSE-2 (the vacuous-instrument pattern and the three guards), CLOSE-3 (`ps -p`
   is not a death test), CLOSE-10 (the per-arm sampler's coverage gap).
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md)
   — U2: per-surface floors carry their measurement conditions, not just a number; the U3
   `RUNTIME_CONFIG` arm type into which the THP shim was filed on the GPU side.
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
@@ -274,7 +274,7 @@ cores.
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CLOSE-8
   (admission control, not screening; the row is a POINTER, not a second owner — the operator owns the
   admission-control design under OP-41 → INF-73 §3.4) and CLOSE-10 (the sampler's coverage gap).
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md)
   — U4: the resource broker, arm-second budgets, and the structural resolution of OP-41.
 - [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
   — the peer campaign's serving-floor recalibration and its side of the shared window.
@@ -427,7 +427,7 @@ consolidated; **lifting the directive is the operator's call.**
 - [`docs/design/champion-consolidation-audit-20260908.md`](../docs/design/champion-consolidation-audit-20260908.md)
   — the consolidation audit: git custody of the fold, ancestry containment, and the `--branches`
   backup lesson.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-loop.md)
   — U1/U3: CPU keeps entering the durable bundle, and the `RUNTIME_CONFIG` arm type under which the
   THP shim was filed on the GPU surface (its first worked instance).
 ```

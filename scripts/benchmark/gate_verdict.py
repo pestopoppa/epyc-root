@@ -3,7 +3,7 @@
 
 Implements CJ-8 (three-valued gate verdicts) and CJ-9 (resolved coverage
 alongside every verdict) from
-``handoffs/active/canonical-judge-suite-revamp.md``.
+``handoffs/active/benchmark-suites.md``.
 
 WHY THIS MODULE EXISTS
 ----------------------

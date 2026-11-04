@@ -183,29 +183,20 @@ class Incident20261101(unittest.TestCase):
         self.assertEqual(idle, {})
         self.assertEqual(pending, [])
 
-    def test_whole_host_dry_run_on_one_quarter(self):
+    def test_whole_host_grant_regions(self):
         d = {"regions": "0-95", "launcher": {"path": os.path.join(self.root, "does-not-exist.sh")}}
         opts, bench = rf.row_shape(d)
         self.assertEqual(opts, [frozenset(Q)])
         self.assertFalse(bench)
-        dopts, one_q = rf.dryrun_shape(d, opts)
-        self.assertTrue(one_q)
-        self.assertEqual(sorted(sorted(o) for o in dopts), [["q0"], ["q1"], ["q2"], ["q3"]])
-        d2 = dict(d, dryrun_whole_host=True)
-        self.assertEqual(rf.dryrun_shape(d2, opts), (opts, False))
-        self.assertEqual(rf.grant_regions(d, frozenset({"q2"}), True), "48-71")
-        self.assertEqual(rf.grant_regions(d, frozenset(Q), False), "0-95")
-        self.assertEqual(rf.grant_regions({"regions": "any-cpu-quarter"}, frozenset({"q1"}), False), "24-47")
+        self.assertEqual(rf.grant_regions(d, frozenset(Q)), "0-95")
+        self.assertEqual(rf.grant_regions({"regions": "any-cpu-quarter"}, frozenset({"q1"})), "24-47")
         # GPU exclusive row claiming the whole host: dry-run shape is GPU + q3 only
         lp = self.gpu_launcher("gpu-excl", "--class gpu --gpu-quiet exclusive --claim-cpus 0-95")
         gd = {"regions": "mi210_0,184-191", "launcher": {"path": lp}}
         opts, bench = rf.row_shape(gd)
         self.assertEqual(opts, [frozenset({rf.GPU} | Q)])
         self.assertTrue(bench)
-        dopts, one_q = rf.dryrun_shape(gd, opts)
-        self.assertEqual(dopts, [frozenset({rf.GPU, "q3"})])
-        self.assertTrue(one_q)
-        self.assertEqual(rf.grant_regions(gd, dopts[0], one_q), "mi210_0,184-191")
+        self.assertEqual(rf.grant_regions(gd, opts[0]), "mi210_0,184-191")
 
     def test_gpu_parser_flag_qual_interpreter(self):
         lp = self.gpu_launcher("gpu-qi", "--class gpu --qual-interpreter python3 --requires-tool /usr/bin/python3")
@@ -411,12 +402,3 @@ class DrainNeverPreempt(unittest.TestCase):
         self.assertEqual(rf.shape_of({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}}), "quiet-host")
         opts, _ = rf.row_shape({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}})
         self.assertEqual(opts, [frozenset(rf.REGIONS)])
-        # quiet-host dry run = correctness on one quarter, no gpu-quiet
-        d = {"regions": "0-95", "shape": "quiet-host", "gib": 48, "launcher": {"path": "/nonexistent"}}
-        dopts, one_q = rf.dryrun_shape(d, opts, "/nonexistent-flags")
-        self.assertTrue(one_q)
-        self.assertEqual(sorted(dopts), sorted(frozenset({q}) for q in rf.QUARTERS))
-        # a 600 GiB host row cannot be dry-run on one quarter: real shape
-        big = {"regions": "0-95", "gib": 600, "launcher": {"path": "/nonexistent"}}
-        bopts, _ = rf.row_shape(big)
-        self.assertEqual(rf.dryrun_shape(big, bopts, "/nonexistent-flags"), (bopts, False))

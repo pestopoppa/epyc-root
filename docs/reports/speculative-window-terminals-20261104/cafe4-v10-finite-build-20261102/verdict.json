@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc64 and missing native result; required full build/artifact proof not established. Operational build failure, no runtime conclusion.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:14:52+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=64 time=2026-11-02T22:19:23Z reason=job-rc-64:exited",
+ "filed_at": "2026-11-04T07:14:52+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-finite-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-finite-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 64,
+ "reason": "Scheduled rc64 and missing native result; required full build/artifact proof not established. Operational build failure, no runtime conclusion.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-finite-build-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "Accept only a complete pinned v10 plus target-bound diagnostic CPU build, compiled CAFE4_NEXT_COMPARISON and target markers and source/artifact digest proof; build-only synthetic fixture, no inference, MTP, fault sensitivity or CAFE-4 conclusion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

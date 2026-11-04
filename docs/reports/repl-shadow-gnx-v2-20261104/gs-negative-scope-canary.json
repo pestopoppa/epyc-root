@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "planner_status": "ready",
+      "source_claims_visible": 0,
+      "target": {
+        "backend": "cpu",
+        "model_file": "embeddinggemma-2-BF16.gguf"
+      }
+    },
+    {
+      "planner_status": "ready",
+      "source_claims_visible": 0,
+      "target": {
+        "backend": "cpu",
+        "model_file": "different-model.gguf"
+      }
+    },
+    {
+      "planner_status": "ready",
+      "source_claims_visible": 0,
+      "target": {
+        "backend": "gpu",
+        "model_file": "embeddinggemma-2-BF16.gguf"
+      }
+    },
+    {
+      "planner_status": "ready",
+      "source_claims_visible": 0,
+      "target": {
+        "backend": "cpu",
+        "corpus_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "model_file": "embeddinggemma-2-BF16.gguf"
+      }
+    }
+  ],
+  "corpus_matching": "not implemented by planner target; claim omitted because model scope is absent, not because corpus was compared",
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "index_freshness": "test stub only; no production freshness conclusion",
+  "kind": "negative-canary",
+  "ledger_scope": "isolated temporary canary ledger; not canonical",
+  "limitation": "No positive planner wiring is claimed. The run is a paired, cohort-specific coverage observation; its projection does not establish per-target or corpus applicability.",
+  "metric": "valid_frozen_query_records",
+  "next": "Capture and validate explicit paired model/runtime and corpus identity as a producer-time applicability contract, then add a consumer target that expresses both models and the cohort; demonstrate matching and mismatching canaries without changing this historical row.",
+  "scope": {
+    "backend": "cpu"
+  },
+  "source": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query-v2/frozen-coverage.belief_measurements.jsonl",
+  "source_sha256": "0b40b201592f943b3cb8fef028f1b98d8ca8e54ce3c1cd45fc0bf10c3fbf1c49",
+  "status": "passed",
+  "value": 500
+}

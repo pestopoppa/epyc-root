@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """alarm_channel.py — THE operator-reachable alarm channel (P0-1).
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md § Phase 0 / P0-1
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md § Phase 0 / P0-1
 Conventions:    coordination/session-bus/BUS_PROTOCOL.md (advisory / last-hop escalation)
 
 --------------------------------------------------------------------------

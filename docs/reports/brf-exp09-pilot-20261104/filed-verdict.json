@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-delegation-context-preassembly",
+  "rationale": "REVISE harness, not a gate STOP/EXPAND. rc=75; 37/48 cells; control identity unchanged and mismatch rejection 9/9. Five answer parse failures reached the 256-token cap, confounding operational futility. Native evidence preserved at docs/reports/brf-exp09-pilot-20261104; result sha256 cb8f455daa1ddacee266a8e3dbf83aa63a3f23a55ed7f2d6854e6629c4ba95da. Parent TOC-SP-3 remains open; follow-up reruns with answer budget1024.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:25:09+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-02T22:19:48Z reason=partial-native-incomplete",
+ "filed_at": "2026-11-04T07:25:09+00:00",
+ "filed_by": "handoff-delegation-context-preassembly",
+ "handoff_task": "handoffs/active/context-and-token-economy.md:TOC-SP-3",
+ "id": "brf-exp09-pilot-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp09-pilot-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "REVISE harness, not a gate STOP/EXPAND. rc=75; 37/48 cells; control identity unchanged and mismatch rejection 9/9. Five answer parse failures reached the 256-token cap, confounding operational futility. Native evidence preserved at docs/reports/brf-exp09-pilot-20261104; result sha256 cb8f455daa1ddacee266a8e3dbf83aa63a3f23a55ed7f2d6854e6629c4ba95da. Parent TOC-SP-3 remains open; follow-up reruns with answer budget1024.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp09-pilot-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "BRF-T4-EXP09 / manifest EXP-09 pilot, exploratory/decision-support. 12 frozen failing logs (corpus sha f3a8342c) x 4 arms: control = current _spill_output (orchestrator 3a428cb3, fn sha e1707a1b, executed unchanged, worker Qwen3.6-35B-A3B-MTP-Q8_0 on own v10 kernel-store llama-server), verified-quote, deterministic shape-header, pointer-only. Validity: control code unchanged, planted-mismatch quote rejected (mechanism fired), raw answers + evidence selections captured per cell. Owner (TOC-SP-3) decides: EXPAND if control verified and mechanism fired and verified-quote accuracy >= control; REVISE control if the nominal path did not run; STOP if verified-quote never beats control. Futility stop = operational decision, never a gate result.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "cb8f455daa1ddacee266a8e3dbf83aa63a3f23a55ed7f2d6854e6629c4ba95da",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

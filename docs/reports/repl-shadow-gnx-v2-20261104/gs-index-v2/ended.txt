@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T14:24:16Z reason=complete
+job_id=ufh12-gs-frozen-gnx-v2-20261104
+owner=handoff-agentic-serving-harness-fixes
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T14:23:10Z
+regions=0-95

@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Qualification-only: pass iff schema is dtap.crm_fullentry_fixture_qualification.v1, pass=true, capture_kind=fixture, model_invoked=false and provider close and fixture seal are retained. No model, injection-resistance or security verdict.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 900,
+ "gib": 48,
+ "handoff_task": "benchmark-suites.md:TU-DTAP-2a",
+ "id": "evl46-crm-fullentry-fixture-20261102",
+ "keep": [
+  "result.json",
+  "source.json",
+  "crm.py",
+  "slack.py",
+  "job.py",
+  "launch.sh",
+  "complete.py",
+  "runs/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/evl46-qual-20261102/launch.sh",
+  "sha256": "2c56e9d410377c27e8e6c2d353125427e512539067d36b56b4bd6dd26c528d3f"
+ },
+ "min_window_s": 600,
+ "owner": "codex-evl46",
+ "ports": [
+  19184
+ ],
+ "priority_rank": 114.0,
+ "published_at": "2026-11-02T13:31:41Z",
+ "published_from": "/mnt/raid0/llm/tmp/evl46-qual-20261102/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/evl46-qual-20261102/result.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/evl46-qual-20261102",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/evl46-qual-20261102/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/evl46-qual-20261102"
+}

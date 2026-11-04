@@ -1,0 +1,42 @@
+{
+  "row": "ufh14-repl-emb23a-parse-v4-20261104",
+  "verdict": "inconclusive",
+  "reason": "partial official run: two length-limited selections, one valid selection and actual open; reviewed runtime closure limitations remain",
+  "official_records": [
+    {
+      "query_number": 0,
+      "selection": null,
+      "terminal": {
+        "stop": true,
+        "stop_type": "limit",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": false
+    },
+    {
+      "query_number": 1,
+      "selection": null,
+      "terminal": {
+        "stop": true,
+        "stop_type": "limit",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": false
+    },
+    {
+      "query_number": 2,
+      "selection": 1,
+      "terminal": {
+        "stop": true,
+        "stop_type": "eos",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": true
+    }
+  ],
+  "native_sha256": "223837fbdeaf6b9c934bc9a7fed60d315de05a6fec76b66ad3cf7255ba9c3667",
+  "private_native_copy": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/preserved-partial-shadow/ufh14-repl-emb23a-parse-v4-20261104/results.jsonl"
+}

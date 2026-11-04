@@ -91,7 +91,7 @@ prompt *screening* (repeated-5-gram fraction), which is necessary but not suffic
 copied text is the model's own **generation**, not the prompt. Rule fed: never replicate a
 context-reading drafter against a live server on a repeated prompt, and always include a
 non-context control arm (`draft-mtp` or `none`) **structurally in the harness** rather than as
-operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding-mtp-refresh.md`.
+operator discipline — NG5/SW-2 in `handoffs/active/speculative-decoding.md`.
 
 ## INC-20260731-stale-config-outranked-operator-decision
 The operator's standing decision is the **composed** spec recipe `ngram-mod,draft-mtp`. The committed
@@ -287,7 +287,7 @@ supervises, not its own script. The generalised supervision loop that would also
 a registry `runtime:` field plus `observer_census.py --live` — remains open as NIB2-81 remedy (b),
 out of scope here. Rule fed: runtime-plane daemons execute from canon only (CLAUDE.md § Working-tree
 identity; `scripts/coordination/WORKTREE_MIGRATION.md` § The two planes;
-`handoffs/active/non-inference-backlog.md` NIB2-81/NIB2-81a).
+`handoffs/active/engineering-hygiene-backlog.md` NIB2-81/NIB2-81a).
 
 ## INC-20260925-parallel-repack-lost-in-bundled-revert
 The OpenMP tensor-repack parallelization (52ddd3200, 2025-12-21, 1.5-2.5x CPU model-load speedup;
@@ -356,7 +356,7 @@ Full record: [AutoKernel local-actor bring-up retrospective](../../design/autoke
 Rules fed:
 - the new-actor checklist, `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new
   actor model or backend*;
-- the gates `handoffs/active/autokernel-orchestrator-actor-backend.md` OAB-29..OAB-32;
+- the gates `handoffs/active/autokernel-loop.md` OAB-29..OAB-32;
 - proposed for operator ratification: a wire test before any new actor seat runs live
   (`scripts/operator/ratify_actor_seat_wire_test_20260926.sh`, into
   `agents/shared/OPERATING_CONSTRAINTS.md`).
@@ -367,7 +367,7 @@ window. Its watcher treated `closing` as still usable. The sidecar stayed up pas
 DS41's pre-measurement build and died at 03:36:17Z (overlap about 03:33-03:36Z). There was no
 contamination: it died before lane 1's A/B began, which workspace-76 confirmed. Rules fed:
 - `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
-- the champion-sidecar gate, `handoffs/active/typed-decision-plane.md` → operator ruling 6;
+- the champion-sidecar gate, `handoffs/active/routing-program.md` → operator ruling 6;
 - proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
   Benchmarks: `artifacts/operator/lessons-20260929-operating-constraints.patch`.
 
@@ -389,7 +389,7 @@ windows. Each check only fails against live state:
   all CPUs.
 
 The :8083 window of 07:05-07:09Z lost the champion GPU A/B three times this way
-(`handoffs/active/autokernel-champion-aggregate.md` V6R-4d). Rules fed:
+(`handoffs/active/kernel-champion-and-promotion.md` V6R-4d). Rules fed:
 - test every check against real artifacts or the live read-only process before spending a window, in
   `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
 - proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
@@ -409,7 +409,7 @@ On 2026-10-01 at 12:22Z workspace-8d fast-forwarded the shared orchestrator clon
 `revise` segment was running in-process from that same clone. The driver's integrity check voided all 90 revisions
 at 12:59:07Z ("code_root commit drifted during the segment"), and they must be redone. Rule fed: an
 in-process run pins `--code-root` to a detached worktree at its commit, never the shared clone
-(`handoffs/active/routing-intelligence.md` RI-18; wrapper fix RI-18b).
+(`handoffs/active/routing-program.md` RI-18; wrapper fix RI-18b).
 
 ## INC-20261003-start-dry-run-launched-stack
 On 2026-10-03, on a freshly rebooted host, workspace-ec ran `orchestrator_stack.py start --dry-run`, expecting a
@@ -425,7 +425,7 @@ enable was recorded as "runtime-only" (REPL-EMB-4.4), but `POST /config` persist
 `orchestration/runtime_flags.json`, and every API start reads that file back. After the host reboot and the
 2026-10-03 stack restart, the flag came back ON, against the REPL-EMB-2.1 kill rule's OFF default. workspace-ec caught
 it and reset it (record stamped 03:51:31Z). Rule fed: an experiment-arm flag enable carries an expiry or an explicit
-restore step (`handoffs/active/repl-embedding-retrieval.md` REPL-EMB-4.5).
+restore step (`handoffs/active/harness-program.md` REPL-EMB-4.5).
 
 ## INC-20261003-dflash2-ruling-never-compiled
 On 2026-10-01 the operator found production :8083 (Qwen3.8-27B) serving `--spec-type draft-mtp`, five weeks after
@@ -441,9 +441,9 @@ re-inherited MTP. Fixed by STACKCHG-DFLASH2-20261003 (signed 2026-10-03T04:39:55
 `d3233170` + `5265e09d`); :8083 serves DFlash2 as PID 3793153. Rules fed:
 - an operator recipe ruling becomes a registry field plus a compile check, never handoff prose: DRAFT-SEL-1 (master
   `drafters`, topology `drafter_selection`, compile fails closed) and SCG-RULING-TO-FIELD, both in
-  `handoffs/active/stack-change-governance-pipeline.md`;
+  `handoffs/active/stack-lifecycle-program.md`;
 - every kernel freeze re-selects each role's spec-decode recipe: CH-17 in
-  `handoffs/active/autokernel-champion-aggregate.md`;
+  `handoffs/active/kernel-champion-and-promotion.md`;
 - the other roles with legacy drafter fields: DRAFT-SEL-2.
 
 ## INC-20261003-urgent-fix-slowed-by-bundling
@@ -456,7 +456,7 @@ fast path (operator-terminal relaunch with the target argv, PID 3737649, 04:30Z:
 acceptance 450/490, vs ~37-41 tok/s on MTP), with the permanent package behind it. Rules fed:
 - for an urgent production fix, offer the fast path first and the permanent package behind it, and do not bundle
   an unrelated move without the operator choosing to: SCG-FASTPATH in
-  `handoffs/active/stack-change-governance-pipeline.md`;
+  `handoffs/active/stack-lifecycle-program.md`;
 - a pending operator decision is put to the operator as options when it arises, never waited on in silence
   (`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*; already canonical, restated here as the cause).
 
@@ -473,7 +473,7 @@ coordinator's request. Nothing claimed the GPU: the subagent had no window, and 
   in a coordinated slot, and a main that dispatches a GPU-capable subagent gives it the slot or forbids GPU use:
   `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
 - the store-build re-validation moved to the coordinated GPU block: KVU-19a-1 in
-  `handoffs/active/kv-unified-stack-rollout.md`.
+  `handoffs/active/kv-cache-program.md`.
 
 ## INC-20261004-cleanup-removed-load-bearing-worktree
 On 2026-10-04 the operator-approved disk cleanup run by ak-ds41-main (evidence `/mnt/raid0/llm/tmp/disk-cleanup-20261004/`:
@@ -499,7 +499,7 @@ On 2026-10-04 workspace-89 held CPU window 2 (`region-lock run --cpu-list 0-95 -
 q0-q3 held 04:40:39Z-05:00:11Z; evidence `/mnt/raid0/llm/tmp/cpu-window2-20261004/window.log`). Two workspace-ec subagents
 working on the prefill-budget change ran local CPU work inside that window without taking any lock: a dev
 `llama-server` (`llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev`, gemma-3-1b) pinned to CPUs 160-183, and a
-`cmake -j24` build. Both ran at `nice 19`. A third unlocked consumer was workspace-ec's own KVU-19b GPU validation slot (`gpu_slot2.sh`, 04:44:49Z-05:05:18Z): it pinned all of its host-side work (the CPU-reference exactness harness, p3batch, `llama-batched-bench`, and `test-backend-ops`, which computes a CPU reference) to `taskset -c 160-183` at `nice 19` with no region claim. The `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` process (pid 2539565, store build `gpu-20261004-c7f5ac9ad`) that the window's preflight recorded is that slot's step 5. The slot's host-bound numbers (p3batch on gemma-3-1b) were in turn taken on a contended host, so they carry a contention caveat (`handoffs/active/kv-unified-stack-rollout.md` KVU-19b-1). At 04:59:40-51Z the window's load preflight measured the host at about 2,400% of
+`cmake -j24` build. Both ran at `nice 19`. A third unlocked consumer was workspace-ec's own KVU-19b GPU validation slot (`gpu_slot2.sh`, 04:44:49Z-05:05:18Z): it pinned all of its host-side work (the CPU-reference exactness harness, p3batch, `llama-batched-bench`, and `test-backend-ops`, which computes a CPU reference) to `taskset -c 160-183` at `nice 19` with no region claim. The `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` process (pid 2539565, store build `gpu-20261004-c7f5ac9ad`) that the window's preflight recorded is that slot's step 5. The slot's host-bound numbers (p3batch on gemma-3-1b) were in turn taken on a contended host, so they carry a contention caveat (`handoffs/active/kv-cache-program.md` KVU-19b-1). At 04:59:40-51Z the window's load preflight measured the host at about 2,400% of
 one CPU (load 94), with llama-servers at 937% and 336% and the build at 760%, and refused steps 2-4 (EXL3 microbench,
 MXFP4/Q4_K, Q38FN anchor; `step{2,3,4}_*/load-preflight.json`). Those measurements were lost, and the window was spent. The
 root cause was the briefs: none required `region-lock` for builds, servers or tests, so nothing made the work queue behind
@@ -514,7 +514,7 @@ sibling-only `--cpu-list 160-183` maps to no region and cannot be claimed. Rules
   (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks, *Your own subagents are load*); this incident is
   its guest-side complement.
 - the lock layer must fold SMT siblings into their physical core's region instead of dropping them: filed as
-  REGION-SIBLING-1 in `handoffs/active/shape-keyed-contention-gating.md`.
+  REGION-SIBLING-1 in `handoffs/active/numa-placement-and-contention.md`.
 
 **Recurrence, same day (2026-10-04, later).** The briefs now required `region-lock`, and the mechanism still let
 workspace-ec's own subagents into held CPU windows: **three more preemptions**, by a KPF smoke run, a DCA perplexity run

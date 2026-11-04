@@ -2,7 +2,7 @@
 
 **Status:** design option only; no selector, routing activation, model call, or incumbent change. Prepared against ROOT `4c0c653baf1654c8c25c66433cf39c8faefd8e52` and epyc-orchestrator `62db79be0bf9a4cdc8341ec48d8d240a14458288`. This specification records source-backed candidates and decision boundaries; it is not evidence that a detector pool or fixer is currently wired.
 
-**Task source:** ROOT [`reviewer-escalation-and-human-gate-policy.md`](../../handoffs/active/reviewer-escalation-and-human-gate-policy.md), HG-9 at lines 39–52 and MAIN-reviewed JEV refinement at lines 76–82. HG-9 Step 1 is no-inference; EV-13b and judge-stable scoring gate Step 2; P-AB-1 and LB-6 gate Step 3. ROOT [`tri-role-coordinator-architecture.md`](../../handoffs/active/tri-role-coordinator-architecture.md), TR-4.4 at line 101 and its decision at lines 240–247, explicitly keeps verifier-acceptance termination parallel to review/escalation.
+**Task source:** ROOT [`reviewer-escalation-and-human-gate-policy.md`](../../handoffs/active/reviewer-control-plane.md#track-reviewer-escalation-and-human-gate-policy), HG-9 at lines 39–52 and MAIN-reviewed JEV refinement at lines 76–82. HG-9 Step 1 is no-inference; EV-13b and judge-stable scoring gate Step 2; P-AB-1 and LB-6 gate Step 3. ROOT [`tri-role-coordinator-architecture.md`](../../handoffs/active/routing-program.md#track-tri-role-coordinator-architecture), TR-4.4 at line 101 and its decision at lines 240–247, explicitly keeps verifier-acceptance termination parallel to review/escalation.
 
 ## Source-backed present topology
 

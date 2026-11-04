@@ -141,6 +141,9 @@ def default_lock_dir(repo: os.PathLike | str) -> Path:
 # ---------------------------------------------------------------------------
 
 
+WAIT_POLL_S = 2.0
+
+
 class SerializedPushError(Exception):
     condition = "unknown"
 
@@ -1261,6 +1264,8 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--status", action="store_true", help="report lock state and exit")
     p.add_argument("--fetch", action="store_true",
                    help="update the upstream ref first (a network op: runs under the lock)")
+    p.add_argument("--wait", type=float, default=0, metavar="SECONDS",
+                   help="wait up to SECONDS for a plain lock-held push lock instead of refusing (default: 0)")
     p.add_argument("--limit", type=int, default=40, help="commits to list (default: %(default)s)")
     p.add_argument("--lock-name", default="push",
                    help="which lease over this repo to operate on (default: %(default)s). "
@@ -1392,13 +1397,24 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_OK
 
     # ---- lock-holding operations (acquire / push) ---------------------------
-    try:
-        rec = acquire(args.lock_dir, key, args.agent, str(repo),
-                      mode="hold" if args.acquire else "push", name=args.lock_name,
-                      token_file=args.token_file)
-    except (LockHeldError, LockCorruptError, LeaseTokenError) as exc:
-        print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
-        return EXIT_LOCKED
+    deadline = time.monotonic() + max(0.0, float(args.wait or 0))
+    while True:
+        try:
+            rec = acquire(args.lock_dir, key, args.agent, str(repo),
+                          mode="hold" if args.acquire else "push", name=args.lock_name,
+                          token_file=args.token_file)
+            break
+        except LockHeldError as exc:
+            # --wait (ws58): queue on a contended lock instead of failing; only a plain
+            # lock-held waits — token/same-agent refusals and corruption fail at once.
+            if exc.condition == "lock-held" and time.monotonic() < deadline:
+                time.sleep(min(WAIT_POLL_S, max(0.1, deadline - time.monotonic())))
+                continue
+            print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
+            return EXIT_LOCKED
+        except (LockCorruptError, LeaseTokenError) as exc:
+            print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
+            return EXIT_LOCKED
 
     if args.acquire and str(flock_path(path)) in _HELD:
         # A fresh hold: this CLI call exits now, so hand the kernel lock to a keeper.

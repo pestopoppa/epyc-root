@@ -1,0 +1,31 @@
+{
+  "id": "cafe2-v10-expert-union-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only: accept pinned v10 plus exact CAFE2 expert-union candidate/header/bridge, frozen tokenizer input and CMake integration; full CPU executable with CAFE2_VERIFY_RAW, CAFE2_EFFECTIVE_THREADS and cafe2.expert.window.begin.v1 compiled markers, source/artifact hashes and local library linkage. No native callback, expert union, timing or CAFE-2 verdict.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256",
+    "*.patch",
+    "*.md",
+    "tokenizer-linkage.txt"
+  ],
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-expert-build/proof.py predicate",
+  "first_progress_s": 300
+}

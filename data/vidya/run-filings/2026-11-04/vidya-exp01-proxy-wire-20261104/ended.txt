@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T08:18:57Z reason=complete
+job_id=vidya-exp01-proxy-wire-20261104
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T08:17:24Z
+regions=0-3

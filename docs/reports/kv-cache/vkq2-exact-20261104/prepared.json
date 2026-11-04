@@ -1,0 +1,102 @@
+{
+  "schema": "cpu-fa-vkq2.prepared.v1",
+  "prepared_at": 1793619796.176662,
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_ops": {
+    "path": "/mnt/raid0/llm/worktrees/c5-fold-20261024/ggml/src/ggml-cpu/ops.cpp",
+    "size": 458818,
+    "mtime_ns": 1792836807192810360,
+    "device": 2431,
+    "inode": 143535929,
+    "sha256": "f0d83af52edf9d41bd76a95dd9c07d7769c8f00369c4b09474f67f2114752e3d"
+  },
+  "store_manifest": {
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/SHA256SUMS",
+    "size": 10105,
+    "mtime_ns": 1792838109715705620,
+    "device": 2431,
+    "inode": 102903812,
+    "sha256": "bc272ae3b6169e6cd924f390e664dd4c3c2117992844888f8c4226faafdbe58e"
+  },
+  "products": [
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/llama-bench",
+      "size": 17984,
+      "mtime_ns": 1792838088396418166,
+      "device": 2431,
+      "inode": 102903803,
+      "sha256": "104d557282da038cd3ef54350e30b39ed1adab3b59441796c7fca7764b176e44"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama-bench-impl.so",
+      "size": 511656,
+      "mtime_ns": 1792838088298260159,
+      "device": 2431,
+      "inode": 102903802,
+      "sha256": "e3dfb360cf58b8c064ae5178c09935e3c7295a7cbb21397011e90c046511ae38"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libllama.so.0.0.10419",
+      "size": 4704240,
+      "mtime_ns": 1792838047568082802,
+      "device": 2431,
+      "inode": 102903695,
+      "sha256": "ec45054f0f729d84c776a125d7fdd75457f66256f555c28851fa7ad318319081"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0",
+      "size": 59648,
+      "mtime_ns": 1792838036540361102,
+      "device": 2431,
+      "inode": 102903339,
+      "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+      "size": 940008,
+      "mtime_ns": 1792838018539793050,
+      "device": 2431,
+      "inode": 102903280,
+      "sha256": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84"
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+      "size": 3600320,
+      "mtime_ns": 1792838035348829674,
+      "device": 2431,
+      "inode": 102903331,
+      "sha256": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f"
+    }
+  ],
+  "models": [
+    {
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "size": 10946624,
+      "mtime_ns": 1787946258053345946,
+      "device": 2431,
+      "inode": 96209037,
+      "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
+    },
+    {
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "size": 49835229856,
+      "mtime_ns": 1787971384722588539,
+      "device": 2431,
+      "inode": 96209038,
+      "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7"
+    },
+    {
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+      "size": 43836407744,
+      "mtime_ns": 1787972823021404632,
+      "device": 2431,
+      "inode": 96209043,
+      "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+    }
+  ],
+  "knobs": [
+    "GGML_FA_VKQ_F16",
+    "GGML_FA_VKQ_F32"
+  ],
+  "input": "llama-bench deterministic native depth prefill; no transcript"
+}

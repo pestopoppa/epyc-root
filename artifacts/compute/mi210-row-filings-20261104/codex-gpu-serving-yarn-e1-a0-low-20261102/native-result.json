@@ -1,0 +1,15 @@
+{
+  "status": "COMPLETE",
+  "scope": "historical E1 A0 low phase attribution",
+  "qualification_only": false,
+  "detail": {
+    "status": "COMPLETE",
+    "report": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/native/A0/20261102T132639Z/report.json",
+    "image": "E1",
+    "arm": "A0",
+    "level": "low",
+    "kfd_samples": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/kfd.jsonl",
+    "shim_log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/hipmalloc.jsonl",
+    "phase_attribution": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/phase-attribution.json"
+  }
+}

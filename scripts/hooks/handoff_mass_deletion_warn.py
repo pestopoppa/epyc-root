@@ -2,7 +2,7 @@
 """Warn-only pre-commit check: a staged change that deletes a large share of a handoff.
 
 WHY: commit 465954bc0 (2026-10-07) was titled as adding one task to
-handoffs/active/kv-unified-stack-rollout.md but changed it +12/-892 (1234 -> 354 lines): a stale-base
+handoffs/active/kv-cache-program.md but changed it +12/-892 (1234 -> 354 lines): a stale-base
 overwrite that silently dropped about 50 task bodies. Nothing flagged it, and the ids dangled for two weeks.
 
 RULE: for every staged MODIFIED handoffs/active/*.md, warn when the commit deletes more than

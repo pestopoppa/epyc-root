@@ -1,0 +1,1 @@
+{"status": "STRUCTURE_PASS", "files": ["calc.py", "main.py"], "deletions": [], "contents": {"calc.py": "def double(x):\n    return x * 2\n\ndef square(x):\n    return x * x", "main.py": "from calc import square\nprint(square(5))"}, "scope": "expected full-file envelope only"}

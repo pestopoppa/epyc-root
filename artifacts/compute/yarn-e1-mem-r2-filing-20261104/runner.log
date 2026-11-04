@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/yarn_needle.py", line 1028, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/yarn_needle.py", line 1024, in main
+    return run(a)
+           ^^^^^^
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/yarn_needle.py", line 777, in run
+    inp = load_inputs()
+          ^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/yarn_needle.py", line 395, in load_inputs
+    needles = read_jsonl(INPUTS / "needles.jsonl")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/yarn_needle.py", line 183, in read_jsonl
+    return [json.loads(x) for x in p.read_text(encoding="utf-8").split("\n") if x.strip()]
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/inputs/needles.jsonl'

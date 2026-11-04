@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:03:04Z reason=complete
+job_id=vb-canary-b-r1-20261103
+owner=ws58
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T07:02:46Z
+regions=0-23
