@@ -151,3 +151,7 @@ The r5 preparation event was already consumed; free space is approximately 137 G
 ## 17:19Z — Retry custody build qualification under the unchanged disk floor
 
 Retried publisher qualification for `kvu-kpf174-custody-r5-20261104`; the four-CPU smoke started, with its outcome pending at handoff. Earlier attempts returned WAIT at the 150 GiB disk floor. No row publication or full custody verdict is asserted. The KPF-18 layout-matched control still needs native construction and custody qualification; the KPF-26 API successor is unnecessary because both original scoped diagnostics were filed.
+
+## 17:26Z — Qualify the R15 seed ownership repair and recover KVU-12.5 exposure boundaries
+
+KPF-18 R15 C1 construction failed three times at a missing pid_owns_port helper before the seed request; a focused successor ownership check passed, but cancellation, raw custody and the native control remain unqualified. KVU-12.5 offline replay was repaired and six model-free tests pass; retained records cannot recover exact corpus intervals or authorize replacement offsets. The armed KPF-17.4d custody row awaits its full result. A separate KPF-17 mutation-oracle build repair is in preparation; its report event is registered for review and publisher qualification. No new row or native result is claimed.
