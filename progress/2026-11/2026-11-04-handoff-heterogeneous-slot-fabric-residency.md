@@ -87,3 +87,7 @@ Acknowledged the previously filed original CODE-on attempt rc1 INCONCLUSIVE: thr
 ## 16:05Z — Identify the native KPF-30 phase-capture compatibility defect
 
 Acknowledged the previously filed original P5 A1 rc75 disk-floor outcome: target result absent and no 20-row verdict; the separate r2 partial exposure remains preserved. Identified source compatibility defect preventing KPF-30 inference: integrated observer at 8952a0f69 emits KPF30 row and seq without pos, while the phase reader strictly requires pos and joins to explicit call/phase brackets; the observer does not emit those brackets. Recorded the exact source/reader boundary, with no inferred phase or native measurement. A standalone source-bound fix and model-free validation are in preparation.
+
+## 16:11Z — Prepare and verify a native KPF-30 position-field patch
+
+Acknowledged the previously filed KPF-17.4d custody r1 rc75 disk-floor result: full build and custody manifest absent; one-object qualification is not full build acceptance. Prepared an unapplied patch against integrated source 8952a0f69 that emits token position in the native KPF-30 row, so it can match the strict reader. Four compiled-format/parser contract tests and five existing phase-reader tests pass; source apply-check passes. The P3 reference impact LOW is not candidate-bound clearance; phase brackets, runner integration, linked runtime and two-window measurement remain open.

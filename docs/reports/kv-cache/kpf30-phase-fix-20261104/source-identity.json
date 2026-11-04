@@ -1,0 +1,6 @@
+{
+  "source": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-build-20261104/source/src/llama-kv-cache.cpp",
+  "commit": "8952a0f693fb923918157eb25117641b74766230",
+  "sha256": "22e6be8328fee4cf82760e7ec3dc47ac8609123b35ea06994b0655c2a1ec47c1",
+  "scope": "unapplied artifact; reference impact belongs to c72ec82, not integrated source"
+}
