@@ -80,6 +80,8 @@ TMP = os.environ.get("ROWFLOW_TMP", _LLM + "tmp/")  # tests override
 ENGINE_RE = re.compile(r"filler_run(\d+)\.sh$")
 CANONICAL_ENGINE = "filler_run15.sh"
 MAX_FAILS = 3
+DISK_FLOOR_GIB = 150.0       # == filler_run15.sh FILLER_DISK_FLOOR_GIB default and scratch_release.DISK_FLOOR_GIB
+DEFAULT_BUDGET_GIB = 1.0     # a row's declared scratch growth when the spec names none (budget_gib)
 STOP_GRACE_S = 600  # a job may finish its current item before honouring the stop file
 _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry\d*|try\d+))+$", re.I)
 SNAPSHOT_MAX_BYTES = 256 << 20  # a snapshot copies a directory; a launcher that lives next to models is a spec defect
@@ -422,6 +424,27 @@ def guess_format(result_path):
 FETCH_KINDS = ("fetch", "prepare", "inputs", "download", "copy")
 
 
+_VER = re.compile(r"^(.+?)-([vr])(\d+)((?:[-_]\d{8}(?:T\d{4,6}Z?)?)?)$", re.I)
+
+
+def disk_floor_predecessor(flags, rid):
+    """(id, scratch_root) of the newest lower version of rid's family (<base>-vN / -rN) when its grants/<id>.ended says
+    reason=disk-floor; else None."""
+    m = _VER.match(rid)
+    if not m:
+        return None
+    base, kind, n = m.group(1), m.group(2).lower(), int(m.group(3))
+    best = None
+    for e in glob.glob(os.path.join(flags, "grants", "*.ended")):
+        oid = os.path.basename(e)[:-6]
+        w = _VER.match(oid)
+        if w and w.group(1) == base and w.group(2).lower() == kind and int(w.group(3)) < n and (best is None or int(w.group(3)) > best[0]):
+            best = (int(w.group(3)), oid, e)
+    if not best or "reason=disk-floor" not in (head1(best[2]) or ""):
+        return None
+    return best[1], (load_json(ready_path(flags, best[1])) or {}).get("scratch_root")
+
+
 def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     for k in ("id", "owner", "launcher", "lane", "result_path", "decision_rule", "estimate_s", "handoff_task"):
         need(k in spec and spec[k] not in (None, ""), f"spec.{k} missing")
@@ -485,6 +508,14 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(scratch.startswith(TMP) and scratch[len(TMP):].split("/")[0] not in ("", "compute-flags", "disk-audit-20261028"),
          f"scratch_root {scratch} must be a job dir under {TMP} (not compute-flags)")
     need(launcher.startswith(scratch + "/"), f"launcher {launcher} is not inside scratch_root {scratch}")
+    # coordinator 2026-11-04 (akxall8 v9..v37): a job stopped by the disk floor is a HOST condition, not an attempt. A new
+    # version of a row family whose newest ended predecessor stopped reason=disk-floor must reuse that predecessor's
+    # scratch_root (no fresh snapshot); otherwise wait for space. Each fresh 2 GB snapshot pushed the disk lower.
+    pred = disk_floor_predecessor(flags, rid)
+    if pred:
+        need(os.path.normpath(pred[1] or "") == scratch,
+             f"predecessor {pred[0]} stopped reason=disk-floor (host condition, not an attempt): reuse its scratch_root "
+             f"{pred[1]} (no fresh snapshot) or wait for disk space")
     keep = list(spec.get("keep") or [])   # operator 2026-11-03: empty = inputs + result (the reaper protects every input)
     if result_path.startswith(scratch + "/"):
         rel = os.path.relpath(result_path, scratch)
@@ -505,6 +536,20 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
             re.compile(spec["unit_key"])
         except re.error as e:
             raise Refused(f"unit_key is a regex for text-lines results and does not compile: {e}")
+    # scratch budget (operator 2026-11-04, lease Phase 3 minimal): the GiB this row may still write into scratch; the
+    # allocator refuses its grant when free disk minus every live grant's budget would breach DISK_FLOOR_GIB.
+    try:
+        budget = float(spec.get("budget_gib") if spec.get("budget_gib") is not None else DEFAULT_BUDGET_GIB)
+    except (TypeError, ValueError):
+        raise Refused("budget_gib must be a number of GiB")
+    need(budget >= 0, "budget_gib must be >= 0")
+    # scratch_inputs (operator 2026-11-04): re-derivable inputs under scratch_root, released promptly once the row ends.
+    sins = spec.get("scratch_inputs")
+    if sins is not None:
+        need(isinstance(sins, list) and all(isinstance(x, dict) and isinstance(x.get("path"), str) and x["path"]
+                                            and not os.path.isabs(x["path"]) and ".." not in x["path"].split("/")
+                                            and x.get("kind") in ("git-worktree", "sha-manifest") for x in sins),
+             "scratch_inputs must be [{path (relative to scratch_root), kind: git-worktree|sha-manifest, manifest?, source?}]")
     regions = str(spec.get("regions") or ("mi210_0,184-191" if lane == "gpu" else ("0-95" if o["claim_cpus"] == "0-95" else "any-cpu-quarter")))
     if lane == "gpu":
         need("mi210_0" in regions, "gpu regions must name mi210_0")
@@ -524,7 +569,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "gib": int(spec.get("ram_gib") or 48), "ports": sorted(set(o["ports"]) | {int(x) for x in (spec.get("ports") or [])}),
         "priority_rank": rank,
         "scratch_root": scratch, "keep": keep, "stop_file": o["stop"], "workdir": o["workdir"],
-        "first_progress_s": fps,
+        "first_progress_s": fps, "budget_gib": budget,
         "published_at": now_iso(), "published_from": source or "spec",
     }
     if spec.get("total_units") is not None:
@@ -538,7 +583,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key"):
+              "smoke_predicate", "unit_key", "scratch_inputs"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     if spec.get("shape") is not None:
@@ -2171,6 +2216,33 @@ def admit(flags, rid, d, pid, regions, window_s):
         return False, f"refuse: launcher check could not read its inputs: {e}"
 
 
+def disk_free_gib(path=None):
+    try:
+        return shutil.disk_usage(path or TMP).free / 2**30
+    except OSError:
+        return None
+
+
+def disk_budget_refusal(flags, rid, allrows, free_gib=None):
+    """None when granting `rid` keeps free disk minus every live grant's budget_gib (and its own) at or above
+    DISK_FLOOR_GIB; else the refusal line. Live = grants/<id>.grant without .ended. Unknown free disk => no refusal
+    (the filler's own floor still applies)."""
+    free_gib = disk_free_gib() if free_gib is None else free_gib
+    if free_gib is None:
+        return None
+    live = 0.0
+    for g in open_grants(flags):
+        if g["id"] == rid or os.path.exists(os.path.join(flags, "grants", g["id"] + ".ended")):
+            continue
+        live += float((allrows.get(g["id"]) or {}).get("budget_gib") or 0)
+    own = float((allrows.get(rid) or {}).get("budget_gib") or 0)
+    head = free_gib - live - own
+    if head < DISK_FLOOR_GIB:
+        return (f"disk budget: free {free_gib:.0f} GiB - live budgets {live:.0f} GiB - this row {own:.0f} GiB = "
+                f"{head:.0f} GiB < {DISK_FLOOR_GIB:.0f} GiB floor")
+    return None
+
+
 def write_grant(flags, rid, regions, holds, window_s):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
@@ -2406,6 +2478,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             if dry:
                 log(f"PLAN {c['kind']} {rid} regions={regions} holds={','.join(compress(opt))} lane={c['lane']} rank={c['rank']:g}"); continue
             try:  # one row's failure never aborts the tick (22:33Z: an import error after ROW-ARM left q0 ungranted for 3 ticks)
+                why = disk_budget_refusal(flags, rid, allrows)
+                if why:   # host condition, not the row: no FAIL recorded, retried next tick
+                    log(f"WAIT {rid}: {why}")
+                    failed.append(rid); continue
                 a = load_json(armed_path(flags, rid))
                 if a and alive(a.get("pid")) and not armed_engine_ok(a.get("pid"), rid):
                     log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row (not killed; re-armed)")

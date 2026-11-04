@@ -222,6 +222,39 @@ try:
     LEASE = _ilu.module_from_spec(_sp); _sp.loader.exec_module(LEASE)
 except Exception as _e:
     LEASE = None; out('LEASE-ERR', 'all', 'scratch_lease unloadable (%r); every KEEP marker blocks' % (_e,))
+try:   # prompt input release + supersession (operator-directed 2026-11-04; scripts/system/scratch_release.py)
+    _sp = _ilu.spec_from_file_location('scratch_release', os.path.join(SYSDIR, 'scratch_release.py'))
+    SREL = _ilu.module_from_spec(_sp); _sp.loader.exec_module(SREL)
+except Exception as _e:
+    SREL = None; out('RELEASE-ERR', 'all', 'scratch_release unloadable (%r); inputs wait for the filing rules' % (_e,))
+ALLIDS = set()   # filled before the group pass (mans is built above it)
+def release_inputs(root, ids, tag):
+    '''INPUTS are freed as soon as every row naming the root is released (ended any rc / dry run complete / superseded):
+    verified re-derivable => freed directly (no trash, no idle wait); a DECLARED input that fails verification => guarded_rm;
+    a derived one that fails => kept. Same guards as outputs (process, KEEP marker, other refs, handoff/FILLERS, guard error).'''
+    if SREL is None or not ids: return
+    why = [SREL.row_released(F.rstrip('/'), i, ALLIDS) for i in sorted(ids)]
+    if not all(ok for ok, _ in why): return
+    decls = []
+    for i in sorted(ids):
+        for d in SREL.row_inputs(mans[i][0]):
+            if d['path'] not in [x['path'] for x in decls] and os.path.lexists(os.path.join(root, d['path'])): decls.append(d)
+    if not decls: return
+    bl, _p = cited(root, ids)
+    blockers = keepmarkers(root) + bl + other_refs(root, ids) + (['process-uses-root'] if proc_uses(root) else []) + ([GUARD_ERR] if GUARD_ERR else [])
+    rsn = ';'.join(sorted({w for _, w in why}))
+    for d in decls:
+        p = os.path.join(root, d['path']); itag = '%s/%s' % (tag, d['path'])
+        if blockers: out('INPUT-BLOCKED', itag, ','.join(blockers)); continue
+        ok, vwhy = SREL.verify_input(root, d); b = du(p)
+        if not ok and d.get('derived'): out('INPUT-KEEP', itag, 'derived input not re-derivable (%s); filing rules apply' % vwhy); continue
+        if not take_budget(itag, b): continue
+        if MODE == 'dry': out('WOULD-FREE-INPUT' if ok else 'WOULD-TRASH-INPUT', itag, '%s, %s (%s)' % (gib(b), vwhy, rsn)); continue
+        if not ok: really_delete(itag, root, [p], b, 'declared input not re-derivable: ' + vwhy); continue
+        chk = subprocess.run(['bash', '-c', 'for q in /proc/[0-9]*; do tr "\\0" " " < $q/cmdline 2>/dev/null | grep -qF "$0/" && exit 3; ls -l $q/fd 2>/dev/null | grep -qF "$0/" && exit 3; done; exit 0', p]).returncode
+        if chk != 0: out('INPUT-BLOCKED', itag, 'process appeared at free time'); continue
+        try: SREL.free_input(root, d); out('FREED-INPUT', itag, '%s directly (%s; %s)' % (gib(b), vwhy, rsn))
+        except Exception as e: out('FREE-FAIL', itag, repr(e)[:200])
 def keepmarkers(root):
     '''markers that still BLOCK. Legacy (no lease) => every marker blocks; an EXPIRED lease releases them; any error blocks.'''
     f = [m for m in MARKERS if os.path.exists(os.path.join(root, m))]
@@ -411,10 +444,12 @@ def really_delete(tag, root, dels, dbytes, note=''):
         except OSError as e: bad += 1; out('FREE-FAIL', tag, '%s %r (stays in trash; backstop sweep after 1d)' % (dest, e))
     out('FREED', tag, '%d trash entries deleted, %d failed, ~%s' % (freed, bad, gib(dbytes)))
 # ---- group decisions ----
+ALLIDS |= set(mans) | {os.path.basename(x)[:-6] for x in glob.glob(G + '*.ended')}
 for root in sorted(groups):
   g = groups[root]; ids = g['ids']; name = os.path.basename(root); tag = '%s[%s]' % (name, g['src'])
   try:
     if not os.path.isdir(root): out('GONE', tag, 'scratch_root does not exist'); continue
+    release_inputs(root, ids, tag)
     # Every associated run must have completed and have its own filing receipt.
     # A root FILED marker alone cannot assert that each result was filed.
     filed = []
@@ -443,7 +478,8 @@ for root in sorted(groups):
     dels = delplan(root, ks, prot | ins); dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
     if not vok: out('BLOCKED', tag, 'vault not verified; nothing deleted (%d entries, %s waiting)' % (len(dels), gib(dbytes))); continue
     if not dels: out('CLEAN', tag, 'nothing outside keep set and inputs; ' + inote); continue
-    if age_d < DAYS: out('HOLD', tag, 'filed %.1fd ago, reap in %.1fh (%d entries, %s)' % (age_d, (DAYS - age_d) * 24, len(dels), gib(dbytes))); continue
+    sup = SREL is not None and SREL.all_superseded(ids, ALLIDS)   # superseded + filed: no idle wait
+    if age_d < DAYS and not sup: out('HOLD', tag, 'filed %.1fd ago, reap in %.1fh (%d entries, %s)' % (age_d, (DAYS - age_d) * 24, len(dels), gib(dbytes))); continue
     blockers += keepmarkers(root) + bl + other_refs(root, ids)
     if proc_uses(root): blockers.append('process-uses-root')
     if blockers: out('BLOCKED', tag, '%s (would free %s)' % (','.join(blockers), gib(dbytes))); continue
