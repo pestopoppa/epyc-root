@@ -199,3 +199,7 @@ KPF-50.CLOCK-QUAL: published the same-lineage r4 clock-witness successor after p
 ## 22:54Z — Ready V11-FA-8 source-impact successor and file the KPF-50 clock interruption
 
 V11-FA-8: published v11-fa8-impact-5026470-20261104-r5 after its four-CPU source-reference smoke PASS. The detached candidate and source/input seals are bound to 5026470c6c5882042aa543ae54fe5410357b41ae; the original single impact query, native coverage rule and 150 GiB full-run floor remain unchanged. Smoke does not provide impact risk, edit clearance or an overflow finding. KPF-50.CLOCK-QUAL r4 ended rc75 at the disk floor before native result and was filed INCONCLUSIVE; no target window was exposed.
+
+## 22:56Z — Ready KPF-RS-1 impact successor and file V11-FA-8 interruption
+
+KPF-RS-1: kpf-rs1-impact-8952-20261104-r4 passed its four-CPU source-reference smoke and was published. The fresh detached source is bound to 8952a0f693fb923918157eb25117641b74766230; smoke uses the publisher 20 GiB floor and full runs force the original 150 GiB floor. The complete seven-symbol impact and skipped-file coverage remain pending; no source edit clearance follows. V11-FA-8 r5 ended rc75 disk-floor before native impact and coverage; filed INCONCLUSIVE.
