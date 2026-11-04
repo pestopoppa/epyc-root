@@ -976,10 +976,11 @@ KPF-22..24 and KPF-26 need P1 live.
   - [x] KPF-27c: flag-off proof (`tests/unit/test_prefix_index_flag_off.py`) and wiring tests through the
     passthrough route and `llm_call` → `/completion`. ✅ 2026-10-04 — branch A 237 passed, branch B 350 passed; the
     one wider failure (`test_canonicalization_throughput`) fails identically on untouched main (DESIGN.md §6).
-  - [ ] KPF-27d: land on main (owning session), then a **shadow window** on :8083 with the flag on and
+  - [ ] **KPF-27d**: land on main (owning session), then a **shadow window** on :8083 with the flag on and
     `_FORK` off: record `prediction_abs_err_tokens/predictions`, `slot_prediction_hits/slot_predictions` and
     the `stale_drops` mix from `get_status()`; done when two windows are recorded (VB-KVU-PF). 2026-10-04: branch A
     is landed; branch B and both shadow windows are open.
+    - **Source-impact prerequisite:** Model: none; on detached orchestrator `326f502759986c9846027f8187972969139c0089`, capture six native upstream impacts and skipped-file coverage for per-worker shadow capture. Stop on answer when all six nonpartial source-bound queries complete; stop on source drift, missing or ambiguous binding, HIGH/CRITICAL, parser failure, STOP or deadline. Gate-class: futility-only. The smoke does not clear edits or constitute a shadow window.
   - [x] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI ✅ 2026-11-02 [belief: cc]
     timings, checkpoint positions, `/props` fork capability, unique cells) into `reconcile`/`lookup`, and send
     `checkpoint_at` from the trunk-first path (KPF-21).

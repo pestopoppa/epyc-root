@@ -211,3 +211,7 @@ KPF-64.3: kpf64-impact-4f4f-20261104-r2 passed the four-CPU source-reference smo
 ## 23:01Z — Ready KPF-50 clock witness r5
 
 KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r5-20261104 passed publisher GPU smoke and was published. Its isolated attempt retains the same model-free qualification, source and toolchain custody and the unchanged 150 GiB full-run floor. Smoke does not establish full clock qualification, expose a target profiling window or decide KPF-50.
+
+## 23:03Z — Ready KPF-27d per-worker capture source-impact scan
+
+KPF-27d: published kpf27d-impact-326f-20261104 after four-CPU source-reference smoke PASS, bound to detached orchestrator 326f502759986c9846027f8187972969139c0089. The six native impacts and skipped-file coverage remain pending under the unchanged 150 GiB full-run floor; smoke is not edit clearance or a shadow window. KPF-50 clock witness r5 stopped rc75 at the disk floor before a native result and was filed INCONCLUSIVE, with no target window exposed.
