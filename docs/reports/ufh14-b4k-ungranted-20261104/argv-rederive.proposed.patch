@@ -1,0 +1,15 @@
+--- a/job.py
++++ b/job.py
+@@ -66,6 +66,12 @@
+ 
+ def launch_record() -> dict:
+     rec = json.loads(LAUNCH.read_text())
++    argv = rec.get("argv")
++    if not isinstance(argv, list) or not argv or any(not isinstance(arg, str) or "\0" in arg for arg in argv):
++        raise SystemExit("launch record argv must be nonempty strings without NUL")
++    actual_sha = hashlib.sha256("\0".join(argv).encode()).hexdigest()
++    if actual_sha != ARGV_SHA:
++        raise SystemExit(f"launch record actual argv_sha256 {actual_sha} != pinned {ARGV_SHA}")
+     if rec.get("argv_sha256") != ARGV_SHA:
+         raise SystemExit(f"launch record argv_sha256 {rec.get('argv_sha256')} != pinned {ARGV_SHA}")
+     return rec
