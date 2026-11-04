@@ -1,0 +1,7 @@
+rc=70 time=2026-11-02T22:19:11Z reason=job-rc-70:exited
+job_id=r18-belief-symbols-scratch-20261102
+owner=r18-belief-successor
+step=job-run
+estimated_wall_s=14400
+started=2026-11-02T22:10:33Z
+regions=80,81,82,83,176,177,178,179

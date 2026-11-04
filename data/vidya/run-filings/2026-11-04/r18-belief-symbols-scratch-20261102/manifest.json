@@ -1,0 +1,101 @@
+{
+ "decision_rule": "A complete nonpartial independent comparison with no CPU, HIP host or gfx90a device symbol differences passes; an evidenced complete comparison with differences is a valid negative; all failures and partials are UNKNOWN.",
+ "dryrun_timeout_s": 1800,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 14400,
+ "gib": 32,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS",
+ "id": "r18-belief-symbols-scratch-20261102",
+ "keep": [
+  "native-units.jsonl",
+  "scratch/full/*.json",
+  "scratch/full/*.jsonl",
+  "scratch/full/*.out",
+  "scratch/full/belief-symbol-finding/**",
+  "scratch/full/build*/bin/*",
+  "scratch/full/build*/CMakeCache.txt",
+  "snapshot/**",
+  "source/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/snapshot/launcher/r18_launch_successor.sh",
+  "sha256": "68fb8fcbe8cacdfe6eb2cac9dd85b0c524e0fc66642c9b4d38bdf8ffade35103"
+ },
+ "min_window_s": 1080,
+ "owner": "r18-belief-successor",
+ "ports": [],
+ "priority_rank": 12.0,
+ "published_at": "2026-11-02T13:44:24Z",
+ "published_from": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-inputs-20261102/row-spec.json",
+ "regions": "80-83",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/native-units.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102",
+ "shape": "quarter",
+ "snapshot": {
+  "dirty": false,
+  "git_toplevel": null,
+  "launcher": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/snapshot/launcher/r18_launch_successor.sh",
+  "method": "copy",
+  "rewrites": {
+   "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-inputs-20261102": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/snapshot/launcher"
+  },
+  "sha256": {
+   "launcher/lex2/README.md": "56d1fc4a84debb64e6e8a49156db464e55a45a6bd98671b1400e98f283b83496",
+   "launcher/lex2/bundle_lex2.py": "4e00ff1b7179d88003fe2911beb99ce07472c3eacfd6bed56f2dbaa7464d1fed",
+   "launcher/lex2/complete_predicate.py": "8af945047418f0947e0bb707157d8ca4f6bfe91710ddde784f3ae8ab87f20c4f",
+   "launcher/lex2/emit_lex2_observations.py": "7be58c37fe76e1b48e1e80f8c15b1c0eae13cf7c15928bf41a3321e94c70eb9d",
+   "launcher/lex2/grid_job.py": "f75de53598c15dc2aedbdc670122f04a0ad2fadc137b424bba90897111671ef4",
+   "launcher/lex2/lex2_native_capture.py": "47a68c80ec97d49aa24e9de9766ec71849d82507f9f4330fa60adcb74b46cf35",
+   "launcher/lex2/tests/test_adapter.py": "e360f34fb7b5013536ece48e11104db6de32f0e0137ad7942d02e2779fd9bc94",
+   "launcher/lex2/tests/test_native_launcher.py": "c3bd1a893ae308b55a543511009d347a58903b38194420657ca1cd1f62028bdf",
+   "launcher/r18_completion_successor.py": "7fdec3560468ff5ea30ed478cbddaee6e010c6c6b9b10c3b1e17b4d7ac76d097",
+   "launcher/r18_full_build_successor.py": "aab8a69c744be697121452657e77f4a5cac67cbbbf2ce77672fe508efb29288c",
+   "launcher/r18_inputs/CUID-RECIPES.json": "89cdaffdd58b9a8a624c5e79b7d477b82b626640876694f5fa5654a73d874aa4",
+   "launcher/r18_inputs/README.md": "8efebf041a02046f745c6f97a3407225b3dd8fb048b7567d27c68f27274bba1f",
+   "launcher/r18_inputs/comparator-dependencies.json": "5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd",
+   "launcher/r18_inputs/compare_symbols.py": "08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61",
+   "launcher/r18_inputs/perl-lib/File/Which.pm": "e317605124d953a950d3d6cc7624d0e5358bb710eeaf20f3ec7889023f19dac0",
+   "launcher/r18_inputs/perl-lib/URI/Escape.pm": "0bd8e615325fb77778b03ac7f025b9cc06b7e82410d39a55ebdb2ab18ae93ef6",
+   "launcher/r18_inputs/production-recipe.json": "74a2544c1b953a95df302295bdbb83fef9ccd26f37c7868989546f26e6d96496",
+   "launcher/r18_inputs/replay_evidence.py": "640540abc50af9c1024bd3296e3a1d11e6c90c3fdaa2c2204d483e243ac0c596",
+   "launcher/r18_inputs/replay_hip_cuid.py": "7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01",
+   "launcher/r18_job_successor.sh": "d6d63bffa8e0b4c42f9a7e33ca328b730a4816b0aef5a9c2ea6f37ba7a009534",
+   "launcher/r18_launch_successor.sh": "68fb8fcbe8cacdfe6eb2cac9dd85b0c524e0fc66642c9b4d38bdf8ffade35103",
+   "launcher/r18_run_full_successor.py": "31a7be155ca88de7b9caaa75c2ff6565d28c1a03584da473f1d2582cdd269815",
+   "launcher/r18_symbol_capture.py": "2ca369a9365a0a37ab6c1d2240deb08b26694e0e5a76a9a98504d3235e8686be",
+   "launcher/r18_symbol_capture_cli.py": "1d33be30456a39c3a39c377fa2c73ca82e2d1f547e04b9d620c4c60225c1b201",
+   "launcher/r18_symbol_sets.py": "e05f99d51b6a1642fc9b03fbbcf3790f5fc89447277746d84d0b09ab0f3166b5",
+   "launcher/repl_shadow.py": "39af8efffbcfc7efb288913f991737ca49c9499bdc349afb5adc2c356dc41496",
+   "launcher/repl_shadow_sink.py": "1d39533573f77eff7be9bb429e02e17c2a2f1e28bfac09c39801f80f630ae3b1",
+   "launcher/repl_shadow_validate.py": "2af8d5e9f6def81b6e6d937930e690c7205e35e559d37aad71e66c7ab278a9a0",
+   "launcher/repl_trace_capture.py": "9c177bcabff373748ed4f22cebb3bd121e3601312bba005de38e8b432ff07e51",
+   "launcher/row-spec.json": "dc7038c04940152148c0ac6beabd8c95633b495d86912fa920510af568dc9e49",
+   "launcher/ufh12_gs_capture.py": "de2c315743e827367493a2810ec54fe54dfe1420026b43197b2d634d3dd5933d",
+   "launcher/ufh12_gs_diagnostic.py": "96449344de985296deb73b05fec2f476cc28d1f41eaa025d8e08b3e9220fa96e",
+   "launcher/ufh12_irt_paired_capture.py": "68c924e9149187389f39f3cb3cb432faf56ba29f3ebf7f070a82626de1f86735"
+  },
+  "snapshot_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/snapshot",
+  "source_commit": null,
+  "source_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-inputs-20261102/r18_launch_successor.sh",
+  "taken_at": "2026-11-02T13:44:24Z",
+  "units": [
+   {
+    "dirty": false,
+    "git_toplevel": null,
+    "method": "copy",
+    "snapshot_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/snapshot/launcher",
+    "source_commit": null,
+    "source_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-inputs-20261102"
+   }
+  ]
+ },
+ "stop_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102"
+}
