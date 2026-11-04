@@ -271,3 +271,7 @@ The GDN comparator build was already filed. Filed floor v14, C6 build r11, paire
 ## 21:37Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
 
 The P1b 7d2 CPU build was already filed as a bounded build pass. Filed floor v15, paired C6 GPU r9 and NEMO marker build r2 as inconclusive rc75 disk-floor stops; terminal packets retained. Published floor v16 and NEMO marker build r3 after publisher smokes PASS; full calibration and build remain pending. Published paired C6 GPU diagnostic r10 after publisher smoke PASS; full diagnostic remains pending.
+
+## 21:40Z — Filed disk-floor interruptions and published independent floor, marker-build and GPU successors.
+
+The C6 qsum build was already filed. Filed floor v16, paired C6 GPU r10 and NEMO marker build r3 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent NEMO marker r4, floor v17 and paired GPU diagnostic r11 after publisher smokes passed; full results remain pending.
