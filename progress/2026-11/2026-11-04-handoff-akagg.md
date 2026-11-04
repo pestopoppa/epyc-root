@@ -323,3 +323,7 @@ LB3.2b pair r2 had already been filed inconclusive. Filed floor v25 and paired C
 ## 22:25Z — Filed disk-floor interruptions and published independent floor and GPU successors.
 
 The original GDN f32 event was already filed inconclusive. Filed floor v26 and paired C6 GPU r21 as inconclusive rc75 disk-floor stops with terminal packets retained. Published paired GPU diagnostic r22 after publisher smoke PASS; full diagnostic pending. Published independent floor v27 and paired GPU r22 after publisher smokes passed; full results remain pending.
+
+## 22:29Z — Filed interrupted floor and advanced CH31 component review.
+
+The GDN GPU event and C6 paired GPU r22 were already filed; r23 was already published by another owner. Filed floor v27 as inconclusive rc75 disk-floor stop, retaining terminal evidence. CH31 component review found empty-output acceptance, missing event-route binding and incompatible layout assumptions; correction requested, no native replay result claimed. Published independent floor v28 after publisher smoke PASS; full calibration pending.
