@@ -87,3 +87,7 @@ Acknowledged CH33 build rc0: CPU and HIP built/linkage verified for aa493c690, p
 ## 15:02Z — Acknowledge the filed CH18 model-free controls and retain their evidence.
 
 Acknowledged CH18 controls rc0: occupancy and provenance/fail-closed model-free controls passed. Retained both logs, completion marker and result with hashes before filing receipt. Server/model validation and original CH18.b reuse gate remain open.
+
+## 15:05Z — File EG2 fixed-versus-control co-batch diagnostic and preserve native evidence.
+
+Filed EG2 co-batch row rc0. Three fixed cases pass cosine distance <=0.001; the same-tip C5 control produced identical distances and did not reproduce the defect on these cases. Preserved 21 raw outputs, prompts and binding files with hashes; CH33 model gates and fold remain open.
