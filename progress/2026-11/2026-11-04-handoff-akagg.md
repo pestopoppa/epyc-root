@@ -167,3 +167,7 @@ Investigated v9 claim-loss evidence: 6863 successful lock samples through 18:17:
 ## 19:05Z — File C6 MMQ n5 GPU case and P1b build results
 
 C6 n5 granted case passed rc0 with matched inputs, MMQ route, residual 0.0039209109105864245 below unchanged 0.005948093131031932, 306 positive VRAM samples and clean drain; full suite remains open. Filed 7d2 CPU coverage build pass with 431 reviewed entries and 292 coverage notes. Filed 732 HIP build inconclusive: fresh plan contained nine dirty-marker changes and failed exact comparison before compiling; clean-source successor preparation is underway.
+
+## 19:10Z — File CH-LB1 CPU gates, CH31 metadata fixture and P1b coverage builds
+
+Filed CH-LB1 trial CPU guard/corpus/linkage/strings pass with 38/38 and BF16 refusal; fold CAS remains open. Filed CH31 cap4096 model-free ON/OFF synthetic fixture pass; model behavior remains open. Filed six P1b CPU/HIP coverage build passes with retained verified artifacts. The 7d2 HIP build refused nine dirty-marker plan differences before compilation, inconclusive; replay remains open.
