@@ -344,7 +344,7 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 65,
+      "closed": 67,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 32,
@@ -356,11 +356,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 97,
+      "total": 99,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 17,
+          "closed": 19,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -373,7 +373,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 622,
+          "line": 642,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -383,7 +383,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 934,
+          "line": 954,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -393,7 +393,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1141,
+          "line": 1161,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -403,7 +403,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1467,
+          "line": 1487,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -413,7 +413,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1702,
+          "line": 1722,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2702,
+          "line": 2704,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 692,
+          "line": 693,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14

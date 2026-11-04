@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T15:28:05Z",
+  "generated_at": "2026-11-04T15:38:14Z",
   "nodes": [
     {
       "age_days": 1,
@@ -991,7 +991,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 65,
+      "closed": 67,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1032,7 +1032,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 622,
+          "line": 642,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1041,7 +1041,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 934,
+          "line": 954,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1050,7 +1050,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1141,
+          "line": 1161,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1059,7 +1059,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1467,
+          "line": 1487,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1068,7 +1068,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1702,
+          "line": 1722,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 692,
+          "line": 693,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -3715,7 +3715,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2702,
+          "line": 2704,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
