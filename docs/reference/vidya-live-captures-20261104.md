@@ -34,6 +34,20 @@ model quality, timing nor merge validity.
 The run passes its capture/projection decision rule. `VB-AK-WIRE-MATRIX-LIVE` and its parent remain
 open until the actual AK planning context lists the decided proposition for its target.
 
+The follow-up `vb-ak-wire-canary-r1-20261104` is filed **FAIL**. The real reader returned `ready`,
+ingest projected all 31 findings without refusals, and the protected ledger hash was unchanged,
+but the matrix proposition was absent from the Q38FN CPU planning target's
+evidence section. Projection of the matrix tuple retains `source_class=verifier`,
+`binding_kind=identity` and empty applicability. The native request identifies client seats and
+their wire suite; it does not author applicability to a Q38FN model. The selector must not acquire
+that scope from the canary's requested model. The missing operational-verifier consumption path
+therefore remains a wiring gap; neither the live capture nor this failed canary closes the loop.
+
+The new unregistered `scripts/vidya/actor_wire_subject.py` names that operational identity from the
+strictly re-read native record and matches producer/request/suite/seat exactly. Its controls run
+alongside the native adapter tests (58 passed). It adds no ledger selection, admissibility or
+grading policy and has no production caller; actual planner integration remains required.
+
 ## Canary B: failed keep recovery
 
 `vb-canary-b-r1-20261103` successfully used the live BGE-large embedder (1024 dimensions, two calls,
@@ -59,3 +73,53 @@ its published rule.
 reported `pinned input changed: private_hip`; the terminal disposition is UNKNOWN. Build-complete
 units do not establish a complete CPU/HIP-host/gfx90a-device symbol comparison. No symbol-equivalence
 or difference finding follows, and the surviving `VB-KQROUTE-1` acceptance task remains open.
+
+## Prospective source controls and qualification submissions
+
+The separate EXP01 source-capture control `vidya-exp01-proxy-wire-20261104` completed on four CPUs
+with four native threads. Four original speed units and the first fixed paired item produced six
+native launches and four strictly rederived observations. Its first attempt exposed a parser defect:
+the original validity record uses `unit=validity` without a `kind` field. That attempt is preserved;
+the corrected parser has a regression built from its native record. The subsequent complete control
+is filed PASS. It supplies no new pilot ratio/look, speed advantage, port/futility decision or formal
+gate evidence and is not combined with r3. Canonical source registration and a real planning-context
+canary remain required for `VB-EXP01-PROXY-WIRE`.
+
+The prospective GPU-pool helper `gpu_pool_native.py` and exact actor-wire subject validator are
+unregistered components. Their native writer adoption and actual planner consumption remain open;
+the completed code/control subtasks do not close their parent source families.
+
+Three other row definitions were submitted while the GPU was occupied. Their publisher outcome was
+`GPU-SMOKE-QUEUED`, not a qualification PASS:
+
+| Row | Scoped workload |
+|---|---|
+| `handoff-vidya-kvu19a2-wire-20261104` | Model-free attention cases 78/80, five exact-input launches per arm/case |
+| `vidya-r18d-aa-wire-20261104` | Qwen3.8-27B Q8_0 pp512 A/A; original conditioning and 20 pairs per condition |
+| `vidya-r234-native-sweep-20261104` | Seven-arm Qwen3.8-27B DFlash2 serving sweep; 63 predeclared requests |
+
+The allocator owns their pending GPU smokes. R18-D smoke observations are explicitly unsettled and
+cannot establish a calibration floor. Row source packets and submission snapshots are retained in
+[`data/vidya/row-preparation/2026-11-04/`](../../data/vidya/row-preparation/2026-11-04/).
+
+## Completed-smoke result glob recovery
+
+The full EXP01 control passed smoke, but the publisher then treated its declared result glob as a
+literal filename. The source publisher now resolves exactly one real result inside the scratch
+root, preserving the declaration separately and archiving the resolved literal path. Missing,
+ambiguous or escaped results refuse filing. `--resume-complete` verifies the original PASS and
+current launcher/engine bindings, retains the no-smoke-branch and full-completion checks, and files
+the already-completed job without rerunning it. Content bindings make retries reject drift and
+preserve terminal bytes. A legacy PASS without a result hash gains a filing-time binding to the
+currently full-validated result; it does not gain a fabricated historical hash.
+
+This coordination/churn source fix has 24 passing focused/existing publisher tests. It changes no
+allocator or admission policy. The deployed tool snapshot was not edited; recovery used the reviewed
+repository source command. GitNexus could not provide a current impact graph for this lane; static
+caller review and the focused tests cover the completed-smoke paths, and a wrapper refresh was
+started with a completion event.
+
+The tested publisher recovery fix is retained as an **unmerged review patch** in
+[`publisher-completion-candidate-20261104`](../../data/vidya/publisher-completion-candidate-20261104/).
+D9 rejected committing its executable source without explicit operator acknowledgment. The
+completed source-control result remains filed; the publisher source-landing subtask remains open.

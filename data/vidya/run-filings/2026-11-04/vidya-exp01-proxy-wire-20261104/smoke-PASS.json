@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-wire-20261104/launcher.out",
+ "elapsed_s": 93,
+ "ended": "rc=0 time=2026-11-04T08:18:57Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T08:18:58Z",
+ "id": "vidya-exp01-proxy-wire-20261104",
+ "job_complete": true,
+ "job_complete_reason": "no smoke branch; full-job --complete-cmd passes on the job's own artifacts",
+ "launcher_sha256": "72edea406d12f864c8d472dd37cfce7b523e3594b326dea8bbaebca790be388d",
+ "passed_at": "2026-11-04T08:18:58Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/control/*/RESULT.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

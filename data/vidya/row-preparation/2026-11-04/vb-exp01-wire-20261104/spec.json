@@ -1,0 +1,28 @@
+{
+  "schema": "epyc.row.v3",
+  "id": "vidya-exp01-proxy-wire-20261104",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-3",
+  "ram_gib": 64,
+  "result_path": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/control/*/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.env",
+    "*.md",
+    "SHA256SUMS",
+    "control/**"
+  ],
+  "estimate_s": 300,
+  "handoff_task": "vidya-belief-substrate-program.md:VB-EXP01-PROXY-WIRE",
+  "decision_rule": "Source-capture/projection control ONLY, same bounded workload on exactly 4 CPUs/4 native threads: one original pp512/tg128 native speed unit per Q4KM/IQ4KT/IQ2XXS/IQ2KT arm plus the first fixed pinned paired item on Q4KM and IQ4KT. No separate smoke/official workload or duplicate scheduled run. Emit one declared measurement:false result only after full six native launches and strict source/runtime/resource/paired-item projection pass; failures/partials retain raw records and never satisfy completion. Provisional estimate 300s, absolute cap <=900s bounded by allocator deadline. No pilot ratio/look/port/futility decision, optimization evidence, historical warrant, or combination with r3.",
+  "priority_rank": 6,
+  "lineage": "vidya-exp01-prospective-capture-diagnostic",
+  "measurement": false,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/vb-exp01-wire-20261104/reader.py complete /mnt/raid0/llm/tmp/vb-exp01-wire-20261104"
+}

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "The full bounded source-capture control completed inside the four-CPU smoke: four original native speed units, first fixed paired item on both arms (six native launches), four strict source/runtime/resource/paired-item projections, measurement=false and source-capture-only purpose. It supplies no new pilot ratio/look, speed-advantage, port/futility or formal-gate conclusion and is not combined with r3. Publication filing was recovered without compute after exact-one glob resolution; source/engine/PASS checks and full completion still passed. Canonical source registration and actual planning-context integration remain open, so the parent is not ticked.",
+  "tick_text": null,
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T08:40:44+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T08:18:57Z reason=complete",
+ "filed_at": "2026-11-04T08:40:44+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-EXP01-PROXY-WIRE",
+ "id": "vidya-exp01-proxy-wire-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-wire-20261104/completed-manifest.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/control/c7a783daf09f4b69ad41cbcb46d0ea64/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "The full bounded source-capture control completed inside the four-CPU smoke: four original native speed units, first fixed paired item on both arms (six native launches), four strict source/runtime/resource/paired-item projections, measurement=false and source-capture-only purpose. It supplies no new pilot ratio/look, speed-advantage, port/futility or formal-gate conclusion and is not combined with r3. Publication filing was recovered without compute after exact-one glob resolution; source/engine/PASS checks and full completion still passed. Canonical source registration and actual planning-context integration remain open, so the parent is not ticked.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/control/c7a783daf09f4b69ad41cbcb46d0ea64/RESULT.json",
+ "root_cause_family": null,
+ "row": "vidya-exp01-proxy-wire-20261104",
+ "row_verdict": "pass",
+ "rule": "Source-capture/projection control ONLY, same bounded workload on exactly 4 CPUs/4 native threads: one original pp512/tg128 native speed unit per Q4KM/IQ4KT/IQ2XXS/IQ2KT arm plus the first fixed pinned paired item on Q4KM and IQ4KT. No separate smoke/official workload or duplicate scheduled run. Emit one declared measurement:false result only after full six native launches and strict source/runtime/resource/paired-item projection pass; failures/partials retain raw records and never satisfy completion. Provisional estimate 300s, absolute cap <=900s bounded by allocator deadline. No pilot ratio/look/port/futility decision, optimization evidence, historical warrant, or combination with r3.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a5ea662e20bee1923117a3ae3e114c050655b3c338799a4847597fb5b3694d62",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "id": "vidya-exp01-proxy-wire-20261104",
+ "launcher_sha256": "72edea406d12f864c8d472dd37cfce7b523e3594b326dea8bbaebca790be388d",
+ "manifest_sha256": "6806e41cf25e17cbb3f402c6109fd675f4245af0a4249a7b35a8eefcd773a19d",
+ "pass_sha256": "23ca719c8a4ff79e6811e94fc2749727623cbe0792ae489f027c0d79eb354945",
+ "result_path": "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/control/c7a783daf09f4b69ad41cbcb46d0ea64/RESULT.json",
+ "result_sha256": "a5ea662e20bee1923117a3ae3e114c050655b3c338799a4847597fb5b3694d62",
+ "schema": "epyc.rowflow.completed_smoke_filing.v1",
+ "sources_sha256": {
+  "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+  "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/reader.py": "9488f7959b2838240ad4362017cdd839618a6cc9e18d8ac6ef4ad6b8d079aef8",
+  "/mnt/raid0/llm/tmp/vb-exp01-wire-20261104/run.sh": "de71aeacc8522506f3b52af1a45fd605fc81ff022abd37cc5cf75455d204e433",
+  "/usr/bin/bash": "2986231b72a4ad6d21ce85f05f6630b6bddf2100a80fa49198c527e87eb1a6af"
+ }
+}
