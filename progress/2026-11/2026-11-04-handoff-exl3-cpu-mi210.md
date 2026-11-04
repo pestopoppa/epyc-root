@@ -19,3 +19,7 @@ Duplicate build-r3 end acknowledged; existing fail verdict retained (missing sha
 ## 07:24Z — Acknowledge already-filed EXP01 build-r2 event
 
 Duplicate build-r2 event acknowledged; retain its existing fail verdict for incomplete importance-matrix coverage. Build-r5 supplies the completed prerequisite. The isolated pilot brf-exp01-trellis-pilot-20261104-r3 is running; no new evidence or task completion claimed.
+
+## 07:33Z — Complete bounded EXP01 pilot with inconclusive disposition
+
+Filed isolated r3 inconclusive (rc=0): all 12 speed launches used 24 threads in the grant; IQ4KT/Q4KM=0.9630 band [0.9436,0.9824], IQ2KT/IQ2XXS=0.9610 [0.9392,0.9828]. Neither predeclared stopping condition reached by the three-launch-per-arm cap. Paired quality: 12 both correct, 10 both wrong, 2 IQ4KT-only, 0 Q4KM-only; 14/24 versus 12/24, exact paired p=0.5. Completed the bounded pilot box; T2/T3 and port remain undecided. Preserved original raw records and hashes in docs/evidence/exp01-pilot-r3-20261104/; findings and concrete optional follow-up in docs/findings/exp01-trellis-proxy-pilot-20261104.md. Registered prospective source wiring without retroactive measurement warrant. Duplicate build-r5 event acknowledged with its existing pass retained.
