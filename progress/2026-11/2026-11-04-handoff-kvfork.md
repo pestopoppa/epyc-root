@@ -247,3 +247,9 @@ V11-FA-8: published v11-fa8-impact-5026470-20261104-r6 after its four-CPU source
 ## 23:36Z — Publish child-evidence impact successor and file HSF-3 census
 
 KPF-50.CHILD-EVIDENCE-OUTPUT: published kpf50-child-evidence-main-impact-20261104-r2 after a four-CPU source-reference smoke passed. Its source retains 20,613 excluded artifact paths, explicitly recorded as skipped and not cleared; native impact is pending. The first smoke reported references under counts.main, so the incorrect progress key was corrected before retry. HSF-3 r3 was filed INCONCLUSIVE: json_records is never incremented. Retained scoped aggregate evidence and an unapplied fix with three passing synthetic tests; source-bound impact remains necessary.
+
+## 23:43Z — Ready the model-free GDB continue and inferior-exit qualification prerequisite for KPF-17.
+
+## 23:42Z — Ready KPF-17 GDB continue qualification
+
+KPF-17: published `kvfork17-gdb-continue-qual-r2-20261104` after its isolated four-CPU publisher smoke passed. The full row checks normal and deliberately nonzero inferior exit codes, post-continue state and captured-child cleanup. Smoke is not a full qualification, native oracle result, model result or library-custody claim.
