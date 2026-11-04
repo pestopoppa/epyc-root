@@ -98,6 +98,9 @@ INSTALL=(
   "bin/rowflow/filler_lib.sh      $RF/filler_lib.sh"
   "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
   "bin/rowflow/publish_row.py     $RF/publish_row.py"
+  "bin/rowflow/hostutil.py        $RF/hostutil.py"
+  "bin/rowflow/run_direct.py      $RF/run_direct.py"
+  "bin/rowflow/run_direct.sh      $RF/run_direct.sh"
 )
 # RETIRED 2026-11-01 evening (allocator): grant-writer templates, grant_ok*.sh, ram_admit.sh, validate_fillers.py, the legacy
 # grant_ok_launcher.py. rowflow.py allocate (keeper v11) is the one actor that writes grants.
