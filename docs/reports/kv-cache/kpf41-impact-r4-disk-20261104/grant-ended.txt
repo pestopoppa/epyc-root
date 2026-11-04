@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T23:06:04Z reason=disk-floor
+job_id=kpf41-direct-vec-impact-8952a0f-20261104-r4
+owner=h-kvfork
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T23:06:03Z
+regions=0-95

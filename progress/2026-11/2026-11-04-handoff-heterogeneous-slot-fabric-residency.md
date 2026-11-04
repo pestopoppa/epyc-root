@@ -439,3 +439,7 @@ The KPF-17 isolated mapping interruption was already filed inconclusive. Reanaly
 ## 23:06Z — File interrupted KPF-27d and KPF-64 impact runs
 
 Clock qualification r4 was already filed inconclusive. Filed kpf27d-impact-326f-20261104 and kpf64-impact-4f4f-20261104-r2 inconclusive after rc75 disk-floor stopped each before native impact and coverage output; preserved grant ends. No impact severity, source-edit clearance, shadow-window or KPF-64 gate result follows. KPF-61 three-failure lineage remains parked.
+
+## 23:11Z — File interrupted KPF-41 source impact
+
+Filed kpf41-direct-vec-impact-8952a0f-20261104-r4 inconclusive after rc75 disk-floor before native impact or coverage; preserved the grant end. No impact severity or edit clearance follows.

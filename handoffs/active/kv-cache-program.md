@@ -1072,6 +1072,7 @@ upstream code, so it is not copied into this repo — re-fetch with `gh pr diff 
   - *(2026-11-04.)* `kpf41-direct-vec-impact-8952a0f-20261104` ended rc75 at the disk floor before a native impact or coverage result. [Receipt](../../docs/reports/kv-cache/kpf41-direct-vec-impact-8952a0f-20261104-disk-floor/README.md). [no-belief: incomplete source scan]
   - *(2026-11-04, r2.)* `kpf41-direct-vec-impact-8952a0f-20261104-r2` also ended rc75 at the disk floor without native impact or coverage output. [Receipt](../../docs/reports/kv-cache/kpf41-direct-vec-impact-8952a0f-20261104-r2-disk-floor/README.md). [no-belief: incomplete source scan]
   - *(2026-11-04, r3.)* `kpf41-direct-vec-impact-8952a0f-20261104-r3` ended rc75 at the disk floor before native impact or coverage output. [Receipt](../../docs/reports/kv-cache/kpf41-direct-vec-impact-8952a0f-20261104-r3-disk-floor/README.md). [no-belief: incomplete source scan]
+  - *(2026-11-04, r4.)* `kpf41-direct-vec-impact-8952a0f-20261104-r4` ended rc75 at the disk floor with no native impact or coverage result; the port and source-impact prerequisite remain open. [Grant receipt](../../docs/reports/kv-cache/kpf41-impact-r4-disk-20261104/grant-ended.txt). [no-belief: incomplete source scan]
   - Enable the MMA `kv_rows` path on CDNA. Upstream gates it `GGML_CUDA_CC_IS_NVIDIA && turing_mma_available`; add
     AMD MFMA.
   - Add `kv_rows` reads to the vec kernel for plain decode.
