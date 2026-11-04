@@ -99,3 +99,15 @@ UFH14-A3A-F2: offline contract controls reproduced acceptance of NaN native pred
 ## 17:11Z — File the guarded B4k disk-floor stop and prepare a compliant successor.
 
 UFH14-B4k: filed ufh14-b4k-guard-v4-20261104 INCONCLUSIVE rc75 disk-floor after one second. The required filing.file_run refused missing or mismatched RESULT/COMPLETE; no valid window or baseline. Retained original ended receipt and filed verdict at docs/reports/ufh14-b4k-disk-floor-20261104. Disk available was 134 GiB, below 150 GiB floor; preserve the floor. Successor preparation and task-owned cleanup review registered as terminal events.
+
+## 17:13Z — Preserve the tested finite timing validator and its publication ownership constraint.
+
+UFH14-A3A-F2: fresh successor rejects nonnumeric, boolean and nonfinite native timing/count fields; 24 malformed timing controls, 13 authority controls and receipt controls passed offline. Saved analyzer, controls and two receipts under docs/reports/ufh14-a3-f2-finite-20261104. Prior attempt FAIL-1 is terminal, but its unpublished retry remains keeper-owned; successor not published, no native smoke or measurement claimed. B4k successor and independent CPU preparation delegated with terminal events.
+
+## 17:13Z — Preserve the tested finite timing validator and its publication ownership constraint.
+
+UFH14-A3A-F2: fresh successor rejects nonnumeric, boolean and nonfinite native timing/count fields; 24 malformed timing controls, 13 authority controls and receipt controls passed offline. Saved analyzer, controls and two receipts under docs/reports/ufh14-a3-f2-finite-20261104. Prior attempt FAIL-1 is terminal, but its unpublished retry remains keeper-owned; successor not published, no native smoke or measurement claimed. B4k successor and independent CPU preparation delegated with terminal events.
+
+## 17:14Z — Preserve the tested finite timing validator and its publication ownership constraint.
+
+UFH14-A3A-F2: fresh successor rejects nonnumeric, boolean and nonfinite native timing/count fields; 24 malformed timing controls, 13 authority controls and receipt controls passed offline. Saved analyzer, controls and two receipts under docs/reports/ufh14-a3-f2-finite-20261104. Prior attempt FAIL-1 is terminal, but its unpublished retry remains keeper-owned; successor not published, no native smoke or measurement claimed. B4k successor and independent CPU preparation delegated with terminal events.
