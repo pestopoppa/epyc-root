@@ -379,3 +379,7 @@ The validator guard proposal was already preserved and remains gated on a native
 ## 22:12Z — Publish bounded HSF-3 source coverage census
 
 The kvu126 impact interruption had already been filed inconclusive. Published hsf3-source-coverage-task8-20261104 after four-CPU synthetic smoke passed; its full granted census will read bounded progress and checkpoint sources and emit aggregate-only coverage. Source changes or missing input fail closed; SQLite custody is stat stability, not a logical snapshot hash. This is not a gap distribution or HSF-3 completion.
+
+## 22:14Z — Review GPU prerequisites and validator guard
+
+The KPF-50 source-impact event was already filed inconclusive after the disk floor stopped the full run. HSF-3 source coverage is running. KPF-17.4d historical re-judgment still requires same-image a1f0c8cf9 custody and a qualified layout witness; the newer build is not a historical substitute. Independent GPU preparation and validator guard work remain incomplete; no new row, source clearance, or profile result is asserted.
