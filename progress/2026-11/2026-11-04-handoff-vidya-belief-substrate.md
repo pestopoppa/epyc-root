@@ -23,3 +23,7 @@ Duplicate vb-sl2-steps-r1-20261103 event refers to the already filed PASS and al
 ## 15:24Z — Prepare successor native actor-wire canary and prospective source work
 
 The repeated vb-ak-wire-canary-r1-20261104 event was already filed FAIL; its native matrix ingested but was absent from planning context. Reviewed landed harness tier e9f943781 and the original canary packet; commissioned bounded successor canary publication, EXP01 strict reader and an independent CPU row, with completion events registered. No new row qualification or acceptance result is claimed.
+
+## 16:25Z — Publish native actor-wire planning canary successor with harness-isolation checks
+
+Published vb-ak-wire-canary-r3-20261104 after four-CPU first-progress smoke PASS (rc 75 partial-native-incomplete). Pinned detached root source 57cd9378675c54c8583572407035672240594969 and preserved the original native matrix evidence. The live decision requires ready planner, zero ingest refusals, proposition visibility in the harness tier, exclusion from reliance-eligible claim IDs and unchanged canonical ledger. Native launch packet and submission record archived under data/vidya/row-preparation/2026-11-04; the smoke does not close the acceptance boxes. The previous actor-planner-next review found the harness-tier code already landed at e9f943781; its two synthetic isolation tests passed.

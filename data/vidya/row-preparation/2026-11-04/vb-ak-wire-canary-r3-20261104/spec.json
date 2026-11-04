@@ -1,0 +1,26 @@
+{
+  "id": "vb-ak-wire-canary-r3-20261104",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS iff status=PASS, prepare_status=ready, ingest_refused=0, rows_projected>0, proposition_visible=true, harness_matrix_visible=true, harness_excluded_from_claim_ids=true and canonical_unchanged=true. FAIL on a ready unchanged canary missing any required proposition, harness isolation or ingest condition; UNKNOWN on exception, refusal or canonical change. Model-free verifier finding only; no timing or quality claim.",
+  "estimate_s": 900,
+  "min_window_s": 900,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "admission_class": "block-correctness",
+  "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+  "scratch_root": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104",
+  "lineage": "vb-ak-wire-canary",
+  "keep": [
+    "RESULT.json",
+    "evidence/**",
+    "state/ingest.json",
+    "state/prepared.json",
+    "state/planner-belief-section.txt"
+  ],
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/progress.py"
+}

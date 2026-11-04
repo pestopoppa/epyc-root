@@ -1,0 +1,8 @@
+{
+  "row": "vb-ak-wire-canary-r3-20261104",
+  "status_at_submission": "SMOKE PASS; published",
+  "source_commit": "57cd9378675c54c8583572407035672240594969",
+  "smoke": "four CPUs, first-progress predicate, rc 75 partial-native-incomplete",
+  "original_native_evidence": "data/vidya/run-filings/2026-11-04/vb-ak-wire-matrix-r1-20261103/native-evidence.tar.gz",
+  "result": "pending allocated run; smoke is not acceptance"
+}
