@@ -1,0 +1,35 @@
+{
+  "hip": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+  "hip_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+  "hip_stat": {
+    "dev": 2431,
+    "ino": 110022320,
+    "mtime_ns": 1790001510815103014,
+    "size": 68250624
+  },
+  "kernel": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+  "kernel_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+  "limitation": "fresh model hashes verified before publication; grant checks device, inode, size, mtime and ctime without model hashing",
+  "models": [
+    {
+      "ctime_ns": 1786727071283192651,
+      "dev": 2431,
+      "ino": 96505457,
+      "mtime_ns": 1786727071030792493,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "size": 29047086048
+    },
+    {
+      "ctime_ns": 1787174924804276376,
+      "dev": 2431,
+      "ino": 96211175,
+      "mtime_ns": 1787172135435655139,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+      "size": 2056414752
+    }
+  ],
+  "schema": "epyc.sr8.preflight.v1",
+  "scope": "np4 GPU server with one active request; no concurrent throughput claim"
+}
