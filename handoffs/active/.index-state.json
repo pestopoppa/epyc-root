@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 679
+      "open": 678
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 205
+      "open": 206
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 476
+      "open": 477
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 248,
+      "closed": 249,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 89,
+      "open": 90,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 338,
+      "total": 340,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 130,
+          "closed": 131,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 44
+          "open": 45
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1364,
+          "line": 1368,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1746,
+          "line": 1750,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1361,10 +1361,10 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 92,
+      "closed": 93,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 36,
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1419,13 +1419,13 @@
         },
         {
           "blocked": 0,
-          "closed": 17,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
           "line": 1709,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 6
+          "open": 5
         }
       ]
     },
@@ -2617,7 +2617,7 @@
       "closed": 350,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 94,
+      "open": 95,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 446
+      "total": 447
     }
   },
   "row_id_collisions": {},
