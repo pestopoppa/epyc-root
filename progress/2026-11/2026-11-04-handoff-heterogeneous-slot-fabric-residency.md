@@ -407,3 +407,7 @@ The KPF-50 clock qualification was already filed inconclusive. Prepared an optio
 ## 22:42Z — Publish and audit KPF-17 mapping revalidation fixture
 
 The prior KPF-50 clock outcome was already filed. Rejected the initial KPF-17 race fixture because it tested substitute comparisons; published kvfork17-alt17-custody-race-qual-20261104 after a four-CPU smoke against source-bound custody.validate_maps on private fixtures. Publisher reported the first progress in the declared full-result path; that path is smoke-contaminated and cannot support a full PASS without independent same-attempt proof. An isolated-output successor is being prepared. The test only concerns revalidation after a mutation; it cannot establish safety after the last check, build identity or native loading.
+
+## 22:45Z — File ambiguous mapping result and publish isolated successor
+
+HSF-3 interruption was already filed. Filed kvfork17-alt17-custody-race-qual-20261104 inconclusive despite rc0 because publisher smoke wrote the declared full-result path and no full-attempt provenance distinguishes it; preserved the ambiguous record. Published kvfork17-alt17-map-revalidation-safe-20261104 after a four-CPU smoke wrote a separate native-attempt path. The full result is attempt-bound and pending. Scope is only a second validate_maps capture after private in-place mutation, not post-check or native-loading safety.
