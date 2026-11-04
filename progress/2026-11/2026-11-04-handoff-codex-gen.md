@@ -15,3 +15,7 @@ Filed `akx-lb3-2-cv3-pair-20261102` as PARTIAL-VERDICT/inconclusive (`SMOKE_ONLY
 ## 07:28Z — File completed CAP-04 exploratory pilot
 
 Filed `brf-cap04-pilot-20261102-v3` through file_result.py as inconclusive, retaining the owner REVISE (budget derivation) disposition in `progress/2026-11/2026-11-03-ws58-brf-t4-closeout.md`. Preserved the filed verdict and original native summary in `progress/evidence/codex-gen-cap04-filing-20261104.json`. The pilot completed 76/76 units but nested-prefix validation matched 0/4 checks; derived 8k/16k comparisons and TB-4 do not count. This is an operational screen, never a gate result. The bounded pilot was already checked in the completed backlog handoff, so no checkbox was reticked; TB-1 and uncovered follow-up remain with the owning session. file_result.py wrote the FILED receipt.
+
+## 07:35Z — File invalid LSA CPU parity attempt
+
+Filed `lsa-screen-1-cpu-parity-20261103` through file_result.py as inconclusive and wrote the FILED receipt. Native result is invalid (`rc=1`, own quarter lock not visible), with null parity metrics; outer `rc=0` is not a parity success. Preserved native result and filed verdict at `progress/evidence/codex-gen-lsa-parity-filing-20261104.json`. The declared finite logits/dense-all tolerance/argmax/16-layer mask conditions were not evaluated. LSA-SCREEN-1 remains open in the owning long-context handoff; no checkbox was ticked and no timing, quality or parity verdict was issued. Experimental repair and remaining CPU/MI210 work remain with that handoff session.
