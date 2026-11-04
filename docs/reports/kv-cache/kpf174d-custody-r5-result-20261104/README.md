@@ -1,0 +1,5 @@
+# KPF-17.4d R5 prospective build custody
+
+`kvu-kpf174-custody-r5-20261104` completed rc0 on CPUs 72–95. The build-only rule is met for source `6ec877068936588b6d63dbba5842bbd540b92031`, parent `84d0a31603d495377dee24e1159bbbf02f1e2f21`: the receipt records the full build, reference options, compiler and artifact hashes, required three knobs and own-library linkage. `CUSTODY.json` binds the four built ggml DSOs to the build receipt; the pinned linkage helper is recorded. Server SHA-256 is `f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650`. Receipt SHA-256 is `6427d8c1fa491950c6f9c5f7566e3e2bc49c32ad6a750cac4fe7afbb76141b75`; custody SHA-256 is `e2ba74779ddfbb32560de5c08a2c687e56be562015a1ebce050017d82f1e63a8`.
+
+Build-only PASS: no model or GPU inference, correctness, historical image equivalence or re-judgment follows. A prospective witness must pin these receipt and custody hashes and capture mapped DSOs during its own execution. Historical-image-specific controls remain separate.

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T18:23:22Z reason=complete
+job_id=kvfork62-g3-build-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T18:22:19Z
+regions=48-71
