@@ -19,3 +19,7 @@ KPF-17 oracle build qualification: repaired the missing Ninja dependency by usin
 ## 17:28Z — Repair and publish KPF-17 mutation oracle build
 
 KPF-17 oracle build qualification: repaired the missing Ninja dependency by using Unix Makefiles, and recorded actual object bytes in the native smoke record. The four-CPU smoke compiled the reviewed test object; the published build row remains build-only, and the dependent native test requires a filed PASS before publication. No model or mutation verdict is claimed.
+
+## 17:32Z — Prepare and publish the source-bound six-symbol impact scan successor
+
+KPF-30.PHASE-IMPACT: r3 stopped at the disk floor before native impacts. Prepared fresh r4 with pinned candidate 8952a0f693fb923918157eb25117641b74766230, all six queries, source-integrity and risk-stop checks, 150 GiB floor, and a sealed private guard. Source integrity checks pass; four-CPU source-reference smoke PASS and row kpf30-impact-8952-20261104-r4 published. The full scan, risk findings, and source-edit clearance remain pending. KPF-17 oracle smoke event consumed; its full build remains pending. KPF-17.4d custody r5 is already published by its owner. Prepared model-free KPF-62 joint-source build packet at scripts/coordination/kvfork/kpf62-g3-build; its publisher smoke was started and its outcome was not observed at this boundary. The full build and scoring-launch integration remain pending; no inference successor is authorized.
