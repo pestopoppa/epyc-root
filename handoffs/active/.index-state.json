@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 676
+      "open": 679
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 202
+      "open": 203
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 86
+      "open": 85
     }
   },
   "duplicates": {},
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 228,
+      "closed": 229,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 79,
+      "open": 78,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1083,7 +1083,7 @@
         },
         {
           "blocked": 2,
-          "closed": 34,
+          "closed": 35,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -1095,7 +1095,7 @@
           "line": 2260,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 18
+          "open": 17
         },
         {
           "blocked": 0,
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2704,
+          "line": 2706,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1361,10 +1361,10 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 83,
+      "closed": 85,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 33,
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 116,
+      "total": 120,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,13 +1419,13 @@
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 1708,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 4
+          "open": 6
         }
       ]
     },
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 196,
+      "closed": 198,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 45,
+      "open": 46,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,24 +1505,24 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 243,
+      "total": 246,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 105,
+          "closed": 107,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 26
+          "open": 27
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 666,
+          "line": 673,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1025,
+          "line": 1032,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1302,
+          "line": 1309,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1937,
+          "line": 1944,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2239,
+          "line": 2246,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2848,
+          "line": 2855,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 111,
+      "closed": 113,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 145,
+      "total": 147,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 69,
+          "closed": 71,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 693,
+          "line": 695,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2617,7 +2617,7 @@
       "closed": 350,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 91,
+      "open": 92,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 443
+      "total": 444
     }
   },
   "row_id_collisions": {},
