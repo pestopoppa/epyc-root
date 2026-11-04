@@ -1,0 +1,551 @@
+diff --git a/src/llama-kv-cache.h b/src/llama-kv-cache.h
+index 548f01623..b5f8f495f 100644
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -159,6 +159,9 @@ public:
+     uint32_t get_n_stream() const;
+ 
+     bool get_has_shift() const;
++    bool get_v_trans() const { return v_trans; }
++    bool get_is_alias() const { return other != nullptr; }
++    bool is_valid_seq_id(llama_seq_id seq_id) const { return seq_id >= 0 && size_t(seq_id) < seq_to_stream.size(); }
+ 
+     ggml_type type_k() const;
+     ggml_type type_v() const;
+diff --git a/src/llama-kv-compress-plan.h b/src/llama-kv-compress-plan.h
+new file mode 100644
+index 000000000..b7eb3d98a
+--- /dev/null
++++ b/src/llama-kv-compress-plan.h
+@@ -0,0 +1,84 @@
++#pragma once
++#include "llama-kv-cells.h"
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <limits>
++#include <vector>
++
++namespace llama_kv_compress_plan {
++struct cell { int pos; uint32_t index; };
++inline bool occupied(const llama_kv_cells & cells, int seq_id, std::vector<cell> & out) {
++    out.clear();
++    if (seq_id < 0 || seq_id >= LLAMA_MAX_SEQ || size_t(cells.size()) > size_t(std::numeric_limits<int>::max())) return false;
++    for (uint32_t i = 0; i < cells.size(); ++i) {
++        if (!cells.is_empty(i)) {
++            if (!cells.seq_has(i, seq_id) || cells.seq_count(i) != 1 || cells.pos_get(i) != int(i)) return false;
++            out.push_back({cells.pos_get(i), i});
++        }
++    }
++    std::sort(out.begin(), out.end(), [](const cell & a, const cell & b) { return a.pos < b.pos; });
++    for (size_t i = 0; i < out.size(); ++i) if (out[i].pos != int(i)) return false;
++    return true;
++}
++inline bool select(const std::vector<cell> & cells, const std::vector<float> & scores,
++                   int n_sink, float ratio, int keep_recent, float recency_ratio, std::vector<int> & out) {
++    out.clear();
++    if (n_sink < 0 || keep_recent < 0 || !std::isfinite(ratio) || ratio < 0 || ratio > 1 ||
++        !std::isfinite(recency_ratio) || recency_ratio < 0 || recency_ratio > 1 ||
++        (keep_recent > 0 && recency_ratio > 0)) return false;
++    for (size_t i = 0; i < cells.size(); ++i) {
++        if (cells[i].pos < 0 || (i && cells[i-1].pos >= cells[i].pos) ||
++            size_t(cells[i].pos) >= scores.size() || !std::isfinite(scores[cells[i].pos])) return false;
++    }
++    size_t sink = 0; while (sink < cells.size() && cells[sink].pos < n_sink) ++sink;
++    if (cells.size() - sink > size_t(INT32_MAX)) return false;
++    const int active = int(cells.size() - sink);
++    // Match the original size_t * float arithmetic: promoting the ratio to
++    // double changes integer boundaries for otherwise identical requests.
++    const float target_float = float(active) * ratio;
++    if (!std::isfinite(target_float) || double(target_float) > double(INT32_MAX)) return false;
++    const int target = int(target_float);
++    if (target > active) return false;
++    if (target <= 0) return true;
++    const int kept = int(cells.size()) - target;
++    const int requested = recency_ratio > 0 ? int(double(kept) * double(recency_ratio)) : keep_recent;
++    const int recent = std::min(requested, active - target);
++    const size_t end = cells.size() - recent;
++    std::vector<float> ordered;
++    for (size_t i = sink; i < end; ++i) ordered.push_back(scores[cells[i].pos]);
++    std::sort(ordered.begin(), ordered.end());
++    if (recent > 0 && target >= int(ordered.size())) {
++        for (size_t i = sink; i < end; ++i) out.push_back(cells[i].pos);
++    } else {
++        const float threshold = ordered[std::min(target, int(ordered.size())-1)];
++        for (size_t i = sink; i < end; ++i) if (scores[cells[i].pos] < threshold) out.push_back(cells[i].pos);
++    }
++    return true;
++}
++inline bool matches(const llama_kv_cells & after, int seq_id, const std::vector<cell> & before, const std::vector<int> & removed) {
++    if (after.size() < before.size()) return false;
++    std::vector<bool> expected(before.size(), true);
++    for (int p : removed) { if (p < 0 || size_t(p) >= expected.size()) return false; expected[p] = false; }
++    for (uint32_t i = 0; i < after.size(); ++i) {
++        const bool present = !after.is_empty(i);
++        if (i >= expected.size()) { if (present) return false; continue; }
++        if (present != expected[i] || (present && (after.pos_get(i) != int(i) || !after.seq_has(i, seq_id) || after.seq_count(i) != 1))) return false;
++    }
++    return true;
++}
++inline bool layout_ok(bool plain, unsigned streams, bool transposed, bool alias, bool shifted) {
++    return plain && streams == 1 && !transposed && !alias && !shifted;
++}
++// A failed callback stops immediately. Earlier successful ranges are NOT rolled back.
++struct removal { int removed; bool ok; };
++template<class Remove> removal remove(const std::vector<int> & pos, Remove fn) {
++    int removed = 0;
++    for (size_t i = 0; i < pos.size();) {
++        size_t j = i+1; while (j < pos.size() && pos[j] == pos[j-1]+1) ++j;
++        if (!fn(pos[i], pos[j-1]+1)) return {removed, false};
++        removed += int(j-i); i = j;
++    }
++    return {removed, true};
++}
++}
+diff --git a/src/llama-kv-compress.cpp b/src/llama-kv-compress.cpp
+index c2fde8aac..d732e4c51 100644
+--- a/src/llama-kv-compress.cpp
++++ b/src/llama-kv-compress.cpp
+@@ -1,5 +1,6 @@
+ #include "llama-kv-compress.h"
+ #include "llama-kv-cache.h"
++#include "llama-kv-compress-plan.h"
+ #include "llama-memory-hybrid.h"
+ 
+ #include "ggml.h"
+@@ -59,11 +60,12 @@ static void rope_apply_avg(float * out, const float * x,
+ 
+ static void extract_layer_kv_f32(
+         llama_kv_cache * kvc,
+-        int il, int n_kv, int n_kv_heads, int d_head,
++        int il, const std::vector<llama_kv_compress_plan::cell> & cells, int n_kv_heads, int d_head,
+         std::vector<float> & k_out,
+         std::vector<float> & v_out) {
+ 
+-    const int total = n_kv * n_kv_heads * d_head;
++    const int n_kv = (int) cells.size();
++    const size_t total = size_t(n_kv) * size_t(n_kv_heads) * size_t(d_head);
+     k_out.resize(total);
+     v_out.resize(total);
+ 
+@@ -78,7 +80,7 @@ static void extract_layer_kv_f32(
+ 
+     for (int p = 0; p < n_kv; p++) {
+         // K
+-        ggml_backend_tensor_get(k_tensor, row_buf.data(), p * row_bytes_k, row_bytes_k);
++        ggml_backend_tensor_get(k_tensor, row_buf.data(), cells[p].index * k_tensor->nb[1], row_bytes_k);
+         if (k_tensor->type == GGML_TYPE_F32) {
+             memcpy(k_out.data() + p * row_size, row_buf.data(), row_size * sizeof(float));
+         } else if (k_tensor->type == GGML_TYPE_F16) {
+@@ -92,7 +94,7 @@ static void extract_layer_kv_f32(
+         }
+ 
+         // V
+-        ggml_backend_tensor_get(v_tensor, row_buf.data(), p * row_bytes_v, row_bytes_v);
++        ggml_backend_tensor_get(v_tensor, row_buf.data(), cells[p].index * v_tensor->nb[1], row_bytes_v);
+         if (v_tensor->type == GGML_TYPE_F32) {
+             memcpy(v_out.data() + p * row_size, row_buf.data(), row_size * sizeof(float));
+         } else if (v_tensor->type == GGML_TYPE_F16) {
+@@ -124,13 +126,13 @@ static std::vector<float> score_layer(
+ 
+     // Step 1: Reverse-RoPE K → pre-RoPE K, accumulate mean per head
+     std::vector<float> mu(n_kv_heads * d_head, 0.0f);
+-    std::vector<float> k_prerope(n_active * stride_pos);
++    std::vector<float> k_prerope(size_t(n_active) * size_t(stride_pos));
+ 
+     for (int p = cfg.n_sink; p < n_kv; p++) {
+         int idx = p - cfg.n_sink;
+         for (int h = 0; h < n_kv_heads; h++) {
+-            const float * k_pos = k_data + p * stride_pos + h * stride_head;
+-            float * k_out = k_prerope.data() + idx * stride_pos + h * stride_head;
++            const float * k_pos = k_data + size_t(p) * stride_pos + h * stride_head;
++            float * k_out = k_prerope.data() + size_t(idx) * stride_pos + h * stride_head;
+             rope_inverse(k_out, k_pos, d_head, theta_base, positions[p]);
+             for (int d = 0; d < d_head; d++) {
+                 mu[h * d_head + d] += k_out[d];
+@@ -141,7 +143,7 @@ static std::vector<float> score_layer(
+ 
+     // Step 2: Apply averaged forward RoPE to mean
+     std::vector<float> avg_cos(d_head / 2), avg_sin(d_head / 2);
+-    rope_avg_cos_sin(avg_cos.data(), avg_sin.data(), d_head, theta_base, n_kv, cfg.n_future);
++    rope_avg_cos_sin(avg_cos.data(), avg_sin.data(), d_head, theta_base, positions[n_kv - 1] + 1, cfg.n_future);
+ 
+     std::vector<float> mu_rotated(n_kv_heads * d_head);
+     for (int h = 0; h < n_kv_heads; h++) {
+@@ -152,20 +154,20 @@ static std::vector<float> score_layer(
+     // Step 2b: Covariance (optional)
+     std::vector<float> cov;
+     if (cfg.use_covariance) {
+-        cov.resize(n_kv_heads * d_head * d_head, 0.0f);
++        cov.resize(size_t(n_kv_heads) * size_t(d_head) * size_t(d_head), 0.0f);
+         for (int p = cfg.n_sink; p < n_kv; p++) {
+             int idx = p - cfg.n_sink;
+             for (int h = 0; h < n_kv_heads; h++) {
+-                const float * k_pre = k_prerope.data() + idx * stride_pos + h * stride_head;
++                const float * k_pre = k_prerope.data() + size_t(idx) * stride_pos + h * stride_head;
+                 const float * mu_h = mu.data() + h * d_head;
+-                float * cov_h = cov.data() + h * d_head * d_head;
++                float * cov_h = cov.data() + size_t(h) * d_head * d_head;
+                 for (int i = 0; i < d_head; i++) {
+                     float di = k_pre[i] - mu_h[i];
+                     for (int j = i; j < d_head; j++) {
+                         float dj = k_pre[j] - mu_h[j];
+                         float v = di * dj;
+-                        cov_h[i * d_head + j] += v;
+-                        if (i != j) cov_h[j * d_head + i] += v;
++                        cov_h[size_t(i) * d_head + j] += v;
++                        if (i != j) cov_h[size_t(j) * d_head + i] += v;
+                     }
+                 }
+             }
+@@ -182,7 +184,7 @@ static std::vector<float> score_layer(
+     for (int p = cfg.n_sink; p < n_kv; p++) {
+         float score = 0.0f;
+         for (int h = 0; h < n_kv_heads; h++) {
+-            const float * k_pos = k_data + p * stride_pos + h * stride_head;
++            const float * k_pos = k_data + size_t(p) * stride_pos + h * stride_head;
+             const float * mu_h = mu_rotated.data() + h * d_head;
+ 
+             float dot = 0.0f;
+@@ -190,12 +192,12 @@ static std::vector<float> score_layer(
+ 
+             float cov_term = 0.0f;
+             if (cfg.use_covariance) {
+-                const float * cov_h = cov.data() + h * d_head * d_head;
++                const float * cov_h = cov.data() + size_t(h) * d_head * d_head;
+                 for (int i = 0; i < d_head; i++) {
+                     float ki = k_pos[i];
+-                    cov_term += ki * ki * cov_h[i * d_head + i];
++                    cov_term += ki * ki * cov_h[size_t(i) * d_head + i];
+                     for (int j = i + 1; j < d_head; j++) {
+-                        cov_term += 2.0f * ki * k_pos[j] * cov_h[i * d_head + j];
++                        cov_term += 2.0f * ki * k_pos[j] * cov_h[size_t(i) * d_head + j];
+                     }
+                 }
+             }
+@@ -206,7 +208,7 @@ static std::vector<float> score_layer(
+         // V-norm weighting
+         float v_norm = 0.0f;
+         for (int h = 0; h < n_kv_heads; h++) {
+-            const float * v_pos = v_data + p * stride_pos + h * stride_head;
++            const float * v_pos = v_data + size_t(p) * stride_pos + h * stride_head;
+             for (int d = 0; d < d_head; d++) v_norm += v_pos[d] * v_pos[d];
+         }
+         scores[p] = score * sqrtf(v_norm + 1e-8f);
+@@ -257,22 +259,35 @@ std::vector<float> llama_kv_compress_score(
+         const llama_kv_compress_params & params) {
+ 
+     llama_memory_t mem = llama_get_memory(ctx);
+-    llama_kv_cache * kvc = get_kv_cache(ctx);
+-    if (!kvc) return {};
+-
++    // Only plain, unified, non-transposed caches have a proven mapping here.
++    // Composite/hybrid removal can fail after partial mutation; reject it.
++    auto * kvc = dynamic_cast<llama_kv_cache *>(mem);
++    if (!kvc || !llama_kv_compress_plan::layout_ok(true, kvc->get_n_stream(), kvc->get_v_trans(), kvc->get_is_alias(), kvc->get_has_shift()) || !kvc->is_valid_seq_id(seq_id)) return {};
++    std::vector<llama_kv_compress_plan::cell> cells;
++    if (!llama_kv_compress_plan::occupied(kvc->get_cells(seq_id), seq_id, cells) || cells.empty()) return {};
++    const int n_kv = (int) cells.size();
++    const int pos_max = cells.back().pos;
++    if (params.n_sink < 0 || params.n_future <= 0) return {};
+     const llama_model * model = llama_get_model(ctx);
+     const int n_layers   = llama_model_n_layer(model);
+     const int n_kv_heads = llama_model_n_head_kv(model);
+     const int n_q_heads  = llama_model_n_head(model);
++    if (n_kv_heads <= 0 || n_q_heads <= 0 || n_q_heads % n_kv_heads != 0) return {};
++    if (llama_model_n_embd(model) % n_q_heads != 0) return {};
+     const int d_head     = llama_model_n_embd(model) / n_q_heads;
++    if (d_head <= 0 || d_head % 2 != 0 || params.n_future > INT32_MAX - pos_max - 1) return {};
++    const size_t limit = std::vector<float>().max_size();
++    const size_t head_size = size_t(d_head);
++    if (size_t(n_kv_heads) > limit / head_size) return {};
++    const size_t row_size = size_t(n_kv_heads) * head_size;
++    if (row_size == 0 || row_size > size_t(INT32_MAX) || cells.size() > size_t(INT32_MAX) / row_size ||
++        cells.size() > limit / row_size || head_size > limit / head_size ||
++        size_t(n_kv_heads) > limit / (head_size * head_size)) return {};
+     const float theta    = get_theta_base(model);
+-
+-    llama_pos pos_max = llama_memory_seq_pos_max(mem, seq_id);
+-    if (pos_max < 0) return {};
+-    const int n_kv = pos_max + 1;
+-
+-    std::vector<int> positions(n_kv);
+-    std::iota(positions.begin(), positions.end(), 0);
++    std::vector<int> positions; positions.reserve(cells.size());
++    for (const auto & cell : cells) positions.push_back(cell.pos);
++    llama_kv_compress_params score_params = params;
++    score_params.n_sink = (int) std::count_if(cells.begin(), cells.end(), [&](const auto & cell) { return cell.pos < params.n_sink; });
+ 
+     // Find attention layers
+     std::vector<int> attn_layers;
+@@ -295,11 +310,25 @@ std::vector<float> llama_kv_compress_score(
+         weight_sum += w;
+ 
+         std::vector<float> k_data, v_data;
+-        extract_layer_kv_f32(kvc, il, n_kv, n_kv_heads, d_head, k_data, v_data);
++        auto * kt = kvc->get_k_layer_raw(il); auto * vt = kvc->get_v_layer_raw(il);
++        if (!kt || !vt || kt->ne[0] != n_kv_heads*d_head || vt->ne[0] != n_kv_heads*d_head ||
++            kt->ne[1] < n_kv || vt->ne[1] < n_kv ||
++            (kt->type != GGML_TYPE_F32 && kt->type != GGML_TYPE_F16 && !ggml_get_type_traits(kt->type)->to_float) ||
++            (vt->type != GGML_TYPE_F32 && vt->type != GGML_TYPE_F16 && !ggml_get_type_traits(vt->type)->to_float)) return {};
++        const size_t k_row = ggml_row_size(kt->type, n_kv_heads*d_head);
++        const size_t v_row = ggml_row_size(vt->type, n_kv_heads*d_head);
++        const auto row_fits = [&](const ggml_tensor * tensor, size_t row_bytes) {
++            const size_t total = ggml_nbytes(tensor);
++            if (tensor->nb[1] < row_bytes || total < row_bytes) return false;
++            const size_t last = cells.back().index;
++            return last <= (total - row_bytes) / tensor->nb[1];
++        };
++        if (!row_fits(kt, k_row) || !row_fits(vt, v_row)) return {};
++        extract_layer_kv_f32(kvc, il, cells, n_kv_heads, d_head, k_data, v_data);
+ 
+         auto layer_scores = score_layer(
+             k_data.data(), v_data.data(), positions.data(),
+-            n_kv, n_kv_heads, d_head, theta, n_q_heads, params);
++            n_kv, n_kv_heads, d_head, theta, n_q_heads, score_params);
+ 
+         for (int p = 0; p < n_kv; p++) scores[p] += layer_scores[p] * w;
+     }
+@@ -308,7 +337,9 @@ std::vector<float> llama_kv_compress_score(
+         for (auto & s : scores) s /= weight_sum;
+     }
+ 
+-    return scores;
++    std::vector<float> by_position((size_t) pos_max + 1, NAN);
++    for (size_t i = 0; i < cells.size(); ++i) by_position[cells[i].pos] = scores[i];
++    return by_position;
+ }
+ 
+ int llama_kv_compress_evict(
+@@ -316,102 +347,32 @@ int llama_kv_compress_evict(
+         llama_seq_id    seq_id,
+         const llama_kv_compress_params & params) {
+ 
++    if (params.n_sink < 0 || params.keep_recent < 0 ||
++        !std::isfinite(params.compression_ratio) || params.compression_ratio < 0.0f || params.compression_ratio > 1.0f ||
++        !std::isfinite(params.recency_ratio) || params.recency_ratio < 0.0f || params.recency_ratio > 1.0f ||
++        (params.keep_recent > 0 && params.recency_ratio > 0.0f)) return -1;
++    llama_memory_t mem = llama_get_memory(ctx);
++    auto * kvc = dynamic_cast<llama_kv_cache *>(mem);
++    if (!kvc || !llama_kv_compress_plan::layout_ok(true, kvc->get_n_stream(), kvc->get_v_trans(), kvc->get_is_alias(), kvc->get_has_shift()) || !kvc->is_valid_seq_id(seq_id) || params.compact_positions) return -1;
++    std::vector<llama_kv_compress_plan::cell> cells;
++    if (!llama_kv_compress_plan::occupied(kvc->get_cells(seq_id), seq_id, cells) || cells.empty()) return -1;
++    if (std::all_of(cells.begin(), cells.end(), [&](const auto & cell) { return cell.pos < params.n_sink; })) return 0;
+     auto scores = llama_kv_compress_score(ctx, seq_id, params);
+     if (scores.empty()) return -1;
+-
+-    llama_memory_t mem = llama_get_memory(ctx);
+-    const int n_kv = (int)scores.size();
+-
+-    // Find eviction threshold
+-    std::vector<float> sorted(scores.begin() + params.n_sink, scores.end());
+-    std::sort(sorted.begin(), sorted.end());
+-    int n_evict_target = (int)(sorted.size() * params.compression_ratio);
+-    if (n_evict_target <= 0) return 0;
+-    float threshold = sorted[std::min(n_evict_target, (int)sorted.size() - 1)];
+-
+-    // Mark positions for eviction
+-    std::vector<bool> evict(n_kv, false);
+-    for (int p = params.n_sink; p < n_kv; p++) {
+-        if (scores[p] < threshold) {
+-            evict[p] = true;
+-        }
+-    }
+-
+-    // Bulk eviction: merge consecutive positions into ranges to minimize seq_rm calls.
+-    // At 50% eviction on 32K context, this reduces ~16K calls to ~8K (alternating keep/evict)
+-    // and far fewer when eviction is spatially clustered (common — low-importance tokens
+-    // are often contiguous filler/padding regions).
+-    int evicted = 0;
+-    int range_start = -1;
+-
+-    for (int p = 0; p <= n_kv; p++) {
+-        bool should_evict = (p < n_kv) && evict[p];
+-        if (should_evict && range_start < 0) {
+-            range_start = p;
+-        } else if (!should_evict && range_start >= 0) {
+-            // Evict range [range_start, p)
+-            llama_memory_seq_rm(mem, seq_id, range_start, p);
+-            evicted += (p - range_start);
+-            range_start = -1;
+-        }
+-    }
+-
+-    // Position gap compaction (opt-in): shift remaining positions to close gaps.
+-    // Without this, gaps consume context window — new tokens at pos_max+1
+-    // waste positions that have no KV entries. The shift preserves relative
+-    // ordering but changes absolute RoPE positions.
+-    //
+-    // WARNING: Only safe when the caller manages token positions directly.
+-    // llama-server tracks positions in its prompt cache independently — using
+-    // seq_add here would desync the server's state. Default is OFF.
+-    if (evicted > 0 && params.compact_positions) {
+-        int gap = 0;
+-        bool in_gap = false;
+-        int gap_start = -1;
+-
+-        for (int p = params.n_sink; p < n_kv; p++) {
+-            if (evict[p]) {
+-                if (!in_gap) {
+-                    gap_start = p;
+-                    in_gap = true;
+-                }
+-            } else {
+-                if (in_gap) {
+-                    gap += (p - gap_start);
+-                    in_gap = false;
+-                }
+-                // Shift this position left by accumulated gap
+-                // (handled by a single seq_add call after the scan)
+-            }
+-        }
+-        // Final gap at end
+-        if (in_gap) {
+-            gap += (n_kv - gap_start);
+-        }
+-
+-        // Apply shift: for each contiguous kept range after a gap,
+-        // shift it left by the gap size at that point.
+-        // We do this in reverse order of gaps to avoid shifting already-shifted ranges.
+-        // Simpler approach: rebuild position sequence via seq_rm of the whole range
+-        // then seq_add. But seq_add shifts ALL positions >= p0, which handles it in one call
+-        // per gap.
+-        gap = 0;
+-        for (int p = params.n_sink; p < n_kv; p++) {
+-            if (evict[p]) {
+-                gap++;
+-            } else if (gap > 0) {
+-                // Found a kept position after a gap — shift everything from here onward
+-                llama_memory_seq_add(mem, seq_id, p, -1, -gap);
+-                // After shifting, positions [p, ...) become [p-gap, ...).
+-                // Adjust our scan to account for the shift.
+-                // The remaining positions are now at [p-gap, ...) so we continue
+-                // scanning but the evict[] array still uses original indices.
+-                // Since seq_add shifted ALL positions >= p, subsequent kept positions
+-                // are already shifted. We only need one seq_add call per contiguous gap.
+-                gap = 0;
+-            }
+-        }
+-    }
++    std::vector<int> positions;
++    if (!llama_kv_compress_plan::select(cells, scores, params.n_sink, params.compression_ratio,
++                                        params.keep_recent, params.recency_ratio, positions)) return -1;
++    auto result = llama_kv_compress_plan::remove(positions, [&](int p0, int p1) {
++        return llama_memory_seq_rm(mem, seq_id, p0, p1);
++    });
++    // On failure earlier ranges may already have been removed; report the error
++    // rather than falsely reporting the requested count as successful.
++    // Compare physical ownership against the expected original or final set.
++    // A failed call is non-mutating only if every pre-existing cell is unchanged.
++    const std::vector<int> none;
++    if (!llama_kv_compress_plan::matches(kvc->get_cells(seq_id), seq_id, cells, result.ok ? positions : none)) return -2;
++    if (!result.ok) return -1;
++    const int evicted = result.removed;
+ 
+     return evicted;
+ }
+diff --git a/src/llama-kv-compress.h b/src/llama-kv-compress.h
+index 0e14ec47f..ebdbbf2ac 100644
+--- a/src/llama-kv-compress.h
++++ b/src/llama-kv-compress.h
+@@ -16,6 +16,8 @@ struct llama_kv_compress_params {
+     float compression_ratio = 0.50f;  // fraction of KV entries to REMOVE
+     int   n_future          = 128;    // future positions for RoPE averaging
+     int   n_sink            = 4;      // sink tokens to protect (never evicted)
++    int   keep_recent       = 0;      // most recent positions to reserve, 0 = disabled
++    float recency_ratio     = 0.0f;   // fraction of retained budget to reserve; exclusive with keep_recent
+     bool  use_covariance    = true;   // include covariance term (more accurate, slower)
+ 
+     // If true, shift remaining positions to close gaps after eviction via seq_add.
+@@ -45,7 +47,7 @@ std::vector<float> llama_kv_compress_score(
+ 
+ // Score and evict low-importance KV entries in one call.
+ // Evicts the bottom `compression_ratio` fraction of non-sink entries.
+-// Returns number of entries evicted, or -1 on error.
++// Returns entries evicted, -1 on error with unchanged sequence, or -2 when partial/uncertain mutation requires full sequence invalidation.
+ int llama_kv_compress_evict(
+         llama_context * ctx,
+         llama_seq_id    seq_id,
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 07544da91..71d4a21ef 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -19,6 +19,8 @@
+ #include "mtmd-helper.h"
+ 
+ #include <algorithm>
++#include <cmath>
++#include <limits>
+ #include <cstddef>
+ #include <cstring>
+ #include <cinttypes>
+@@ -2732,7 +2734,12 @@ private:
+ 
+                     const int n_evicted = llama_kv_compress_evict(ctx_tgt, id_slot, ea_params);
+                     if (n_evicted < 0) {
+-                        send_error(task, "Expected Attention compression failed", ERROR_TYPE_SERVER);
++                        if (n_evicted == -2) {
++                            // Clears target/draft KV, prompt tokens and checkpoints. The
++                            // clear itself aborts on failure, preventing stale reuse.
++                            slot->prompt_clear();
++                        }
++                        send_error(task, n_evicted == -2 ? "Expected Attention partially mutated the cache; slot invalidated" : "Expected Attention compression failed", ERROR_TYPE_SERVER);
+                         break;
+                     }
+ 
+@@ -5545,6 +5552,8 @@ static llama_kv_compress_params make_server_expected_attention_params(const serv
+     llama_kv_compress_params ea_params;
+     ea_params.compression_ratio = 1.0f - task.slot_action.keep_ratio; // keep_ratio=0.5 → remove 50%
+     ea_params.n_sink            = task.slot_action.keep_first;
++    ea_params.keep_recent       = task.slot_action.keep_recent;
++    ea_params.recency_ratio     = task.slot_action.recency_ratio;
+     ea_params.n_future          = task.slot_action.n_future;
+     ea_params.use_covariance    = task.slot_action.use_covariance;
+     ea_params.layer_weights     = task.slot_action.layer_weights;
+@@ -5570,9 +5579,32 @@ std::unique_ptr<server_res_generator> server_routes::handle_slots_compact(const
+     // operates in-place on raw KV tensors, so it needs no state-buffer surgery.
+     auto res = create_response();
+ 
+-    auto body = json::parse(req.body, nullptr, false);
++    auto body = req.body.empty() ? json::object() : json::parse(req.body, nullptr, false);
++    if (!body.is_object()) {
++        res->error(format_error_response("Expected a JSON object", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++
++    if (body.is_object() && body.contains("keep_recent") && body.contains("recency_ratio")) {
++        res->error(format_error_response("Specify only one of keep_recent and recency_ratio", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++    if (body.is_object() && body.contains("keep_recent") &&
++        (!body["keep_recent"].is_number_integer() ||
++         (body["keep_recent"].is_number_unsigned() && body["keep_recent"].get<uint64_t>() > uint64_t(std::numeric_limits<int>::max())) ||
++         (!body["keep_recent"].is_number_unsigned() && (body["keep_recent"].get<int64_t>() < 0 || body["keep_recent"].get<int64_t>() > std::numeric_limits<int>::max())))) {
++        res->error(format_error_response("keep_recent must be a non-negative integer", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++    if (body.is_object() && body.contains("recency_ratio") &&
++        (!body["recency_ratio"].is_number() || !std::isfinite(body["recency_ratio"].get<double>()) || body["recency_ratio"].get<double>() < 0.0 || body["recency_ratio"].get<double>() > 1.0)) {
++        res->error(format_error_response("recency_ratio must be between 0 and 1", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
+ 
+     server_task task(SERVER_TASK_TYPE_SLOT_COMPACT);
++    task.slot_action.keep_recent = body.is_object() && body.contains("keep_recent") ? body["keep_recent"].get<int>() : 0;
++    task.slot_action.recency_ratio = body.is_object() && body.contains("recency_ratio") ? body["recency_ratio"].get<float>() : 0.0f;
+     task.slot_action.id_slot        = id_slot;
+     task.slot_action.keep_ratio     = body.is_object() && body.contains("keep_ratio")     ? body["keep_ratio"].get<float>()    : 0.5f;
+     task.slot_action.keep_first     = body.is_object() && body.contains("keep_first")     ? body["keep_first"].get<int>()      : 8;
+diff --git a/tools/server/server-task.h b/tools/server/server-task.h
+index 07501dfaf..c7f9b7311 100644
+--- a/tools/server/server-task.h
++++ b/tools/server/server-task.h
+@@ -174,6 +174,8 @@ struct server_task {
+ 
+         // used by SERVER_TASK_TYPE_SLOT_COMPACT (Expected Attention KV compaction)
+         float keep_ratio       = 0.5f;  // fraction of KV entries to KEEP
++        int   keep_recent      = 0;     // number of recent positions protected
++        float recency_ratio    = 0.0f;  // fraction of retained budget protected
+         int   keep_first       = 8;     // sink tokens protected from eviction
+         int   n_future         = 128;   // RoPE averaging window
+         bool  use_covariance   = true;  // include covariance term (more accurate)

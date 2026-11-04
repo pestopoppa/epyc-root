@@ -1,0 +1,28 @@
+{
+  "id": "lsa-gitnexus-enum-validate-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/gitnexus-parser-debug-20261104/enum-validation/launch.sh",
+  "lane": "cpu",
+  "regions": "0-1",
+  "ram_gib": 8,
+  "estimate_s": 300,
+  "first_progress_s": 80,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/gitnexus-parser-debug-20261104/enum-validation/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Qualify with enum semantic/traversal and small C++/Python graph identity; run exact d424aba6 ops.cpp candidate full worker, stop on result or 60s and record outputs.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "busy_fraction": 0.5,
+  "keep": [
+    "*.out",
+    "*.err",
+    "*.stdout",
+    "*.stderr",
+    "*.samples",
+    "*.jsonl",
+    "*.py",
+    "*.sh",
+    "*.sha256"
+  ]
+}

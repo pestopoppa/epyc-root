@@ -1,0 +1,17 @@
+{
+  "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/out/CMakeCache.txt": {
+    "expected": "99faf617bac4a3d07fd5154c2f19824d1711b7a24f97c56ddde4e75476a188e5",
+    "actual": "99faf617bac4a3d07fd5154c2f19824d1711b7a24f97c56ddde4e75476a188e5",
+    "matches": true
+  },
+  "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/out/compile_commands.json": {
+    "expected": "1a9bada82f2a54da764d89b8901c667fdcdc65ab8d8bb799584e2be5165cbdad",
+    "actual": "1a9bada82f2a54da764d89b8901c667fdcdc65ab8d8bb799584e2be5165cbdad",
+    "matches": true
+  },
+  "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/out/bin/libggml-base.so.0.16.0": {
+    "expected": "ca9a30b8f7ec33a3fe66dcd11d6ceb1ddfb390467cf3e04e1e5c7e30550667f2",
+    "actual": "ca9a30b8f7ec33a3fe66dcd11d6ceb1ddfb390467cf3e04e1e5c7e30550667f2",
+    "matches": true
+  }
+}
