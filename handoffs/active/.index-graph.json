@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T00:00:37Z",
+  "generated_at": "2026-11-04T00:06:35Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1351,7 +1351,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 344,
@@ -1360,7 +1360,7 @@
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
       "open": 86,
       "priority": 0.8902,
