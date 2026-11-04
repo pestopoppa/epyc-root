@@ -123,3 +123,7 @@ Acknowledged previously filed CH31 v2 rc0 fixture with ON/OFF OpenMP and six mod
 ## 16:28Z — Integrate GDN controls, P1b identity and v7 floor retention; declare the GDN build stopping conditions.
 
 Consumed GDN control review, P1b identity preflight and floor v7 retention outcomes. Added the existing GDN build prerequisite stop conditions without changing oracle or promotion criteria. Source-bound four-core SMT-safe successor and P1b historical recipe evidence are being prepared; no new row or model identity is claimed.
+
+## 17:17Z — File the GDN affinity build disk-floor stop and repair CH-LB1.1 smoke qualification
+
+The affinity build row stopped rc75 at the disk floor before native build; RESULT.json is absent and the pre-existing filing is inconclusive. AKX-ALL-31.GDN remains open. CH-LB1.1 successor smoke failed on an unset dry-run result variable; packet repair is in progress.
