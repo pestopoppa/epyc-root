@@ -135,3 +135,7 @@ C6-Q4-MMVQ-FIX: filed c6-pre-mmq-capture-build-r3-20261104 inconclusive (rc75 di
 ## 20:46Z — File failed C6 diagnostic admission and publish independently preserved successor
 
 C6-Q4-MMVQ-FIX: c6-n4-shared-harness-20261104 ended rc75 at disk-floor admission without RESULT.json; filed inconclusive after preserving both image bundles. Published c6-n4-shared-harness-r2-20261104 with GPU smoke PASS, unchanged matched-input, MMVQ route and own-process GPU custody rules; smoke is not a qualification result. CH-26b: private request-owner integration at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-integration/ passed five model-free tests; continuous placement, contention, host coverage and custody remain unproved, so no floor is admitted.
+
+## 20:49Z — Prepare host-scoped scheduler trace ABI diagnostic for CH-26b
+
+C6-Q4-MMVQ-FIX: c6-n4-shared-harness-r2-20261104 stopped rc75 at disk-floor admission without a result; retained the terminal packet and filed inconclusive. Repeated same-objective disk-floor failures park the diagnostic lineage. CH-26b: prepared a bounded host-scoped scheduler-trace repeatability diagnostic; this is functional evidence only and does not establish continuous host coverage, contention, placement or a noise floor. Private source-custody preparation passed nine model-free tests but runtime custody remains unproved. Published ch26-hostscope-abi-20261104 after its one-capture smoke PASS; the real row requires six separately sealed four-CPU captures over five minutes and independent raw-ring verification.
