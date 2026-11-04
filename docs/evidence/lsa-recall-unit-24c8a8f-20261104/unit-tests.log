@@ -1,0 +1,18 @@
+test_recall_instrument (unittest.loader._FailedTest.test_recall_instrument) ... ERROR
+
+======================================================================
+ERROR: test_recall_instrument (unittest.loader._FailedTest.test_recall_instrument)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_recall_instrument
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/recall-unit-20261104/code/test_recall_instrument.py", line 10, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
