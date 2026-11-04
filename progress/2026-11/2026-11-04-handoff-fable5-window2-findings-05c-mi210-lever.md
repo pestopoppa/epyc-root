@@ -27,3 +27,7 @@ The dispatched r2 event was already filed inconclusive with receipt (rc143, no n
 ## 14:18Z — Repair Q38 recipe row after pre-inference directory failure
 
 Diagnosed r4 rc1 from the original job log: the full-job path attempted to mkdir captures/run-r1 without its missing parent; the smoke followed a separate branch. The successor must create the parent while refusing existing output, reseal its plan and source custody for r5, and test the full-job setup path without running a model. Delegated that bounded packet preparation and registered its completion event. The r3 YARN event was previously filed inconclusive and the parent memory box is closed by the later continuous-chain result.
+
+## 14:20Z — File partial PF1 refinement and prepare control-bias follow-up
+
+Filed pf1-expand-r2-20261104 inconclusive, rc75 disk-floor after 2/3 blocks: 32 valid units, 1.0 capture completeness, A0 node share 25%; A1-disabled/A0 controls 0.8975, 0.8820, 0.8597, 0.9004 at L384/448/512/768, so first three fail the 0.90–1.10 guard. Preserved native results, capture proofs, manifest and end in data/mi210/pf1-expand-r2-20261104. No crossover or NPD claim; the box remains open. Delegated diagnosis of the control bias and preparation of a successor under the existing rule. YARN r4 was already filed inconclusive; later continuous-chain evidence closes its parent.
