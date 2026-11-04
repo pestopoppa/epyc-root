@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc75 disk-floor and missing native RESULT; required full source-bound diagnostic executable/marker/linkage proof is not established. Earlier qualification is not a scheduled full-build or timing result.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T14:19:29+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T14:18:04Z reason=disk-floor",
+ "filed_at": "2026-11-04T14:19:29+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+ "id": "cafe2-v10-verify-cost-build-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe2-v10-verify-cost-build-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "Scheduled rc75 disk-floor and missing native RESULT; required full source-bound diagnostic executable/marker/linkage proof is not established. Earlier qualification is not a scheduled full-build or timing result.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe2-v10-verify-cost-build-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Accept only pinned v10 plus exact CAFE-2 candidate/bridge and CMake patch; full CPU cafe2-verify-cost executable, compiled CAFE2_VERIFY_RAW marker, content hashes and local llama-common linkage. Build-only prerequisite: no timing, expert union, MTP execution or CAFE-2 cost verdict. Stop on build failure, source mismatch, STOP or deadline; incomplete is UNKNOWN.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}
