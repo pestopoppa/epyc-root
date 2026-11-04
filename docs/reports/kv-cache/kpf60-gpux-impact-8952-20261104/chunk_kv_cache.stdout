@@ -1,0 +1,299 @@
+{
+  "target": {
+    "id": "Function:src/llama-context.cpp:chunk_kv_cache",
+    "name": "chunk_kv_cache",
+    "type": "Function",
+    "filePath": "src/llama-context.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 25,
+  "risk": "MEDIUM",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 7,
+    "processes_affected": 2,
+    "modules_affected": 2
+  },
+  "byDepthCounts": {
+    "1": 7,
+    "2": 13,
+    "3": 5
+  },
+  "affected_processes": [
+    {
+      "name": "main",
+      "type": "Function",
+      "filePath": "tests/test-chunk-kv-recompute.cpp",
+      "affected_process_count": 1,
+      "total_hits": 1,
+      "earliest_broken_step": 1
+    },
+    {
+      "name": "main",
+      "type": "Function",
+      "filePath": "tests/test-chunk-kv.cpp",
+      "affected_process_count": 1,
+      "total_hits": 1,
+      "earliest_broken_step": 1
+    }
+  ],
+  "affected_modules": [
+    {
+      "name": "Tests",
+      "hits": 20,
+      "impact": "direct"
+    },
+    {
+      "name": "Server",
+      "hits": 3,
+      "impact": "indirect"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_supported",
+        "name": "llama_chunk_kv_supported",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_export",
+        "name": "llama_chunk_kv_export",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_inject",
+        "name": "llama_chunk_kv_inject",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_read_f32",
+        "name": "llama_chunk_kv_read_f32",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_read_layer_k_f32",
+        "name": "llama_chunk_kv_read_layer_k_f32",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_rope_selfcheck",
+        "name": "llama_chunk_kv_rope_selfcheck",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/llama-context.cpp:llama_chunk_kv_decode_at",
+        "name": "llama_chunk_kv_decode_at",
+        "filePath": "src/llama-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Function:tools/server/server-chunk-recompute.h:decode_range",
+        "name": "decode_range",
+        "filePath": "tools/server/server-chunk-recompute.h",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tools/server/server-chunk-recompute.h:assemble~shape:llama_context:none:pointer:1|llama_token:const:pointer:1|std::vector<span>:const:lvalue-ref:0|int32_t:none:value:0|int32_t:none:value:0|llama_seq_id:none:value:0|int32_t:none:value:0|select_mode:none:value:0|int32_t:none:value:0|F:none:rvalue-ref:0|assemble_stats:none:lvalue-ref:0|int32_t:none:pointer:1|kdev_selector:const:pointer:1~c:10ca570",
+        "name": "assemble",
+        "filePath": "tools/server/server-chunk-recompute.h",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv-g3.cpp:blob",
+        "name": "blob",
+        "filePath": "tests/test-chunk-kv-g3.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv-g3.cpp:fresh",
+        "name": "fresh",
+        "filePath": "tests/test-chunk-kv-g3.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv-recompute.cpp:read_kv",
+        "name": "read_kv",
+        "filePath": "tests/test-chunk-kv-recompute.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv-recompute.cpp:test_recompute",
+        "name": "test_recompute",
+        "filePath": "tests/test-chunk-kv-recompute.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv-recompute.cpp:blob",
+        "name": "blob",
+        "filePath": "tests/test-chunk-kv-recompute.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv.cpp:read_kv",
+        "name": "read_kv",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv.cpp:test_refusal",
+        "name": "test_refusal",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv.cpp:blob",
+        "name": "blob",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv.cpp:blob2",
+        "name": "blob2",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:tests/test-chunk-kv.cpp:test_off_identical",
+        "name": "test_off_identical",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:tools/server/server-context.cpp:server_context_impl.chunk_encode#2",
+        "name": "chunk_encode",
+        "filePath": "tools/server/server-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "Function:tools/server/server-chunk-recompute.h:recompute_runs",
+        "name": "recompute_runs",
+        "filePath": "tools/server/server-chunk-recompute.h",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Function:tests/test-chunk-kv-kdev-contract.cpp:main",
+        "name": "main",
+        "filePath": "tests/test-chunk-kv-kdev-contract.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Function:tests/test-chunk-kv-recompute.cpp:main",
+        "name": "main",
+        "filePath": "tests/test-chunk-kv-recompute.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_285_main",
+            "label": "Main → N_tokens",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 3,
+        "id": "Function:tests/test-chunk-kv.cpp:main",
+        "name": "main",
+        "filePath": "tests/test-chunk-kv.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_270_main",
+            "label": "Main → N_tokens",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 3,
+        "id": "Method:tools/server/server-context.cpp:server_context_impl.kv_chunks_apply#1",
+        "name": "kv_chunks_apply",
+        "filePath": "tools/server/server-context.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}
