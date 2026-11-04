@@ -247,3 +247,7 @@ Filed kvu19b-profiler-clock-build-20261104 INCONCLUSIVE rc75 at disk floor, with
 ## 20:11Z — File five disk-floor interruptions and publish profiler and V11 source-impact successors.
 
 Filed kvu19b-profiler-clock-build-20261104-r2, kpf-rs1-impact-8952-20261104-r2, kpf30-impact-8952-20261104-r5, kpf41-direct-vec-impact-8952a0f-20261104 and v11-fa8-impact-5026470-20261104 INCONCLUSIVE: each ended rc75 at the unchanged disk floor with no full native result. Published independent kvu19b-profiler-clock-build-20261104-r3 and v11-fa8-impact-5026470-20261104-r2 after four-CPU publisher smoke PASS; neither full run is complete. Prepared kpf-rs1-impact-8952-20261104-r3; its publisher returned disk-floor WAIT, not FAIL or publication. The earlier kvfork17-oracle-test-r2-20261104 INVALID result was already filed and remains unchanged. No causal or source-impact conclusion follows.
+
+## 20:14Z — File two disk-floor run ends and publish profiler, V11 and KPF-41 successors.
+
+The previously reported kpf41-direct-vec-impact-8952a0f-20261104 result was already filed INCONCLUSIVE. Filed kvu19b-profiler-clock-build-20261104-r3 and v11-fa8-impact-5026470-20261104-r2 INCONCLUSIVE: both ended rc75 at the unchanged disk floor without full native output. Preserved their receipts. Published independent kvu19b-profiler-clock-build-20261104-r4, v11-fa8-impact-5026470-20261104-r3 and kpf41-direct-vec-impact-8952a0f-20261104-r2 after four-CPU publisher smoke PASS. Full build and source-impact results remain open.
