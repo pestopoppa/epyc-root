@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T15:36:45Z reason=job-rc-1:exited
+job_id=sr8-bep-heldout-exact-rounds-20261104
+owner=handoff-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T15:36:06Z
+regions=mi210_0,184-191

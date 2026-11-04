@@ -1,0 +1,1 @@
+{"status": "STRUCTURE_PASS", "files": ["utils.py", "app.py"], "deletions": ["helpers.py"], "contents": {"utils.py": "def greet():\n    return 'hi'", "app.py": "from utils import greet\nprint(greet())"}, "scope": "expected full-file envelope only"}
