@@ -235,3 +235,7 @@ Filed C6 build r3 and GDN BF16 CPU r8 / sentinel build r11 as inconclusive disk-
 ## 21:04Z — Repaired signal receipt handling and published floor v10; attempted W5s qualification, which refused at its disk guard.
 
 Reviewed v9 floor ancestry: 24 main pairs and zero longctx pairs, no completed floor. Repaired v10 repeated signal telemetry writes; 28 model-free tests passed, and publisher smoke passed for akxall8-c5-declared-floor-v10-20261104. Reconciled W5s registry bindings and repaired its packet; publisher smoke refused rc75 before work because the RAID storage floor was unmet. Removed four unreferenced superseded W5s source worktrees (about 3.3 GiB). CH-LB1 successor smoke was already followed by passed CPU gates; fold CAS remains open.
+
+## 21:08Z — Filed disk-floor interruptions and published C6 CPU build and paired GPU diagnostic successors after publisher smokes.
+
+Removed the specified stale root-owned 732 checkout copy. CH-LB1 successor event was already filed and its later CPU gates passed. Filed C6 qsum r2, C6 cuBLAS build r4, floor v10, GDN CPU f32 r9 and GDN BF16 sentinel build r14 as inconclusive rc75 disk-floor stops without full results, preserving terminal evidence. Published C6 cuBLAS build r5 after four-CPU custody smoke; full build and GPU verdict remain pending. Published paired GPU diagnostic r3 after publisher smoke PASS, retaining the original seed and custody predicates; full diagnosis remains pending.
