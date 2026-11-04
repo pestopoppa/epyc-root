@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "case": "first_compaction",
+      "http": 200,
+      "response": {
+        "compact_positions": false,
+        "id_slot": 0,
+        "keep_ratio": 0.5,
+        "logical_context_reclaimed": false,
+        "n_evicted": 60,
+        "pos_max_after": 127,
+        "reclaim_mode": "evict_only_gapped",
+        "scorer": "expected_attention"
+      }
+    },
+    {
+      "case": "second_compaction",
+      "http": 500,
+      "response": {
+        "error": {
+          "code": 500,
+          "message": "Expected Attention compression failed",
+          "type": "server_error"
+        }
+      }
+    }
+  ],
+  "reason": "first removed entries; gapped repeat rejected",
+  "schema": "s8c-api-validation-v1",
+  "scope": "One isolated CPU server; response and gapped-cache rejection only, no physical KV continuity, quality or speed claim.",
+  "status": "pass",
+  "witness": {
+    "exe": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/llama-server",
+    "exe_sha256": "2b62285c98f28d02dde77acdbccc119acf00e6a7197335beab0fb514f27b75e6",
+    "mapped_dsos": [
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml-base.so.0.16.0",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml-cpu.so.0.16.0",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml.so.0.16.0",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama-common.so.0.0.10303",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama-server-impl.so",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama.so.0.0.10303"
+    ],
+    "pid": 328643,
+    "start_ticks": 193291720
+  }
+}

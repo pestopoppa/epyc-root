@@ -43,3 +43,7 @@ The already filed lsa-native-c5-gitnexus-20261104 ended rc=75 at hard-end with o
 ## 16:41Z — Repair the real-cache API validation fixture and resubmit its smoke
 
 The previously filed GitNexus targeted-v3 attempt failed and was superseded by targeted-v4. Repaired the pending S8-C real-cache diagnostic: the pinned model tokenizer maps valid text to token 23811; 128 repetitions and deterministic output bias replace the byte-token fixture that caused invalid UTF-8 responses. Four offline packet regression tests pass. The resubmitted smoke has not yet returned; runtime behavior and publication are not claimed.
+
+## 16:42Z — File real-cache gapped compaction qualification observation
+
+The corrected real-cache API qualification completed on the pinned Qwen3-1.7B CPU candidate: the first response reported 60 evictions and the second returned the expected compression error against the resulting gapped state. Preserved raw output and identity in docs/evidence/triattention-s8c-api-real-smoke-20261104/. This is response-level evidence only: physical KV continuity, parameter coverage, quality and speed remain unproven.
