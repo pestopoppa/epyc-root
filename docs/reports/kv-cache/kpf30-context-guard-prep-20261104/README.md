@@ -1,0 +1,9 @@
+# KPF-30 context admission candidate — unapplied
+
+`candidate.patch` is bound to integrated `8952a0f693fb923918157eb25117641b74766230`; committed source digest and patch digest are in manifest.json. No tracked source was edited. This is a temporary fail-closed admission guard, not a phase runner or target-context implementation.
+
+With LLAMA_KPF30_MIXED_BLOCKS exactly 1, load_model refuses a separate draft or MTP speculative context before model loading, emitting KPF30_UNSCOPED_TARGET. process_mtmd_chunk independently refuses before invoking any multimodal helper. The existing phase reader rejects both markers. Disabled observer values preserve admission. Ngram-only modes without a draft context are unaffected by this specific guard; they still have no phase-runner qualification.
+
+Meaningful model-free controls: git apply --check passed against the exact source tree; the exact new header compiled under C++11 with -Wall -Wextra -Werror; its executable checked null/empty/0/true/01/trailing-space disabled values, ordinary target admission and speculative rejection. The actual existing phase parser rejected both emitted refusal markers. Structural checks prove guards precede helper work and loading. validation.json records outcomes.
+
+Limitations: native server translation unit/full candidate has not been compiled; no runtime or inference occurred. The patch intentionally prevents the required DFlash2 measurement until explicit target/draft context selection is implemented and reviewed. It does not add pos, phase labels, call brackets, capture invocation, replay provenance, per-window declaration, or a planning canary. Native impact remains UNKNOWN: do not apply. Existing six-query impact admission plus additional load_model/process_mtmd_chunk upstream impacts are required before tracked edits. No source-risk clearance follows from model-free controls.

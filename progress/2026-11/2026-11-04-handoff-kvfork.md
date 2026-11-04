@@ -155,3 +155,7 @@ KPF-17.4d: R5 exposed witness remains INVALID; conservative multi-ubatch refusal
 ## 22:14Z — Prepare KPF-50 GPU clock qualification and conservative KPF-17.4d witness parser
 
 KPF-50.CLOCK-QUAL: published kvfork50-clock-qual-20261104 after GPU publisher smoke PASS; no target windows launched. Two earlier qualification failures (missing ROCm path, insufficient sampled VRAM) were repaired within the same lineage; full qualification awaits a grant under the unchanged 150 GiB floor. KPF-17.4d: prepared a conservative prefix parser patch and verified 16 model-free cases; source-bound impact and an unexposed prospective input remain prerequisites. No retained result was regraded. Prior report incorrectly treated full-run disk-floor stops as failed qualifications; the three-qualification rule requires qualification failures.
+
+## 22:19Z — File disk-floor clock attempt and publish the same-lineage clock qualification successor
+
+KPF-50.CLOCK-QUAL: filed kvfork50-clock-qual-20261104 INCONCLUSIVE, rc75 disk-floor before full RESULT; the isolated smoke is not a full-run result. Published kvfork50-clock-qual-r2-20261104 after GPU smoke PASS with fresh output and unchanged 150 GiB floor. No target profile window was launched. KPF-30: prepared an unapplied fail-closed draft/multimodal admission patch with source-bound model-free controls; source impacts remain unknown and DFlash2 measurement remains unavailable.
