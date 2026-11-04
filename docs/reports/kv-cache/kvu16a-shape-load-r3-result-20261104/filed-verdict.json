@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "Single actual load (rc 0): 2 post-health own-PID HIP/KFD samples (gap 0.502 s, within 1.5 s), each >=1 GiB, max sampled own VRAM 51.338 GB minus observed target KV 13.690 GB gives healthy_sampled_max_non_kv 37.648 GB (35.06 GiB). Exact recipe argv/identity recorded (gpu-20260921-ffc1bac82 store), captured child TERM-killed and verified dead, belief sidecar present. Sampled maximum only: peak_claim false, whole_load_coverage_qualified false, startup unqualified; no registry ratification.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T13:58:17+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T11:36:24Z reason=complete",
+ "filed_at": "2026-11-04T13:58:17+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "kv-cache-program.md:KVU-16a",
+ "id": "handoff-kvu16a-shape-load-r3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-kvu16a-shape-load-r3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-kv-cache-program",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Single actual load (rc 0): 2 post-health own-PID HIP/KFD samples (gap 0.502 s, within 1.5 s), each >=1 GiB, max sampled own VRAM 51.338 GB minus observed target KV 13.690 GB gives healthy_sampled_max_non_kv 37.648 GB (35.06 GiB). Exact recipe argv/identity recorded (gpu-20260921-ffc1bac82 store), captured child TERM-killed and verified dead, belief sidecar present. Sampled maximum only: peak_claim false, whole_load_coverage_qualified false, startup unqualified; no registry ratification.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-kvu16a-shape-load-r3-20261104",
+ "row_verdict": "pass",
+ "rule": "Stop-on-answer after one actual load and two post-health own-PID HIP/KFD samples (explicit selected-pair window; full raw startup stream retained, whole-load coverage false) each >=1GiB with predeclared <=1.5s sample gaps, observed unique target KV allocation, exact recipe argv/environment/model/library identity, verified captured-child cleanup and original-run belief sidecar. Report max healthy sampled own VRAM minus observed target KV bytes; lower is better; one-process observations, no independent-run error estimate or lifetime/runtime-peak claim. Futility stop on load, identity, sampling, residency or cleanup fault, STOP/deadline, or absent allocation log; no generation, registry update or deployment. Native smoke is the real load, exactly four actual granted CPUs; it retains eight configured server threads and changes only execution affinity. Full execution uses recipe CPUs184-191. Port/slots isolated; -lv4 is the sole diagnostic logging addition.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "c68274d74f312cae5ecd107e0ef51d206cd66bee5621c2d30570e1335e7787f5",
+  "result": "pass",
+  "status": "filed"
+ }
+}
