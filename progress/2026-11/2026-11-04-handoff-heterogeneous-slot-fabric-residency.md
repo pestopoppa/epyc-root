@@ -39,3 +39,7 @@ The previously filed full VKQ-2 event was acknowledged: 20 fresh processes, 16k 
 ## 15:04Z — Resolve the quarter-r2 precondition failure and preserve its evidence
 
 The repeated KVU-12.5 quarter-r2 event was already filed INCONCLUSIVE and is acknowledged. The retained launcher log establishes a more precise cause: rc1 on the pinned region_lock_cli.py SHA-256 precondition before the target command, with no target events. Preserved the original input pins, launcher log, row spec and end record; no anchor, comparison or deployment verdict follows. A separately pinned successor is in preparation; the parent decision-grade np8 pair remains open.
+
+## 15:06Z — Preserve the inconclusive KVU-16a v2 native result and repair handoff placement
+
+Acknowledged the previously filed v2 rc75 INCONCLUSIVE result: 79 samples without qualified coverage or logged target KV and dry-run PID-file provenance; no subtraction or registry claim. Preserved its native result, sample stream, server log and filed verdict. Corrected the prior KVU-12.5 precondition note that was accidentally inserted under KVU-16a, and restored the interrupted dispatch sentence around the distinct later r3 post-health checkpoint. KVU-16a remains open for stack-change reconciliation; successor preparation remains pending.
