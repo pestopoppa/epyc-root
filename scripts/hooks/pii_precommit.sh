@@ -274,6 +274,20 @@ is_autokernel_record_id_line() {
   fi
   return 0
 }
+is_p5_generated_run_path_line() {
+  # P5's offline harness appends time.time_ns() to this closed run-directory
+  # vocabulary. Disambiguate only those tokens in the two published evidence
+  # surfaces; a second long number on the same line must still block.
+  local path="$1" line="$2" stripped
+  [[ "$path" =~ ^docs/reports/p5-gold-controls-[0-9]{8}/result[.]json$ ||
+     "$path" =~ ^docs/reports/p5-gold-source-refusal-[0-9]{8}/run_instance[.]log$ ]] || return 1
+  stripped="$(printf '%s\n' "$line" | command sed -E 's@(^|[^A-Za-z0-9_.-])logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r[0-9]+-[0-9]{8}-(negative|gold)-1[0-9]{18}/@\1@g')"
+  [[ "$stripped" != "$line" ]] || return 1
+  # Consume the whole remainder: grep -q can SIGPIPE printf on a long line,
+  # making pipefail invert a detected account number into an exemption.
+  ! printf '%s\n' "$stripped" | command grep -E '\b[0-9]{12,19}\b' >/dev/null
+}
+
 is_benchmark_per_question_line() {
   # Per-question eval records embed the benchmark's own problem text verbatim.
   # Coding suites (LiveCodeBench, SWE-bench) routinely carry 12-19 digit integer
@@ -550,6 +564,9 @@ scan_blob() {
         continue
       fi
       if is_autokernel_record_id_line "$fullline"; then
+        continue
+      fi
+      if is_p5_generated_run_path_line "$path" "$fullline"; then
         continue
       fi
       if is_perf_report_counter_line "$path" "$fullline"; then

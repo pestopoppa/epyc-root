@@ -1,0 +1,20 @@
+{
+  "base": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+  "head": "d350420dae50c80ca33b845734c31428d62af0a8",
+  "blob_or_kind_changes": [
+    {
+      "path": "pyproject.toml",
+      "base": [
+        "100644",
+        "blob",
+        "3364d307406a06457fba6b129db98c2399e7d624"
+      ],
+      "head": [
+        "100755",
+        "blob",
+        "02dddbe713a3d037b3e5f6ba49af3b7ec1c49c0b"
+      ]
+    }
+  ],
+  "mode_only_changes": 1860
+}

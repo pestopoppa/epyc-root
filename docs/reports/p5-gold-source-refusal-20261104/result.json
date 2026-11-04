@@ -1,0 +1,22 @@
+{
+  "schema": "p5.gold-control.v1",
+  "producer_source_manifest_sha256": "3a7047e04da04284ffc64c885ad2e5e38e9ca899d73e574c10ad57affbf78e05",
+  "producer_launcher_sha256": "8a132d822b2c8867d215fe6e0bde66cc76528890a05c1076cb0ae063af27aedb",
+  "instance_id": "astropy__astropy-12907",
+  "arms": {},
+  "image_id": "sha256:924ad8472b7e9f6faa2546de7e9e79274837af0a41f279c1339a37e1800a7fb9",
+  "case_sha256": "ea9e936b6d002607859edadc526fbb7fa3a7342ba5f06668019504610e637382",
+  "script_binding": {
+    "official_script_sha256": "8982427832e1065d24fd44f827a6857a985d58e9da604bb0b16c2adf4f8afe82",
+    "offline_script_sha256": "c1b649c200bd0a7641175877b558b0cb2694d7f32898c35ebe24a7c7ccafa1d8",
+    "setup_index": 10,
+    "derived_image_id": "sha256:924ad8472b7e9f6faa2546de7e9e79274837af0a41f279c1339a37e1800a7fb9",
+    "scope": "one exact setup substitution; all other generated commands unchanged"
+  },
+  "image_build_log_sha256": "a6655d74a82eaa95f5626d766f8b8687d1232d3f7477d9ad6c0dd5312185a4b4",
+  "wheel_manifest_sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba",
+  "checkout_proofs": {},
+  "status": "FAIL",
+  "error": "RuntimeError('incomplete run / missing explicit named test statuses: negative')",
+  "owned_containers_removed": true
+}

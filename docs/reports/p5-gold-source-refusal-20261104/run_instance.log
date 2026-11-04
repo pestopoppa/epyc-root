@@ -1,0 +1,14 @@
+2026-11-04 07:11:59,442 - INFO - Container for astropy__astropy-12907 started: bf194e1fb6e490cc0e2a329ce94f502ef22e8ddb64ee76982697f41f5ce1c2c0
+2026-11-04 07:11:59,442 - INFO - Intermediate patch for astropy__astropy-12907 written to logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r2-20261102-negative-1793776319307388766/negative/astropy__astropy-12907/patch.diff, now applying to container...
+2026-11-04 07:11:59,547 - ERROR - Error in evaluating model for astropy__astropy-12907: image HEAD blob tree differs from pinned case base
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/epyc-inference-research/.venv-swebench/lib/python3.12/site-packages/swebench/harness/run_evaluation.py", line 164, in run_instance
+    copy_to_container(container, patch_file, PurePosixPath(DOCKER_PATCH))
+  File "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r2/job.py", line 40, in guarded_copy_to_container
+    checkout_proofs[container.id]=verify_checkout(container,case['base_commit'])
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r2/source_guard.py", line 38, in verify_checkout
+    raise RuntimeError('image HEAD blob tree differs from pinned case base')
+RuntimeError: image HEAD blob tree differs from pinned case base
+
+Check (logs/run_evaluation/p5-gold-codex-gpu-serving-p5-gold-offline-r2-20261102-negative-1793776319307388766/negative/astropy__astropy-12907/run_instance.log) for more information.

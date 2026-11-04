@@ -1,0 +1,7 @@
+{
+  "old_image": "sha256:924ad8472b7e9f6faa2546de7e9e79274837af0a41f279c1339a37e1800a7fb9",
+  "case_base": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+  "old_head": "d350420dae50c80ca33b845734c31428d62af0a8",
+  "blob_difference": "pyproject.toml build-system requires setuptools==68.0.0 versus case original setuptools",
+  "fix": "git reset --hard pinned case base and git clean -ffdx before editable build; guard unchanged"
+}

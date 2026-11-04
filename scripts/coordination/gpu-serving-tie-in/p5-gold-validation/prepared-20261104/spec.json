@@ -1,0 +1,28 @@
+{
+  "id": "codex-gpu-serving-p5-gold-offline-r3-20261104",
+  "owner": "handoff-gpu-serving-tie-in",
+  "launcher": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Instrument subset PASS only if official SWE-bench run_evaluation applies both the pinned gold patch and an independently valid no-op negative control to fresh pinned astropy-12907 containers, explicitly parses every named FAIL_TO_PASS and PASS_TO_PASS test, resolves gold with all passed and marks negative unresolved with at least one named FAIL_TO_PASS failure and all PASS_TO_PASS passed; owned containers cleaned. One case only, not complete P5-2 or proof of other cases.",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2a",
+  "priority_rank": 70,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "SOURCE.sha256",
+    "logs/run_evaluation/*/*/*/*.json",
+    "logs/run_evaluation/*/*/*/*.txt",
+    "logs/run_evaluation/*/*/*/*.diff",
+    "logs/run_evaluation/*/*/*/*.sh"
+  ],
+  "ram_gib": 16,
+  "supersedes": "codex-gpu-serving-p5-gold-offline-r2-20261102",
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-offline-r3/complete.py"
+}
