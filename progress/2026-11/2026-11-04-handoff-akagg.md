@@ -147,3 +147,7 @@ Published akagg-ch-lb1-c5-successor-20261104 after four-CPU publisher smoke PASS
 ## 18:36Z — File W5s failed census precheck and prepare host status repair
 
 Filed W5s successor rc1 inconclusive: host chroot region-lock shim could not execute its venv interpreter, before native census; retained failed grant, packet and logs with hashes. Reproduced the failure in host chroot and confirmed the canonical status module runs with host /usr/bin/python3. Isolated successor preparation is ongoing, with the existing global lock and ancestor checks preserved.
+
+## 18:39Z — File CH-LB1.1 ANSI parser failure and prepare isolated successor
+
+Filed CH-LB1.1 successor rc1 as inconclusive: four F32/BF16 guard cases passed, all three corpus logs had 38/38 and BF16 had two added refusals, but the parser rejected ANSI-colored backend OK before strings checks. Preserved 25 evidence files and hash-bound binary artifacts. Fresh ANSI-safe successor is in preparation; full gate and CAS remain open.
