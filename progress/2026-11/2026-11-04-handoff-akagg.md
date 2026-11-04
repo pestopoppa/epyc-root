@@ -43,3 +43,7 @@ Filed prior CH18 build rc0: model-free occupancy and provenance controls passed;
 ## 14:38Z — Acknowledge the filed C6 single-case MMVQ fix and retain the native candidate and capture.
 
 Filed the previously judged single q4_0 MMVQ correction: native rc0 with unchanged input bytes, without a broader GPU gate claim. Preserved its run image, HIP library, captured inputs and build logs after checking binary and library hashes against the result. CH18 input preparation and runtime packet work were delegated.
+
+## 14:40Z — Acknowledge the already-filed q4_K n5 diagnostic and retain its raw same-input run evidence.
+
+Acknowledged the C6 original versus combined ordinal 7047 diagnostic: matching inputs and outputs, MMQ route, both residual 0.0086928737870828558 above 0.0059480931310319316. Preserved both native run directories and result with SHA-256 inventory; no full gate claim. CH18 fixed-case discovery and runtime preparation delegated.
