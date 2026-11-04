@@ -411,3 +411,7 @@ The prior KPF-50 clock outcome was already filed. Rejected the initial KPF-17 ra
 ## 22:45Z — File ambiguous mapping result and publish isolated successor
 
 HSF-3 interruption was already filed. Filed kvfork17-alt17-custody-race-qual-20261104 inconclusive despite rc0 because publisher smoke wrote the declared full-result path and no full-attempt provenance distinguishes it; preserved the ambiguous record. Published kvfork17-alt17-map-revalidation-safe-20261104 after a four-CPU smoke wrote a separate native-attempt path. The full result is attempt-bound and pending. Scope is only a second validate_maps capture after private in-place mutation, not post-check or native-loading safety.
+
+## 22:48Z — File interrupted HSF-3 and KPF-17 successor results
+
+The KPF-50 clock r2 interruption was already filed. Filed kvu-hsf3-source-coverage-r2-20261104 and kvfork17-alt17-map-revalidation-safe-20261104 inconclusive: both ended rc75 at the disk floor without full results. The respective smokes do not establish a source census or full mapping-fixture verdict. KPF-61 third qualification recorded 32/32 matching tokens but differing probability rows and its lineage is already parked; no launcher retry is justified.
