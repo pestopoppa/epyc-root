@@ -59,3 +59,7 @@ Acknowledged W5s r7 rc1 precheck futility with no LAST-RESULT and no census obse
 ## 14:47Z — Acknowledge v6 floor refusal and localize the v7 duplicate ancestor predicate.
 
 Acknowledged previously filed v6 root-cgroup run: rc2, native result REFUSED and no floor or process units. Localized v7 duplicate-R15 detection to an argv-membership test preceding FD255 inode and digest proof. Exact failed ancestry was not retained; successor work preserves the existing owner, lock and measurement predicates.
+
+## 14:49Z — Acknowledge the previously filed v4 floor refusal; prepare the v8 claim-chain fix.
+
+Acknowledged the prior v4 result: rc2, REFUSED because root cgroup memory.max was absent, floor_claim=null and no process units. The v7 successor also failed before calibration; v8 claim-chain repair and independent review are delegated.
