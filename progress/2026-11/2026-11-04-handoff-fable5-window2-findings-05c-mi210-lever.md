@@ -63,3 +63,7 @@ Preserved the corrected indicative P12 rerun result: C1 np1/2/4 placement passed
 ## 14:45Z — File complete guarded PF1 refinement and identify remaining brackets
 
 Filed pf1-expand-r3-20261104 as pass for the scoped three-block exploratory capture, rc0, 48/48 valid units, in-window HIP, capture 1.0, CPU placement 25% per node and median controls 0.9349/0.9291/0.9258/0.9853 (all within ±10%). Under the prior operator amendment GPU skew is recorded as a covariate, not failed by the CPU-only 40% rule. A1/A0 medians at L384/448/512/768: 1.0009/1.1004/1.1877/1.4114; A2/A0: 1.1494/1.2524/1.3886/1.7084. A1 at L384 is inside predeclared ±0.07 at-crossover band and A2 is not bracketed below L384. A0 bias remains unexplained; PF1-EXPAND-2 remains open, with no PF1/NPD or promotion verdict. Preserved native capture, verdict, manifest and end in data/mi210/pf1-expand-r3-result-20261104. Custody r1 was previously filed inconclusive.
+
+## 14:46Z — Submit lower-length PF1 bracket row
+
+Prepared PF1 r4 lower grid L256/320/384/448 with three independent blocks, identity, strict A0 placement, GPU skew covariate amendment, residency and ±10% control guards intact. A1 r3 at L384=1.0009 remains within the predeclared ±0.07 noise band and A2 has no below-384 bracket; A0 bias is not claimed fixed. Static and model-free checks plus prepublication source/binary/input identity passed. The canonical publisher queued native smoke because the GPU is busy; not yet PASS/readied. Archived the prepared packet in data/mi210/pf1-expand-r4-prepared-20261104.
