@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T15:48:56Z",
+  "generated_at": "2026-11-04T16:20:36Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1355,14 +1355,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 350,
-      "dispatchable": 92,
+      "dispatchable": 94,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 94,
+      "open": 96,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1561,15 +1561,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 198,
-      "dispatchable": 46,
+      "closed": 199,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 48,
+      "open": 47,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,18 +1589,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 27,
+          "dispatchable": 26,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 27,
+          "open": 26,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 673,
+          "line": 677,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1032,
+          "line": 1036,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1309,
+          "line": 1313,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1944,
+          "line": 1948,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2246,
+          "line": 2250,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2855,
+          "line": 2859,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3,
           "readiness": "blocked"
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 113,
+      "closed": 116,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 695,
+          "line": 701,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2047,15 +2047,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 85,
-      "dispatchable": 35,
+      "closed": 92,
+      "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-04",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 35,
+      "open": 36,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2077,20 +2077,20 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 23,
+          "dispatchable": 24,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 23,
+          "open": 24,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 574,
+          "line": 575,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -2099,7 +2099,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 945,
+          "line": 946,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2108,7 +2108,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1561,
+          "line": 1562,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -2117,7 +2117,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1708,
+          "line": 1709,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2915,7 +2915,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 144,
+      "closed": 145,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3507,7 +3507,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 246,
+      "closed": 248,
       "dispatchable": 89,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3556,7 +3556,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1360,
+          "line": 1364,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3571,7 +3571,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1742,
+          "line": 1746,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
@@ -3583,14 +3583,14 @@
       "blocked": 15,
       "blocked_by": [],
       "closed": 229,
-      "dispatchable": 78,
+      "dispatchable": 79,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-04",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 93,
+      "open": 94,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3710,14 +3710,14 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 25,
+          "dispatchable": 26,
           "gates": [
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 2706,
           "name": "agentic-serving-harness-fixes",
-          "open": 25,
+          "open": 26,
           "readiness": "blocked"
         }
       ]
