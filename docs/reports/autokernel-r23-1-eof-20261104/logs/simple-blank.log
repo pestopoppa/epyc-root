@@ -1,0 +1,27 @@
+[memory-range-redacted] r--p 00000000 09:7f 197711272                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0
+[memory-range-redacted] r-xp 00014000 09:7f 197711272                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0
+[memory-range-redacted] r--p 00280000 09:7f 197711272                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0
+[memory-range-redacted] r--p 002b0000 09:7f 197711272                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0
+[memory-range-redacted] rw-p 002b2000 09:7f 197711272                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0
+[memory-range-redacted] r--p 00000000 09:7f 197711269                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303
+[memory-range-redacted] r-xp 0009b000 09:7f 197711269                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303
+[memory-range-redacted] r--p 00321000 09:7f 197711269                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303
+[memory-range-redacted] r--p 003a5000 09:7f 197711269                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303
+[memory-range-redacted] rw-p 003b2000 09:7f 197711269                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303
+[memory-range-redacted] r--p 00000000 09:7f 197711285                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0
+[memory-range-redacted] r-xp 00014000 09:7f 197711285                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0
+[memory-range-redacted] r--p 000af000 09:7f 197711285                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0
+[memory-range-redacted] r--p 000d1000 09:7f 197711285                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0
+[memory-range-redacted] rw-p 000d3000 09:7f 197711285                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0
+[memory-range-redacted] r--p 00000000 09:7f 197711283                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0
+[memory-range-redacted] r-xp 00003000 09:7f 197711283                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0
+[memory-range-redacted] r--p 0000a000 09:7f 197711283                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0
+[memory-range-redacted] r--p 0000b000 09:7f 197711283                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0
+[memory-range-redacted] rw-p 0000c000 09:7f 197711283                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0
+[memory-range-redacted] r--p 00000000 09:7f 197711273                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303
+[memory-range-redacted] r-xp 000a5000 09:7f 197711273                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303
+[memory-range-redacted] r--p 003d4000 09:7f 197711273                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303
+[memory-range-redacted] r--p 0047c000 09:7f 197711273                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303
+[memory-range-redacted] rw-p 00484000 09:7f 197711273                  /mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303
+READY
+RESULT more=0 hex=0a
