@@ -87,3 +87,7 @@ Wrote the FILED receipt for `triattention-s8c-plan-property-v2-20261104` using i
 ## 16:42Z — Acknowledge filed TriAttention corrected planner test
 
 Wrote the FILED receipt for `triattention-s8c-plan-property-v3-20261104` using its existing PASS verdict. All 65 size groups and 3,112,886 deterministic synthetic checks passed, including the 0.7f legacy boundary. Native result SHA-256 `106e2b00ba6988e268e6fb2a9aa9e2ef362c5671dc873a8da753d8a952561ef3`; source and case evidence is retained in `docs/evidence/triattention-s8c-plan-property-v3-20261104/`. The owning S8-C-PLAN-PROPERTY-V2 box was already ticked. This is a synthetic planner test, not a real cache, server, model, quality or performance result.
+
+## 16:49Z — File bounded TriAttention API guard diagnostic
+
+Filed `triattention-s8c-api-real-20261104` PASS via file_result.py and wrote its FILED receipt. The first CPU-server compaction returned HTTP 200 and reported 60 evictions; the repeat returned HTTP 500 with the expected compression error, satisfying the original two-response guard rule. The source-bound native result and rule are retained at `progress/evidence/codex-gen-triattention-api-filing-20261104.json`. This does not prove physical KV continuity, model quality or performance. The owning S8-C-API-REAL task also requires broader parameter handling, so no parent checkbox was ticked.
