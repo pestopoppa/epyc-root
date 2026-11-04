@@ -63,3 +63,7 @@ Acknowledged previously filed v6 root-cgroup run: rc2, native result REFUSED and
 ## 14:49Z — Acknowledge the previously filed v4 floor refusal; prepare the v8 claim-chain fix.
 
 Acknowledged the prior v4 result: rc2, REFUSED because root cgroup memory.max was absent, floor_claim=null and no process units. The v7 successor also failed before calibration; v8 claim-chain repair and independent review are delegated.
+
+## 14:52Z — File and retain the grouped-GQA route2 distinct-sinks correctness family.
+
+Filed native route2 distinct-sinks diagnostic: OFF and nth 1,16,32,64,96 passed, each route2 exactly once and bitwise identical; NMSE 1.68623571e-9, independent oracle 6.08579447e-14. Retained native result, harness, historical manifest and three exact ELF hashes. Historical TRACE source commit remains unknown; other attention paths and parent remain open.
