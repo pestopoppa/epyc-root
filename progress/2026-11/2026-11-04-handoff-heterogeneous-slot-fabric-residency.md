@@ -139,3 +139,7 @@ Prepared fresh `kvu-kpf174-custody-r5-20261104` source and sealed inputs; publis
 ## 16:59Z — Filed KPF-30 impact r3 inconclusive and retried custody r5 qualification, blocked by the disk floor.
 
 Filed `kpf30-impact-8952-20261104-r3` INCONCLUSIVE (rc75 disk-floor, no native impact result), with preserved end, manifest and smoke evidence. Retried `kvu-kpf174-custody-r5-20261104` publisher; smoke WAIT due the 150 GiB disk floor, not published.
+
+## 17:00Z — Removed the clean superseded r4 source worktree after preserving its filed disk-floor result; the fresh r5 source remains prepared.
+
+Removed the clean superseded KPF-17.4d r4 detached source worktree after its result was filed. The r5 source and spec remain prepared; host free disk was approximately 138 GiB, below the unmodified 150 GiB smoke floor. KPF-30 r3 was already filed INCONCLUSIVE.
