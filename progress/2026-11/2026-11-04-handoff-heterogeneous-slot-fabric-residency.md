@@ -211,3 +211,7 @@ Completed KPF-13.1 synthetic grid-decoder/comparator controls: 29 model-free tes
 ## 19:26Z — File both source-impact admission refusals and prepare safe successors.
 
 Filed kpf-rs1-impact-8952-20261104 and kpf30-impact-8952-20261104-r4 INCONCLUSIVE: rc75 disk-floor, no native results.jsonl, completed graph or skipped-file coverage. Both impact tasks remain open and the 150 GiB floor is unchanged.
+
+## 19:29Z — Publish safe KPF-RS-1 and KPF-30 source-impact successors after disk-floor refusals.
+
+Published kpf-rs1-impact-8952-20261104-r2 and kpf30-impact-8952-20261104-r5 after four-CPU publisher smoke PASS, preserving exact source, source-bound target rules, skipped-file reporting and 150 GiB floor. Both smoke results are first progress only; full impacts and source-edit clearance remain open.
