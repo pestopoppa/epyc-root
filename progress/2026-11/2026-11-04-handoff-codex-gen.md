@@ -11,3 +11,7 @@ Completed the requested FILED receipt for `handoff-kvu-kvu19a2-capture-build-202
 ## 07:11Z — File AKX pair smoke as partial evidence
 
 Filed `akx-lb3-2-cv3-pair-20261102` as PARTIAL-VERDICT/inconclusive (`SMOKE_ONLY`) using the recovered original publication rule, which explicitly excludes smoke from a GM/MG pair verdict. Native SHA-256 `f0df6c37d0e31160bcd771895b90d01daf5850f22fb959cf1f2c096fbd003e01`. Wrote the verdict and FILED receipt; preserved the filing at `progress/evidence/codex-gen-akx-pair-filing-20261104.json`. The owning AKX-ALL-LB3.2b pair task remains open, with no pair acceptance/invalidity/order-sensitivity claim. No parent checkbox changed; successor experimental work remains with the owning handoff session.
+
+## 07:28Z — File completed CAP-04 exploratory pilot
+
+Filed `brf-cap04-pilot-20261102-v3` through file_result.py as inconclusive, retaining the owner REVISE (budget derivation) disposition in `progress/2026-11/2026-11-03-ws58-brf-t4-closeout.md`. Preserved the filed verdict and original native summary in `progress/evidence/codex-gen-cap04-filing-20261104.json`. The pilot completed 76/76 units but nested-prefix validation matched 0/4 checks; derived 8k/16k comparisons and TB-4 do not count. This is an operational screen, never a gate result. The bounded pilot was already checked in the completed backlog handoff, so no checkbox was reticked; TB-1 and uncovered follow-up remain with the owning session. file_result.py wrote the FILED receipt.
