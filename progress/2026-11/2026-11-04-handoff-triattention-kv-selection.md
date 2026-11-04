@@ -87,3 +87,7 @@ Filed lsa-spec-guard-probe-compile-21bebb-20261104 pass: probe SHA be5793e96adc2
 ## 19:50Z — File candidate-only GPU phase timing capture
 
 Filed lsa-phase-gpu-pp-6465-20261104 pass: one 6465-token request, 16 native layers across five groups, 80 paired host phase events and own-PID KFD/VRAM; prompt 123186.506 ms. Evidence docs/evidence/lsa-phase-gpu-pp-6465-20261104/. Controls differ in token IDs and server recipe; no causal speedup or quality claim.
+
+## 23:50Z — File source-bound speculative guard server build
+
+Filed lsa-spec-guard-server-build-21bebb-20261104 pass: standard server built against source 21bebb748 and candidate libllama, server SHA 26a0f61b9b81db47f77becc03afdf2668fa8a2865c3552cc3a11c90d3700083b with linkage and output receipts. Evidence docs/evidence/lsa-spec-guard-server-build-21bebb-20261104/. No model or GPU run.
