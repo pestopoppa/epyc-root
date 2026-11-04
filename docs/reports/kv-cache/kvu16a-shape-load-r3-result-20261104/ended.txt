@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T11:36:24Z reason=complete
+job_id=handoff-kvu16a-shape-load-r3-20261104
+owner=handoff-kv-cache-program
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T11:36:18Z
+regions=mi210_0,184-191

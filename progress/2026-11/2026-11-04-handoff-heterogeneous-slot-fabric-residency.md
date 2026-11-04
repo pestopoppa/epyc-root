@@ -67,3 +67,7 @@ Acknowledged the previously filed KPF-26 CODE-off r2 diagnostic: three completed
 ## 15:42Z — Acknowledge the API-off diagnostic and bind child observations to witnesses
 
 The previously filed API-off diagnostic completed rc0/HTTP200 with two scout calls: child 0 keyword true, zero fork tokens and slot/task 3/3; child 1 keyword false, zero fork tokens and slot/task 2/4. Its top-level flag attestation is unverified, checkpoint witness absent and gate_pass null. Preserved the original scoped result and acknowledged the duplicate event. Corrected current handoff prose to include these indexed observations and the previously completed rubric applicability review; KPF-26 remains open. Quarter and P5 successor preparation is pending.
+
+## 15:45Z — Preserve the KVU-16a shape-matched sampled load result
+
+Acknowledged previously filed shape-matched r3 rc0 PASS: two post-health samples separated by 0.502 s, max own-PID VRAM 51,338,338,304 B minus logged KV 13,690,208,256 B = 37,648,130,048 B (35.0626 GiB). Captured cleanup was verified; native plan, original-run belief sidecar, startup stream and selected samples are preserved. Selected-pair coverage alone qualifies; whole-load/startup and lifetime peak remain unqualified. Corrected obsolete queued-smoke text. KVU-16a remains open for stack-change reconciliation, registry and check; no deployment or registry update.
