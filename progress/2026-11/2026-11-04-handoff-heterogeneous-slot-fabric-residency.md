@@ -395,3 +395,7 @@ KPF-64 impact was already filed inconclusive. Filed kvfork50-clock-qual-r2-20261
 ## 22:28Z — Review anonymous-inode validator guard
 
 The KVU-11c HIP build interruption was already filed inconclusive. Reviewed and preserved a corrected anonymous-inode guard design sketch after detecting the first draft closed its descriptor before linking. A separate mechanism check passed on the project filesystem; the exact target script is not tested or changed, filesystem and crash-durability limits remain, and source-bound impact remains unknown. HSF-1 receipt preparation is incomplete and its review result is registered. No new row was published.
+
+## 22:32Z — Review and preserve HSF-1 receipt source preparation
+
+Consumed all five preparation events. HSF-3 row and both validator proposals were already recorded; the KPF-50 diagnostic draft is superseded and not runnable. Reviewed an HSF-1 standalone receipt draft: its first form hashes redacted argv and can leak free-form secrets. A scratch revision stores only an original-argv digest and passed five lifecycle tests, but does not capture required effective argv and an unkeyed digest can expose low-entropy secrets. Preserved both drafts and limits; no orchestrator integration, launch receipt, measurement, or new row is claimed.
