@@ -1,0 +1,10 @@
+4249b43d6afb4a1ea4c9ebb7f96cb50239b4d992158c35840a1a3c84b9c92ff4  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/complete.py
+00ec4fb2622c8b7d5723578f6a622ad0035073e8b3e9a56a0d8662b16c94f9b8  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/custody.py
+680f948198b3c7681dad4dcad63cc90d8097193a61a1257bca632a4c67452c59  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/host-job.sh
+59f6dca54b0157d36d5fd791096434f949ace5170bee880596208517c500ecac  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/integrity.py
+bf22b802963c0a7c100e36f18909bce379ce9d97b22c098575d7a0ad1f6d1422  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/job.sh
+050e88605dd747324d3d8bf23a1da4bfb02d37822d261ac7fecb8d34623bace8  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/linkage.sha256
+96228e4d33ae7438af47140468d77226e1f3cc3b908ebc77b5f95c9836032104  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/proof.py
+638e36b9da41b0c9561c81601fd6ae00788450a5233d64c35668f8569bfa88c7  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/supervise.py
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/verify_ggml_linkage.sh
+c28e41cec9b631fe489e209e3e31ba3f4a85ab82c4d9c60b48c1c7b54ec4df69  /mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/input/PREPARED.json

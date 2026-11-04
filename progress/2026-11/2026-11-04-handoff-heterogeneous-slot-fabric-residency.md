@@ -115,3 +115,7 @@ Acknowledged the previously filed P5 r2 rc75 partial run, preserving 19 complete
 ## 16:43Z — Publish the KPF-30 candidate impact successor
 
 Consumed all five completed preparation outputs. Phase provenance contract and the custody-build predecessor were already integrated; the latter ended inconclusive at the disk floor. Withheld the quarter draft because its input corpus contains prior exposed units and no authorized disjoint-offset selection is established. Published kpf30-impact-8952-20261104-r2 after four-CPU partial-reference smoke PASS, preserving source/guard seals, explicit HIGH/CRITICAL stop and the canonical 150 GiB disk floor. Full source-bound index, risks and coverage remain pending; smoke is not impact clearance.
+
+## 16:47Z — Publish a fresh KPF-17.4d custody-build successor
+
+Acknowledged the previously filed KPF-17.4d custody r3 rc75 disk-floor incomplete result. Prepared independent detached source worktree at 6ec877068 (parent 84d0a316), bound the full build/custody/linkage/knob rule, retained the 48 GiB reservation and canonical 150 GiB disk floor, and published kvu-kpf174-custody-r4-20261104 after four-CPU first-object smoke PASS. The full build outcome remains pending; no correctness or historical equivalence follows from smoke.

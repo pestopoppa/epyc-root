@@ -1,0 +1,32 @@
+{
+  "id": "kvu-kpf174-custody-r4-20261104",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only accepted iff full prospective 6ec877068 build, parent 84d0a316, reference options and source integrity match, all ggml DSOs are included in build receipt and custody manifest, pinned linkage helper passes, compiled knobs pass, and completion reopens files and compiler hashes. First-object 4-CPU smoke proves progress only. No inference, historical equivalence or correctness verdict.",
+  "estimate_s": 2400,
+  "min_window_s": 2400,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 300,
+  "first_progress_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r4-20261104",
+  "keep": [
+    "RESULT.json",
+    "CUSTODY.json",
+    "runs/**",
+    "input/**",
+    "v3/**",
+    "source/**"
+  ],
+  "notes": "Fresh-ID build-only successor after r3 rc75 disk-floor. No prior completion or qualification inherited. Original 150 GiB floor remains enforced; reservation remains 48 GiB. Dedicated reusable detached source worktree /mnt/raid0/llm/worktrees/kpf174-custody-r4-source-20261104 was freshly materialized by git worktree, never copied from production. Exact source commit, parent, tracked cleanliness, 3304 source bytes and inputs reverified; stat inventories regenerated. Model weights never read or hashed. First-object 4-CPU publisher smoke proves progress only and has NOT RUN for this successor. Full prospective HIP build is allocated CPU work. All custody, all seven ggml/shared-library receipt hashes, pinned linkage helper, compiled knobs, completion file reopening and host compiler digests retained. Witness successor must pin validated receipt+custody hashes before GPU publication.",
+  "unit_key": "files",
+  "ram_gib": 48,
+  "lineage": "kvu-kpf174-custody",
+  "supersedes": "kvu-kpf174-custody-r3-20261104"
+}
