@@ -42,4 +42,6 @@ The official [v6 result](shadow-v6-filing.json) likewise ended rc=75 with two le
 
 The APP query-capture impact run ended rc=1 after the lookup returned a markdown table where its parser expected a list. Its [source scan](gs-app-impact-v1/results.jsonl) is not an impact result; no target risk was assessed and source edits remain blocked pending exact context and impact receipts.
 
+The [corrected impact run](gs-app-impact-v2/results.jsonl) produced seven LOW retriever-method impacts, then stopped on **CRITICAL** for `TaskEmbedder._generate_embedding`: 37 indexed upstream nodes, six direct, eight modules and one process. `StrategyStore.retrieve` was not reached. The rc=0 signals the prescribed risk stop, not a nine-target pass. Do not edit the critical target on this result.
+
 The [second frozen-query impact run](gs-index-v2/results.jsonl) completed at the pinned source with exact context and LOW upstream impact for all four targets, at most three indexed callers. This is an impact finding, not a G-S result.

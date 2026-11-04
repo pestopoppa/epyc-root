@@ -1,0 +1,61 @@
+{
+ "decision_rule": "Private three-query online wiring pilot, not retrieval-quality or full parent completion. Complete iff official phase has three recorded valid model selections (0 is explicit no-open), real BGE and Granite hybrid searches with independent indexes and no fallback, only BGE shown to private Qwen frontdoor, >=1 actual selected pointer opened through ContextBundle and delivered to a validated ShadowSink stream, pinned inputs and owned-process drain; reject truncated, repeated or unclosed reasoning envelopes and out-of-range selections. Missing/no-open is unknown, hidden-arm matching is counterfactual; do not infer a model-scope belief warrant. Incomplete otherwise.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 3300,
+ "first_progress_s": 600,
+ "gib": 64,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3a",
+ "id": "ufh14-repl-emb23a-parse-v7-20261104",
+ "keep": [
+  "out/**/*",
+  "pilot.py",
+  "bridge.py",
+  "selection.py",
+  "launch.sh",
+  "closure.json",
+  "closure.py",
+  "runtime_guard.py",
+  "inner_command.py",
+  "bootstrap_guard.sh",
+  "verify_ggml_linkage.sh",
+  "test_*.py",
+  "spec.json",
+  "prepared-inputs.json",
+  "scripts/vidya/producers/*.py",
+  "out/run/*/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/launch.sh",
+  "sha256": "15ef228a2b87c5004a7e578a8e69cca9faf1b28d66e14330c7354688032c7e40"
+ },
+ "min_window_s": 3600,
+ "notes": "v7 reserves ports 19551-19553. The inner command verifies the literal bootstrap-guard hash and reruns sealed bootstrap after grant, then verifies the source/dependency closure before the native pilot. The frontdoor prompt requests one digit without explanation; its output is bounded at 1024 tokens. Strict native stop metadata and exact parsing remain required. This addresses the v6 256-token limit failure mode without relying on unsupported no-think behavior.",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "ports": [
+  19551,
+  19552,
+  19553
+ ],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "harness-program.md:2471: untestable prose prerequisite: 'require a corrected successor before treating its result as complete. [Review].\\n    - Independent v4 review found the in'",
+  "volatile-paths: the job runs /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python, /mnt/raid0/llm/epyc-orchestrator/.venv/pyvenv.cfg from a lane/worktree path that can change or vanish before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)"
+ ],
+ "published_at": "2026-11-04T15:27:38Z",
+ "published_from": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/out/run/*/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/STOP",
+ "supersedes": "ufh14-repl-emb23a-parse-v6-20261104",
+ "window_s": 4260,
+ "workdir": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7"
+}

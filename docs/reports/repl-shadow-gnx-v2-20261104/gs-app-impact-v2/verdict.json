@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official rc0 is a declared risk-stop, not full PASS. Exact pinned TaskEmbedder._generate_embedding is CRITICAL, 37 indexed upstream nodes, 6 direct; stopped before StrategyStore.retrieve, so nine-target LOW/MEDIUM gate not met. Warn and do not edit critical target. Seven prior methods LOW, and remaining target was not assessed.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T15:27:26+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:20:13Z reason=complete",
+ "filed_at": "2026-11-04T15:27:26+00:00",
+ "filed_by": "agent",
+ "handoff_task": "harness-program.md:REPL-EMB-2.11-APP-IMPACT",
+ "id": "ufh12-gs-app-query-impact-v2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh12-gs-app-query-impact-v2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-v2/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc0 is a declared risk-stop, not full PASS. Exact pinned TaskEmbedder._generate_embedding is CRITICAL, 37 indexed upstream nodes, 6 direct; stopped before StrategyStore.retrieve, so nine-target LOW/MEDIUM gate not met. Warn and do not edit critical target. Seven prior methods LOW, and remaining target was not assessed.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-v2/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "ufh12-gs-app-query-impact-v2-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Exact class-qualified methods indexed at APP origin/main 326f502759986c9846027f8187972969139c0089. PASS requires pinned source index and context plus upstream impact for all nine unique methods with verified UID/file/class/source line, LOW/MEDIUM only. HIGH/CRITICAL immediately records warning and stops before edits; missing, ambiguous, unknown or wrong UID, stale index, partial and smoke source scan are not PASS.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "efcd4176241823fe9b0de35b2cfc8248db5ebf4f4483bf9841907e9753578b19",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}
