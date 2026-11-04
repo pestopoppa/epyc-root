@@ -1,0 +1,9 @@
+{
+  "FOLD-PLAN.json": "01afe317a17ad6db7226716de00aa93e8e69da47d85f3799968c34faaa17d851",
+  "OBSERVATION.json": "5d1d5f1349956535c7c9e56102aee1483059d7a55195e3fe06eb4ff76b9e62dc",
+  "cpu_recipe_compare.py": "d78f8c61eefe2b0fb887eb9dc56cb0d4ba2a89bf0f539491946982e19fd725ae",
+  "fold-authority.md": "1515c2dfb3f09745d57df802d788bd217ca672d395a7bd089bb42708336d886a",
+  "fold_entry.py": "f102376d2851ec3ab6567392918c1475616f76f3595153a5c7e1b1c9f4736f0d",
+  "gpu_enrollment.py": "2a4f5592c0b0de2a8ffded3b669b7b130ffceb0f4e00fca86d1464b39f0d23fd",
+  "gpu_write_capture.py": "098a041d802d47e7ab02a83201f63eeb21a3cc536bdcb99980aacf505680539a"
+}

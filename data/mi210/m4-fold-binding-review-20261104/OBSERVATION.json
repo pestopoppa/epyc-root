@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.m4.fold-binding-observation.v1",
+  "cells": 16,
+  "entries": [
+    [
+      "python3",
+      "/workspace/scripts/champion/m4/fold_entry.py",
+      "{plan}",
+      "{cell}",
+      "{out}"
+    ]
+  ],
+  "entry_files": {
+    "/workspace/scripts/champion/m4/fold_entry.py": "f102376d2851ec3ab6567392918c1475616f76f3595153a5c7e1b1c9f4736f0d"
+  },
+  "candidate_flags_present": {
+    "--prefill-order": 8,
+    "--prefill-contend-cap": 0
+  },
+  "baseline_flags_present": {
+    "--prefill-order": 0,
+    "--prefill-contend-cap": 0
+  },
+  "scope": "source inspection only, no gate decision, no measurement or run"
+}
