@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 194
+      "open": 193
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 86
+      "open": 84
     }
   },
   "duplicates": {},
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 221,
+      "closed": 223,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 79,
+      "last_advanced": "2026-11-04",
+      "open": 77,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1039,13 +1039,13 @@
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 31,
           "gates": [],
           "guarded": 0,
           "line": 390,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 8
+          "open": 6
         },
         {
           "blocked": 0,
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2681,
+          "line": 2683,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1114,9 +1114,9 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 235,
+      "closed": 237,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "open": 100,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 337,
+      "total": 339,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1298,
+          "line": 1301,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1422,
+          "line": 1425,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1749,
+          "line": 1752,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1888,
+          "line": 1891,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,21 +1188,21 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2441,
+          "line": 2444,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 27,
+          "closed": 29,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2578,
+          "line": 2581,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3420,
+          "line": 3428,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 239,
+      "closed": 240,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 90,
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 330,
+      "total": 331,
       "tracks": [
         {
           "blocked": 1,
@@ -1332,30 +1332,30 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 44
+          "open": 45
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1345,
+          "line": 1348,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
         },
         {
           "blocked": 0,
-          "closed": 104,
+          "closed": 105,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1727,
+          "line": 1730,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 38
+          "open": 37
         }
       ]
     },
@@ -2093,9 +2093,9 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 0,
-      "closed": 66,
+      "closed": 67,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2105,7 +2105,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 93,
+      "total": 94,
       "tracks": [
         {
           "blocked": 0,
@@ -2119,7 +2119,7 @@
         },
         {
           "blocked": 0,
-          "closed": 26,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
           "line": 205,
@@ -2132,7 +2132,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 647,
+          "line": 648,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 3
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 102,
+      "closed": 103,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 136,
+      "total": 137,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 60,
+          "closed": 61,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 660,
+          "line": 669,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2614,10 +2614,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 344,
+      "closed": 346,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 84,
+      "open": 83,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 430
+      "total": 431
     }
   },
   "row_id_collisions": {},
