@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T23:36:08Z",
+  "generated_at": "2026-11-04T23:37:20Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1574,7 +1574,7 @@
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
-      "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
+      "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
       "open": 18,
       "priority": 0.9884,
       "priority_basis": {
