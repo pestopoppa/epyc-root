@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T19:58:16Z",
+  "generated_at": "2026-11-04T20:08:27Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2132,7 +2132,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 249,
+      "closed": 251,
       "dispatchable": 100,
       "domain": "inference-research",
       "guarded": 0,
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1346,
+          "line": 1348,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1470,
+          "line": 1472,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1797,
+          "line": 1799,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1936,
+          "line": 1938,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2489,
+          "line": 2491,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2626,
+          "line": 2628,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3496,
+          "line": 3501,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3511,7 +3511,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 258,
+      "closed": 259,
       "dispatchable": 89,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3560,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1429,
+          "line": 1430,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1812,
+          "line": 1813,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
