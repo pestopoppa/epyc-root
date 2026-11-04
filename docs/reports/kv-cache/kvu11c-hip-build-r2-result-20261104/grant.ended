@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T23:24:47Z reason=complete
+job_id=kvu11c-hip-build-r2-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=3600
+started=2026-11-04T23:23:38Z
+regions=72-95

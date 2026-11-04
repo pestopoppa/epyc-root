@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T23:23:10Z reason=complete
+job_id=kvu19b-profiler-clock-build-20261104-r5
+owner=h-kvfork
+step=job-run
+estimated_wall_s=600
+started=2026-11-04T23:23:07Z
+regions=72-95

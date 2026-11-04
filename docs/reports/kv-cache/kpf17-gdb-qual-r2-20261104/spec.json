@@ -1,0 +1,40 @@
+{
+  "attempt_id": "kvfork17-gdb-continue-qual-r2-20261104-attempt-7f3a91c6",
+  "attempt_nonce": "7f3a91c6-6d24-4c88-b0f1-a13fe8c5198a",
+  "cleanup_contract": "gcc and gdb execute as captured direct children under a verified subreaper; bounded STOP/timeout cleanup signals only PID/birth-verified captured descendants through pidfds, then repeatedly captures, signals, reaps, and verifies every adopted own child after the captured parent exits, including children born after a tree snapshot; normal completion also checks and drains adopted children and cannot PASS if that requires signals; no process-group or name-pattern signals",
+  "decision_rule": "PASS only if the private model-free control records post-continue selected inferior PID 0 and GDB $_exitcode 0 after continuing, the deliberate exit-code-23 mutation records post-continue PID 0 and $_exitcode 23, both captured inferiors are reaped without signals on normal completion, timeout cleanup uses the verified subreaper plus captured PID birth/pidfd and leaves no survivors, and all qualification inputs/results are internally hashed. GDB/cleanup prerequisite only; no KPF-17 source, model, library, mapping, custody, or oracle claim. Result publication occurs only after TemporaryDirectory exit, final verified child cleanup, and pidfd closure, with no cleanup signals and STOP flag/file checked immediately before atomic replacement. Complete generated source/executable and gcc/GDB stdout/stderr are retained in an exclusive attempt-local RESULT.evidence directory with SHA-256 references.",
+  "dryrun_native_result": true,
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "id": "kvfork17-gdb-continue-qual-r2-20261104",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/launch.sh",
+  "launcher_contract": {
+    "class": "cpu",
+    "completion_predicate": "qualify.py --validate-result parses PASS and requires exact attempt ID/nonce, control exit 0 and mutation exit 23, post-continue inferior PID 0, and clean unsignalled completion for both; smoke uses only its separate result path; rejects STOP flag/file at validator entry and exit and verifies complete retained evidence paths and hashes",
+    "engine": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "role": "build",
+    "smoke_output": "publisher-provided FILLER_DRYRUN_RESULT_PATH only; accept any resolved path except the full attempt RESULT.json and reject any existing destination; full attempt path is selected only outside FILLER_SMOKE and FILLER_DRYRUN",
+    "stop": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/STOP",
+    "workdir": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104"
+  },
+  "notes": "Preparation only. Full output is attempt-bound by a dedicated directory, attempt ID, and nonce; publisher smoke output has a separate path. Source scripts copied into successor only. Do not infer a KPF-17/oracle claim from this prerequisite packet.",
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "ram_gib": 1,
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/out/full-attempt-kvfork17-gdb-continue-qual-r2-20261104-7f3a91c6/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104",
+  "sealed_files": [
+    "qualify.py",
+    "spec.json"
+  ],
+  "smoke_result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/out/publisher-smoke/RESULT.json",
+  "smoke_timeout_s": 120,
+  "supersedes": "kvfork17-gdb-continue-qual-20261104"
+}

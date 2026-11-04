@@ -1,0 +1,19 @@
+qwentts.cpp aca7032 (2026-11-02)
+
+Usage: /mnt/raid0/llm/tmp/kvfork/kvu11c-hip-build-r2-20261104/build/tts-server --model <gguf> --codec <gguf> [options]
+
+Required:
+  --model <gguf>          Talker LM GGUF (qwen-talker-*.gguf)
+  --codec <gguf>          Codec GGUF (qwen-tokenizer-*.gguf)
+
+Optional:
+  --alias <name>          Report this model id instead of the GGUF file name
+  --host <ip>             Listen address (default: 127.0.0.1)
+  --port <n>              Listen port (default: 8080)
+  --lang <name>           Language label (default: auto)
+  --max-batch <n>         Concurrent requests batched on the GPU (default: 1)
+  --threads <n>           GGML CPU backend threads (default: half logical CPUs)
+  --no-fa                 Disable flash attention
+  --clamp-fp16            Clamp hidden states to FP16 range
+  --codec-chunk-dur <f>   Codec decode chunk duration in seconds, wav responses (default: 24.0)
+  --codec-fused           Decode each frame's audio inside the predictor graph (max-batch 1, streaming)

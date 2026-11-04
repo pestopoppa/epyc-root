@@ -1,0 +1,10 @@
+{
+  "attempt_id": "kvu-kpf17-map-revalidation-r3-20261104",
+  "input_seal_sha256": "7062812001a8c6ae6dce53e5a56e85c3e1cecd8e171e8acd2437731a110a5567",
+  "nonce": "7160181c9fa5b60f201cc64e5dcd4199d419f5c705ec871e",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/map-revalidation-r3-20261104/out/RESULT.json",
+  "row_id": "kvu-kpf17-map-revalidation-r3-20261104",
+  "runner_sha256": "239d91ddccaa91f7ad45039755762fa7989f30e18adf892492aafb16fe445f5d",
+  "schema": "kpf17.alt17-attempt.v1",
+  "state": "STARTED"
+}
