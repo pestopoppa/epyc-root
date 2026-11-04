@@ -55,3 +55,7 @@ The integrated CPU v3 compile was already filed pass. Prepared an isolated Qwen3
 ## 17:04Z — File phase CPU build disk-floor stop
 
 Filed lsa-phase-cpu-build-20261104 inconclusive: rc=75 disk-floor after configuration, no build completion. Preserved result, manifest and end in docs/evidence/lsa-phase-cpu-build-20261104/. Integrated CPU v2 failure was already filed and superseded by passing v3.
+
+## 17:14Z — Preserve and classify N10 qualification exposure with insufficient GPU custody
+
+N10 qualification ended rc=75 after a full response: all 2,269 observation attempts were unbracketed, including 2,267 slot timeouts, so the at-least-two owned GPU samples rule failed. Preserved the exposure, server log, identity and qualification failure in docs/evidence/yarn-e1-a2-n10-gpu-20261104/. N10 remains unscorable and its no-replay rule forbids re-running this witness. The prior API-real-ready event was superseded by the already filed corrected API qualification.
