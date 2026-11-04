@@ -191,3 +191,7 @@ KPF-17.MAP-REVALIDATION: kvfork17-alt17-map-revalidation-safe-20261104 ended rc7
 ## 22:49Z — Prepare KPF-50 clock witness successor
 
 KPF-50.CLOCK-QUAL: prepared a fresh r4 successor with isolated paths, regenerated content seals, and the unchanged 150 GiB full-run floor. Publisher smoke was started but its result was not available at this boundary; no publication, qualification, target window, or scientific verdict is claimed. Registered its PASS event for resumption. Filesystem free space was approximately 102 GiB before the smoke.
+
+## 22:51Z — Ready KPF-50 clock witness successor
+
+KPF-50.CLOCK-QUAL: published the same-lineage r4 clock-witness successor after publisher smoke PASS with separate output and the unchanged 150 GiB full-run disk floor. The prior full attempt ended at that floor before producing its native result; no target profiling windows were exposed and no qualification or profile verdict follows.
