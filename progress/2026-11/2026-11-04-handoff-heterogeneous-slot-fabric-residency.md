@@ -355,3 +355,7 @@ KPF-60 checked-fixture r5 was already filed inconclusive. Added KPF-50.CHILD-EVI
 ## 21:51Z — Preserve and review validator overwrite guard proposal
 
 KPF-60 checked-fixture r6 was already filed inconclusive. Preserved the validator guard patch and nine-test scratch results with its static-path limitation; concurrent output-path replacement remains a race. No production code changed: exact-source GitNexus impact is not available in existing indexes, and independent source-bound impact row preparation continues. No new row or inference verdict.
+
+## 21:55Z — Publish exact-source validator impact row
+
+The kpf60 checked-fixture r7 was already filed inconclusive. Published kpf50-child-evidence-main-impact-20261104 after the four-CPU committed-reference smoke passed. It uses a pinned detached checkout and preserves native analyzer/query output and coverage; the smoke does not establish an impact result. Located the HSF-3 progress directory and checkpoint database, but did not read records; the three uncensused source schemas do not independently supply exact HSF-3 pairs.
