@@ -1,0 +1,38 @@
+{
+  "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+  "layers_pruned": [
+    3,
+    7,
+    11,
+    15,
+    19,
+    23,
+    27,
+    31,
+    35,
+    39,
+    43,
+    47,
+    51,
+    55,
+    59,
+    63
+  ],
+  "phases": {
+    "prefill": [
+      5005754112,
+      5005754112,
+      5057770752,
+      64
+    ],
+    "decode": [
+      15939072,
+      15939072,
+      17753472,
+      144
+    ]
+  },
+  "client_first_token_s": 91.196214259,
+  "client_request_s": 94.296875612,
+  "scope": "derived from preserved trace; no new measurement or comparison"
+}

@@ -1,0 +1,244 @@
+{
+  "reviewed": true,
+  "trace_schema_reviewed": true,
+  "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+  "source_identity": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1",
+  "build_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out",
+  "artifacts": [
+    {
+      "role": "native_server",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/llama-server",
+      "sha256": "e7b376b28713c17a0755de083d63bdf25d36f801ac6986a33380b7b9f222915b"
+    },
+    {
+      "role": "ggml_hip_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-hip.so.0.16.0",
+      "sha256": "2145faefcea4a9b08b733375d3e6febd3b4b7ccdab2f570eca19db5c7420a1db"
+    },
+    {
+      "role": "ggml_cpu_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-cpu.so.0.16.0",
+      "sha256": "0183cac6b037a3235dd256bf3026a27362437bed217855bfe4744f41d32a9907"
+    },
+    {
+      "role": "ggml_base_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-base.so.0.16.0",
+      "sha256": "d26f2caecdbfdd12e492828465d6bbb61187f41854021d4fab92e4081fef1f0d"
+    },
+    {
+      "role": "ggml_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml.so.0.16.0",
+      "sha256": "35d47dae9c6b6bcc6adabe1263fb4546652dfa15e22c45a3a37bbff95c91a5e9"
+    },
+    {
+      "role": "llama_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama.so.0.0.0",
+      "sha256": "7d381796426e282fa22ff8a3a79538698c91231d7506180402cb977f61c1519e"
+    },
+    {
+      "role": "llama_common_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama-common.so.0.0.0",
+      "sha256": "671e00b11073bfd54afba498638dff1161559211fe75f3e75ec4b842c888aa2d"
+    },
+    {
+      "role": "llama_server_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama-server-impl.so",
+      "sha256": "d610710923ec996dd60a12186b5e493126a609ec43de0f76cd12cb6eb1b2fd8c"
+    },
+    {
+      "role": "mtmd_dso",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libmtmd.so.0.0.0",
+      "sha256": "cf1fd6f0d2068e6969e3bb40e515bb55d99a213b3f4cf6da11487810fadfc12c"
+    },
+    {
+      "role": "build_manifest",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/build-receipt.json",
+      "sha256": "be38bec5dd7bf0cd65e5492a3669ddf7056f4cba13efd08836f30a236b5b260b"
+    },
+    {
+      "role": "source_manifest",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source-manifest.json",
+      "sha256": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1"
+    },
+    {
+      "role": "source_diff_proof",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/source-diff-proof.json",
+      "sha256": "b37fd806d2a41b1ea741596c17811aa41b1a2d2c1f60fe63b75416761547c278"
+    },
+    {
+      "role": "trace_producer",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source/src/llama-lsa-graph.cpp",
+      "sha256": "088e8b1f8ee2890d041d0d1a83e0ebd273232e11579aca4ea9ca277315aac4ca"
+    },
+    {
+      "role": "capacity_receipt",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/capacity-inherited.json",
+      "sha256": "7a41f4511df4e3637d9d90240e634f20bdfa61ce9a404d9a11b216aabfb77919"
+    },
+    {
+      "role": "native_manifest",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/native.manifest",
+      "sha256": "4c5f7c9ffe4f3c364b4bfb8ec8ab1d476355ef31dfcb928d6297bd90fc421d84"
+    },
+    {
+      "role": "request_client",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/request.py",
+      "sha256": "d00feadc983162db8dae647868292492a3f56818301ef519bfb1a51733d4a087"
+    },
+    {
+      "role": "trace_validator",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/validate_trace.py",
+      "sha256": "fa1577ab3ea6c60f99e0a5ac449b6eb9a1900b2fda4cdd9f31676775e4e78325"
+    },
+    {
+      "role": "classifier",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/classify.py",
+      "sha256": "6270f1ea061de3a2f272a20b4d76ef55e517fd408f9c708529d4c9174483cadd"
+    },
+    {
+      "role": "run_control",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/job.py",
+      "sha256": "9a68870662c225da89ba9bd180b82a8342389fd5a79e93b16102387a17925284"
+    },
+    {
+      "role": "preflight",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/preflight.py",
+      "sha256": "29e234b64e2004287ffd00906b70394883e1a6532d4dd160b0da242dbc1bc8be"
+    },
+    {
+      "role": "plan",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/plan.json",
+      "sha256": "bcb49cc1430809edd679490022285be225020705f82d18c6bc13ba1f295a6ece"
+    },
+    {
+      "role": "launcher",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/launch.sh",
+      "sha256": "a8a7f2ef73402ba17d336007ba04d68a6c654e6db417a46cccd9ea16ad017268"
+    },
+    {
+      "role": "spec",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/spec.json",
+      "sha256": "ba24bb964b2feb5977226f0ce199da1d0165ee6a9052d40fb839664feb217ba1"
+    },
+    {
+      "role": "monitor",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/monitor.py",
+      "sha256": "5e3addbd2584d992f345124fdcfb0b24aa5e050ff09b14c8b2944ff4b5a3853f"
+    },
+    {
+      "role": "native_evidence",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/native_evidence.py",
+      "sha256": "9fa64caa725c4dd0655410a2d7c1c18305304be16ad1c8a0bb33e9ac09563870"
+    },
+    {
+      "role": "belief_adapter",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/scripts/vidya/adapters/research_screen.py",
+      "sha256": "b5aecc9d08727d9f6a94017aa4728d69090602b836439ce9bd87c35c0dfa9c25"
+    },
+    {
+      "role": "linkage_verifier",
+      "path": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+    },
+    {
+      "role": "engine",
+      "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+      "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+    },
+    {
+      "role": "cpu_suite",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-cpu-cases/results.jsonl",
+      "sha256": "783a93525c52267675494273dd884dcba2ee5644b071756baa3d7268876f3cf4"
+    },
+    {
+      "role": "hip_native_witness",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/hip-synthetic-repair/native-27b/witness.json",
+      "sha256": "fddb90dfc77351271f24dcb22c5797134f1b4e14104edabac59037a9dfafab69"
+    },
+    {
+      "role": "hip_runtime_witness",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/hip-synthetic-repair/runtime-hip/witness.json",
+      "sha256": "76cbacccb1311b7092289c0b58c7a41fdbfc2db2829ff6996dfd3f3edfa997d5"
+    },
+    {
+      "role": "hip_graph_witness",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/hip-synthetic-observe-v2/disabled-default/witness.json",
+      "sha256": "93719a3c588f72d273e67471ba012b512d2dd922a9ba9872290c026e8697ab70"
+    },
+    {
+      "role": "hip_graph_witness",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/hip-synthetic-observe-v2/late-fallback/witness.json",
+      "sha256": "340643f2aa8eb713668ae86b20cdcf8c3fea1456f99b23ada51ed3aec584ae9d"
+    },
+    {
+      "role": "hip_graph_witness",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/hip-synthetic-observe-v2/late-fallback-q8/witness.json",
+      "sha256": "0b1477687f7f9fbdec0128248efe8d857bbad5ee66b7d40b1dc83875f3ac358b"
+    },
+    {
+      "role": "prior_invalid_result",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-sentinel/ATTEMPT/result.json",
+      "sha256": "b9ac1d987e99d3ab5eba224272ab57380974a76310abeb71f92b20bf34b595b7"
+    },
+    {
+      "role": "prior_invalid_receipt",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-sentinel/ATTEMPT/result.json.research-screen.json",
+      "sha256": "b29c661b95ed39bb480277b3e1b4dd4a1a8e5c91b9c775b5825bead54a21296d"
+    },
+    {
+      "role": "prior_native_trace",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-sentinel/ATTEMPT/native-trace.jsonl",
+      "sha256": "c4b2a49b11a1f02a3f960bf2e95ba098bd1f00c0cfce0754a26cc6ae12b3d86c"
+    },
+    {
+      "role": "trace_guard",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/trace_guard.py",
+      "sha256": "0e1f17c5f1637dc1098242cb8686ac1d9f2dca0e9a75345f2250bb7e09232ec5"
+    },
+    {
+      "role": "ward_cpu_results",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/results.jsonl",
+      "sha256": "e9c5ec3790f0853f293903a5dad30c50402c7eb3f339665c1ccdc86e28442e16"
+    },
+    {
+      "role": "ward_cpu_tied",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/tied.receipt",
+      "sha256": "149a2108ea939a1b40105c782a1a903d86c9f4200a1975c3712a69c4de603e48"
+    },
+    {
+      "role": "ward_cpu_pca",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/pca-projection.receipt",
+      "sha256": "a7ed3617aaecab10ec38e43b52988a274f15eb7848523f904c90a1c3b58ff747"
+    },
+    {
+      "role": "ward_hip_tied",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/tied/witness.json",
+      "sha256": "bca502f462709d7b91cbb77918db02227546ebdee522c831211cf58568875e19"
+    },
+    {
+      "role": "ward_hip_27b",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/native-27b/witness.json",
+      "sha256": "ff5bec8116fe9f1865229eaabd428528b2049f45fb87887c25326f40ee4a46eb"
+    },
+    {
+      "role": "ward_fixture",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/fixture/tied513.lsafix",
+      "sha256": "c6c11be3a9b1ca6a613bf40a4961521481515970b8ff89b32158f4f85307955f"
+    },
+    {
+      "role": "ward_host_sort",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/fixture/host-sort-result.json",
+      "sha256": "449022d65c7a4d5756f01c1b67146c19d425f4f0dc596a26a4c5b6a20e393c04"
+    },
+    {
+      "role": "r2_invalid",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-sentinel-r2/ATTEMPT/result.json",
+      "sha256": "84a21ed1ab3022cccf7edf9a00f1eca6b95a93093856e6a046c95f413ca78738"
+    },
+    {
+      "role": "reason_probe_failure",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/reason-probe-20261104/ATTEMPT/result.json",
+      "sha256": "04c2d178fe012d8a4a133aecd135559314ad8657c9db49051b430784480bead6"
+    }
+  ]
+}
