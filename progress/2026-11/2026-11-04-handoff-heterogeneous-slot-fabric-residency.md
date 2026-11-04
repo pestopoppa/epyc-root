@@ -427,3 +427,7 @@ The clock qualification r3 was already filed inconclusive after rc75 disk-floor 
 ## 22:56Z — File interrupted V11-FA-8 source impact
 
 The original KPF-17 mapping result was already filed inconclusive due to smoke contamination. Filed v11-fa8-impact-5026470-20261104-r5 inconclusive after rc75 disk-floor before native impact or coverage; preserved grant end. No impact severity, edit clearance or GPU inference result follows. KPF-61 third qualification is already recorded as a comparison failure with its lineage parked.
+
+## 22:59Z — File interrupted map and RS1 qualification results
+
+HSF-3 r2 was already filed inconclusive. Filed kvu-kpf17-map-revalidation-r2-20261104 and kpf-rs1-impact-8952-20261104-r4 inconclusive after rc75 disk-floor before their full outputs; grant ends retained. No full map revalidation, native impact, coverage or edit-safety finding follows. The 150 GiB grant floor remains unchanged; filesystem available was 93 GiB.
