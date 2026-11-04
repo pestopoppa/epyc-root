@@ -47,3 +47,7 @@ KPF-50: prior waiter and four interrupted attempts ended rc143; retained evidenc
 ## 17:47Z — Publish the KPF-17.4d prospective custody build successor after disk recovery
 
 KPF-17.4d: disk space recovered sufficiently for the existing r5 successor's unchanged floor. `kvu-kpf174-custody-r5-20261104` passed its four-CPU first-object smoke and was published. The full build, sealed DSO and helper custody, and prospective GPU witness remain pending; this does not adjudicate historical cells. KPF-18.1's retained successor remains disabled: the reviewed entry has no enforceable all-writer custody provider, and its interrupted unit remains UNKNOWN.
+
+## 17:50Z — Publish the candidate-bound V11-FA-8 source impact prerequisite
+
+V11-FA-8: declared the existing source-impact packet's stop-on-answer and futility conditions in the handoff and published `v11-fa8-impact-5026470-20261104`. The publisher accepted its four-CPU partial source-reference smoke (rc75 after progress); full native impact and skipped-file coverage remain pending. No source-edit clearance, GPU overflow result or inference follows. KPF-18.1 remains unqualified because its existing provider cannot exclude legacy writers.
