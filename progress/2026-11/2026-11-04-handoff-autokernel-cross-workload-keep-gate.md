@@ -139,3 +139,7 @@ C6-Q4-MMVQ-FIX: c6-n4-shared-harness-20261104 ended rc75 at disk-floor admission
 ## 20:49Z — Prepare host-scoped scheduler trace ABI diagnostic for CH-26b
 
 C6-Q4-MMVQ-FIX: c6-n4-shared-harness-r2-20261104 stopped rc75 at disk-floor admission without a result; retained the terminal packet and filed inconclusive. Repeated same-objective disk-floor failures park the diagnostic lineage. CH-26b: prepared a bounded host-scoped scheduler-trace repeatability diagnostic; this is functional evidence only and does not establish continuous host coverage, contention, placement or a noise floor. Private source-custody preparation passed nine model-free tests but runtime custody remains unproved. Published ch26-hostscope-abi-20261104 after its one-capture smoke PASS; the real row requires six separately sealed four-CPU captures over five minutes and independent raw-ring verification.
+
+## 20:51Z — File host-scope admission failure and publish sealed successor
+
+CH-26b: ch26-hostscope-abi-20261104 stopped at disk-floor admission rc75 without RESULT.json; original packet and smoke evidence retained at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-hostscope-abi-retained-20261104/ and filed inconclusive. Published ch26-hostscope-abi-r2-20261104 after smoke PASS with unchanged six-window functional-only rule. No continuous coverage, contention, placement or floor conclusion follows. C6 source inspection found a plausible n=4 correction inconsistency in the specialized MMVQ path; it remains unvalidated.
