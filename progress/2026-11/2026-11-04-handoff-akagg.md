@@ -247,3 +247,7 @@ The requested stale checkout copy had already been removed. P1b 1f7 HIP build ev
 ## 21:16Z — Filed four disk-floor interruptions and published C6 CPU successor.
 
 The specified stale checkout had already been removed. The P1b 732 CPU coverage build event was already filed as a build-only pass. Filed floor v11, GDN sentinel r15, C6 build r6 and paired GPU r4 as inconclusive rc75 disk-floor stops with retained terminal packets. Published C6 build r7 after four-CPU publisher custody smoke; full build and correctness remain pending. A v12 floor packet requires source independent of the FILED predecessor scratch; do not publish until that custody is established. Published paired GPU diagnostic r5 after publisher smoke PASS; full diagnostic pending. Floor v12 provisional packet must not be published while it points into reclaimable predecessor scratch; independent source review pending.
+
+## 21:19Z — Filed disk-floor interruptions, repaired floor source custody, and published CPU, GPU and floor successors.
+
+The db18 CPU build was already filed as a bounded coverage-build pass. Filed GDN CPU f32 r10, C6 build r7 and C6 paired diagnostic r5 as inconclusive disk-floor stops, preserving terminal packets. Published C6 build r8 after publisher custody smoke. Floor v12 was repaired with an independent detached research worktree and the reviewed serving delta; all 905 snapshot hashes match. Published paired GPU diagnostic r6 and floor v12 after their publisher smokes passed; both full results remain pending.
