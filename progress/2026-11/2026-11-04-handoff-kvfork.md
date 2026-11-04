@@ -219,3 +219,7 @@ KPF-27d: published kpf27d-impact-326f-20261104 after four-CPU source-reference s
 ## 23:06Z — Ready KPF-41 direct-vector impact successor
 
 KPF-41: published kpf41-direct-vec-impact-8952a0f-20261104-r4 after its four-CPU source-reference smoke passed. The detached source and tree are bound to 8952a0f693fb923918157eb25117641b74766230 and 8772563484cd449f15188aaf6db89e84bdb6b025; the four full impact queries and skipped-file coverage remain pending under the 150 GiB floor. Smoke is not edit clearance or a GPU result. KPF-27d source-impact attempt ended rc75 at the disk floor before native results and was filed INCONCLUSIVE. A separate KPF-30.PHASE-IMPACT r8 packet is prepared at /mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r8/spec.json, not yet published.
+
+## 23:08Z — Publish the KPF-30 phase-runner source-impact r8 successor
+
+KPF-30.PHASE-IMPACT: published kpf30-impact-8952-20261104-r8 after its four-CPU source-reference smoke passed. The six native impact queries and skipped-file coverage remain pending; the full run retains the 150 GiB disk floor. Smoke is not source-edit clearance.
