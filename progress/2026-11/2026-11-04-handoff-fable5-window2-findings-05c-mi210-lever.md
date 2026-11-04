@@ -95,3 +95,7 @@ Filed and closed P5-2d on the actual grant rc0: pytest exit0, exactly 7 JUnit ca
 ## 15:53Z — Published P12 non-gating scout successor after full-run host-health refusal.
 
 P12-NEXT-4: Published p12-slots-followup-r2-20261104 with real four-CPU one-request native smoke PASS. The full run is a non-gating host-health-warning scout with cold-cache, placement and overlapping /slots evidence, stopping at the first incomplete cell; source packet and prospective belief wiring are recorded. Earlier r1 failed before requests and supplies no measurement.
+
+## 15:55Z — Consumed duplicate r4 event; prior filing and r5 repair are already recorded.
+
+M4-Q38-RECIPE-COMPARISON: r4 had already been filed as invalid, with the missing capture-parent root cause and r5 correction recorded. r5 qualification remains pending; no t48/t96 result can be inferred from r4. The prior P12 scout wrap landed as 2066342a85503171e7d587c9d5c9700f62a5feed.
