@@ -227,3 +227,7 @@ A model-free actual-GDB starti regression passed: after the inferior was capture
 ## 19:48Z — Exercise post-debugger discovery and captured-PID cleanup of an initially unrecorded inferior.
 
 KPF-17 model-free actual-GDB regression expanded to 4/4 passing: a previously unrecorded inferior was discovered only after debugger death and subreaper adoption, then PID/birth/pidfd captured before termination and reaped without false COMPLETE. The modeled pre-spawn STOP does not validate the production entry; multilevel descendants and oracle packet integration remain open.
+
+## 19:50Z — File the six-source KPF-60 GPU-X impact scan and preserve its native coverage.
+
+Filed kpf60-gpux-impact-8952-20261104 PASS rc=0: six exact-source native impacts, scan_complete partial=false and verbose skipped-file coverage. Two MEDIUM risks had 25 and 10 affected nodes; four LOW risks had 0, 2, 2 and 2. Skipped files remain uncleared and there is no native KV-byte or crossover result.

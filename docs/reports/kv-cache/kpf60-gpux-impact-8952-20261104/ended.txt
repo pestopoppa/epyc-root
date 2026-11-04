@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T19:46:54Z reason=complete
+job_id=kpf60-gpux-impact-8952-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T19:17:59Z
+regions=0-95
