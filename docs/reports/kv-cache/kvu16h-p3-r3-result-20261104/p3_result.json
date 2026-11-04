@@ -1,0 +1,29 @@
+{
+ "schema": "p3.result.v1",
+ "at": "2026-11-04T11:33:59Z",
+ "a1": {
+  "base_tps": {
+   "drafted": 35.56,
+   "nodraft": 22.172
+  },
+  "loss_pct_at_L3": {
+   "drafted": 58.0,
+   "nodraft": 61.29
+  },
+  "aba_drift_nodraft_pct": -0.0,
+  "peak_resident_tokens": 358838,
+  "peak_resident_frac": 0.9126,
+  "log_scan": {
+   "failed to find a memory slot": 0,
+   "context size has been exceeded": 0,
+   "failed to find free space in the KV cache": 0,
+   "exceeds the available context size": 0,
+   "purging slot": 0,
+   "Unable to restore slot": 0,
+   "saving_idle_slot_lines": 0
+  },
+  "vram_peak_gib": 51.71,
+  "own_pid_peak_vram_gib": 51.7
+ },
+ "verdict": "P5 trigger (>=5%): MET; split-per-slot trigger (>=15% at >=300k): MET"
+}

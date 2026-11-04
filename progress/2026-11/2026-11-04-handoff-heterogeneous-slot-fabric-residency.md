@@ -51,3 +51,7 @@ Acknowledged previously filed P3 lifecycle r2 rc1 INCONCLUSIVE (neighbour occupa
 ## 15:31Z — Acknowledge the incomplete CODE-off event and reconcile its successor status
 
 The original CODE-off diagnostic was already filed INCONCLUSIVE: full rc1, no declared result JSONL and three cancelled scouts with no completion under the short native and aggregate caps. Acknowledged its receipt and kept the original failure separate from the later full r2 off/on descriptive diagnostics. Corrected stale handoff prose claiming those r2 full results were still pending. Source-grounded outcome review is in preparation; the P2 gate and predeclared windows remain open.
+
+## 15:34Z — Preserve and scope the completed P3 r3 full run
+
+Acknowledged the previously filed P3 r3 rc0 full run; retained both native arm records, residency streams, server logs, final and derived reports, and original verdict. Recomputed loss versus the combined mean of L0 base/after: 58.00% drafted and 61.29% no-draft. The no-draft native draft_n is UNKNOWN, not zero; sampled own-PID maximum 51.7 GiB is not a lifetime peak. Corrected stale r3 queued-smoke language and left the global cross-runner parent open. The P5 partial run has no validated no-redraw continuation; its missing last row was already exposed.
