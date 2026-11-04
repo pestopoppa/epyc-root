@@ -1,0 +1,3 @@
+# KPF-26 CODE-off r2 diagnostic
+
+The previously filed single-route three-scout collection completed rc0/HTTP 200. Child indices 0/1/2 each report zero fork tokens and true keyword checks. Top-level effective-flag attestation is unverified and the checkpoint witness is null. This is a descriptive diagnostic, not a quality, representativeness, performance or KPF-26 gate verdict. Full scout inputs and responses remain in private session evidence; hashes remain in result.json. The proposed retained-sibling rubric applies to a different cohort, and two OFF summaries were clipped; source-grounded outcome labels remain UNKNOWN.

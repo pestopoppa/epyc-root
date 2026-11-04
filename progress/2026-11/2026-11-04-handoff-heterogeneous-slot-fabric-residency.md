@@ -59,3 +59,7 @@ Acknowledged the previously filed P3 r3 rc0 full run; retained both native arm r
 ## 15:37Z — File scoped CODE-on diagnostic and correct per-child outcome ordering
 
 The previously filed KPF-26 CODE-on r2 event was acknowledged: one route HTTP200, three scouts with child-index fork counts 3547/5498/0 and keyword booleans false/true/true, top-level flag attestation unverified and checkpoint witness null. Corrected the prior checkpoint which incorrectly paired the booleans to child indices, preserved the native result and original filed verdict, and stored raw response/trace privately for source-grounded review. It is a descriptive diagnostic only and does not close P2. No runnable independent successor was identified; outcome review remains in progress.
+
+## 15:40Z — Preserve the scoped CODE-off r2 diagnostic result
+
+Acknowledged the previously filed KPF-26 CODE-off r2 diagnostic: three completed scouts with zero reported fork tokens and true keyword checks, HTTP200 and rc0; top-level effective flags remain unverified and checkpoint witness is null. Preserved the native result, original verdict and end event, and retained raw input and response privately. Added correctly indexed OFF observations alongside ON observations in the current dispatch. Proposed source-grounded outcome labels remain UNKNOWN and the P2 gate and windows remain open.
