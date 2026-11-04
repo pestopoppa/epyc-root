@@ -143,3 +143,7 @@ Filed `kpf30-impact-8952-20261104-r3` INCONCLUSIVE (rc75 disk-floor, no native i
 ## 17:00Z — Removed the clean superseded r4 source worktree after preserving its filed disk-floor result; the fresh r5 source remains prepared.
 
 Removed the clean superseded KPF-17.4d r4 detached source worktree after its result was filed. The r5 source and spec remain prepared; host free disk was approximately 138 GiB, below the unmodified 150 GiB smoke floor. KPF-30 r3 was already filed INCONCLUSIVE.
+
+## 17:02Z — The already-consumed r5 preparation is still awaiting host disk recovery before publisher qualification.
+
+The r5 preparation event was already consumed; free space is approximately 137 GiB, below the unchanged 150 GiB smoke floor. No row published and no full build verdict.
