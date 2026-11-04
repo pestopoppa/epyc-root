@@ -63,3 +63,11 @@ The first wrap-up was rejected by the test collectability hook; the inherited un
 ## 23:23Z — Complete the recurrent-impact successor wrap-up
 
 The first wrap-up was rejected by the test collectability hook; the inherited unittest suite now has a direct runner and passes all four cases. The preceding entry records the published row and preparation.
+
+## 23:30Z — File the KPF-17 mapping-revalidation full result and prepare the next source-impact row.
+
+`kvu-kpf17-map-revalidation-r3-20261104` completed rc 0 and passed its scoped rule: baseline accepted for all five private fixture DSOs, the synchronization barrier passed, and the second `custody.validate_maps` refused the mutated library. Evidence: `docs/reports/kv-cache/kpf17-map-r3-20261104/`; this says nothing about native loading, build identity, mutation after the final check or full-chain custody. The result was filed and the filing receipt issued. A source-header own-child fixture observed the expected ubatch count and ID pointer and detected planted mutations, without exercising the historical library or proving a live ABI. A disabled KPF-18 source-transition verifier passed five tests and produced a 79-entry review manifest; it is not integrated or transitive custody. GitNexus is unindexed; these are new files only.
+
+## 23:31Z — Complete mapping-revalidation result filing
+
+The prior wrap-up was refused by the D9 loop-plane hook. The unintegrated source-transition draft was moved to progress/evidence; its five tests pass and the live entry remains disabled. The preceding entry records the scoped mapping qualification and retained evidence.
