@@ -51,3 +51,7 @@ Wrote the FILED receipt for `lsa-projection-row474-20261104` using its existing 
 ## 15:55Z — Acknowledge filed LSA normalization-order diagnostic
 
 Wrote the FILED receipt for `lsa-norm-row1185-20261104` using its existing PASS verdict. The filed one-row result reports that the eight-lane BF16 normalization matched the frozen row 1185 fixture, while the sequential result differed. Native result SHA-256 `191420106bedcb75b4db18de09b16b7c46426fef6b0d986726e7396e2de75092`. This bounded diagnostic does not complete LSA-SCREEN-1; no checkbox was ticked.
+
+## 15:57Z — Acknowledge filed LSA tied-sort profile
+
+Wrote the FILED receipt for `lsa-tied-sort-profile-20261104` using its existing inconclusive verdict. The CPU tied-cutoff and full sort-order checks passed, while the compile-only HIP std::sort viability leg failed. Native result SHA-256 `7afc6c794166dc8558bb8ab6e9e382562d8437cb133a42141a2baa0181da86a8`. No model or GPU execution was included; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
