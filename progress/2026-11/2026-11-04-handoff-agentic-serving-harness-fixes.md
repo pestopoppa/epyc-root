@@ -95,3 +95,7 @@ UFH14-B4k-RUN-GUARD: fresh ufh14-b4k-guard-v4-20261104 is qualified and armed pe
 ## 17:08Z — Preserve reproducible non-finite native timing failure and prepare a finite guard.
 
 UFH14-A3A-F2: offline contract controls reproduced acceptance of NaN native predicted_ms as COMPLETE_DESCRIPTIVE and identified finite guard requirement; retained receipt and prospective patch in docs/reports/ufh14-a3-f2-finite-20261104. No existing queued packet was changed and no native outcome is claimed; fresh packet guard validation underway. Consumed 13 preparation outcomes: prior model-free CPU controls, guarded B4k v2/v3 and qualified v4 successor, and unprotected HIGH impact stop remain scoped as previously filed. Independent CPU isolation and stable-head prerequisites continue via registered output events.
+
+## 17:11Z — File the guarded B4k disk-floor stop and prepare a compliant successor.
+
+UFH14-B4k: filed ufh14-b4k-guard-v4-20261104 INCONCLUSIVE rc75 disk-floor after one second. The required filing.file_run refused missing or mismatched RESULT/COMPLETE; no valid window or baseline. Retained original ended receipt and filed verdict at docs/reports/ufh14-b4k-disk-floor-20261104. Disk available was 134 GiB, below 150 GiB floor; preserve the floor. Successor preparation and task-owned cleanup review registered as terminal events.
