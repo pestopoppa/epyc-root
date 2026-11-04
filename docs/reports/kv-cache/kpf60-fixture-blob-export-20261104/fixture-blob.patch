@@ -1,0 +1,53 @@
+--- a/tests/test-kpf60-cache-fixture.cpp
++++ b/tests/test-kpf60-cache-fixture.cpp
+@@ -6,6 +6,10 @@
+ #include "llama-io.h"
+ #include "ggml-backend.h"
+ #include <cassert>
++#include <cerrno>
++#include <cstdio>
++#include <fcntl.h>
++#include <unistd.h>
+ #include <cstdint>
+ #include <cstring>
+ #include <memory>
+@@ -51,7 +55,27 @@
+     }
+ };
+ 
+-int main() {
++// Caller supplies a new path inside its already claimed output directory.
++// Do not follow symlinks or overwrite any earlier capture.
++static bool emit_blob(const char * path, const std::vector<uint8_t> & data) {
++    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
++    if (fd < 0) return false;
++    size_t pos = 0;
++    bool ok = true;
++    while (pos < data.size()) {
++        ssize_t n = write(fd, data.data() + pos, data.size() - pos);
++        if (n < 0 && errno == EINTR) continue;
++        if (n <= 0) { ok = false; break; }
++        pos += static_cast<size_t>(n);
++    }
++    if (ok && fsync(fd) != 0) ok = false;
++    if (close(fd) != 0) ok = false;
++    return ok;
++}
++
++int main(int argc, char ** argv) {
++    if (argc != 1 && argc != 3) return 2;
++    if (argc == 3 && std::strcmp(argv[1], "--data-blob") != 0) return 2;
+     std::unique_ptr<llama_model> model(llama_model_create(LLM_ARCH_LLAMA, llama_model_default_params()));
+     assert(model);
+     llama_hparams h{}; h.n_layer_all=2; h.n_embd_head_k_full=4; h.n_embd_head_v_full=4;
+@@ -69,6 +93,10 @@
+     assert(t.k==48 && t.v==48 && t.metadata==56 && t.serialized==152);
+     bytes_sink sink; kpf60_fixture_access::write(c,r,sink);
+     assert(sink.bytes.size()==t.serialized);
++    if (argc == 3 && !emit_blob(argv[2], sink.bytes)) {
++        std::fprintf(stderr, "native fixture blob capture failed\n");
++        return 1;
++    }
+     auto bad=expected; bad.pop_back(); t={99,99,99,99};
+     assert(!kpf60_fixture_access::count(c,r,bad,t));
+     assert(t.k==99 && t.serialized==99);
