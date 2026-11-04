@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 678
+      "open": 679
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 198
+      "open": 200
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,13 +28,13 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 476
+      "open": 475
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 84
+      "open": 86
     }
   },
   "duplicates": {},
@@ -344,10 +344,10 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 64,
+      "closed": 65,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 31,
+      "open": 32,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -356,7 +356,7 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 95,
+      "total": 97,
       "tracks": [
         {
           "blocked": 0,
@@ -410,13 +410,13 @@
         },
         {
           "blocked": 0,
-          "closed": 26,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
           "line": 1702,
           "markers": 1,
           "name": "tool-use-eval-contract",
-          "open": 6
+          "open": 7
         }
       ]
     },
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 223,
+      "closed": 225,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 77,
+      "open": 79,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 315,
+      "total": 319,
       "tracks": [
         {
           "blocked": 12,
@@ -1083,7 +1083,7 @@
         },
         {
           "blocked": 2,
-          "closed": 29,
+          "closed": 31,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -1095,7 +1095,7 @@
           "line": 2260,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 16
+          "open": 18
         },
         {
           "blocked": 0,
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2683,
+          "line": 2690,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 237,
+      "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 100,
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 339,
+      "total": 341,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1301,
+          "line": 1302,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1425,
+          "line": 1426,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1752,
+          "line": 1753,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1891,
+          "line": 1892,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,21 +1188,21 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2444,
+          "line": 2445,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 31,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2581,
+          "line": 2582,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3428,
+          "line": 3433,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 240,
+      "closed": 242,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 90,
+      "open": 89,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 331,
+      "total": 332,
       "tracks": [
         {
           "blocked": 1,
@@ -1339,32 +1339,32 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1348,
+          "line": 1349,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
         },
         {
           "blocked": 0,
-          "closed": 105,
+          "closed": 107,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1730,
+          "line": 1731,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 37
+          "open": 36
         }
       ]
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 75,
+      "closed": 76,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 33,
+      "last_advanced": "2026-11-04",
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 108,
+      "total": 110,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,13 +1419,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1708,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 4
+          "open": 5
         }
       ]
     },
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 104,
+      "closed": 105,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 138,
+      "total": 139,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 62,
+          "closed": 63,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 673,
+          "line": 676,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2617,7 +2617,7 @@
       "closed": 346,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 88,
+      "open": 89,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 436
+      "total": 437
     }
   },
   "row_id_collisions": {},
