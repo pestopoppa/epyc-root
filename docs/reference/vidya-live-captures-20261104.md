@@ -119,7 +119,8 @@ repository source command. GitNexus could not provide a current impact graph for
 caller review and the focused tests cover the completed-smoke paths, and a wrapper refresh was
 started with a completion event.
 
-The tested publisher recovery fix is retained as an **unmerged review patch** in
+The tested publisher recovery fix is retained as a historical review patch in
 [`publisher-completion-candidate-20261104`](../../data/vidya/publisher-completion-candidate-20261104/).
-D9 rejected committing its executable source without explicit operator acknowledgment. The
-completed source-control result remains filed; the publisher source-landing subtask remains open.
+The coordination owner landed it in `84c3d7c869cf6056c303ebe084e5195f1f705b14` with relayed
+operator D9 acknowledgment, reporting 211 passing rowflow/churn tests and five pre-existing
+failures. The EXP01 source-control result remains filed.
