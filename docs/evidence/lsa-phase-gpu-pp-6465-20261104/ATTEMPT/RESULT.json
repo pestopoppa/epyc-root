@@ -1,0 +1,70 @@
+{
+  "schema": "lsa-screen-raw-v1",
+  "status": "pass",
+  "reason": "one candidate timing capture valid; performance decision remains descriptive",
+  "arm": "pca-native-light-phase-gpu",
+  "item": {
+    "id": "banked-speed-pp-300-pca-native-light",
+    "split": "retained-pp-reconstruction"
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 6465,
+    "prompt_ms": 123186.506,
+    "prompt_per_token_ms": 19.05437061098221,
+    "prompt_per_second": 52.48139759723358,
+    "predicted_n": 1,
+    "predicted_ms": 0.001,
+    "predicted_per_token_ms": 0.001,
+    "predicted_per_second": 1000000.0
+  },
+  "mapped_dsos": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libggml-base.so.0.16.0": "d26f2caecdbfdd12e492828465d6bbb61187f41854021d4fab92e4081fef1f0d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libggml-cpu.so.0.16.0": "8fa8ef428352f5c504f3c0f2bf25ca7a5443076ad52d4bf1fc0df3644bf4e659",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libggml-hip.so.0.16.0": "0f8730de7e55d093d4ba7fba87a41f158b75158af0aa334589f2fcadb51ee6eb",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libggml.so.0.16.0": "80b5927b67b2af8e026ef1cc3cb5925e99b8fc2aada7fc16a6457f46fd9d723f",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libllama-common.so.0.0.10427": "c1944b0f3d2e94d8a2b8ee1d64e7084b8fce8166341185089c30b64ef41e7692",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libllama-server-impl.so": "c2f4ca1d279b67b1e12a6ea970fb82125afd8a955faa5ed7753af0594dadd627",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/phase-hip-2ace/out/bin/libllama.so.0.0.10427": "f4e67d9ec6a60d793b76d2896531ec3cd2298d9289b2bdd8d4baaddc5f9a6002"
+  },
+  "server_pid": 3860793,
+  "client_request_ms": 123271.615356,
+  "client_ttft_ms": 123190.051814,
+  "client_ttft_kind": "request_start_to_first_stream_token",
+  "client_request_kind": "request_start_to_complete_stream",
+  "rss_peak_sampled_bytes": 2428743680,
+  "rss_peak_proc_hwm_bytes": 2428743680,
+  "output": " Record",
+  "output_matches_gold": false,
+  "trace_validation": {
+    "events": 80,
+    "groups": 5,
+    "covered_positions": 6465,
+    "all_16_native": true,
+    "selection_capacity": 4612,
+    "pruning_inference": true,
+    "phase_events": 80,
+    "phase_totals_host_us": {
+      "key_append_host_us": 5017972,
+      "query_select_host_us": 10204351,
+      "attention_host_us": 105705866
+    },
+    "phase_scope": "host API elapsed, including existing HIP synchronization; not GPU kernel time"
+  },
+  "timing_decision": "unmatched_candidate_only_diagnostic",
+  "retained_c5_prompt_ms_range": [
+    9244.815,
+    16152.835
+  ],
+  "server_dead": true,
+  "time_utc": "2026-11-04T19:49:32.327528+00:00",
+  "binding": {
+    "source_commit": "2aceed42bf1e3273e1a8feef12fa91dfe57d2e6b",
+    "source_parent": "69aaf507afe82b06bb16dec01f443c392441c9ad",
+    "server_sha256": "a08eb6f2329fad4ce2fc8d19e40bbbe06e94b690345569ba30e8b227caa8c69d",
+    "model_identity_basis": "prior full SHA256 receipt plus unchanged dev/ino/size/mtime_ns/ctime_ns and 64KiB edges",
+    "model_prior_receipt_sha256": "42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078"
+  },
+  "scope": "One candidate-only source-reconstructed 6465-token GPU PP prompt. Retained C5 30-arm prompt_ms envelope reused without dense rerun. Original token IDs and server np/context/spec settings differ, so no causal speedup claim.",
+  "manifest_sha256": "061f8731d08ee3e1de2ed4522aa8431c86e20567903a746932e7eade444cd63a"
+}

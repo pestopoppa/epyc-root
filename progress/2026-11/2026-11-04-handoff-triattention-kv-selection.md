@@ -83,3 +83,7 @@ Filed lsa-spec-guard-build-21bebb-20261104 pass: 448 donor objects verified, cha
 ## 18:42Z — File speculative guard probe compile and linkage
 
 Filed lsa-spec-guard-probe-compile-21bebb-20261104 pass: probe SHA be5793e96adc268799c2fff6683dc5531c113cf9b1a923504ab329e3ff6c1784 and five linked candidate libraries recorded. Evidence docs/evidence/lsa-spec-guard-probe-compile-21bebb-20261104/. No model or GPU execution.
+
+## 19:50Z — File candidate-only GPU phase timing capture
+
+Filed lsa-phase-gpu-pp-6465-20261104 pass: one 6465-token request, 16 native layers across five groups, 80 paired host phase events and own-PID KFD/VRAM; prompt 123186.506 ms. Evidence docs/evidence/lsa-phase-gpu-pp-6465-20261104/. Controls differ in token IDs and server recipe; no causal speedup or quality claim.
