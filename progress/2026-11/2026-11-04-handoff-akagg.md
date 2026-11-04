@@ -111,3 +111,7 @@ Acknowledged previously filed source-pinned sync17 build rc0 with 435 planned co
 ## 15:25Z — Acknowledge the original CH31 build failure and retain native failure evidence.
 
 Acknowledged original CH31 fixture rc1: all-target OpenMP ON build failed on missing mtmd.h before model-free graph controls. Retained original build/config/fixture logs and end record. Separate explicit-target v2 has passed its bounded model-free fixture; CH31 model defect remains open.
+
+## 15:31Z — File v7 pre-calibration claim refusal and advance v8 source and lock qualification.
+
+Acknowledged previously filed v7 rc2 REFUSED/floor_claim=null, with duplicate R15 inner ancestor and no process units. Retained native result and traceback with hashes. Isolated v8 draft passed 23 model-free tests; host lock qualification and normal publisher smoke remain incomplete.
