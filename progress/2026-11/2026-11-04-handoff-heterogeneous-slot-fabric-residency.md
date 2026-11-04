@@ -447,3 +447,7 @@ Filed kpf41-direct-vec-impact-8952a0f-20261104-r4 inconclusive after rc75 disk-f
 ## 23:14Z — Prepare the isolated KPF-41 source-impact successor
 
 The KPF-17 map-revalidation r2 result was already filed inconclusive after disk-floor interruption; r3 is armed. Published kpf41-direct-vec-impact-8952a0f-20261104-r5 after its four-CPU source-reference smoke passed, using a fresh detached candidate and private output. Native impacts, skipped-file coverage and edit clearance remain pending.
+
+## 23:24Z — Prepare the isolated HSF-3 aggregate census successor
+
+RS-1 r4 was already filed inconclusive after disk-floor interruption; r5 publisher reports a smoke already running and is not yet published. Published kvu-hsf3-source-coverage-r3-20261104 after its isolated four-CPU aggregate smoke passed. Full census and inter-call gaps remain pending.
