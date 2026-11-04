@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-04T17:04:07.522604+00:00",
+  "status": "PUBLISHER_SMOKE_IN_PROGRESS",
+  "ready": false,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104",
+  "row_id": "ufh14-b4k-guard-v4-20261104",
+  "fix": {
+    "native_source": "scripts/coordination/rowflow/rowflow.py:1779,1911",
+    "parser": "Default real grant parser rejects schema/id/kind/admission_class and all unknown fields. Native synthetic fields accepted only with matching row ID, exact schema/kind and valid optional admission_class, FILLER_DRYRUN=FILLER_SMOKE=1, canonical expected flags/dryrun/<id>/grants directory. Duplicates rejected.",
+    "completion": "Synthetic admission is marked grant_kind=rowflow-dryrun and cannot create authoritative COMPLETE/RESULT. Real grant checks, byte-equal atomic RESULT, original receipt selection preserved.",
+    "retained": [
+      "actual NUL-joined argv rehash",
+      "literal manifest SHA anchor",
+      "pre-model KFD fail-closed precondition",
+      "consumed grant verification",
+      "COMPLETE/RESULT custody"
+    ]
+  },
+  "tests": {
+    "command": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest -q /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104/test_*.py",
+    "passed": 49,
+    "subtests_passed": 33,
+    "native_serializer_exercised": true,
+    "job_check_rc": 0,
+    "packet_pins_verified": true,
+    "literal_manifest_anchor_verified": true,
+    "source_closure_files_verified": 1837
+  },
+  "source": {
+    "mechanism": "git worktree add --detach",
+    "commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+    "clean": true,
+    "copied_checkout": false
+  },
+  "publisher": {
+    "invoked": true,
+    "invocation_count": 1,
+    "command": "python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104/spec.json",
+    "captured_exec_session_id": 94962,
+    "last_observed_state": "running; no output; terminal outcome not yet observed",
+    "log": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104/publisher.log",
+    "interrupted": false,
+    "PASS_claimed": false
+  },
+  "safety": {
+    "direct_inference": false,
+    "foreign_gpu_touched": false,
+    "grant_queue_polling": false,
+    "production_edits": false,
+    "old_packet_edits": false,
+    "manual_grants": false
+  },
+  "next_event": "Dispatcher resumes on this row publisher PASS/FAIL terminal event; owning root registers event. Smoke left under bounded publisher control, no poll or interruption."
+}
