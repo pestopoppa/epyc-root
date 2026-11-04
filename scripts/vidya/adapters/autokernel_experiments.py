@@ -90,6 +90,10 @@ MEASUREMENT_STATUSES = frozenset({"kept", "keep_candidate", "measured_null", "re
 VERIFIER_STATUSES = frozenset({"gate_refused", "integrity_refused", "measured_divergence"})
 BASELINE_STATUSES = frozenset({"anchor_verified", "runtime_observed"})
 PROJECTED_STATUSES = MEASUREMENT_STATUSES | VERIFIER_STATUSES | BASELINE_STATUSES
+# Invalid measurements normally remain out of the projection, but the producer's same-code
+# tripwire records one narrow verifier event in this status. Its payload must be available so
+# classify() can validate the sealed evidence before deciding whether to project it.
+PAYLOAD_STATUSES = PROJECTED_STATUSES | {"measurement_invalid"}
 
 #: status -> observation.outcome for the statuses whose outcome is fixed by the status alone.
 #: `measured_serving_gate` is decided by the sign of its effect (see `_outcome`).
@@ -125,6 +129,12 @@ _COLUMNS = ("attempt_id", "recorded_at", "campaign_id", "deployment", "epoch_sha
 _HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 _GIT_SHA = re.compile(r"[0-9a-f]{7,64}\Z")
 _ATTEMPT = re.compile(r"[^\s\x00-\x1f\x7f]{1,200}\Z")
+_TRIPWIRE_VERIFICATION_TOKEN = object()
+
+
+class _NativeRow(dict):
+    """Dict-compatible database row with unforgeable-by-input verification metadata."""
+    __slots__ = ("_tripwire_verification",)
 _OP_FAILED = re.compile(r"^([A-Z][A-Z0-9_]{2,})\s+failed\b")
 _SERVING_SURFACE = re.compile(r"^serving:(?P<recipe>\S+)$")
 
@@ -239,16 +249,18 @@ def native_rows(store_dir: Path, since_rowid: int | None = None) -> list[dict]:
         if "attempt_id" not in present or "status" not in present or "payload" not in present:
             raise ProjectionError("experiments table lacks attempt_id/status/payload")
         select = ", ".join(c if c in present else f"NULL AS {c}" for c in _COLUMNS)
-        marks = ",".join("?" for _ in PROJECTED_STATUSES)
+        marks = ",".join("?" for _ in PAYLOAD_STATUSES)
         sql = (f"SELECT rowid, {select}, "
                f"CASE WHEN status IN ({marks}) THEN payload END AS payload "
                "FROM experiments WHERE rowid > ? ORDER BY rowid")
-        cursor = conn.execute(sql, (*sorted(PROJECTED_STATUSES), -1 if since_rowid is None
+        cursor = conn.execute(sql, (*sorted(PAYLOAD_STATUSES), -1 if since_rowid is None
                                     else since_rowid))
+        has_tripwire_table = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='same_code_measurements'").fetchone() is not None
         names = ["rowid", *_COLUMNS, "payload"]
         rows = []
         for values in cursor:
-            row = dict(zip(names, values))
+            row = _NativeRow(zip(names, values))
             raw = row["payload"]
             row["payload"], row["payload_sha256"], row["payload_error"] = None, None, None
             if raw is not None:
@@ -261,6 +273,10 @@ def native_rows(store_dir: Path, since_rowid: int | None = None) -> list[dict]:
                 else:
                     if isinstance(parsed, dict):
                         row["payload"] = parsed
+                        if row.get("status") == "measurement_invalid" and has_tripwire_table:
+                            if _verify_same_code_prior(conn, row["rowid"], row, parsed):
+                                row._tripwire_verification = (
+                                    _TRIPWIRE_VERIFICATION_TOKEN, _tripwire_row_digest(row))
                     else:
                         row["payload_error"] = "payload is not a JSON object"
             rows.append(row)
@@ -355,6 +371,25 @@ def classify(row: Mapping[str, Any]) -> tuple[str | None, str]:
     if not isinstance(attempt, str) or not _ATTEMPT.fullmatch(attempt):
         return None, "no_attempt_id"
     status = _text(row.get("status"))
+    if status == "measurement_invalid":
+        payload = row.get("payload")
+        if not isinstance(payload, Mapping):
+            return None, "payload_unreadable"
+        # This event records invalidation, never a usable current measurement. The producer
+        # keeps native comparison evidence under invalid_measurement and clears both surfaces.
+        if row.get("effect_fraction") is not None or isinstance(payload.get("comparison"), Mapping):
+            return None, "invalid_measurement"
+        if "belief_capture" not in payload:
+            return None, "invalid_measurement"
+        refused = capture_refusal(row, payload)
+        if refused:
+            return None, f"belief_capture_{refused}"
+        verified = getattr(row, "_tripwire_verification", None)
+        prior_is_bound = (isinstance(verified, tuple) and len(verified) == 2 and
+                          verified[0] is _TRIPWIRE_VERIFICATION_TOKEN and
+                          verified[1] == _tripwire_row_digest(row))
+        return ("verifier", status) if _same_code_excursion(row, payload) and prior_is_bound \
+            else (None, "invalid_measurement")
     if status in NOT_PROJECTED:
         return None, NOT_PROJECTED[status]
     if status not in PROJECTED_STATUSES:
@@ -375,6 +410,89 @@ def classify(row: Mapping[str, Any]) -> tuple[str | None, str]:
     if _numbers(row, comparison)["value"] is None:
         return None, "no_numbers"
     return ("baseline" if status in BASELINE_STATUSES else "measurement"), status
+
+
+_TRIPWIRE_SCHEMA = "epyc.autokernel.same_code_tripwire.v1"
+
+
+def _tripwire_row_digest(row: Mapping[str, Any]) -> str:
+    """Bind DB prior verification to the exact row image later classified/projected."""
+    image = {"rowid": row.get("rowid"),
+             "columns": {name: row.get(name) for name in _COLUMNS},
+             "payload_sha256": row.get("payload_sha256"),
+             "payload": row.get("payload")}
+    return hashlib.sha256(_capture_canon(image)).hexdigest()
+
+
+def _verify_same_code_prior(conn: sqlite3.Connection, current_rowid: int,
+                            row: Mapping[str, Any], payload: Mapping[str, Any]) -> bool:
+    """Bind tripwire's prior reference to the producer's earlier same-work record."""
+    invalid = payload.get("invalid_measurement")
+    evidence = invalid.get("same_code_tripwire") if isinstance(invalid, Mapping) else None
+    if not isinstance(evidence, Mapping):
+        return False
+    prior_id, work_key = evidence.get("prior_attempt_id"), evidence.get("work_key")
+    if not isinstance(prior_id, str) or not isinstance(work_key, str):
+        return False
+    try:
+        prior = conn.execute(
+            "SELECT sm.attempt_id, sm.work_key, sm.effect_fraction, sm.floor_pct, e.rowid "
+            "FROM same_code_measurements AS sm JOIN experiments AS e "
+            "ON e.attempt_id=sm.attempt_id WHERE sm.work_key=? AND e.rowid<? "
+            "ORDER BY sm.rowid DESC LIMIT 1", (work_key, current_rowid)).fetchone()
+    except sqlite3.Error:
+        return False
+    if prior is None or prior[0] != prior_id:
+        return False
+    prior_effect, prior_floor = evidence.get("prior_effect_fraction"), evidence.get("prior_floor_pct")
+    return (type(prior[2]) in (int, float) and type(prior_effect) in (int, float) and
+            math.isclose(prior[2], prior_effect, rel_tol=1e-12, abs_tol=1e-12) and
+            type(prior[3]) in (int, float) and type(prior_floor) in (int, float) and
+            math.isclose(prior[3], prior_floor, rel_tol=1e-12, abs_tol=1e-12))
+
+
+def _same_code_excursion(row: Mapping[str, Any], payload: Mapping[str, Any]) -> bool:
+    """Accept only a complete, internally consistent producer tripwire excursion."""
+    invalid = payload.get("invalid_measurement")
+    evidence = invalid.get("same_code_tripwire") if isinstance(invalid, Mapping) else None
+    if not isinstance(evidence, Mapping) or evidence.get("schema") != _TRIPWIRE_SCHEMA or \
+            evidence.get("status") != "same_code_excursion":
+        return False
+    prior_id = evidence.get("prior_attempt_id")
+    work_key = evidence.get("work_key")
+    code_digests = (evidence.get("anchor_code_sha256"),
+                    evidence.get("candidate_code_sha256"))
+    if not isinstance(prior_id, str) or not _ATTEMPT.fullmatch(prior_id) or \
+            prior_id == row.get("attempt_id") or not isinstance(work_key, str) or \
+            not _HEX64.fullmatch(work_key) or any(not isinstance(d, str) or
+                                                   not _HEX64.fullmatch(d) for d in code_digests):
+        return False
+    values = [evidence.get(k) for k in ("prior_effect_fraction", "effect_fraction",
+                                         "prior_floor_pct", "floor_pct", "delta_pct",
+                                         "comparison_floor_pct")]
+    if any(type(v) not in (int, float) or not math.isfinite(v) for v in values):
+        return False
+    prior, current, prior_floor, floor, delta, comparison_floor = values
+    comparison = invalid.get("comparison") if isinstance(invalid, Mapping) else None
+    if not isinstance(comparison, Mapping):
+        return False
+    native_effect = _num(comparison.get("effect"))
+    native_floor = _num(comparison.get("noise_floor_pct"))
+    anchor_samples = comparison.get("anchor_samples")
+    candidate_samples = comparison.get("candidate_samples")
+    if (native_effect is None or native_floor is None or
+            not isinstance(anchor_samples, list) or not anchor_samples or
+            not isinstance(candidate_samples, list) or not candidate_samples or
+            any(_num(sample) is None for sample in (*anchor_samples, *candidate_samples))):
+        return False
+    if (prior_floor < 0 or floor < 0 or comparison_floor < 0 or
+            not math.isclose(delta, (current - prior) * 100.0, rel_tol=1e-12, abs_tol=1e-12) or
+            not math.isclose(comparison_floor, floor, rel_tol=1e-12, abs_tol=1e-12) or
+            not math.isclose(native_effect, current, rel_tol=1e-12, abs_tol=1e-12) or
+            not math.isclose(native_floor, floor, rel_tol=1e-12, abs_tol=1e-12) or
+            abs(delta) <= floor):
+        return False
+    return True
 
 
 # ============================================================================== extraction
@@ -426,7 +544,16 @@ def _numbers(row: Mapping[str, Any], comparison: Mapping[str, Any]) -> dict:
 def _proposition(row: Mapping[str, Any], payload: Mapping[str, Any]) -> str:
     """The gate's own output line (DESIGN §4.4), verbatim."""
     status = _text(row.get("status"))
-    if status == "measured_divergence":
+    if status == "measurement_invalid":
+        invalid = payload.get("invalid_measurement")
+        evidence = invalid.get("same_code_tripwire") if isinstance(invalid, Mapping) else {}
+        prior = evidence.get("prior_attempt_id") if isinstance(evidence, Mapping) else ""
+        delta = evidence.get("delta_pct") if isinstance(evidence, Mapping) else None
+        floor = evidence.get("comparison_floor_pct") if isinstance(evidence, Mapping) else None
+        text = (f"same-code evaluator/session excursion: {delta:+.6g}% exceeds existing "
+                f"comparison floor {floor:.6g}% (prior attempt {prior})"
+                if isinstance(delta, (int, float)) and isinstance(floor, (int, float)) else "")
+    elif status == "measured_divergence":
         text = _text(payload.get("hypothesis")) or _text(row.get("refusal_reason"))
     else:
         text = _text(row.get("refusal_reason")) or _text(payload.get("reason"))
@@ -442,6 +569,8 @@ def _proposition(row: Mapping[str, Any], payload: Mapping[str, Any]) -> str:
 
 def _outcome(row: Mapping[str, Any], numbers: Mapping[str, Any]) -> str:
     status = _text(row.get("status"))
+    if status == "measurement_invalid":
+        return "null"
     if status == "gate_refused":
         return "refused_correctness"
     if status == "measured_serving_gate":
@@ -591,7 +720,7 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
     ident = measurement_id(row, store_manifest)
     status = _text(row.get("status"))
     payload = row["payload"]
-    comparison = _comparison(row, payload)
+    comparison = {} if status == "measurement_invalid" else _comparison(row, payload)
     numbers = _numbers(row, comparison)
     outcome = _outcome(row, numbers)
     reason = (_text(row.get("refusal_reason")) or _text(payload.get("reason")))[:REASON_MAX]
@@ -614,8 +743,10 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
             screen = payload.get("integrity_screen")
             klass = _text(screen.get("refusal_class")) if isinstance(screen, Mapping) else ""
             metric = f"integrity:{klass}" if klass else "integrity"
-        else:
+        elif status == "measured_divergence":
             metric = "serving_gate:diverged"
+        else:
+            metric = "instrument:evaluator_excursion"
 
     applicability = _applicability(row, payload, comparison, store_manifest, op)
     label = _label(store_manifest, applicability)
@@ -625,6 +756,7 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
     if disposition == "verifier":
         verdict = ("refused by the correctness gate" if status == "gate_refused" else
                    "refused by the integrity screen" if status == "integrity_refused" else
+                   "same-code evaluator/session excursion" if status == "measurement_invalid" else
                    "serving gate diverged from the bench")
         claim = f"{label}: {what}{where}: {verdict}: {proposition[:160]}"
     else:
@@ -655,6 +787,8 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
         observation["serving_claim_id"] = serving
     if reason:
         observation["outcome_reason"] = reason
+    if status == "measurement_invalid":
+        observation["outcome_reason"] = proposition
     if mechanism_id:
         observation["mechanism"] = {"id": mechanism_id, **(
             {"statement": statement[:STATEMENT_MAX]} if statement else {}), **(

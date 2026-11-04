@@ -708,6 +708,171 @@ def test_refused_captures_are_counted_not_dropped(tmp_path):
     assert report["not_projected"] == {"belief_capture_disagrees_with_row": 4}
 
 
+def _same_code_invalid_row(*, mutate=None, captured=True):
+    row = dict(next(r for r in PROSPECTIVE if r["status"] == "keep_candidate"))
+    prior = aid("prior-attempt")
+    evidence = {"schema": "epyc.autokernel.same_code_tripwire.v1",
+                "status": "same_code_excursion", "work_key": aid("work-key"),
+                "anchor_code_sha256": aid("anchor-code"),
+                "candidate_code_sha256": aid("candidate-code"),
+                "prior_attempt_id": prior, "prior_effect_fraction": 0.01,
+                "effect_fraction": 0.08, "prior_floor_pct": 1.0,
+                "floor_pct": 2.0, "delta_pct": 7.0, "comparison_floor_pct": 2.0}
+    if mutate:
+        mutate(evidence)
+    row.update(status="measurement_invalid", effect_fraction=None)
+    payload = json.loads(row["payload"])
+    native_comparison = payload.pop("comparison")
+    native_comparison.update(effect=0.08, noise_floor_pct=2.0)
+    payload["comparison"] = None
+    payload["invalid_measurement"] = {"same_code_tripwire": evidence,
+                                       "comparison": native_comparison}
+    payload.pop("belief_capture", None)
+    row["payload"] = payload
+    if captured:
+        # Seal the complete prospective row with the same ROOT-side contract used by the reader.
+        payload["belief_capture"] = {"schema": exp.CAPTURE_SCHEMA,
+            "subject": exp._capture_subject(row, payload)}
+        payload["belief_capture"]["content_sha256"] = hashlib.sha256(
+            exp._capture_canon(payload["belief_capture"]["subject"])).hexdigest()
+    return row
+
+
+def _with_verified_prior(row):
+    native = exp._NativeRow(row)
+    native._tripwire_verification = (exp._TRIPWIRE_VERIFICATION_TOKEN,
+                                    exp._tripwire_row_digest(native))
+    return native
+
+
+def test_same_code_excursion_projects_as_informational_verifier():
+    row = _same_code_invalid_row()
+    # Unit-level classification validates the evidence shape; native_rows is responsible for
+    # adding this private marker only after checking the producer's same_code_measurements table.
+    row = _with_verified_prior(row)
+    disposition, reason = exp.classify(row)
+    assert (disposition, reason) == ("verifier", "measurement_invalid")
+    tup = exp.project(row, store_manifest=MANIFEST)
+    assert tup is not None and tup.source_class == "verifier"
+    assert tup.metric == "instrument:evaluator_excursion" and tup.value == 0
+    assert "same-code evaluator/session excursion" in tup.decided_proposition
+    assert exp.observation_of(tup)["outcome"] == "null"
+    assert "same-code evaluator/session excursion" in exp.observation_of(tup)["outcome_reason"]
+    assert grade(tup)[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda e: e.update(delta_pct=1.0),
+    lambda e: e.update(comparison_floor_pct=99.0),
+    lambda e: e.update(prior_attempt_id="bad id"),
+    lambda e: e.update(status="within_floor"),
+    lambda e: e.pop("anchor_code_sha256"),
+])
+def test_same_code_excursion_requires_consistent_producer_tripwire(mutate):
+    row = _same_code_invalid_row(mutate=mutate)
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == (None, "invalid_measurement")
+    assert exp.project(row, store_manifest=MANIFEST) is None
+
+
+def test_same_code_excursion_without_producer_capture_stays_unprojected():
+    row = _same_code_invalid_row(captured=False)
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == (None, "invalid_measurement")
+
+
+@pytest.mark.parametrize("tamper", ["row_effect", "top_level_comparison"])
+def test_same_code_excursion_refuses_any_current_measurement_surface(tamper):
+    row = _same_code_invalid_row()
+    if tamper == "row_effect":
+        row["effect_fraction"] = 0.08
+    else:
+        row["payload"]["comparison"] = comparison(effect=0.08)
+    row["payload"]["belief_capture"]["subject"] = exp._capture_subject(row, row["payload"])
+    row["payload"]["belief_capture"]["content_sha256"] = hashlib.sha256(
+        exp._capture_canon(row["payload"]["belief_capture"]["subject"])).hexdigest()
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == (None, "invalid_measurement")
+    assert exp.project(row, store_manifest=MANIFEST) is None
+
+
+def _insert_experiment_row(conn, row):
+    columns = exp._COLUMNS
+    marks = ",".join("?" for _ in range(len(columns) + 1))
+    conn.execute(f"INSERT INTO experiments ({','.join(columns)},payload) VALUES ({marks})",
+                 (*[row.get(key) for key in columns], json.dumps(row["payload"], sort_keys=True)))
+
+
+@pytest.mark.parametrize("tamper", ["none", "prior_id", "prior_effect", "prior_floor"])
+def test_same_code_excursion_native_rows_verifies_prior_and_projects(tmp_path, tamper):
+    store = make_store(tmp_path)
+    conn = sqlite3.connect(store / "experiments.db")
+    conn.execute("CREATE TABLE same_code_measurements (attempt_id TEXT PRIMARY KEY, work_key TEXT NOT NULL,"
+                 "effect_fraction REAL NOT NULL, floor_pct REAL)")
+    prior_id = aid("prior-attempt")
+    prior = dict(next(r for r in PROSPECTIVE if r["status"] == "keep_candidate"))
+    prior.update(attempt_id=prior_id, status="keep_candidate", effect_fraction=0.01)
+    _insert_experiment_row(conn, prior)
+    work_key = aid("work-key")
+    conn.execute("INSERT INTO same_code_measurements VALUES (?,?,?,?)",
+                 (prior_id, work_key, 0.01, 1.0))
+    def mutate(evidence):
+        if tamper == "prior_id":
+            evidence["prior_attempt_id"] = aid("not-the-prior")
+        elif tamper == "prior_effect":
+            evidence["prior_effect_fraction"] = 0.02
+        elif tamper == "prior_floor":
+            evidence["prior_floor_pct"] = 2.0
+    invalid = _same_code_invalid_row(mutate=mutate if tamper != "none" else None)
+    invalid["attempt_id"] = aid("tripwire-current")
+    # The evidence and its capture are generated independently of the DB rowid. Reseal after
+    # changing the attempt id, just as the producer does before insert.
+    invalid["payload"]["belief_capture"]["subject"] = exp._capture_subject(invalid, invalid["payload"])
+    invalid["payload"]["belief_capture"]["content_sha256"] = hashlib.sha256(
+        exp._capture_canon(invalid["payload"]["belief_capture"]["subject"])).hexdigest()
+    _insert_experiment_row(conn, invalid)
+    conn.commit()
+    conn.close()
+
+    row = next(r for r in exp.native_rows(store) if r["attempt_id"] == invalid["attempt_id"])
+    if tamper != "none":
+        verified = getattr(row, "_tripwire_verification", None)
+        assert not (isinstance(verified, tuple) and verified[0] is exp._TRIPWIRE_VERIFICATION_TOKEN)
+        assert exp.classify(row) == (None, "invalid_measurement")
+        assert exp.project(row, store_manifest=MANIFEST) is None
+    else:
+        assert row._tripwire_verification[0] is exp._TRIPWIRE_VERIFICATION_TOKEN
+        assert exp.classify(row) == ("verifier", "measurement_invalid")
+        tup = exp.project(row, store_manifest=MANIFEST)
+        assert tup is not None and tup.source_class == "verifier"
+        assert "same-code evaluator/session excursion" in tup.claim
+        assert "serving gate diverged" not in tup.claim
+
+        # A consumer cannot mutate an accepted DB row and reseal it locally while retaining
+        # the prior-verification decision made for the original row image.
+        evidence = row["payload"]["invalid_measurement"]["same_code_tripwire"]
+        evidence["prior_attempt_id"] = aid("substituted-after-read")
+        row["payload"]["belief_capture"]["subject"] = exp._capture_subject(row, row["payload"])
+        row["payload"]["belief_capture"]["content_sha256"] = hashlib.sha256(
+            exp._capture_canon(row["payload"]["belief_capture"]["subject"])).hexdigest()
+        assert exp.classify(row) == (None, "invalid_measurement")
+
+
+@pytest.mark.parametrize("field,value", [("effect", None), ("effect", "0.08"),
+                                          ("noise_floor_pct", None),
+                                          ("noise_floor_pct", "2.0")])
+def test_same_code_excursion_requires_explicit_native_effect_and_floor(field, value):
+    row = _same_code_invalid_row()
+    payload = row["payload"]
+    payload["invalid_measurement"]["comparison"][field] = value
+    # Re-seal so the failure proves semantic validation, not capture tampering.
+    payload["belief_capture"]["subject"] = exp._capture_subject(row, payload)
+    payload["belief_capture"]["content_sha256"] = hashlib.sha256(
+        exp._capture_canon(payload["belief_capture"]["subject"])).hexdigest()
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == (None, "invalid_measurement")
+
+
 # ------------------------------------------------------------------------------ ingest / CLI
 
 
