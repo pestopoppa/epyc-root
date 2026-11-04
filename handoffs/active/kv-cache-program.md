@@ -2616,6 +2616,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         from 20 rows, but device applicability was not authored and the planning canary remains open.
         [belief: cc]
       - *(2026-11-04, upstream report prepared.)* The [concrete issue draft](../../progress/evidence/kvu19a2-upstream-20261104/ISSUE-DRAFT.md) and evidence index reuse the source-bound `f8878bf14` repeat and `7a8a2d8fa` negative barrier diagnostic. The newly prepared three-case GPU packet remains unused: its publication was refused before smoke by task sufficiency lint, and the existing two-case evidence already answers its bounded repeatability question. No case79 result or current-upstream defect is inferred. Posting awaits the explicit authorization required by this handoff's execution contract. [no-belief: report preparation from retained evidence]
+      - *(2026-11-04, upstream issue posted.)* Operator approved posting; filed as https://github.com/ggml-org/llama.cpp/issues/31654 (draft body with the "draft only" banner and posting-authorization line removed, and relative attachment links rendered as names "available on request"). [no-belief: publication of an already-prepared report]
       - *(2026-11-02, source-bound repeat.)* Research `f8878bf14` retains the complete 20-run native
         record, output and source/build receipts. Source `a0d0ae238e714aaab04e973ef4b5a4b7c9917744`
         was materialized as a root-owned read-only baseline and one-file candidate patch
