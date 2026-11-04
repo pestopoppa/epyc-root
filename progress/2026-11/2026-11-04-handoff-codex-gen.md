@@ -35,3 +35,7 @@ Wrote the FILED receipt for `lsa-dpbf16-blocked-row474-20261104` using its exist
 ## 15:41Z — Acknowledge filed LSA packet mock controls
 
 Wrote the FILED receipt for `lsa-27b-packet-mocks-20261104` using its existing PASS verdict: five of five model-free packet gate mock controls passed with no errors or failures. Native result SHA-256 `498b9c14b68d3b3bf5c38296def6f0ec0994619b7fee22d07961d77a18becaa9`. This establishes mock controls only, not a 27B model, GPU performance or full LSA-SCREEN-1 result; no checkbox was ticked.
+
+## 15:43Z — Acknowledge filed LSA native normalization diagnostic
+
+Wrote the FILED receipt for `lsa-native-norm-row1185-20261104` using its existing PASS verdict. The filed one-row result reports native norm 7.362187385559082 and zero exact-row mismatches against the frozen row 1185 fixture. Native result SHA-256 `f2aa56caa63532f9e84726731e61cd37cda6be4b1e867236a61b6737265877fa`. This is a bounded normalization diagnostic; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
