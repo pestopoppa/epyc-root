@@ -207,3 +207,7 @@ Reviewed experimental source for the retained KPF-17.4d parser candidate: ITEM4 
 ## 19:22Z — Implement and test synthetic historical KV-grid parsing and bound-comparator refusal controls.
 
 Completed KPF-13.1 synthetic grid-decoder/comparator controls: 29 model-free tests pass, with historical a1f source-bound occupancy/high-water checks, missing-evidence UNKNOWN and contradictory-evidence INVALID. The parser is not a physical ABI or real request/stream validation; the native-adapter gate remains closed and no inference was run.
+
+## 19:26Z — File both source-impact admission refusals and prepare safe successors.
+
+Filed kpf-rs1-impact-8952-20261104 and kpf30-impact-8952-20261104-r4 INCONCLUSIVE: rc75 disk-floor, no native results.jsonl, completed graph or skipped-file coverage. Both impact tasks remain open and the 150 GiB floor is unchanged.
