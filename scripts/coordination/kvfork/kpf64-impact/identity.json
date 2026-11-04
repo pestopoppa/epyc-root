@@ -1,0 +1,15 @@
+{
+  "head": "4f4f1443dba949c9d83d98cd37fe31210b6fb087",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-source-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/job.py": "3c1921b72605f9f1a2a9a276e60bd07480882f9df9ae4c4d001013ead5bc37e4",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/launch.sh": "7046add402702182605b2f8da6ec2b582f13ecbc194c736f33367eae107a581f",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/spec.json": "b49505868143c0edcee0eaead9ee33ba6e279db12abdffbad8ec87859325415c",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/README.md": "f739203a9345ee73d7b4001254acb7b30dbaa014b45e9c207746beb89b6f59c5",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-source-20261104/scripts/gitnexus-analyze.sh": "45b7b921ac66b10e9ea2235d2b6ddd766531849d67eeb09d45658e2ba91d86ed",
+    "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-source-20261104/scripts/benchmark/kpf64_replay/cohort_audit.py": "2576f5c24ff8cc81b1869967df925ea256e050bd0a7126f32331fa80d1c1364d"
+  }
+}
