@@ -31,3 +31,7 @@ Published `kvu-kpf174-custody-r5-20261104`: four-CPU first-object smoke PASS, th
 ## 17:53Z — Qualified two model-free output supervision boundaries for the KPF-18 native-control successor and queued the KVU-19b-gap GPU smoke.
 
 KPF-18.0d: two model-free tests passed for the pinned successor output-reserve guard and periodic supervisor failure path; [test packet](../evidence/kpf18-supervisor-qualification-20261104/README.md). Process cleanup, disk free, and GPU admission were mocked, so this is not native-control or GPU readiness. The independent `handoff-kvu19b-gap-clean-20261104` smoke was queued because the GPU was busy; it has not passed and is not claimed ready. KPF-17.4d custody r5 remains grantable.
+
+## 18:15Z — Tested actual owned-process stop and drain for the KPF-18 successor.
+
+KPF-18.0d: extended the [supervision qualification](../evidence/kpf18-supervisor-qualification-20261104/README.md) with an actual synthetic child and adopted descendant, both ignoring SIGTERM; the pinned supervisor and drain escalated and reaped both. Three tests pass. This does not qualify the GPU workload. A model-receipt component is in `/mnt/raid0/llm/tmp/kvu/kpf18-model-receipt/`, but remains unintegrated and needs source sealing and a preparation/runtime split before publication. KVU-19b-gap GPU smoke remained queued; no new row readiness is claimed.
