@@ -207,3 +207,7 @@ Filed `inf75-p1b-moespec-hip-retry-r2-20261104`, `akx-gdn-onehot-cpu-bf16-fixed-
 ## 20:15Z — Published the corrected-image BF16 CPU one-hot successor after baseline smoke.
 
 Published `akx-gdn-onehot-cpu-bf16-fixed-r2-20261104` after its four-CPU corrected-image BF16 baseline smoke passed; the full three-arm CPU result and all GPU BF16 results remain pending. The C6 pre-MMQ paired comparison needs a separately built, source-bound test binary with capture instrumentation: the retained pre-MMQ binary lacks the capture symbol.
+
+## 20:25Z — Published the source-bound pre-MMQ capture-instrumented build prerequisite for the paired n4 GPU diagnostic.
+
+Published `c6-pre-mmq-capture-build-20261104` after four-CPU custody smoke. The existing pre-MMQ combined binary lacks input capture; the isolated detached C6 source now carries the original combined CUDA patch and capture-only test harness overlay, both bound to prior manifests. A granted build must verify the capture symbols, executable hash, and linkage to the retained pre-MMQ image; no native test or GPU verdict is claimed. The first smoke exposed copied aliases as regular files; after verifying bytes, replaced 12 aliases with their receipt-pinned symlinks and passed smoke. Earlier in this turn published f32 and BF16 CPU successors after baseline smokes, filed three disk-floor stops inconclusive, and removed a superseded C6 proposal.
