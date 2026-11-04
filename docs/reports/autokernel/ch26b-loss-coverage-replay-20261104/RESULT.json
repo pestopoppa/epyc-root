@@ -1,0 +1,25 @@
+{
+  "capture_overlap_ns": [
+    1948089467921624,
+    1948089467991794
+  ],
+  "coverage": "unproven",
+  "limitations": [
+    "producer and kernel are not independently authenticated",
+    "perf loss/counter semantics are assumed, not validated",
+    "structural continuity does not prove all CPUs were serviced",
+    "does not prove continuous execution placement or absence of competing inference",
+    "empty error arrays are adapter scaffolding, not producer error receipts",
+    "replay verifies only the retained receipt; it does not authenticate capture code or kernel",
+    "one historical diagnostic capture is not a full-host coverage or calibration sample"
+  ],
+  "losslessness": "unproven",
+  "measurement_admission": "none",
+  "producer_manifest_sha256": "8f67dc879ec4b117ff88db78575abc4963e0ac15dcf28e564c3a52587c989fee",
+  "producer_run_id": "ch26-hostscope-abi-r3-20261104-895615-1948089531255657",
+  "producer_schema": "epyc.ch26.hostscope-perf-evidence.v1",
+  "ring_snapshots": 4,
+  "schema": "epyc.ch26.loss-coverage-replay.v1",
+  "source_count": 4,
+  "status": "structural_pass"
+}
