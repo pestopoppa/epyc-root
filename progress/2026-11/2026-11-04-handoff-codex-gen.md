@@ -59,3 +59,7 @@ Wrote the FILED receipt for `lsa-tied-sort-profile-20261104` using its existing 
 ## 15:59Z — File LSA author fixture control
 
 Filed `lsa-ward-author-fixture-20261104` as PASS via file_result.py and wrote its FILED receipt. The source-derived host sort matched the pinned 128-item reference order; the 513-key author fixture was generated, and `sha256sum -c outputs.sha256` validated all three outputs. Preserved host-sort order, native-result digest and output checksums in `progress/evidence/codex-gen-lsa-ward-fixture-filing-20261104.json`. This is a bounded CPU fixture check; no HIP/GPU execution, model inference or broader Ward correctness is established. LSA-SCREEN-1 remains open; no checkbox was ticked.
+
+## 16:30Z — Acknowledge filed P5 Sphinx control
+
+Wrote the FILED receipt for `codex-gpu-serving-p5-sphinx-gold-r2-20261104` using its existing PASS verdict. The owning handoff already records P5-2c complete, with source-bound gold/no-op reports in `docs/reports/p5-sphinx-controls-20261104/`. Native result SHA-256 `83c8b9dd45abdfb2d27db4ad361d13f6434c78a90d6feab54b7aec0b12c01e01`. This is one Sphinx scorer control; broader P5-2 remains open and no checkbox was reticked.
