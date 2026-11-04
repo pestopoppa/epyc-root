@@ -11,3 +11,7 @@ Filed evl46-crm-live-source-tests-20261102 PASS: scheduled rc0, native source-te
 ## 15:33Z — Prepare the IFBench corpus and diagnostic row and BFCL native tool-call parser
 
 Prepared the pinned IFBench root corpus (300 unique prompts, 344 constraints, 58 IDs), provenance, licenses and descriptive run contract; V7 skips empty expected fields, so the prepared row uses the direct-corpus worker and official scorer. Prepared 26 BFCL source/gold coverage pairs and a native tool-call parser; 12 unit tests and ruff passed. The BFCL official checker and live transport remain to be integrated. The IFBench 27B diagnostic was submitted to the publisher; its four-CPU non-cohort smoke had not returned at this boundary, so no publication or benchmark score is claimed. Its detached upstream worktree must be removed after result preservation and before the FILED receipt.
+
+## 15:56Z — Diagnose live CRM diagnostic lock self-deadlock and prepare a safe successor
+
+The already-filed CRM pair result was invalid: rc75, no completed arms or pair seal. Preserved its scheduled log and verdict; the log proves the outer filler held q0 while the nested receipt provider waited for the same lock until timeout. A successor must use one actual lock owner with genuine spanning receipts; preparation and BFCL checker integration are delegated with completion events. The live pair and posthash remain open.
