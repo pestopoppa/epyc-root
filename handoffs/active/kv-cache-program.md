@@ -1769,6 +1769,8 @@ implementation; this handoff owns the schema. The fields use proposal-003 semant
 
 - [ ] **HSF-1 — Write a launch-phase receipt on every production GPU launch; it is the measured swap cost C per
   (model, MI210).**
+  - An [unintegrated receipt draft and review](../../docs/reports/kv-cache/hsf1-receipt-prep-20261104/REVIEW.md) identify effective-argv custody and secret-redaction gaps. No producer or receipt is deployed; review and source-bound impact remain open. [no-belief: unlanded source preparation]
+  - A later scratch revision retains only an original-argv digest and passed five isolated lifecycle tests. It does not capture the required effective argv, and an unkeyed digest of secret-bearing arguments may permit guessing; no producer or receipt is deployed. [Review](../../docs/reports/kv-cache/hsf1-receipt-prep-20261104/REVIEW.md). [no-belief: unlanded source preparation]
   - Written from orch @fb7871ea `orchestrator_stack.py` (GPU path :1259-1275) to
     `orchestration/reports/launch_phase/<role>-<UTC>.json`.
   - Timer from stderr: process start → `load_model` → `model loaded` → health → first token.
