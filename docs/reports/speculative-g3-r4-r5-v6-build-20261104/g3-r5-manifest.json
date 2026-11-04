@@ -1,0 +1,50 @@
+{
+ "decision_rule": "Scoped diagnostic: four cells q8/q4 KV x n_max 1/4, with first qualified full cell then subsequent cells as checkpoints. Strict V5 ordered non-overlapping target scope must cover every expected verify attention layer; unknown dispatch inside any target scope, async dispatch, missing controls, timeout, missing GPU ownership, drift or failure => UNKNOWN. Each accepted dispatch must fall inside one of two distinct live mapped-HIP KFD own-PID VRAM samples within its target invocation on topology-pinned MI210 with stable sampled clocks. Positive VEC answers the existential question only once all declared control cells pass; otherwise the fixed four-cell endpoint is futility/UNKNOWN. No performance/bandwidth conclusion; STOP/deadline saves partials and drains.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 900,
+ "gib": 64,
+ "handoff_task": "handoffs/active/speculative-decoding.md:G3",
+ "id": "g3-v10-v4-mi210-r5-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "*.sha256",
+  "vendor/**",
+  "runs/**",
+  "RESULT.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/launch.sh",
+  "sha256": "5e3253704b38180c83d16f7237c4744a76eb914f03e81daea934fd187616d736"
+ },
+ "min_window_s": 5400,
+ "notes": "R4 retains V4 binary and graph-replay-off trace, replaces global unattributed-event veto with V5 fail-closed outside-scope accounting and uses lightweight same-device per-PID KFD sysfs samples. V3 R3 results remain UNKNOWN; no post-hoc regrade. R5 binds runtime.sha256 with a literal digest in the publisher-sealed launcher; runtime list excludes launcher to avoid a cyclic hash.",
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [
+  18991
+ ],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:359: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T16:09:58Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/spec.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/RESULT.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5",
+ "shape": "gpu",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/smoke_predicate.py",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/STOP",
+ "supersedes": "g3-v10-v4-mi210-r4-20261104",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5"
+}
