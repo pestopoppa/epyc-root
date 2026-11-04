@@ -1,0 +1,3 @@
+# KVU-12.6 source-bound impact scan
+
+Model-free prerequisite for the proposed sampling interval patch. This packet indexes detached research source beb7b859c55e8b8c720a77ac442eec6a5b0393bf and requests the native upstream impacts for wave_observation and analyze_prospective in artifacts/np_context_kvu_cpu_study_20261020/driver/kvu126_compare.py. HIGH or CRITICAL produces OWNER_WARNING and stops. Missing/partial graph data, ambiguous target, source drift, STOP or deadline fails closed. It retains verbose logs and tracked large-file coverage; skipped code is not proven safe. A 4-CPU smoke is a source-reference observation only. No inference, source modification, risk verdict, or numerical result is claimed.

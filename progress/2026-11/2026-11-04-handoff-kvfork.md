@@ -131,3 +131,11 @@ KPF-17 mutation oracle could not be readied: the filesystem has approximately 13
 ## 21:49Z — Prepare a coverage-key correction for KPF-64 family replay
 
 KPF-64.3: found that the successor coverage audit accepts JSON Boolean turn indices as Python integers, allowing true/false to falsely cover turn 1/0. Prepared an isolated correction and three passing model-free controls in docs/reports/kv-cache/kpf64-coverage-key-20261104. The patch is not integrated into research or a runnable row; the lane GitNexus index was unavailable. KPF-17 still has a shared rowflow stop-precedence defect and free disk was approximately 130 GiB against the 150 GiB floor. No row was published and no inference ran.
+
+## 21:54Z — Publish source-bound impact prerequisite for KVU-12.6 sampling fix
+
+KVU-12.6: published kvu126-impact-beb7-20261104 after its four-CPU source-reference smoke passed. The model-free row binds research source beb7b859c55e8b8c720a77ac442eec6a5b0393bf and both wave_observation and analyze_prospective, records skipped-file coverage, and stops on ambiguous or HIGH/CRITICAL results; the unchanged 150 GiB full-run floor applies. Full graph impacts, source-edit clearance, native build and occupancy inference remain pending. GitNexus was unavailable in this lane; no scientific result is claimed.
+
+## 21:54Z — Publish source-bound impact prerequisite for KVU-12.6 sampling fix
+
+KVU-12.6: published kvu126-impact-beb7-20261104 after its four-CPU source-reference smoke passed. The model-free row binds research source beb7b859c55e8b8c720a77ac442eec6a5b0393bf and both wave_observation and analyze_prospective, records skipped-file coverage, and stops on ambiguous or HIGH/CRITICAL results; the unchanged 150 GiB full-run floor applies. Full graph impacts, source-edit clearance, native build and occupancy inference remain pending. GitNexus was unavailable in this lane; no scientific result is claimed.
