@@ -39,3 +39,11 @@ PF1 pilot r4 had already been filed inconclusive; r6 later completed the bounded
 ## 14:25Z — Repair Q38 recipe packet and submit native smoke
 
 Recut Q38 recipe successor r5 after r4 exited before inference due to a missing captures parent. Fixed the row-local reader enrollment and re-sealed its independent source digest; pregrant checks pass for all 12 cells and four custody receipts. A model-free subprocess test exercises the real shell full-run branch, missing-parent creation, repeat refusal and the distinct dry-run branch. Submitted the native publisher smoke; it has not yet reported PASS, so no row-readiness or measurement claim is made. Archived the prepared packet and regression test under data/mi210/q38-recipe-r5-20261104. Original recipe r1 was already filed inconclusive.
+
+## 14:29Z — Analyze PF1 control drift to guide guarded rerun
+
+Analyzed the preserved PF1 refinement: A0 falls block 0 to 1 from 229.657 to 207.935, 237.510 to 207.177, 248.411 to 207.350 and 237.601 to 207.008 tok/s at L384/448/512/768 respectively, while disabled-control throughput stays approximately 193–202 tok/s. This is observed block drift, with the cause still confounded by different CPU/GPU builds and host-memory placement; the 10% guard remains binding. Prepared follow-up delegated. Q38 custody r2 was already filed as a custody-only pass; r5 recipe native qualification is running.
+
+## 14:30Z — Submit guarded PF1 refinement retry
+
+Prepared a fresh PF1 r3 three-block retry under the original model/source pins, strict A0 placement, HIP residency, complete capture, and control 0.90–1.10 guards. The job removes the prior answer-based early exit, preserving futility and safety stops. No prior r2 observations are dropped or pooled; unresolved A0 drift is not claimed fixed. Static checks and pre-publication identity verification passed. Submitted the native publisher smoke; readiness remains pending PASS. Packet archived in data/mi210/pf1-expand-r3-20261104.

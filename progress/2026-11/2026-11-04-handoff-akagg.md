@@ -23,3 +23,7 @@ C6 combined build rc0 and COMPLETE_BUILD_ONLY; exact-case receipt digests are re
 ## 14:26Z — File the C6 q4_K exact-case result and complete the CH31 model-free instrument fixture.
 
 Acknowledged previously filed q4_K exact-case result, with its original input and single-case scope. CH31 v2 rc0 built C5 instrumentation with OpenMP on and off, and ran three real synthetic ggml controls per build. Retained result, patch, logs and metadata with digests before acknowledging the row. The model defect, broader GPU correctness and promotion remain open.
+
+## 14:28Z — Acknowledge the previously filed combined C6 diagnostic and preserve the CH31 native fixture binaries.
+
+Acknowledged the already-filed combined C6 diagnostic: 1120 MUL_MAT passes, 25 q4_K failures and 326 unsupported, without a full GPU gate pass. Corrected the missing CH31 fixture filing receipt and preserved its ON/OFF CPU libraries and graph binaries after matching result digests. CH26 prerequisite implementations are delegated.
