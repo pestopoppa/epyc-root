@@ -42,3 +42,9 @@ The current disabled preparation is `/mnt/raid0/llm/tmp/kvfork/g3-provider-trans
 Actual entry custody passes 192 unique pinned entries. Normal entry verifies those entries then refuses rc78; the inner runtime barrier remains unchanged. The five existing integration controls passed after this preparer change. One additional focused test, `IndependentValidation.test_reviewed_r9_closure_and_refusals`, passes against the independently reviewed result and covers receipt pin drift, missing closure, manifest drift and incomplete-marker refusal. No broader suite was repeated for this final test addition.
 
 The new `PREPARATION.json` SHA-256 is `f6919974801c9d1b972af12b568cbcb0f39196d9b4e91907b4e0867729719e70`; `ALL-SOURCES.sha256` is `01c6ac4303fb042e7876d858789aa5005e8d89ff61b78c1c1a3cc1ccc34fd963`. All other remaining admission/integration items above still apply. No row was published, no NI source changed and no inference executed.
+
+## Current rowflow and residency preparation
+
+The disabled `/mnt/raid0/llm/tmp/kvfork/g3-rowflow-prep-20261104` adds source-level current rowflow and four-CPU smoke checks. Its custody entry verifies 199 members; its outer, inner, rowflow, precondition and completion entries all refuse with rc78. Fourteen successor tests passed. The separately tested `scripts/coordination/kvfork/kpf18-g3-gpu/` hook prepares per-process KFD, mapped-HIP and VRAM evidence with dynamic device discovery; it is not installed in this candidate. Eight focused GPU-witness tests passed without inference. Its native writer/projection and planning canary remain pending under VB-KVU-PF.
+
+These source checks do not qualify the actual publisher's lock or GPU admission, native cancellation and cleanup, sampled-output overshoot, or the disabled candidate. The 214 GiB disk floor remains in force. No G3 row, GPU run or gate verdict follows.
