@@ -291,3 +291,7 @@ C6 generic-isolation build c6-n4-generic-isolation-build-20261104 is grantable a
 ## 23:17Z — Prepared and started publisher for CH-26b compact observer overhead r3; smoke result pending
 
 CH-26b: prepared independent ch26-compact-observer-overhead-r3-20261104 from the sealed synthetic observer diagnostic, retaining its stop and decision rules; available disk was 228 GiB versus the 150 GiB floor. Publisher was started but its smoke result was not established in this turn. The r1 and r2 attempts ended rc75 at disk admission; neither established a synthetic overhead or DS41 floor. C6 paired diagnostic r34 is already published and awaits a grant. [no-belief: preparation only]
+
+## 23:21Z — Completed publication of CH-26b synthetic observer overhead r3 with publisher smoke PASS
+
+CH-26b: ch26-compact-observer-overhead-r3-20261104 publisher completed its smoke PASS on one native unit and is grantable. Full 24-pair diagnostic is pending; smoke does not establish overhead, placement, contention or a DS41 floor. Spec: /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-observer-overhead-r3-20261104/spec.json. C6 diagnostic r34 remains grantable; Nemo historical traces lack the required boundaries and its marker build lineage reached the retry limit. [no-belief: publication and smoke only]
