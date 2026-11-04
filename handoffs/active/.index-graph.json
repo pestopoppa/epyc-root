@@ -97,6 +97,12 @@
     {
       "from": "EVL-08",
       "kind": "ref",
+      "to": "EVL-02",
+      "weight": 1
+    },
+    {
+      "from": "EVL-08",
+      "kind": "ref",
       "to": "EVL-14",
       "weight": 5
     },
@@ -146,7 +152,7 @@
       "from": "EVL-14",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 12
+      "weight": 15
     },
     {
       "from": "EVL-14",
@@ -434,7 +440,7 @@
       "from": "INF-80",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "INF-80",
@@ -500,7 +506,7 @@
       "from": "RTG-08",
       "kind": "ref",
       "to": "EVL-02",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "RTG-08",
@@ -635,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T17:34:08Z",
+  "generated_at": "2026-11-04T17:55:02Z",
   "nodes": [
     {
       "age_days": 1,
@@ -3554,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1380,
+          "line": 1382,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3569,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1762,
+          "line": 1765,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
