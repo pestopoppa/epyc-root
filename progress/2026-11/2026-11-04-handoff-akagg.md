@@ -131,3 +131,7 @@ The affinity build row stopped rc75 at the disk floor before native build; RESUL
 ## 18:21Z — File 732 HIP coverage configure and repair CH-LB1.1 qualification
 
 Filed inf75-p1b-732-hip-configure-20261104 pass for configure only: 572 compile entries, 141 HIP coverage entries; retained and verified cache, plan, log, preflight and source manifest. The P1b replay remains open. CH-LB1.1 successor publisher smoke is in progress after repair.
+
+## 18:23Z — File direct-parent and 1f7 CPU configure prerequisites and repair CH-LB1.1 qualification
+
+Filed the 8f6487f3 direct-parent and 1f7f36e4 CPU configure rows as configure-only passes: respectively 435 and 431 compile entries. Retained and checked cache, compile plan, log, preflight and source manifest for each. Neither result completes the P1b replay. The CH-LB1.1 launcher checksum pin was repaired and publisher smoke started.
