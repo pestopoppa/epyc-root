@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T17:02:47Z",
+  "generated_at": "2026-11-04T17:13:21Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1354,7 +1354,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 351,
+      "closed": 352,
       "dispatchable": 94,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -2915,7 +2915,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 146,
+      "closed": 147,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3582,15 +3582,15 @@
       "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
-      "closed": 229,
-      "dispatchable": 79,
+      "closed": 230,
+      "dispatchable": 78,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-04",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 94,
+      "open": 93,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3710,14 +3710,14 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 26,
+          "dispatchable": 25,
           "gates": [
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2706,
+          "line": 2707,
           "name": "agentic-serving-harness-fixes",
-          "open": 26,
+          "open": 25,
           "readiness": "blocked"
         }
       ]

@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 86
+      "open": 85
     }
   },
   "duplicates": {},
@@ -422,7 +422,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 146,
+      "closed": 147,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 40,
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 188,
+      "total": 189,
       "tracks": [
         {
           "blocked": 0,
@@ -508,7 +508,7 @@
         },
         {
           "blocked": 0,
-          "closed": 51,
+          "closed": 52,
           "gates": [],
           "guarded": 0,
           "line": 2930,
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 229,
+      "closed": 230,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 79,
+      "open": 78,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1099,16 +1099,16 @@
         },
         {
           "blocked": 0,
-          "closed": 61,
+          "closed": 62,
           "gates": [
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2706,
+          "line": 2707,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
-          "open": 26
+          "open": 25
         }
       ]
     },
@@ -2614,7 +2614,7 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 351,
+      "closed": 352,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 94,
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 447
+      "total": 448
     }
   },
   "row_id_collisions": {},
