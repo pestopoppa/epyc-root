@@ -11,3 +11,7 @@ Filed six terminal rows: build original/r2/r3 fail; r4 inconclusive; r5 pass; pi
 ## 07:22Z — Acknowledge duplicate EXP01 r2 end; await isolated rerun
 
 Duplicate r2 event acknowledged with its existing inconclusive verdict retained. No new measurement or box completion claimed. EXP01-PILOT awaits the already smoke-passed and running isolated successor brf-exp01-trellis-pilot-20261104-r3; use its official run-r3 results for the port/futility decision.
+
+## 07:23Z — Acknowledge already-filed EXP01 build-r3 event
+
+Duplicate build-r3 end acknowledged; existing fail verdict retained (missing shared-expert imatrix entry). The completed build-r5 supersedes it. EXP01-PILOT awaits the running, smoke-passed isolated measurement brf-exp01-trellis-pilot-20261104-r3.
