@@ -107,3 +107,7 @@ Filed already-judged GDN build refusal: rc1 before compilation because the grant
 ## 15:22Z — Acknowledge the filed P1b build experiment and advance replay custody prerequisites.
 
 Acknowledged previously filed source-pinned sync17 build rc0 with 435 planned compile entries, 295 coverage notes, server and CLI linkage; retained artifacts already exist. Exact recipe parity, full compiler/source custody, model identity and replay remain unproven; concrete successor work delegated.
+
+## 15:25Z — Acknowledge the original CH31 build failure and retain native failure evidence.
+
+Acknowledged original CH31 fixture rc1: all-target OpenMP ON build failed on missing mtmd.h before model-free graph controls. Retained original build/config/fixture logs and end record. Separate explicit-target v2 has passed its bounded model-free fixture; CH31 model defect remains open.
