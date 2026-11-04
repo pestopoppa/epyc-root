@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "Official grant completed rc0 and native RESULT mode=build binds v10 ffc1bac82 plus exact V4 timed patch 3c2e57bfdf98a8cae15dfec9d0719cc210c1b51f38c7c0f4a1c0a3aee7cbd97d. Successful row completion checked server/backend timestamp and trace markers, layer marker, source identity, linkage and artifact hashes; the runtime receipt binder also returns BUILD_BOUND. Build-only pass; no MI210 residency or kernel-selection result.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:11:51+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:52:08Z reason=complete",
+ "filed_at": "2026-11-04T07:11:51+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "handoffs/active/speculative-decoding.md:G3",
+ "id": "g3-v10-v4-timed-hip-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/g3-v10-v4-timed-hip-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official grant completed rc0 and native RESULT mode=build binds v10 ffc1bac82 plus exact V4 timed patch 3c2e57bfdf98a8cae15dfec9d0719cc210c1b51f38c7c0f4a1c0a3aee7cbd97d. Successful row completion checked server/backend timestamp and trace markers, layer marker, source identity, linkage and artifact hashes; the runtime receipt binder also returns BUILD_BOUND. Build-only pass; no MI210 residency or kernel-selection result.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "g3-v10-v4-timed-hip-build-20261102",
+ "row_verdict": "pass",
+ "rule": "Accept only complete v10 plus exact timed V4 trace patch HIP gfx90a build, compiled timestamp and trace markers in server and backend, source checks, linkage and SHA-256 receipt verified. Build-only; no inference or residency result.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "5eacf3ac3a245b96cac7854cce1cb4fc3181880a01a4f59fb8f42dc9ddd3ae8b",
+  "result": "pass",
+  "status": "filed"
+ }
+}

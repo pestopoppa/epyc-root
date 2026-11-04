@@ -1,0 +1,7 @@
+# SR-8 edit speculation packet
+
+This is a prepared native GPU benchmark packet, not an inference result. The five fixed paired blocks rotate four source-bearing canonical BEP edit tasks across plain, DFlash2 and `ngram-simple` prompt-lookup arms. The target is Qwen3.8-27B Q8_0 on the v10 GPU store. It uses np4 with one active request per fresh server; it makes no concurrent-serving throughput claim.
+
+`candidate-plan.json` freezes the task rendering, source identities and arm order. The native worker retains raw requests/responses, proposer statistics, fixed edit-verifier results and at least two in-request KFD/HIP residency samples. Each successful observation references a contemporaneous native-record digest binding plan, source, model/drafter preflight, actual executable/backend, grant and raw evidence. Model weights are hashed once before publication, with metadata checked at runtime. No grade or retrospective warrant is created.
+
+Eleven bounded tests passed. Publication was refused before smoke because the task linter reads the main handoff view and the model/stopping fields had not landed there. After landing, publish the task-scratch copy of `spec.json` through `publish_row.py`; do not launch the worker directly. Keep all incomplete, invalid, interrupted or unqualified cells UNKNOWN. Only a complete, valid five-pair result may apply the sealed 1.5x rule. The existing SC50 draft-acceptance source class carries the projection/canary task `VB-SR8-DRAFT-ACCEPTANCE-WIRE`.

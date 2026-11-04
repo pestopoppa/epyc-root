@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T11:50:49Z reason=complete
+job_id=cafe4-v10-diagnostic-build-20261102
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=1800
+started=2026-11-02T11:50:33Z
+regions=48-71
