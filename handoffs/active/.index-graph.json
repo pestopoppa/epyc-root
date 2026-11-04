@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T07:06:00Z",
+  "generated_at": "2026-11-04T07:16:02Z",
   "nodes": [
     {
       "age_days": 1,
@@ -988,18 +988,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 61,
-      "dispatchable": 30,
+      "closed": 64,
+      "dispatchable": 31,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
-      "open": 30,
+      "open": 31,
       "priority": 0.7283,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample \u2014 reuse the existing hard-slice construction (n=53",
@@ -1066,11 +1066,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 6,
           "gates": [],
           "line": 1702,
           "name": "tool-use-eval-contract",
-          "open": 5,
+          "open": 6,
           "readiness": "ready"
         }
       ]
@@ -1394,18 +1394,18 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 747,
-      "dispatchable": 130,
+      "closed": 748,
+      "dispatchable": 129,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
-      "open": 131,
+      "open": 130,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1479,7 +1479,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "dispatchable": 20,
+          "dispatchable": 19,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -1488,7 +1488,7 @@
           ],
           "line": 6192,
           "name": "autokernel-rebuild-program",
-          "open": 20,
+          "open": 19,
           "readiness": "blocked"
         },
         {
@@ -1977,18 +1977,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 101,
-      "dispatchable": 34,
+      "closed": 102,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
-      "open": 35,
+      "open": 34,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -2019,11 +2019,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 20,
+          "dispatchable": 19,
           "gates": [],
           "line": 13,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 21,
+          "open": 20,
           "readiness": "ready"
         },
         {
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 659,
+          "line": 660,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -3504,18 +3504,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 237,
-      "dispatchable": 91,
+      "closed": 239,
+      "dispatchable": 90,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 92,
+      "open": 91,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3541,7 +3541,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 45,
+          "dispatchable": 44,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3549,14 +3549,14 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 46,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1342,
+          "line": 1345,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3571,7 +3571,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1724,
+          "line": 1727,
           "name": "kv-unified-stack-rollout",
           "open": 38,
           "readiness": "blocked"

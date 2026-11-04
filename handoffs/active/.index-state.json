@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 682
+      "open": 680
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 193
+      "open": 194
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 476
+      "open": 475
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 747,
+      "closed": 748,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 130,
+      "last_advanced": "2026-11-04",
+      "open": 129,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -93,7 +93,7 @@
         },
         {
           "blocked": 0,
-          "closed": 168,
+          "closed": 169,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -104,7 +104,7 @@
           "line": 6192,
           "markers": 1,
           "name": "autokernel-rebuild-program",
-          "open": 20
+          "open": 19
         },
         {
           "blocked": 0,
@@ -344,10 +344,10 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 61,
+      "closed": 64,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 30,
+      "last_advanced": "2026-11-04",
+      "open": 31,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -356,7 +356,7 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 91,
+      "total": 95,
       "tracks": [
         {
           "blocked": 0,
@@ -410,13 +410,13 @@
         },
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 26,
           "gates": [],
           "guarded": 0,
           "line": 1702,
           "markers": 1,
           "name": "tool-use-eval-contract",
-          "open": 5
+          "open": 6
         }
       ]
     },
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 237,
+      "closed": 239,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 91,
+      "last_advanced": "2026-11-04",
+      "open": 90,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 329,
+      "total": 330,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 123,
+          "closed": 125,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 45
+          "open": 44
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1342,
+          "line": 1345,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1724,
+          "line": 1727,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 38
@@ -2421,10 +2421,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 101,
+      "closed": 102,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 34,
+      "last_advanced": "2026-11-04",
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2437,13 +2437,13 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 59,
+          "closed": 60,
           "gates": [],
           "guarded": 0,
           "line": 13,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 20
+          "open": 19
         },
         {
           "blocked": 0,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 659,
+          "line": 660,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
