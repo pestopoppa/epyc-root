@@ -1,0 +1,44 @@
+{
+  "attempt_dir": "/mnt/raid0/llm/tmp/kvfork/kpf61-cpu-permutation-20261104/out/attempts/e4dfd06df16f49258ee5bdf2ab52c0e8",
+  "capsule": "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/docs/reports/kv-cache/kpf61-third-smoke-20261104/SUMMARY.json",
+  "comparison": "paired JSON response aggregates; no prompt/text emitted",
+  "limitations": [
+    "comparison uses retained completion-probability rows, not full logits",
+    "no numerical tolerance or equivalence threshold was applied",
+    "aggregate mismatch does not identify cause"
+  ],
+  "probability_row_counts": [
+    32,
+    32
+  ],
+  "row0_selected_logprob": [
+    -3.7098066806793213,
+    -3.7433578968048096
+  ],
+  "row0_selected_token_id": 286,
+  "scope": "single Qwen3.5-0.8B public-control CPU publisher smoke; not 35B or full KPF-61 gate",
+  "selected_logprob_abs_delta_max": 0.04168844223022461,
+  "selected_logprob_abs_delta_min": 0.00015679001808166504,
+  "selected_logprob_different_rows": 32,
+  "selected_token_ids_equal_all_rows": true,
+  "source_sha256": {
+    "0-cold-test.response.json": "84a66e5b0a52b4ab911201c026d5ec8dea5ed33460a06e1f41d5778207f0ede2",
+    "0-reorder-test.response.json": "d51f129c8aaa37092e7169039ac167808000b08123f7314e392e22b7215950af"
+  },
+  "token_counts": [
+    32,
+    32
+  ],
+  "token_id_arrays_equal": true,
+  "top32_id_order_different_rows": 32,
+  "top32_id_set_different_rows": 25,
+  "top_logprobs_exactly_32_all_rows": true,
+  "top_logprobs_lengths": [
+    [
+      32
+    ],
+    [
+      32
+    ]
+  ]
+}
