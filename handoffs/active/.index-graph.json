@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T14:27:48Z",
+  "generated_at": "2026-11-04T14:45:04Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1561,7 +1561,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 196,
+      "closed": 197,
       "dispatchable": 44,
       "domain": "inference-research",
       "guarded": 0,
@@ -1600,7 +1600,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 658,
+          "line": 664,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 3,
           "readiness": "ready"
@@ -1609,7 +1609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1017,
+          "line": 1023,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2,
           "readiness": "ready"
@@ -1618,7 +1618,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1294,
+          "line": 1300,
           "name": "gpu-acceleration-path",
           "open": 2,
           "readiness": "ready"
@@ -1627,7 +1627,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1929,
+          "line": 1935,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8,
           "readiness": "ready"
@@ -1636,7 +1636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2231,
+          "line": 2237,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3,
           "readiness": "ready"
@@ -1659,7 +1659,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2840,
+          "line": 2846,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3,
           "readiness": "blocked"
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 107,
+      "closed": 109,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 685,
+          "line": 690,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2128,7 +2128,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 240,
+      "closed": 241,
       "dispatchable": 100,
       "domain": "inference-research",
       "guarded": 0,
@@ -2186,7 +2186,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1312,
+          "line": 1319,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1436,
+          "line": 1443,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2204,7 +2204,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1763,
+          "line": 1770,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2213,7 +2213,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1902,
+          "line": 1909,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2222,7 +2222,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2455,
+          "line": 2462,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2239,7 +2239,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2592,
+          "line": 2599,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2262,7 +2262,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3443,
+          "line": 3451,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3582,15 +3582,15 @@
       "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
-      "closed": 226,
-      "dispatchable": 78,
+      "closed": 228,
+      "dispatchable": 79,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-04",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 93,
+      "open": 94,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3692,7 +3692,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -3702,7 +3702,7 @@
           ],
           "line": 2260,
           "name": "repl-embedding-retrieval",
-          "open": 19,
+          "open": 20,
           "readiness": "blocked"
         },
         {
@@ -3715,7 +3715,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2692,
+          "line": 2700,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

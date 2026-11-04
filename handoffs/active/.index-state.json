@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 85
+      "open": 86
     }
   },
   "duplicates": {},
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 226,
+      "closed": 228,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 78,
+      "open": 79,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 319,
+      "total": 322,
       "tracks": [
         {
           "blocked": 12,
@@ -1083,7 +1083,7 @@
         },
         {
           "blocked": 2,
-          "closed": 32,
+          "closed": 34,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -1095,7 +1095,7 @@
           "line": 2260,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 17
+          "open": 18
         },
         {
           "blocked": 0,
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2692,
+          "line": 2700,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 240,
+      "closed": 241,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 100,
@@ -1126,11 +1126,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 342,
+      "total": 343,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 112,
+          "closed": 113,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1312,
+          "line": 1319,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1436,
+          "line": 1443,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1763,
+          "line": 1770,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1902,
+          "line": 1909,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2455,
+          "line": 2462,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2592,
+          "line": 2599,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3443,
+          "line": 3451,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1493,7 +1493,7 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 196,
+      "closed": 197,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 44,
@@ -1505,11 +1505,11 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 242,
+      "total": 243,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 105,
+          "closed": 106,
           "gates": [],
           "guarded": 0,
           "line": 23,
@@ -1522,7 +1522,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 658,
+          "line": 664,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1017,
+          "line": 1023,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1294,
+          "line": 1300,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
@@ -1552,7 +1552,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1929,
+          "line": 1935,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 8
@@ -1562,7 +1562,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2231,
+          "line": 2237,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2840,
+          "line": 2846,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 107,
+      "closed": 109,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 141,
+      "total": 143,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 65,
+          "closed": 67,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 685,
+          "line": 690,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
