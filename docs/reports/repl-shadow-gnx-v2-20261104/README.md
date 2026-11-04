@@ -1,0 +1,19 @@
+# REPL online-shadow GitNexus prerequisite
+
+The successor completed at rc 0 with all four exact symbol-context and upstream-impact receipts at root `f58d0bf7668147b5aa142ade921b7b86ece35ec0`. All risks were LOW: `ShadowSink` 1 upstream node (1 direct), `validate_shadow_stream` 0, `ingest` 8 (4 direct), `cmd_ingest` 0. This is the source-analysis prerequisite; online-shadow execution remains open, and changed source requires its own impact review.
+
+The original [result stream](results.jsonl), per-symbol stdout receipts, [summary](SUMMARY.json), decision rule and end receipt are retained here. No inference or measurement-performance claim follows.
+
+The runtime task now has a finalized-stream ingest seam: `repl-shadow-observation` revalidates and rederives each result through the shared ClaimTuple grade. Unknown opens remain unknown, hidden-arm overlaps remain counterfactual, and identities remain producer-declared. Eight focused tests passed, including explicit-file ingest, incomplete/tampered refusal and exclusion from arbitrary-model planning context. This is write-side source coverage only; it is not a positive planning-context canary or a live online-shadow run.
+
+## Native next rows
+
+`ufh14-repl-emb23a-private-pilot-20261104` passed publisher qualification by executing a real BGE hybrid search on four CPUs. Its official three-query pilot uses independent BGE and Granite retrieval indexes, displays BGE only, and asks a private Qwen3.6-35B frontdoor to choose a pointer that is actually opened and delivered to the shadow sink. The arm subset, hidden-arm counterfactual semantics and unknown no-open outcomes remain explicit; this pilot cannot close all-arm online shadow or establish retrieval quality. The mutable shared Python environment warning is retained in the publication receipt.
+
+`ufh12-gs-frozen-query-v2-20261104` passed a one-query publisher smoke on four CPUs. It freezes 500 of the original 582 query rows: 414 synthetic-spill, 47 agent-navigation, 39 probe45, preserving source flags. It compares BGE and EG2 top-k cosine distributions on private episodic and strategy stores and records query token lengths. This is a code/docs convenience-corpus transfer diagnostic; it is not organic traffic, a quality verdict or full G-S closure.
+
+The first query-row attempt failed before writing an official measurement: the original poller traceback shows errno 98 during a plain pre-server socket bind. This establishes the failing operation, not whether TIME_WAIT or a listening process caused it. The successor uses SO_REUSEADDR with separate live-listener/closed-port controls and still verifies owned server listeners. Its runtime receipt pins seven actual shared libraries, including six matching the earlier library receipt; the original tiny executable wrapper is not used alone as a kernel freshness proof. Native run context captures original grant bytes, CPU affinity, source/corpus/input pins and listener/library witnesses; every success/error result is bound and sealed at write time. No historical warrant was reconstructed for the failed attempt.
+
+The maintained `ufh12-gs-coverage` adapter now accepts this distinct native schema through the existing shared ladder while retaining stored-text proxy compatibility. It validates record/context/cohort hashes, query membership and flags, and structural top-k fields. The sample is pinned before launch; the reader does not independently recreate the 582-to-500 selection or re-observe the original process witnesses. Coverage is unscoped to a particular model and the positive planning-context canary remains open; this is not a fully wired or verified-model claim. Ten distinct focused source/compatibility tests passed, with shared-carrier byte/grade invariants reporting zero violations.
+
+[Published manifests, smoke receipts and runtime definitions](successors/) preserve these scopes. Native query text stays in private scratch; it is not reproduced here.
