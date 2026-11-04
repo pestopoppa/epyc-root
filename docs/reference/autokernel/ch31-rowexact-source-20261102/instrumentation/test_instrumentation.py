@@ -6,7 +6,7 @@ def metadata():
  return ('node=node_13\nbase_source_commit='+mod.SOURCE+'\nmodel_sha256='+'a'*64+'\ninstrumentation_patch_sha256='+'b'*64+'\npregrant_receipt_sha256='+'c'*64+'\nactivation_capture=UNAVAILABLE\nrowexact_n=4\ndisable_rowexact=0\nsrc0 name=w type=q8_0 ne=32,2,1,1 nb=34,34,68,68 bytes=68 contiguous=1\nsrc1 name=x type=f32 ne=2,2,1,1 nb=4,8,16,16 bytes=16 contiguous=1\n')
 class Checks(unittest.TestCase):
  def test_no_byte_capture(self):
-  p=(D/'ch31-instrument.patch').read_text();self.assertNotIn('fwrite(',p);self.assertNotIn('src0.bin',p);self.assertNotIn('src1.bin',p);self.assertIn('activation_capture=UNAVAILABLE',p)
+  p=(D/'ch31-instrument.patch').read_text();self.assertNotIn('fwrite(',p);self.assertNotIn('src0.bin',p);self.assertNotIn('src1.bin',p);self.assertIn('activation_capture=UNAVAILABLE',p);self.assertNotIn('+        ggml_barrier(',p)
  def test_layout_rejects_empty_overlap_out_of_bounds(self):
   valid={'type':'f32','ne':[2,2,1,1],'nb':[4,8,16,16],'bytes':16};mod.validate_layout(valid)
   for delta in ({'ne':[0,2,1,1]},{'nb':[4,4,16,16]},{'nb':[4,8,16,0]},{'bytes':15},{'type':'other'}):

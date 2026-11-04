@@ -9,22 +9,18 @@
  void ggml_compute_forward_mul_mat(
          const struct ggml_compute_params * params,
                struct ggml_tensor * dst) {
-@@ -1467,6 +1469,14 @@
+@@ -1467,6 +1469,10 @@
      GGML_ASSERT(ne1 == ne11);
      GGML_ASSERT(ne2 == ne12);
      GGML_ASSERT(ne3 == ne13);
 +
 +    char ch31_stem[4096];
-+    int ch31_enabled = 0;
-+    if (ch31_requested(dst)) {
-+        ggml_barrier(params->threadpool);
-+        ch31_enabled = ch31_capture(params, dst, ch31_stem, sizeof ch31_stem);
-+        ggml_barrier(params->threadpool);
-+    }
++    int ch31_enabled = ch31_requested(dst)
++        ? ch31_capture(params, dst, ch31_stem, sizeof ch31_stem) : 0;
  
      // we don't support permuted src0 or src1
      GGML_ASSERT(nb00 == ggml_type_size(src0->type));
-@@ -1490,6 +1500,7 @@
+@@ -1490,6 +1496,7 @@
      // Runtime-gated by env GGML_IQK=1; returns false (falls through) otherwise or
      // for unsupported types/dims. Handles its own src1 quantization + barrier.
      if (ggml_iqk_try_mul_mat(params, dst)) {
@@ -32,7 +28,7 @@
          return;
      }
  #endif
-@@ -1535,6 +1546,7 @@
+@@ -1535,6 +1542,7 @@
                                       src1->type,
                                       dst->type))
                      goto UseGgmlGemm1;
@@ -40,7 +36,7 @@
          return;
      }
  UseGgmlGemm1:;
-@@ -1645,10 +1657,13 @@
+@@ -1645,10 +1653,13 @@
                                       vec_dot_type,
                                       dst->type))
                      goto UseGgmlGemm2;
