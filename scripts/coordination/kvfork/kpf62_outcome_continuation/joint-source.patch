@@ -1,0 +1,667 @@
+diff --git a/scripts/chunk-kv/G3_CORPUS_CONTRACT.md b/scripts/chunk-kv/G3_CORPUS_CONTRACT.md
+index 4c51c9e70..2a0996106 100644
+--- a/scripts/chunk-kv/G3_CORPUS_CONTRACT.md
++++ b/scripts/chunk-kv/G3_CORPUS_CONTRACT.md
+@@ -36,3 +36,24 @@ change the pre-existing threshold. Missing, duplicated, failed, unknown or
+ unmatched records refuse. A standalone aggregate `score_full`/`score_reuse` value
+ is not evidence and is not accepted. Other request capture and model/DSO provenance
+ remain the runner's responsibility; a score table alone is not a qualified run.
++
++## Optional pinned project text scorer
++
++For prospectively declared deterministic text tasks, the tasks JSONL may instead bind
++`metric: "orchestrator_text_v1"`, a nonempty `expected` string, explicit
++`scoring_method` (`substring`, `exact_match`, or `f1`), explicit `scoring_config`, and
++`scorer_sha256` of the exact orchestrator `scripts/benchmark/debug_scorer.py` bytes. The
++full tasks-file digest freezes all of these fields. Both outcome arms must carry original
++`output_text` strings and `complete: true`; errors, missing pairs, unsupported methods,
++multiple scorer digests, and an absent or changed scorer refuse. Pass the exact scorer
++file via `g3_gate.py gate --scorer-module PATH`; the gate verifies and executes those
++pinned bytes, returns per-item full/reuse scores, and computes the original retention
++ratio and paired CI without introducing a new threshold. Original generated output,
++token-to-text decoding and native run custody remain separately required.
++
++This implements an instrument interface, not corpus or scoring-policy admission. The
++project's current ZeroSCROLLS QA adapter selects substring; SQuALITY and open-ended
++L-Eval use `llm_judge`. This deterministic path deliberately refuses `llm_judge` and
++must not silently substitute a different score for those tasks. Freeze any task-specific
++methods and scorer identities under the existing G3 measurement process before running a
++decision-grade gate; the prospective mixed corpus is not thereby admitted as B7.
+diff --git a/scripts/chunk-kv/g3_gate.py b/scripts/chunk-kv/g3_gate.py
+index 786497a92..022e8dd08 100755
+--- a/scripts/chunk-kv/g3_gate.py
++++ b/scripts/chunk-kv/g3_gate.py
+@@ -26,6 +26,7 @@ import os
+ import re
+ import random
+ import sys
++import types
+ 
+ try:
+     import g3_manifest
+@@ -35,6 +36,12 @@ except ModuleNotFoundError:
+     import g3_manifest
+ import tempfile
+ 
++try:
++    import g3_outcome_guard
++except ModuleNotFoundError:
++    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++    import g3_outcome_guard
++
+ GATES = {
+     "mean_kl": ("<=", 0.05),
+     "p95_kl": ("<=", 0.25),
+@@ -325,10 +332,27 @@ def bound_cohort(manifest, reqs, pos, selector, naive):
+     return expected
+ 
+ 
+-def paired_retention(path, tasks_path, expected):
+-    """Score exact token matches against the frozen target, retaining every paired item."""
++def _load_pinned_scorer(path, expected_sha):
++    """Execute the exact digest-pinned project scorer bytes, never a path substitute."""
++    if not path:
++        raise ValueError("frozen text tasks require --scorer-module")
++    with open(path, "rb") as source:
++        data = source.read()
++    if hashlib.sha256(data).hexdigest() != expected_sha:
++        raise ValueError("scorer module digest mismatch")
++    module = types.ModuleType("_kpf62_pinned_debug_scorer")
++    module.__file__ = os.path.abspath(path)
++    exec(compile(data, module.__file__, "exec"), module.__dict__)
++    if not callable(getattr(module, "score_answer", None)):
++        raise ValueError("pinned scorer has no score_answer")
++    return module.score_answer
++
++
++def paired_retention(path, tasks_path, expected, scorer_module=None, segments_path=None):
++    """Score paired raw outputs against each frozen task and pinned scorer."""
+     tasks = g3_manifest.records(tasks_path)
+     pairs = {}
++    outcome_rows = []
+     with open(path, encoding="utf-8") as f:
+         for line in f:
+             if not line.strip():
+@@ -339,18 +363,52 @@ def paired_retention(path, tasks_path, expected):
+             key = (row.get("id"), row.get("arm"))
+             if key in pairs or key[0] not in expected or key[1] not in ("full", "reuse"):
+                 raise ValueError("duplicate or unexpected task outcome")
+-            tokens = row.get("output_tokens")
+-            if not isinstance(tokens, list) or any(type(x) is not int or x < 0 for x in tokens):
+-                raise ValueError("missing or invalid task output tokens")
++            task = tasks[key[0]]
++            if task.get("metric") == "exact_token_match":
++                output = row.get("output_tokens")
++                if not isinstance(output, list) or any(type(x) is not int or x < 0 for x in output):
++                    raise ValueError("missing or invalid task output tokens")
++            elif task.get("metric") == "orchestrator_text_v1":
++                output = row.get("output_text")
++                if not isinstance(output, str):
++                    raise ValueError("missing or invalid task output text")
++            else:
++                raise ValueError("unsupported task metric")
+             if row.get("error") is not None or row.get("complete") is not True:
+                 raise ValueError("task output is incomplete or failed")
+-            pairs[key] = tokens
++            pairs[key] = output
++            outcome_rows.append(row)
+     required = {(rid, arm) for rid in expected for arm in ("full", "reuse")}
+     if set(pairs) != required:
+         raise ValueError("paired task outcome coverage is incomplete")
+     ids = sorted(expected)
+-    full = [int(pairs[(rid, "full")] == tasks[rid]["target_tokens"]) for rid in ids]
+-    reuse = [int(pairs[(rid, "reuse")] == tasks[rid]["target_tokens"]) for rid in ids]
++    segment_digest = None
++    if segments_path is not None:
++        with open(segments_path, "rb") as f:
++            data = f.read()
++        segment_digest = hashlib.sha256(data).hexdigest()
++        segment_rows = [json.loads(line) for line in data.splitlines() if line.strip()]
++        g3_outcome_guard.validate(ids, outcome_rows, segment_rows)
++    text_hashes = {tasks[rid]["scorer_sha256"] for rid in ids
++                   if tasks[rid].get("metric") == "orchestrator_text_v1"}
++    if len(text_hashes) > 1:
++        raise ValueError("multiple scorer module digests in one cohort")
++    scorer = _load_pinned_scorer(scorer_module, next(iter(text_hashes))) if text_hashes else None
++    def score(rid, arm):
++        task = tasks[rid]
++        if task["metric"] == "exact_token_match":
++            return int(pairs[(rid, arm)] == task["target_tokens"])
++        if task.get("scoring_method") not in ("substring", "exact_match", "f1"):
++            raise ValueError("unsupported or non-deterministic scoring method")
++        try:
++            value = scorer(pairs[(rid, arm)], task["expected"], task["scoring_method"], task["scoring_config"])
++        except Exception as exc:
++            raise ValueError(f"{rid}/{arm}: canonical scorer failed") from exc
++        if type(value) is not bool:
++            raise ValueError("canonical scorer did not return a boolean")
++        return int(value)
++    full = [score(rid, "full") for rid in ids]
++    reuse = [score(rid, "reuse") for rid in ids]
+     total = sum(full)
+     if not total:
+         raise ValueError("full-recompute score is zero; retention is undefined")
+@@ -366,10 +424,16 @@ def paired_retention(path, tasks_path, expected):
+         else:
+             undefined += 1
+     estimates.sort()
+-    return {"score_full": total / len(ids), "score_reuse": sum(reuse) / len(ids),
++    result = {"score_full": total / len(ids), "score_reuse": sum(reuse) / len(ids),
+             "retention": ratio, "n_tasks": len(ids), "bootstrap_seed": 62026,
+             "bootstrap_samples": 10000, "bootstrap_undefined": undefined,
++            "scorer_sha256": next(iter(text_hashes)) if text_hashes else None,
++            "item_scores": [{"id": rid, "full": full[i], "reuse": reuse[i],
++                             "metric": tasks[rid]["metric"]} for i, rid in enumerate(ids)],
+             "bootstrap_95": [nearest_rank(estimates, 2.5), nearest_rank(estimates, 97.5)] if estimates else None}
++    if segment_digest is not None:
++        result["outcome_segments_sha256"] = segment_digest
++    return result
+ 
+ 
+ def cmd_gate(args):
+@@ -381,6 +445,9 @@ def cmd_gate(args):
+         rc = cmd_prereg(args)
+         if rc != 0:
+             return rc
++    if getattr(args, "outcome_segments", None) and not args.retention:
++        print("REFUSED: --outcome-segments requires --retention")
++        return 3
+     reqs, pos, meta = load_run(args.run)
+     retention, score = None, None
+     if not args.dev:
+@@ -392,7 +459,8 @@ def cmd_gate(args):
+             if meta.get("n_cont") != 64:
+                 raise ValueError("native run did not declare 64 continuation positions")
+             expected = bound_cohort(manifest, reqs, pos, args.selector, args.naive)
+-            score = paired_retention(args.retention, args.tasks, expected)
++            score = paired_retention(args.retention, args.tasks, expected, getattr(args, "scorer_module", None),
++                                     getattr(args, "outcome_segments", None))
+             retention = score["retention"]
+         except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+             print(f"REFUSED: invalid frozen cohort or paired outcomes: {exc}")
+@@ -490,7 +558,9 @@ def main():
+     s.add_argument("--naive", default="none")
+     s.add_argument("--corpus", help="frozen tokenized corpus JSONL matching the manifest")
+     s.add_argument("--tasks", help="frozen task target JSONL matching the manifest")
+-    s.add_argument("--retention", help="paired per-item full/reuse output-token JSONL")
++    s.add_argument("--retention", help="paired per-item full/reuse raw output JSONL")
++    s.add_argument("--outcome-segments", help="opt-in segment ledger JSONL for completed paired outcomes")
++    s.add_argument("--scorer-module", help="digest-pinned canonical orchestrator debug_scorer.py for frozen text tasks")
+     s.add_argument("--dev", action="store_true")
+     s.add_argument("--out", help="write OUT.json and OUT.md")
+     sub.add_parser("selftest")
+diff --git a/scripts/chunk-kv/g3_manifest.py b/scripts/chunk-kv/g3_manifest.py
+index bf941bb18..104b2ab13 100644
+--- a/scripts/chunk-kv/g3_manifest.py
++++ b/scripts/chunk-kv/g3_manifest.py
+@@ -2,7 +2,8 @@
+ """Freeze and verify tokenized G3 task corpora; no inference or result grading.
+ 
+ Input JSONL corpus entries contain id, tokens, chunks [{offset,n_tokens}]. Task
+-JSONL entries contain id, metric=exact_token_match, target_tokens. Both inputs
++JSONL entries specify either exact_token_match/target_tokens or an explicitly pinned
++orchestrator_text_v1 deterministic scorer, method, config and expected text. Both inputs
+ must be independently sourced, not synthesized from model results. The output
+ manifest binds exact bytes and predeclared SHA256(id) % 5 split. A gate cohort
+ must satisfy P0's 200/50-per-bucket requirements; shared chunks must occur under
+@@ -16,6 +17,7 @@ import argparse
+ import hashlib
+ import json
+ import os
++import re
+ from pathlib import Path
+ 
+ SCHEMA = 'epyc.kpf62.g3-manifest.v1'
+@@ -81,8 +83,19 @@ def inspect(corpus_path, tasks_path):
+             key = hashlib.sha256(body).hexdigest()
+             chunk_occurrences.setdefault(key, set()).add((off, hashlib.sha256(predecessor).hexdigest()))
+             previous_end = off + n
+-        if task.get('metric') != 'exact_token_match' or not _tokens(task.get('target_tokens')):
+-            raise ValueError(f'{rid}: unsupported metric or invalid target tokens')
++        metric = task.get('metric')
++        if metric == 'exact_token_match':
++            if not _tokens(task.get('target_tokens')):
++                raise ValueError(f'{rid}: unsupported metric or invalid target tokens')
++        elif metric == 'orchestrator_text_v1':
++            if (task.get('scoring_method') not in ('substring', 'exact_match', 'f1')
++                    or not isinstance(task.get('expected'), str) or not task['expected'].strip()
++                    or not isinstance(task.get('scoring_config'), dict)
++                    or not isinstance(task.get('scorer_sha256'), str)
++                    or not re.fullmatch(r'[0-9a-f]{64}', task['scorer_sha256'])):
++                raise ValueError(f'{rid}: unsupported metric or incomplete pinned text scorer')
++        else:
++            raise ValueError(f'{rid}: unsupported metric')
+         rows.append({'id': rid, 'split': split(rid), 'n_tokens': len(toks), 'n_chunks': len(chunks),
+                      'suffix_start': previous_end, 'metric': task['metric']})
+     if any(len(v) < 2 for v in chunk_occurrences.values()):
+diff --git a/scripts/chunk-kv/g3_outcome_guard.py b/scripts/chunk-kv/g3_outcome_guard.py
+new file mode 100644
+index 000000000..f7f8e556f
+--- /dev/null
++++ b/scripts/chunk-kv/g3_outcome_guard.py
+@@ -0,0 +1,64 @@
++#!/usr/bin/env python3
++"""Refuse incomplete or unpaired G3 outcome inputs; does not score quality."""
++import argparse
++import json
++from pathlib import Path
++
++
++def validate(ids, outcomes, segments):
++    ids = list(ids)
++    if not ids or len(ids) != len(set(ids)) or any(not isinstance(x, str) or not x for x in ids):
++        raise ValueError('invalid expected ids')
++    expected = {(x, arm) for x in ids for arm in ('full', 'reuse')}
++    indexed = {}
++    for row in outcomes:
++        key = (row.get('id'), row.get('arm'))
++        if key not in expected or key in indexed:
++            raise ValueError('unexpected or duplicate outcome')
++        if row.get('complete') is not True or row.get('finish_reason') != 'eog':
++            raise ValueError('incomplete outcome')
++        if not isinstance(row.get('output_tokens'), list):
++            raise ValueError('missing outcome tokens')
++        indexed[key] = row
++    if set(indexed) != expected:
++        raise ValueError('missing paired outcome')
++    ledger = {key: [] for key in expected}
++    for row in segments:
++        key = (row.get('id'), row.get('arm'))
++        if key not in ledger:
++            raise ValueError('unexpected segment')
++        ledger[key].append(row)
++    for key, rows in ledger.items():
++        if not rows:
++            raise ValueError('missing segment ledger')
++        tokens = []
++        for i, row in enumerate(rows):
++            if row.get('segment') != i or row.get('start') != len(tokens) or not isinstance(row.get('tokens'), list):
++                raise ValueError('out-of-order or malformed segment')
++            expected_reason = 'eog' if i == len(rows) - 1 else 'continue'
++            if row.get('finish_reason') != expected_reason:
++                raise ValueError('incomplete segment ledger')
++            tokens.extend(row['tokens'])
++        if tokens != indexed[key]['output_tokens']:
++            raise ValueError('segment/output token mismatch')
++    return {'pairs': len(ids), 'outcomes': len(indexed), 'segments': sum(map(len, ledger.values()))}
++
++
++def rows(path):
++    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--ids', required=True, help='JSON array of predeclared request IDs')
++    p.add_argument('--outcomes', required=True)
++    p.add_argument('--segments', required=True)
++    a = p.parse_args()
++    try:
++        print(json.dumps(validate(json.loads(Path(a.ids).read_text()), rows(a.outcomes), rows(a.segments)), sort_keys=True))
++    except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
++        p.exit(2, f'INVALID: {e}\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/chunk-kv/tests/test_g3_manifest.py b/scripts/chunk-kv/tests/test_g3_manifest.py
+index 07cc4846f..5c22f5887 100644
+--- a/scripts/chunk-kv/tests/test_g3_manifest.py
++++ b/scripts/chunk-kv/tests/test_g3_manifest.py
+@@ -107,6 +107,36 @@ class FrozenGateTest(unittest.TestCase):
+             self.op.write_text(json.dumps({'score_full': 1, 'score_reuse': 1}))
+             self.assertEqual(gate.cmd_gate(args), 3)
+ 
++    def test_pinned_canonical_text_scorer_is_bound_per_item(self):
++        import hashlib
++        scorer = self.root / 'scorer.py'
++        scorer.write_text('def score_answer(answer, expected, scoring_method, scoring_config):\n'
++                          '    return expected.lower() in answer.lower()\n')
++        digest = hashlib.sha256(scorer.read_bytes()).hexdigest()
++        tasks = gm.records(self.tp)
++        for rid in self.ids:
++            tasks[rid] = {'id': rid, 'metric': 'orchestrator_text_v1', 'expected': 'Oxford',
++                          'scoring_method': 'substring', 'scoring_config': {}, 'scorer_sha256': digest}
++        self.tp.write_text(''.join(json.dumps(x) + '\n' for x in tasks.values()))
++        manifest = gm.make_manifest(self.cp, self.tp, 'role', 'fixture')
++        self.mp.write_text(json.dumps(manifest))
++        self.assertEqual(gm.verify(self.mp, self.cp, self.tp), manifest)
++        outcomes = [{'id': rid, 'arm': arm, 'output_text': 'Oxford University', 'complete': True}
++                    for rid in self.ids for arm in ('full', 'reuse')]
++        self.op.write_text(''.join(json.dumps(x) + '\n' for x in outcomes))
++        expected = {x['id']: x for x in manifest['requests']}
++        result = gate.paired_retention(self.op, self.tp, expected, str(scorer))
++        self.assertEqual(result['retention'], 1)
++        self.assertEqual(len(result['item_scores']), len(self.ids))
++        self.assertEqual(result['scorer_sha256'], digest)
++        scorer.write_text('def score_answer(*args): return True\n')
++        with self.assertRaisesRegex(ValueError, 'digest mismatch'):
++            gate.paired_retention(self.op, self.tp, expected, str(scorer))
++        tasks[self.ids[0]]['scoring_method'] = 'llm_judge'
++        self.tp.write_text(''.join(json.dumps(x) + '\n' for x in tasks.values()))
++        with self.assertRaisesRegex(ValueError, 'unsupported'):
++            gm.make_manifest(self.cp, self.tp, 'role', 'fixture')
++
+     def test_missing_task_wrong_metrics_or_changed_layout_refuse(self):
+         rows = gm.records(self.tp)
+         rows[self.ids[0]]['metric'] = 'unfixed_metric'
+diff --git a/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py b/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py
+new file mode 100644
+index 000000000..01519f59c
+--- /dev/null
++++ b/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py
+@@ -0,0 +1,53 @@
++"""Opt-in ledger validation occurs before exact or canonical text scoring."""
++import hashlib
++import importlib.util
++import json
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++PATH=Path(__file__).resolve().parents[1]/'g3_gate.py'
++spec=importlib.util.spec_from_file_location('g3_gate_outcome_integration',PATH)
++gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
++
++class Integration(unittest.TestCase):
++    def setUp(self):
++        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
++        p=Path(self.tmp.name);self.task=p/'tasks';self.out=p/'outcomes';self.seg=p/'segments'
++        self.expected={'q':{}}
++        self.tasks=[{'id':'q','metric':'exact_token_match','target_tokens':[1,2,3]}]
++        self.outcomes=[{'id':'q','arm':a,'output_tokens':[1,2,3],'output_text':'ok','complete':True,'finish_reason':'eog'} for a in ('full','reuse')]
++        self.segments=[{'id':'q','arm':a,'segment':i,'start':start,'tokens':tokens,'finish_reason':reason}
++                       for a in ('full','reuse') for i,start,tokens,reason in ((0,0,[1,2],'continue'),(1,2,[3],'eog'))]
++        self.write()
++    def write(self):
++        for path,rows in ((self.task,self.tasks),(self.out,self.outcomes),(self.seg,self.segments)):
++            path.write_text(''.join(json.dumps(row)+'\n' for row in rows))
++    def test_legacy_unchanged_and_segmented_valid(self):
++        for o in self.outcomes:o.pop('finish_reason')
++        self.write();legacy=gate.paired_retention(self.out,self.task,self.expected)
++        self.assertEqual(legacy['retention'],1);self.assertNotIn('outcome_segments_sha256',legacy)
++        for o in self.outcomes:o['finish_reason']='eog'
++        self.write();result=gate.paired_retention(self.out,self.task,self.expected,segments_path=self.seg)
++        self.assertEqual(result['retention'],1)
++        self.assertEqual(result['outcome_segments_sha256'],hashlib.sha256(self.seg.read_bytes()).hexdigest())
++    def test_refuses_interruption_exhaustion_mismatch_duplicates(self):
++        variants=[self.segments[:-1],self.segments+self.segments[:1],
++                  [dict(x,finish_reason='length') if x['arm']=='reuse' and x['segment']==1 else x for x in self.segments],
++                  [dict(x,tokens=[9]) if x['arm']=='reuse' and x['segment']==1 else x for x in self.segments]]
++        for rows in variants:
++            self.segments=rows;self.write()
++            with self.subTest(rows=rows),self.assertRaises(ValueError):
++                gate.paired_retention(self.out,self.task,self.expected,segments_path=self.seg)
++    def test_text_scorer_interface_and_no_score_on_invalid(self):
++        self.tasks=[{'id':'q','metric':'orchestrator_text_v1','scorer_sha256':'a'*64,'scoring_method':'exact_match','expected':'ok','scoring_config':{}}]
++        self.write()
++        with patch.object(gate,'_load_pinned_scorer',return_value=lambda a,b,c,d: a==b) as load:
++            result=gate.paired_retention(self.out,self.task,self.expected,'scorer.py',self.seg)
++            self.assertEqual(result['retention'],1);load.assert_called_once_with('scorer.py','a'*64)
++        self.segments=self.segments[:-1];self.write()
++        with patch.object(gate,'_load_pinned_scorer') as load:
++            with self.assertRaises(ValueError):gate.paired_retention(self.out,self.task,self.expected,'scorer.py',self.seg)
++            load.assert_not_called()
++if __name__=='__main__':unittest.main()
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 1ceafd429..ec6760296 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -190,6 +190,7 @@ if (NOT WIN32 OR NOT BUILD_SHARED_LIBS)
+     llama_build_and_test(test-llama-grammar.cpp)
+     llama_build_and_test(test-batch-alloc.cpp)
+     llama_build_and_test(test-server-chunk-store.cpp)
++    llama_build_and_test(test-kpf62-outcome-budget.cpp)
+     target_include_directories(test-server-chunk-store PRIVATE ${PROJECT_SOURCE_DIR}/tools/server)
+     llama_build_and_test(test-server-reorder.cpp)
+     target_include_directories(test-server-reorder PRIVATE ${PROJECT_SOURCE_DIR}/tools/server)
+diff --git a/tests/kpf62-outcome-budget.h b/tests/kpf62-outcome-budget.h
+new file mode 100644
+index 000000000..d470fea76
+--- /dev/null
++++ b/tests/kpf62-outcome-budget.h
+@@ -0,0 +1,45 @@
++#pragma once
++// Pure bounded continuation engine. Segments are persisted by emit before the
++// next segment starts. A missing final row therefore remains incomplete.
++#include <algorithm>
++#include <cstddef>
++#include <string>
++#include <vector>
++
++namespace kpf62_outcome {
++template<class Token> struct result {
++    std::vector<Token> tokens;
++    std::string finish_reason;
++    bool complete = false;
++};
++template<class Token, class IsEog, class Advance, class Emit>
++result<Token> generate(Token next, int max_tokens, int segment_tokens,
++                       IsEog is_eog, Advance advance, Emit emit) {
++    result<Token> result;
++    if (max_tokens <= 0 || segment_tokens <= 0 || segment_tokens > max_tokens) {
++        result.finish_reason = "invalid_budget";
++        return result;
++    }
++    int segment = 0;
++    for (;;) {
++        const auto start = result.tokens.size();
++        const auto bound = std::min<std::size_t>(start + segment_tokens, max_tokens);
++        bool decode_error = false;
++        while (result.tokens.size() < bound && !is_eog(next)) {
++            result.tokens.push_back(next);
++            if (!advance(next, result.tokens.size() - 1)) { decode_error = true; break; }
++        }
++        result.complete = !decode_error && is_eog(next);
++        const char * reason = decode_error ? "decode_error" : result.complete ? "eog" :
++                              result.tokens.size() == std::size_t(max_tokens) ? "length" : "continue";
++        result.finish_reason = reason;
++        std::vector<Token> chunk(result.tokens.begin() + start, result.tokens.end());
++        if (!emit(segment++, start, chunk, reason)) {
++            result.complete = false;
++            result.finish_reason = "write_error";
++            return result;
++        }
++        if (decode_error || result.complete || result.tokens.size() == std::size_t(max_tokens)) return result;
++    }
++}
++}
+diff --git a/tests/test-chunk-kv-g3.cpp b/tests/test-chunk-kv-g3.cpp
+index 473574bc5..708b5b3bd 100644
+--- a/tests/test-chunk-kv-g3.cpp
++++ b/tests/test-chunk-kv-g3.cpp
+@@ -37,6 +37,8 @@
+ 
+ #include <nlohmann/json.hpp>
+ 
++#include "kpf62-outcome-budget.h"
++
+ #include <algorithm>
+ #include <chrono>
+ #include <clocale>
+@@ -66,6 +68,7 @@ struct g3_args {
+     bool    self_test    = false;
+     bool    modes_explicit = false;
+     int32_t outcome_tokens = 0;
++    int32_t outcome_segment_tokens = 0;
+     std::string outcome_mode;
+     int32_t kdev_layer   = -1;
+     double  kdev_r       = -1;
+@@ -146,6 +149,11 @@ static bool split_args(int argc, char ** argv, g3_args & a, std::vector<char *>
+             char * end = nullptr; const long x = std::strtol(v.c_str(), &end, 10);
+             if (!end || *end || end == v.c_str() || x < 1 || x > 4096) return false;
+             a.outcome_tokens = int32_t(x);
++        } else if (k == "--g3-outcome-segment-tokens") {
++            if (!need(v)) return false;
++            char * end = nullptr; const long x = std::strtol(v.c_str(), &end, 10);
++            if (!end || *end || end == v.c_str() || x < 1 || x > 4096) return false;
++            a.outcome_segment_tokens = int32_t(x);
+         } else if (k == "--g3-outcome-mode") { if (!need(a.outcome_mode)) return false; }
+         else if (k == "--g3-self-test")  { a.self_test = true; }
+         else if (k == "--g3-kdev-layer") {
+@@ -282,37 +290,43 @@ static bool continuation(llama_context * ctx, tokens_t & cont, int32_t n_cont, i
+ 
+ // Generate each task arm independently from its own prompt state. Teacher-forced
+ // continuation rows remain the separate G3 distribution measurement.
+-static bool write_outcome(FILE * out, const std::string & id, const char * arm,
++static bool write_outcome(FILE * out, FILE * segments, const std::string & id, const char * arm,
+                           llama_context * ctx, llama_memory_t mem, const llama_vocab * vocab,
+                           llama_seq_id seq, int32_t prompt_len, const float * first_logits,
+-                          int n_vocab, int32_t max_tokens) {
++                          int n_vocab, int32_t max_tokens, int32_t segment_tokens) {
+     if (!llama_memory_seq_rm(mem, seq, prompt_len, -1)) return false;
+-    tokens_t tokens;
+-    llama_token next = argmax(first_logits, n_vocab);
+-    bool complete = false;
+     llama_batch one = llama_batch_init(1, 0, 1);
+-    for (int32_t k = 0; k < max_tokens; ++k) {
+-        if (llama_vocab_is_eog(vocab, next)) { complete = true; break; }
+-        tokens.push_back(next);
+-        one.n_tokens = 1; one.token[0] = next; one.pos[0] = prompt_len + k;
+-        one.n_seq_id[0] = 1; one.seq_id[0][0] = seq; one.logits[0] = 1;
+-        const float * row = llama_decode(ctx, one) == 0 ? llama_get_logits_ith(ctx, 0) : nullptr;
+-        if (!row) { llama_batch_free(one); return false; }
+-        next = argmax(row, n_vocab);
+-    }
++    const auto result = kpf62_outcome::generate<llama_token>(argmax(first_logits, n_vocab),
++        max_tokens, segment_tokens,
++        [&](llama_token t) { return llama_vocab_is_eog(vocab, t); },
++        [&](llama_token & next, size_t offset) {
++            one.n_tokens = 1; one.token[0] = next; one.pos[0] = prompt_len + offset;
++            one.n_seq_id[0] = 1; one.seq_id[0][0] = seq; one.logits[0] = 1;
++            const float * row = llama_decode(ctx, one) == 0 ? llama_get_logits_ith(ctx, 0) : nullptr;
++            if (!row) return false;
++            next = argmax(row, n_vocab);
++            return true;
++        },
++        [&](int segment, size_t start, const tokens_t & chunk, const char * reason) {
++            try {
++                json row = {{"id", id}, {"arm", arm}, {"segment", segment}, {"start", start},
++                            {"tokens", chunk}, {"finish_reason", reason}};
++                return fprintf(segments, "%s\n", row.dump().c_str()) >= 0 && fflush(segments) == 0;
++            } catch (const std::exception &) { return false; }
++        });
+     llama_batch_free(one);
+-    // A final EOG prediction at the exact bound is a completed response.
+-    if (!complete && llama_vocab_is_eog(vocab, next)) complete = true;
+     try {
+-        json result = {{"id", id}, {"arm", arm}, {"output_tokens", tokens},
+-                       {"output_text", common_detokenize(vocab, tokens, false)},
+-                       {"complete", complete}, {"finish_reason", complete ? "eog" : "length"}};
+-        if (fprintf(out, "%s\n", result.dump().c_str()) < 0 || fflush(out) != 0) return false;
++        json row = {{"id", id}, {"arm", arm}, {"output_tokens", result.tokens},
++                    {"output_text", common_detokenize(vocab, result.tokens, false)},
++                    {"complete", result.complete}, {"finish_reason", result.finish_reason},
++                    {"segment_tokens", segment_tokens}, {"max_tokens", max_tokens}};
++        if (fprintf(out, "%s\n", row.dump().c_str()) < 0 || fflush(out) != 0) return false;
+     } catch (const std::exception & e) {
+         fprintf(stderr, "outcome serialization failed for %s/%s: %s\n", id.c_str(), arm, e.what());
+         return false;
+     }
+-    return true;
++    return result.finish_reason != "decode_error" && result.finish_reason != "write_error" &&
++           result.finish_reason != "invalid_budget";
+ }
+ 
+ int main(int argc, char ** argv) {
+@@ -331,7 +345,8 @@ int main(int argc, char ** argv) {
+         (a.kdev_layer < 0 || a.kdev_r < 0)) {
+         fprintf(stderr, "kdev requires explicit --g3-kdev-layer and --g3-kdev-r\n"); return 2;
+     }
+-    if ((a.outcome_tokens > 0) != !a.outcome_mode.empty() ||
++    if ((a.outcome_segment_tokens > 0 && (a.outcome_tokens == 0 || a.outcome_segment_tokens > a.outcome_tokens)) ||
++        (a.outcome_tokens > 0) != !a.outcome_mode.empty() ||
+         (a.outcome_tokens > 0 && (a.out.empty() ||
+          (a.outcome_mode != "kdev" && a.outcome_mode != "head" && a.outcome_mode != "all-inject") ||
+          std::count_if(a.modes.begin(), a.modes.end(), [&](server_chunk::select_mode m) {
+@@ -448,11 +463,15 @@ int main(int argc, char ** argv) {
+     FILE * f_pos = nullptr;
+     FILE * f_req = nullptr;
+     FILE * f_outcomes = nullptr;
++    FILE * f_outcome_segments = nullptr;
+     if (!a.out.empty()) {
+         f_pos = fopen((a.out + "/positions.jsonl").c_str(), "w");
+         f_req = fopen((a.out + "/requests.jsonl").c_str(), "w");
+-        if (a.outcome_tokens > 0) f_outcomes = fopen((a.out + "/outcomes.jsonl").c_str(), "w");
+-        if (!f_pos || !f_req || (a.outcome_tokens > 0 && !f_outcomes)) {
++        if (a.outcome_tokens > 0) {
++            f_outcomes = fopen((a.out + "/outcomes.jsonl").c_str(), "w");
++            f_outcome_segments = fopen((a.out + "/outcome_segments.jsonl").c_str(), "w");
++        }
++        if (!f_pos || !f_req || (a.outcome_tokens > 0 && (!f_outcomes || !f_outcome_segments))) {
+             fprintf(stderr, "cannot write into %s (create it first)\n", a.out.c_str());
+             return 2;
+         }
+@@ -483,8 +502,8 @@ int main(int argc, char ** argv) {
+             fprintf(stderr, "request %s: reference decode failed\n", r.id.c_str());
+             return 3;
+         }
+-        if (f_outcomes && !write_outcome(f_outcomes, r.id, "full", ctx, mem, vocab, s_ref, N,
+-                ref_rows.data() + size_t(N - E - 1) * n_vocab, n_vocab, a.outcome_tokens)) {
++        if (f_outcomes && !write_outcome(f_outcomes, f_outcome_segments, r.id, "full", ctx, mem, vocab, s_ref, N,
++                ref_rows.data() + size_t(N - E - 1) * n_vocab, n_vocab, a.outcome_tokens, a.outcome_segment_tokens ? a.outcome_segment_tokens : a.outcome_tokens)) {
+             fprintf(stderr, "request %s: full outcome decode failed\n", r.id.c_str()); return 3;
+         }
+         // Only kdev retains the full-reference K oracle; legacy modes keep their original lifecycle.
+@@ -561,8 +580,8 @@ int main(int argc, char ** argv) {
+                 return 3;
+             }
+             if (f_outcomes && a.outcome_mode == server_chunk::select_mode_name(mode) &&
+-                !write_outcome(f_outcomes, r.id, "reuse", ctx, mem, vocab, s_arm, N,
+-                    rows.data() + size_t(N - E - 1) * n_vocab, n_vocab, a.outcome_tokens)) {
++                !write_outcome(f_outcomes, f_outcome_segments, r.id, "reuse", ctx, mem, vocab, s_arm, N,
++                    rows.data() + size_t(N - E - 1) * n_vocab, n_vocab, a.outcome_tokens, a.outcome_segment_tokens ? a.outcome_segment_tokens : a.outcome_tokens)) {
+                 fprintf(stderr, "request %s: reuse outcome decode failed\n", r.id.c_str()); return 3;
+             }
+             llama_memory_seq_rm(mem, s_arm, -1, -1);
+@@ -630,7 +649,7 @@ int main(int argc, char ** argv) {
+             {"window", a.window}, {"n_cont", a.n_cont}, {"n_batch", n_batch}, {"n_ubatch", (int) llama_n_ubatch(ctx)},
+             {"n_threads", params.cpuparams.n_threads}, {"type_k", ggml_type_name(cparams.type_k)}, {"type_v", ggml_type_name(cparams.type_v)},
+             {"selector", "head-window-v0 or kdev offline reference K, as named by each arm"},
+-            {"outcome_tokens", a.outcome_tokens}, {"outcome_mode", a.outcome_mode},
++            {"outcome_tokens", a.outcome_tokens}, {"outcome_segment_tokens", a.outcome_segment_tokens ? a.outcome_segment_tokens : a.outcome_tokens}, {"outcome_mode", a.outcome_mode},
+             {"kdev_layer", a.kdev_layer}, {"kdev_target_r", a.kdev_r},
+             {"kdev_scope", "full-graph reference K, offline quality only; no online speed claim"},
+             {"scored_rows", "logits at every suffix position after the last chunk, plus after each of n_cont teacher-forced tokens of the reference greedy continuation"},
+@@ -644,6 +663,7 @@ int main(int argc, char ** argv) {
+     if (f_pos) fclose(f_pos);
+     if (f_req) fclose(f_req);
+     if (f_outcomes) fclose(f_outcomes);
++    if (f_outcome_segments) fclose(f_outcome_segments);
+ 
+     printf("sanity (all-inject vs reference): max KL=%.3e max NMSE=%.3e top1 misses=%d -> %s\n", sanity_kl_max, sanity_nmse_max,
+             sanity_top1_miss, n_fail == 0 ? "bit-identical" : "DIFFER");
+diff --git a/tests/test-kpf62-outcome-budget.cpp b/tests/test-kpf62-outcome-budget.cpp
+new file mode 100644
+index 000000000..0f8f17ee4
+--- /dev/null
++++ b/tests/test-kpf62-outcome-budget.cpp
+@@ -0,0 +1,27 @@
++#include "kpf62-outcome-budget.h"
++#include <cassert>
++#include <string>
++#include <vector>
++using namespace kpf62_outcome;
++struct record { int segment; size_t start; std::vector<int> tokens; std::string reason; };
++static result<int> run(int initial, int max, int seg, int eog, int fail_at, int emit_limit, std::vector<record> & records) {
++    int advances = 0;
++    return generate<int>(initial, max, seg, [=](int t) { return t == eog; },
++        [&](int & t, size_t) { if (advances++ == fail_at) return false; ++t; return true; },
++        [&](int i, size_t start, const std::vector<int> & tokens, const char * reason) {
++            if (i >= emit_limit) return false;
++            records.push_back({i,start,tokens,reason}); return true;
++        });
++}
++int main() {
++    std::vector<record> r;
++    auto e = run(9,8,3,9,-1,10,r); assert(e.complete && e.tokens.empty() && r.size()==1 && r[0].reason=="eog");
++    r.clear(); auto c = run(0,8,2,5,-1,10,r); assert(c.complete && c.tokens.size()==5 && r.size()==3 && r[0].reason=="continue" && r[1].start==2 && r[2].reason=="eog");
++    r.clear(); auto b = run(0,4,2,4,-1,10,r); assert(b.complete && b.tokens.size()==4 && r.back().reason=="eog");
++    r.clear(); auto x = run(0,4,2,20,-1,10,r); assert(!x.complete && x.tokens.size()==4 && x.finish_reason=="length" && r.size()==2);
++    r.clear(); auto d = run(0,8,2,20,2,10,r); assert(!d.complete && d.finish_reason=="decode_error" && r.size()==2 && r.back().start==2);
++    r.clear(); auto w = run(0,8,2,20,-1,1,r); assert(!w.complete && w.finish_reason=="write_error" && r.size()==1);
++    r.clear(); auto invalid = run(0,4,5,20,-1,10,r); assert(!invalid.complete && invalid.finish_reason=="invalid_budget" && r.empty());
++    std::vector<record> full, reuse; auto f=run(0,8,2,3,-1,10,full); auto z=run(4,8,3,8,-1,10,reuse);
++    assert(f.complete && z.complete && f.tokens != z.tokens && full.front().start==0 && reuse.front().start==0);
++}

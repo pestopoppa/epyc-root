@@ -33,6 +33,8 @@ def validate(repo, dest, commit):
         raise ValueError('source must remain detached')
     if git(dest, 'status', '--porcelain', '--untracked-files=all').stdout.strip():
         raise ValueError('source worktree is dirty')
+    if any(line[:1] != 'H' for line in git(dest, 'ls-files', '-v').stdout.splitlines()):
+        raise ValueError('source has hidden index flags')
     return {'schema': 'epyc.detached-source.v1', 'source_commit': commit, 'source': str(dest), 'git_common_dir': str(actual_common)}
 
 def prepare(repo, ref, dest):

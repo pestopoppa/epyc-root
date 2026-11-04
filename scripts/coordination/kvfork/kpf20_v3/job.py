@@ -19,6 +19,7 @@ def check():
  if run(['git','symbolic-ref','-q','HEAD'], accepted=(0,1)).strip(): raise RuntimeError('source must remain detached')
  assert run(['git','rev-parse','HEAD']).strip()==HEAD
  assert not run(['git','diff','--name-only','HEAD']).strip()
+ if any(line[:1] != 'H' for line in run(['git','ls-files','-v']).splitlines()): raise RuntimeError('source has hidden index flags')
  untracked=run(['git','ls-files','--others','--exclude-standard']).splitlines()
  if untracked: raise RuntimeError(f'untracked nonignored files could enter the GitNexus index: {untracked[:20]}')
  assert (TREE/'scripts/gitnexus-analyze.sh').is_file()

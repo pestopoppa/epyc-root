@@ -41,4 +41,17 @@ class TestPrepare(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'commit changed'):
             mod.prepare(self.repo, 'HEAD', self.dest)
 
+    def test_hidden_index_flags_cannot_mask_modified_source(self):
+        mod.prepare(self.repo, self.commit, self.dest)
+        for flag in ('--assume-unchanged', '--skip-worktree'):
+            with self.subTest(flag=flag):
+                subprocess.run(['git', '-C', str(self.dest), 'update-index', flag, 'unit.txt'], check=True)
+                (self.dest/'unit.txt').write_text('changed')
+                with self.assertRaisesRegex(ValueError, 'hidden index flags'):
+                    mod.prepare(self.repo, self.commit, self.dest)
+                (self.dest/'unit.txt').write_text('source')
+                undo = '--no-assume-unchanged' if flag == '--assume-unchanged' else '--no-skip-worktree'
+                subprocess.run(['git', '-C', str(self.dest), 'update-index', undo, 'unit.txt'], check=True)
+        self.git('worktree', 'remove', str(self.dest))
+
 if __name__ == '__main__': unittest.main()
