@@ -1,0 +1,24 @@
+{
+  "source_commit": "beb7b859c",
+  "source_path": "/mnt/raid0/llm/worktrees/rtg57-kvu126-matrix-20261102/artifacts/np_context_kvu_cpu_study_20261020/driver",
+  "files": {
+    "kvu126_capture.py": "bb0dbb08df34f6b2200367796e852cedc75bb7a3375f73ff924ec8fdf8afc0a1",
+    "kvu121_offline_offsets.py": "c8a44e99e1df4139fa1ca9918bfa38df28080d9955bf68a64ecb7cf40e4ce7e7",
+    "test_kvu122_bank_cells.py": "af14d00e7012e7727403dfb3351489e5093e4cb6179ac4e74448ad79eb2872f3",
+    "kvu126_finalize.py": "9c363eed78f834467bf6f81309c54a614b319a254baf6f1f38cb2e9ea54f581e",
+    "test_kvu126_identity.py": "87764a0cd7bf18ede292e716aff8d376fdf3adb95e8ee78f276323eb4c826c55",
+    "kvu_ckpt_arms.py": "cc2eda6a6e9ae5bf908cc464b6d1afacd37a1953f3914f9c2186d43c59b0d2c4",
+    "test_kvu126_compare.py": "7fa76688d38b30901f317205ada69875f3939feb807a5152e12b0491f6c36cdd",
+    "test_kvu126_build.py": "9ca9421c41cef0f941e7ce390dd8a86a06a482cfd5bb1f275786bd4a83b4133c",
+    "kvu_cpu_matrix.py": "d6c3435e73ea71abef9e28d3c712c5ef301f952cce9ec22e6e72d9bab9f8be2d",
+    "kvu12_verdict.py": "e9a881b23658d208a68af8e75f88d243d1e04574b317237669ff4fa0d84d07fa",
+    "test_kvu126_capture.py": "c153970e9ce4a8d3fb70667745d43866fad129861cae5cd82b299bd82cce898f",
+    "test_kvu_ckpt_arms.py": "0901a1676917697960a1c92f153a5dacf3ce908b9c5266bac3ac3c14b4941c31",
+    "test_kvu126_lengths.py": "25c677c91d2a111cbbe10bd32212db2dc168de30c51fe982900e8856b56752e3",
+    "kvu126_compare.py": "f43120422c024d43e36b6eab6672143037a433ea9244677a887995612e4b88f5",
+    "kvu126_build.py": "80955c95abc677dca61726bc660339255361f71be5f557ee9afbbea7e4c660c5",
+    "kvu126_identity.py": "908e516b03e5d68ef291f51f785b5b63a1eb83d58f7fb66f47ee30301298e0cc",
+    "kvu122_bank_cells.py": "fbc0d4e5c4bbf9cd9336f988bee7a6fc9db182630e799311372caf4a91a3137c",
+    "test_kvu126_finalize.py": "1497355f5c19f79150ce395dbe04369cedce8bc823d6f2cc144c1a2a34203712"
+  }
+}
