@@ -115,3 +115,9 @@ C6 n4 predecessor publisher smoke failed rc1 before native execution because the
 ## GDN BF16 reference build result
 
 Filed `akx-gdn-bf16-reference-build-20261104` pass rc0 for the source-bound build prerequisite. Manifest SHA-256 `9100dae88b9e1af0550be6cfe8afe72d83d039c23a7dd575b8d737341c4bc907`; binary, libraries, HIP object, logs and inputs are retained at `/mnt/raid0/llm/tmp/akagg/gdn-bf16-reference-build-retained-20261104/`. No native operation ran; BF16 correctness and crash causation remain open.
+
+## 20:01Z — Submit BF16 GDN native oracle successor smoke
+
+## BF16 GDN GPU successor smoke queued
+
+Prepared `akx-gdn-onehot-gpu-bf16-successor-20261104` against the retained source-bound BF16 reference image and submitted its publisher smoke. The publisher queued smoke because the GPU was busy; no PASS, READY row or native BF16 verdict is claimed. PASS and FAIL event paths are registered. Packet: `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-gpu-successor-20261104/`. The job retains the BF16 baseline and two planted mutants and own-PID mapped HIP/VRAM checks; review the packet and smoke outcome before claiming readiness.
