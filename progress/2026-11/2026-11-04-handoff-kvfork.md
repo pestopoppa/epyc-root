@@ -207,3 +207,7 @@ KPF-RS-1: kpf-rs1-impact-8952-20261104-r4 passed its four-CPU source-reference s
 ## 23:00Z — Ready KPF-64 audit-coverage impact successor
 
 KPF-64.3: kpf64-impact-4f4f-20261104-r2 passed the four-CPU source-reference smoke and was published. The detached research source is bound to 4f4f1443dba949c9d83d98cd37fe31210b6fb087; full runs explicitly retain the 150 GiB disk floor, while publisher smoke uses 20 GiB. The native impact and coverage remain pending; smoke provides no source edit clearance or replay verdict. KPF-50 clock-witness r5 publisher GPU smoke was started with isolated output; its PASS event was registered. No publication or full qualification is asserted until that event.
+
+## 23:01Z — Ready KPF-50 clock witness r5
+
+KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r5-20261104 passed publisher GPU smoke and was published. Its isolated attempt retains the same model-free qualification, source and toolchain custody and the unchanged 150 GiB full-run floor. Smoke does not establish full clock qualification, expose a target profiling window or decide KPF-50.
