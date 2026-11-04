@@ -51,3 +51,7 @@ Acknowledged the C6 original versus combined ordinal 7047 diagnostic: matching i
 ## 14:42Z — Acknowledge the filed C6 q4_0 route diagnostic and preserve its native log and captures.
 
 The previously filed q4_0 route diagnostic returned native rc1, reproduced prior input and output hashes and recorded MMVQ. Preserved native route log, captures and result with SHA-256 inventory; no full GPU gate pass. CH18 case discovery and runner preparation remain in progress.
+
+## 14:44Z — Acknowledge the filed W5s precheck stop and advance its isolated grant-transport successor.
+
+Acknowledged W5s r7 rc1 precheck futility with no LAST-RESULT and no census observation. The successor grant parser and isolated job integration passed seven model-free controls; launcher, pinned source closure and actual lock verification remain outstanding and were delegated. No scientific pass or parent closure.
