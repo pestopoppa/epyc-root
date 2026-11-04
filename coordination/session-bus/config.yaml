@@ -18,6 +18,9 @@ diagnostic_overrides:
 roster:
   # LOOP-27: the existing filing watcher owns only its service outbox.
   - {id: filing-watch, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
+  # 2026-11-04 incident: rowflow (filler_run15.sh / rowflow.py) pushes row terminal events, smoke FAILs and disk-floor
+  # crossings from this service outbox (scripts/coordination/rowflow/notify.py); it owns only that outbox.
+  - {id: rowflow-keeper, role: service, lanes: [none], endpoint: "monitor:file", drain: none, schedulable: false}
   # AutoKernel operator session 01a11473-3d55-7543-8830-0de817d87bbe; coordination only.
   - {id: codex-ak-main-01a11473, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.

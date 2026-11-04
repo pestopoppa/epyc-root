@@ -99,6 +99,7 @@ INSTALL=(
   "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
   "bin/rowflow/publish_row.py     $RF/publish_row.py"
   "bin/rowflow/hostutil.py        $RF/hostutil.py"
+  "bin/rowflow/notify.py          $RF/notify.py"
   "bin/rowflow/run_direct.py      $RF/run_direct.py"
   "bin/rowflow/run_direct.sh      $RF/run_direct.sh"
 )

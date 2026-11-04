@@ -67,6 +67,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
     sys.path.insert(0, _HERE)
 import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
+import notify  # noqa: E402  - push every terminal event / smoke FAIL / disk-floor crossing (incident 2026-11-04)
 
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
@@ -1721,7 +1722,12 @@ def record_fail(flags, rid, d, reason, extra):
            "row_sha256": row_sha(flags, rid), "rowflow_sha256": sha256(__file__), "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
            "fix_task": f"fix dry-run failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/launcher.out; the keeper retries as soon as the launcher file changes)",
            **extra}
-    atomic_json(os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json"), rec)
+    fp = os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json")
+    atomic_json(fp, rec)
+    try:  # push, not wait-to-be-noticed (2026-11-04); never blocks the FAIL record
+        notify.smoke_fail(flags, rid, fp, rec, owner=str(d.get("owner") or ""))
+    except Exception as e:  # noqa: BLE001
+        print(f"notify smoke-fail {rid}: {type(e).__name__}: {e}", file=sys.stderr)
     return rec
 
 
@@ -2438,6 +2444,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
             seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
     if not dry:
+        try:  # host disk floor: ONE alert per crossing (hysteresis), naming the rows it blocks; never deletes
+            blocked = sorted(gids | {c["id"] for c in cands})
+            if notify.disk_floor_check(flags, os.path.join(state_dir(flags), "disk_floor.json"), blocked,
+                                       reclaim_root=TMP, log=log) == "raised" and notify.is_live(flags):
+                route_alert("disk-floor", f"/mnt/raid0 below FILLER_DISK_FLOOR_GIB; {len(blocked)} rows blocked; see rowflow-alerts.jsonl",
+                            {"rows_blocked": blocked[:50]}, log)
+        except Exception as e:  # noqa: BLE001 - an alerting fault must not stop allocation
+            log(f"DISK-FLOOR check failed: {type(e).__name__}: {e}")
         idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)

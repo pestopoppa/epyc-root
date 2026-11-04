@@ -157,6 +157,18 @@ write_ended() { # rc reason
   rm -f "$ENDED.tmp"
   rm -f "$GRANT"
   log "ended rc=$1 reason=$2 (grant deleted)"
+  notify_end "$1" "$2"
+}
+# 2026-11-04 incident (disk-floor kill, nobody told for 3 h): push every terminal event to the row owner (session bus)
+# and rowflow-alerts.jsonl. Idempotent, best effort, never changes the caller's rc. Dry runs report via rowflow FAIL.
+notify_end() { # rc reason
+  [ "$DRYRUN" = 1 ] && return 0
+  [ -f "$HERE/notify.py" ] || { log "WARN: $HERE/notify.py missing; terminal event NOT pushed"; return 0; }
+  local ef=()
+  [ -e "$ENDED" ] && ef=(--ended-file "$ENDED")
+  ROWFLOW_FLAGS="$FLAGS" timeout 60 python3 -I "$HERE/notify.py" --flags "$FLAGS" row-ended --id "$ID" \
+    --rc "$1" --reason "$2" ${FILLER_OWNER:+--owner "$FILLER_OWNER"} "${ef[@]}" </dev/null 7>&- 8>&- || log "WARN: notify rc=$?"
+  return 0
 }
 gone() { ! kill -0 -- "-$1" 2>/dev/null; }
 proc_birth() { sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $20}'; }
@@ -353,6 +365,7 @@ run_one() {
   exec 8>&-
   if [ "$cleanup_bad" = 1 ] || [ "$reason" = cleanup-failed ]; then
     log "REFUSED: native cleanup incomplete; grant retained, no .ended or .complete"
+    notify_end 70 cleanup-failed
     STARTED_ONE=1; return 70
   fi
   if is_complete; then mark_complete || return 70; return 20; fi
