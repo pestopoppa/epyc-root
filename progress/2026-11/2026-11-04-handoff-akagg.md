@@ -95,3 +95,7 @@ Filed EG2 co-batch row rc0. Three fixed cases pass cosine distance <=0.001; the 
 ## 15:07Z — Acknowledge failed CH27 preflight and integrate the isolated ownership-protocol preparation.
 
 Acknowledged CH27 rc70 missing/symlinked CPU lock preflight: no FINAL or sealed floors. Recorded the retained owner-token/flock prototype and six model-free controls; an unmodified legacy release bypasses the new lock, so shared-writer custody and calibration authorization remain unproven.
+
+## 15:10Z — Integrate 28 bounded results and supply the existing CH26 calibration stop rule; implement missing successor prerequisites.
+
+Consumed 28 completed bounded reports. CH26 owned capture, CH27 global custody, W5s sealed closure and CH33 discriminating split remain incomplete. Added the existing 24-pair/cmp5 stop rule to CH26 without changing admissibility, and delegated concrete PID custody, source-closure and split-runner implementation. No row is claimed ready from these drafts.
