@@ -1,0 +1,221 @@
+{
+  "row_id": "handoff-rte-pfx2-quarter-native-v3-20261102",
+  "row_owner": "handoff-repl-turn-efficiency",
+  "handoff": "handoffs/active/harness-program.md",
+  "exact_box_text": "**RTE-PFX2-QN-V3 \u2014 run the quarter-native same-prefix cache mechanism probe (RTE-PFX-2 lineage) on a keeper-granted window.** [inference] (filed 2026-11-02, row `handoff-rte-pfx2-quarter-native-v3-20261102`, supersedes v2 `handoff-rte-pfx2-quarter-native-v2-20261101`)",
+  "verdict": "Complete, valid indicative mechanism capture; no sibling meets full-prefix hit criterion. One sibling per hold-first-end trial reused 4504 tokens (68.85% of the 6542-token prefix), not a >=90% hit. No semantic quality or promotion conclusion.",
+  "result_path": "rte/probe.json.journal.jsonl",
+  "rc": 0,
+  "phase": "run",
+  "prefix_tokens": 6542,
+  "threshold": 5887.8,
+  "arm_results": {
+    "simultaneous": {
+      "trials": 5,
+      "uncached_tokens_per_trial": [
+        26208,
+        26208,
+        26208,
+        26208,
+        26208
+      ],
+      "cache_n_per_trial": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "siblings_meeting_90_percent": 0,
+      "siblings_total": 15,
+      "ttft_ms_sorted": [
+        22731.0,
+        22923.4,
+        23159.5,
+        26999.3,
+        27349.2,
+        41871.1,
+        42472.8,
+        46444.3,
+        48517.0,
+        56090.3,
+        56757.5,
+        57131.5,
+        61645.7,
+        62449.2,
+        62610.4,
+        62910.7,
+        63452.3,
+        68920.2,
+        82625.9,
+        89014.6
+      ]
+    },
+    "hold_first_tok": {
+      "trials": 5,
+      "uncached_tokens_per_trial": [
+        26208,
+        26208,
+        26208,
+        26208,
+        26208
+      ],
+      "cache_n_per_trial": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "siblings_meeting_90_percent": 0,
+      "siblings_total": 15,
+      "ttft_ms_sorted": [
+        15513.1,
+        15617.6,
+        16050.6,
+        19421.6,
+        20444.0,
+        22809.5,
+        22909.3,
+        23332.7,
+        23338.5,
+        23432.1,
+        40635.9,
+        41176.1,
+        41339.7,
+        41358.1,
+        41438.5,
+        47015.0,
+        47383.1,
+        47518.8,
+        47650.6,
+        47716.4
+      ]
+    },
+    "hold_first_end": {
+      "trials": 5,
+      "uncached_tokens_per_trial": [
+        21704,
+        21704,
+        21704,
+        21704,
+        21704
+      ],
+      "cache_n_per_trial": [
+        [
+          0,
+          0,
+          0,
+          4504
+        ],
+        [
+          0,
+          0,
+          4504,
+          0
+        ],
+        [
+          0,
+          4504,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          4504,
+          0
+        ],
+        [
+          0,
+          0,
+          4504,
+          0
+        ]
+      ],
+      "siblings_meeting_90_percent": 0,
+      "siblings_total": 15,
+      "ttft_ms_sorted": [
+        9554.9,
+        9676.4,
+        9754.4,
+        9790.8,
+        15298.4,
+        15549.7,
+        15717.4,
+        16436.3,
+        17512.3,
+        28583.3,
+        30884.7,
+        31107.1,
+        31250.0,
+        31575.3,
+        31803.3,
+        37341.0,
+        37399.6,
+        37409.8,
+        37866.0,
+        38034.0
+      ]
+    }
+  },
+  "header_path": "rte/RUN_HEADER.json.gz",
+  "drain": {
+    "child_dead": true,
+    "server_dead": true
+  },
+  "belief_output": "rte/chunk_kv.beliefs.jsonl",
+  "caveat": "Slot snapshot matches streamed id_slot to processing slot; cannot rule out buffering or slot reuse without id_task. Shares host with GPU job; indicative.",
+  "follow_up": "Owner handoff-repl-turn-efficiency must invoke/verify write-side belief adapter using original window claim, then file this result and receipt through its own row lifecycle. Continue parent RTE-Prefix live A/B and semantic gate on a granted window; this mechanism probe alone does not satisfy it.",
+  "no_file_or_tick_performed": true
+}

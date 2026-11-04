@@ -1,0 +1,25 @@
+{
+  "id": "codex-ufh12-shadow-gnx-v2-20261104",
+  "owner": "handoff-repl-embedding-retrieval",
+  "launcher": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Read-only pinned f58d0bf source context and upstream impact for four targets. PASS requires all four exact path identities and known LOW/MEDIUM risks. HIGH/CRITICAL records a warning and stops immediately: no edits. Partial, unknown, ambiguous, stale index or wrong target is not PASS. Smoke source scan is not a verdict.",
+  "estimate_s": 900,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3",
+  "priority_rank": 18,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow",
+  "min_window_s": 300,
+  "keep": [
+    "out/**",
+    "source/**",
+    "successor-v2/**"
+  ],
+  "supersedes": "codex-ufh12-shadow-gnx-v1-20261102",
+  "smoke_predicate": "test -s /mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/smoke.jsonl",
+  "notes": "Reuses pinned index, no indexing; isolated smoke and official outputs. Shared source checkout/index preserved."
+}

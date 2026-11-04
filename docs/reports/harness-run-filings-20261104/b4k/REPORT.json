@@ -1,0 +1,47 @@
+{
+  "directions": {
+    "cold_large_share": "lower_better",
+    "hit_tok": "higher_better",
+    "missed_prefill_share": "lower_better",
+    "prefill_s": "lower_better"
+  },
+  "log": [
+    "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/serving_calls.jsonl"
+  ],
+  "ports": {
+    "18183": {
+      "calls": 140,
+      "cold_large": 6,
+      "cold_large_s": 645.451,
+      "cold_large_share": 0.2923,
+      "concurrent_dupes": 6,
+      "fp_coverage": 1.0,
+      "hit_tok": 0.9278,
+      "missed_prefill_s": 55.707,
+      "missed_prefill_share": 0.0252,
+      "missed_reuse": 6,
+      "missed_tokens": 15763,
+      "prefill_s": 2208.403,
+      "prompt_tokens": 4421561
+    }
+  },
+  "roles": {
+    "18183:architect_critic": {
+      "calls": 140,
+      "cold_large": 6,
+      "cold_large_s": 645.451,
+      "cold_large_share": 0.2923,
+      "concurrent_dupes": 6,
+      "fp_coverage": 1.0,
+      "hit_tok": 0.9278,
+      "missed_prefill_s": 55.707,
+      "missed_prefill_share": 0.0252,
+      "missed_reuse": 6,
+      "missed_tokens": 15763,
+      "prefill_s": 2208.403,
+      "prompt_tokens": 4421561
+    }
+  },
+  "schema": "epyc.orchestrator.prefix_cache_report.v1",
+  "window_min": 60.0
+}
