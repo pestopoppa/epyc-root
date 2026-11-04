@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc0 mode=build binds pinned v10, exact source/candidate/header/bridge/prompt, compiled timing/effective-thread/expert-window markers, artifact hashes and local linkage. Build-only; no native callback, union, timing or CAFE-2 conclusion.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:21:11+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:45:16Z reason=complete",
+ "filed_at": "2026-11-04T15:21:11+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+ "id": "cafe2-v10-expert-union-build-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe2-v10-expert-union-build-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0 mode=build binds pinned v10, exact source/candidate/header/bridge/prompt, compiled timing/effective-thread/expert-window markers, artifact hashes and local linkage. Build-only; no native callback, union, timing or CAFE-2 conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe2-v10-expert-union-build-20261104",
+ "row_verdict": "pass",
+ "rule": "Build-only: accept pinned v10 plus exact CAFE2 expert-union candidate/header/bridge, frozen tokenizer input and CMake integration; full CPU executable with CAFE2_VERIFY_RAW, CAFE2_EFFECTIVE_THREADS and cafe2.expert.window.begin.v1 compiled markers, source/artifact hashes and local library linkage. No native callback, expert union, timing or CAFE-2 verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "b7399a27912425d78402a961a50ea6ddbfb0a9d00bac258c544d0fe0add5fe2b",
+  "result": "pass",
+  "status": "filed"
+ }
+}
