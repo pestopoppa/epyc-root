@@ -23,3 +23,7 @@ Filed `lsa-screen-1-cpu-parity-20261103` through file_result.py as inconclusive 
 ## 15:20Z — Acknowledge filed P5 gold-control result
 
 Wrote the FILED receipt for `codex-gpu-serving-p5-gold-offline-r3-20261104` using its existing PASS verdict. The owning handoff already records P5-2a complete and preserves the gold/no-op control evidence in `docs/reports/p5-gold-controls-20261104/`; broader P5-2 remains open. No checkbox was reticked or new result inferred.
+
+## 15:34Z — Acknowledge filed LSA row 474 diagnostic
+
+Wrote the FILED receipt for `lsa-dpbf16-row474-20261104` using the existing fail verdict. The filed result reports hardware BF16 dot raw bits 47058 versus frozen/PyTorch 47057, with one raw and one frozen-key mismatch in this accumulation order; rc=0 indicates execution only. Native result SHA-256 `18e11aec252d7e2e26aefb5a7ef401b072ef93dca41b8121bb4f675fb168bc37`. The broader LSA-SCREEN-1 task is not complete and no checkbox was ticked.
