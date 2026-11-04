@@ -79,3 +79,7 @@ Acknowledged previously filed API-on rc0/HTTP200 descriptive two-scout result: i
 ## 15:50Z — Preserve the P3 impact report and disclose analyzer coverage
 
 Acknowledged the previously filed P3 impact scan PASS at c72ec82f: find_slot LOW 5 impacted/2 direct, apply_ubatch LOW 6/3, llama_kv_cells LOW 29/3; three records and nonpartial scan_complete, no HIGH/CRITICAL. Preserved native impact outputs, analyzer/status logs and original verdict. Analyzer reports 25 files over 512 KB skipped, so nonpartial does not prove complete indexing. KPF-30 counter/measurement and the KPF-32 implementation prerequisite remain open; no source change, performance or correctness claim.
+
+## 15:53Z — Correct the P3 execution order after integrated counter implementation
+
+Acknowledged the previously filed original CODE-on attempt rc1 INCONCLUSIVE: three scouts launched, two completed and one timed out at the 240.055 s stage budget; the subsequent r2 is a separate descriptive result and KPF-26 remains open. Corrected stale P3 execution instructions: KPF-30 default-off counter, synthetic fixtures and source compile were already implemented at 236413a87 and the counter is included in integrated C5-derived 8952a0f69; native declaration, two-window measurement and KPF-32 gate remain open. A quarter successor is being prepared.
