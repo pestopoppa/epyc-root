@@ -1,0 +1,9 @@
+{
+  "rule": "Frozen candidate set only; non-Astropy and nonempty FTP/PTP; minimum total named tests then lexicographic instance_id; no outcome inspected. No family preference needed.",
+  "manifest_path": "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/docs/reports/p5-question-candidate-20261104/manifest.eval-only.json",
+  "manifest_sha256": "eb751b16907dda305c06f21826d1ee3dbe1548dc18d183444e19f7c2c84a5cb1",
+  "instance_id": "sphinx-doc__sphinx-8593",
+  "FAIL_TO_PASS_count": 2,
+  "PASS_TO_PASS_count": 1,
+  "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca"
+}

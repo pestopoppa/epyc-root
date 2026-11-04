@@ -1,0 +1,66 @@
+{
+  "schema": "p5.gold-control.v1",
+  "producer_source_manifest_sha256": "0d7bda06d2df025afe509b9b78981c80ea96e3bff6b78f212d76ee2bcfaf87c7",
+  "producer_launcher_sha256": "ee7f6d18cad3652d87af2d59b8ed8a3676a9cd298105cce663510844da232dea",
+  "instance_id": "sphinx-doc__sphinx-8593",
+  "arms": {
+    "negative": {
+      "resolved": false,
+      "FAIL_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field": "FAILED",
+        "tests/test_ext_autodoc_private_members.py::test_private_members": "FAILED"
+      },
+      "PASS_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field_and_private_members": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-sphinx-gold-r2-20261104-negative-ns18e4e12de6242766/negative/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-sphinx-gold-r2-20261104-negative-ns18e4e12de6242766/negative/sphinx-doc__sphinx-8593/test_output.txt"
+    },
+    "gold": {
+      "resolved": true,
+      "FAIL_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field": "PASSED",
+        "tests/test_ext_autodoc_private_members.py::test_private_members": "PASSED"
+      },
+      "PASS_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field_and_private_members": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-sphinx-gold-r2-20261104-gold-ns18e4e12e6d452d14/gold/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/logs/run_evaluation/p5-gold-codex-gpu-serving-p5-sphinx-gold-r2-20261104-gold-ns18e4e12e6d452d14/gold/sphinx-doc__sphinx-8593/test_output.txt"
+    }
+  },
+  "image_id": "sha256:e48db103c5c1b2d13782a16375c1efb79e5d4f12ea55755d6de43b83443d3f9f",
+  "case_sha256": "0971c84ae68579da57b1a94541d5d1a600ee842db58dadd7334d3f1d89c54135",
+  "script_binding": {
+    "official_script_sha256": "a0c969ac491740a8e30386cc6b482019e4f44d976c30b3bb288527db511bc311",
+    "offline_script_sha256": "93c7e5a5401c8eac52152f26137b746f99fb4ff41c4658ddf48119151ab5c82d",
+    "setup_index": 10,
+    "derived_image_id": "sha256:e48db103c5c1b2d13782a16375c1efb79e5d4f12ea55755d6de43b83443d3f9f",
+    "reporting_command_index": 14,
+    "reporting_only_suffix": "-rA --color=no",
+    "scope": "exact offline setup substitution and reporting-only pytest suffix; selectors, patches and parser unchanged"
+  },
+  "image_build_log_sha256": "5940c31cd50b35f8ad586e7b3ff4d09ca8cb9d2a7dea26eb9c2b6f6d5fa3770d",
+  "wheel_manifest_sha256": null,
+  "checkout_proofs": {
+    "41c4a019d889d14998340e15dd31cce74f9c339a1a6cef6870d049e3ce8553b2": {
+      "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+      "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    },
+    "98d9ae665ed96181848e2afff2480357bacf2b0be87386b9f92d985706be05e4": {
+      "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+      "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    }
+  },
+  "decision": "PASS",
+  "status": "COMPLETE",
+  "owned_containers_removed": true
+}

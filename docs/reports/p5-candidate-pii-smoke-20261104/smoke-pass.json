@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-gpu-serving-p5-candidate-pii-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=0 time=2026-11-04T15:40:27Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T15:40:29Z",
+ "id": "codex-gpu-serving-p5-candidate-pii-20261104",
+ "job_complete": false,
+ "job_complete_reason": "launcher branches on FILLER_SMOKE/FILLER_DRYRUN (/usr/bin/python3 (too large to scan)): a smoke is not the job",
+ "launcher_sha256": "9f0be4ed64ac3427dda590f17de1c49ef5a1b171292910c7b061ab6a22c323da",
+ "passed_at": "2026-11-04T15:40:29Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/RESULT.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

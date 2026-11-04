@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-gpu-serving-p5-sphinx-gold-r2-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=0 time=2026-11-04T15:29:06Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T15:29:07Z",
+ "id": "codex-gpu-serving-p5-sphinx-gold-r2-20261104",
+ "job_complete": true,
+ "job_complete_reason": "no smoke branch; full-job --complete-cmd passes on the job's own artifacts",
+ "launcher_sha256": "ee7f6d18cad3652d87af2d59b8ed8a3676a9cd298105cce663510844da232dea",
+ "passed_at": "2026-11-04T15:29:07Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/RESULT.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

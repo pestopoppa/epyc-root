@@ -288,6 +288,17 @@ is_p5_generated_run_path_line() {
   ! printf '%s\n' "$stripped" | command grep -E '\b[0-9]{12,19}\b' >/dev/null
 }
 
+is_p5_public_sympy_question_line() {
+  # Public SWE-bench SymPy polynomial arithmetic, retained byte-for-byte in
+  # this candidate. Hash the entire physical JSON line WITHOUT its newline;
+  # any mutation or extra account changes the digest. This is account-only:
+  # scan_blob always scans secrets independently before reaching this helper.
+  local path="$1" line="$2" digest
+  [[ "$path" == 'docs/reports/p5-question-candidate-20261104/questions.json' ]] || return 1
+  digest="$(printf '%s' "$line" | sha256sum)"
+  [[ "${digest%% *}" == '33a0fd6e91f4f4fad0ffe945e889f1dad1a55fc95636c29be8ab75394151904b' ]]
+}
+
 is_benchmark_per_question_line() {
   # Per-question eval records embed the benchmark's own problem text verbatim.
   # Coding suites (LiveCodeBench, SWE-bench) routinely carry 12-19 digit integer
@@ -536,6 +547,9 @@ scan_blob() {
       [[ -z "$lineno" ]] && continue
       local fullline
       fullline="$(echo "$blob_content" | sed -n "${lineno}p")"
+      if is_p5_public_sympy_question_line "$path" "$fullline"; then
+        continue
+      fi
       if is_native_ci_metadata_account_line "$path" "$fullline"; then
         continue
       fi
