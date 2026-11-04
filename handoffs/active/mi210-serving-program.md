@@ -2431,7 +2431,7 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
       haystack. That is model behaviour plus a needle-design confound, not a drafting fault; see Q38-T7b.
     - n-max 7 vs 8 is settled by KVU-16, which runs n-max 7. The belief-kernel write side is VB-SERVING-DF2, which
       stays open in `vidya-belief-substrate-program.md`.
-  - [ ] **Q38-T7a — DFlash2 draft acceptance on ORGANIC :8083 traffic.** (filed 2026-10-04, workspace-ec, split out of
+  - **Q38-T7a — DFlash2 draft acceptance on ORGANIC :8083 traffic.** [declined: operator 2026-11-04: DFlash2 performance already measured on the champion; not needed] (filed 2026-10-04, workspace-ec, split out of
     Q38-T7.) Q38-T7 ran with :8083's roles parked, so its 0.53 acceptance comes from the codified mix, not from
     organic traffic. Read `draft_n` / `draft_n_accepted` from the KVU-17 serving records (`logs/serving_calls/`) for
     `architect_general` / `coder_escalation` on :8083 since the 2026-10-04 restore. This is a passive read with no
