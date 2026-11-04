@@ -1,0 +1,23 @@
+{
+  "id": "lsa-ward-build-088-20261104",
+  "owner": "lsa-screen",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 16,
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/launch.sh",
+  "estimate_s": 1200,
+  "first_progress_s": 300,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Build 088 Ward fix from pinned source with isolated C5 config; verify all prior objects, compile changed kernel and tests, checkpoint first HIP object, relink. CPU compile only, no GPU execution.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build",
+  "keep": [
+    "results.jsonl",
+    "base-unit.json",
+    "seeded-objects.json",
+    "artifact-sha256.txt"
+  ]
+}

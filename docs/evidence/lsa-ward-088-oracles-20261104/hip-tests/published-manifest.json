@@ -1,0 +1,43 @@
+{
+ "decision_rule": "One bounded MI210 sequence: exact 513-key Ward author fixture, then existing 27B-shaped native correctness suite; own PID DSO and KFD/VRAM timeline, stop first error, no model or retry.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 300,
+ "gib": 8,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-ward-hip-tests-088-20261104",
+ "keep": [
+  "*.log",
+  "*.pass",
+  "*/witness.json",
+  "*/samples.jsonl",
+  "results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/launch.sh",
+  "sha256": "b723e92dcb64e526f6fbe7d4aa62bf3b7b7d20b129702c6c23dcb1b4698ecb64"
+ },
+ "min_window_s": 900,
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1805: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T14:03:40Z",
+ "published_from": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/spec.json",
+ "regions": "mi210_0,94-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/STOP",
+ "unit_key": "case",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests"
+}

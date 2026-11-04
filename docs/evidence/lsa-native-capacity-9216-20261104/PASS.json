@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-native-capacity-9216-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=0 time=2026-11-04T15:37:58Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/results.jsonl (unit_key unit set)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T15:38:00Z",
+ "id": "lsa-native-capacity-9216-20261104",
+ "job_complete": true,
+ "job_complete_reason": "no smoke branch; full-job --complete-cmd passes on the job's own artifacts",
+ "launcher_sha256": "1c91c8fe31c80a814d1e7bf22c94ae9302fa35810a883ba3ca628aacd3e423c1",
+ "passed_at": "2026-11-04T15:38:00Z",
+ "progress_rule": "record",
+ "regions": "24-27",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/results.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

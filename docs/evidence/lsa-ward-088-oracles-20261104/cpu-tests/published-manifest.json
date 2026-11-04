@@ -1,0 +1,42 @@
+{
+ "decision_rule": "Run new Ward CPU native tied oracle, native unit, frozen random and projected 5k ordered-index oracles, and PCA projection fixture; stop on first failure, retain completed tied receipt. No GPU/model.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1200,
+ "first_progress_s": 300,
+ "gib": 8,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-ward-cpu-oracles-088-20261104",
+ "keep": [
+  "*.log",
+  "*.receipt",
+  "results.jsonl",
+  "pins.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/launch.sh",
+  "sha256": "ed644e130be1f0aaa4b9342ad0d76363a5a60d430eb9eae5705bb328624cf766"
+ },
+ "min_window_s": 1200,
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1805: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T14:00:28Z",
+ "published_from": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/STOP",
+ "unit_key": "unit",
+ "window_s": 1740,
+ "workdir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests"
+}

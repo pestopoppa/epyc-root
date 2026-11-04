@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "rc=0; results.jsonl has ggml-base checkpoint and cpu-wip-compile-complete. Compile/syntax evidence only; no graph test or inference.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T13:55:21+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T12:06:53Z reason=direct-run",
+ "filed_at": "2026-11-04T13:55:21+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-wip-cpu-compile-v2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/lsa-wip-cpu-compile-v2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "lsa-screen",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0; results.jsonl has ggml-base checkpoint and cpu-wip-compile-complete. Compile/syntax evidence only; no graph test or inference.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/results.jsonl",
+ "root_cause_family": null,
+ "row": "lsa-wip-cpu-compile-v2-20261104",
+ "row_verdict": "pass",
+ "rule": "Compile ggml-base, ggml-cpu and llama on the reviewed WIP source snapshot with canonical CPU C5 feature configuration; checkpoint after ggml-base and stop on any compile error, STOP, or deadline. This is syntax/build evidence, not a graph test or inference result.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "49cf0044f8dbc90a95b19d9d31e8f6b96cdb8869ddcc7438c1e50539cfe8efc5",
+  "result": "pass",
+  "status": "filed"
+ }
+}

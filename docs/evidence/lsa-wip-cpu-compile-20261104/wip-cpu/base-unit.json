@@ -1,0 +1,6 @@
+{
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-source-cpu-20261104/source-manifest.json": "a4e4dbe0d4e6ead49770691b8f988854dba0faeb8fdfa161ff546290c01cd203",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu/out/CMakeCache.txt": "ef91666c8222d661f6da7de7e0e0f634f5047b690d107bd4a252a4512e1bb990",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu/out/compile_commands.json": "e1eb6a46674329c398265b8aaaa8e153639283088c223ce36d2e565eac0da102",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu/out/bin/libggml-base.so.0.16.0": "305186922bb938915a920c554c182afa69b6ba4077b006611e073cceef6fc5b9"
+}

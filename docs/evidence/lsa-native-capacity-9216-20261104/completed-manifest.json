@@ -1,0 +1,44 @@
+{
+ "completed_result_sha256": "8444d6eb4c03825710ba29357f9bbd6ea6a906a71c386efb560c3abbb17c212f",
+ "decision_rule": "With source-bound Ward 088 candidate on CPU, load pinned released PCA map and check Qwen3.8-27B 16-layer native host admission and 9216-key calculated GPU memory, aggregate <=2 GiB; stop after one capacity result or first failure. No GPU allocation, inference, quality, speed or native-manifest change.",
+ "declared_result_path": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/results.jsonl",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1-CAPACITY-9216",
+ "id": "lsa-native-capacity-9216-20261104",
+ "keep": [
+  "output/*",
+  "results.jsonl",
+  "complete"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/packet/launch.sh",
+  "sha256": "1c91c8fe31c80a814d1e7bf22c94ae9302fa35810a883ba3ca628aacd3e423c1"
+ },
+ "min_window_s": 300,
+ "notes": "Model weights are never read or hashed. PCA map sha256 must be checked once before publishing; launcher packet must be copied to scratch and reviewed by owner.",
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1807: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T15:37:55Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/lsa-native-capacity-9216-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "lsa-native-capacity-9216-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/packet/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 8,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "first_progress_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/lsa-native-capacity-9216-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "With source-bound Ward 088 candidate on CPU, load pinned released PCA map and check Qwen3.8-27B 16-layer native host admission and 9216-key calculated GPU memory, aggregate <=2 GiB; stop after one capacity result or first failure. No GPU allocation, inference, quality, speed or native-manifest change.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1-CAPACITY-9216",
+  "priority_rank": 10,
+  "keep": [
+    "output/*",
+    "results.jsonl",
+    "complete"
+  ],
+  "notes": "Model weights are never read or hashed. PCA map sha256 must be checked once before publishing; launcher packet must be copied to scratch and reviewed by owner."
+}

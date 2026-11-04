@@ -1,0 +1,4 @@
+759bab3011d5832a3776db4626b31b8efae2562b66af0bad01712bed6ca97be3  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/out/bin/libggml-cpu.so.0.16.0
+14739cd1f1cd1990138fb4ee8209684ce04ff14163ded59a9d70dd1c56e70fc6  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/out/bin/libllama.so.0.0.0
+28bfc65f132f64c09c1121d3b923e0c12ebf17a56b81a199e259d882e477b5e5  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/out/bin/libggml.so.0.16.0
+305186922bb938915a920c554c182afa69b6ba4077b006611e073cceef6fc5b9  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/out/bin/libggml-base.so.0.16.0

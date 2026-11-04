@@ -1,0 +1,2 @@
+device=0 arch=gfx90a:sramecc+:xnack- pid=1329494
+LSA HIP 27B-shape synthetic passed

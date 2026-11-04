@@ -1,0 +1,1 @@
+host_valid=1 layers=16 per_layer_device_bytes=17240102 shared_scratch_bytes=50930432 aggregate_device_bytes=326772064 cap_bytes=2147483648

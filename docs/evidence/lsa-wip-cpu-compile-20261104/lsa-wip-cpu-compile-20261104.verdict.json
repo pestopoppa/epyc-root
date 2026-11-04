@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "rc=1 after 3s; results.jsonl has only the ggml-base unit start, no completion. Superseded by v2.",
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T13:55:21+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-04T12:05:29Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T13:55:21+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-wip-cpu-compile-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/lsa-wip-cpu-compile-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "lsa-screen",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1 after 3s; results.jsonl has only the ggml-base unit start, no completion. Superseded by v2.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu/results.jsonl",
+ "root_cause_family": null,
+ "row": "lsa-wip-cpu-compile-20261104",
+ "row_verdict": "fail",
+ "rule": "Compile ggml-base, ggml-cpu and llama on the reviewed WIP source snapshot with canonical CPU C5 feature configuration; checkpoint after ggml-base and stop on any compile error, STOP, or deadline. This is syntax/build evidence, not a graph test or inference result.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a9422f0d95ed98db2de454796043dd0fcf043437feb26006c9a7706b789ce5b6",
+  "result": "fail",
+  "status": "filed"
+ }
+}

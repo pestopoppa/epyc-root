@@ -1,0 +1,2 @@
+device=0 arch=gfx90a:sramecc+:xnack- pid=1319572
+LSA HIP pinned author Ward tie fixture passed

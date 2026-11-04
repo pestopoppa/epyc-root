@@ -1,0 +1,17 @@
+{
+  "reviewed": true,
+  "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+  "source_manifest": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source-manifest.json",
+  "compiler_receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/repair-hip/actual-compilers.json",
+  "pins": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/job.sh": "853f5cdfa7cd3889bcfbe7a1e26bee90387d32d67be6ebf799c8c0710d5a74db",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/launch.sh": "716a555b5f0dd4d59f0bb0a94b8919518342e5480676b5bfaab30a18d1f6c62a",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/cmake-args.sh": "f39b6cb0810882921889203d862bde0b90be9834c1fddfe72a82ffc1176c3219",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/spec.json": "ee39f366be620670e55aa5388f29265d03637c237091f1cf5aaf724515673798",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source-manifest.json": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/prior-objects.sha256": "9ae78d22e027b7aee0cdf3f1eaf8107a61357627c7b547494ba3ab95b0ff06ca",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/reason-build-d2c5/build-receipt.json": "5117a1d9abca9f97450053b3bd127c919af72618da0cfc6a44b35dbbfd612eff",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/repair-hip/actual-compilers.json": "574fe2e97d2bcefd33ea9725e18535bdb3cdbe3dadee0ac8dcd9939f71c90859",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/dependency.sha256": "77e57ae68f4486284dfa7e626e3713e0fe600597f8d89195cb16fedc85d82a9d"
+  }
+}

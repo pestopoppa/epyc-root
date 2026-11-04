@@ -1,0 +1,8 @@
+AUTHOR_FIXTURE members_exact=1 centroids_tol=1 ambiguous_clusters=0
+PASS author fixture all tie cutoffs resolved
+PASS author fixture bucket members exact, including ties
+PASS author fixture centroid error <=3e-6
+PASS author fixture selected indices exact, including ties
+PASS author fixture selected indices exact, including ties
+PASS author fixture selected indices exact, including ties
+PASS author fixture has no trailing bytes

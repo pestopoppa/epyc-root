@@ -1,0 +1,13 @@
+5febea0b534eb77efc9bbd608a7441151da08b139925a500ea7aad57a9fc444b  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/job.sh
+ed644e130be1f0aaa4b9342ad0d76363a5a60d430eb9eae5705bb328624cf766  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/launch.sh
+680f4ad087cff98b7268326bd1ecfbdc5e1198a304771f0dd8bd5fb9c736c7e2  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/spec.json
+2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source-manifest.json
+85fa97f9764dd54c4804a943b2d3fc5b63afbf848dc3f813a51f37296537c481  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/artifact-sha256.txt
+306112ecfa035831adcdf5b0942ac880662bad91b37954c041e025013c9cd1da  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/test-lsa-native-live
+7d381796426e282fa22ff8a3a79538698c91231d7506180402cb977f61c1519e  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama.so.0.0.0
+d26f2caecdbfdd12e492828465d6bbb61187f41854021d4fab92e4081fef1f0d  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-base.so.0.16.0
+0183cac6b037a3235dd256bf3026a27362437bed217855bfe4744f41d32a9907  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-cpu.so.0.16.0
+c6c11be3a9b1ca6a613bf40a4961521481515970b8ff89b32158f4f85307955f  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/fixture/tied513.lsafix
+7a3a490041cbef0de5b0523d28d13b5079f6a881ed2368c599753f73af96123c  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/random.lsafix
+cd8615a5b656381b7bc82960dfce6dd6b513ba4c0c4bf85b2f2943ba156344cf  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/projected27b.lsafix
+fff3c289f94835690ec6433cbfc72b4e1ede81c354db5957633d3c85b29837b3  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-cpu-fixtures-v4/released27b-pca-layer3.lsapro

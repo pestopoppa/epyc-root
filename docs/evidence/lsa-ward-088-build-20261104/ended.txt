@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T13:59:46Z reason=direct-run
+job_id=lsa-ward-build-088-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=1200
+started=2026-11-04T13:59:04Z
+regions=q0
