@@ -47,3 +47,7 @@ The previously filed GitNexus targeted-v3 attempt failed and was superseded by t
 ## 16:42Z — File real-cache gapped compaction qualification observation
 
 The corrected real-cache API qualification completed on the pinned Qwen3-1.7B CPU candidate: the first response reported 60 evictions and the second returned the expected compression error against the resulting gapped state. Preserved raw output and identity in docs/evidence/triattention-s8c-api-real-smoke-20261104/. This is response-level evidence only: physical KV continuity, parameter coverage, quality and speed remain unproven.
+
+## 16:47Z — Prepare bounded real-cache recency parameter validation
+
+The integrated CPU v3 compile was already filed pass. Prepared an isolated Qwen3-1.7B CPU parameter-validation packet using 128 frozen valid token IDs, candidate/model/DSO pins, fresh slots and stop-on-first-response-mismatch. Python syntax and shell syntax passed. Submitted the row for smoke; no runtime pass or publication is asserted until smoke returns.
