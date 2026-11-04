@@ -121,3 +121,9 @@ Filed `akx-gdn-bf16-reference-build-20261104` pass rc0 for the source-bound buil
 ## BF16 GDN GPU successor smoke queued
 
 Prepared `akx-gdn-onehot-gpu-bf16-successor-20261104` against the retained source-bound BF16 reference image and submitted its publisher smoke. The publisher queued smoke because the GPU was busy; no PASS, READY row or native BF16 verdict is claimed. PASS and FAIL event paths are registered. Packet: `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-gpu-successor-20261104/`. The job retains the BF16 baseline and two planted mutants and own-PID mapped HIP/VRAM checks; review the packet and smoke outcome before claiming readiness.
+
+## 20:05Z — Publish corrected BF16 CPU reference oracle
+
+## Corrected BF16 CPU oracle
+
+Published `akx-gdn-onehot-cpu-bf16-fixed-20261104` after the four-CPU corrected-image BF16 baseline smoke passed. The full row tests the baseline and two planted mutants against the independent closed-form K=3 oracle; the full verdict and GPU correctness remain open. The first smoke failed before native work due to missing copied library symlinks; the aliases were restored and the successor smoke passed. Packet: `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-cpu-successor-20261104/`. The GPU BF16 successor smoke remains queued; an independent review found no serious packet blocker.
