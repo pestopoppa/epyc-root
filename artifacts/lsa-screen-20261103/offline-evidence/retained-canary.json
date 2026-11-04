@@ -1,0 +1,10 @@
+{
+  "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+  "status": "ready",
+  "rows_projected": 1,
+  "refused": [],
+  "value": 0,
+  "claims_visible": 1,
+  "source_files_modified": false,
+  "previous_refusals": []
+}

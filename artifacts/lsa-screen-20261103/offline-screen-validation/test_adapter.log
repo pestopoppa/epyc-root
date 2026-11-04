@@ -1,0 +1,4 @@
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q0: [2, 3]}
+loopback adapter token IDs, streaming output and timing scopes: PASS
+return_code=0

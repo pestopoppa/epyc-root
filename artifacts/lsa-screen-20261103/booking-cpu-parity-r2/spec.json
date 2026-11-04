@@ -1,0 +1,27 @@
+{
+  "id": "lsa-screen-1-cpu-parity-r2-20261103",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/launcher.sh",
+  "lane": "cpu",
+  "regions": "0-3",
+  "ram_gib": 48,
+  "min_window_s": 900,
+  "estimate_s": 900,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2",
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "One 45-ID prefill pair on Qwen3.8-27B-Q8_0: all vocabulary logits finite, max absolute dense/all difference <=1e-5, exact argmax equality, exactly the 16 global layers observed with unchanged all-key masks. Stop on completed pair or first failed check; no timing or quality claim.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 22,
+  "admission_class": "diagnostic",
+  "dryrun_timeout_s": 900,
+  "keep": [
+    "*.json",
+    "*.sh",
+    "*.py",
+    "ATTEMPT_FENCE/*",
+    "ATTEMPT_FENCE/*"
+  ],
+  "smoke_timeout_s": 600,
+  "notes": "Retry of infrastructure-invalid lsa-screen-1-cpu-parity-20261103: no model process ran; original terminal record preserved at ../booking-cpu-parity/ATTEMPT_FENCE/RESULT.json. One authorized pair only."
+}

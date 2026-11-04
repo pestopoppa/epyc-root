@@ -1,0 +1,15 @@
+# Offline runner review
+
+Scope: LSA screen runner and adapter, no inference or server launch. The controller is the direct runner caller; the reviewed binding selects the adapter, and `native_evidence.emit` consumes the saved record. The scratch lane is unindexed. GitNexus impact could not resolve this lane; manual impact is limited to these screen records, their controller, and evidence capture. A mistake could invalidate the screen; no graph HIGH/CRITICAL finding was available.
+
+A successful response previously could be scored with a missing or mismatched served `prompt_n`. The runner now records the exact requested IDs, their frozen digest and count, output cap and seed for every invoked request; retains the raw response; and marks a missing or mismatched server prompt count invalid before scoring. Explicit adapter failure, timeout, invalid and abstention statuses remain in the denominator without requiring a successful timing response. The adapter fixture additionally checks the reported count and requested output cap.
+
+Count equality plus the transmitted IDs does not independently prove the server processed those exact IDs. A runtime identity witness is still needed before claiming the README's served-token-identity prerequisite is satisfied. The source and runtime binding, launch receipt and monitor witness are retained by the existing record path. An evidence-hook exception produces a nonzero runner exit; the controller is already paused before the invocation and remains paused afterwards.
+
+Validation: source and direct callers inspected; `gitnexus status` reported the workspace index stale and impact could not resolve the unindexed lane. No tests were run: no granted region-lock claim covering physical cores was supplied. The existing loopback adapter test was updated but is unrun. Run only under an authorized short-lived physical-core region claim; no inference is required for that fixture.
+
+## Producer custody correction
+
+The three historical `booking-cpu-parity{,-r2,-r3}/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json` receipts bind `runner.py` SHA-256 `53eb7518562a0ece9906561ef585e3b123471c31f22ba21e23494855a8a4f27e`. Reversing only this review's edits reconstructed that digest before restoring the original path; its restored digest is identical. This restores the referenced bytes, but does not prove what actually executed historically. No receipt was changed.
+
+The new code is `runner_v2.py`, SHA-256 `ef80b1f1263497a196262f03d21879a67a734697ce551e987d1f13a7fed5c9c1`; it explicitly passes its own file as `producer_path`. The controller's only change selects this version. A mocked offline regression checks the producer path and digest passed to the hook and checks matching and mismatched served counts. The existing loopback adapter test also passed. Command: `region-lock run --cpu-list 0-1 --role build --timeout-s 3 --tag lsa-offline-test -- taskset -c 0-1 /usr/bin/python3 <absolute-path>/test_adapter.py`; real sub-quarter core claim held, exit 0. No inference was run.

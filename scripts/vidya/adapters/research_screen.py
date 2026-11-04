@@ -464,6 +464,11 @@ def _profile(
                         )
                 elif outcome is not None:
                     raise ProjectionError("unobserved routing outcome must be absent")
+    elif kind == "lsa_item":
+        if set(profile) != {"kind", "original_record", "producer_source", "model_file", "model_sha256"}:
+            raise ProjectionError("lsa_item requires only its original record artifact")
+        _artifact(profile["original_record"], "profile.original_record", base)
+        _artifact(profile["producer_source"], "profile.producer_source", base)
     elif kind == "deterministic_primitive":
         required = {"primitive_id", "conformance_artifact", "provenance_artifact"}
         _obj(profile, "deterministic_primitive", required)
@@ -513,7 +518,7 @@ def validate(receipt: Mapping[str, Any], base: Path) -> None:
         receipt["raw_outputs"], base, counts, kind=profile["kind"]
     )
     window = _obj(receipt["window"], "window", {"kind", "id", "reason"})
-    if window["kind"] not in ("holdout", "later_window", "inapplicable"):
+    if window["kind"] not in ("holdout", "later_window", "inapplicable", "diagnostic"):
         raise ProjectionError(
             "window.kind must be holdout, later_window, or inapplicable"
         )
@@ -528,6 +533,9 @@ def validate(receipt: Mapping[str, Any], base: Path) -> None:
             raise ProjectionError(
                 "inapplicable holdout needs a deterministic conformance reason"
             )
+    elif window["kind"] == "diagnostic":
+        if profile["kind"] != "lsa_item" or not _text(window["reason"], "window.reason"):
+            raise ProjectionError("diagnostic window is reserved for incomplete LSA observations")
     elif window["reason"] not in ("", None):
         raise ProjectionError("window.reason is reserved for inapplicable holdouts")
     claim = _obj(
@@ -557,6 +565,42 @@ def validate(receipt: Mapping[str, Any], base: Path) -> None:
         raise ProjectionError("claim.protocol_id must be producer text or empty")
     _text(claim["reps_basis"], "claim.reps_basis")
     _profile(receipt["profile"], base, counts, raw_keys, scored_keys)
+    if profile["kind"] == "lsa_item":
+        source_path = Path(profile["original_record"]["path"])
+        if not source_path.is_absolute():
+            source_path = base / source_path
+        try:
+            original = json.loads(source_path.read_bytes())
+            raw_path = Path(receipt["raw_outputs"]["path"])
+            if not raw_path.is_absolute():
+                raw_path = base / raw_path
+            row = json.loads(raw_path.read_bytes())
+            manifest_path = Path(receipt["input_manifest"]["path"])
+            if not manifest_path.is_absolute():
+                manifest_path = base / manifest_path
+            manifest = json.loads(manifest_path.read_bytes())
+            item = original["item"]
+            binding = original["binding"]
+        except (ValueError, KeyError, TypeError, OSError) as exc:
+            raise ProjectionError("invalid LSA original record or manifest") from exc
+        statuses = {"pass": "scored", "failure": "failure", "timeout": "failure", "invalid": "invalid", "abstention": "abstention"}
+        if (not isinstance(binding, dict) or item not in manifest.get("rows", [])
+                or original.get("schema") != "lsa-screen-raw-v1"
+                or original.get("manifest_sha256") != receipt["input_manifest"]["sha256"]
+                or profile["model_file"] != manifest.get("model")
+                or profile["model_sha256"] != manifest.get("model_sha256")
+                or row != {"item_id": item.get("id"), "status": statuses.get(original.get("status")), "original": original}
+                or original.get("status") not in statuses
+                or original.get("arm") not in manifest.get("arms", [])
+                or receipt["counts"]["eligible"] != 1
+                or claim["metric"] != "lsa_item_passed" or claim["value"] != (row["status"] == "scored")
+                or claim["category"] != "CANDIDATE" or claim["protocol_id"] != ""
+                or claim["class"] != "mechanism_feasibility" or claim["direction"] != "higher_better"
+                or claim["unit"] != "items" or receipt["timestamp"] != original.get("time_utc")
+                or receipt["producer"]["revision"] != profile["producer_source"]["sha256"]
+                or receipt["source"]["revision"] != (binding.get("source_commit") or "unknown")
+                or window["kind"] != "diagnostic"):
+            raise ProjectionError("LSA receipt differs from its original item or diagnostic scope")
     if receipt["profile"]["kind"] == "observed_outcome_routing":
         decisions = Path(receipt["profile"]["raw_decisions"]["path"])
         if not decisions.is_absolute():
@@ -639,7 +683,9 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
     claim = receipt["claim"]
     counts = receipt["counts"]
     return ClaimTuple(
+        applicability={"model_file": receipt["profile"]["model_file"], "model_sha256": receipt["profile"]["model_sha256"]} if receipt["profile"]["kind"] == "lsa_item" else {},
         measurement_id=receipt["receipt_id"],
+        observation={"outcome_native": receipt["disposition"]["reason"]} if receipt["profile"]["kind"] == "lsa_item" else {},
         metric=claim["metric"],
         value=claim["value"],
         date=receipt["timestamp"][:10],

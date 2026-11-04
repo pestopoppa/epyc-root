@@ -1,0 +1,9 @@
+# Offline controller review
+
+The controller previously persisted `paused` before a unit, but an interruption before its result was appended left no record of the attempted item. A later `continue` could launch it again, violating heldout-once. It now persists the unit identity before invoking the runner and refuses further commands if that intent remains unsealed; it also refuses a pre-existing output before launching, including orphaned outputs from the earlier controller. A normal runner return records the outcome and clears the intent in the same state write. No automatic recovery or inference is introduced.
+
+Scope: `controller.py`, `test_controller.py`. Direct callsite inspection found the controller invokes `runner.py`; lane GitNexus reports unindexed. No reindex was attempted. The change is local to interrupted/duplicate recovery; risk is low, with interrupted attempts deliberately requiring evidence review instead of retry.
+
+Focused tests were prepared but not run: real region-lock acquisition for physical CPU 24 with 0.1-second timeout failed (exit 75, q1 held). No unclaimed tests were run. Once a genuinely available physical CPU is known, run the existing `test_controller.py` under the real region-lock and taskset for that CPU; do not wait on or steal an occupied region. The test includes the existing no-binding invalid-record path plus synthetic interrupted-intent and orphan-output cases.
+
+Follow-up: a nonblocking exclusive OS flock on the resolved per-state lock path now spans initialization or the entire read/validate/runner/write operation; contenders refuse before running anything. Existing result files are rehashed against the state before any status or decision is used, and absent or changed files refuse continuation. Added offline tests for competing lock ownership and altered/missing records. The same real-claim requirement applies; these follow-up tests remain unrun unless a claim succeeds.

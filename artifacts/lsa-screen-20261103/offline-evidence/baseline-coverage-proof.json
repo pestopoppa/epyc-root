@@ -1,0 +1,29 @@
+{
+  "baseline_commit": "50bf6767586ac20657fdeab1ecb8b40d96b6ac89",
+  "files": {
+    "scripts/vidya/ingest_sources.py": {
+      "git_blob_sha256": "38187c00f23cebc065a254b5d871daf81a4a1a10521bc844fc4e7df568d79d0e",
+      "matches": {
+        "dtap-crm-pair": [
+          {
+            "line": 180,
+            "text": "    Source(\"dtap-crm-pair\", \"dtap_crm_pair\", _files(\"*.json\"),"
+          }
+        ],
+        "ak-r18-symbols": [
+          {
+            "line": 521,
+            "text": "    Source(\"ak-r18-symbols\", \"autokernel_r18_symbols\", _files(\"terminal.json\", \"*/terminal.json\"),"
+          }
+        ]
+      }
+    },
+    "tests/vidya/test_ingest_sources.py": {
+      "git_blob_sha256": "4ae52028fc7ab0e0754651cb2d16265acbcde40d3a2c8298f71edede17312da7",
+      "matches": {
+        "dtap-crm-pair": [],
+        "ak-r18-symbols": []
+      }
+    }
+  }
+}

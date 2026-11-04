@@ -1,0 +1,20 @@
+[
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "metric": "lsa_item_passed",
+    "value": 0,
+    "reader": "accepted"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "metric": "lsa_item_passed",
+    "value": 0,
+    "reader": "accepted"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "metric": "lsa_item_passed",
+    "value": 1,
+    "reader": "accepted"
+  }
+]

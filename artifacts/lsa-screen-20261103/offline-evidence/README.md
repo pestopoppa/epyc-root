@@ -1,0 +1,7 @@
+# Offline evidence wiring
+
+`retained_canary.py` reads an already sealed diagnostic receipt and uses a private ledger and planning context. `check_parity.py` reads the three retained parity receipts. The old runner was restored to the digest those receipts referenced; a matching file does not independently prove what code ran historically.
+
+`test_pilot_projection.py` exercises producer-time envelope writing, strict reader, private CLI ingestion and planning context using synthetic data. It also invokes the actual pilot's terminal failure path with local dummy inputs; no teacher or model is run. The pilot can optionally call the verified helper at its final checkpoint, as documented in the research pilot README. Its actual pilot has not run.
+
+For a future CPU or HIP native unit, run `native_unit_junit.py` as the command captured prospectively by `scripts/ci/native_conformance.py`, with a fresh JUnit destination, named case, explicit argument vector, and read paths including this wrapper, the unit executable, its source/build manifest and other relevant inputs. Use the native conformance producer's own repository, selection, and output requirements. The result asserts the captured command's exit outcome only; exit 77 is skipped, and no GPU residency or inference conclusion follows. Existing unit logs have no such producer-time receipt and are eligible only as committed conclusions.

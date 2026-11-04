@@ -582,6 +582,7 @@ _FILE_SOURCES = (
     "orchestrator-serving-call",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
+    "lsa-moe-pilot",
     "s4-omega-ab",
     "kv-quant-27b-v10-measurement", "kv-quant-27b-v10-retrofit", "autokernel-served-shape", "embedder-placement-gate", "gfx90a-static-register",
     "repl-retrieval-eval", "repl-embedder-speed",

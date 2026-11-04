@@ -1,0 +1,26 @@
+[
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "error": "ProjectionError('profile.producer_source bytes do not match producer digest')"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "error": "ProjectionError('profile.producer_source bytes do not match producer digest')"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json",
+    "error": "ProjectionError('profile.producer_source bytes do not match producer digest')"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-dense-8k-control/ATTEMPT_FENCE/result.raw.json.research-screen.json",
+    "error": "AssertionError(('ready', []))"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-sparse-no-think/ATTEMPT_FENCE/result.raw.json.research-screen.json",
+    "error": "AssertionError(('ready', []))"
+  },
+  {
+    "receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-sparse-smoke/ATTEMPT_FENCE/result.raw.json.research-screen.json",
+    "error": "AssertionError(('ready', []))"
+  }
+]

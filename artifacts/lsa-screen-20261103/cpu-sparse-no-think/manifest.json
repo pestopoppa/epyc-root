@@ -1,0 +1,113 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18197",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "48",
+    "-tb",
+    "48",
+    "-ub",
+    "512",
+    "--flash-attn",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-ngl",
+    "0",
+    "--no-warmup"
+  ],
+  "arms": [
+    "pca"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HIP_VISIBLE_DEVICES": "",
+    "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin",
+    "LLAMA_LSA_MAP": "/tmp/lsa-release-inspect/qwen38_27b__long-16k-1M-heavy-key-and-query-pca-step0.pt",
+    "LLAMA_LSA_PYTHON": "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "LLAMA_LSA_SCREEN": "pca",
+    "LLAMA_LSA_WORKER": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion/experiments/lsa-screen/mask_worker.py",
+    "LSA_THREADS": "1",
+    "OMP_NUM_THREADS": "48",
+    "ROCR_VISIBLE_DEVICES": ""
+  },
+  "files": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-base.so.0.16.0": "eb5cd450058983655ea54c11675d3138b61863564a6bfa11ce77260309926897",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-cpu.so.0.16.0": "decaede0a92b5d5833f32b02dc4a7e8cf2467ca4c54491d6641a5b6948dbd3f0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml.so.0.16.0": "3bc4efabd8103258b03f658148e0d3a2b60d5cd64116d23481eb7dbeac987b09",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libllama-common.so.0.0.10419": "951813ba73ad0244df1a4d45b48186e4107b18de3f6287987d8c328607ff8ce9",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libllama-server-impl.so": "d237f88b677804a747ca5fb6f3761e707f7a0238524b7ebb99a06d9b19221873",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libllama.so.0.0.10419": "03ec1dca0a68a702073012ef43b933558715cc535bfb7f2c266e66526099052a",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/llama-server": "7451dd5de568a3ec302ffe5fb7765f34848a6e5f610e067ec66c1b90d509c17d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/kernel-patch-build-receipt.json": "a6b261519644ab00ea7c5169102af23da02b6ff261091e29b82481dd214480f6",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion/experiments/lsa-screen/mask_worker.py": "b9faba4e73cba6fdb1659cb3896467a0053b01e60cb8ab6b6547795967c8b078",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion/experiments/lsa-screen/reference.py": "96e44dc399114e0709a0f6c0820c0ddcc2c62cb28d69f7a675389ae17db68ac2",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion/src/models/lsa-screen-reference.h": "ea64a04e15befeca4b0deb4351d03fb8c564c130d77d6ae5311cade83ed2cc60",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion/src/models/qwen35.cpp": "d4fd6835c3809d990c36651abfcd7d47ca0c52405fcfbd2c438f8ea8dc8e9c15",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-sparse-no-think/ids.json": "a3ea35a630763ff63a6b381866f87dff3126cf8c6245d9a5a6211fa8b54833ed",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/native_evidence.py": "9fa64caa725c4dd0655410a2d7c1c18305304be16ad1c8a0bb33e9ac09563870",
+    "/tmp/lsa-release-inspect/qwen38_27b__long-16k-1M-heavy-key-and-query-pca-step0.pt": "baaa28cb00b4378b3d33e02dc971e2781482d5c4d45e29e9140143bdf7832e65"
+  },
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "model_stat": {
+    "edge_sha256": [
+      "6dbb3b594feeabdd881aac0568baef2c764dd0183199bbe2d58cba531b2f0a5f",
+      "2205235cea141d3c23f152e0279a0702fb6ca30074776eb2033f5639ba299bba"
+    ],
+    "inode": 96505457,
+    "limit": "full SHA is frozen manifest value; fresh size, inode, 64 KiB edges and live mapping only",
+    "size": 29047086048
+  },
+  "rows": [
+    {
+      "base_5120_sha256": "734a8de4c18d2f25f85d33973143541adb3a3643f2e8f5578b1a66410c992a06",
+      "expected": "92-8-E75FB6",
+      "id": "dev-document_qa-00-trim-5120-no-think",
+      "prompt_n": 5132,
+      "removed_indices": [
+        2000,
+        5072
+      ],
+      "source_id": "dev-document_qa-00-8192",
+      "split": "dev",
+      "token_ids_sha256": "a3ea35a630763ff63a6b381866f87dff3126cf8c6245d9a5a6211fa8b54833ed",
+      "wrapper_prefix_ids": [
+        248045,
+        846,
+        198
+      ],
+      "wrapper_suffix_ids": [
+        248046,
+        198,
+        248045,
+        74455,
+        198,
+        248068,
+        271,
+        248069,
+        271
+      ]
+    }
+  ],
+  "schema": "lsa-cpu-sparse-smoke-v1",
+  "scope": "One CPU PCA mechanism and synthetic retrieval case, chat wrapped with thinking disabled; no timing comparison, population accuracy or promotion.",
+  "selection_policy": {
+    "sink": 4,
+    "top_k": 4096,
+    "top_p_buckets": 1024,
+    "window": 512
+  },
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400"
+}

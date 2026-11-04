@@ -1,0 +1,4 @@
+b6bea8b24243260e8623afaab88305313dd4fb3001943373dfef53ae591ce3c2  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/research-lsa/scripts/lsa_moe/pilot.py
+9a446d1ec18cdb8f31cfacbe8518ae44acfc4c6eb957391069136188ec05817a  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/research-lsa/tests/lsa_moe/test_pilot.py
+b38b18b23cc4dd7d00372702545af680f8eeee5300916da5691ed7039c65378f  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/scripts/vidya/adapters/lsa_moe_pilot.py
+21beea19a21f947881627a2d2d3afc70178e12171bef7831b59a66603ed4e756  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/offline-evidence/test_pilot_projection.py

@@ -1,0 +1,8 @@
+{
+  "approved": true,
+  "manifest_sha256": "28079030a404e4680044f77e3306bc3b51eedf19c172b46e0433173360ed60b1",
+  "job_sha256": "5b709f6ecef139097e57b0fb9b22629dcf427a7af1d821190b0576f9b0047f0c",
+  "scope": "One CPU-only PCA semantic smoke on the C5-derived candidate: 5120 frozen IDs, positive pruning on the sixteen target layers, and one known synthetic retrieval answer. No baseline rerun or timing/throughput claim.",
+  "authorization": "Operator resumed CPU-only work; GPU remains paused. Claim only CPU q0/q1, hide GPU devices, offload zero layers, reject HIP mappings, keep all GPU STOP markers unchanged.",
+  "stop": "One request only, STOP-aware, initialization cap120s, first-token cap300s, request cap360s; interruptions stay inconclusive and never launch a successor."
+}

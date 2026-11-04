@@ -1,0 +1,3 @@
+For the existing LSA-SCREEN-1 checkbox, append this child paragraph (owning session applies it):
+
+> First CPU parity unit: C5-derived candidate at base `c72ec82f5417bb2937310326120f149b665e8400`, Qwen3.8-27B-Q8_0 GGUF; one frozen 45-token prefill, dense versus all-keys, on four CPU cores (four threads), BF16 KV, context 1024. Question: does all-keys reproduce dense logits without changing the mask? Pass requires all full-vocabulary logits finite, max absolute difference ≤ 1e-5, exact argmax match, and exactly 16 actual global layers with zero mask changes. Check both arms and their trace once; stop on the completed pair or first failure, timeout, STOP, or invalid evidence. This is a correctness test, not a timing or quality estimate.
