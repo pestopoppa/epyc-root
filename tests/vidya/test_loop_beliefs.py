@@ -631,7 +631,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     stranger = _loop("stranger", model="Some-Other-Model-Q8_0.gguf", mech="akm-stranger")
     path = _write(tmp_path, *q4, uniform, stranger)
     _, ev = _ev(tmp_path, alarm, path, DS41_1017_T)
-    assert ev["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 3, "host": 0}
+    assert ev["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 3, "host": 0, "harness": 0}
     sibling_lines = [line for line in ev["section"].splitlines()
                      if line.startswith("- ") and "transfer unproven" in line]
     assert len(sibling_lines) == 3
@@ -641,7 +641,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     assert set(ev["claim_ids"]) == {_cid(b) for b in q4}       # sibling ids are reliance-eligible
     assert _cid(stranger) not in ev["section"]
     _, q38 = _ev(tmp_path, alarm, path, Q38_T)                 # uniform file is UD's sibling
-    assert q38["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 1, "host": 0}
+    assert q38["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 1, "host": 0, "harness": 0}
     assert f"measured on {Q38_UNI}" in q38["section"]
 
 
@@ -654,12 +654,12 @@ def test_section_caps(tmp_path, alarm):
     hosts = [_host(f"host-{i}") for i in range(6)]
     path = _write(tmp_path, *own, *sib, *hosts)
     _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
-    assert ev["tiers"] == {"knob": 0, "target": 30, "lineup": 0, "sibling": 12, "host": 6}
+    assert ev["tiers"] == {"knob": 0, "target": 30, "lineup": 0, "sibling": 12, "host": 6, "harness": 0}
     assert ev["tiers_shown"]["target"] <= lb.TIER_CAPS["target"] == 16
     assert ev["tiers_shown"]["sibling"] <= lb.TIER_CAPS["sibling"] == 8
     assert ev["tiers_shown"]["host"] <= lb.TIER_CAPS["host"] == 3
     assert ev["section_bytes"] <= lb.DEFAULT_MAX_BYTES == 14000
-    assert lb.DEFAULT_MAX_CLAIMS == 27
+    assert lb.DEFAULT_MAX_CLAIMS == 30
     assert "bounded" in ev["reasons"]
     _, tight = _ev(tmp_path, alarm, path, DS41_Q4_T, max_bytes=4000)
     assert 0 < tight["section_bytes"] <= 4000
@@ -920,7 +920,7 @@ def test_existing_answer_keys_are_kept(tmp_path, alarm):
         assert {"claim_id", "source_kind", "run", "grade", "locator", "tier", "status",
                 "outcome", "mechanism_id", "value", "unit", "effect_rel"} <= set(claim)
     empty = lb._evidence_empty("no_applicable_claims", as_of=AS_OF)
-    assert empty["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 0, "host": 0}
+    assert empty["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 0, "host": 0, "harness": 0}
     assert empty["banner"] is None
 
 
@@ -1262,3 +1262,44 @@ def test_ac2_is_not_loosened_fails_without_banner_siblings_or_candidate(tmp_path
     few = _write(tmp_path, *_q38_claims(Q38_UD, 3, "ud"), name="few.jsonl")
     res = acc.ac2(acc.Reader(few, AS_OF, {}))
     assert not res["pass"] and "sibling lines 3 (need 8)" in res["detail"]
+
+
+# ------------------------------------------------------------------------------ harness tier
+
+
+def _harness_frames(tmp_path):
+    import test_autokernel_actor_wire_adapter as aw
+    path, _ = aw.build(tmp_path, verdicts=("PASS", "FAIL"))
+    return aw.w.frames_for_path(path, as_of="2026-11-03T12:00:00Z")
+
+
+def test_harness_claims_reach_only_their_consumer_and_are_never_evidence(tmp_path, alarm):
+    own = _loop("ds41-own", mech="akm-own")
+    frames = _harness_frames(tmp_path)
+    hid = {f["assertion"]["claim_id"] for f in frames
+           if f["frame_type"].endswith("claim_proposed/v1")}
+    assert hid
+    path = _write(tmp_path, own, frames)
+    ans = lb.prepare("autokernel.planner", DS41_Q4_T, ledger=path, index_path=tmp_path / "index.yaml",
+                     as_of="2026-11-04T12:00:00+00:00", sync_module=FakeSync(),
+                     known_good=tmp_path / "known_good.json", **alarm)
+    assert ans["status"] == "ready", ans.get("detail")
+    ev = ans["evidence"]
+    shown = {c["claim_id"]: c for c in ev["claims"] if c["claim_id"] in hid}
+    assert shown and len(shown) <= lb.TIER_CAPS["harness"]
+    assert all(c["tier"] == "harness" and c["not_evidence"] for c in shown.values())
+    assert ev["tiers"]["harness"] == len(hid) and ev["tiers_shown"]["harness"] == len(shown)
+    assert not hid & set(ev["claim_ids"])                       # never reliance-eligible
+    assert set(shown) <= set(ev["not_evidence_claim_ids"])
+    assert "Loop-infrastructure facts (harness tier)" in ev["section"]
+    assert "not evidence about any model" in ev["section"]
+    assert ev["tiers"]["target"] == 1 and _tier_of(ev, _cid(own)) == "target"
+    assert not [c for c in ev["claims"] if c["tier"] in ("target", "sibling", "knob")
+                and c["claim_id"] in hid]
+    assert not [e for e in ev["tried_index"] if e["tier"] == "harness"]
+    # another consumer, or no consumer at all, never sees them
+    other = lb.prepare("some.other", DS41_Q4_T, ledger=path, index_path=tmp_path / "index.yaml",
+                       as_of="2026-11-04T12:00:00+00:00", sync_module=FakeSync(),
+                       known_good=tmp_path / "known_good2.json", **alarm)
+    assert other["evidence"]["tiers"]["harness"] == 0
+    assert not hid & {c["claim_id"] for c in other["evidence"]["claims"]}
