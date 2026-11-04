@@ -1,0 +1,50 @@
+{
+ "decision_rule": "Descriptive P12 C1 np1/2/4 only: COMPLETE requires all three exact cells, harness rc0, actual performed successful drop_caches with cold_cache_guaranteed=true, in-window placement PASS, and /slots busy GET fully overlapping successful same-cell same-port request on every expected port. Missing occupancy is incomplete evidence, not absence. Native smoke does not satisfy full-run completion. Expected: existing C1 ~84\u201390 aggregate tok/s; single replicate is descriptive, not a formal speed claim. Stop-on-answer when all three native cells satisfy the specified overlap, placement and cache witnesses; stop-on-futility on STOP, deadline, server failure or missing required proof; no interim decision-grade gate.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 1800,
+ "gib": 64,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P12-NEXT-4",
+ "id": "p12-slots-followup-20261104",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "spec.json",
+  "README.md",
+  "run/**",
+  "RESULT.json",
+  "MODEL-PREGRANT.json",
+  "SOURCE.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/launch.sh",
+  "sha256": "9c06c08718fee997d978a646de0b9e53deaed2efc660f7bc6cd5cee27b9c4111"
+ },
+ "min_window_s": 7200,
+ "notes": "Owner-prepared only: publish_row executes the native exactly-four-CPU real Qwen server smoke (one completion, eight generated-token cap), no cache reset, captured server cleanup and loaded ggml path proof. Full row uses CPU 0-95 and exclusive GPU quiet, pinned harness and strict cold-cache/busy-overlap guards. No gate or production changes.",
+ "owner": "h-fable5-window2-findings-05c-mi210-lever",
+ "ports": [
+  19080
+ ],
+ "priority_rank": 65.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:137: identity fields incomplete: ['estimate'] \u2014 add estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)"
+ ],
+ "published_at": "2026-11-04T14:51:15Z",
+ "published_from": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104",
+ "shape": "quiet-host",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/p12-slots-followup-20261104/native_smoke.py --check",
+ "stop_file": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/STOP",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104"
+}

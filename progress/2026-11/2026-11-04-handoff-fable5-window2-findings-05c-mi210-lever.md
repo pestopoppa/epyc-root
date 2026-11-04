@@ -67,3 +67,7 @@ Filed pf1-expand-r3-20261104 as pass for the scoped three-block exploratory capt
 ## 14:46Z — Submit lower-length PF1 bracket row
 
 Prepared PF1 r4 lower grid L256/320/384/448 with three independent blocks, identity, strict A0 placement, GPU skew covariate amendment, residency and ±10% control guards intact. A1 r3 at L384=1.0009 remains within the predeclared ±0.07 noise band and A2 has no below-384 bracket; A0 bias is not claimed fixed. Static and model-free checks plus prepublication source/binary/input identity passed. The canonical publisher queued native smoke because the GPU is busy; not yet PASS/readied. Archived the prepared packet in data/mi210/pf1-expand-r4-prepared-20261104.
+
+## 14:52Z — Publish P12 request-overlap and placement row
+
+Published p12-slots-followup-20261104 after its actual four-CPU pinned-server one-request native smoke PASS. Its C1 np1/2/4 full run requires same-port busy GET wholly within a successful native request, placement sampling and per-cell performed cold-cache witnesses under full host/GPU-quiet exclusivity. Inherited prior model SHA custody only after exact stat identity match; source is pinned to bb669e628, candidate executable content-bound, no model hashing in grant. Corrected retry isolation to use FILLER_DRYRUN_RESULT_PATH, verified model-free overlap tests (3 passed) and prepared a durable packet with PASS/manifest. Prospective E5/P12 writer/reader/canary work is wired to existing VB-SWAP-C, not claimed complete. The earlier PF1 pilot r3 was already filed inconclusive and r6 completed the screen.
