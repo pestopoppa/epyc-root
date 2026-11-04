@@ -1,6 +1,6 @@
 # Completed-smoke publisher candidate
 
-Reviewed source fix owned by coordination/churn. D9 requires explicit operator acknowledgment before the executable source can land. This patch is retained for review, not installed or applied automatically.
+Reviewed source fix owned by coordination/churn. The candidate landed unchanged in `84c3d7c869cf6056c303ebe084e5195f1f705b14` with relayed operator D9 acknowledgment. This historical patch is retained for review.
 
 Resolves exactly one in-scratch declared native result and binds its content for idempotent completed-smoke recovery; original completion/no-branch gates remain. Missing, ambiguous or escaped results and content drift refuse. Focused and existing publisher controls: 24 passed.
 
