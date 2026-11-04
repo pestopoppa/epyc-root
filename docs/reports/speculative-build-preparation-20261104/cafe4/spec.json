@@ -1,0 +1,28 @@
+{
+  "id": "cafe4-v10-mtp-rollback-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Accept only complete pinned v10 plus exact target-bound snapshot diagnostic and real-MTP rollback/fault candidate CPU executable, compiled CAFE4_MTP_ROLLBACK marker, source/artifact hashes and local common linkage. Build only; native matched off/observe/fault controls and numerical floor remain unexecuted; no CAFE-4 completion.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "dryrun_timeout_s": 900,
+  "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256"
+  ],
+  "first_progress_s": 900
+}
