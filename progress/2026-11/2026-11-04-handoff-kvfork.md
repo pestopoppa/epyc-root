@@ -239,3 +239,7 @@ KPF-RS-1: published kpf-rs1-impact-8952-20261104-r5 after four-CPU source-refere
 ## 23:24Z — Ready the model-free GPU clock witness successor
 
 KPF-50.CLOCK-QUAL: kvfork50-clock-qual-r6-20261104 passed its queued publisher GPU smoke and was published. The isolated smoke is not the full clock qualification, exposes no target profiling window, and gives no KPF-50 verdict; the full attempt retains the 150 GiB disk floor.
+
+## 23:28Z — Publish the source-bound V11 FA impact successor
+
+V11-FA-8: published v11-fa8-impact-5026470-20261104-r6 after its four-CPU source-reference smoke passed. The packet reuses the prior disk-floor attempt scratch root and detached source at 5026470c6c5882042aa543ae54fe5410357b41ae, with isolated successor output and a 150 GiB full-run floor. Native impact and skipped-file coverage remain pending; smoke does not clear edits or establish an overflow result. KPF-17 map successor remains unready because prior fixture entry is not ruled out under its no-retry rule; the previous KVU-12.6 source snapshot is absent.
