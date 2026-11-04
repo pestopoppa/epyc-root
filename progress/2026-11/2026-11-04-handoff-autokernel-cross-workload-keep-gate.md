@@ -199,3 +199,7 @@ The published akagg-ch26-compact-observer-overhead-r2-20261104 ended rc75 at dis
 ## 22:06Z — Checked the parked candidate build and disk admission prerequisite.
 
 C6 q4_K b4-qsum build r3 was previously filed rc75 and its lineage expressly parked after three admission failures; no successor was published. Free space fell to about 117 GiB versus the 150 GiB run floor, with additional build headroom required. The keeper's partial read-only scan found no immediately reclaimable task-owned space sufficient to close the shortfall; row scratch reclamation remains keeper-owned. Candidate build and correctness remain unproved. Existing C6 and CH-26b successors were published by the other active handoff session; no duplicate row was created.
+
+## 22:08Z — Prepare prospective NEMO capture snapshot validation and review CH-26b observer lifecycle.
+
+Prepared prospective NEMO capture snapshot validator at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/nemo-capture-validation-snapshot/: structural-event and request-join checks consume the same byte snapshots and return their SHA-256 identities; 23 model-free tests pass. This is diagnostic preparation only, with no event authenticity, token alignment, profiler attribution or historical boundary claim. Independent CH-26b census prototype review found sampler lifecycle errors on inner-hook exceptions and timeouts; the prototype is not admissible for placement, contention or floor use. NEMO marker build remains blocked at disk admission and C6 qsum lineage remains parked; no row was published.
