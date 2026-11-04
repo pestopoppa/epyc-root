@@ -1823,15 +1823,13 @@ packet or a process name is not evidence of a completed or qualified run.
    df29 0/10 recorded; reconcile candidate identity instead of rerunning the old 640-case instruction.
    Remeasure 19b's contended gap against a clean baseline before profiling. Draft upstream findings only from supported evidence;
    posting requires explicit authorization.
-5. **CPU attention (CPU-FA-VKQ-2/3, KVU-LB1.d).** Reconcile the 16k/64k hybrid-versus-legacy packet's actual
-   publication and final-byte qualification: the committed row specification calls itself an unpublished
-   draft despite a later READY assertion; a live READY entry and a four-CPU smoke receipt exist, but do not
-   establish a full run. Verify final packet identity, interruption semantics and runtime estimate: 20 cells
-   with 1800-second caps can exceed the four-hour booking. Pin executable, libraries, model, and the F16/F32
-   override precedence.
-   VKQ-1 is superseded; send VKQ-2 results to the current candidate/carrier decision. For VKQ-3 preserve the
-   interrupted exposed prompt and UNKNOWN, repair and qualify the tokenizer/supervisor successor before any
-   new prospective work. LB1.d's T96 six-arm run is incomplete and its prior admission failed: qualify a
+5. **CPU attention (CPU-FA-VKQ-2/3, KVU-LB1.d).** The full VKQ-2 exact same-binary CPU run completed: the
+   observed 16k and 64k hybrid gains (+1.84% and +2.11%) were within their respective 36.39% and 4.11% noise
+   floors. The measured delta and floor are recorded under CPU-FA-VKQ-2; no resolved superiority, MTP or promotion
+   claim follows. VKQ-3's independent 70,814-token calibration also completed with 96/121 accepted drafts in each
+   arm and identical 128-token outputs, with verified cleanup; its earlier interrupted exposure remains distinct.
+   Do not repeat either completed cell. VKQ-1 is superseded; carry VKQ-2's scoped result into the current
+   candidate/carrier decision. LB1.d's T96 six-arm run is incomplete and its prior admission failed: qualify a
    successor and source-side belief capture, compare actual role shapes, then choose a carrier only after the
    separate correctness, performance and stack-change gates.
 6. **CPU context and checkpoint policy (KVU-12, 12.1, 12.3b, 12.4–12.6, HPR-B-SIM-FIX-2).** Keep the

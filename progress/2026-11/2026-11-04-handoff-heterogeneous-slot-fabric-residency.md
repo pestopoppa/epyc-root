@@ -31,3 +31,7 @@ KPF-17a GPU row had already been filed PASS and its box closed; acknowledged the
 ## 14:58Z — File the VKQ calibration and unique-cell gauge capability results
 
 Acknowledged the previously filed CPU-FA-VKQ-3 calibration: both target arms accepted 96 of 121 drafts and emitted identical 128-token IDs, with verified cleanup. Filed KVU-12.6 gauge r2 rc0 PASS as a one-request capability observation: 0 to 45 unique cells, one generated token, process and mapping custody, strict request-window timestamp inequality and verified cleanup. This does not explain np8 collapse and does not invent an original build-time attestation. Preserved native outputs and the corrected, checksummed r2 preparation packet; a fresh KPF-17.4d build successor is being prepared independently.
+
+## 15:01Z — File VKQ-2 outcome and correct current CPU attention dispatch
+
+The previously filed full VKQ-2 event was acknowledged: 20 fresh processes, 16k hybrid 19.917212 versus legacy 19.557956 tok/s, +1.84% against 36.39% floor; 64k 13.137735 versus 12.866371, +2.11% against 4.11% floor. Both effects fall within their observed floors; no superiority or deployment claim. Corrected the current CPU attention dispatch, which had still represented both VKQ-2 and the independently completed VKQ-3 calibration as unfinished. A fresh KPF-17.4d build successor is being prepared after the prior disk-floor refusal.
