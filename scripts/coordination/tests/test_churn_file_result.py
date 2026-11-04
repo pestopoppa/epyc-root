@@ -66,6 +66,58 @@ class Base(unittest.TestCase):
 
 
 class TestFileResult(Base):
+    def file_agent_tick(self, task):
+        self.row("ROW-1", "judge by eye", {"x": 1})
+        manifest = Path(self.flags, "ready/ROW-1.json")
+        row = json.loads(manifest.read_text())
+        row["handoff_task"] = task
+        manifest.write_text(json.dumps(row))
+        verdict = Path(self.tmp.name, "agent-verdict.json")
+        verdict.write_text(json.dumps({"verdict": "pass", "rationale": "observed",
+                                       "tick_text": "scoped native evidence"}))
+        return self.run_main("ROW-1", "--verdict-json", str(verdict))
+
+    def test_basename_task_ticks_active_handoff_not_same_named_root_file(self):
+        root_file = Path(self.lane, "h.md")
+        root_file.write_text(HANDOFF)
+        code, _, err = self.file_agent_tick("h.md:ROW-1")
+        self.assertEqual(code, 0, err)
+        active = Path(self.lane, "handoffs/active/h.md").read_text()
+        self.assertIn("- [x] **ROW-1**", active)
+        self.assertIn("- [ ] **ROW-2**", active)
+        self.assertEqual(root_file.read_text(), HANDOFF)
+        self.assertTrue(self.filed("ROW-1"))
+
+    def test_qualified_task_keeps_its_file_and_token(self):
+        code, _, err = self.file_agent_tick("handoffs/active/h.md:ROW-2")
+        self.assertEqual(code, 0, err)
+        active = Path(self.lane, "handoffs/active/h.md").read_text()
+        self.assertIn("- [ ] **ROW-1**", active)
+        self.assertIn("- [x] **ROW-2**", active)
+        self.assertTrue(self.filed("ROW-1"))
+
+    def test_tick_rejects_absolute_and_parent_traversal_paths(self):
+        outside = Path(self.tmp.name, "outside.md")
+        outside.write_text(HANDOFF)
+        for path in (str(outside), "../outside.md", "handoffs/active/../../../outside.md"):
+            with self.subTest(path=path):
+                code, _, err = self.file_agent_tick(path + ":ROW-1")
+                self.assertEqual(code, 5)
+                self.assertIn("tick failed", err)
+                self.assertFalse(self.filed("ROW-1"))
+                self.assertEqual(outside.read_text(), HANDOFF)
+                self.assertEqual(Path(self.lane, "handoffs/active/h.md").read_text(), HANDOFF)
+
+    def test_tick_rejects_symlink_escape_without_receipt(self):
+        outside = Path(self.tmp.name, "outside.md")
+        outside.write_text(HANDOFF)
+        Path(self.lane, "handoffs/active/escape.md").symlink_to(outside)
+        code, _, err = self.file_agent_tick("escape.md:ROW-1")
+        self.assertEqual(code, 5)
+        self.assertIn("outside the lane", err)
+        self.assertFalse(self.filed("ROW-1"))
+        self.assertEqual(outside.read_text(), HANDOFF)
+
     def test_completed_smoke_identity_mismatch_unpublishes(self):
         self.row("ROW-1", "rc == 0", {"ok": True})
         ready = Path(self.flags, "ready", "ROW-1.json")
