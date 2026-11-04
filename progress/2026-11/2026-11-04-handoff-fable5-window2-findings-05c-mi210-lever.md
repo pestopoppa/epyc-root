@@ -119,3 +119,7 @@ Consumed six fired notices: chain r1 and PF1 r4 are historical; CPU r4 was inval
 ## 16:14Z — Filed PF1 r5 and P12 r2 inconclusive; submitted corrected PF1 r6 for native qualification.
 
 PF1-EXPAND-2: filed r5 rc75 disk-floor, 36/48 cells and control 0.87455 at L256, no crossover verdict; preserved native partial and submitted r6 canonical native qualification. P12-NEXT-4: filed r2 rc1 after clean-runtime preflight found another llama server; no request, placement, cache or occupancy evidence. Both remain open.
+
+## 16:36Z — Prepared P12 retry boundary after prior conflicting process exited.
+
+P12-NEXT-4: r1 and r2 remain inconclusive. The exact process named by r2 clean-runtime refusal has exited. A bounded agent is preparing a fresh C1 retry preserving all guards; completion file registered. C1b busy-probe evidence remains a separate requirement within the same open box.
