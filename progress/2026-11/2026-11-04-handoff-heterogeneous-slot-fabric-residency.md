@@ -75,3 +75,7 @@ Acknowledged previously filed shape-matched r3 rc0 PASS: two post-health samples
 ## 15:47Z — Acknowledge API-on diagnostic and bind scout observations to witnesses
 
 Acknowledged previously filed API-on rc0/HTTP200 descriptive two-scout result: indexed keyword outcomes true/true, fork counts 3555/0 and slot/task witnesses 2/52 and 3/50; checkpoint witness contained a pinned 3555-token entry. Top-level effective flag attestation remains unverified, gate_pass is null and no P2 gate, causality or performance conclusion follows. Recorded native indices next to API-off and kept the parent open.
+
+## 15:50Z — Preserve the P3 impact report and disclose analyzer coverage
+
+Acknowledged the previously filed P3 impact scan PASS at c72ec82f: find_slot LOW 5 impacted/2 direct, apply_ubatch LOW 6/3, llama_kv_cells LOW 29/3; three records and nonpartial scan_complete, no HIGH/CRITICAL. Preserved native impact outputs, analyzer/status logs and original verdict. Analyzer reports 25 files over 512 KB skipped, so nonpartial does not prove complete indexing. KPF-30 counter/measurement and the KPF-32 implementation prerequisite remain open; no source change, performance or correctness claim.
