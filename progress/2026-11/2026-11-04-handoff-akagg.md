@@ -115,3 +115,7 @@ Acknowledged original CH31 fixture rc1: all-target OpenMP ON build failed on mis
 ## 15:31Z — File v7 pre-calibration claim refusal and advance v8 source and lock qualification.
 
 Acknowledged previously filed v7 rc2 REFUSED/floor_claim=null, with duplicate R15 inner ancestor and no process units. Retained native result and traceback with hashes. Isolated v8 draft passed 23 model-free tests; host lock qualification and normal publisher smoke remain incomplete.
+
+## 16:16Z — Acknowledge the already-filed CH31 fixture and update stale instrumentation documentation.
+
+Acknowledged previously filed CH31 v2 rc0 fixture with ON/OFF OpenMP and six model-free graph controls. Corrected the instrumentation README, which still incorrectly described the patch as unbuilt, to cite the retained bounded fixture and its limits. Model-backed localization remains open.
