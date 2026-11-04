@@ -43,3 +43,7 @@ Wrote the FILED receipt for `lsa-native-norm-row1185-20261104` using its existin
 ## 15:45Z — Acknowledge filed Vidya source-capture control
 
 Wrote the FILED receipt for `vidya-exp01-proxy-wire-20261104` using its existing PASS verdict. The bounded source-capture and projection control completed its six native launches with measurement=false. Native result SHA-256 `a5ea662e20bee1923117a3ae3e114c050655b3c338799a4847597fb5b3694d62`. This control yields no speed, pilot, port, futility or formal-gate verdict. The filed result leaves canonical source registration and planning-context integration open; no parent checkbox was ticked.
+
+## 15:52Z — Acknowledge filed LSA projection diagnostic
+
+Wrote the FILED receipt for `lsa-projection-row474-20261104` using its existing PASS verdict. The filed single-thread PyTorch BF16 slice matched the frozen row 474 fixture, with zero exact-row mismatches. Native result SHA-256 `c8e205a4fed1967055b93edd7d531d0135f1f2af2dbaa81e20955c6c4f224254`. This bounded diagnostic does not complete LSA-SCREEN-1; no checkbox was ticked.
