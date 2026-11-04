@@ -18,19 +18,46 @@ def q(options, n=1):
             "tool_input": {"questions": [{"question": "which?", "options": [{"label": o} for o in options]}] * n}}
 
 
+def qs(*texts, opts=("A", "B")):
+    return {"tool_name": "AskUserQuestion", "session_id": "s1", "transcript_path": "/nonexistent",
+            "tool_input": {"questions": [{"question": t, "header": f"h{i}", "options": [{"label": o} for o in opts]}
+                                         for i, t in enumerate(texts)]}}
+
+
 class Verdicts(unittest.TestCase):
     def test_one_plain_item_passes(self):
         self.assertIsNone(cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text="what do you think?"))
 
-    def test_more_than_one_item_is_denied(self):
+    def test_duplicate_or_too_many_items_are_denied(self):
         v = cq.verdict(q(["A", "B"], n=3), flags="/nonexistent", last_text="")
-        self.assertTrue(v.startswith("BLOCKED: 3 items in one question; fix:"), v)
+        self.assertIn("duplicate items", v)
+        v = cq.verdict(qs(*[f"decision {i}?" for i in range(5)]), flags="/nonexistent", last_text="")
+        self.assertTrue(v.startswith("BLOCKED: 5 items in one question"), v)
 
-    def test_recommended_option_is_denied(self):
-        v = cq.verdict(q(["A (Recommended)", "B"]), flags="/nonexistent", last_text="")
-        self.assertIn("marked Recommended/default", v)
-        v = cq.verdict({"tool_input": {"questions": [{"options": [{"label": "A", "description": "the default"}]}]}}, flags="/nonexistent", last_text="")
-        self.assertIn("marked Recommended/default", v)
+    def test_up_to_four_distinct_questions_pass(self):  # regression 2026-11-04 block 3
+        self.assertIsNone(cq.verdict(qs("Fold rule?", "D9 ack?", "Floor value?", "Push now?"), flags="/nonexistent", last_text=""))
+
+    def test_one_recommended_option_passes(self):  # regression 2026-11-04 block 1 (contract demands it)
+        self.assertIsNone(cq.verdict(q(["A (Recommended)", "B"]), flags="/nonexistent", last_text=""))
+        d9 = qs("D9 ack: acknowledge the gate result?", opts=["Ack (Recommended)", "Hold"])
+        self.assertIsNone(cq.verdict(d9, flags="/nonexistent", last_text=""))
+
+    def test_several_recommended_options_in_one_question_are_denied(self):
+        v = cq.verdict(q(["A (Recommended)", "B (Recommended)"]), flags="/nonexistent", last_text="")
+        self.assertIn("several options marked", v)
+        v = cq.verdict({"tool_input": {"questions": [{"options": [{"label": "A", "description": "the default"}, {"label": "B (recommended)"}]}]}}, flags="/nonexistent", last_text="")
+        self.assertIn("several options marked", v)
+
+    def test_operator_asking_for_the_decision_tool_is_not_an_imperative(self):  # regression block 2a
+        text = "decision tool with context, options and tradeoffs please, now"
+        self.assertIsNone(cq.verdict(q(["A (Recommended)", "B"]), flags="/nonexistent", last_text=text))
+        self.assertIsNone(cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text="ok now what are we doing about the floor"))
+
+    def test_operator_only_decision_survives_imperative(self):  # regression block 2b
+        rat = qs("Ratify the fold-floor change? (human-only path)", opts=["Sign (Recommended)", "Reject"])
+        self.assertIsNone(cq.verdict(rat, flags="/nonexistent", last_text="fold floor: do it NOW"))
+        mixed = qs("Ratify the fold floor?", "Which lane should run?")
+        self.assertIn("imperative", cq.verdict(mixed, flags="/nonexistent", last_text="RUN IT NOW"))
 
     def test_operator_imperative_is_denied(self):
         for text in ("run YARN r5 NOW. Nothing else", "JUST RUN THE READIED TASK", "THE MACHINE IS IDLE. DO SOMETHING!"):
@@ -48,6 +75,9 @@ class Verdicts(unittest.TestCase):
             self.assertIsNone(cq.verdict(dict(q(["A", "B"]), session_id="other"), flags=flags, last_text=""))
             json.dump({"id": "row-x", "session_id": "s1", "ended": "t"}, open(os.path.join(flags, "dryrun", "row-x", "DIRECT.json"), "w"))
             self.assertIsNone(cq.verdict(q(["A", "B"]), flags=flags, last_text=""))
+            json.dump({"id": "row-x", "session_id": "s1"}, open(os.path.join(flags, "dryrun", "row-x", "DIRECT.json"), "w"))
+            rat = qs("Ratify X?", opts=["Sign (Recommended)", "Reject"])  # operator-only does not bypass rule 4
+            self.assertIn("owns a live launch", cq.verdict(rat, flags=flags, last_text=""))
 
     def test_last_user_text_reads_the_transcript(self):
         with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
@@ -74,13 +104,14 @@ class Process(unittest.TestCase):
         return subprocess.run([sys.executable, HOOK], input=payload, capture_output=True, text=True, env=e)
 
     def test_exit_2_with_one_line_on_deny_and_0_otherwise(self):
-        r = self.run_hook(json.dumps(q(["A (Recommended)"])))
+        r = self.run_hook(json.dumps(q(["A (Recommended)", "B (Recommended)"])))
         self.assertEqual(r.returncode, 2)
         self.assertEqual(len(r.stderr.strip().splitlines()), 1)
         self.assertTrue(r.stderr.startswith("BLOCKED:"))
         self.assertEqual(self.run_hook(json.dumps(q(["A", "B"]))).returncode, 0)
         self.assertEqual(self.run_hook("not json").returncode, 0)
-        self.assertEqual(self.run_hook(json.dumps(dict(q(["A (Recommended)"]), tool_name="Bash"))).returncode, 0)
+        self.assertEqual(self.run_hook(json.dumps(q(["A (Recommended)", "B"]))).returncode, 0)
+        self.assertEqual(self.run_hook(json.dumps(dict(q(["A (Recommended)", "B (Recommended)"]), tool_name="Bash"))).returncode, 0)
 
 
 if __name__ == "__main__":

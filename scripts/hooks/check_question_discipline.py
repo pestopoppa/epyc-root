@@ -13,6 +13,15 @@ Prose rules did not fire; this hook denies the call (exit 2, one line, cause + f
      (a `dryrun/<id>/DIRECT.json` or `grants/<id>.grant` whose record carries this hook's session_id; run_direct.sh
      records it when CLAUDE_SESSION_ID is in its environment).
 
+2026-11-04 fix (four legitimate decision packages blocked): CLAUDE.md's decision-package contract REQUIRES the
+recommended option first, labelled "(Recommended)", and the tool takes up to 4 questions. So:
+  1'. up to 4 DISTINCT questions pass; duplicates or >4 are denied;
+  2'. one "(Recommended)" option per question passes; a question with several marked options is denied
+      (a mark that does not discriminate is not a recommendation);
+  3'. the imperative test is case-sensitive for bare NOW (shouted), and is skipped when the operator asked for the
+      question itself ("decision tool", "options", "ask me", ...) or when every question is an operator-only decision
+      (ratification, signature, ack, approval, authorisation, human-only path);
+  4 is unchanged and applies to every question: a thread that owns live compute never blocks.
 Everything else passes. Malformed input passes (the hook never blocks on its own bug). Flags dir: ROWFLOW_FLAGS.
 """
 import glob
@@ -21,8 +30,11 @@ import os
 import re
 import sys
 
-IMPERATIVE = re.compile(r"\b(NOW|JUST RUN|RUN IT|DO SOMETHING|LAUNCH (IT|THE)|GO AHEAD|STOP ASKING)\b", re.I)
+IMPERATIVE = re.compile(r"\bNOW\b|\b(?i:JUST RUN|RUN IT|DO SOMETHING|LAUNCH (IT|THE)|GO AHEAD|STOP ASKING)\b")
 RECOMMENDED = re.compile(r"\b(recommended|default)\b", re.I)
+ASKS_FOR_QUESTION = re.compile(r"decision (tool|package)|AskUserQuestion|\boptions?\b|trade-?offs?|\bask me\b|which (one|option)", re.I)
+OPERATOR_ONLY = re.compile(r"ratif|signature|\bsign[- ]?off\b|\bsign\b|\back(nowledge\w*)?\b|approv|authori[sz]|human[- ]only|operator[- ]only", re.I)
+MAX_QUESTIONS = 4
 FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
 
 
@@ -79,16 +91,23 @@ def verdict(hook_input, flags=FLAGS, last_text=None):
     qs = ti.get("questions")
     if not isinstance(qs, list):
         return None
-    if len(qs) > 1:
-        return f"BLOCKED: {len(qs)} items in one question; fix: ask the ONE decision only the operator can make, or act on the rest first"
-    for q in qs:
-        for o in (q.get("options") or []) if isinstance(q, dict) else []:
+    qs = [x for x in qs if isinstance(x, dict)]
+    if len(qs) > MAX_QUESTIONS:
+        return f"BLOCKED: {len(qs)} items in one question (max {MAX_QUESTIONS}); fix: ask only the decisions only the operator can make, act on the rest first"
+    keys = [(str(x.get("question", "")).strip().lower(), str(x.get("header", "")).strip().lower()) for x in qs]
+    if len(set(keys)) != len(keys):
+        return "BLOCKED: duplicate items in one question; fix: ask each distinct operator decision once"
+    for x in qs:
+        marked = 0
+        for o in x.get("options") or []:
             label = " ".join(str(o.get(k, "")) for k in ("label", "description")) if isinstance(o, dict) else str(o)
-            if RECOMMENDED.search(label):
-                return "BLOCKED: an option is marked Recommended/default; fix: you already know the answer - do it and report, do not ask"
+            marked += bool(RECOMMENDED.search(label))
+        if marked > 1:
+            return "BLOCKED: several options marked Recommended/default in one question; fix: recommend ONE option (first), or act if they are all acceptable"
+    operator_only = bool(qs) and all(OPERATOR_ONLY.search(f"{x.get('header', '')} {x.get('question', '')}") for x in qs)
     text = last_user_text(hook_input.get("transcript_path", "")) if last_text is None else last_text
     m = IMPERATIVE.search(text or "")
-    if m:
+    if m and not operator_only and not ASKS_FOR_QUESTION.search(text):
         return f"BLOCKED: the operator's last message is an imperative ({m.group(0)!r}); fix: make the tool call it asks for in this turn"
     rid = live_launch(hook_input.get("session_id"), flags)
     if rid:
