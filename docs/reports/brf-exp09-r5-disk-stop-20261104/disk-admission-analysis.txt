@@ -1,0 +1,12 @@
+Read-only rowflow / disk-condition inspection (2026-11-04)
+
+Installed copies inspected: `/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py`, `filler_run15.sh`, `grant_ok_launcher.py`, and keeper v12; docs: `docs/guides/agent-workflows/backlog-churn-runbook.md`. Host free space measured with `df -BG --output=avail /mnt/raid0/llm`: 134 GiB, 16 GiB below the 150 GiB floor.
+
+Admission behavior:
+- A smoke-passed v3 row with unchanged launcher is `grantable` (`_status_raw`, rowflow.py ~1535); `next_action` says wait for keeper tick / free lane. Keeper v12 allocates on ticks. Rowflow has no disk-floor condition in its allocator or `grant_ok_launcher.py`.
+- The smoke path is deliberately different: `dryrun_run` sets `FILLER_DISK_FLOOR_GIB=20`; if the filler reports `reason=disk-floor` or an early `hard-end`, it returns `WAIT` and does not record a failed dry run (~1897, 1962-63). This is retryable qualification, not a 150-GiB pre-admission hold.
+- Real filler execution checks `/mnt/raid0` free space against 150 GiB in its run loop (~342-347). Below floor it stops with rc75 and writes `.ended` (unless cleanup fails). Rowflow classifies any `.ended` as terminal `done` (~1485); `publish()` refuses reuse of that id when `.ended`/`.complete` exists (~437-440). Therefore there is no supported disk-aware queue state for an already published smoke-passed row to sit in until recovery: if allocator grants it while below floor, execution terminates it and that row id cannot be admitted later. The supported safe path is to keep it un-published until floor is restored, or, if its state is still grantable and it has no terminal marker, let normal keeper allocation proceed only after recovery. No keeper/gate changes or floor lowering recommended/performed.
+
+Safe reclaim inspection:
+- Read-only keeper command used: `bash /mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v12.sh --reap-dry-run`. The installed runbook specifies live janitor cadence: filed+terminal rows with filing receipts and age >=1 day, plus unmanifested idle tmp dirs >=1 day, all guarded; per-pass cap 50 GiB. Trash sweep frees only aged trash. Do not manually infer ownership from size.
+- The dry-run is slow and was still scanning when inspected; its output so far showed one `REAP-WOULD-REAP ... 0.00GiB`, and no identified explicitly task-owned safe reclaim >=16 GiB. This is not a completed census, so no candidate is asserted. I did not delete or initiate any reclaim. The dry-run transcript is `/mnt/raid0/llm/tmp/compute-flags/reap-inspect-readonly.txt`.

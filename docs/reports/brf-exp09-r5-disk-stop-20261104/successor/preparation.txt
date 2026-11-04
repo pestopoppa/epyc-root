@@ -1,0 +1,23 @@
+R6 preparation report — 2026-11-04
+
+Prepared `/mnt/raid0/llm/tmp/brf-exp09-resume-r6` for row `brf-exp09-resume-r6-20261104`, port 18451.
+
+Artifacts and runtime contract:
+- `launch.sh`: R6 rowflow launcher using `/mnt/raid0/llm/tmp/brf-exp09/pyenv/venv/bin/python`, production-consolidated-v10 CPU kernel-store binary, and standard ggml linkage verifier. The launcher pins job.py, summary_flags.py, identity.json, smoke_predicate.py, seed-pins.json, the R3 native seed, and corpus manifest. It sets no disk floor and adds no prelaunch disk gate; rowflow's existing 150 GiB default floor and publisher qualification remain unchanged. Min window/cap remain 2700 seconds.
+- `job.py`: R6-owned native result path `out/results.jsonl`, event path `out/run-events.r6.jsonl`, and dry-run path `out/results.dryrun.r6.jsonl`. Dry-run executes one verified_quote cell and returns 0 without writing COMPLETE. Native R6 stream begins absent/empty; R3 controls are read separately from the seed.
+- `smoke_predicate.py`: requires exactly one new `dryrun=true`, `verified_quote` cell with exec_id in the R6 dry-run stream.
+- `spec.json`: R6 row/port/result paths and dry-run predicate. Decision contract requires matching non-dryrun R6 preflight and pass_complete, valid linkage and unchanged control code, immutable R3 seed integrity, and 96 unique seed-plus-treatment cells before any verdict. It preserves separate execution IDs, CPU affinities, and spill roots, and records split-run/descriptive-only limitations.
+
+Lineage and source:
+- R5 `out/results.jsonl` was absent and R5 `out/run-events.r5.jsonl` records only a dryrun preflight; R5 produced no native treatment cells. Thus no R5 treatment was added. R5 dry-run/event/linkage artifacts remain predecessor history and are never copied into R6 native or R6 qualification streams.
+- Preserved `out/results.r3-native.jsonl` byte-for-byte at SHA-256 `59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266`, plus seed pins and exact corpus/manifest.
+- Per root-session direction, `orch` is an absolute symlink to the existing clean R5 detached source worktree (`/mnt/raid0/llm/tmp/brf-exp09-resume-r5/orch`) at commit `3a428cb3795b26251c5f111c9eaa887db0690994`. R5 spec retains `orch/**`; R6 spec records this source dependency. No second worktree remains and the R5 worktree was not modified.
+
+Offline validation only (no inference or publication):
+- `job.py --check` -> `CHECK OK`.
+- `bash -n launch.sh` passed; launcher content-pin `sha256sum -c` passed all seven inputs; Python AST parsing passed.
+- Synthetic one-cell dry-run predicate passed; two-cell stream rejected.
+- Assertions confirmed R6 identity/port, source symlink and commit, seed hash, absent R6 result/dryrun/event/COMPLETE/STOP streams, and no floor override in launcher.
+- Shared R5 source worktree status is clean.
+
+No inference, publication, gate change, or kernel modification was performed.
