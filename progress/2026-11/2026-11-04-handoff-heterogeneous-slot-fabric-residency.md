@@ -219,3 +219,7 @@ Published kpf-rs1-impact-8952-20261104-r2 and kpf30-impact-8952-20261104-r5 afte
 ## 19:36Z — Implement and test conservative refusal of unbound multi-ubatch layout associations.
 
 Completed KPF-17.4d multi-ubatch safety control: source review and a planted counterexample show the initial candidate can select a non-target layout. A separate conservative candidate rejects any target-prefill batch with multiple layouts before matching; five model-free tests pass. It can reject valid traces and is not a live adapter or paired result. The retained attempt remains INVALID; the one-off read-only diagnostic replay is disclosed.
+
+## 19:45Z — Validate captured-inferior adoption and cleanup in a model-free actual-GDB fixture.
+
+A model-free actual-GDB starti regression passed: after the inferior was captured but before its GDB receipt, the verified subreaper adopted and reaped it when the captured debugger was stopped and killed; no false COMPLETE appeared. The fixture does not establish cleanup discovery of an entirely unknown orphan or qualify the oracle packet. Corrected stale build qualification prose.
