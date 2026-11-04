@@ -127,3 +127,7 @@ KPF-50: prospective child evidence now binds raw JSONL digest and native run ide
 ## 21:46Z — Attempt to ready the KPF-17 mutation oracle
 
 KPF-17 mutation oracle could not be readied: the filesystem has approximately 132 GiB available against the unchanged 150 GiB full-run admission floor, and the shared rowflow stop-precedence defect remains unresolved. No new row was published or model run. The KPF-30 impact lineage has three disk-floor failures and remains parked. KPF-18 group 3 requires additional lifecycle and custody qualification and a 214 GiB admission floor.
+
+## 21:49Z — Prepare a coverage-key correction for KPF-64 family replay
+
+KPF-64.3: found that the successor coverage audit accepts JSON Boolean turn indices as Python integers, allowing true/false to falsely cover turn 1/0. Prepared an isolated correction and three passing model-free controls in docs/reports/kv-cache/kpf64-coverage-key-20261104. The patch is not integrated into research or a runnable row; the lane GitNexus index was unavailable. KPF-17 still has a shared rowflow stop-precedence defect and free disk was approximately 130 GiB against the 150 GiB floor. No row was published and no inference ran.
