@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Build-only accepted iff full prospective 6ec877068 build, parent 84d0a316, reference options and source integrity match, all ggml DSOs are included in build receipt and custody manifest, pinned linkage helper passes, compiled knobs pass, and completion reopens files and compiler hashes. First-object 4-CPU smoke proves progress only. No inference, historical equivalence or correctness verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+ "id": "kvu-kpf174-custody-r3-20261104",
+ "keep": [
+  "RESULT.json",
+  "CUSTODY.json",
+  "runs/**",
+  "input/**",
+  "v3/**",
+  "source/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104/v3/launch.sh",
+  "sha256": "b4f0691f2711530b22bed4d05d3952890dda76fb28a77047d767ea1a7753a6bb"
+ },
+ "lineage": "kvu-kpf174-custody",
+ "min_window_s": 2400,
+ "notes": "Detached source worktree; missing old source snapshot repaired before publication. Model weights are never read or hashed by this build row. Publication smoke compiles actual cache object on 4 CPUs; full HIP build is allocated CPU work. Witness successor must pin validated receipt+custody hashes before GPU publication. Fresh-ID successor of r1 after rc75 disk-floor; no prior result is inherited; disk floor remains enforced. Source detached checkout and exact source bytes reverified during preparation; PREPARED metadata regenerated for this checkout.",
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-04T16:23:33Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104/STOP",
+ "supersedes": "kvu-kpf174-custody-r1-20261104",
+ "unit_key": "files",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r3-20261104/v3"
+}

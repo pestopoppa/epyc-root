@@ -1,0 +1,312 @@
+{
+  "status": "WITHHELD_EXACT_EXPOSURE_AND_SELECTION_AUTHORITY_NOT_ESTABLISHED",
+  "generated_at": "2026-11-04T16:28:08.448763+00:00",
+  "archive": "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/progress/evidence/kvu12-5-quarter-result-20261102/native-partial.tar.gz",
+  "archive_sha256": "42a549585194b1d0e61195c1d6f93ab6e88fe05d9ee32a002fe6f9050c4475e7",
+  "archived_members_sha256": {
+    "events.jsonl": "fb424ada9340d7ed9eaf79397789682c3a42354565fa7cbe01641a1143372569",
+    "run/anchor-start/split_np4_slot65536_t8anchor/server.log": "d36d536dfcf22cf690aa9b164a71eb690432509545293ea7804ad241bca93247",
+    "run/anchor-start/split_np4_slot65536_t8anchor/t8short_independent/cell.log": "218c18fc1b5fb1b2c74c9c547128d63c09fff591b94b8232cf4753b588647eec",
+    "run/anchor-start/split_np4_slot65536_t8anchor/t8short_independent/waves.json": "594d7e12e5824afaf7aef6b09166742a010f9b1cef6f30b53c4ed0f1b317733f",
+    "run/anchor-start/split_np4_slot65536_t8anchor/t8short_independent/waves_capture.jsonl": "1e3e8844dc0ca488f1f81a086dae8dfd61bf5419748b4b1eb4f85f1cab742ed5",
+    "run/anchor-start/driver.log": "ab9bd0f0520a5f50c4c083c82d9c7f2bbdc57c4dfd1fbc0fb31ebd145a5b28e0",
+    "run/unified/unified_np8_pool524288/64k_depth/cell.log": "00a9a7d7182f4c8ccc7af127d039a21a977dbefe757677a2e694ac581e3957e6",
+    "run/unified/unified_np8_pool524288/server.log": "7d510f0201e5837ab8a89a38ade03ebab9c547bcaea536e17d940691174d7ad6",
+    "run/unified/driver.log": "9ceffc70fe9f7fe41ac53db4dcc9c8ff0a70423db2e156f7887e66e7811f17f4"
+  },
+  "driver": "/mnt/raid0/llm/worktrees/research-kvu12-run/artifacts/np_context_kvu_cpu_study_20261020/driver/kvu_cpu_matrix.py",
+  "driver_sha256": "43e4fcad361693cddbed8f616bb0f02895e0f4fd7ab2dc01233cca74459ecdf0",
+  "corpus_sha256": "476c08ab215e9c852159124ce2c17c574c3efeb304b6f66a3f2cfb72abdf657b",
+  "corpus_chars": 24050585,
+  "exact_logical_units": {
+    "start_anchor": {
+      "completed": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "unit_key": "wave, stream; independent t8short",
+      "all_request_results_200": true
+    },
+    "unified": {
+      "submitted_wave0_streams": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "server_slot_task_pairs": [
+        [
+          7,
+          6
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          2,
+          11
+        ],
+        [
+          5,
+          12
+        ],
+        [
+          1,
+          13
+        ],
+        [
+          4,
+          14
+        ]
+      ],
+      "completed_waves": 0,
+      "planned_but_not_submitted_suffixes": [
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ]
+      ],
+      "doc_tokens_by_stream": [
+        64541,
+        64573,
+        64540,
+        64576,
+        64544,
+        64555,
+        64438,
+        64451
+      ]
+    },
+    "qualification_control": {
+      "model": "same Qwen3.6 target, not current Qwen2.5 smoke",
+      "cell": "8k_independent",
+      "completed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "evidence": "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101/qualification/control/summary.jsonl",
+      "evidence_sha256": "bcb6c13a2f46740133e6396922098848c0a5c42d31df72d0688cd9e40d278c55",
+      "in_archived_partial": false
+    },
+    "warmup": "Each launch sends literal \"Warm up. \" * 50; no corpus consumption."
+  },
+  "offsets": {
+    "exact_char_or_byte_ranges": null,
+    "reason": "Receipts omit prompt content, chosen nchars, Corpus cursor and tokenizer request/response records. make_doc adapts nchars using tokenizer and may trim returned text without rolling cursor back; prompt token counts do not identify exact ranges. Suffixes consume additional cursor space before submission. Corpus initializes cursor=0 independently in every launch.",
+    "disjoint_offsets_proven": false,
+    "whole_corpus_exposed_claim": false
+  },
+  "authority": {
+    "inspected": [
+      "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101/PREDECLARATION-DRAFT.md",
+      "/mnt/raid0/llm/tmp/handoff-kvu12-5-quarter-20261101/SPEC-DRAFT.json",
+      "/mnt/raid0/llm/tmp/kvu/kvu12-5-quarter-r3-20261104/PREDECLARATION.md"
+    ],
+    "finding": "Frozen declarations pin same corpus and same conversation bank, but do not define predeclared offset allocation, replacement cohort, or continuation-selection algorithm. Prospective unused tail cannot itself establish no-redraw authority."
+  },
+  "sealed_successor_spec": null,
+  "compute_run": false,
+  "published": false,
+  "grant_requested": false
+}
