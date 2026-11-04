@@ -75,3 +75,7 @@ C6 default versus fused-ON smoke rc0: arms completed and died, ON environment ma
 ## 14:56Z — Acknowledge the historical model reconstruction partial and preserve its native result.
 
 Acknowledged previously filed historical reconstruction inconclusive: quantizer rc0 and expected size but grant rc75 partial-native-incomplete, so required complete status, output hash and canonical publication are absent. Retained native result SHA fef408dcec95119dfa5d66a244a8d536431dfaa7d1b8378b0656a56e3381737f; no historical model identity or replay claim.
+
+## 14:58Z — File invalid paired run and preserve native GM/MG evidence for affinity repair.
+
+Acknowledged previously filed pair rc1 PAIR_INVALID: GM measurement overhead +12.47% at 64k exceeds the 5% limit; MG G arm ran roughly five times slower than M, so no lane attribution is accepted. Preserved both arm logs and pair verdict with hashes. Affinity readback and order-dependent slowdown remain under investigation.
