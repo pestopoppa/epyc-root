@@ -115,3 +115,7 @@ KPF-17 mutation oracle remains unready: RAID free space was 142 GiB against the 
 ## 21:33Z — Prepare a reviewable KPF-17 rowflow stop-precedence correction
 
 KPF-17: prepared a reviewable patch for the shared rowflow engine that preserves disk-floor and hard-end outcomes over a simultaneous native completion predicate; six model-free tests passed and the patch applies to the current source. The shared engine and keeper were not changed. The patch leaves a crash-before-ended-receipt gap and requires owner integration and end-to-end qualification. Full runs remain below the unchanged 150 GiB disk floor; publisher smoke uses its separate 20 GiB threshold. No inference row was published or model run. KPF-50 prospective native outcome producer remains incomplete and was not retained.
+
+## 21:37Z — Validate KPF-50 raw child fork evidence
+
+KPF-50: implemented a prospective raw JSONL validator requiring four distinct child suffixes, successful responses, exact run identity and integer fork witnesses of at least 60000, with the input digest; six model-free tests pass. Its output is partial structural evidence only, not an independently authenticated or completed window. The GPU packet still needs custody, process cleanup, clock/trace integration and qualification; no inference row or model run was produced. KPF-17 remains constrained by the shared stop-precedence issue and the full-run 150 GiB disk floor.
