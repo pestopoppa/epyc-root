@@ -185,3 +185,7 @@ CPU BF16 oracle r9 and source-bound sentinel build r13 ended rc75 at disk-floor 
 ## 21:07Z — Filed v10 floor calibration admission failure; assess eligible successor
 
 AKX-ALL-8-FLOOR: filed akxall8-c5-declared-floor-v10-20261104 inconclusive, rc75 disk-floor after START; no runs directory, process observations, or floor result. FILED receipt written. The v6, v7 and v9 unsuccessful qualification attempts require applying the three-failure lineage parking rule before another attempt. AKX-ALL-31.GDN GPU BF16 needs a finite-sentinel build; r14 stopped rc75 at disk floor, and the previous GPU smoke failed NaN checks. Runner disk floor is 150 GiB and df reported 148 GiB available. No row published or correctness claim.
+
+## 21:10Z — Published finite-sentinel BF16 build prerequisite
+
+AKX-ALL-31.GDN: published akx-gdn-bf16-sentinel-build-r15-20261104 after four-CPU publisher smoke PASS. Independent detached C5 source is sealed with the finite-sentinel patch; the full build and BF16 GPU oracle remain pending. Scratch: /mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-sentinel-build-r15-20261104/. RAID free was 148 GiB against the runner 150 GiB disk floor; full execution requires space to recover. Correction to prior entry: rowflow defines three-failure parking as failed dry runs in a lineage or consecutive arming/launch failures since PASS; v6/v7/v9 full-run outcomes alone do not prove AKX-ALL-8-FLOOR is parked.
