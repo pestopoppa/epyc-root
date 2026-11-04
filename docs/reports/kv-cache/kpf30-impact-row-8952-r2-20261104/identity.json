@@ -1,0 +1,16 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/job.py": "a4b78852301895820176a314235a40cd3bb7b2113c80b615a87f55674ee29dde",
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/launch.sh": "bbb00448a89cc145422398f690ba1b12f144a98a8c686fac6414ad802ba95f00",
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/spec.json": "e8c6b642452dfab91445e1b36f192bee085374d084f02b0dfc78d5707d078320",
+    "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r2/README.md": "f86eccbea8a6765d7258b575a6e835d175474710673cdc1ad6bf1c9fc07a3f4f",
+    "/mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104/tools/server/server-context.cpp": "7c68370f9085178de2fa57d2c679915d3befb54ff8e6a3377756965c9501b7ba",
+    "/mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104/src/llama-kv-cache.cpp": "22e6be8328fee4cf82760e7ec3dc47ac8609123b35ea06994b0655c2a1ec47c1",
+    "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/scripts/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d"
+  }
+}

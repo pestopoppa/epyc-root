@@ -111,3 +111,7 @@ Acknowledged the previously filed KVU-12.6 gauge r2 capability PASS (0 to 45, on
 ## 16:34Z — File the failed candidate-bound impact attempt
 
 Acknowledged the previously filed P5 r2 rc75 partial run, preserving 19 completed rows and the exposed incomplete no-draft repetition; no recovery class was established. Filed KPF-30 integrated-candidate impact attempt INCONCLUSIVE: full grant rc75 disk-floor, native impact JSONL absent and no graph risk/coverage or scan_complete. The four-CPU smoke contained only preliminary references, not source-edit clearance. Preserved end, manifest and smoke receipt. A fresh same-lineage successor is being prepared with the unchanged disk floor.
+
+## 16:43Z — Publish the KPF-30 candidate impact successor
+
+Consumed all five completed preparation outputs. Phase provenance contract and the custody-build predecessor were already integrated; the latter ended inconclusive at the disk floor. Withheld the quarter draft because its input corpus contains prior exposed units and no authorized disjoint-offset selection is established. Published kpf30-impact-8952-20261104-r2 after four-CPU partial-reference smoke PASS, preserving source/guard seals, explicit HIGH/CRITICAL stop and the canonical 150 GiB disk floor. Full source-bound index, risks and coverage remain pending; smoke is not impact clearance.
