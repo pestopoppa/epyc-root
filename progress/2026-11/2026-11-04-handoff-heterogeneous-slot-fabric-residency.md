@@ -71,3 +71,7 @@ The previously filed API-off diagnostic completed rc0/HTTP200 with two scout cal
 ## 15:45Z — Preserve the KVU-16a shape-matched sampled load result
 
 Acknowledged previously filed shape-matched r3 rc0 PASS: two post-health samples separated by 0.502 s, max own-PID VRAM 51,338,338,304 B minus logged KV 13,690,208,256 B = 37,648,130,048 B (35.0626 GiB). Captured cleanup was verified; native plan, original-run belief sidecar, startup stream and selected samples are preserved. Selected-pair coverage alone qualifies; whole-load/startup and lifetime peak remain unqualified. Corrected obsolete queued-smoke text. KVU-16a remains open for stack-change reconciliation, registry and check; no deployment or registry update.
+
+## 15:47Z — Acknowledge API-on diagnostic and bind scout observations to witnesses
+
+Acknowledged previously filed API-on rc0/HTTP200 descriptive two-scout result: indexed keyword outcomes true/true, fork counts 3555/0 and slot/task witnesses 2/52 and 3/50; checkpoint witness contained a pinned 3555-token entry. Top-level effective flag attestation remains unverified, gate_pass is null and no P2 gate, causality or performance conclusion follows. Recorded native indices next to API-off and kept the parent open.
