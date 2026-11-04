@@ -10,6 +10,11 @@ class Repair(unittest.TestCase):
   native = pathlib.Path(__file__).resolve().parent / 'native'
   code = "import sys; sys.path.insert(0, sys.argv[1]); import capture_worker"
   subprocess.run([sys.executable, '-I', '-c', code, str(native)], check=True, capture_output=True, text=True)
+ def test_worker_entrypoint_runs_under_isolated_python(self):
+  native = pathlib.Path(__file__).resolve().parent / 'native'
+  result = subprocess.run([sys.executable, '-I', '-B', str(native / 'capture_worker.py'), '--help'], capture_output=True, text=True, timeout=10)
+  self.assertEqual(result.returncode, 0, result.stderr)
+  self.assertIn('--control-fd', result.stdout)
  def test_context_is_bound_to_controlled_child(self):
   p=pathlib.Path('/tmp/example-only.json')
   with patch.object(diagnostic,'RequestCapture') as factory:

@@ -51,21 +51,21 @@ class RingArchive:
         self.quota=max_bytes; self.bytes=0; self.count=0; self.previous='0'*64
         self.tails={}; self.closed=False
 
-    def append(self, source, snapshot, *, head, tail):
+    def append(self, source, snapshot, *, head, tail, terminal=False):
         try:
-            return self._append(source, snapshot, head=head, tail=tail)
+            return self._append(source, snapshot, head=head, tail=tail, terminal=terminal)
         except BaseException:
             self.abort()
             raise
 
-    def _append(self, source, snapshot, *, head, tail):
-        if self.closed or type(source) is not int or source <= 0:
+    def _append(self, source, snapshot, *, head, tail, terminal):
+        if self.closed or type(source) is not int or source <= 0 or type(terminal) is not bool:
             raise ValueError('invalid event ID or closed archive')
         if source in self.tails and self.tails[source] != tail:
             raise ValueError('source position discontinuity')
         data=_window(snapshot, head, tail)
         frame={'source':source, 'size':len(snapshot), 'head':head, 'tail':tail,
-               'data':base64.b64encode(data).decode('ascii'), 'previous':self.previous}
+               'data':base64.b64encode(data).decode('ascii'), 'previous':self.previous, 'terminal':terminal}
         raw=json.dumps(frame,sort_keys=True,separators=(',',':')).encode()
         digest=hashlib.sha256(raw).hexdigest()
         line=json.dumps({'frame':frame,'sha256':digest},sort_keys=True,separators=(',',':')).encode()+b'\n'
@@ -100,7 +100,7 @@ class RingArchive:
             except FileNotFoundError: pass
 
 
-def verify(path, expected, *, max_bytes):
+def verify(path, expected, *, max_bytes, expected_sources=None, source_provenance=None, expected_terminals=None):
     if type(max_bytes) is not int or max_bytes < 256: raise ValueError('invalid quota')
     fd=os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
     try:
@@ -109,23 +109,33 @@ def verify(path, expected, *, max_bytes):
         identity=lambda x:(x.st_dev,x.st_ino,x.st_size,x.st_mtime_ns,x.st_ctime_ns,x.st_nlink)
         if identity(os.lstat(path)) != identity(st): raise ValueError('archive path identity mismatch')
         with os.fdopen(fd, 'rb') as f:
-            fd=None; last='0'*64; tails={}; count=0; total=0
+            fd=None; last='0'*64; tails={}; terminals=set(); count=0; total=0
             for line in f:
                 total+=len(line)
                 if total > max_bytes or not line.endswith(b'\n'): raise ValueError('truncated or oversized archive')
                 doc=json.loads(line); frame=doc['frame']
                 raw=json.dumps(frame,sort_keys=True,separators=(',',':')).encode()
                 digest=hashlib.sha256(raw).hexdigest()
-                if set(doc) != {'frame','sha256'} or set(frame) != {'source','size','head','tail','data','previous'} or doc['sha256'] != digest or frame['previous'] != last:
+                if set(doc) != {'frame','sha256'} or set(frame) != {'source','size','head','tail','data','previous','terminal'} or doc['sha256'] != digest or frame['previous'] != last:
                     raise ValueError('archive chain mismatch')
                 source=frame['source']; head=frame['head']; tail=frame['tail']
                 if type(source) is not int or source <= 0 or (source in tails and tails[source]!=tail): raise ValueError('source discontinuity')
+                if type(frame['terminal']) is not bool or source in terminals: raise ValueError('invalid terminal sequence')
+                if frame['terminal']:
+                    terminals.add(source)
+                    if expected_terminals is not None and expected_terminals.get(source) != (head, tail): raise ValueError('terminal position differs from counter receipt')
                 data=base64.b64decode(frame['data'],validate=True)
                 ring=_rebuild(frame['size'],head,tail,data)
                 if _window(ring,head,tail) != data: raise ValueError('ring replay mismatch')
+                if source_provenance is not None:
+                    from tracepoint_payload_guard import check
+                    prov=source_provenance[source]
+                    check({'snapshot':ring,'head':head,'tail':tail,'errors':[]}, cpu=prov['cpu'], event_id=source, tracepoint_id=prov['tracepoint_id'])
                 tails[source]=head; last=digest; count+=1
             if identity(os.fstat(f.fileno())) != identity(st) or identity(os.lstat(path)) != identity(st):
                 raise ValueError('archive changed during replay')
+            if expected_sources is not None and (set(tails) != set(expected_sources) or terminals != set(expected_sources)): raise ValueError('archive source or terminal census mismatch')
+            if expected_terminals is not None and set(expected_terminals) != terminals: raise ValueError('terminal receipt census mismatch')
             observed={'count':count,'bytes':total,'last_sha256':last}
             if observed != expected: raise ValueError('archive receipt mismatch')
             return observed

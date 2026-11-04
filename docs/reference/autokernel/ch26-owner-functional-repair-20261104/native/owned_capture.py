@@ -17,15 +17,15 @@ EVENTS = frozenset(('sched_switch', 'irq_handler_entry', 'irq_handler_exit',
 
 
 class Capture:
-    def __init__(self, receiver, target, sources, cpus, *, interval_s=0.05,
-                 max_bytes=16 * 1024 * 1024):
+    def __init__(self, receiver, target, sources, cpus, *, interval_s=0.05, archive=None):
         if not isinstance(receiver, Receiver) or receiver.failed or receiver.fd is None:
             raise ValueError('live authenticated owner receiver required')
         if not isinstance(target, Target): raise ValueError('pidfd target required')
         if not isinstance(cpus, (set, frozenset)) or not cpus or any(type(c) is not int or c < 0 for c in cpus):
             raise ValueError('invalid CPU inventory')
-        if not 0.005 <= interval_s <= 1 or type(max_bytes) is not int or not 4096 <= max_bytes <= 256 * 1024 * 1024:
+        if not 0.005 <= interval_s <= 1:
             raise ValueError('invalid capture bounds')
+        if archive is None: raise ValueError('compact archive required')
         if not isinstance(sources, list): raise ValueError('invalid sources')
         expected = {(c, e) for c in cpus for e in EVENTS}
         actual = []
@@ -53,9 +53,9 @@ class Capture:
         self.receiver, self.target, self.sources = receiver, target, sources
         self.provenance = provenance
         self.provenance_by_session = {id(item['session']): p for item, p in zip(sources, provenance)}
-        self.interval_s, self.max_bytes = interval_s, max_bytes
+        self.interval_s = interval_s
         self.stop_event = threading.Event(); self.thread = None; self.started = []
-        self.snapshots = []; self.results = []; self.errors = []; self.size = 0
+        self.archive = archive; self.results = []; self.errors = []
         self.markers = []; self.observations = []; self.state = 'new'
         self.cleaned = False
 
@@ -68,13 +68,14 @@ class Capture:
 
     def abort(self):
         """Release owned sessions once; failed joins require worker process exit."""
-        if self.cleaned:
-            return
-        self._cleanup()
+        if not self.cleaned:
+            self._cleanup()
         if self.state != 'finished':
+            if self.thread is None or not self.thread.is_alive():
+                self.archive.abort()
             self.state = 'failed'
 
-    def _retain(self, item, ring):
+    def _retain(self, item, ring, *, terminal=False):
         snapshot = ring.get('snapshot')
         if not isinstance(snapshot, bytes) or not isinstance(ring.get('errors'), list):
             raise ValueError('ring snapshot missing')
@@ -82,10 +83,7 @@ class Capture:
         session = item['session']
         source = self.provenance_by_session[id(session)]
         check_payload(ring, cpu=session.cpu, event_id=session.event_id, tracepoint_id=source['tracepoint_id'])
-        if self.size + len(snapshot) > self.max_bytes: raise ValueError('capture byte bound exceeded')
-        self.size += len(snapshot)
-        self.snapshots.append({'name': item['name'], 'cpu': item['session'].cpu,
-                               'event_id': item['session'].event_id, 'ring': ring})
+        self.archive.append(session.event_id, snapshot, head=ring['head'], tail=ring['tail'], terminal=terminal)
 
     def _drain_loop(self):
         try:
@@ -115,8 +113,10 @@ class Capture:
             if s.state == 'running':
                 try:
                     result = self.guards[id(s)].call(lambda: s.stop(request_window=window), closes_fd=True)
-                    self._retain(item, result['ring'])
-                    self.results.append({'name': item['name'], **result})
+                    self._retain(item, result['ring'], terminal=True)
+                    compact_result = dict(result)
+                    compact_result['ring'] = {k: v for k, v in result['ring'].items() if k != 'snapshot'}
+                    self.results.append({'name': item['name'], **compact_result})
                     self.errors.extend(result.get('errors', []))
                 except Exception as exc: self.errors.append(f'stop: {type(exc).__name__}: {exc}')
         for item in self.sources:
@@ -164,10 +164,15 @@ class Capture:
             window = (self.markers[0]['timestamp_ns'], marker['timestamp_ns'])
             self._cleanup(window)
             if len(self.results) != len(self.sources): self.errors.append('missing final ring result')
-            self.state = 'finished' if not self.errors else 'failed'
+            if self.errors:
+                if self.thread is None or not self.thread.is_alive():
+                    self.archive.abort()
+                raise ValueError('capture failed: ' + '; '.join(self.errors))
+            archive_receipt = self.archive.finish()
+            self.state = 'finished'
             return {'status': 'unproven', 'coverage': 'unknown', 'loss': 'unknown',
                     'measurement_admission': 'none', 'markers': self.markers,
-                    'target_observations': self.observations, 'snapshots': self.snapshots,
+                    'target_observations': self.observations, 'archive_receipt': archive_receipt,
                     'rings': self.results, 'source_provenance': self.provenance, 'errors': self.errors,
                     'limitations': ['FD attributes recorded at syscall lack independent kernel readback',
                                     'same-FD and raw common_type checks trust owner process and source receipt',

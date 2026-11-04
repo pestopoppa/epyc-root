@@ -44,7 +44,11 @@ class Session:
  def drain(self):
   if self.state not in ('running','disabled'):raise ValueError('wrong state')
   head=self.atomics.acquire(HEAD);tail=self.atomics.acquire(TAIL)
-  data=bytes(self.mem[self.data_offset:self.data_offset+self.data_size]);r=decode(data,head=head,tail=tail)
+  data=bytes(self.mem[self.data_offset:self.data_offset+self.data_size])
+  after=self.atomics.acquire(HEAD)
+  r=decode(data,head=head,tail=tail)
+  if after<head or after-tail>self.data_size:
+   r['errors'].append('ring overwritten during copy or head regressed')
   # Preserve the exact ring bytes and positions for an independent decoder.
   r.update(snapshot=data,head=head,tail=tail)
   for event in r.get('events',[]):

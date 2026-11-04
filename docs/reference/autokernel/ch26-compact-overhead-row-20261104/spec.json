@@ -1,0 +1,32 @@
+{
+  "id": "ch26-compact-observer-overhead-20261104",
+  "owner": "handoff-autokernel-cross-workload-keep-gate",
+  "launcher": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-observer-overhead-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-observer-overhead-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Controlled synthetic diagnostic, not a floor or C5 serving claim: 24 alternating matched off/on pairs, each arm running a single pinned synthetic process for 16 CPU-seconds while the on arm records the actual compact observer across 96 CPUs and five tracepoint sources each. The 16-second CPU-time choice is an approximate sizing proxy informed by a retained C2 17.06-second request measurement window, not a representation of C5 workload. For every arm retain work count and CPU/wall durations; for every on unit independently verify owner markers, 480-source census, per-source terminal positions/counters and compact raw archive plus cleanup. Stop on first malformed receipt, loss, limit, STOP or deadline; incomplete is inconclusive. Full completion supports a descriptive synthetic observer-off/on comparison only, not execution placement, contention, losslessness, serving overhead, DS41 floor or promotion. No interim performance or gate decision.",
+  "estimate_s": 1800,
+  "duration_basis": "48 arms each consume 16 CPU-seconds, establishing at least 768 seconds before 24 full 480-source attach/teardown, independent archive replay, process scheduling and result custody. An 1800-second planning estimate allows roughly 43 seconds of overhead per observed pair; this overhead is unmeasured and the estimate is uncertain, not a claim it will finish. The 3600-second hard cutoff bounds uncertainty. Smoke uses one 0.1 CPU-second pair over 4 CPUs only and is functional transport, not a timing sample.",
+  "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-26b",
+  "priority_rank": 0.2,
+  "kind": "compute",
+  "gib": 4,
+  "scratch_root": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-observer-overhead-20261104",
+  "window_s": 3600,
+  "min_window_s": 1800,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "keep": [
+    "RESULT.json",
+    "RESULT-evidence/**",
+    "*.py",
+    "*.sh",
+    "SOURCE.sha256",
+    "SEAL.sha256",
+    "native/*.py"
+  ],
+  "unit_key": "pair_count",
+  "first_progress_s": 300
+}

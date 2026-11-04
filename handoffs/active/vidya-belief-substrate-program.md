@@ -14,6 +14,8 @@ Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy
 
 **Priority**: MEDIUM — the live items are the 2026-10-21 refocus trial (AutoKernel + autopilot readers, P1/P2 storage redesign, non-empty-read proof); producer wiring is demand-driven under that decision, so the prospective-wiring backlog no longer ranks with inference programs
 
+- **VB-CH26-OVERHEAD-WIRE — prospectively capture compact observer synthetic overhead measurements.** Bind each ordered off/on pair, synthetic workload and CPU budget, native count and CPU/wall timings, observer source and raw archive digests, CPU/event census, resource and cleanup evidence, partial runs and refusals at write time. Project using the existing carrier and `claim_tuple.grade()`; do not create a new ladder or reconstruct historical warrant. Smoke is not the full row, and synthetic outcomes do not establish C5 serving overhead, coverage, placement, contention or a noise floor. Prove writer-to-reader planning-context canary before calling the source wired. [no-belief: prospective wiring task]
+
 - **VB-CH26-REPLAY-WIRE — prospectively capture CH-26b structural receipt replay observations.** Bind the original receipt and raw-ring digests, CPU/event inventory, verifier revision, producer identity, synthetic interval designation, refusals and incomplete outcomes at write time; project through the existing carrier and `claim_tuple.grade()`. A structural replay is not a request-placement, contention, losslessness, host-coverage or floor verdict. Do not reconstruct historical measurement warrant. Prove the writer-to-reader path and planning-context canary before calling this source wired. [no-belief: prospective wiring task]
 
 ## Objective

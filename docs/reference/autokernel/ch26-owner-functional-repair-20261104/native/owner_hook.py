@@ -10,6 +10,7 @@ from worker_guard import WorkerGuard
 from worker_protocol import _recv, command
 from source_census import validate as validate_source_census
 from evidence_custody import read_receipt
+from ring_archive import verify as verify_archive
 
 
 class RequestCapture:
@@ -68,6 +69,10 @@ class RequestCapture:
             # Reject incomplete or inconsistent CPU/event receipts before any
             # request is accepted. This checks consistency, not coverage.
             validate_source_census(body, self.cpus)
+            verify_archive(str(self.output) + '.rings', body['archive_receipt'], max_bytes=256 * 1024 * 1024,
+                           expected_sources={x['event_id'] for x in body['source_provenance']},
+                           source_provenance={x['event_id']: x for x in body['source_provenance']},
+                           expected_terminals={x['event_id']: (x['ring']['head'], x['ring']['tail']) for x in body['rings']})
             markers = body.get('markers'); observations = body.get('target_observations')
             if not isinstance(markers, list) or len(markers) != 2 or not isinstance(observations, list) or len(observations) < 3:
                 raise ValueError('native request evidence lacks marker/target snapshots')

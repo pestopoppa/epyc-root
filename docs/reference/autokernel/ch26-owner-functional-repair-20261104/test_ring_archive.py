@@ -58,7 +58,7 @@ class ArchiveTests(unittest.TestCase):
  def test_malicious_ring_size_refuses_before_allocation(self):
   with tempfile.TemporaryDirectory() as d:
    p=pathlib.Path(d)/'a'
-   f={'source':1,'size':MAX_RING_BYTES*2,'head':0,'tail':0,'data':'','previous':'0'*64}
+   f={'source':1,'size':MAX_RING_BYTES*2,'head':0,'tail':0,'data':'','previous':'0'*64,'terminal':False}
    raw=json.dumps(f,sort_keys=True,separators=(',',':')).encode(); digest=hashlib.sha256(raw).hexdigest()
    line=json.dumps({'frame':f,'sha256':digest},sort_keys=True,separators=(',',':')).encode()+b'\n'
    p.write_bytes(line); receipt={'count':1,'bytes':len(line),'last_sha256':digest}

@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from owner_hook import RequestCapture
 from test_source_census import fixture
+from ring_archive import RingArchive
 
 
 def body():
@@ -18,7 +19,15 @@ def body():
 class OwnerReceiptTest(unittest.TestCase):
     def run_receipt(self, data):
         with tempfile.TemporaryDirectory() as tmp:
-            path=Path(tmp)/'capture.json'; path.write_text(json.dumps(data))
+            path=Path(tmp)/'capture.json'
+            archive=RingArchive(Path(str(path)+'.rings'),max_bytes=100000)
+            for src in data['source_provenance']:
+                src['tracepoint_id']=1
+                archive.append(src['event_id'],bytes(64),head=0,tail=0,terminal=True)
+            for ring in data['rings']:
+                ring['ring'].update(head=0,tail=0)
+            data['archive_receipt']=archive.finish()
+            path.write_text(json.dumps(data))
             cap=RequestCapture.__new__(RequestCapture)
             cap.output=path; cap.cpus={0,1}; cap.timeout=1; cap.state='request'
             cap.guard=SimpleNamespace(process=SimpleNamespace(wait=lambda **kw: 0),finished=False)
