@@ -4,15 +4,27 @@
     "handoff-active": 30,
     "handoff-blocked": 1,
     "handoff-completed": 372,
-    "progress": 1322,
+    "progress": 1323,
     "research": 278
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-04T14:14:16Z",
-  "mode": "touch",
-  "scan_time": "2026-11-04T14:14:16Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 0,
+      "removed": 0
+    },
+    "at": "2026-11-04T17:22:18Z",
+    "scope_paths": [
+      "progress/2026-11/2026-11-04-inf22.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-04T17:22:18Z",
   "schema_version": 1,
-  "source_set_hash": "e0b64f88f405ee8612d0316334f02d7bc6b1789abba5bcbeba6c3920997c4424",
+  "source_set_hash": "10ec6e17f0e64a5a095272b37d1fcfb4f97be0654923ae6a80bd3759aa9424b9",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -15935,6 +15947,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "066429ef5434ee089ca0c8d71c357bec47d7b034b0877ae8a2637f96e917cdd2",
+      "modified": "2026-11-04T17:22:03Z",
+      "path": "progress/2026-11/2026-11-04-inf22.md",
+      "size": 3131,
+      "title": "2026-11-04 \u2014 INF-22 main session (main-inf22, operator-spawned, no lane)",
+      "type": "progress"
+    },
+    {
       "content_hash": "4aade60324bf96b72930131dd2f84da80f4d286c9835bc93b6a9fc920f58b5b3",
       "modified": "2026-11-04T14:13:20Z",
       "path": "progress/evidence/kvu-df29-port-20261102/NATIVE-GPU-ROW.md",
@@ -18991,7 +19011,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2372,
+  "total_new": 2373,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

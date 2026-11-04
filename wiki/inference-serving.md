@@ -6,6 +6,16 @@
 **Sources**: (+ sweep 2 sources, see its Source References) 157 native document references (source review 2026-10-07)
 
 
+## Compiled Update — 2026-11-04 (operator wiki sweep, INF-22 main): np16 halves lose, the PF1 crossover is bracketed, and the M4 decode A/B measured the wrong mechanism
+
+- **P1-2 head-to-head (indicative).** C1 np8 79.2 / np16 83.9 tok/s, C1b np8 74.7. The cross-day C1b np16 reading (99.2, 11-03) is WITHDRAWN: same-session np16 gave C1 87.5 vs C1b 60.5, so the halves lose at np16. A cross-day comparison cannot carry that claim; only the same-session one can.
+- **PF1 crossover bracketed.** A2 (MI210 prefill) crosses CPU in (256,512] tokens, A1 in (512,1024]. Closed at bracket precision; a finer PF1-EXPAND-2 was dropped because no decision depends on the extra precision.
+- **M4 GPU A/A noise.** n=5 mean 0.968, SD 0.025, second arm ~3 % slow: the order effect that the ABBA launch order exists to cancel. The signed fold rule (GPU fail 0.950, CPU fail 0.940, greedy token identity) was then superseded: SRPF (`--prefill-order srpf`) is default-OFF and cannot move decode, so a decode A/B tested the wrong mechanism. V11-121 stays IN, default OFF; enabling it is the separate M4-SRPF-ENABLE box. Lesson: match the mechanism to the metric before building a gate.
+- **Sufficiency closures.** The q8_1 requant kill L2 "30.5 %" was one probe cell (3.37 % whole-model, already cached); the wide-cache knob is unmeasured on `experimental/q81-requant-cache-20261104`. Q38-T7a (DFlash2 already measured), Q38-T10.1r (flag already live) and GPS-PIN-1b (applies at next stack bring-up) needed no new work.
+- **rowflow allocator.** A lower-ranked row no longer receives regions a better-ranked row is waiting for (`aacbd45b7`, live).
+
+Sources: [INF-22 main progress](../progress/2026-11/2026-11-04-inf22.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)
+
 ## Compiled Update — 2026-11-03 (evening): INF-22 results, t48 recipe bundle, v11 bench tooling
 
 **Confidence: verified** (run artifacts cited in the handoff; the t48 bundle is an operator decision, not a measurement).
