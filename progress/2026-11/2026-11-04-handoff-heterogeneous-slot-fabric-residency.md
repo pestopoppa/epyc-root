@@ -443,3 +443,7 @@ Clock qualification r4 was already filed inconclusive. Filed kpf27d-impact-326f-
 ## 23:11Z — File interrupted KPF-41 source impact
 
 Filed kpf41-direct-vec-impact-8952a0f-20261104-r4 inconclusive after rc75 disk-floor before native impact or coverage; preserved the grant end. No impact severity or edit clearance follows.
+
+## 23:14Z — Prepare the isolated KPF-41 source-impact successor
+
+The KPF-17 map-revalidation r2 result was already filed inconclusive after disk-floor interruption; r3 is armed. Published kpf41-direct-vec-impact-8952a0f-20261104-r5 after its four-CPU source-reference smoke passed, using a fresh detached candidate and private output. Native impacts, skipped-file coverage and edit clearance remain pending.
