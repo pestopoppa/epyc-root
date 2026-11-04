@@ -7,6 +7,32 @@ import sys
 import time
 
 
+def _stop_path_state(stop: Path) -> str:
+    """Return an explicit fail-closed state for the STOP path and its parents."""
+    if not stop.is_absolute() or stop == stop.parent:
+        return "invalid-stop-path"
+    # Inspect every component without following symlinks. A missing STOP leaf is
+    # allowed, but every directory leading to it must exist and be usable.
+    current = Path(stop.anchor)
+    try:
+        for component in stop.parent.parts[1:]:
+            current = current / component
+            st = current.lstat()
+            if current.is_symlink() or not current.is_dir():
+                return "invalid-stop-path"
+            if not os.access(current, os.X_OK | os.R_OK):
+                return "invalid-stop-path"
+        if stop.is_symlink():
+            return "invalid-stop-path"
+        try:
+            stop.lstat()
+        except FileNotFoundError:
+            return "missing"
+        return "stop-file"
+    except OSError:
+        return "invalid-stop-path"
+
+
 def may_start_unit(stop_file: Path, deadline_epoch: float, *, now: float | None = None) -> bool:
     """A job may begin a new unit only before deadline and while STOP is absent."""
     current = time.time() if now is None else now
@@ -30,9 +56,10 @@ def rowflow_entry(env=None, *, now: float | None = None) -> tuple[bool, str]:
         return False, "invalid-stop-path"
     if not (math.isfinite(end) and math.isfinite(deadline) and deadline < end):
         return False, "invalid-rowflow-window"
-    if stop.is_symlink():
+    stop_state = _stop_path_state(stop)
+    if stop_state == "invalid-stop-path":
         return False, "invalid-stop-path"
-    if stop.exists():
+    if stop_state == "stop-file":
         return False, "stop-file"
     current = time.time() if now is None else now
     if not math.isfinite(current) or current >= deadline:

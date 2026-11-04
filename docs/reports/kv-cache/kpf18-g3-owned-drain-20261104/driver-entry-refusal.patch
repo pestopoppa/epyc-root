@@ -12,22 +12,24 @@
  import native_group3 as g
  import pipeline
  import kpf18_gate as gate
-+from driver_boundary import EntryRefused,run_with_rowflow_boundary
++from driver_boundary import EntryRefused,RowflowContext,abort_terminal_refusal,run_with_rowflow_boundary
  
  OUT=guard.attempt_root()
  PRELOAD_MODELS=None
-@@ -128,7 +130,13 @@
+@@ -128,8 +130,15 @@
      steps.append(gate.Step('capture actual sealed identity before original group3 diagnostic',120,lambda:setup(ctx,srv,state)))
      def cell():
          state['block_vram_start']=srv.sampler.n_own_nonzero if srv.sampler else 0
 -        try:run(gate,guard.ContextBoundary(ctx),state['R'],srv,state['record'],state['identity'],state['ledger'])
++        entry_ctx=RowflowContext(guard.ContextBoundary(ctx),os.environ,time.time)
 +        try:
-+            run_with_rowflow_boundary(partial(run,gate),guard.ContextBoundary(ctx),state['R'],srv,
++            run_with_rowflow_boundary(partial(run,gate),entry_ctx,state['R'],srv,
 +                state['record'],state['identity'],state['ledger'],env=os.environ,now_fn=time.time)
 +        except EntryRefused as error:
-+            state['record']['diagnostic_error']=type(error).__name__+': '+str(error)
-+            state['ledger'].json('DIAGNOSTIC-REFUSAL.json',state['record']['diagnostic_error'])
-+            raise gate.Abort('rowflow/guard boundary refusal: '+str(error)) from error
++            abort_terminal_refusal(entry_ctx,error,state['record'],state['ledger'],gate.Abort)
          except Exception as error:
++            if entry_ctx.terminal_refusal is not None:
++                abort_terminal_refusal(entry_ctx,error,state['record'],state['ledger'],gate.Abort)
              state['record']['diagnostic_error']=type(error).__name__+': '+str(error)
              state['ledger'].json('DIAGNOSTIC-REFUSAL.json',state['record']['diagnostic_error'])
+     steps.append(gate.Step('X1 C1 X2 C2 C3; max3 exactT constructions/control; preserve every refusal',6400,cell))
