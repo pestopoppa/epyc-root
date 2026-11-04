@@ -1,0 +1,2 @@
+2026-11-04T20:04:20Z ROW-ARM ARMED kvfork17-oracle-test-r2-20261104 pid=36049
+2026-11-04T20:04:20Z GRANT kvfork17-oracle-test-r2-20261104 regions=72-95 start=2026-11-04T20:03Z end=2026-11-04T20:44Z holds=q3 (launcher=filler_run15.sh:36049 lclass=cpu minwin=300(argv) window=2460 claim=72-95 gpuq=- claim_regions=q3 regions=72-95 reserve=gpu-quiet precond=ok)

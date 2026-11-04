@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T20:04:27Z reason=complete
+job_id=kvfork17-oracle-test-r2-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T20:04:24Z
+regions=72-95
