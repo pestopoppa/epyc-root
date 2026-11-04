@@ -35,3 +35,7 @@ Acknowledged previously filed C6 q4_K same-input diagnostic: C5 and C6 original 
 ## 14:33Z — Acknowledge the already-filed C6 q4_0 capture and preserve its exact raw comparison evidence.
 
 Acknowledged previously filed diagnostic q4_0 capture; both C5 and C6 used matching logical inputs and GPU outputs and failed the same FP64 property. Preserved 31 capture and comparator files with hashes. The comparator outputs_equal field means GPU output matches across C5/C6; GPU and CPU sibling outputs differ. No full GPU gate pass.
+
+## 14:36Z — Acknowledge CH18 bounded CPU/HIP build and retain model-free controls and linkage evidence.
+
+Filed prior CH18 build rc0: model-free occupancy and provenance controls passed; CPU/HIP server builds and per-tree linkage checks completed. Retained 12 native evidence files with SHA-256 inventory; no model, reuse, runtime residency or promotion claim. Model-backed upstream, rollback and warm/cold validation remain open.
