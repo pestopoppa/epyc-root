@@ -1,0 +1,41 @@
+{
+  "state": "repaired-not-republished",
+  "stop_control": "Only each owned dryrun/<id>/stop touched; no grant or gate edits and no signals",
+  "captured_launcher_pids": [
+    402512,
+    385400
+  ],
+  "termination_proof": "ps -p 402512,385400 -o pid=,stat=,lstart=,args= returned no processes and rc1",
+  "changes": [
+    "Explicit fresh current-run candidate.o predicate with source/input/file content proof",
+    "mp.load_mtp=true in both external diagnostic candidates",
+    "Runtime hashes and CAFE2 SOURCE.json refreshed; CAFE4 pinned candidate hash updated"
+  ],
+  "checks": [
+    "Python AST",
+    "bash -n",
+    "proof.py source"
+  ],
+  "publications": [],
+  "pass_claimed": false,
+  "limitation": "After stop and launcher-death proof, one terminal collection still found RUNNING.json and no FAIL for both original publisher invocations. Their terminal bookkeeping must complete before a safe same-ID republish. No status loops or unowned publisher kill performed.",
+  "next": "On original publisher terminal, rerun publish_row.py on each SAME spec/id using ROWFLOW_REPO=/mnt/raid0/llm/worktrees/mains/h-df2; preserve existing failure lineage.",
+  "packages": [
+    {
+      "row": "cafe2-v10-verify-cost-build-20261104",
+      "spec": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/spec.json",
+      "predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-build-row/proof.py predicate",
+      "candidate_sha256": "d9cc5fe5e40c81caccc553ee14a8d5de2f4408c9868340a8515b9a2c81c7f41c",
+      "proof_sha256": "c121cd707e8039fdb42c773958f773144279ed76add546a84e5adf5d9f0a85d6",
+      "runtime_sha256": "3005c8bfba66306fb6715b78ddf2eadb53e4c5f4751df52fafa18ec937de8e3d"
+    },
+    {
+      "row": "cafe4-v10-mtp-rollback-build-20261104",
+      "spec": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row/spec.json",
+      "predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row/proof.py predicate",
+      "candidate_sha256": "6c3dde339cd231b42e2d06cfdf0f953ba624f12ad381f4bd0f9fd4049f91135e",
+      "proof_sha256": "4edac995af6b1780d7412e6eb009d960d022567bfd4805da07e5697e2b326792",
+      "runtime_sha256": "be02d51d1e16b2c1662ccb1c7c23af2aee3ed4bbe1ff041a903c21a1a336e49b"
+    }
+  ]
+}
