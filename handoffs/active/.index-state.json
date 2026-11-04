@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 208
+      "open": 209
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 478
+      "open": 477
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 252,
+      "closed": 255,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 101,
@@ -1126,11 +1126,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 355,
+      "total": 358,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 119,
+          "closed": 120,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1446,
+          "line": 1448,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1570,
+          "line": 1572,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1897,
+          "line": 1899,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2036,
+          "line": 2038,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,21 +1188,21 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2589,
+          "line": 2591,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 33,
+          "closed": 35,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2726,
+          "line": 2728,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3608,
+          "line": 3612,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 261,
+      "closed": 262,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 92,
+      "open": 91,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1322,7 +1322,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 140,
+          "closed": 141,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,7 +1332,7 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 47
+          "open": 46
         },
         {
           "blocked": 0,
@@ -2617,7 +2617,7 @@
       "closed": 352,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 97,
+      "open": 98,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 451
+      "total": 452
     }
   },
   "row_id_collisions": {},
