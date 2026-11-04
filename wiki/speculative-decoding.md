@@ -3141,3 +3141,11 @@ The R3 recovery verified retained C5 artifacts and a CPU architecture test, but 
 - [CAFE-2 design](../docs/reports/speculative-build-preparation-20261104/cafe2/DESIGN.md)
 - [CAFE-4 predeclaration](../docs/reports/speculative-build-preparation-20261104/cafe4/PREDECLARED.md)
 - [SR-8 source proof](../docs/reports/speculative-build-preparation-20261104/sr8/SOURCE-PROOF.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): SR-6 closed, CAFE-4 MTP lifecycle
+
+- **SR-6** closed as terminated UNKNOWN under its predeclared any-UNKNOWN futility rule (native DrainError despite rc0; SR-7 recorded 0/90 completed per window). No reruns.
+- **CAFE-4:** the real-MTP lifecycle build PASSED (build-only). Native lifecycle qualification failed three times (missing `load_mtp=true`, a namespace mismatch, misspelled linker args); the lineage is parked. The rollback build's `-lcommon` link error is fixed to `llama-common` (v3 row READY).
+- BRF EXP09: the mechanism did not fire (REVISE). The answer-budget repair row is published.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [spec-decoding handoff](../handoffs/active/speculative-decoding.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)

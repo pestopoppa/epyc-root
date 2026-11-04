@@ -6998,3 +6998,13 @@ Sources: [INF-22 handoff](../handoffs/active/mi210-serving-program.md#track-mi21
 - **Build prerequisites.** The sync17 coverage build (435 compile entries, source `2516c980`, own-library linkage PASS) is a build result only; replay validity and execution custody are not established. The repaired GDN HIP successor has only static preparation checks (six tests, syntax-only compile and gfx90a object compile pending the publisher).
 
 Sources: [claim-path design](../docs/design/gpu-serving-p25g-claim-path-20261104.md) · [INF-22 unblock](../progress/2026-11/2026-11-04-inf22-unblock.md) · [slot-fabric residency](../progress/2026-11/2026-11-04-handoff-heterogeneous-slot-fabric-residency.md) · [GDN static checks](../docs/reference/autokernel/gdn-hip-build-failure-20261104/successor/STATIC-CHECKS.md) · [champion handoff](../handoffs/active/kernel-champion-and-promotion.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): filed verdicts from the 84-row filing drain
+
+- **PF1-EXPAND prefill crossover (Q38FN).** The MI210 overtakes the CPU from L=512 (A2 1.12×) / L=1024 (A1 1.44×), reaching 1.94-2.12× at L=2048. The L=512 control guard missed, so a 384/448/512/768 refinement (5 reps, `pf1-expand-r2-20261104`) is published READY.
+- **P12 split servers.** Two half servers at np16 reach 0.69× one full server on this row; M4 GPU A/A noise SD is ~3 %, and r8 0.9597 lies inside it.
+- **LSA.** GitNexus ops.cpp parser stall fixed (80 s timeout → 3.4 s). LSA graph candidate passes all CPU builds/cases; the MI210 synthetic found a tol-0 BF16 key-projection mismatch, fixed by a HIP repair (35B geometry untested). HIP `std::sort` does not compile for gfx90a.
+- **C6 q4 MMVQ** fixes pass on their single exact cases; 25 q4_K MUL_MAT failures remain on the MMQ route (next: mmqfix candidate). AKX-ALL-10.1 route-2 sinks CPU correctness PASS; LB3.2 CV4 pair PAIR_INVALID (MG arm ~5× slow).
+- **Build failures are infra, not kernel results:** GDN HIP build FAIL (malformed staged BF16 registration emitted comment prose as C++ tokens), CAFE-4 rollback link against nonexistent `common` target (fixed to `llama-common`). R18-A symbol identity PASS (zero additions/removals across CPU, HIP host and gfx90a).
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md) · [MI210 program](../handoffs/active/mi210-serving-program.md) · [champion handoff](../handoffs/active/kernel-champion-and-promotion.md) · [AutoKernel loop](../handoffs/active/autokernel-loop.md)

@@ -4389,3 +4389,12 @@ Sources: [wiki3 dive](../research/deep-dives/ws58-jev-20261102/wiki3-dive.md) ·
 - Projection-accepted is not planning-wired: a loop counts as wired only when its planning-context canary passes.
 
 Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [vidya shard](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [vidya program](../handoffs/active/vidya-belief-substrate-program.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): Vidya live captures and wiring gaps
+
+- **Serving steps capture accepted:** `vb-sl2-steps-r1` A/A (two C5 pairs) ingested 15 frames, two steps estimates (`predicted_n_minus_draft_n_accepted`, 9.57 vs 7.00 steps/s), no refusals. It proves the producer/reader path only; the 41.5 vs 30.4 tok/s gap is launch noise (per-launch CV ~15 %, n=1).
+- **Actor-wire matrix PASS 15/15** (93 frames, 31 findings) but the planning canary FAILED: the tuples carry empty applicability, and every planner tier was model- or device-scoped. Fixed by a consumer-scoped `harness` tier (cap 3, not evidence; `e9f943781`); re-ingest plus a new canary are pending with the owning session.
+- **Canary B FAIL is a bad sentinel, not a retrieval defect:** the live BGE-large embedder worked, but trial 1472 is learning-excluded (`reproduction_confirmed`) and pre-era. A future canary needs an eligible current-era keep.
+- 11-03 fan-out landed `cert_check.py`, AK/autopilot/INF-66 adapters (R2364 ingest rows=5, frames=15) and `reliance_review.py`; the canary-A guard was kept (≥3 scoped comparable answers refuse).
+
+Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [fan-out](../progress/2026-11/2026-11-03-vidya-fanout-20261103.md) · [handoff log](../progress/2026-11/2026-11-04-handoff-vidya-belief-substrate.md) · [program](../handoffs/active/vidya-belief-substrate-program.md)
