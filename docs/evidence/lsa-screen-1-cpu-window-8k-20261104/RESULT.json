@@ -1,0 +1,72 @@
+{
+  "arm": "window",
+  "binding": {
+    "admission_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "baseline": {
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-dense-8k-control/ATTEMPT_FENCE/result.raw.json",
+      "scope": "retained dense correct item; different 48-core admission, no timing comparison",
+      "sha256": "386c4da66723643de2d022705823de777e3fe7977504614556444fe96ac56c11"
+    },
+    "loaded_byte_proof": "frozen model manifest digest, current inode and size, live mapping; no fresh model hash",
+    "manifest_path": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet/manifest.json",
+    "monitor_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-window-8k-20261104/native/attempt-2615210/monitor.json",
+    "producer_sha256": "315e09cdf5442af99d1a9902ea98230565756bad44d4b8bc6a2176242c240729",
+    "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+    "trace_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-window-8k-20261104/native/attempt-2615210/trace.jsonl"
+  },
+  "checks": {
+    "all_global_layers": true,
+    "cpu_libraries": true,
+    "mask_changed": true,
+    "mask_only_removes": true,
+    "model_mapping": true,
+    "no_think_reopened": true,
+    "prompt_8204": true,
+    "response_complete": true
+  },
+  "item": {
+    "expected": "92-8-E75FB6",
+    "id": "dev-document_qa-00-original-8192-window-no-think",
+    "prompt_n": 8204,
+    "source_id": "dev-document_qa-00-8192",
+    "source_ids_sha256": "5095df092adfab4345d99958b2c31046eb598daec9eaefd86d1b3de1499f299b",
+    "split": "dev",
+    "token_ids_sha256": "056563f23d3191f5ca9a37ca7684131daacb3210586af1d95ebfea00507209be",
+    "wrapper_prefix_ids": [
+      248045,
+      846,
+      198
+    ],
+    "wrapper_suffix_ids": [
+      248046,
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ]
+  },
+  "manifest_sha256": "4df4b115bebb8a8bac6e398ff657dffa5ec07b4233a311b6a119204497d5d34c",
+  "output": "K69CE14F2C66B",
+  "phase": "diagnostic",
+  "reason": "completed positional exact retrieval control",
+  "response_complete": true,
+  "retrieval_match": false,
+  "schema": "lsa-screen-raw-v1",
+  "scope": "One CPU positional sink4 plus last4608 retrieval control on exact same 8204 token IDs versus retained dense success; no timing or population quality claim.",
+  "score": null,
+  "server_dead": true,
+  "server_exit": 0,
+  "server_pid": 2615231,
+  "status": "pass",
+  "time_utc": "2026-11-04T09:31:54.397903+00:00",
+  "unit": "window-exact-retrieval-8204"
+}

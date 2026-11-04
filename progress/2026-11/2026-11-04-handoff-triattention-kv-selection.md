@@ -31,3 +31,7 @@ Filed GitNexus enum validation PASS: 48 enum matches, graph fixtures passed and 
 ## 16:33Z — File final CPU graph and projection test cases
 
 LSA final CPU cases passed rc=0: all five graph cases, native and runtime units, and random/PCA/distilled projection fixtures completed with original assertions and mapped CPU library witnesses preserved in docs/evidence/lsa-final-cpu-cases-20261104/. This does not establish GPU behavior, model quality or performance. The API smoke encountered a prompt-fixture error; a separate bounded repair is in progress.
+
+## 16:35Z — Preserve CPU window diagnostic evidence and qualify its filing
+
+The already filed CPU window run has raw result prompt_n=8204, eight capture checks true, retrieval_match=false, and rc=0. Preserved raw result, trace, monitor, response, and writer status under docs/evidence/lsa-screen-1-cpu-window-8k-20261104/. The canonical result was absent at filing and the writer marked the research projection invalid; the raw diagnostic is not a valid projected research claim. No population-quality or timing claim.
