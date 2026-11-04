@@ -1,0 +1,28 @@
+{
+ "backend": "gpu",
+ "binary": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-bench",
+ "binary_sha256": "d94c4817838918c043ed6505a42863c851d0012a94c89265b86c80e06e06ebe8",
+ "embedded_commit": "729599d69",
+ "ggml_linkage": "PASS",
+ "kind": "kernel_store",
+ "library_path": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+ "linked_libraries_sha256": {
+  "libggml-base.so.0.16.0": "29a56498493073a5049661841c71c7571144b4bf639723149a180e804c99db1f",
+  "libggml-cpu.so.0.16.0": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a",
+  "libggml-hip.so.0.16.0": "1647ba7d3afffd2f79a8adf6f1213c6fd0bd088779ea73f820df372a10057f54",
+  "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+  "libllama-bench-impl.so": "4a56044c14ad2bff3367d42cc39ec26a492912ccde61b6ecfdce223c7baf198c",
+  "libllama-common.so.0.0.10500": "44cc2cf6e1b0101eee0eda37853196385a193ee31515115a9a8a65a3b6ff1f64",
+  "libllama.so.0.0.10500": "dfb13d6c8c5c7198ebbea3fbfa571b077c007e1d187c3659370c69f8bd50490a"
+ },
+ "manifest": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/BUILD-IDENTITY.json",
+ "manifest_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+ "manifest_sha256": "0f28bbcd2dca7f143b4add2bf29e19611051cc0918f413f1ec963c68d812aef5",
+ "sha256sums": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/SHA256SUMS",
+ "sha256sums_sha256": "64c34e61d12e5170acc77d69d4edcbab296754d2e3a48679ceb916fde3bb3704",
+ "source_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+ "source_root": "/mnt/raid0/llm/llama.cpp",
+ "store_build_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+ "store_build_id": "gpu-20261030-729599d69-c6",
+ "store_root": "/mnt/raid0/llm/kernels"
+}

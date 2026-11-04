@@ -140,6 +140,9 @@ APPLICABILITY_KEYS = frozenset({
     # serving-floor key (VB-FLOOR-REGISTRY-WIRE): native declarations of the floor registry entry; inert to grading.
     "equivalence_key", "recipe_hash", "request_digest", "model_sha", "numerics_epoch", "claim_class",
     "threads", "co_tenancy",
+    # VB-AK-WIRE-PLANNER-TIER: the planning consumer a loop-infrastructure verifier finding is
+    # scoped to (e.g. `autokernel.planner`). Not a model or device scope; inert to grading.
+    "consumer",
 })
 # `native`: every scope key came from the record itself. `store_manifest`: the record carries no
 # scope of its own and the store's manifest pinned it (the SOURCE_SCOPES basis, §3.1).

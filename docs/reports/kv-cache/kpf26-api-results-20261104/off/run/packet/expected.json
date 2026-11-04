@@ -1,0 +1,13 @@
+{
+  "required_terms": [
+    [
+      "RELEASE_CODENAME",
+      "amber-heron-47"
+    ],
+    [
+      "RELEASE_CODENAME",
+      "amber-heron-47"
+    ]
+  ],
+  "schema": "epyc.kpf26.scorer.required-terms.v1"
+}

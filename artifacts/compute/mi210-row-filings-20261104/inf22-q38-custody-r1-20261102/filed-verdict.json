@@ -1,0 +1,43 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r1-20261102/end.txt": "13c7dc6c28c8d19753ca9b55b9d9f4183593f7b508e449e726ee04a4b2cb919b",
+   "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r1-20261102/manifest.json": "f89052b68d263400eb2c765cae187f95ec0e2a16686da19fe52c87d681660fa6"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc143 launcher-signalled and no custody result. No custody completion, performance or recipe conclusion.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:04+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=143 time=2026-11-03T07:19:22Z reason=launcher-signalled",
+ "filed_at": "2026-11-04T07:10:04+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:M4-FOLD-GATE",
+ "id": "inf22-q38-custody-r1-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/inf22-q38-custody-r1-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/inf22-q38-custody-r1-20261102/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "codex-inf22-m4",
+ "phase": "filing",
+ "rc": 143,
+ "reason": "rc143 launcher-signalled and no custody result. No custody completion, performance or recipe conclusion.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-q38-custody-r1-20261102/RESULT.json",
+ "root_cause_family": null,
+ "row": "inf22-q38-custody-r1-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "SHA-256 custody only; no performance or best-recipe measurement Shares host with GPU job (custody only, no timing).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

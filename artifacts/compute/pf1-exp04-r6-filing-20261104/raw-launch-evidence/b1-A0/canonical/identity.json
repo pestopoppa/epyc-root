@@ -1,0 +1,27 @@
+{
+ "backend": "cpu",
+ "binary": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin/llama-bench",
+ "binary_sha256": "718faad47abb189f7266c7fd27ee6b10fb47b62bdc019d379acf69190b036476",
+ "embedded_commit": "729599d69",
+ "ggml_linkage": "PASS",
+ "kind": "kernel_store",
+ "library_path": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin",
+ "linked_libraries_sha256": {
+  "libggml-base.so.0.16.0": "2d8abefff2ba0dcd4e1080c0268027f0ac5a7331e0aa21d3e265146ba051a1ea",
+  "libggml-cpu.so.0.16.0": "79e0c13edd0f598f0ce9dbd4311fc20ae2ef8d4494b1a59834e20e9456148cc7",
+  "libggml.so.0.16.0": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+  "libllama-bench-impl.so": "0568df3524b628964c7ec84837e1fd7eab0340d73cf817ce97c66359baa04931",
+  "libllama-common.so.0.0.10500": "56221c3974bc0b554e03304bc96f11c147556002bf3edef6ba53928d083ff96f",
+  "libllama.so.0.0.10500": "9412c2ba955e6deed0b78035909ec36cedabc194b689de94a7c10f94a8d27627"
+ },
+ "manifest": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/BUILD-IDENTITY.json",
+ "manifest_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+ "manifest_sha256": "39f7f6f3a34e3431f6a1a3c11d22c9cf54189bf16c5fd4b0dd31df8789ca2041",
+ "sha256sums": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/SHA256SUMS",
+ "sha256sums_sha256": "f751b659d2ac30cb1169c72c2be7f8965b6d342530c7c06382717bb5e1e71191",
+ "source_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+ "source_root": "/mnt/raid0/llm/llama.cpp",
+ "store_build_dir": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+ "store_build_id": "cpu-20261030-729599d69-c6",
+ "store_root": "/mnt/raid0/llm/kernels"
+}

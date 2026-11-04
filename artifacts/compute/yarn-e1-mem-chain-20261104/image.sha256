@@ -1,0 +1,9 @@
+80efc4984107c27a1c69eec46efe059327c3234309693686b3f2bbc6d025c1a2  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-base.so.0.16.0
+2faaa83455f48dfc3368090f785430d4f53874fc95890c7aaa0fd0f6c5b9ca6c  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-cpu.so.0.16.0
+0557aa6a92186a3b4d38236d71d52b901933170452c285c6696f428b434bcfec  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-hip.so.0.16.0
+bff079152349464f53b0d4870e3bd8604b99927f844e40c22d0a2e5bb4fda110  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml.so.0.16.0
+33fca3c58813eee13c1531b620d24015e3da9216d516d4065041515270da0961  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libllama-common.so.0.0.10325
+b5d375c2d5741fb9d113b449ea5205ebbbf7d1762cf33449010dbf12225b8015  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libllama-server-impl.so
+3d585ddb064a9c2061932c29c83b7541835ed2c84a1ae463a917f99e7973a30a  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libllama.so.0.0.10325
+4c6a8d71ba6d2a49b9e382c8c75fd014801daade8f6b3719bfc4291dc0b2b4cd  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libmtmd.so.0.0.10325
+ffbbe30ec8d91c8f7abc341d587070837bdb77918983fda85b2677437cf22877  /mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/llama-server

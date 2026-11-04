@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "rc1: full drafted arm failed parked-neighbour occupancy at L2 after restore reported99377 but observed slot2 remained0. Four of required20decode rows, no no-draft arm, no final result.json; PID110887 teardown verified dead rc0/port free. Partial source records do not support L3 loss or full lifecycle PASS.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

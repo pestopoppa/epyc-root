@@ -1,0 +1,10 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc143 signalled run, declared native result absent. No complete sealed-harness recipe comparison or fold evidence.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r2-20261103/end.txt": "21e6d68d11d4b009d1913201dee34f509c5e785940ddec03415c36df74680e1c",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r2-20261103/manifest.json": "8109325a7a77d465a4a6a64edeee38b20a947129f3bb2f64b5812d7b0e5762e0"
+  }
+}

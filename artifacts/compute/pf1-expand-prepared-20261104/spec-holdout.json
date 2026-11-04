@@ -1,0 +1,33 @@
+{
+  "owner": "ws58",
+  "lane": "gpu",
+  "shape": "quiet-host",
+  "regions": "mi210_0,0-95",
+  "ram_gib": 200,
+  "scratch_root": "/mnt/raid0/llm/tmp/brf-exp04-r7-placement-20261104",
+  "launcher": "/mnt/raid0/llm/tmp/brf-exp04-r7-placement-20261104/launch-holdout.sh",
+  "result_format": "json",
+  "admission_class": "block-timing-pairable",
+  "estimate_s": 43200,
+  "min_window_s": 14400,
+  "dryrun_timeout_s": 1200,
+  "smoke_timeout_s": 1200,
+  "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND",
+  "decision_rule": "P3-3 diagnostic full shorter-L forward grid: Q38FN three-shard model; C6 load-threads candidate build bound by BUILD-RECEIPT; A0 plus A1/A2/A1-disabled; L 128/256/512/1024/2048; GPU ub 512/2048/4096; five interleaved launch blocks; one independent invocation per cell, except five intact canonical A0 L=2048 r=10 invocations (inner 10 samples retained, invocation medians are independent units). Deterministic 10,000-resample median bootstrap 95% CIs, seed 34; smallest L with best GPU median >=1.10x A0 and non-overlapping CIs is provisional L*. GPU arms require valid in-window placement proof and record max node share under 2026-11-03 amendment; A0 remains strict <=40%. No protocol ID unless all P-BENCH/P-GPU requirements are actually met; outputs are diagnostic and cannot drive scheduler/adoption/closure. A separate later window >=4h after initial completion runs reversed arm order at the two bracket lengths, or 8192/32768 if no L*. Holdout is blocked until complete initial receipt self-hash validates and at least 14,400 seconds have elapsed; same frozen build/model manifest, a distinct later session.",
+  "id": "brf-exp04-pf1-full-holdout-20261104-r7",
+  "result_path": "/mnt/raid0/llm/tmp/brf-exp04-r7-placement-20261104/attempts/holdout/run/receipt.json",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.md",
+    "*.json",
+    "*.sha256",
+    "attempts/**",
+    "tmp/**",
+    "dryrun/**"
+  ],
+  "lineage": "brf-exp04-pf1-full",
+  "supersedes": "brf-exp04-pf1-full-initial-20261104-r7",
+  "dryrun_native_result": true,
+  "first_progress_s": 600
+}

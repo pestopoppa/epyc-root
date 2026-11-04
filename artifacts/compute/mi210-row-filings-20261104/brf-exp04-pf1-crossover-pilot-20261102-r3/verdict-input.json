@@ -1,0 +1,12 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Original archived summary: REVISE harness; 4/8 valid units, capture 0.75, both A2 HIP-residency proofs missing, 2K disabled-control ratio 0.8591 outside \u00b110%. Pilot invalid; no PF1 verdict or EXPAND authorization. Later shared result is not this attempt.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/attempt-summary.json": "34d2264ccf9e4d864e81d3ffb769291fb429e3db05483eb9f2e0e2c7dab5536d",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/end.txt": "7a9b45a4f16b453e750348809229ce95081df06fa3f7cff184d4bb696491cdf6",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/manifest.json": "1de05d0aa14dbd369545a29272ca4da6868d64208b914b3228cfba60bfea8f21"
+  }
+}

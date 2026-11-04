@@ -1,0 +1,7 @@
+rc=0 time=2026-11-03T09:14:58Z reason=complete
+job_id=handoff-kvu-cpu-fa-vkq2-exact-20261102
+owner=handoff-kv-unified-stack-rollout
+step=job-run
+estimated_wall_s=14400
+started=2026-11-03T07:38:00Z
+regions=q0,q1,q2,q3

@@ -1,0 +1,96 @@
+{
+  "off": {
+    "id": "rtg58-kpf26-api-off-diag-20261102",
+    "status": "API_SCOUTS_OBSERVED",
+    "http_status": 200,
+    "native_completed_scouts": 2,
+    "keyword_outcomes": [
+      true,
+      false
+    ],
+    "slot_witnesses": [
+      {
+        "sample_t": 1793777856.4057791,
+        "slot": 3,
+        "task": 3
+      },
+      {
+        "sample_t": 1793777856.4057791,
+        "slot": 2,
+        "task": 4
+      }
+    ],
+    "n_fork_tokens": [
+      0,
+      0
+    ],
+    "checkpoint_witness": null,
+    "flags_raw": {
+      "ORCHESTRATOR_PREFIX_INDEX": "0",
+      "ORCHESTRATOR_PREFIX_INDEX_FORK": "0",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM": "0",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM_MAX_SKIPS": "1"
+    },
+    "top_level_flags": "unverified",
+    "effective_native_scout_budget_s": 240.0,
+    "source_scoped_rule": "descriptive outcomes and slot witnesses only, no paired gate/performance decision"
+  },
+  "on": {
+    "id": "rtg58-kpf26-api-on-diag-20261102",
+    "status": "API_SCOUTS_OBSERVED",
+    "http_status": 200,
+    "native_completed_scouts": 2,
+    "keyword_outcomes": [
+      true,
+      true
+    ],
+    "slot_witnesses": [
+      {
+        "sample_t": 1793777981.0714912,
+        "slot": 2,
+        "task": 52
+      },
+      {
+        "sample_t": 1793777981.0714912,
+        "slot": 3,
+        "task": 50
+      }
+    ],
+    "n_fork_tokens": [
+      3555,
+      0
+    ],
+    "checkpoint_witness": {
+      "checkpoints": [
+        {
+          "n_tokens": 1610,
+          "pinned": false,
+          "pos_max": 1609,
+          "pos_min": 1609,
+          "prefix_hash": "9ad069b7b27d72ae",
+          "size_mib": 65.9946403503418
+        },
+        {
+          "n_tokens": 3555,
+          "pinned": true,
+          "pos_max": 3554,
+          "pos_min": 3554,
+          "prefix_hash": "2367030ed6922c4a",
+          "size_mib": 69.83798599243164
+        }
+      ],
+      "sample_t": 1793777978.7597415,
+      "slot": 3,
+      "task": 4
+    },
+    "flags_raw": {
+      "ORCHESTRATOR_PREFIX_INDEX": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_FORK": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM": "1",
+      "ORCHESTRATOR_PREFIX_INDEX_LPM_MAX_SKIPS": "1"
+    },
+    "top_level_flags": "unverified",
+    "effective_native_scout_budget_s": 240.0,
+    "source_scoped_rule": "descriptive outcomes and slot witnesses only, no paired gate/performance decision"
+  }
+}

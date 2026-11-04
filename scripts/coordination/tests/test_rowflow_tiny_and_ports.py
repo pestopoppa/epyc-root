@@ -22,6 +22,10 @@ class TinyRowTests(unittest.TestCase):
         self.res = os.path.join(self.flags, "out", "RESULT.json")
         self.pkt = os.path.join(self.flags, "pkt")
         os.makedirs(self.pkt)
+        # live ready manifests always bind the engine by path + sha256 (completed-smoke filing checks it)
+        self.engine = os.path.join(self.pkt, "filler_run15.sh")
+        with open(self.engine, "w") as f:
+            f.write("#!/bin/bash\nexit 0\n")
 
     def _launcher(self, body="", complete_cmd=None):
         """A row launcher: optional pre-engine body, then the filler_run15.sh engine line (never executed here)."""
@@ -29,7 +33,7 @@ class TinyRowTests(unittest.TestCase):
         cc = complete_cmd or f"test -s {self.res}"
         with open(lp, "w") as f:
             f.write("#!/bin/bash\nset -euo pipefail\n" + body +
-                    f"exec /bin/bash /nonexistent/filler_run15.sh --id {self.rid} --class cpu --min-window 600 "
+                    f"exec /bin/bash {self.engine} --id {self.rid} --class cpu --min-window 600 "
                     f"--cmd '/bin/true' --complete-cmd '{cc}' --stop {self.pkt}/STOP --workdir {self.pkt}\n")
         return lp
 
@@ -38,7 +42,9 @@ class TinyRowTests(unittest.TestCase):
         lp = launcher or self._launcher()
 
         def publish(spec, flags, source=None):
-            row = {"schema": rf.SCHEMA, "id": rid, "result_path": res, "launcher": {"path": lp}, "workdir": self.pkt}
+            row = {"schema": rf.SCHEMA, "id": rid, "result_path": res, "scratch_root": os.path.join(self.flags, "out"),
+                   "launcher": {"path": lp, "sha256": rf.sha256(lp)},
+                   "engine": {"path": self.engine, "sha256": rf.sha256(self.engine)}, "workdir": self.pkt}
             rf.atomic_json(rf.ready_path(flags, rid), row)
             return row
 
@@ -49,7 +55,9 @@ class TinyRowTests(unittest.TestCase):
                 os.makedirs(os.path.dirname(res), exist_ok=True)
                 open(res, "w").write("{}")
             open(os.path.join(dd, "ended"), "w").write("rc=0 reason=complete\n")
-            rf.atomic_json(rf.pass_path(flags, rid_), {"id": rid_, "result_path": res, "job_complete": complete})
+            rf.atomic_json(rf.pass_path(flags, rid_), {"id": rid_, "result_path": res, "job_complete": complete,
+                                                      "launcher_sha256": rf.sha256(lp),
+                                                      "engine_sha256": rf.sha256(self.engine)})
             return "PASS", "1 unit(s)"
         with mock.patch.object(pr, "smoke_regions", return_value="0-3"), mock.patch.object(rf, "publish", publish), \
                 mock.patch.object(rf, "dryrun_run", dry):
@@ -88,8 +96,15 @@ class TinyRowTests(unittest.TestCase):
         self._assert_not_filed(self._smoke(True, launcher=lp))
 
     def test_full_job_predicate_unsatisfied_never_filed_complete(self):
-        # no smoke branch, but the full-job artifact the --complete-cmd reads is absent
-        self._assert_not_filed(self._smoke(True, write_result=False))
+        # no smoke branch, but the full-job artifact the --complete-cmd reads is absent. Since the completed-smoke
+        # result contract (D9-acked 2026-11-04) a job_complete PASS whose declared result is missing REFUSES and the
+        # row is quarantined out of READY (same rule as test_churn_file_result's missing-result case), never filed.
+        with self.assertRaises(rf.Refused):
+            self._smoke(True, write_result=False)
+        g = os.path.join(self.flags, "grants")
+        self.assertFalse(os.path.exists(os.path.join(g, self.rid + ".complete")))
+        self.assertFalse(os.path.exists(os.path.join(g, self.rid + ".ended")))
+        self.assertFalse(os.path.exists(rf.ready_path(self.flags, self.rid)))
 
     def test_check_scrubs_smoke_env_before_rerunning_predicate(self):
         # the predicate detects the smoke variable without naming it (naming it would itself be a smoke branch)

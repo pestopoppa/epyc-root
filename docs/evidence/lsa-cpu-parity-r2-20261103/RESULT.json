@@ -1,0 +1,22 @@
+{
+  "status": "invalid",
+  "rc": 1,
+  "invalid_reason": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/2770180/exe'",
+  "passed": null,
+  "max_abs": null,
+  "dense_argmax": null,
+  "oracle_argmax": null,
+  "native_paths": {
+    "dense": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense.bin",
+    "all": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/all.bin",
+    "trace": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/trace.jsonl",
+    "dense_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense.log",
+    "all_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/all.log",
+    "dense_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense-monitor.jsonl",
+    "all_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/all-monitor.jsonl"
+  },
+  "owner_pid": 2769085,
+  "owner_start_ticks": 185108243,
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/job.py\", line 152, in main\n    seal=check();run('dense',a,seal);run('all',a,seal)\n                                     ~~~^^^^^^^^^^^^^^\n  File \"/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/job.py\", line 56, in run\n    exe=os.path.realpath(os.readlink(f'/proc/{p.pid}/exe'))\n                         ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/proc/2770180/exe'\n",
+  "evidence_receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json"
+}

@@ -200,6 +200,21 @@ def tick_line(rid, rc, verdict, values, filed_by):
             f"[no-belief: row verdict filed by {filed_by}]").replace("  ", " ")
 
 
+def handoff_path(lane, hpath):
+    """Resolve manifest basename aliases without allowing a tick outside the lane."""
+    if not hpath or os.path.isabs(hpath) or ".." in hpath.split("/"):
+        raise ValueError("handoff path must be lane-relative without parent traversal")
+    if not hpath.endswith(".md"):
+        raise ValueError("handoff path must name a Markdown file")
+    if "/" not in hpath:
+        hpath = os.path.join("handoffs", "active", hpath)
+    root = os.path.realpath(lane)
+    target = os.path.realpath(os.path.join(root, hpath))
+    if os.path.commonpath((root, target)) != root:
+        raise ValueError("handoff path resolves outside the lane")
+    return target
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("row_id")
@@ -256,10 +271,10 @@ def main(argv=None):
         import flip_checkbox
         hpath, token = task.rsplit(":", 1)
         try:
-            flip_checkbox.flip(os.path.join(a.lane, hpath), token, datetime.date.today().isoformat(),
+            flip_checkbox.flip(handoff_path(a.lane, hpath), token, datetime.date.today().isoformat(),
                                f"rc={rc} {verdict}; {tick}", dry_run=False)
             print(f"TICKED {token} in {hpath}")
-        except flip_checkbox.CheckboxFlipError as e:
+        except (flip_checkbox.CheckboxFlipError, ValueError) as e:
             print(f"ERROR tick failed: {e}", file=sys.stderr); return 5
     else:
         print("TICK " + tick_line(rid, rc, verdict, values, filed_by))

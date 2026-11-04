@@ -10,10 +10,16 @@ AUTHORITY = 'measurement'
 _spec = importlib.util.spec_from_file_location('ufh12_gs_capture', Path(__file__).resolve().parents[1] / 'producers/ufh12_gs_capture.py')
 _producer = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_producer)
+_fspec = importlib.util.spec_from_file_location('ufh12_gs_frozen', Path(__file__).resolve().parents[1] / 'producers/ufh12_gs_frozen_capture.py')
+_frozen = importlib.util.module_from_spec(_fspec)
+_fspec.loader.exec_module(_frozen)
+
+def _validate(row):
+    return _frozen.validate(row) if row.get('schema') == _frozen.SCHEMA else _producer.validate(row)
 
 def native_rows(path):
     path = Path(path).resolve()
-    rows = _producer.c.load_rows(path, _producer.validate)
+    rows = _producer.c.load_rows(path, _validate)
     if rows is None or len(rows) != 1:
         raise ProjectionError('invalid or mixed UFH-12 G-S coverage sidecar')
     return tuple({'row': row, 'path': str(path)} for row in rows)
@@ -23,6 +29,7 @@ def project(native):
     if native not in native_rows(native['path']):
         raise ProjectionError('UFH-12 G-S coverage does not rederive')
     try:
-        return _producer.project(native['row'])
+        return (_frozen.project(native['row']) if native['row'].get('schema') == _frozen.SCHEMA
+                else _producer.project(native['row']))
     except (ValueError, KeyError, OSError) as exc:
         raise ProjectionError('invalid UFH-12 G-S native record') from exc

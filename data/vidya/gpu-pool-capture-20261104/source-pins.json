@@ -1,0 +1,17 @@
+{
+  "matmul": {
+    "original_path": "/mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code/data/gpu-pool/matmul-20261026/run-v1.py",
+    "original_sha256": "c7dd8496a9073c15f679ce7a20eae9a0fe9ffdf180f97357608701293ea4b41e",
+    "patched_sha256": "616de0c084dd3c28d7169de129d73f93471870f76d528b84a1ab12f24ee78962"
+  },
+  "attention": {
+    "original_path": "/mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code/data/gpu-pool/attention-20261026/run-v3.py",
+    "original_sha256": "41d4bc5a6faf46e7568e12566b43508b604954dc50b82a8b8d04b11f0988fb53",
+    "patched_sha256": "a9bb296e029ec6fb44cc36de01b143445804bc869c19d191593f655560e9a2e7"
+  },
+  "elementwise": {
+    "original_path": "/mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code/data/gpu-pool/elementwise-20261026/run-v3.py",
+    "original_sha256": "16082d51ccd85332f5711b09ff7def5bc5b646827674ea9f10a2aa68dca5b115",
+    "patched_sha256": "d28cf8dccf63d8589e520d1c5d1c563386e271492352a2c69787313dac93b66f"
+  }
+}

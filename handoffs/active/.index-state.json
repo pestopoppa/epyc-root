@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 51,
+      "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 678
+      "open": 676
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 198
+      "open": 202
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 84
+      "open": 85
     }
   },
   "duplicates": {},
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9406,
+          "line": 9407,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 59
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13756,
+          "line": 13757,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 13968,
+          "line": 13969,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -344,10 +344,10 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 64,
+      "closed": 65,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 31,
+      "open": 32,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -356,7 +356,7 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 95,
+      "total": 97,
       "tracks": [
         {
           "blocked": 0,
@@ -410,13 +410,13 @@
         },
         {
           "blocked": 0,
-          "closed": 26,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
           "line": 1702,
           "markers": 1,
           "name": "tool-use-eval-contract",
-          "open": 6
+          "open": 7
         }
       ]
     },
@@ -523,7 +523,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 49,
+      "open": 50,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -532,7 +532,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 388,
+      "total": 389,
       "tracks": [
         {
           "blocked": 0,
@@ -552,14 +552,14 @@
           "line": 2436,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 20
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2558,
+          "line": 2559,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -569,7 +569,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3032,
+          "line": 3033,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -584,7 +584,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3477,
+          "line": 3478,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -600,7 +600,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4990,
+          "line": 4991,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -616,7 +616,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5650,
+          "line": 5651,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -632,7 +632,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5838,
+          "line": 5839,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 223,
+      "closed": 226,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 77,
+      "open": 78,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 315,
+      "total": 319,
       "tracks": [
         {
           "blocked": 12,
@@ -1083,7 +1083,7 @@
         },
         {
           "blocked": 2,
-          "closed": 29,
+          "closed": 32,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -1095,7 +1095,7 @@
           "line": 2260,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 16
+          "open": 17
         },
         {
           "blocked": 0,
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2683,
+          "line": 2692,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 237,
+      "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 100,
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 339,
+      "total": 341,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1301,
+          "line": 1307,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1425,
+          "line": 1431,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1752,
+          "line": 1758,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1891,
+          "line": 1897,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,21 +1188,21 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2444,
+          "line": 2450,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 31,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2581,
+          "line": 2587,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3428,
+          "line": 3438,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 240,
+      "closed": 243,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 90,
+      "open": 89,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 331,
+      "total": 333,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 125,
+          "closed": 126,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,27 +1332,27 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 45
+          "open": 44
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1348,
+          "line": 1351,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
         },
         {
           "blocked": 0,
-          "closed": 105,
+          "closed": 107,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1730,
+          "line": 1733,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1361,9 +1361,9 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 75,
+      "closed": 77,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-04",
       "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 108,
+      "total": 110,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,7 +1419,7 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 1708,
@@ -1492,11 +1492,11 @@
       ]
     },
     "mi210-serving-program.md": {
-      "blocked": 3,
-      "closed": 186,
+      "blocked": 2,
+      "closed": 195,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 47,
+      "open": 45,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,24 +1505,24 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 236,
+      "total": 242,
       "tracks": [
         {
-          "blocked": 1,
-          "closed": 98,
+          "blocked": 0,
+          "closed": 104,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 27
+          "open": 26
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 637,
+          "line": 657,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 1
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 996,
+          "line": 1016,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 2
@@ -1542,34 +1542,34 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1273,
+          "line": 1293,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 2
         },
         {
           "blocked": 0,
-          "closed": 18,
+          "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1908,
+          "line": 1928,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 9
+          "open": 8
         },
         {
           "blocked": 0,
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 2203,
+          "line": 2230,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 3
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 2,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2812,
+          "line": 2839,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3
@@ -2093,7 +2093,7 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 0,
-      "closed": 68,
+      "closed": 69,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 26,
@@ -2105,7 +2105,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 94,
+      "total": 95,
       "tracks": [
         {
           "blocked": 0,
@@ -2129,7 +2129,7 @@
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
           "line": 648,
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 104,
+      "closed": 105,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 138,
+      "total": 139,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 62,
+          "closed": 63,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 673,
+          "line": 679,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2491,7 +2491,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 982,
+          "line": 983,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5
@@ -2614,10 +2614,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 346,
+      "closed": 349,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 88,
+      "open": 91,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 436
+      "total": 442
     }
   },
   "row_id_collisions": {},

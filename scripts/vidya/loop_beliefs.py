@@ -107,13 +107,17 @@ EXIT_READY, EXIT_USAGE, EXIT_REFUSED = 0, 2, 3
 SECTION_HEADER = "## Belief-kernel evidence (Vidya ledger, read-only)"
 #: Section budget (belief redesign §7.3): target 16 + sibling 8 + host 3 detailed claims, an
 #: 80-id tried-mechanisms index, 14 KB in all.
-DEFAULT_MAX_CLAIMS = 27
+DEFAULT_MAX_CLAIMS = 30
 DEFAULT_MAX_BYTES = 14000
 #: Tiers in rank order. `knob` (belief redesign §12.3) is a target-model match whose
 #: `knob_family` is one the target can change; it shares the target budget and ranks above plain
 #: target lines. `lineup` matches a lineup target by `stack_regime` (AutoPilot's own trials).
-TIERS = ("knob", "target", "lineup", "sibling", "host")
-TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3}
+#: `harness` (VB-AK-WIRE-PLANNER-TIER) is consumer-scoped, not model- or device-scoped: a
+#: loop-infrastructure verifier finding (e.g. the actor-wire matrix) whose source frame declares
+#: `applicability.consumer`. It reaches only the consumer it names, is never evidence about a
+#: model, and is excluded from reliance-eligible `claim_ids` exactly like the host tier.
+TIERS = ("knob", "target", "lineup", "sibling", "host", "harness")
+TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3, "harness": 3}
 #: Knob share of the shared knob+target budget while any target-tier claim exists (operator
 #: option A, 2026-10-24, P1 AC9): a large knob family (e.g. the 10 kv_profile retrofit claims)
 #: may take at most half of the 16 model slots, so it can never displace the target's own
@@ -121,6 +125,8 @@ TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3}
 KNOB_CAP_WITH_TARGET = 8
 #: Tiers whose ids are planner evidence for the target (reliance-eligible); host is not.
 _MODEL_TIERS = ("knob", "target")
+#: Tiers shown as context only: never reliance-eligible, never planner evidence.
+NOT_EVIDENCE_TIERS = ("host", "harness")
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
 #: unknown family never reaches the knob tier.
 KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
@@ -799,9 +805,16 @@ def _table_scope(table: SourceScope) -> dict[str, Any]:
             "device": table.device}
 
 
-def _tier(scope: Mapping[str, Any], targets: list[Target]) -> tuple[str | None, list[Target]]:
+def _tier(scope: Mapping[str, Any], targets: list[Target],
+          consumer: str = "") -> tuple[str | None, list[Target]]:
     """The best tier this claim reaches for any target (target > sibling > host), and the
-    targets it reaches it for. A claim lands in exactly one tier."""
+    targets it reaches it for. A claim lands in exactly one tier. A scope that names a
+    `consumer` is a harness fact: it reaches the harness tier for that consumer and nothing
+    else (never a model tier, whatever else the scope says)."""
+    if isinstance(scope, Mapping) and scope.get("consumer"):
+        if consumer and str(scope["consumer"]) == consumer and targets:
+            return "harness", list(targets)
+        return None, []
     hits: dict[str, list[Target]] = {}
     for target in targets:
         tier = tier_of(scope, target)
@@ -900,7 +913,7 @@ def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
 
 
 def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
-            fold_result: Any = None) -> dict[str, Any]:
+            fold_result: Any = None, consumer: str = "") -> dict[str, Any]:
     """Every claim that applies to the targets, tiered and gated, before any cap. Usable rows
     (gate ALLOW, newest complete run per source) are `rows`; refused-but-decision-relevant ones
     are in `flagged`. Public so acceptance checks can count what the caps hide."""
@@ -949,7 +962,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             scope = _table_scope(table)
         else:
             continue
-        tier, hits = _tier(scope, targets)
+        tier, hits = _tier(scope, targets, consumer)
         if tier is None:
             continue
         matched_any = True
@@ -1229,7 +1242,7 @@ def tried_index(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     best: dict[tuple, dict[str, Any]] = {}
     counts: dict[tuple, int] = {}
     for row in rows:
-        if row["tier"] in ("host", "lineup") or not row["mechanism_id"] or row["outcome"] in (
+        if row["tier"] in ("host", "harness", "lineup") or not row["mechanism_id"] or row["outcome"] in (
                 "anchor", "floor"):
             continue
         tier = "target" if row["tier"] in _MODEL_TIERS else row["tier"]
@@ -1283,6 +1296,9 @@ TIER_TITLES = {
                "(lineup-wide knobs)"),
     "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
                 "(other weights, quant or recipe); transfer unproven, never target evidence"),
+    "harness": ("### Loop-infrastructure facts (harness tier) -- verifier findings about this "
+                "consumer's own tooling, not evidence about any model; not evidence for a "
+                "proposal"),
     "host": ("### Device-scope claims (host tier) -- scoped by device only, no model: host "
              "ceiling, not about this model; not evidence for a proposal"),
 }
@@ -1348,6 +1364,8 @@ def _where(row: Mapping[str, Any], tier: str) -> str:
         return f"lineup regime {row['stack_regime'][:12]}{tail}"
     if tier == "host":
         return "device-scope: host ceiling, not about this model"
+    if tier == "harness":
+        return "harness fact: loop infrastructure, not about any model"
     if tier == "sibling":
         recipe = f", recipe {row['recipe']}" if row["recipe"] else ""
         return (f"sibling: measured on {row['model_file'] or row['locator']}{recipe}; "
@@ -1443,7 +1461,7 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
                          if row["falsifier"] else "")
             lines.append(f"  mechanism: {_cap(row['statement'], STATEMENT_CAP)}{falsifier}")
     else:
-        if first_of_source and tier != "host":
+        if first_of_source and tier not in ("host", "harness"):
             scope = SOURCE_SCOPES.get(row["source_kind"])
             run = f", run {row['run']}" if row["run"] else ""
             limits = f" Limits: {scope.limits}." if scope else ""
@@ -1600,7 +1618,8 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                  f"{shown_counts['target']} of {total['target']} target, "
                  f"{shown_counts['lineup']} of {total['lineup']} lineup, "
                  f"{shown_counts['sibling']} of {total['sibling']} sibling, "
-                 f"{shown_counts['host']} of {total['host']} device-scope (host) claim(s) "
+                 f"{shown_counts['host']} of {total['host']} device-scope (host) claim(s), "
+                 f"{shown_counts['harness']} of {total['harness']} harness claim(s) "
                  f"({flags['contested']} contested, {flags['withdrawn']} withdrawn, "
                  f"{flags['refuted']} refuted); tried index {len(entries)} of "
                  f"{len(tried or [])} mechanism(s); bounded at {max_claims} claims / "
@@ -1610,7 +1629,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         return "\n".join(head + body + [count] + tail)
 
     def trim_once() -> bool:
-        for tier in ("host", "sibling"):
+        for tier in ("harness", "host", "sibling"):
             if selected[tier]:
                 selected[tier].pop()
                 return True
@@ -1668,16 +1687,16 @@ def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
             "knob_family": row["knob_family"], "role": row["role"],
             "varied": list(row["varied"]), "knobs": dict(row["knobs"]),
             "stack_regime": row["stack_regime"],
-            "not_evidence": row["tier"] == "host"}
+            "not_evidence": row["tier"] in NOT_EVIDENCE_TIERS}
 
 
 def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
                     max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
                     fold_result: Any = None, reply_field: str = "relies_on_claims",
-                    ) -> dict[str, Any]:
+                    consumer: str = "") -> dict[str, Any]:
     """The evidence half of a `ready` answer, from frames already verified."""
     targets = list(targets)
-    col = collect(frames, targets, as_of=as_of, fold_result=fold_result)
+    col = collect(frames, targets, as_of=as_of, fold_result=fold_result, consumer=consumer)
     if not col["matched_any"]:
         return _evidence_empty("no_applicable_claims", as_of=as_of, frontier=col["frontier"],
                                targets=targets)
@@ -1711,7 +1730,7 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                      presented_runs.items(), key=lambda item: (item[0][0], str(item[0][1])))] \
         + col["run_rows"]
     flagged_ids = {b: [r["claim_id"] for r in rows_b] for b, rows_b in shown_flagged.items()}
-    host_ids = [row["claim_id"] for row in shown if row["tier"] == "host"]
+    host_ids = [row["claim_id"] for row in shown if row["tier"] in NOT_EVIDENCE_TIERS]
     in_section = {(e["tier"], e["model_file"], e["mechanism_id"])
                   for e in tried[:info["index_shown"]]}
     in_section |= {(r["tier"], r["model_file"], r["mechanism_id"]) for r in info["selected"]
@@ -1724,7 +1743,7 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
         "status": status, "reasons": sorted({o["reason"] for o in omitted}),
         "frontier": col["frontier"], "as_of": as_of,
         # Reliance-eligible ids: usable target- and sibling-tier claims shown in the section.
-        "claim_ids": [cid for row in shown if row["tier"] != "host"
+        "claim_ids": [cid for row in shown if row["tier"] not in NOT_EVIDENCE_TIERS
                       for cid in [row["claim_id"], *row["linked_claim_ids"]]],
         "contested_claim_ids": flagged_ids["contested"],
         "withdrawn_claim_ids": flagged_ids["withdrawn"],
@@ -1977,7 +1996,7 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
         if parsed:
             evidence = evaluate_frames(frames, parsed, as_of=as_of, max_claims=max_claims,
                                        max_bytes=max_bytes, fold_result=result,
-                                       reply_field=reply_field)
+                                       reply_field=reply_field, consumer=consumer)
         else:
             evidence = _evidence_empty("inapplicable_target", as_of=as_of,
                                        error="; ".join(target_errors) or "no target")

@@ -1,0 +1,29 @@
+{
+  "old_manifest_count": 26,
+  "actual_bin_files": 36,
+  "previously_uncovered": [
+    "libllama-common.so",
+    "libllama-common.so.0",
+    "libllama-common.so.0.0.10447",
+    "libllama-common.so.0.0.10448",
+    "libllama-server-impl.so",
+    "libmtmd.so",
+    "libmtmd.so.0",
+    "libmtmd.so.0.0.10447",
+    "libmtmd.so.0.0.10448",
+    "test-chunk-kv"
+  ],
+  "verification": {
+    "bin_files": 36,
+    "loader_files": 17,
+    "own_dsos": [
+      "libggml-base.so.0",
+      "libggml-cpu.so.0",
+      "libggml.so.0",
+      "libllama-common.so.0",
+      "libllama-server-impl.so",
+      "libllama.so.0",
+      "libmtmd.so.0"
+    ]
+  }
+}

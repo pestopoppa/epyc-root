@@ -1,0 +1,29 @@
+{
+  "provenance": "New prospective fan-out over copied, commit-pinned real project source. Tasks and cohort are constructed now; no claim of historical production traffic, existing scored outcomes, held-out status, or decision-grade representativeness.",
+  "schema": "epyc.kpf26.prospective-code-fanout.v1",
+  "scope_files_sha256": {
+    "src/api/routes/chat_pipeline/scout_stage.py": "035ce54711ed4b7f0314767413804c20ffab47a67a9998c47dc945fc7e71acea",
+    "src/backends/context_limits.py": "26315e7700577d95d3cf2ebe6d77baaacfe68c41de298a7ed6e7c547a923166f",
+    "src/inference/prefix_index.py": "3921d463b16b97b77b50a9025cc72f4df182fc71958b5fa167e5ed561171c316"
+  },
+  "scoring": "Source-anchored technical claims must be manually adjudicated from full summaries and cited code; deterministic task scoring is not yet implemented.",
+  "source_commit": "868275acb64ef3d490ecac6952518ae187fe74d3",
+  "targets": [
+    {
+      "file": "src/api/routes/chat_pipeline/scout_stage.py",
+      "label": "Explain when and how a scout pre-fills its shared trunk.",
+      "symbol": "_scout_trunk_prefill"
+    },
+    {
+      "file": "src/inference/prefix_index.py",
+      "label": "Identify flags and server capabilities required for prefix fork.",
+      "symbol": "fork_enabled"
+    },
+    {
+      "file": "src/backends/context_limits.py",
+      "label": "Explain how the runtime determines whether KV is shared.",
+      "symbol": "parse_props"
+    }
+  ],
+  "task": "Review how the real scout serving path enables and admits shared-prefix forks."
+}

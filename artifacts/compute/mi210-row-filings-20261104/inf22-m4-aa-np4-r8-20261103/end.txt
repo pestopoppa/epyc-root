@@ -1,0 +1,7 @@
+rc=0 time=2026-11-03T18:11:19Z reason=complete
+job_id=inf22-m4-aa-np4-r8-20261103
+owner=codex-inf22
+step=job-run
+estimated_wall_s=1800
+started=2026-11-03T18:10:28Z
+regions=mi210_0,184-191

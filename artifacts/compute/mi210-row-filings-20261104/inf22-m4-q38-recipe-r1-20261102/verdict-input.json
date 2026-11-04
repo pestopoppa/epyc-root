@@ -1,0 +1,10 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc2 execution refusal, declared native result absent. Existing record attributes it to ownership argv verifier refusing the env wrapper. No recipe comparison or fold evidence.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r1-20261102/end.txt": "47e20dbaf3c542109779521064845d8f9733b88b1a3f6353aac681f1cb259fa6",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r1-20261102/manifest.json": "e37f561926d0e62c650c7723a6a717737ed537abec45668098b788a3a7789c8a"
+  }
+}

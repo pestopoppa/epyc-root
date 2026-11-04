@@ -1,0 +1,221 @@
+{
+  "candidate": "bc441f1a261766d11bfeff21668a1031c4dbf8cd",
+  "cells": [
+    {
+      "arm": "baseline",
+      "recipe": "canonical_t48",
+      "rep": 0
+    },
+    {
+      "arm": "baseline",
+      "recipe": "configured_t96",
+      "rep": 0
+    },
+    {
+      "arm": "candidate",
+      "recipe": "canonical_t48",
+      "rep": 0
+    },
+    {
+      "arm": "candidate",
+      "recipe": "configured_t96",
+      "rep": 0
+    },
+    {
+      "arm": "candidate",
+      "recipe": "configured_t96",
+      "rep": 1
+    },
+    {
+      "arm": "candidate",
+      "recipe": "canonical_t48",
+      "rep": 1
+    },
+    {
+      "arm": "baseline",
+      "recipe": "configured_t96",
+      "rep": 1
+    },
+    {
+      "arm": "baseline",
+      "recipe": "canonical_t48",
+      "rep": 1
+    },
+    {
+      "arm": "baseline",
+      "recipe": "canonical_t48",
+      "rep": 2
+    },
+    {
+      "arm": "baseline",
+      "recipe": "configured_t96",
+      "rep": 2
+    },
+    {
+      "arm": "candidate",
+      "recipe": "canonical_t48",
+      "rep": 2
+    },
+    {
+      "arm": "candidate",
+      "recipe": "configured_t96",
+      "rep": 2
+    }
+  ],
+  "champion": "c72ec82f5417bb2937310326120f149b665e8400",
+  "decision_authority": "descriptive_only",
+  "images": {
+    "baseline": {
+      "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/baseline-image-manifest.json",
+      "sha256": "c44806104d9c9a657df25420944b0dda08d7400fce543fbe8b1c373455016afc"
+    },
+    "candidate": {
+      "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/candidate-image-manifest.json",
+      "sha256": "0cbb92ce35d1d084eecb8eb17dedf481cacf03825749a768dd0a0f866a72a299"
+    }
+  },
+  "inputs": [
+    {
+      "custody_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/q38-input-0-custody.json",
+      "custody_sha256": "64b7643f246dfda07a8900224b91884f3cb1f32024d14562f81e49c74cdb3611",
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
+    },
+    {
+      "custody_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/q38-input-1-custody.json",
+      "custody_sha256": "a2b504512ba820d3fabda100f8fa21662fbf2e96451ce31694d74d48d8498495",
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7"
+    },
+    {
+      "custody_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/q38-input-2-custody.json",
+      "custody_sha256": "e4cbcd4431438603749bf93e35b00ced4dd8cf6f837963ad4e21269c5f41ccb0",
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+      "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+    },
+    {
+      "custody_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/q38-input-3-custody.json",
+      "custody_sha256": "fa22ccdf0be034c1ef82ac5b83f9ae3396c40773d16dad97682eee208ffa5752",
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6"
+    }
+  ],
+  "model": {
+    "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
+  },
+  "recipes": {
+    "canonical_t48": {
+      "cpu_affinity": "0-95",
+      "description": "Configured architect_general physical server for architect_general; review-only, not verified per-arm optimum",
+      "device": "none",
+      "draft_model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "enable_thinking": false,
+      "extra_args": [
+        "--cache-ram",
+        "32768",
+        "--ctx-checkpoints",
+        "32",
+        "--spec-draft-p-min",
+        "0.5"
+      ],
+      "image_path": null,
+      "image_sha256": null,
+      "jinja": true,
+      "kv_k": "f16",
+      "kv_v": "f16",
+      "max_context": 262144,
+      "mlock": true,
+      "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "n_gpu_layers": 0,
+      "name": "q38fn_canonical_t48",
+      "no_mmap": true,
+      "numa_nodes": "all",
+      "override_kv": [],
+      "parallel": 1,
+      "prior_evidence": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/SOURCE-SNAPSHOT.json",
+      "reasoning": "off",
+      "recipe_env": {
+        "GGML_FA_SPLIT_KV": "0",
+        "GGML_FUSED_DECODE_OFF": "1",
+        "GGML_NOHUGEPAGE_PROCESS": "1"
+      },
+      "request_endpoint": "chat",
+      "request_spec_n_max": null,
+      "role": "architect_general",
+      "server_context_size": 262144,
+      "slot_save_path": null,
+      "spec_draft_device": "none",
+      "spec_draft_n_max": 4,
+      "spec_draft_ngl": 0,
+      "spec_draft_threads": null,
+      "spec_type": "draft-mtp",
+      "threads": 48,
+      "ubatch": 2048
+    },
+    "configured_t96": {
+      "cpu_affinity": "0-95",
+      "description": "Configured architect_general physical server for architect_general; review-only, not verified per-arm optimum",
+      "device": "none",
+      "draft_model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "enable_thinking": false,
+      "extra_args": [
+        "--cache-ram",
+        "32768",
+        "--ctx-checkpoints",
+        "32",
+        "--spec-draft-p-min",
+        "0.5"
+      ],
+      "image_path": null,
+      "image_sha256": null,
+      "jinja": true,
+      "kv_k": "f16",
+      "kv_v": "f16",
+      "max_context": 262144,
+      "mlock": true,
+      "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "n_gpu_layers": 0,
+      "name": "q38fn_configured_t96",
+      "no_mmap": true,
+      "numa_nodes": "all",
+      "override_kv": [],
+      "parallel": 1,
+      "prior_evidence": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r4-20261104/inputs/SOURCE-SNAPSHOT.json",
+      "reasoning": "off",
+      "recipe_env": {
+        "GGML_FA_SPLIT_KV": "0",
+        "GGML_FUSED_DECODE_OFF": null,
+        "GGML_NOHUGEPAGE_PROCESS": null
+      },
+      "request_endpoint": "chat",
+      "request_spec_n_max": null,
+      "role": "architect_general",
+      "server_context_size": 262144,
+      "slot_save_path": null,
+      "spec_draft_device": "none",
+      "spec_draft_n_max": 4,
+      "spec_draft_ngl": 0,
+      "spec_draft_threads": null,
+      "spec_type": "draft-mtp",
+      "threads": 96,
+      "ubatch": 2048
+    }
+  },
+  "resource": {
+    "estimated_output_bytes": 1073741824,
+    "max_ram_bytes": 549755813888,
+    "memory_reserve_bytes": 68719476736,
+    "min_remaining_s": 6900
+  },
+  "row_id": "inf22-m4-q38-recipe-r4-20261104",
+  "schema": "epyc.m4.q38.recipe-comparison.v1",
+  "sources": {
+    "comparator": "83e1ea40499cbca531849af454209d45011b55bc2684c841a09068a15c3fd94e",
+    "compare": "1f17fa6e6f57b13f95634cad3c8bdbe7d74a5648725901f4aa138278678e6460",
+    "ownership": "9f5f78a0c7f6ae0997408f1724a4bc4fadc39118df5b44a835a31f3864ecf007",
+    "runner": "6942fa5e6aa783e9d4cba1912abced698f7dfeb0837ce2385b6acabf01108475",
+    "writer": "701168d58ef67bdc1e130cff9a0fa0f8576516df9fe743bcdaf0794501965479"
+  },
+  "status": "DRAFT_NOT_FOR_EXECUTION"
+}

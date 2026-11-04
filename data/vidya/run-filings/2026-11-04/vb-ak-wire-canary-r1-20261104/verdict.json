@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "The real planner reader returned ready, native ingest projected 31 rows with ingest_refused=0 and the protected canonical ledger hash was unchanged. proposition_visible=false and the status is FAIL. No backend or network call occurred. This fails the published visibility predicate; the matrix producer capture remains valid and the two source-wiring completion boxes remain open.",
+  "tick_text": null,
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T07:36:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:23:40Z reason=complete",
+ "filed_at": "2026-11-04T07:36:58+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-canary-r1-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-ak-wire-canary-r1-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "The real planner reader returned ready, native ingest projected 31 rows with ingest_refused=0 and the protected canonical ledger hash was unchanged. proposition_visible=false and the status is FAIL. No backend or network call occurred. This fails the published visibility predicate; the matrix producer capture remains valid and the two source-wiring completion boxes remain open.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-ak-wire-canary-r1-20261104",
+ "row_verdict": "fail",
+ "rule": "Read RESULT.json: PASS iff status=PASS AND prepare_status=ready AND ingest_refused=0 AND rows_projected>0 AND proposition_visible=true AND canonical_unchanged=true. FAIL iff prepare_status=ready AND canonical_unchanged=true AND (proposition_visible=false OR ingest_refused>0 OR rows_projected=0). UNKNOWN on exception, prepare refusal or canonical hash change. Native proposition comes from actor-wire-final.json via unchanged adapter; no applicability invented. One real loop_beliefs.prepare; no model/backend/network calls; no timing or quality claim; stop first verdict, no in-run retry.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "fa359aded43e9ae6882c347d6d7bd8093a0c27b8b1fdbd7d21c52e23c4ac3433",
+  "result": "fail",
+  "status": "filed"
+ }
+}

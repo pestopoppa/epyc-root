@@ -1,0 +1,7 @@
+rc=0 time=2026-11-02T13:43:17Z reason=complete
+job_id=codex-gpu-serving-yarn-e1-a0-low-20261102
+owner=handoff-gpu-serving-tie-in
+step=job-run
+estimated_wall_s=3000
+started=2026-11-02T13:26:22Z
+regions=mi210_0,184-191

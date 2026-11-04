@@ -7359,6 +7359,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       v9-era llama.cpp carries the same defect for anyone running llama-cli non-interactively.
   - 2026-11-02 operator decision: File upstream (decisions-batch2-4-20261102.json)
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
+  - 2026-11-04 PARTIAL: `autokernel-r225-hip-build-only-20261104` PASS rc0 at `8f26e4f3`: test-backend-ops.cpp object (sha 6d6b1ee3) and gfx90a acc.cu HIP object (sha 52af2f65) built, binary sha 5e6928f0, HIP lib sha 541f4fda, build-only boundary marker present. Closes the 'complete claimed clean build' step; no execution, no numerical validation. Box stays open. Next: run the selected boundary corpus (M in 33..2048) on CPU and gfx90a against the ggml reference. [no-belief: build-only]
       M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
       1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
       Rationale from our own record: nearly every INF-67 fused-decoder defect (span overflow,

@@ -1,0 +1,16 @@
+{
+  "source": "ak-actor-wire",
+  "adapter": "adapters/autokernel_actor_wire.py",
+  "adapter_id": "vidya.adapters.autokernel_actor_wire/v1",
+  "paths": [
+    "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/evidence"
+  ],
+  "units_matched": 1,
+  "units_projected": 1,
+  "declined": [],
+  "refused": [],
+  "missing": [],
+  "rows_projected": 31,
+  "frames_emitted": 93,
+  "dry_run": false
+}

@@ -3125,3 +3125,19 @@ Sources: [speculative decoding/MTP refresh](../handoffs/active/speculative-decod
 ## DF2 retained-artifact recovery — 2026-11-01
 
 The R3 recovery verified retained C5 artifacts and a CPU architecture test, but it is recovery evidence rather than a GPU parity image. The separate byte-parser diagnostic has completed; DF2-12.1 still needs corrected same-source CPU/GPU image proofs and qualification. No GPU parity or decode-cost conclusion follows from R3. ([DF2 handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build); [DF2 progress](../progress/2026-11/2026-11-01-handoff-df2.md); [daily progress](../progress/2026-11/2026-11-01.md))
+
+## MTP build preparation and SR-6 closure — 2026-11-04
+
+- **SR-6:** All three windows were filed inconclusive (W1 retry rc1 with no RESULT; W2 retry and W3 rc0 with native PARTIAL/UNKNOWN DrainError). It was closed by sealed futility with no width or monotonicity conclusion.
+- **CAFE-4 loading bug:** Native lifecycle smoke exposed skipped NextN tensors and an `eh_proj` assertion because model parameters omitted `load_mtp=true`. Corrected lifecycle and rollback v2 builds passed four-CPU smoke on freshly compiled objects. Native initialization, rollback and fault sensitivity remain untested.
+- **CAFE-4 rollback design (build-only, not executed):** three matched trials (off, observe, fault) with a harness acceptance cap of floor(D/2) that forces suffix rejection, so it is not a native acceptance-rate measurement. The fault zeroes a pending recurrent rollback snapshot index.
+- **CAFE-2 design (build-only, not executed):** verify cost for widths 1..9 from one saved target state, restored with byte equality before each width. It has 55 raw timing records, and missing cells are UNKNOWN. The model's E=256/K=8 assumption must still be verified.
+- **SR-8:** The source proof shows v10 `ngram-simple` drafts from the request prompt, so full-file text in the request is its lookup source. `draft-simple` is not file-input.
+- **G3:** The V4 build passed; runtime R2 failed before inference on missing `libhipblas.so.2` (fixed in the library path). R3 is queued, not passed.
+
+### Source references
+
+- [MTP handoff progress](../progress/2026-11/2026-11-04-handoff-speculative-decoding-mtp.md)
+- [CAFE-2 design](../docs/reports/speculative-build-preparation-20261104/cafe2/DESIGN.md)
+- [CAFE-4 predeclaration](../docs/reports/speculative-build-preparation-20261104/cafe4/PREDECLARED.md)
+- [SR-8 source proof](../docs/reports/speculative-build-preparation-20261104/sr8/SOURCE-PROOF.md)

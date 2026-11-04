@@ -1,0 +1,44 @@
+{
+ "decision_rule": "EXP-04 pilot (exploratory/decision-support). Read out/summary.json (PILOT-COMPLETE.json). EXPAND to the full PF1 L x -ub matrix (r=5, CIs, reversed-order replicate) if every A1/A2 unit proves HIP residency (KFD pid + VRAM sampled in-window, mapped libggml-hip = v10 store), A1-disabled/A0 median within +-10% at both L, capture completeness 1.0; REVISE if the control diverges or capture is incomplete; INCONCLUSIVE otherwise. Early stops (answer/futility/cap) are operational decisions, never PF1 gate results; the 2K/8K screen never yields a negative PF1 verdict.",
+ "dryrun_timeout_s": 1500,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 3600,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXP04",
+ "id": "brf-exp04-pf1-crossover-pilot-20261102-r3",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/brf-exp04/launch.sh",
+  "sha256": "9ce19b4fbeafb6e05b23964ab1fe0bcf95933042c17736f57e63eb50ab7affa9"
+ },
+ "min_window_s": 4200,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-02T22:23:15Z",
+ "published_from": "/mnt/raid0/llm/tmp/brf-exp04/spec.json",
+ "regions": "mi210_0,0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/brf-exp04",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/brf-exp04/STOP",
+ "window_s": 4620,
+ "workdir": "/mnt/raid0/llm/tmp/brf-exp04"
+}
