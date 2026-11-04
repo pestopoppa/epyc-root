@@ -954,6 +954,7 @@ Measure first. The build is gated on the measurement.
   a host-side pass over cell seq bits per ubatch, reporting for each decode/verify row: live 256-cell blocks, and
   live blocks that also hold another sequence's **private** cells (shared trunk cells excluded). Run on an organic
   replay at the production shape (4 slots decoding, DFlash2) on the KVU-19b build.
+  - *(2026-11-04, source compatibility finding.)* The integrated `8952a0f69` observer emits `KPF30 row=... seq=...` without a `pos` field, while `scripts/vidya/adapters/kpf30_phase_capture.py` requires `pos` in its strict ordered mask record and joins it to `(seq,pos)` inside explicit `KPF30_BEGIN/PHASE/END` call brackets. The observer itself emits no such brackets. A native observer stream alone therefore cannot satisfy the phase reader; a source-bound fix and owner-runner phase integration with validated identities are required before measurement. Do not infer decode/verify phase or missing positions from an unbracketed trace. [no-belief: source compatibility finding, no native measurement]
   - **Gate (proposed, confirm when the counter exists):** build KPF-32 only if mixed blocks are ≥ 10% of live blocks
     for decode/verify rows in two windows. Otherwise close P3 with the measurement recorded.
 - **[declined: ws58 2026-11-03 content-review: merged into KPF-32 as its GitNexus step]** **KPF-31: GitNexus on `find_slot`**, plus `apply_ubatch` and `llama_kv_cells` (`src/llama-kv-cells.h`), in

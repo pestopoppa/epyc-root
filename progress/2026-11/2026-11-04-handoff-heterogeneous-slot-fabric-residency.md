@@ -83,3 +83,7 @@ Acknowledged the previously filed P3 impact scan PASS at c72ec82f: find_slot LOW
 ## 15:53Z — Correct the P3 execution order after integrated counter implementation
 
 Acknowledged the previously filed original CODE-on attempt rc1 INCONCLUSIVE: three scouts launched, two completed and one timed out at the 240.055 s stage budget; the subsequent r2 is a separate descriptive result and KPF-26 remains open. Corrected stale P3 execution instructions: KPF-30 default-off counter, synthetic fixtures and source compile were already implemented at 236413a87 and the counter is included in integrated C5-derived 8952a0f69; native declaration, two-window measurement and KPF-32 gate remain open. A quarter successor is being prepared.
+
+## 16:05Z — Identify the native KPF-30 phase-capture compatibility defect
+
+Acknowledged the previously filed original P5 A1 rc75 disk-floor outcome: target result absent and no 20-row verdict; the separate r2 partial exposure remains preserved. Identified source compatibility defect preventing KPF-30 inference: integrated observer at 8952a0f69 emits KPF30 row and seq without pos, while the phase reader strictly requires pos and joins to explicit call/phase brackets; the observer does not emit those brackets. Recorded the exact source/reader boundary, with no inferred phase or native measurement. A standalone source-bound fix and model-free validation are in preparation.
