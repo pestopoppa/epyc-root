@@ -2509,7 +2509,7 @@ aggregate**.
 ### Reasoning Effort Levels — prompt-conditioned quality/token ladder
 
 **Status (2026-07-20): STUB — idea captured, not yet designed.** Operator idea, raised while reading the
-R2a result in [`architect-model-selection-bench.md`](architect-model-selection-bench.md).
+R2a result in [`architect-model-selection-bench.md`](model-evaluation-queue.md).
 
 **One-line purpose:** give every role a **tunable reasoning-effort dial** — a spectrum of prompt
 conditions (and token budgets) trading generated tokens for quality — instead of the current binary

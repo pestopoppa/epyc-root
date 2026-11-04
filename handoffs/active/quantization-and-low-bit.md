@@ -900,7 +900,7 @@ Two corrections to the section above, from the tensor-header parse: the whitelis
 
 _Via `/research-intake` Stage-2 on intake-945/946/956 (`EschaLabs/Qwen3.6-35B-A3B-Escha-W2`). Ingested as
 part of the standing search for a faster `worker_general`; see
-[`architect-model-selection-bench.md`](architect-model-selection-bench.md) for the role-level verdict._
+[`architect-model-selection-bench.md`](model-evaluation-queue.md) for the role-level verdict._
 
 **The `eschamoe` format itself is unusable here.** It is closed CUDA sm_80-120 with no ROCm path — the
 same wall as the rest of the quantization×kernel co-design school (ZipServ, EXL3, Sakana are all

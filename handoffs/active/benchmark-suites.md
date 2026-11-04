@@ -5,7 +5,7 @@
 **Status**: active. The CJ-1/CJ-3 corpora are acquired and CJ-1 is wired; the judge-verdict semantics (CJ-8/9/11/12) and the CJ-15 cascade fixture landed. Next: CJ-16 (§ Start here). Operator-authorised 2026-08-02.
 **Created**: 2026-08-03
 **Categories**: benchmark_methodology, evaluation, routing
-**Related (owns adjacent work — do NOT duplicate)**: [`scoring-infra-standardization.md`](eval-tower-program.md#track-scoring-infra-standardization) (Track 2 owns the exec-scorer + coding ladder + LCB contamination refresh), [`architect-model-selection-bench.md`](architect-model-selection-bench.md) (owns the architect keep/drop verdict and its SWE/LCB arms), [`eval-tower-verification.md`](eval-tower-program.md) (owns E-era eval-pool registration)
+**Related (owns adjacent work — do NOT duplicate)**: [`scoring-infra-standardization.md`](eval-tower-program.md#track-scoring-infra-standardization) (Track 2 owns the exec-scorer + coding ladder + LCB contamination refresh), [`architect-model-selection-bench.md`](model-evaluation-queue.md) (owns the architect keep/drop verdict and its SWE/LCB arms), [`eval-tower-verification.md`](eval-tower-program.md) (owns E-era eval-pool registration)
 **Tracked in**: [`research-evaluation-index.md`](research-evaluation-index.md) — index row added 2026-08-03 (operator-approved).
 
 **Priority**: MEDIUM — T6 inference-ready (rank 49), 69 open, none blocked; the execution-verified judge suite is the instrument other evaluations depend on.
