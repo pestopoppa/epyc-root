@@ -1,0 +1,158 @@
+{
+ "schema": "p12.e5stageb.result.v1",
+ "status": "COMPLETE",
+ "kernel_store": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt",
+ "cells": [
+  {
+   "cell": "qwen36_q8_0-C1-np1-a7full",
+   "harness_rc": 0,
+   "wall_s": 92,
+   "placement_threshold": 40,
+   "placement_rcs": {
+    "3554111": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 84.23468327912963,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1-np2-a7full",
+   "harness_rc": 0,
+   "wall_s": 82,
+   "placement_threshold": 40,
+   "placement_rcs": {
+    "3581485": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 89.93044310727655,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1-np4-a7full",
+   "harness_rc": 0,
+   "wall_s": 82,
+   "placement_threshold": 40,
+   "placement_rcs": {
+    "3605263": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 84.58534326076735,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1-np1-e1parity-a7full",
+   "harness_rc": 0,
+   "wall_s": 107,
+   "placement_threshold": 40,
+   "placement_rcs": {
+    "3636900": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 81.11907167019118,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1b-np1-a7half",
+   "harness_rc": 0,
+   "wall_s": 115,
+   "placement_threshold": 60,
+   "placement_rcs": {
+    "3695575": [
+     0,
+     0
+    ],
+    "3699863": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 60.90229629797381,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1b-np2-a7half",
+   "harness_rc": 0,
+   "wall_s": 100,
+   "placement_threshold": 60,
+   "placement_rcs": {
+    "3710371": [
+     0,
+     0
+    ],
+    "3710954": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 74.6853993090741,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1b-np4-a7half",
+   "harness_rc": 0,
+   "wall_s": 105,
+   "placement_threshold": 60,
+   "placement_rcs": {
+    "3716729": [
+     0,
+     0
+    ],
+    "3720123": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 72.80849182633784,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  },
+  {
+   "cell": "qwen36_q8_0-C1b-np8-a7half",
+   "status": "SKIPPED_FUTILITY",
+   "reason": "np4 < 1.03x np2"
+  },
+  {
+   "cell": "qwen36_q8_0-C1b-np16-a7half",
+   "harness_rc": 0,
+   "wall_s": 115,
+   "placement_threshold": 60,
+   "placement_rcs": {
+    "3726148": [
+     0,
+     0
+    ],
+    "3726821": [
+     0,
+     0
+    ]
+   },
+   "aggregate_decode_tps": 99.15599652777564,
+   "decision_grade_harness": false,
+   "placement_proof": "PASS",
+   "status": "OK"
+  }
+ ],
+ "planned": 9,
+ "note": "descriptive; formal claims need MEASUREMENT.md grammar"
+}
