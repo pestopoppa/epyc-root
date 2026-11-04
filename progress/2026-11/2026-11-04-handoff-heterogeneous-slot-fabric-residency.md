@@ -203,3 +203,7 @@ The model-free R9 SSE capture/rowflow STOP composition passed 2/2 in a portable 
 ## 19:15Z — Review the native trace boundary for the KPF-17.4d parser candidate.
 
 Reviewed experimental source for the retained KPF-17.4d parser candidate: ITEM4 rows are emitted once around llama_decode, while cache layout is emitted inside find_slot per ubatch before allocation. A batch with multiple layouts therefore needs a proved ubatch binding or a fail-closed ambiguity check; the candidate is not adopted and the exposed run remains INVALID.
+
+## 19:22Z — Implement and test synthetic historical KV-grid parsing and bound-comparator refusal controls.
+
+Completed KPF-13.1 synthetic grid-decoder/comparator controls: 29 model-free tests pass, with historical a1f source-bound occupancy/high-water checks, missing-evidence UNKNOWN and contradictory-evidence INVALID. The parser is not a physical ABI or real request/stream validation; the native-adapter gate remains closed and no inference was run.
