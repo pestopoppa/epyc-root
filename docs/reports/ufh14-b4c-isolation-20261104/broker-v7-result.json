@@ -1,0 +1,192 @@
+{
+  "schema": "epyc.offline-cpu-isolation.v7",
+  "inference": false,
+  "production_endpoints_contacted": false,
+  "backend_port": 39791,
+  "child_returncode": 0,
+  "stdout": "{\"checks\": {\"outside_write\": \"denied\", \"outside_create\": \"denied\", \"outside_chmod\": \"denied\", \"raw_inet_socket\": \"denied\", \"raw_connect_on_inherited_channel\": \"denied\", \"outside_unlink\": \"denied\", \"broker_negative_cases\": 10}, \"private_write\": \"allowed\", \"native\": {\"http_status\": 200, \"native_health\": {\"status\": \"ok\", \"models_loaded\": 1, \"mock_mode_available\": true, \"version\": \"0.1.0\", \"backend_health\": {}, \"backend_probes\": {\"architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision\": {\"ok\": true, \"latency_ms\": 13.6, \"url\": \"http://127.0.0.1:39791\", \"status_code\": 200, \"failure_reason\": \"\", \"failure_detail\": \"\"}}, \"knowledge_tools\": {\"available\": false, \"tools\": {\"search_arxiv\": {\"available\": false, \"error\": \"No module named 'arxiv'\"}, \"search_papers\": {\"available\": false, \"error\": \"No module named 'semanticscholar'\"}, \"search_wikipedia\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"get_wikipedia_article\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"search_books\": {\"available\": false, \"error\": \"No module named 'googleapiclient'\"}}}}, \"lifespan_started\": true, \"backend_roles\": [], \"real_evaltower_questions_loaded\": 50, \"evaltowers_run\": false}}\n",
+  "stderr": "Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0/llm/tmp/orchestrator_config_attest/.338381.json.bc23bac3b2644420a5b7face26577baa.tmp'\nKnowledge tools unavailable: search_arxiv, search_papers, search_wikipedia, get_wikipedia_article, search_books. Install with: pip install -e '.[knowledge]'\n",
+  "broker_audit": [
+    {
+      "request": [
+        "127.0.0.1",
+        8000
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "localhost",
+        39791
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.2",
+        39791
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::1",
+        39791
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::ffff:127.0.0.1",
+        39791
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "192.0.2.1",
+        39791
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        "39791"
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        39791,
+        1
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": {},
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": null,
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        39791
+      ],
+      "allowed": true
+    }
+  ],
+  "backend_hits": [
+    {
+      "path": "/health",
+      "peer": "127.0.0.1"
+    }
+  ],
+  "sentinel_unchanged": true,
+  "escape_absent": true,
+  "scope": "sandbox-before-application-import native lifespan + ASGI /health + privately configured native backend probes + real suite load; no inference",
+  "sandbox_before_application_import": true,
+  "deployment_ready": false,
+  "limitations": [
+    "Backend HTTP responder is a transport fixture; no model server was started.",
+    "API ingress is in-process ASGI; backend leg uses real TCP HTTP.",
+    "No model, REPL, EvalTower evaluation or inference execution.",
+    "Native lifespan attestation attempted default shared tmp path and was denied by kernel sandbox.",
+    "Native lifespan initializes LLMPrimitives without server_urls, so backend_roles remains empty; route-level real request wiring unproven.",
+    "Health models_loaded=1 counts healthy HTTP fixture targets; no model loaded.",
+    "Final clean detached worktree replaces copied source; no rerun performed per parent instruction."
+  ],
+  "child": {
+    "checks": {
+      "outside_write": "denied",
+      "outside_create": "denied",
+      "outside_chmod": "denied",
+      "raw_inet_socket": "denied",
+      "raw_connect_on_inherited_channel": "denied",
+      "outside_unlink": "denied",
+      "broker_negative_cases": 10
+    },
+    "private_write": "allowed",
+    "native": {
+      "http_status": 200,
+      "native_health": {
+        "status": "ok",
+        "models_loaded": 1,
+        "mock_mode_available": true,
+        "version": "0.1.0",
+        "backend_health": {},
+        "backend_probes": {
+          "architect_critic/architect_general/coder_escalation/frontdoor/ingest_long_context/toolrunner/vision_escalation/worker/worker_explore/worker_general/worker_math/worker_summarize/worker_vision": {
+            "ok": true,
+            "latency_ms": 13.6,
+            "url": "http://127.0.0.1:39791",
+            "status_code": 200,
+            "failure_reason": "",
+            "failure_detail": ""
+          }
+        },
+        "knowledge_tools": {
+          "available": false,
+          "tools": {
+            "search_arxiv": {
+              "available": false,
+              "error": "No module named 'arxiv'"
+            },
+            "search_papers": {
+              "available": false,
+              "error": "No module named 'semanticscholar'"
+            },
+            "search_wikipedia": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "get_wikipedia_article": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "search_books": {
+              "available": false,
+              "error": "No module named 'googleapiclient'"
+            }
+          }
+        }
+      },
+      "lifespan_started": true,
+      "backend_roles": [],
+      "real_evaltower_questions_loaded": 50,
+      "evaltowers_run": false
+    }
+  },
+  "verdict": "model_free_native_lifespan_private_dynamic_routing_pass_real_deployment_incomplete",
+  "copied_source_removed": true,
+  "replacement_worktree_created": true,
+  "worktree_add_output": "Preparing worktree (detached HEAD 326f5027)\n",
+  "proof_execution_source_mechanism": "private source directory copy, removed after proof; result does not claim worktree rerun",
+  "rerun_performed": false,
+  "publisher_run": false,
+  "production_files_written": false,
+  "attestation": "denied_outside_private_root; native temporary-path override still required",
+  "native_backends_constructed": false,
+  "real_evaltower_status": "native loader loaded 50 questions; evaluation not invoked",
+  "python_source_hashes_unchanged": {
+    "src/prompt_builders/builder.py": true,
+    "src/prompt_builders/types.py": true,
+    "src/api/__init__.py": true,
+    "src/api/routes/health.py": true
+  },
+  "proof_sha256": "47b9676eb42aca40a56c23d94a3b569abe3e7429e1454fa43e7e64df70707e45"
+}
