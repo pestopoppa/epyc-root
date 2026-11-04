@@ -23,3 +23,7 @@ Consumed KVU-16a r3 qualification event. Native receipt has a real four-CPU load
 ## 16:19Z — Qualify external observer feasibility, prepare sampled-load package and fix KVU-19b clean-row qualification
 
 Wrap retry: prior CAF-2 attempt applied the scoped observer tick and complete progress entry; its commit scanner flagged zero-filled hexadecimal ELF fields. Omitted the regenerable raw section listing from the durable packet, retained its digest and documented the omission. No rule bypass or source modification.
+
+## 17:44Z — Published the prospective KPF-17.4d custody build prerequisite after its four-CPU first-object smoke passed.
+
+Published `kvu-kpf174-custody-r5-20261104`: four-CPU first-object smoke PASS, then CPU build row published. The row builds prospective 6ec877068 and verifies build and mapped-library custody; it does not adjudicate historical a1f0c8cf9 cells. KPF-13.1 CPU legs and KPF-17.4 CPU conformance were already decided; historical GPU controls remain outstanding.
