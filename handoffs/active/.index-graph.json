@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T15:17:07Z",
+  "generated_at": "2026-11-04T15:28:05Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 109,
+      "closed": 111,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 690,
+          "line": 692,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2186,7 +2186,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1327,
+          "line": 1328,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1451,
+          "line": 1452,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2204,7 +2204,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1778,
+          "line": 1779,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2213,7 +2213,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1917,
+          "line": 1918,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2222,7 +2222,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2470,
+          "line": 2471,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2239,7 +2239,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2607,
+          "line": 2608,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2262,7 +2262,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3459,
+          "line": 3460,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3556,7 +3556,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1358,
+          "line": 1360,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3571,7 +3571,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1740,
+          "line": 1742,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
@@ -3715,7 +3715,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2700,
+          "line": 2702,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
