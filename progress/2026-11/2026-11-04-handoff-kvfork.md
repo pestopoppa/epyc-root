@@ -223,3 +223,7 @@ KPF-41: published kpf41-direct-vec-impact-8952a0f-20261104-r4 after its four-CPU
 ## 23:08Z — Publish the KPF-30 phase-runner source-impact r8 successor
 
 KPF-30.PHASE-IMPACT: published kpf30-impact-8952-20261104-r8 after its four-CPU source-reference smoke passed. The six native impact queries and skipped-file coverage remain pending; the full run retains the 150 GiB disk floor. Smoke is not source-edit clearance.
+
+## 23:13Z — Publish the clock-instrumented profiler build successor
+
+KVU-19b-gap: published kvu19b-profiler-clock-build-20261104-r5 after its four-CPU smoke passed. The full source-bound build remains pending; the prior r4 full attempt stopped at the disk floor. Smoke does not establish clock calibration, model inference or attribution.
