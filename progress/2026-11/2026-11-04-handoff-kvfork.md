@@ -231,3 +231,7 @@ KVU-19b-gap: published kvu19b-profiler-clock-build-20261104-r5 after its four-CP
 ## 23:18Z — Publish the isolated HIP build successor
 
 KVU-11c: published kvu11c-hip-build-r2-20261104 after a four-CPU ggml-base smoke passed. The first smoke built the library but its full-build-only completion predicate refused the isolated smoke result; the repaired predicate validates that result and artifact while preserving the full-build requirement. The source-bound HIP build remains pending under the 150 GiB disk floor; no GPU execution or promotion is claimed. KPF-50 clock r6 remains queued for GPU smoke.
+
+## 23:19Z — Publish the source-impact successor for KPF-RS-1
+
+KPF-RS-1: published kpf-rs1-impact-8952-20261104-r5 after four-CPU source-reference smoke passed. The detached candidate is pinned to 8952a0f693fb923918157eb25117641b74766230; the seven native impact queries and skipped-file coverage remain pending under the unchanged 150 GiB disk floor. Smoke provides no source-edit clearance. KVU-11c r2 smoke completion event confirmed its previously filed PASS.
