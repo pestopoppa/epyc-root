@@ -107,3 +107,7 @@ YARN-E1-MEM-CHAIN: r1 was already filed and acknowledged as invalid because smok
 ## 15:59Z — Consumed duplicate PF1 expansion event; filing and active refinement already exist.
 
 PF1-EXPAND: original row had already been filed inconclusive: L=512 A1-disabled/A0 control 0.869 fails the ±10% guard despite complete capture; the active r5 refinement addresses this unresolved crossover. No duplicate run was submitted.
+
+## 16:00Z — Consumed duplicate already-filed TTFT run event.
+
+KVU-16g: the TTFT row was already filed and acknowledged. First-prompt residual tax was -0.063 s, below the prescribed threshold; the filed recommendation keeps current behavior.
