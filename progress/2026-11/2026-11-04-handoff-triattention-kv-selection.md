@@ -35,3 +35,7 @@ LSA final CPU cases passed rc=0: all five graph cases, native and runtime units,
 ## 16:35Z — Preserve CPU window diagnostic evidence and qualify its filing
 
 The already filed CPU window run has raw result prompt_n=8204, eight capture checks true, retrieval_match=false, and rc=0. Preserved raw result, trace, monitor, response, and writer status under docs/evidence/lsa-screen-1-cpu-window-8k-20261104/. The canonical result was absent at filing and the writer marked the research projection invalid; the raw diagnostic is not a valid projected research claim. No population-quality or timing claim.
+
+## 16:37Z — Preserve failed full-tree index evidence and distinguish completed targeted successor
+
+The already filed lsa-native-c5-gitnexus-20261104 ended rc=75 at hard-end with only the 3345-file source inventory; it did not complete a full-tree index. Preserved the native record, end and verdict at docs/evidence/lsa-native-c5-gitnexus-20261104/. A later targeted-v4 index and query run completed for the targeted scope; no full caller-coverage claim.
