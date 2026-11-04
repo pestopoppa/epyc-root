@@ -79,3 +79,7 @@ Acknowledged previously filed historical reconstruction inconclusive: quantizer 
 ## 14:58Z — File invalid paired run and preserve native GM/MG evidence for affinity repair.
 
 Acknowledged previously filed pair rc1 PAIR_INVALID: GM measurement overhead +12.47% at 64k exceeds the 5% limit; MG G arm ran roughly five times slower than M, so no lane attribution is accepted. Preserved both arm logs and pair verdict with hashes. Affinity readback and order-dependent slowdown remain under investigation.
+
+## 15:00Z — Acknowledge the filed CH33 CPU/HIP source build and preserve its native evidence.
+
+Acknowledged CH33 build rc0: CPU and HIP built/linkage verified for aa493c690, parent C5 c72ec82f5. Retained 25 source-check, patch, options, linkage and compile evidence files with hashes; no model or GPU execution claim. CH33 model gates remain open; prior EG2 same-tip control did not discriminate.
