@@ -383,3 +383,7 @@ Published inf75-w2-native-tracer-cpu-build-20261104 after a smoke compiled the r
 ## 23:26Z — Qualify NEMO marker build successor and repair W2 census custody
 
 Published nemo-server-marker-build-r13-20261104 after publisher smoke PASS; full source-bound build and profiling remain pending. W2 census preparation now binds completion to its own result, requires the full tracer receipt and proves owned-descendant drain; 161 model-free controls passed, but final tracer custody and GPU census remain pending. Prepared a model-free CH31 bridge and an unbuilt source-bound C5 ggml adapter; the short synthetic row was refused under the five-minute floor, and no native model or causation claim follows. The reported C6 diagnostic was already filed.
+
+## 23:31Z — File verified direct-parent coverage build and partial floor, publish floor successor
+
+Filed inf75-p1b-direct-parent-independent-build-r2-20261104 PASS for build-only: 435 reviewed commands, 295 coverage notes, server and CLI, own-library linkage and 310 retained artifact hashes; 12 symlinks and receipt validation retained independently. No replay or recipe-equivalence claim. Filed floor v37 PARTIAL_WINDOW inconclusive with 10 anchor and 10 candidate main-surface units, no longctx or floor claim; raw records retained. Published independent floor v38 after four-CPU publisher smoke PASS. Added prospective incremental-floor belief wiring task without inventing historical warrant. The reported original sentinel row was already filed. W2 tracer is parked after three launcher failures and was not retried.
