@@ -127,3 +127,9 @@ Prepared `akx-gdn-onehot-gpu-bf16-successor-20261104` against the retained sourc
 ## Corrected BF16 CPU oracle
 
 Published `akx-gdn-onehot-cpu-bf16-fixed-20261104` after the four-CPU corrected-image BF16 baseline smoke passed. The full row tests the baseline and two planted mutants against the independent closed-form K=3 oracle; the full verdict and GPU correctness remain open. The first smoke failed before native work due to missing copied library symlinks; the aliases were restored and the successor smoke passed. Packet: `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-cpu-successor-20261104/`. The GPU BF16 successor smoke remains queued; an independent review found no serious packet blocker.
+
+## 20:13Z — Repair GDN fixture sentinel initialization and qualify the source-bound build
+
+## GDN BF16 sentinel diagnosis and source-bound build
+
+The GPU BF16 publisher smoke failed native rc1 on first-repeat `NONE` NaNs despite eight exact output-oracle receipts and 165 own-PID mapped-HIP/positive-VRAM samples. Source review found the custom initializer leaves framework sentinels uninitialized; this explains a plausible failure path but is not proven by the unnamed `NONE` log. Failure evidence is retained at `/mnt/raid0/llm/tmp/akagg/gdn-bf16-smoke-failure-20261104/`. Published `akx-gdn-bf16-sentinel-build-20261104` after four-CPU source-bound C++ syntax and gfx90a-object smoke PASS. The detached C5 candidate preserves BF16 corrections and initializes sentinel values deterministically while retaining NaN and byte checks. Full build requires fix-specific marker custody; no native correctness or GPU verdict is claimed. Packet `/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/gdn-bf16-sentinel-build-20261104/`.
