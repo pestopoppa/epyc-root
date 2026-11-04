@@ -183,3 +183,7 @@ GDN GPU diagnostic outer rc0 but full rule failed: f32 baseline matched 27,262,9
 ## 19:35Z — Published the source-pinned MoE-Spec endpoint HIP build retry after its disk-floor stop.
 
 Published `inf75-p1b-moespec-hip-retry-20261104` after publisher smoke passed on CPUs 0-3 with the sealed 572-command plan; the full build awaits a grant. Removed superseded CH-LB1 and CH-31 fixture attempts after verifying their separately retained evidence. C6 full-suite smoke exposed a missing canonical-recipe parser dependency before native execution; its packet repair is in progress.
+
+## 19:42Z — Published the bounded C6 full-suite successor and CPU-only GDN BF16 reference diagnostic.
+
+Published `c6-mmq-full-r2-20261104` after bounded N5 GPU smoke and `gdn-bf16-reference-diag-20261104` after four-CPU custody smoke. C6 was granted before a concurrent full-suite failure landed: that earlier result found two q4_K n=4 failures, so this candidate is not qualified; the new diagnostic is running and GDN awaits grant. Narrowed C6 scratch reclamation to its own packet; GDN diagnostic source pins are retained within its packet. Removed superseded CH27 native v5 and v6 attempts, preserving active worktrees and evidence. The 732 CPU configure event was already filed pass, rc0, 431 entries.
