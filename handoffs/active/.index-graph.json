@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T18:06:07Z",
+  "generated_at": "2026-11-04T18:26:27Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1642,7 +1642,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2257,
+          "line": 2259,
           "name": "qwen38-27b-replace-qwen36",
           "open": 1,
           "readiness": "ready"
@@ -1663,7 +1663,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2867,
+          "line": 2869,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3464,
+          "line": 3467,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
