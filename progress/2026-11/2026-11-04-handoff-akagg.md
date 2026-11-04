@@ -327,3 +327,7 @@ The original GDN f32 event was already filed inconclusive. Filed floor v26 and p
 ## 22:29Z — Filed interrupted floor and advanced CH31 component review.
 
 The GDN GPU event and C6 paired GPU r22 were already filed; r23 was already published by another owner. Filed floor v27 as inconclusive rc75 disk-floor stop, retaining terminal evidence. CH31 component review found empty-output acceptance, missing event-route binding and incompatible layout assumptions; correction requested, no native replay result claimed. Published independent floor v28 after publisher smoke PASS; full calibration pending.
+
+## 22:32Z — File interrupted floor and publish independent successor
+
+Filed akxall8-c5-declared-floor-v28-20261104 inconclusive after rc75 disk-floor, with no complete result; retained terminal evidence under /mnt/raid0/llm/tmp/akagg/ended-20261104-retained/. Published independent akxall8-c5-declared-floor-v29-20261104 after its four-CPU publisher smoke PASS; actual full calibration remains pending. The reported C6 full-suite event was already filed.
