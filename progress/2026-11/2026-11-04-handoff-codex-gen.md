@@ -27,3 +27,7 @@ Wrote the FILED receipt for `codex-gpu-serving-p5-gold-offline-r3-20261104` usin
 ## 15:34Z — Acknowledge filed LSA row 474 diagnostic
 
 Wrote the FILED receipt for `lsa-dpbf16-row474-20261104` using the existing fail verdict. The filed result reports hardware BF16 dot raw bits 47058 versus frozen/PyTorch 47057, with one raw and one frozen-key mismatch in this accumulation order; rc=0 indicates execution only. Native result SHA-256 `18e11aec252d7e2e26aefb5a7ef401b072ef93dca41b8121bb4f675fb168bc37`. The broader LSA-SCREEN-1 task is not complete and no checkbox was ticked.
+
+## 15:36Z — Acknowledge filed LSA blocked row 474 diagnostic
+
+Wrote the FILED receipt for `lsa-dpbf16-blocked-row474-20261104` using its existing PASS verdict. The filed result reports blocked hardware BF16 dot raw bits 47057 matching the frozen/PyTorch value for row 474, with zero raw or frozen-key mismatches. Native result SHA-256 `217fde9e1dcbfddd6afe9ec36f5187094a7a2ff2948ad7726f64f28cf0d4b4b3`. This is a one-row diagnostic; the broader LSA-SCREEN-1 task remains open and no checkbox was ticked.
