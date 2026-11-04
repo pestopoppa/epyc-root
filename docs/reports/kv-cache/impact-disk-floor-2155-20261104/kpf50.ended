@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T21:55:05Z reason=disk-floor
+job_id=kpf50-child-evidence-main-impact-20261104
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=3600
+started=2026-11-04T21:55:04Z
+regions=0,1,2,3,96,97,98,99

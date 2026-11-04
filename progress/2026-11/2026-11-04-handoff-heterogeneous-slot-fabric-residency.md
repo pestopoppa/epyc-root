@@ -359,3 +359,7 @@ KPF-60 checked-fixture r6 was already filed inconclusive. Preserved the validato
 ## 21:55Z — Publish exact-source validator impact row
 
 The kpf60 checked-fixture r7 was already filed inconclusive. Published kpf50-child-evidence-main-impact-20261104 after the four-CPU committed-reference smoke passed. It uses a pinned detached checkout and preserves native analyzer/query output and coverage; the smoke does not establish an impact result. Located the HSF-3 progress directory and checkpoint database, but did not read records; the three uncensused source schemas do not independently supply exact HSF-3 pairs.
+
+## 21:58Z — File interrupted KPF-50 and KVU-12.6 impact rows
+
+The KPF-60 checked-fixture r8 result was already filed. Filed kpf50-child-evidence-main-impact-20261104 and kvu126-impact-beb7-20261104 inconclusive: both ended rc75 at the disk floor before native impact output; preserved grant receipts. No risk clearance or source edit follows. Independent HSF-3 residual source-census row preparation is registered for resumption.
