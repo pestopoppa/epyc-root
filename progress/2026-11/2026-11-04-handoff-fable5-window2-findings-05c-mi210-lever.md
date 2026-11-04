@@ -23,3 +23,7 @@ YARN-E1-MEM: closed the parent on the filed single-server A1 128k→240k→400k�
 ## 14:15Z — Diagnose failed M4 Q38 recipe successor
 
 The dispatched r2 event was already filed inconclusive with receipt (rc143, no native result). The readied successor r4 ended rc1 after three seconds, without RESULT.json, and was independently filed failed. Assigned a bounded diagnosis and successor preparation, with a file-triggered handoff; PF1 refinement remains running. No comparison conclusion or box completion is claimed.
+
+## 14:18Z — Repair Q38 recipe row after pre-inference directory failure
+
+Diagnosed r4 rc1 from the original job log: the full-job path attempted to mkdir captures/run-r1 without its missing parent; the smoke followed a separate branch. The successor must create the parent while refusing existing output, reseal its plan and source custody for r5, and test the full-job setup path without running a model. Delegated that bounded packet preparation and registered its completion event. The r3 YARN event was previously filed inconclusive and the parent memory box is closed by the later continuous-chain result.
