@@ -91,3 +91,7 @@ UFH14-B4k-RUN-GUARD: v3 source pins/argv checks passed 43 offline tests and 23 s
 ## 17:06Z — Qualify the guarded B4k successor and retain the scoped shadow pilot verdict.
 
 UFH14-B4k-RUN-GUARD: fresh ufh14-b4k-guard-v4-20261104 is qualified and armed per dispatcher. Prequalification passed 49 offline tests and 33 subtests with strict real grant parsing and scoped synthetic smoke fields; producer and selector bind completion to the consumed grant, and actual baseline awaits the official run. REPL-EMB-2.3a parse-v7 already filed PASS and receipt present: selections 1,0,1, two actual opens, validated eight-event stream; private wiring only, no quality or parent completion claim. Independent CPU and GPU packet preparations continue via registered terminal events.
+
+## 17:08Z — Preserve reproducible non-finite native timing failure and prepare a finite guard.
+
+UFH14-A3A-F2: offline contract controls reproduced acceptance of NaN native predicted_ms as COMPLETE_DESCRIPTIVE and identified finite guard requirement; retained receipt and prospective patch in docs/reports/ufh14-a3-f2-finite-20261104. No existing queued packet was changed and no native outcome is claimed; fresh packet guard validation underway. Consumed 13 preparation outcomes: prior model-free CPU controls, guarded B4k v2/v3 and qualified v4 successor, and unprotected HIGH impact stop remain scoped as previously filed. Independent CPU isolation and stable-head prerequisites continue via registered output events.

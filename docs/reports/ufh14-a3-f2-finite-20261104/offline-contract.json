@@ -1,0 +1,25 @@
+{
+  "schema": "codex.a3-offline-contract.v1",
+  "at": "2026-11-04T17:06:22.861500+00:00",
+  "task": "UFH14-A3A-F2",
+  "status": "OFFLINE_METRIC_CONTRACT_GAP_IDENTIFIED",
+  "terminal": true,
+  "inference_launched": false,
+  "packet_modified": false,
+  "grants_modified": false,
+  "ready_claimed": false,
+  "checks": {
+    "numerical_oracle": "PASS",
+    "duplicate_binding": "PASS_REFUSED",
+    "quiet_false": "PASS_REFUSED",
+    "zero_native_decode": "PASS_REFUSED",
+    "cache_miss": "PASS_REFUSED",
+    "slot_binding_false": "PASS_REFUSED",
+    "nonfinite_native_decode": "FAIL_ACCEPTED"
+  },
+  "source_sha256": "9d593ff504999d5f1a4cf81ae630e705979c096b67c4f377fb6016aa94d539f9",
+  "fixture": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/a3-offline-contract-20261104",
+  "finding": "Analyzer accepts NaN native predicted_ms and emits NaN native_decode_tok_s under COMPLETE_DESCRIPTIVE. Finite native timing validation is a bounded prerequisite before accepting F2 results. Existing queued smoke untouched.",
+  "prepared_patch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/a3-finite-native-timing-20261104.patch",
+  "successor_action": "Owning session review/apply finite native timing guard to a successor packet; preserve queued source manifest."
+}
