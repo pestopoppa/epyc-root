@@ -227,3 +227,7 @@ The GDN HIP affinity-r2 build event was already filed pass. Filed `c6-pre-mmq-ca
 ## 20:49Z — Published a source-bound C6 n4 cuBLAS diagnostic build successor.
 
 Published `akx-c6-n4-cublas-build-r3-20261104` after its four-CPU custody smoke. The isolated source is a detached worktree at C6 base 729599d plus exact diagnostic patch 14607eb; full build writes directly to persistent scratch, with marker, image hashes and own-library linkage required. No build, native test, GPU result or promotion is claimed. The existing cuBLAS job hashed the full source manifest and copied build output in the grant; this successor avoids both. Earlier this turn filed BF16 r6 disk-floor inconclusive and published BF16 r7 after its baseline smoke; 1f7 CPU build, C6 r3 stop and sentinel r8 stop were already filed. No scratch directory was proven safely superseded.
+
+## 20:57Z — Filed three disk-floor interrupted runs and published the C6 diagnostic build successor after publisher smoke.
+
+Filed C6 build r3 and GDN BF16 CPU r8 / sentinel build r11 as inconclusive disk-floor interruptions, retaining terminal evidence. Published C6 diagnostic build r4 after publisher custody smoke PASS; full build and GPU correctness remain pending. Prepared BF16 CPU r9; publisher reported an existing smoke in progress. Removed superseded C6 r3 scratch after retaining evidence.
