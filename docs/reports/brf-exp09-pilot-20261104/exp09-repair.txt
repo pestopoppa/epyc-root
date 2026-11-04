@@ -1,0 +1,17 @@
+EXP-09 repair preparation — corrected bundle — 2026-11-04
+
+Bundle: /mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2
+Row spec: /mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/spec.json
+Launcher: /mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/launch.sh
+
+Corrections made after review:
+- Launcher now uses the existing interpreter `/mnt/raid0/llm/tmp/brf-exp09/pyenv/venv/bin/python`; its symlink resolves to the extant CPython 3.11.17 and its populated venv. No interpreter/dependency environment was copied into r2.
+- Removed the copied `orch` directory and added a real detached Git worktree at `/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/orch`, commit `3a428cb3795b26251c5f111c9eaa887db0690994`.
+- Rebased all corpus manifest `file` values to r2's own `corpus/item-NN.log`; refreshed identity's manifest SHA-256 and launcher's job/identity/manifest checksum pins.
+- Corrected `handoff_task` to `handoffs/active/context-and-token-economy.md:TOC-SP-3`.
+
+Diff from original pilot: `job.py` changes the experiment base directory and evaluator answer cap 256 -> 1024. `build_corpus.py` changes its output directory to r2. `launch.sh` changes scratch path, row ID, port (18409 -> 18419), and interpreter reference, plus checksum pins. `identity.json` changes row/port and manifest digest. Corpus manifest changes only the per-item file paths; the 12 log bytes and corpus aggregate identity are unchanged. Orchestrator source snapshot is now an actual detached worktree at the pinned original commit.
+
+The 1024-token change addresses five pilot parse failures truncated exactly at 256 completion tokens (4 shape-header, 1 verified-quote). The original frozen corpus aggregate remains `f3a8342c24a32c05f5d93be54d5dbc7c85a75faf85a444e89686a2c36a2331e4`; all 12 item bytes were compared against the original. Partial futility remains after >=4 verified-quote cells and emits “operational decision, not a gate result”; incomplete/futile runs cannot write COMPLETE. The row decision rule requires full completion for the owner comparison and treats early futility as non-gating.
+
+Validation performed: launcher `bash -n`; actual launcher interpreter ran `job.py --check` and returned `CHECK OK`; verified detached worktree HEAD, scratch-local manifest paths, unchanged aggregate and item bytes, and refreshed launcher checksum pins. No inference or `publish_row.py` was run. No grants or gates were edited.

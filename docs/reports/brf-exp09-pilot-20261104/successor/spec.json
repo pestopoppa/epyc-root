@@ -1,0 +1,33 @@
+{
+ "schema": "epyc.row.v3",
+ "id": "brf-exp09-answerbudget-r2-20261104",
+ "owner": "ws58",
+ "launcher": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/launch.sh",
+ "lane": "cpu",
+ "regions": "any-cpu-quarter",
+ "ram_gib": 48,
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl",
+ "result_format": "jsonl",
+ "scratch_root": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2",
+ "keep": [
+  "out/**",
+  "corpus/**",
+  "identity.json",
+  "job.py",
+  "launch.sh",
+  "build_corpus.py",
+  "spec.json",
+  "orch/**"
+ ],
+ "estimate_s": 2400,
+ "dryrun_timeout_s": 900,
+ "min_window_s": 2700,
+ "handoff_task": "handoffs/active/context-and-token-economy.md:TOC-SP-3-EXP09-R2",
+ "decision_rule": "BRF-T4-EXP09 repaired 12-log replay, exploratory/decision-support. Preserve the original frozen 12-log corpus (same manifest and item bytes), four arms, pinned unchanged control implementation, quote-verification planted-mismatch check, own production-consolidated-v10 kernel-store binary and worker model; only the evaluator answer completion budget changes from 256 to 1024 tokens to remove the observed exact-256-token truncation confound. Continue recording raw answers and selected evidence per cell. Complete 12-log comparison supports owner decision: EXPAND only if control is verified, mechanism fired, and verified-quote accuracy >= control; REVISE if nominal path did not run; STOP if verified-quote never beats control. Futility after >=4 verified-quote cells is an operational early-stop decision only, never a pass/fail gate; every incomplete/futile run remains partial and cannot satisfy completion. All answer records must parse without hitting the 1024-token completion ceiling for a clean full comparison; otherwise REVISE harness/inconclusive. Retention uses the original capped failed-ID reference and substring scorer, so report only that scope.",
+ "notes": "Preparation only; no inference or publication performed. Inputs are copied from /mnt/raid0/llm/tmp/brf-exp09 into a distinct scratch directory; corpus bytes, corpus manifest, and orchestrator control snapshot are preserved. Launcher pins new job, identity and manifest hashes and invokes filler_run15 with a distinct ID/port. Worker binary remains the production-consolidated-v10 CPU kernel-store path; job enforces own-library linkage. Answer cap 1024 is the sole experimental change. Existing partial futility logic is retained with explicit operational-not-gate interpretation. Interpreter resolves to the pre-existing /mnt/raid0/llm/tmp/brf-exp09/pyenv/venv (declared by absolute path); no venv copied. Orchestrator pin is a detached Git worktree at 3a428cb3795b26251c5f111c9eaa887db0690994.",
+ "priority_rank": 1,
+ "lineage": "brf-exp09-pilot",
+ "supersedes": "brf-exp09-pilot-20261102",
+ "first_progress_s": 900,
+ "smoke_predicate": "/mnt/raid0/llm/tmp/brf-exp09/pyenv/venv/bin/python -c 'import json; assert any(json.loads(l).get(\"kind\")==\"cell\" for l in open(\"/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl\"))'"
+}

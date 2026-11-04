@@ -1103,3 +1103,5 @@ The separately sealed original prospective full-role producer is `/mnt/raid0/llm
 
 
 **2026-10-30 source update:** C3 R3 original B emitted one prospective native observation (95 dependent decode steps); G12 completed 110 fixed native queries, with 20 paired evidence-file recall scores and unchanged missing truth. See [filing evidence](../../artifacts/compute/results-filing-c3-g12-20261030.json). The existing C3 and SC50 projection tasks remain open and neither loop has a passing planning-context canary.
+
+| EXP-09 spill-summary pilot | Native paired-evaluation records; existing measurement carrier | Project per-cell source/model/kernel/corpus pins, selected evidence, raw answers, parse status, accuracy/retention denominators and incomplete/futility disposition from the EXP-09 producer. Original rc=75 / 37-of-48 capture remains partial; do not manufacture historical measurement warrant. Prospective successor must capture its own tuple at write time and pass the planning-context canary. | VB-EXP09-SPILL-WRITE; ClaimTuple.grade(), no new ladder; [original disposition](../../../docs/reports/brf-exp09-pilot-20261104/README.md) |
