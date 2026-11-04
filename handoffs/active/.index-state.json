@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 676
+      "open": 675
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1361,7 +1361,7 @@
     },
     "long-context-program.md": {
       "blocked": 0,
-      "closed": 77,
+      "closed": 83,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 110,
+      "total": 116,
       "tracks": [
         {
           "blocked": 0,
@@ -1419,7 +1419,7 @@
         },
         {
           "blocked": 0,
-          "closed": 2,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 1708,
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 195,
+      "closed": 196,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 45,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1509,13 +1509,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 104,
+          "closed": 105,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 26
+          "open": 25
         },
         {
           "blocked": 2,
@@ -2421,7 +2421,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 105,
+      "closed": 106,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 33,
@@ -2433,11 +2433,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 139,
+      "total": 140,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 63,
+          "closed": 64,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 679,
+          "line": 681,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14

@@ -635,7 +635,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T14:12:02Z",
+  "generated_at": "2026-11-04T14:17:54Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1561,15 +1561,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 195,
-      "dispatchable": 45,
+      "closed": 196,
+      "dispatchable": 44,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 47,
+      "open": 46,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1589,11 +1589,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 26,
+          "dispatchable": 25,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 26,
+          "open": 25,
           "readiness": "ready"
         },
         {
@@ -1980,7 +1980,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 105,
+      "closed": 106,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
@@ -2036,7 +2036,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 679,
+          "line": 681,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2047,7 +2047,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 77,
+      "closed": 83,
       "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
