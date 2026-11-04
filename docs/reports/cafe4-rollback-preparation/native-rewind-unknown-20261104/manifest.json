@@ -1,0 +1,48 @@
+{
+ "decision_rule": "One-prompt CPU real-MTP rollback/fault diagnostic only. PASS requires pinned v10 source/build/model/actual mapped libraries, positive native strict partial acceptance, distinct matched off/observe/target-fault controls, nonfault cold-prefix and batched comparisons within declared baseline plus 1e-5, both native recurrent-state mode witnesses, fault deviation greater than ten times diagnostic tolerance, no cutoff and reaped child. Any missing or invalid control is UNKNOWN. One prompt and diagnostic-capped acceptance cannot establish full CAFE-4 or performance; candidate lacks -ngl and arbitrary verify-width CLI. Corrected V4 draft-context rewind build; requalification retains original native lineage and first failed qualification.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-native-rollback-fault-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "bin/**",
+  "*.json",
+  "*.py",
+  "*.sh",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/launch.sh",
+  "sha256": "79120033489bc7e8547a0a5a96373a537e59536d2e654785fa3dd9138e77860b"
+ },
+ "min_window_s": 900,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:470: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:470: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "speculative-decoding.md:470: untestable prose prerequisite: 'after adding the draft-suffix rewind and passing four-CPU object smoke. [Failure, source and qualification]. Full build '"
+ ],
+ "published_at": "2026-11-04T14:27:50Z",
+ "published_from": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/runtime.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104"
+}
