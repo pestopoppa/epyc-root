@@ -1,0 +1,64 @@
+{
+  "row": "ufh14-repl-emb23a-parse-v7-20261104",
+  "native_sha256": "45cce3489c9b3393e97fcb4268251a03bb7ad1510b39a39463e85ea38791f0a0",
+  "private_native_copy": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/preserved-shadow/ufh14-repl-emb23a-parse-v7-20261104/results.jsonl",
+  "records": [
+    {
+      "query_number": 0,
+      "selection": 1,
+      "terminal": {
+        "stop": true,
+        "stop_type": "eos",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": true,
+      "shown_arm": "bge-large",
+      "index_identity": {
+        "bge-large": "c90d983639a3e8ca140d6d765aece9cc3099f0e1fedf178e46f14049f8f1fc38",
+        "granite-97m-r2": "12c1b450566416904d7974565510ff635dc3ce48145c8548e036da281e57b5a1"
+      }
+    },
+    {
+      "query_number": 1,
+      "selection": 0,
+      "terminal": {
+        "stop": true,
+        "stop_type": "eos",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": false,
+      "shown_arm": "bge-large",
+      "index_identity": {
+        "bge-large": "c90d983639a3e8ca140d6d765aece9cc3099f0e1fedf178e46f14049f8f1fc38",
+        "granite-97m-r2": "12c1b450566416904d7974565510ff635dc3ce48145c8548e036da281e57b5a1"
+      }
+    },
+    {
+      "query_number": 2,
+      "selection": 1,
+      "terminal": {
+        "stop": true,
+        "stop_type": "eos",
+        "truncated": false,
+        "stopping_word": ""
+      },
+      "opened": true,
+      "shown_arm": "bge-large",
+      "index_identity": {
+        "bge-large": "c90d983639a3e8ca140d6d765aece9cc3099f0e1fedf178e46f14049f8f1fc38",
+        "granite-97m-r2": "12c1b450566416904d7974565510ff635dc3ce48145c8548e036da281e57b5a1"
+      }
+    }
+  ],
+  "stream_validation": {
+    "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/out/run/d2401540666341e692d3bfd64173e02f/online_shadow_c6e13a4f298b.shadow.jsonl",
+    "events": 8,
+    "validated": true
+  },
+  "drain": {
+    "owned_processes_dead": true
+  },
+  "scope": "Three-query private wiring pilot only; no retrieval-quality, full parent or model-scope claim."
+}

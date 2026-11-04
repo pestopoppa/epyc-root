@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official rc0; exactly three valid native EOS selections 1,0,1; two actual BGE ContextBundle pointer opens delivered to validated eight-event ShadowSink stream; BGE and Granite hybrid searches have distinct indexed identities, only BGE shown; grant, source/model/kernel/runtime closure and owned-process drain recorded. Scoped private wiring pilot only; no retrieval-quality, organic traffic, full parent completion or model-scoped belief warrant. Sanitized evidence docs/reports/repl-shadow-gnx-v2-20261104/shadow-v7-result.json and private source copies retained outside row scratch.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:43:36+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:36:33Z reason=complete",
+ "filed_at": "2026-11-04T15:43:36+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3a",
+ "id": "ufh14-repl-emb23a-parse-v7-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-repl-emb23a-parse-v7-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/out/run/*/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc0; exactly three valid native EOS selections 1,0,1; two actual BGE ContextBundle pointer opens delivered to validated eight-event ShadowSink stream; BGE and Granite hybrid searches have distinct indexed identities, only BGE shown; grant, source/model/kernel/runtime closure and owned-process drain recorded. Scoped private wiring pilot only; no retrieval-quality, organic traffic, full parent completion or model-scoped belief warrant. Sanitized evidence docs/reports/repl-shadow-gnx-v2-20261104/shadow-v7-result.json and private source copies retained outside row scratch.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/out/run/*/results.jsonl",
+ "root_cause_family": null,
+ "row": "ufh14-repl-emb23a-parse-v7-20261104",
+ "row_verdict": "pass",
+ "rule": "Private three-query online wiring pilot, not retrieval-quality or full parent completion. Complete iff official phase has three recorded valid model selections (0 is explicit no-open), real BGE and Granite hybrid searches with independent indexes and no fallback, only BGE shown to private Qwen frontdoor, >=1 actual selected pointer opened through ContextBundle and delivered to a validated ShadowSink stream, pinned inputs and owned-process drain; reject truncated, repeated or unclosed reasoning envelopes and out-of-range selections. Missing/no-open is unknown, hidden-arm matching is counterfactual; do not infer a model-scope belief warrant. Incomplete otherwise.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "45cce3489c9b3393e97fcb4268251a03bb7ad1510b39a39463e85ea38791f0a0",
+  "result": "pass",
+  "status": "filed"
+ }
+}

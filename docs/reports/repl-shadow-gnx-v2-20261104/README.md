@@ -40,6 +40,8 @@ The v2 official attempt stopped at disk floor without output. V3, v4 and v5 each
 
 The official [v6 result](shadow-v6-filing.json) likewise ended rc=75 with two length-limited responses and one valid selection/open. The sink validated eight events and the owned processes drained; the three-selection gate was not met. Original private output is retained outside row scratch.
 
+The official [v7 wiring pilot](shadow-v7-result.json) passed its scoped three-query rule (rc=0): all three selections were valid, two pointers were opened through the shown BGE arm, eight sink events validated and owned processes drained. BGE and Granite had distinct hybrid indexes. This does not establish retrieval quality, organic-traffic behavior, model-scoped applicability or completion of the broader online-shadow task.
+
 The APP query-capture impact run ended rc=1 after the lookup returned a markdown table where its parser expected a list. Its [source scan](gs-app-impact-v1/results.jsonl) is not an impact result; no target risk was assessed and source edits remain blocked pending exact context and impact receipts.
 
 The [corrected impact run](gs-app-impact-v2/results.jsonl) produced seven LOW retriever-method impacts, then stopped on **CRITICAL** for `TaskEmbedder._generate_embedding`: 37 indexed upstream nodes, six direct, eight modules and one process. `StrategyStore.retrieve` was not reached. The rc=0 signals the prescribed risk stop, not a nine-target pass. Do not edit the critical target on this result.
