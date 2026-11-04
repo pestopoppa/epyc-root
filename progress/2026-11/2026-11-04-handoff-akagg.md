@@ -311,3 +311,7 @@ The P1b 9e18 HIP coverage build was already filed as a bounded build pass. Filed
 ## 22:13Z — Filed floor interruption, published successors, and prepared CH31 input discrimination prerequisites.
 
 CH31 cap4096 predecessor and subsequent route diagnostic were already filed. Floor v23 stopped rc75 at disk-floor and was filed inconclusive; paired GPU r18 was already filed inconclusive. Published independent floor v24 and paired GPU r19 after publisher smokes PASS. CH31 retained metadata identifies Q8_0 weight/F32 activation shapes and distinct route tags; byte equality, exact IQK rejection and isolated causation remain open. Independent ownership and post-join replay controls are being prepared with outcome events registered.
+
+## 22:17Z — Filed disk-floor interruptions and published independent floor and GPU successors.
+
+The P1b MoE-Spec HIP build was already filed as an incomplete disk-floor stop. Filed floor v24 and paired C6 GPU r19 as inconclusive rc75 disk-floor stops with terminal packets retained. Published independent floor v25 and paired GPU diagnostic r20 after publisher smokes passed; full results remain pending.
