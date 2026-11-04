@@ -11,3 +11,7 @@ Filed R2 pass/EXPAND as a scoped exploratory decision: 48/48 cells, all parsed b
 ## 16:58Z — File disk-floor-interrupted EXP-09 R3 and publish its continuation
 
 Filed R3 as inconclusive after rc75 disk-floor: native capture contains 24/96 cells, all control, and no paired comparison. Preserved native results, source, identity, manifest, end record, and verdict under docs/reports/brf-exp09-r3-partial-20261104. The first R4 qualification generated a treatment cell but failed when dry-run fell through to full-grid validation; preserved the failure, fixed the dry-only exit, and published R4 after a fresh real-cell four-CPU smoke PASS; it preserves the 24 original control cells and frozen corpus and resumes the 72 treatment cells with split-execution provenance. The production 150 GiB disk floor remains intact; the scheduler must admit the row when capacity permits. Parent R3 remains open.
+
+## 17:08Z — File R4 disk-floor stop and ready preserved-seed continuation
+
+Filed R4 inconclusive: rc75 disk-floor one second after grant, with no native treatment result or real preflight. Preserved the byte-exact 24-control R3 seed, end record, qualification, events and verdict under docs/reports/brf-exp09-r4-disk-stop-20261104. Published R5 after fresh-treatment-cell four-CPU smoke PASS to resume the missing 72 cells; real execution remains subject to the unmodified 150 GiB disk floor. The R3 task stays open and any comparison must retain split-execution and scratch-pointer limitations.

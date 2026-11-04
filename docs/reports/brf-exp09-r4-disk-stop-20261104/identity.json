@@ -1,0 +1,30 @@
+{
+  "schema": "brf-exp09.identity.v1",
+  "row": "brf-exp09-resume-r4-20261104",
+  "port": 18431,
+  "server_bin": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+  "server_bin_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+  "kernel": "production-consolidated-v10 kernel store (kernels/production/cpu -> cpu-20260921-ffc1bac82)",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "model_size": 37801097504,
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "model_sha256_registry": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "model_sha_match": true,
+  "model_role": "worker_general (alias on frontdoor :8070) as served: Qwen3.6-35B-A3B-MTP-Q8_0, KV q8_0, enable_thinking false, terse template 1443ea9ab4bb",
+  "deviation": "draft-mtp speculative decoding OFF and temperature 0 (greedy): output-equivalent class, latency NOT comparable to served; -np 1, -c 16384",
+  "chat_template_file": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+  "omp_env": {
+    "OMP_PROC_BIND": "spread",
+    "OMP_PLACES": "cores",
+    "OMP_WAIT_POLICY": "active",
+    "OMP_DYNAMIC": "false"
+  },
+  "orch_pin": "3a428cb3795b26251c5f111c9eaa887db0690994",
+  "environment_py_sha256": "a0c0ee576e27bea357e4282653895c81d835e644d5789ab5a67ee792194be3d3",
+  "environment_py_git_blob": "9cfe1c393598ab21e35888f2cc837129a87a50e4",
+  "spill_output_fn_sha256": "e1707a1b865d7c27da0267e3b3141ef11d77ade5c6c227ab48adf786ae4a67ce",
+  "corpus_manifest_sha256": "076446cce8d4f0ba14ab1a450eeb4b93e861383367db031d0354465cec12e2cd",
+  "resume_of": "brf-exp09-expanded-r3-20261104",
+  "resume_reason": "R3 native stream has 24 control cells only; no intervention cells or COMPLETE marker.",
+  "split_run_limitation": "R3 native controls were captured in a prior server execution and CPU affinity region; R4 interventions would be a separate process/region. Treat comparisons as split-run descriptive only."
+}
