@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T22:53:07Z",
+  "generated_at": "2026-11-04T23:25:28Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1568,14 +1568,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 200,
-      "dispatchable": 17,
+      "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-04",
       "next_action": "Implement M4 fold-gate capture, current role bindings and qualified CPU/GPU execution; see audited execution route",
-      "open": 19,
+      "open": 18,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1595,11 +1595,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 8,
+          "open": 7,
           "readiness": "ready"
         },
         {
@@ -2132,7 +2132,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 251,
+      "closed": 252,
       "dispatchable": 101,
       "domain": "inference-research",
       "guarded": 0,
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1438,
+          "line": 1446,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1562,
+          "line": 1570,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1889,
+          "line": 1897,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2028,
+          "line": 2036,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2581,
+          "line": 2589,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2718,
+          "line": 2726,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3595,
+          "line": 3608,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3511,7 +3511,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 259,
+      "closed": 261,
       "dispatchable": 92,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3560,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1508,
+          "line": 1517,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1899,
+          "line": 1909,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"

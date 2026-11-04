@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 650
+      "open": 649
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 251,
+      "closed": 252,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 101,
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 354,
+      "total": 355,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1438,
+          "line": 1446,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1562,
+          "line": 1570,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1889,
+          "line": 1897,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2028,
+          "line": 2036,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,21 +1188,21 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2581,
+          "line": 2589,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 32,
+          "closed": 33,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2718,
+          "line": 2726,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3595,
+          "line": 3608,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 259,
+      "closed": 261,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 92,
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 352,
+      "total": 354,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 139,
+          "closed": 140,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1336,10 +1336,10 @@
         },
         {
           "blocked": 0,
-          "closed": 10,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1508,
+          "line": 1517,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1899,
+          "line": 1909,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1496,7 +1496,7 @@
       "closed": 200,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 17,
+      "open": 16,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 219,
+      "total": 218,
       "tracks": [
         {
           "blocked": 0,
@@ -1515,7 +1515,7 @@
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 8
+          "open": 7
         },
         {
           "blocked": 2,
