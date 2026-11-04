@@ -1,0 +1,234 @@
+{
+  "schema": "epyc.offline-cpu-isolation.v5",
+  "inference": false,
+  "production_endpoints_contacted": false,
+  "backend_port": 44873,
+  "child_returncode": 0,
+  "stdout": "{\"checks\": {\"outside_write\": \"denied\", \"outside_create\": \"denied\", \"outside_chmod\": \"denied\", \"raw_inet_socket\": \"denied\", \"outside_unlink\": \"denied\", \"broker_negative_cases\": 10}, \"private_write\": \"allowed\", \"native\": {\"http_status\": 200, \"native_health\": {\"status\": \"degraded\", \"models_loaded\": 0, \"mock_mode_available\": true, \"version\": \"0.1.0\", \"backend_health\": {}, \"backend_probes\": {\"frontdoor/toolrunner/worker/worker_explore/worker_general/worker_math/worker_summarize\": {\"ok\": false, \"latency_ms\": 21.8, \"url\": \"http://localhost:8070\", \"status_code\": null, \"failure_reason\": \"connect_error\", \"failure_detail\": \"ConnectError: All connection attempts failed\"}, \"architect_general\": {\"ok\": false, \"latency_ms\": 10.7, \"url\": \"http://localhost:8074\", \"status_code\": null, \"failure_reason\": \"connect_error\", \"failure_detail\": \"ConnectError: All connection attempts failed\"}, \"architect_critic/coder_escalation/ingest_long_context\": {\"ok\": false, \"latency_ms\": 8.2, \"url\": \"http://localhost:8083\", \"status_code\": null, \"failure_reason\": \"connect_error\", \"failure_detail\": \"ConnectError: All connection attempts failed\"}, \"vision_escalation/worker_vision\": {\"ok\": false, \"latency_ms\": 5.4, \"url\": \"http://localhost:8086\", \"status_code\": null, \"failure_reason\": \"connect_error\", \"failure_detail\": \"ConnectError: All connection attempts failed\"}}, \"knowledge_tools\": {\"available\": false, \"tools\": {\"search_arxiv\": {\"available\": false, \"error\": \"No module named 'arxiv'\"}, \"search_papers\": {\"available\": false, \"error\": \"No module named 'semanticscholar'\"}, \"search_wikipedia\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"get_wikipedia_article\": {\"available\": false, \"error\": \"No module named 'mwclient'\"}, \"search_books\": {\"available\": false, \"error\": \"No module named 'googleapiclient'\"}}}}, \"native_direct_probe\": {\"ok\": true, \"latency_ms\": 4.2, \"url\": \"http://127.0.0.1:44873\", \"status_code\": 200, \"failure_reason\": \"\", \"failure_detail\": \"\"}}}\n",
+  "stderr": "Knowledge tools unavailable: search_arxiv, search_papers, search_wikipedia, get_wikipedia_article, search_books. Install with: pip install -e '.[knowledge]'\n",
+  "broker_audit": [
+    {
+      "request": [
+        "127.0.0.1",
+        8000
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "localhost",
+        44873
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.2",
+        44873
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::1",
+        44873
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "::ffff:127.0.0.1",
+        44873
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "192.0.2.1",
+        44873
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        "44873"
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        44873,
+        1
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": {},
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": null,
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        8070
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        8074
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        8083
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        8086
+      ],
+      "allowed": false,
+      "reason": "exact private IPv4 endpoint required"
+    },
+    {
+      "request": [
+        "127.0.0.1",
+        44873
+      ],
+      "allowed": true
+    }
+  ],
+  "backend_hits": [
+    {
+      "path": "/health",
+      "peer": "127.0.0.1"
+    }
+  ],
+  "sentinel_unchanged": true,
+  "escape_absent": true,
+  "scope": "native ASGI /health to owned dummy HTTP backend, no lifespan/model execution",
+  "child": {
+    "checks": {
+      "outside_write": "denied",
+      "outside_create": "denied",
+      "outside_chmod": "denied",
+      "raw_inet_socket": "denied",
+      "outside_unlink": "denied",
+      "broker_negative_cases": 10
+    },
+    "private_write": "allowed",
+    "native": {
+      "http_status": 200,
+      "native_health": {
+        "status": "degraded",
+        "models_loaded": 0,
+        "mock_mode_available": true,
+        "version": "0.1.0",
+        "backend_health": {},
+        "backend_probes": {
+          "frontdoor/toolrunner/worker/worker_explore/worker_general/worker_math/worker_summarize": {
+            "ok": false,
+            "latency_ms": 21.8,
+            "url": "http://localhost:8070",
+            "status_code": null,
+            "failure_reason": "connect_error",
+            "failure_detail": "ConnectError: All connection attempts failed"
+          },
+          "architect_general": {
+            "ok": false,
+            "latency_ms": 10.7,
+            "url": "http://localhost:8074",
+            "status_code": null,
+            "failure_reason": "connect_error",
+            "failure_detail": "ConnectError: All connection attempts failed"
+          },
+          "architect_critic/coder_escalation/ingest_long_context": {
+            "ok": false,
+            "latency_ms": 8.2,
+            "url": "http://localhost:8083",
+            "status_code": null,
+            "failure_reason": "connect_error",
+            "failure_detail": "ConnectError: All connection attempts failed"
+          },
+          "vision_escalation/worker_vision": {
+            "ok": false,
+            "latency_ms": 5.4,
+            "url": "http://localhost:8086",
+            "status_code": null,
+            "failure_reason": "connect_error",
+            "failure_detail": "ConnectError: All connection attempts failed"
+          }
+        },
+        "knowledge_tools": {
+          "available": false,
+          "tools": {
+            "search_arxiv": {
+              "available": false,
+              "error": "No module named 'arxiv'"
+            },
+            "search_papers": {
+              "available": false,
+              "error": "No module named 'semanticscholar'"
+            },
+            "search_wikipedia": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "get_wikipedia_article": {
+              "available": false,
+              "error": "No module named 'mwclient'"
+            },
+            "search_books": {
+              "available": false,
+              "error": "No module named 'googleapiclient'"
+            }
+          }
+        }
+      },
+      "native_direct_probe": {
+        "ok": true,
+        "latency_ms": 4.2,
+        "url": "http://127.0.0.1:44873",
+        "status_code": 200,
+        "failure_reason": "",
+        "failure_detail": ""
+      }
+    }
+  },
+  "verdict": "partial_native_transport_pass_full_app_private_routing_incomplete",
+  "deployment_ready": false,
+  "source_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source",
+  "proof_sha256": "0e4b2a3150382f61bc1d03551df5d9259d37956025091ca43da3dbf37df061b5",
+  "limitations": [
+    "ASGI API ingress is in-process; only backend leg is real TCP HTTP.",
+    "Native full-app /health source stack-prior URLs remain production-named; broker denies those attempts before any connection.",
+    "Native _probe_backend passes against owned private dummy backend.",
+    "Broker rejects ancillary-bearing requests by code; ancillary injection and connect-error branches were not exercised in this bounded run.",
+    "No API lifespan, REPL, model, inference, scoring, or deployment lifecycle proof."
+  ],
+  "input_v4_receipt_missing": true
+}

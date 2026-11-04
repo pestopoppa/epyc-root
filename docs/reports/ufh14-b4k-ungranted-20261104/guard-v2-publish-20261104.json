@@ -1,0 +1,38 @@
+{
+  "status": "GPU_UNAVAILABLE_UNPUBLISHED",
+  "ready": false,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104",
+  "id": "ufh14-b4k-guard-v2-20261104",
+  "at": "2026-11-04T16:35:02.831323+00:00",
+  "source": {
+    "commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+    "clean": true,
+    "mechanism": "git worktree add --detach; no checkout copied"
+  },
+  "offline_validation": {
+    "tests": 33,
+    "passed": 33,
+    "source_closure_check_before_final_kfd_guard": "ok",
+    "native_first_progress_live": "NOT_RUN",
+    "publisher": "NOT_INVOKED"
+  },
+  "safety": {
+    "existing_kfd_pid": 3941795,
+    "vram_bytes_observed": 51102720000,
+    "observation": "single preflight observation; publisher gpu_busy falsely returned free",
+    "foreign_process_untouched": true,
+    "no_model_started": true,
+    "no_grants_or_existing_packets_mutated": true,
+    "own_precondition": "Before every smoke/real server startup: KFD unavailable or any existing KFD process => fail closed; consumed grant must hold gpu-quiet; launcher requests exclusive lock"
+  },
+  "result_contract": {
+    "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104/out/COMPLETE",
+    "filing": "filing.file_run requires original same-ID successful ended receipt plus retained consumed grant and unique in-window run",
+    "smoke": "native first successful dispatched 384-token prefix-fingerprinted serving record since FILLER_SMOKE_T0, exact pinned producer commit; no COMPLETE dependency"
+  },
+  "next_event": {
+    "type": "FOREIGN_GPU_SESSION_COMPLETED",
+    "owner": "owning session reports completion and releases GPU; main session may then run publisher",
+    "predicate": "foreign session completion event plus its captured process exited; no watching/polling initiated here"
+  }
+}
