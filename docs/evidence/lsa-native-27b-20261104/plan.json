@@ -1,0 +1,87 @@
+{
+  "state": "DRAFT_STOPPED_AWAITING_FINAL_PINS_AND_MAIN_SIGN",
+  "question": "Can one 27B PCA native request return exact gold with all 16 global layers executing and pruning, without fallback?",
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256_previously_recorded": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "model_size": 29047086048,
+  "model_inode": 96505457,
+  "model_edge_sha256": [
+    "6dbb3b594feeabdd881aac0568baef2c764dd0183199bbe2d58cba531b2f0a5f",
+    "2205235cea141d3c23f152e0279a0702fb6ca30074776eb2033f5639ba299bba"
+  ],
+  "ids": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/cpu-sparse-no-think/ids.json",
+  "ids_sha256": "a3ea35a630763ff63a6b381866f87dff3126cf8c6245d9a5a6211fa8b54833ed",
+  "prompt_n": 5132,
+  "expected": "92-8-E75FB6",
+  "request": {
+    "n_predict": 24,
+    "cache_prompt": false,
+    "seed": 42,
+    "stream": true,
+    "temperature": 0.0,
+    "top_k": 1
+  },
+  "server_options": [
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "8",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--device",
+    "ROCm0",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off"
+  ],
+  "stop_rule": "Exactly one request, no retries; stop at first reason-bearing native fallback or guard/deadline, preserve valid mechanism failure; complete request requires full trace coverage and all-16 pruning before quality classification.",
+  "required_evidence": [
+    "reviewed new native C5-derived server and full source/build provenance",
+    "manifest and map digest admission",
+    "per-layer native sparse execution and pruning plus fallback counters for all 16 global layers",
+    "own server PID KFD and VRAM samples overlapping the request",
+    "mapped actual ggml/HIP and llama DSO hashes",
+    "exact token-ID request, gold output, prompt_n and token timings",
+    "owned process cleanup"
+  ],
+  "latency_rule": "Descriptive only unless an independent review establishes exact comparability to retained evidence; no new dense baseline.",
+  "unresolved": [
+    "strict CPU/HIP tied-author and 27B HIP synthetic gates",
+    "reviewed source/binary/DSO/capacity pins",
+    "main final sign and actual model resource admission"
+  ],
+  "warmup": "Retain llama-server default warmup; trace offset is captured after health, and only bytes appended during the one HTTP request count.",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "item": {
+    "id": "dev-document_qa-00-trim-5120-no-think",
+    "split": "dev"
+  },
+  "rows": [
+    {
+      "id": "dev-document_qa-00-trim-5120-no-think",
+      "split": "dev"
+    }
+  ],
+  "arms": [
+    "pca-native"
+  ],
+  "prior_attempt": "R2 exact-gold response had Ward ambiguous_selection at first=2048/layer3 and failed mechanism; immutable receipts retained. New source implements pinned author tie ranking and awaits CPU/HIP qualification."
+}

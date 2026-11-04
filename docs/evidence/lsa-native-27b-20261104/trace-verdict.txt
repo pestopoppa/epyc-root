@@ -1,0 +1,1 @@
+{"valid": true, "schema": "lsa-native-trace-validation-v1", "mechanism": "pruned", "identity": [0, 0, 3], "layers_pruned": [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63], "events": 208, "covered_tokens": 5141, "scope": "one request; no model-quality or speedup generalization"}
