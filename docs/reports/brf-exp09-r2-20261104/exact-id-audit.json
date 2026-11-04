@@ -1,0 +1,26 @@
+{
+  "control": {
+    "n": 12,
+    "mean_exact_id_recall": 0.25,
+    "reference": "original first-10 gold IDs, exact equality after whitespace trim",
+    "not_primary_gate": true
+  },
+  "verified_quote": {
+    "n": 12,
+    "mean_exact_id_recall": 0.6666666666666666,
+    "reference": "original first-10 gold IDs, exact equality after whitespace trim",
+    "not_primary_gate": true
+  },
+  "shape_header": {
+    "n": 12,
+    "mean_exact_id_recall": 0.9,
+    "reference": "original first-10 gold IDs, exact equality after whitespace trim",
+    "not_primary_gate": true
+  },
+  "pointer_only": {
+    "n": 12,
+    "mean_exact_id_recall": 0.0,
+    "reference": "original first-10 gold IDs, exact equality after whitespace trim",
+    "not_primary_gate": true
+  }
+}

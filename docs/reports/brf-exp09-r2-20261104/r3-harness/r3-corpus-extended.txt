@@ -1,0 +1,84 @@
+# EXP-09 R3 extended corpus report
+
+- Custody directory: `/mnt/raid0/llm/tmp/brf-exp09-expand-r3/corpus/`
+- Manifest: `/mnt/raid0/llm/tmp/brf-exp09-expand-r3/corpus/MANIFEST.json`
+- Corpus: 24 items; corpus SHA-256 `d69556e907a25d24a1e837a1258413791d5ad86335f389721e5a701a119f216d`.
+- Items 01–12 remain byte-for-byte identical to the R2 frozen corpus. Items 13–24 are the 12 additions. Every local payload SHA and unchanged builder `gold_of` record was verified against the copied full text; all 24 have unique content hashes. New additions also record source paths, source file SHA-256 and size; item 23’s `sha256` is the decompressed custody content SHA while `source_file_sha256` hashes the gzip bytes.
+
+## Provenance and source groups
+
+- Added cases span 9 provenance groups: `ri18` (1), `slotdraft-30574` (1), `research/run_evaluation/swe-eval-A4` (1), `laguna-swe-oracle-v8-20260726` (1), `q38-oracle-waived` (1), `swe-eval-A1` (2), `gold-smoke-20260724` (3), `ufh14-b6d-20261031` evidence (1), and `p5-sphinx-controls-20261104` (1). Campaign clusters are not independent samples: `gold-smoke` contributes 3 cases and `swe-eval-A1` contributes 2. q38 and swe-eval-A1 both include issue `scikit-learn-10908`, with different first-failed nodes.
+- The 10 newly screened cases comprise 8 SWE-bench `run_evaluation` captures, one historical gzip evidence capture, and one p5 Sphinx negative-control capture. The latter is explicitly labeled intentional and must not be treated as an organic failure sample. The other additions are captured benchmark or prior test outputs, not tagged as negative controls by their source metadata.
+- The candidate scout identified two files larger than the expanded 512,000-byte/character bound (523,905 B and 531,838 B); they were excluded. The gzip evidence was decompressed to custody and checked against the exact original scorer. No brf-exp09-generated output was selected.
+
+## Case provenance and first failing node
+
+| Item | Source group | Case provenance | First failed node / case | Input chars | Input bytes | Stratum |
+|---|---|---|---|---:|---:|---|
+| item-01 | ak-codex-handover-20261007 | ak-codex-handover-20261007 | `../worktrees/ak-codex-focused-timeout-fix-20261007/scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py::test_all_compile_routes_sweep_redirected_descendant_before_native_release[survivor_retry-ordinary]` | 85442 | 85444 | original 9,000–120,000 |
+| item-02 | archswap-20260927 | archswap-20260927 | `tests/unit/test_check_shared_with_derivations.py::test_live_models_py_table_agrees_with_the_live_registry` | 26734 | 26734 | original 9,000–120,000 |
+| item-03 | codex-ni-20261024-scheduling | codex-ni-20261024-scheduling | `tests/integration/test_execute_turn.py::test_final_answer_extraction` | 29132 | 29132 | original 9,000–120,000 |
+| item-04 | codex-ni-20261026-embedder-fallback-fix | codex-ni-20261026-embedder-fallback-fix | `tests/unit/test_retrieval_prefix_convention.py::test_fresh_index_stamps_the_current_convention_and_encodes_documents` | 27598 | 27600 | original 9,000–120,000 |
+| item-05 | codex-ni-ci-app-20261101 | codex-ni-ci-app-20261101 | `tests/unit/test_stack_change_pipeline_simulated_fixtures.py::test_simulated_check_runs_promotion_gate_when_requested` | 14856 | 14856 | original 9,000–120,000 |
+| item-06 | codex-ni-thinkprm-t2-20261030 | codex-ni-thinkprm-t2-20261030 | `tests/unit/test_eval_tower_concurrency_metrics.py::test_live_safe_concurrency_uses_quarter_mode_live_ports` | 31619 | 31619 | original 9,000–120,000 |
+| item-07 | codex3-toc-mp2i-20261031 | codex3-toc-mp2i-20261031 | `tests/unit/test_graph_compaction_budgets.py::TestMaybeCompactContext::test_skips_when_compaction_disabled` | 11483 | 11483 | original 9,000–120,000 |
+| item-08 | f8-fillers-20261022 | f8-fillers-20261022 | `unit/test_rng_poskey.py::test_poskey_depth0_equals_depth3` | 74727 | 74727 | original 9,000–120,000 |
+| item-09 | inf70 | inf70 | `tests/unit/test_baseline_ledger.py::test_apply_baseline_ledger_authority_removes_matching_state_cache` | 71411 | 71411 | original 9,000–120,000 |
+| item-10 | kpf-p1-20261004 | kpf-p1-20261004 | `unit/test_slot_fork.py::test_second_child_after_source_purge` | 117557 | 117557 | original 9,000–120,000 |
+| item-11 | kv-prefix-fork | kv-prefix-fork | `unit/test_slot_fork.py::test_kpf173_pinned_cap_per_slot` | 62377 | 62377 | original 9,000–120,000 |
+| item-12 | refactor-01a16fc3 | refactor-01a16fc3 | `tests/unit/test_autopilot_actions.py::test_numeric_trial_records_applied_optuna_params` | 19416 | 19416 | original 9,000–120,000 |
+| item-13 | ri18 | ri18:orch_targeted_2.txt | `tests/unit/test_routing_stage_timing.py::test_direct_stage_times_review_gate_and_skips_it_for_force_role` | 15445 | 15445 | original-9000-120000 |
+| item-14 | slotdraft-30574 | slotdraft-30574:pytest_port.run3.log | `unit/test_slot_save.py::test_slot_restore_damaged_checkpoint_appendix[oversized_blob]` | 80419 | 80419 | original-9000-120000 |
+| item-15 | research/run_evaluation/swe-eval-A4 | swe-eval-A4:matplotlib/matplotlib-20488 | `lib/matplotlib/tests/test_image.py::test_interp_nearest_vs_none[pdf]` | 34864 | 34864 | original-9000-120000 |
+| item-16 | research/run_evaluation/laguna-swe-oracle-v8-20260726 | laguna-swe-oracle-v8-20260726:scikit-learn/scikit-learn-10844 | `sklearn/metrics/cluster/tests/test_supervised.py::test_int_overflow_mutual_info_fowlkes_mallows_score` | 52309 | 52309 | original-9000-120000 |
+| item-17 | research/run_evaluation/q38-oracle-waived | q38-oracle-waived:scikit-learn/scikit-learn-10908 | `sklearn/feature_extraction/tests/test_text.py::test_vectorizer` | 31168 | 31168 | original-9000-120000 |
+| item-18 | research/run_evaluation/swe-eval-A1 | swe-eval-A1:matplotlib/matplotlib-20676 | `lib/matplotlib/tests/test_widgets.py::test_rectangle_selector` | 20968 | 20968 | original-9000-120000 |
+| item-19 | research/run_evaluation/swe-eval-A1 | swe-eval-A1:scikit-learn/scikit-learn-10908 | `sklearn/feature_extraction/tests/test_text.py::test_feature_names` | 54437 | 54437 | original-9000-120000 |
+| item-20 | research/run_evaluation/gold-smoke-20260724 | gold-smoke-20260724:psf/requests-1921 | `test_requests.py::RequestsTestCase::test_BASICAUTH_TUPLE_HTTP_200_OK_GET` | 59528 | 59530 | original-9000-120000 |
+| item-21 | research/run_evaluation/gold-smoke-20260724 | gold-smoke-20260724:psf/requests-1724 | `test_requests.py::RequestsTestCase::test_DIGEST_AUTH_RETURNS_COOKIE` | 53854 | 53856 | original-9000-120000 |
+| item-22 | research/run_evaluation/gold-smoke-20260724 | gold-smoke-20260724:psf/requests-2317 | `test_requests.py::RequestsTestCase::test_DIGESTAUTH_QUOTES_QOP_VALUE` | 74435 | 74437 | original-9000-120000 |
+| item-23 | root-evidence/ufh14-b6d-20261031 | ufh14-b6d-20261031:historical-33-failures | `tests/unit/test_v1_escalation.py::test_a2_quality_escalation_to_architect_general_with_exact_telemetry` | 132119 | 132119 | expanded-8193-512000 |
+| item-24 | root-test/p5-sphinx-controls-20261104 | p5-sphinx-controls-20261104:test_ext_autodoc_private_members::test_private_field | `tests/test_ext_autodoc_private_members.py::test_private_field` | 21693 | 21693 | original-9000-120000 |
+
+First-failed-node IDs are unique across all 24 items. The capped `gold.failed_ids` references do overlap among additions, so unique content does not imply independent evidence:
+- `sklearn/feature_extraction/tests/test_text.py::test_feature_names` appears in item-17, item-19.
+- `test_requests.py::RequestsTestCase::test_DIGESTAUTH_QUOTES_QOP_VALUE` appears in item-20, item-22.
+- `test_requests.py::RequestsTestCase::test_DIGESTAUTH_WRONG_HTTP_401_GET` appears in item-20, item-22.
+- `test_requests.py::RequestsTestCase::test_DIGEST_AUTH_RETURNS_COOKIE` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_DIGEST_AUTH_SETS_SESSION_COOKIES` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_DIGEST_HTTP_200_OK_GET` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_ALTERNATIVE` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_MIXED_PARAMS` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_PARAMS` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_HTTP_200_OK_HEAD` appears in item-20, item-21, item-22.
+- `test_requests.py::RequestsTestCase::test_HTTP_200_OK_PUT` appears in item-21, item-22.
+
+No repeated capped failed ID was found between items 01–14 and items 15–24. The overlaps above are within the added benchmark campaign cases.
+
+## Deterministic shape view size
+
+For every item, the `shape_header` view was reconstructed from the existing `shape_view()` line-selection rules. It contains the latest matching pytest summary, up to 15 `FAILED`/`ERROR` lines, and the first 6 `E` lines, plus fixed labels and pointer head/footer. The output path uses the planned R3 `out/spill/<item>/full.txt` location.
+
+- Maximum reconstructed view across all 24: **3552 chars / 3554 UTF-8 bytes** (item-05).
+
+Per-added-candidate input line-length bounds below show maximum individual line length within each selected slice; each cell is `max chars / max UTF-8 bytes`. Counts reflect available lines up to the specified cap.
+
+| Item | First 15 lines | Last 5 lines | First 15 FAILED/ERROR lines | First 6 E lines | Shape view chars/bytes |
+|---|---:|---:|---:|---:|---:|
+| item-13 | 119/119 (15) | 114/114 (5) | 121/121 (15) | 209/209 (6) | 3263/3265 |
+| item-14 | 121/121 (15) | 94/94 (5) | 94/94 (4) | 47/47 (4) | 1016/1018 |
+| item-15 | 54/54 (15) | 90/90 (5) | 80/80 (9) | 88/88 (6) | 1708/1710 |
+| item-16 | 54/54 (15) | 108/108 (5) | 108/108 (1) | 99/99 (1) | 661/663 |
+| item-17 | 54/54 (15) | 101/101 (5) | 80/80 (2) | 83/83 (2) | 778/780 |
+| item-18 | 54/54 (15) | 92/92 (5) | 81/81 (3) | 218/218 (6) | 1144/1146 |
+| item-19 | 54/54 (15) | 101/101 (5) | 80/80 (1) | 79/79 (1) | 613/615 |
+| item-20 | 54/54 (15) | 80/80 (5) | 81/81 (15) | 55/55 (6) | 1894/1896 |
+| item-21 | 54/54 (15) | 80/80 (5) | 81/81 (15) | 55/55 (6) | 1925/1927 |
+| item-22 | 54/54 (15) | 80/80 (5) | 85/85 (15) | 55/55 (6) | 1908/1910 |
+| item-23 | 119/119 (15) | 115/115 (5) | 86/86 (15) | 86/86 (6) | 2120/2122 |
+| item-24 | 54/54 (15) | 144/144 (5) | 80/80 (2) | 97/97 (6) | 1126/1128 |
+
+## Custody checks
+
+- All 24 local file paths resolve inside the corpus directory; all are read-only. The original 12 source bytes and gold records were checked against R2. Every addition passed UTF-8, NUL, credential-pattern, size-stratum, failed-summary, and `FAILED`-node checks. `gold_of` was unchanged from `build_corpus.py`.
+- Source manifest contains the per-case source and source group, benchmark/case provenance, first failure node, source SHA-256, local content SHA-256, byte/character sizes, stratum, and negative-control classification. For gzip item 23, compressed source SHA and decompressed content SHA are distinct and both retained.

@@ -1,0 +1,69 @@
+{
+  "row": "brf-exp09-answerbudget-r2-20261104",
+  "result_sha256": "d29680e346f05481d1387e8f90a2d095d009abfe9ea2a1bdb7be4b8e2cc32296",
+  "rc": 0,
+  "cells": 48,
+  "duplicate_or_missing_pairs": 0,
+  "unparsed_or_ceiling_hits": 0,
+  "control_code_unchanged": true,
+  "linkage_ok": true,
+  "planted_mismatch_rejected": "12/12",
+  "native_terminal": {
+    "mechanism_fired": false,
+    "capture_complete": false
+  },
+  "arms": {
+    "control": {
+      "n": 12,
+      "accuracy_mean": 0.8035,
+      "retention_mean": 0.41658333333333336,
+      "max_answer_tokens": 98
+    },
+    "verified_quote": {
+      "n": 12,
+      "accuracy_mean": 0.8680833333333333,
+      "retention_mean": 0.7500833333333333,
+      "max_answer_tokens": 398
+    },
+    "shape_header": {
+      "n": 12,
+      "accuracy_mean": 1.0,
+      "retention_mean": 1.0,
+      "max_answer_tokens": 500
+    },
+    "pointer_only": {
+      "n": 12,
+      "accuracy_mean": 0.2638333333333333,
+      "retention_mean": 0.0,
+      "max_answer_tokens": 75
+    }
+  },
+  "decision": "EXPAND exploratory; terminal aggregate bug corrected by direct native-record inspection; no default-on or production claim",
+  "paired_vs_control": {
+    "verified_quote": {
+      "n": 12,
+      "wins": 4,
+      "ties": 6,
+      "losses": 2,
+      "mean_delta": 0.06458333333333334
+    },
+    "shape_header": {
+      "n": 12,
+      "wins": 8,
+      "ties": 4,
+      "losses": 0,
+      "mean_delta": 0.1965
+    },
+    "pointer_only": {
+      "n": 12,
+      "wins": 0,
+      "ties": 0,
+      "losses": 12,
+      "mean_delta": -0.5396666666666666
+    }
+  },
+  "verified_quote_fallback_count": 1,
+  "execution_ids": {
+    "b089a341736a": 48
+  }
+}
