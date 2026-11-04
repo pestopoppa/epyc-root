@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Engineering-only actual grant rc0: RESULT COMPLETE, pytest exit0, exactly seven JUnit cases, zero failures/errors/skips; pinned source hashes verified pre/post, temporary Git repositories removed. Does not validate scorer quality or model performance. Preserved native result/JUnit/source packet under data/mi210/p5-pii-controls-result-20261104/.",
+  "tick_text": "",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:49:21+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:40:30Z reason=complete",
+ "filed_at": "2026-11-04T15:49:21+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2d",
+ "id": "codex-gpu-serving-p5-candidate-pii-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-gpu-serving-p5-candidate-pii-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-gpu-serving-tie-in",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Engineering-only actual grant rc0: RESULT COMPLETE, pytest exit0, exactly seven JUnit cases, zero failures/errors/skips; pinned source hashes verified pre/post, temporary Git repositories removed. Does not validate scorer quality or model performance. Preserved native result/JUnit/source packet under data/mi210/p5-pii-controls-result-20261104/.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "codex-gpu-serving-p5-candidate-pii-20261104",
+ "row_verdict": "pass",
+ "rule": "COMPLETE requires actual pytest exit0 and JUnit exactly7 collected/testcases, zero failures/errors/skips, source hashes verified pre/post and no temporary Git repositories. Failed/incomplete runs write INCOMPLETE.json only and exit1. Same seven staged-blob controls in smoke/full; no models or network. Four CPUs, 270s execution cap, >=300s estimate/window.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "be7547eb0b47828a6377c194f2873cd0e043f228c8d5b2c48620a3f2bb76da41",
+  "result": "pass",
+  "status": "filed"
+ }
+}
