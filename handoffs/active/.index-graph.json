@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-04T17:55:02Z",
+  "generated_at": "2026-11-04T18:06:07Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1642,7 +1642,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2256,
+          "line": 2257,
           "name": "qwen38-27b-replace-qwen36",
           "open": 1,
           "readiness": "ready"
@@ -1663,7 +1663,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2866,
+          "line": 2867,
           "name": "numa-prefill-decode-disaggregation",
           "open": 2,
           "readiness": "blocked"
@@ -3560,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1382,
+          "line": 1390,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1765,
+          "line": 1773,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
