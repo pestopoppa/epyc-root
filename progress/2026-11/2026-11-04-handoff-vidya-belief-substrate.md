@@ -15,3 +15,7 @@ Filed vb-ak-wire-canary-r1-20261104 FAIL through file_result.py: real planner re
 ## 14:58Z — Close completed-smoke publisher recovery after owner lands reviewed fix with D9 acknowledgment
 
 VB-SMOKE-GLOB-FILING: coordination/churn landed the previously reviewed completed-smoke glob resolution and idempotent recovery fix in 84c3d7c869cf6056c303ebe084e5195f1f705b14 with relayed operator D9 acknowledgment. The landed commit reports 211 passing rowflow/churn tests and five pre-existing failures; the original source control was recovered and filed PASS without a rerun. The duplicate R18 symbols event was previously filed inconclusive: private_hip changed before the complete comparison; no symbol-equivalence claim. Independent source and CPU-row work delegated with completion events.
+
+## 15:09Z — Prepare updated live actor-wire canary and prospective EXP01 reader
+
+Duplicate vb-sl2-steps-r1-20261103 event refers to the already filed PASS and already completed VB-SL2-STEPS-LIVE. Delegated three bounded jobs: prepare a new live actor-wire planning canary against the landed harness tier, implement the prospective EXP01 reader, and prepare an independent CPU inference row. Their completion events are registered; no new source gate or compute result is claimed.
