@@ -143,3 +143,7 @@ Filed fourteen P1b HIP/CPU configure-only rows with retained digest-verified evi
 ## 18:31Z — Publish CH-LB1.1 successor and file P1b and GDN build prerequisites
 
 Published akagg-ch-lb1-c5-successor-20261104 after four-CPU publisher smoke PASS; the full scientific gates and CAS remain open. Filed 1f7 CPU coverage build rc0 with 431 reviewed compile entries and 292 coverage notes and retained 307 verified artifacts. Filed GDN HIP build prerequisite rc0 with retained verified binary, object, libraries and linkage. Both parent workload/oracle gates remain open.
+
+## 18:36Z — File W5s failed census precheck and prepare host status repair
+
+Filed W5s successor rc1 inconclusive: host chroot region-lock shim could not execute its venv interpreter, before native census; retained failed grant, packet and logs with hashes. Reproduced the failure in host chroot and confirmed the canonical status module runs with host /usr/bin/python3. Isolated successor preparation is ongoing, with the existing global lock and ancestor checks preserved.
