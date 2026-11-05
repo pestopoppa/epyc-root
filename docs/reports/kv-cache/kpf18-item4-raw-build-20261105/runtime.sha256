@@ -1,0 +1,9 @@
+aa8fedf4ec8ce2202d1594514ab8e2d3e94940e54df4a85db450ef1782ae1ce3  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/complete.py
+00ec4fb2622c8b7d5723578f6a622ad0035073e8b3e9a56a0d8662b16c94f9b8  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/custody.py
+5d7d10c9ee983c5d04a034ae7df2d90376ff3cab29d07dcb2269db15505a5220  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/host-job.sh
+1a6144b4ac9b5e807b3015a3dae74aac64b6b6b86ccf813bf65b36778adaaa1a  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/integrity.py
+cf69dccbbf42b9a4775cebc1aa0e76a72e5f6e409c592e21cd76017977fb0006  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/job.sh
+c4c4e91be6608e8d7b16782947b56a85d7450f4850509260794ab9919bd31fc0  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/linkage.sha256
+28a6704a1642fa731deee3dc3798da606ea6db9f05b4ca30963e36529c953d40  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/proof.py
+638e36b9da41b0c9561c81601fd6ae00788450a5233d64c35668f8569bfa88c7  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/supervise.py
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/verify_ggml_linkage.sh
