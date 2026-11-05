@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T14:33:31Z",
+  "generated_at": "2026-11-05T15:53:58Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1579,15 +1579,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 202,
-      "dispatchable": 4,
+      "closed": 203,
+      "dispatchable": 3,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 4,
+      "open": 3,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1643,18 +1643,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [],
           "line": 1930,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 3,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2199,
+          "line": 2200,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1673,7 +1673,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2809,
+          "line": 2810,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
@@ -2460,7 +2460,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 985,
+          "line": 986,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3570,7 +3570,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1744,
+          "line": 1746,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3585,7 +3585,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2167,
+          "line": 2169,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"

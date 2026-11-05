@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 670
+      "open": 669
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1339,7 +1339,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1744,
+          "line": 1746,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2167,
+          "line": 2169,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 0,
-      "closed": 202,
+      "closed": 203,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 4,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1549,20 +1549,20 @@
         },
         {
           "blocked": 0,
-          "closed": 17,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
           "line": 1930,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2199,
+          "line": 2200,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2809,
+          "line": 2810,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
@@ -2491,7 +2491,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 985,
+          "line": 986,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5
