@@ -1,0 +1,60 @@
+{
+  "schema": "epyc.c6.q4k-n4-paired-diagnostic.v1",
+  "id": "akx-c6-n4-generic-pair-fresh-20261105",
+  "state": "PREPARED_NOT_PUBLISHED",
+  "owner": "handoff-autokernel-cross-workload-keep-gate",
+  "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:C6-Q4-MMVQ-FIX",
+  "question": "On the same retained seed-71 tensor bytes, does bypassing the special q4_K n=4 MMVQ branch change either native correctness verdict?",
+  "question_scope": "correctness diagnosis only; no performance, qualification, keep, or promotion claim",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "claim_cpus": "184-191",
+  "gpu_threads": "184-191",
+  "gpu_quiet": "exclusive",
+  "role": "build",
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "ram_gib": 32,
+  "dryrun_timeout_s": 300,
+  "seed_plan": {
+    "exact_seed": 71,
+    "case_processes_max": 4,
+    "stop": "both exact pairs completed, or futility on first invalid witness"
+  },
+  "cases": [
+    {
+      "name": "bs32-perm0123",
+      "params_regex": "^type_a=q4_K,type_b=f32,m=16,n=4,k=256,bs=\\[3,2\\],nr=\\[2,2\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "expected_route": "MMVQ",
+      "residual_seed71": 0.007148551097509587,
+      "tolerance_seed71": 0.005595352208076228
+    },
+    {
+      "name": "bs23-perm0321",
+      "params_regex": "^type_a=q4_K,type_b=f32,m=16,n=4,k=256,bs=\\[2,3\\],nr=\\[1,1\\],per=\\[0,3,2,1\\],k_v=0,o=1$",
+      "expected_route": "MMVQ",
+      "residual_seed71": 0.007426463120529613,
+      "tolerance_seed71": 0.006011777852522346
+    }
+  ],
+  "controls": {
+    "inputs": "equal retained r2 byte hashes and oracle inputs",
+    "tolerance": "original per-case tolerance unchanged",
+    "residency": "own-PID pinned HIP mapping plus >=2 KFD reads and positive VRAM",
+    "cleanup": "captured pidfd TERM/KILL escalation, reap and absence check"
+  },
+  "launcher": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/launch.sh",
+  "job": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/job.py",
+  "completion": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/complete.py",
+  "pins": "PINS.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Two exact seed-71 matched pairs on fresh invocation. Require input captures matching each other and retained r2, original tolerance, MMVQ routes, pinned own-PID HIP mappings, at least two own-PID KFD reads and positive VRAM, and drained children. Any missing or invalid witness, STOP or deadline is inconclusive. Report each native verdict; images differ in additional libraries, so no sole-source causal claim; no prevalence, full correctness, performance, qualification, keep or promotion claim. Smoke output is isolated and never the full result.",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "lineage": "akx-c6-n4-generic-pair-fresh",
+  "priority_rank": 100,
+  "first_progress_s": 300,
+  "unit_key": "property.residual"
+}

@@ -1,0 +1,77 @@
+"""Transport completion only; this is not scientific floor admission."""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+D = Path(__file__).resolve().parent
+sys.path.insert(0, str(D))
+from floor_binding import verify_bound_receipt
+from request_observer_join import validate_receipt
+from census_receipt import read_event, read_journal_with_intents
+sys.path.insert(0, str(D / 'native'))
+from source_census import validate as validate_source_census
+from evidence_custody import read_receipt
+
+
+def main():
+    summary_path = D / 'input/full/calibrate-summary.json'
+    event_path = D / 'input/full/request-boundaries.jsonl'
+    runtime_prepared = json.loads((D / 'build-runtime-prepared.json').read_text())
+    pin = json.loads((D / 'input/verification-pin.json').read_text())
+    summary = json.loads(summary_path.read_text())
+    rows = read_journal_with_intents(event_path)
+    floor = json.loads(Path(summary['floor_file']).read_text())
+    ok = (summary['schema'] == 'epyc.ds41_1017.calibrate_summary.v1'
+          and summary['aa_pairs'] == 24 and summary['cmp_pairs'] == 5
+          and summary['unit'] == 'process'
+          and summary['build'] == '/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5'
+          and len(rows) == 96 and verify_bound_receipt(floor, runtime_prepared=runtime_prepared, expected_request=pin["request"], expected_plan=pin["calibration_plan"])
+          and summary['floor_content_sha256'] == floor['content_sha256'])
+    binding = floor['request_binding']
+    durable = {(launch['launch_ordinal'], phase): launch['phases'][phase]
+               for launch in binding['launches']
+               for phase in ('warmup', 'measurement')}
+    seen = set()
+    for row in rows:
+        key = (row['launch_ordinal'], row['phase'])
+        ref = durable.get(key)
+        if ref is None or key in seen:
+            return False
+        seen.add(key)
+        before, after = row['before'], row['after']
+        ok = ok and all(row[k] == ref[k] for k in (
+            'prompt_id', 'request_sha256', 'target', 'before', 'after',
+            'placement_window_ns', 'placement_samples', 'placement_observation',
+            'placement_continuous', 'contention_continuous', 'no_inference_scope',
+            'native_observer', 'writer_check', 'host_census', 'measurement_admission'))
+        ok = ok and row['status'] == 'observed-at-boundaries'
+        ok = ok and before['target'] == after['target'] == row['target']
+        ok = ok and before['tasks'] == after['tasks']
+        ok = ok and before['global_holders'] == after['global_holders']
+        ok = ok and before['monotonic_ns'] < after['monotonic_ns']
+        ok = ok and before['preflight']['verdict'] == after['preflight']['verdict'] == 'PASS'
+        ok = ok and row['placement_observation'] == 'sampled-during-request'
+        ok = ok and 2 <= len(row['placement_samples']) <= 4096
+        ok = ok and row['placement_continuous'] == row['contention_continuous'] == 'unproven'
+        read_event(row)
+        observer = row['native_observer']
+        context = {field: row[field] for field in (
+            'launch_ordinal', 'phase', 'slot_index', 'prompt_id', 'request_sha256')}
+        validate_receipt(observer, request_context=context, target=row['target'],
+                         placement_window_ns=row['placement_window_ns'])
+        raw, _ = read_receipt(observer['evidence_path'], observer['evidence_sha256'])
+        native = json.loads(raw)
+        validate_source_census(native, set(range(96)))
+        ok = ok and native.get('measurement_admission') == 'none'
+        ok = ok and native.get('errors') == []
+        ok = ok and native.get('markers') == observer['markers']
+        ok = ok and native.get('target_observations') == observer['target_observations']
+    return ok and seen == set(durable)
+
+
+if __name__ == '__main__':
+    try:
+        raise SystemExit(0 if main() else 1)
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        raise SystemExit(1)
