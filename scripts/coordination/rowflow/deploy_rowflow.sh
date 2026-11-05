@@ -63,7 +63,7 @@ fi
 tail -1 "$SCRATCH/deploy-$TS-unit.log"
 echo "deploy_rowflow: replay gate (harness $REPLAY_DIR)"
 if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$SCRATCH/deploy-$TS-replay" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
-  grep -E "^(FAILED|E  )" "$SCRATCH/deploy-$TS-replay.log" | head -30; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1
+  sed -n "/^\(FAILED\|E  \)/p" "$SCRATCH/deploy-$TS-replay.log" | sed -n 1,30p; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1
 fi
 tail -1 "$SCRATCH/deploy-$TS-replay.log"
 if [ "$CHECK_ONLY" = 1 ]; then echo "deploy_rowflow: --check-only: gates PASS, nothing installed"; exit 0; fi
