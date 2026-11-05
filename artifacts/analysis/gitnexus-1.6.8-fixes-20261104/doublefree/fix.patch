@@ -1,0 +1,20 @@
+--- a/dist/core/ingestion/pipeline-phases/communities.js
++++ b/dist/core/ingestion/pipeline-phases/communities.js
+@@ -51,7 +51,17 @@
+                 },
+             });
+         });
++        // Singleton communities get no Community node (createCommunityNodes skips
++        // them), so their MEMBER_OF edges dangle. Loading them made the relationship
++        // COPY fail and retry with IGNORE_ERRORS, filling LadybugDB's per-connection
++        // warning store with one warning per dangling row; tearing that store down
++        // intermittently aborted the process ("double free or corruption" in
++        // ClientContext::~ClientContext). Emit only edges whose target exists; the
++        // loaded graph is unchanged because IGNORE_ERRORS dropped exactly these rows.
++        const emittedCommunityIds = new Set(communityResult.communities.map((comm) => comm.id));
+         communityResult.memberships.forEach((membership) => {
++            if (!emittedCommunityIds.has(membership.communityId))
++                return;
+             ctx.graph.addRelationship({
+                 id: `${membership.nodeId}_member_of_${membership.communityId}`,
+                 type: 'MEMBER_OF',

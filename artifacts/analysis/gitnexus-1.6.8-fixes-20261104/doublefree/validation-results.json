@@ -1,0 +1,46 @@
+{
+ "reproducer": "hsf3-adjacency-impact-3a09-20261105 source snapshot; gitnexus analyze --skip-agents-md --skip-skills --workers 1 --force; job.py env; 4-16 concurrent",
+ "arms": {
+  "baseline": {
+   "description": "original package under gdb",
+   "runs": 16,
+   "failures": 3
+  },
+  "trace": {
+   "description": "original + lifecycle trace preload",
+   "runs": 12,
+   "failures": 2
+  },
+  "nockpt": {
+   "description": "original, GITNEXUS_WAL_MANUAL_CHECKPOINT=0 (hypothesis: checkpoint concurrency)",
+   "runs": 32,
+   "failures": 5
+  },
+  "fixed": {
+   "description": "rejected candidate: CHECKPOINT connection gate in lbug-adapter.js",
+   "runs": 32,
+   "failures": 10
+  },
+  "clear": {
+   "description": "original + CALL clear_warnings() before close (diagnostic)",
+   "runs": 20,
+   "failures": 3
+  },
+  "asan": {
+   "description": "original + libasan malloc interposer (diagnostic)",
+   "runs": 24,
+   "failures": 0
+  },
+  "fixed2": {
+   "description": "THIS FIX: communities.js skips dangling MEMBER_OF",
+   "runs": 56,
+   "failures": 0
+  }
+ },
+ "summary": {
+  "original_code_non_asan": "13/80 failed",
+  "fixed": "0/56 failed (56 consecutive successes)",
+  "fixed_show_warnings_at_close": "n=0 in all 32 traced fixed runs (original: 322-383)",
+  "summary_line_identical": "113,135 nodes | 177,464 edges | 3153 clusters | 300 flows"
+ }
+}
