@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T15:53:58Z",
+  "generated_at": "2026-11-05T16:13:45Z",
   "nodes": [
     {
       "age_days": 2,
@@ -3597,14 +3597,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 231,
-      "dispatchable": 76,
+      "dispatchable": 77,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-05",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 94,
+      "open": 95,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3676,13 +3676,13 @@
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 1525,
           "name": "harness-improvement-loop",
-          "open": 12,
+          "open": 13,
           "readiness": "blocked"
         },
         {
@@ -3693,7 +3693,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2187,
+          "line": 2189,
           "name": "opencode-shell-integration",
           "open": 1,
           "readiness": "blocked"
@@ -3714,7 +3714,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2266,
+          "line": 2268,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3729,7 +3729,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2713,
+          "line": 2715,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

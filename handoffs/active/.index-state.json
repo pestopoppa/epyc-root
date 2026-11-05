@@ -34,7 +34,7 @@
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 83
+      "open": 84
     }
   },
   "duplicates": {},
@@ -1007,7 +1007,7 @@
       "closed": 231,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 76,
+      "open": 77,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 325,
+      "total": 326,
       "tracks": [
         {
           "blocked": 12,
@@ -1067,7 +1067,7 @@
           "line": 1525,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 8
+          "open": 9
         },
         {
           "blocked": 0,
@@ -1076,7 +1076,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2187,
+          "line": 2189,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 1
@@ -1092,7 +1092,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2266,
+          "line": 2268,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2713,
+          "line": 2715,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
