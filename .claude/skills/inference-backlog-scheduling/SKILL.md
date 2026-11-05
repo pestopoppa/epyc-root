@@ -103,7 +103,9 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
     8 of 24 decode cores with c6-gpu-27b-identity's 27B reload, requests 20-70% slow (main-inf22,
     2026-11-05). rowflow2 enforces this (`timing: true`, design doc decision 7).
   - **GPU correctness suites (test-backend-ops etc.) rank BELOW every waiting GPU timing row, or batch
-    them into one row**, until rowflow2's correctness-shares-gpu token is live. Each holds exclusive
+    them into one row**: lower rank NUMBER = higher priority and a tie can go to the suite, so give the
+    suite a rank number STRICTLY GREATER than every waiting GPU timing row's (use >= 60; c6q4isum-gpu-suite
+    at 50 beat q38p4b-int8 at 50, 2026-11-05), until rowflow2's correctness-shares-gpu token is live. Each holds exclusive
     gpu-quiet ~40 min at ~2 % busy (c6q4opt2-gpu-suite, 2026-11-05) and four timing rows waited behind it.
 - **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
   184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
