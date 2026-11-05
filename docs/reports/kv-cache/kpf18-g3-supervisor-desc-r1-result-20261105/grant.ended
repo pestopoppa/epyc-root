@@ -1,0 +1,7 @@
+rc=75 time=2026-11-05T03:53:55Z reason=partial-native-incomplete
+job_id=kvu-kpf18-g3-supervisor-desc-20261105
+owner=h-kvu
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T03:53:52Z
+regions=72-95

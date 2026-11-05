@@ -1,0 +1,7 @@
+{
+  "base-supervisor.py": "088a73ac9e5084edb3ef6dc2c6552af8f751ae3a65277e9e0bd424e6ab617da4",
+  "job.py": "94a83603251d3860e90b4fc83b05b384ce3c6778390da5a23ceef92d2bde907a",
+  "owned_drain.py": "6cf1d4159ee768b762ba76f911cab16b675a4b115b1fff34cf6c3e35aa461ec4",
+  "supervisor.py": "c2073f20da64e113da233a6139cb53b91ad345120f196dd256edb3cfb357ace8",
+  "test_real_supervisor.py": "6ca3f23bb1386f9725ff75d889ddd23914a3f0c5ba77cb216972f2e6fb1a187d"
+}

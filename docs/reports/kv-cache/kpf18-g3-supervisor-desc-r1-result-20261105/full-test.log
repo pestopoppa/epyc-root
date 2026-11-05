@@ -1,0 +1,9 @@
+test_child_failure (test_real_supervisor.RealSupervisor.test_child_failure) ... ok
+test_deadline (test_real_supervisor.RealSupervisor.test_deadline) ... ok
+test_normal (test_real_supervisor.RealSupervisor.test_normal) ... ok
+test_stop (test_real_supervisor.RealSupervisor.test_stop) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.822s
+
+OK
