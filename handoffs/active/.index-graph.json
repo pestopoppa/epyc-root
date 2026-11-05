@@ -299,6 +299,12 @@
       "weight": 3
     },
     {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "RTG-58",
+      "weight": 3
+    },
+    {
       "from": "INF-45",
       "kind": "ref",
       "to": "EVL-02",
@@ -653,7 +659,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T16:13:45Z",
+  "generated_at": "2026-11-05T16:36:50Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1579,15 +1585,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 203,
-      "dispatchable": 3,
+      "closed": 204,
+      "dispatchable": 2,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 3,
+      "open": 2,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1607,18 +1613,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 680,
+          "line": 681,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0,
           "readiness": "no_open"
@@ -1627,7 +1633,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1017,
+          "line": 1018,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 0,
           "readiness": "no_open"
@@ -1636,7 +1642,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1295,
+          "line": 1296,
           "name": "gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
@@ -1645,7 +1651,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1930,
+          "line": 1931,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 2,
           "readiness": "ready"
@@ -1654,15 +1660,14 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2200,
+          "line": 2201,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [
-            "INF-22#mi210-big-model-and-acceleration-roadmap",
-            "INF-22#mi210-serving-program"
+            "INF-22#mi210-big-model-and-acceleration-roadmap"
           ],
           "dispatchable": 0,
           "gates": [
@@ -1673,7 +1678,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2810,
+          "line": 2811,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
@@ -3521,7 +3526,7 @@
       "age_days": 0,
       "blocked": 9,
       "blocked_by": [],
-      "closed": 408,
+      "closed": 409,
       "dispatchable": 97,
       "domain": "routing-and-optimization",
       "guarded": 0,

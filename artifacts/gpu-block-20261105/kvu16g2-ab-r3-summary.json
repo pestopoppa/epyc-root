@@ -1,0 +1,113 @@
+{
+ "at": "2026-11-05T16:35:25Z",
+ "params": {
+  "schema": "kvu16g2.params.v1",
+  "at": "2026-11-05T12:38:27Z",
+  "D50_short_ms": 132.2,
+  "D99_deep_ms": 257.9,
+  "D50_deep_ms": 188.1,
+  "prefill_budget_target_ms": 460,
+  "TPOT_target_ms": 670.7,
+  "prefill_budget_decoding": 256,
+  "converges": true,
+  "rule": {
+   "margin_ms": 210.7,
+   "margin_source": "PB-QCOST-1 refit held-out P99 abs residual at n=4 (2026-10-21; reconfirmed 2026-11-05); confirm-R one-sided 200.1 is the less conservative alternative",
+   "a_ms_per_tok_n4": 1.029,
+   "a_source": "PB-QCOST-1 refit q coefficient at n=4 (prefill-budget-8083-stack-change-package.md section 3)",
+   "slo_multiple": 5,
+   "slo_source": "Sarathi-Serve strict TBT SLO = 5x the decode-only iteration time",
+   "n_batch": 512,
+   "agree_tol": 0.1,
+   "min_all_streams_frac": 0.9
+  },
+  "launches": [
+   "L1",
+   "L2"
+  ],
+  "params_sha256": "065ca9aed0703f354f19feb2d17bd10cac52c50de5432fd5ec17e5d36d2b7eb9"
+ },
+ "units": {
+  "0-OFF": {
+   "valid": true,
+   "checks": {
+    "rc_ok": true,
+    "own_residency": true,
+    "no_foreign_kfd": true,
+    "released": true,
+    "linkage": true,
+    "client_ok": true,
+    "cells": true,
+    "decode_iters_seen": true,
+    "budget_state": true
+   }
+  },
+  "1-ON": {
+   "valid": true,
+   "checks": {
+    "rc_ok": true,
+    "own_residency": true,
+    "no_foreign_kfd": true,
+    "released": true,
+    "linkage": true,
+    "client_ok": true,
+    "cells": true,
+    "decode_iters_seen": true,
+    "budget_state": true
+   }
+  },
+  "2-ON": {
+   "valid": true,
+   "checks": {
+    "rc_ok": true,
+    "own_residency": true,
+    "no_foreign_kfd": true,
+    "released": true,
+    "linkage": true,
+    "client_ok": true,
+    "cells": true,
+    "decode_iters_seen": true,
+    "budget_state": true
+   }
+  },
+  "3-OFF": {
+   "valid": true,
+   "checks": {
+    "rc_ok": true,
+    "own_residency": true,
+    "no_foreign_kfd": true,
+    "released": true,
+    "linkage": true,
+    "client_ok": true,
+    "cells": true,
+    "decode_iters_seen": true,
+    "budget_state": true
+   }
+  }
+ },
+ "verdict": "REJECT-AS-CONFIGURED",
+ "pairs": [
+  {
+   "worst_iter": 0.32059761426715483,
+   "p99_iter": 0.3086780307545595,
+   "mean_iter": 0.37525172317817906,
+   "mean_decode_tps": 2.3050640136997473,
+   "neighbour_ttft": 1.682248337569522,
+   "solo_ttft": 1.0022720578954012,
+   "on_p99_iter_ms": 517.9
+  },
+  {
+   "worst_iter": 0.3944135198836568,
+   "p99_iter": 0.30301955917981444,
+   "mean_iter": 0.36942177391416436,
+   "mean_decode_tps": 1.8435026622535615,
+   "neighbour_ttft": 1.7259894676394782,
+   "solo_ttft": 1.0021586488281622,
+   "on_p99_iter_ms": 512.8
+  }
+ ],
+ "failed": [
+  "4 neighbour TTFT"
+ ],
+ "complete": true
+}

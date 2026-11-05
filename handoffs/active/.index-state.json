@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 669
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 9,
-      "closed": 408,
+      "closed": 409,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 97,
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 514,
+      "total": 515,
       "tracks": [
         {
           "blocked": 8,
@@ -1346,7 +1346,7 @@
         },
         {
           "blocked": 0,
-          "closed": 135,
+          "closed": 136,
           "gates": [
             "RTG-36",
             "INF-79"
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 0,
-      "closed": 203,
+      "closed": 204,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1509,20 +1509,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 106,
+          "closed": 107,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 680,
+          "line": 681,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1017,
+          "line": 1018,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 0
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1295,
+          "line": 1296,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 0
@@ -1552,7 +1552,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1930,
+          "line": 1931,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 2
@@ -1562,7 +1562,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2200,
+          "line": 2201,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2810,
+          "line": 2811,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
