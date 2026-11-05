@@ -23,3 +23,7 @@ KVU-11c: corrected the existing r2 launcher to declare CPUs 184-187 after the GP
 ## 00:33Z — Prepare and submit the immutable-plan qualification row
 
 KPF-17.4-PLAN-QUAL: adopted the sealed model-free native-judge adapter into this lane, retained its 120 s workload and 7 s cleanup limits, and submitted it with a 300 s reservation. Publisher was still running when the session proceeded; PASS and publication are not claimed. Registered ready and smoke-failure events for dispatcher resumption. KVU-11c GPU smoke remains queued.
+
+## 00:35Z — Repair the sealed plan-adapter packet and publish its qualification row
+
+KPF-17.4-PLAN-QUAL: the first publisher smoke failed before job entry because the adapted spec digest did not match SHA256SUMS; all other sealed members matched. Preserved the failure and repaired only that digest. The four-CPU publisher smoke then passed and published kpf174-plan-bound-integration-20261105. Smoke established synthetic native equality, missing-launch refusal and owned PID cleanup only; the full qualification and historical rejudgment remain open.
