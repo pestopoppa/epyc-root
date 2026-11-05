@@ -21,3 +21,9 @@ NEMO-PROF-RESEG: consumed the independent uncompiled request-identity producer p
 CH-26b: the earlier point-in-time C5 map prototype bound hashes only to device/inode and could accept an in-place change after hashing. Added an independent reference successor in docs/reference/autokernel/ch26-map-integrity-20261105/ that also checks file size, mtime and ctime, preserves complete mapping-set refusal and rejects old receipts without metadata. Eight model-free tests pass, including same-inode same-size mutation with restored mtime and partial mapping refusal. The check is point-in-time, does not eliminate races or privileged manipulation, and is not integrated into a row or evidence of a DS41 floor. [belief: cc]
 
 NEMO-PROF-RESEG: retained independent client/join source preparation under docs/reference/autokernel/nemo-request-producers-20261105/. Five mocked publication/transport tests pass; a worker reported 26 prior fixture tests and pinned C3 patch apply-check pass. No build, server request, profiler alignment or historical boundary conclusion follows. [no-belief: offline preparation only]
+
+## 00:21Z — Prepare CUBLAS route diagnostic and advance NeMo and CH-26b prerequisites
+
+C6-Q4-MMVQ-FIX: independent akx-c6-n4-cublas-route-diagnostic-20261105 packet was prepared and publisher queued GPU smoke because the GPU was busy. It has not passed smoke or become a ready row; PASS and FAIL events are registered. Review of its route/custody conditions and duration estimate is underway. No GPU diagnostic or gate result follows. [no-belief: queued smoke only]
+
+Linked the already-landed CH-26b map integrity prototype and NeMo request-identity producer packet from their handoff tasks, with their offline-only and point-in-time limitations. CH-26b separate owner/census qualification reported ten model-free checks and a live pidfd identity check; no host-wide coverage or floor follows. [no-belief: preparation and functional checks only]
