@@ -28,6 +28,31 @@ except ImportError:  # loaded as a top-level module (tests / scripts)
     import handoff_parser as _hp  # type: ignore[no-redef]
 
 HANDOFF_ROOT = Path(__file__).resolve().parents[1] / "handoffs"
+_ROWFLOW_PY = Path(__file__).resolve().parents[1] / "scripts" / "coordination" / "rowflow" / "rowflow.py"
+_ROWFLOW_MOD: list = []
+
+
+def _stop_path(row: dict) -> str | None:
+    """rowflow.resolve_stop_path (the keeper's own parse); None = unknown, which keeps a row "ready"."""
+    if not _ROWFLOW_MOD:
+        try:
+            import importlib.util
+            import sys
+            sys.path.insert(0, str(_ROWFLOW_PY.parent))
+            try:
+                spec = importlib.util.spec_from_file_location("_rowflow_for_dashboard", _ROWFLOW_PY)
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)  # type: ignore[union-attr]
+            finally:
+                sys.path.remove(str(_ROWFLOW_PY.parent))
+            _ROWFLOW_MOD.append(mod)
+        except Exception:  # noqa: BLE001 - a dashboard never fails on a helper import
+            _ROWFLOW_MOD.append(None)
+    mod = _ROWFLOW_MOD[0]
+    try:
+        return mod.resolve_stop_path(row) if mod else None
+    except Exception:  # noqa: BLE001
+        return None
 
 SCHEMA = "epyc.pipeline_status.v1"
 REGIONS = ("q0", "q1", "q2", "q3", "gpu-quiet")
@@ -161,7 +186,7 @@ def step_of(entry: dict, report: dict | None, live: bool, last: dict | None) -> 
 def _rows(flags: Path, fmap: dict | None = None) -> dict[str, dict]:
     """{row_id: {state, ...}} for every published row that is not finished.
 
-    state: running (grant, no end) | ready (dry run PASS) | dryrun-fail | dryrun-pending
+    state: running (grant, no end) | stopped (STOP file present) | ready (dry run PASS) | dryrun-fail | dryrun-pending
     """
     grants = flags / "grants"
     ended = set()
@@ -207,6 +232,10 @@ def _rows(flags: Path, fmap: dict | None = None) -> dict[str, dict]:
         if rid in out or rid in ended:
             continue
         d = flags / "dryrun" / rid
+        sp = _stop_path(_json(flags / "ready" / f"{rid}.json") or {})
+        if sp and os.path.exists(sp):                       # the launcher's --stop file: never granted, not ready
+            out[rid] = {"id": rid, "state": "stopped", "stop_file": sp, "handoff": _handoff_of(rid)}
+            continue
         if (d / "PASS.json").exists():
             st = "ready"
         elif any(d.glob("FAIL-*.json")):
@@ -309,7 +338,7 @@ def compute_payload(flags: Path, now: float, fmap: dict | None = None) -> dict:
         label = "free" if not row else ("idle-held" if pct is not None and pct < IDLE_PCT else phase)
         regions.append({"region": r, "state": "busy" if row else "free", "row": row,
                         "phase": phase, "cpu_pct": pct, "label": label})
-    counts = {"ready": 0, "running": 0, "dryrun-fail": 0, "dryrun-pending": 0}
+    counts = {"ready": 0, "running": 0, "stopped": 0, "dryrun-fail": 0, "dryrun-pending": 0}
     for r in rows.values():
         counts[r["state"]] = counts.get(r["state"], 0) + 1
     counts["free_regions"] = sum(1 for r in regions if r["state"] == "free")

@@ -250,7 +250,7 @@ class ReviewItem7(Fixture):
         rf.atomic_json(rf.ready_path(self.flags, rid), d)
         open(sf, "w").close()
         st = rf.status(self.flags, rid)
-        self.assertEqual(st["state"], "held")
+        self.assertEqual(st["state"], "stopped")
         self.assertEqual(st["fix"], f"rm {sf}")
         self.assertEqual(self.tick(), [])
         self.assertEqual(self.armed_calls, [])

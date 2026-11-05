@@ -39,7 +39,9 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               may call it, and allocate does the same on every GPU-free tick
     (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant. PASS = the job's
      FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
-    status <id>               needs-dryrun | dryrun-running | failed | parked | stale | grantable | armed | running | done
+    status <id>               needs-dryrun | dryrun-running | failed | parked | stale | stopped | grantable | armed | running | done
+                              (stopped: the launcher's --stop file exists - never granted, never a drain candidate;
+                               reason = the path; deleting it returns the row to grantable)
                               (parked: MAX_FAILS failed dry runs in the lineage, OR MAX_FAILS consecutive arming/launch
                               failures since the row's PASS - a PASS alone no longer keeps an unarmable row grantable)
 
@@ -256,6 +258,49 @@ def parse_launcher(path):
     need(o["complete_cmd"], "engine --complete-cmd missing (the engine refuses without it)")
     need(o["stop"], "engine --stop missing")
     return o
+
+
+# the launcher's own `D=` idioms that name its directory (ws58 2026-11-05: 18 rows carried an unexpanded `$D/...STOP`)
+_D_SELF_DIR = re.compile(r"""^\$\((?:cd\s+(?:--\s+)?"\$\(dirname\s+(?:--\s+)?"(?:\$0|\$\{BASH_SOURCE\[0\]\})"\)"\s*&&\s*pwd|dirname\s+(?:--\s+)?"(?:\$0|\$\{BASH_SOURCE\[0\]\})")\)$""")
+_D_SELF_REAL = re.compile(r"""^\$\(dirname\s+(?:--\s+)?"\$\(readlink\s+-f\s+(?:--\s+)?"(?:\$0|\$\{BASH_SOURCE\[0\]\})"\)"\)$""")
+
+
+def resolve_stop_path(d):
+    """The row's STOP file as an absolute path, or None (unknown). Manifest `stop_file` when it is a literal absolute
+    path; else the launcher's `--stop` with ITS OWN single `D=` assignment substituted (a literal absolute path or the
+    launcher-directory idiom). Only literal paths and `$D/...` count; anything else is unknown (= no STOP evidence)."""
+    sf = str((d or {}).get("stop_file") or "")
+    if sf.startswith("/") and "$" not in sf and "`" not in sf:
+        return os.path.normpath(sf)
+    lp = str(((d or {}).get("launcher") or {}).get("path") or "")
+    try:
+        text = open(lp, errors="replace").read()
+    except OSError:
+        return None
+    if not sf:
+        m = re.search(r"""--stop[ =]+("[^"]*"|'[^']*'|\S+)""", re.sub(r"\\\n", " ", text))
+        sf = m.group(1).strip("\"'") if m else ""
+    m = re.match(r"^\$(?:D|\{D\})(/.*)$", sf)
+    if not m:
+        return None
+    defs = {v.strip() for v in re.findall(r"^[ \t]*(?:export\s+)?D=(.*?)\s*(?:#.*)?$", text, re.M)}
+    if len(defs) != 1:
+        return None
+    v = defs.pop()
+    if len(v) > 1 and v[0] == v[-1] and v[0] in "\"'":
+        v = v[1:-1]
+    if v.startswith("/") and not re.search(r"[$`*?]", v):
+        base = v
+    elif _D_SELF_REAL.match(v):
+        base = os.path.dirname(os.path.realpath(lp))
+    elif _D_SELF_DIR.match(v):
+        base = os.path.dirname(os.path.abspath(lp))
+    else:
+        return None
+    rest = m.group(1)
+    if re.search(r"[$`*?]", rest):
+        return None
+    return os.path.normpath(base + rest)
 
 
 # ---------------------------------------------------------------- snapshot (rows are independent of lanes)
@@ -1492,7 +1537,7 @@ def next_action(st, flags, rid):
     s = st["state"]
     if s in ("done", "running", "dryrun-running"):
         return "-"
-    if s == "held":
+    if s in ("held", "stopped"):
         return st.get("fix") or "-"
     if s in ("failed", "parked"):
         return (st.get("fix_task") or "fix the launcher") + f"; then republish: python3 {os.path.join(_HERE, 'publish_row.py')} <spec.json>"
@@ -1585,9 +1630,9 @@ def _status_raw(flags, rid, allrows=None):
     fails = [load_json(x) or {} for x in fail_paths(flags, rid)]
     last_fail = fails[-1] if fails else None
     if p and p.get("launcher_sha256") == cur:
-        sf = str(d.get("stop_file") or "")
-        if sf and os.path.exists(sf):   # 2026-11-03: a STOP file holds the row; it is never granted and never burns the id
-            out.update(state="held", reason=f"STOP file present: {sf}", fix=f"rm {sf}"); return out
+        sf = resolve_stop_path(d)   # 2026-11-05: `$D/...` resolved; unknown (None) keeps the row grantable
+        if sf and os.path.exists(sf):   # a STOP file stops the row: never granted, never a drain candidate, never burns the id
+            out.update(state="stopped", reason=sf, stop_file=sf, fix=f"rm {sf}"); return out
         a = load_json(armed_path(flags, rid))
         if a and alive(a.get("pid")):
             if armed_engine_ok(a.get("pid"), rid):

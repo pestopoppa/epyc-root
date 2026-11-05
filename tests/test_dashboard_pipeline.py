@@ -96,6 +96,27 @@ class Payload(unittest.TestCase):
             self.assertEqual(regs["q0"]["state"], "free")
 
 
+class StoppedRows(unittest.TestCase):
+    def test_stopped_row_is_not_ready_and_returns_when_stop_deleted(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _fixture(root, {})
+            lp = root / "launch.sh"
+            lp.write_text('#!/bin/bash\nD=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)\n'
+                          'exec /x/filler_run15.sh --id rowstop --stop "$D/x.STOP"\n')
+            for r, row in (("rowstop", {"stop_file": "$D/x.STOP", "launcher": {"path": str(lp)}}),
+                           ("rowunknown", {"stop_file": "$OTHER/x.STOP", "launcher": {"path": str(lp)}})):
+                (root / "ready" / f"{r}.json").write_text(json.dumps(row))
+                (root / "dryrun" / r).mkdir()
+                (root / "dryrun" / r / "PASS.json").write_text("{}")
+            (root / "x.STOP").write_text("")
+            c = ps.build_payload(root, NOW)["compute"]["counts"]
+            self.assertEqual((c["ready"], c["stopped"]), (1, 1))
+            (root / "x.STOP").unlink()
+            c = ps.build_payload(root, NOW)["compute"]["counts"]
+            self.assertEqual((c["ready"], c["stopped"]), (2, 0))
+
+
 class Overview(unittest.TestCase):
     def test_classes_from_graph_and_rowflow(self):
         def node(h, tier, openn=3):
