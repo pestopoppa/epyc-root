@@ -659,7 +659,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T17:47:50Z",
+  "generated_at": "2026-11-05T18:22:56Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1418,7 +1418,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 750,
@@ -1427,7 +1427,7 @@
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
       "open": 140,
       "priority": 0.896,
@@ -1585,15 +1585,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 204,
-      "dispatchable": 2,
+      "closed": 205,
+      "dispatchable": 1,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 2,
+      "open": 1,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1649,18 +1649,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 1931,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2201,
+          "line": 2202,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1678,7 +1678,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2811,
+          "line": 2812,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
@@ -2148,14 +2148,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 277,
-      "dispatchable": 120,
+      "dispatchable": 121,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 122,
+      "open": 123,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2189,7 +2189,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 41,
+          "dispatchable": 42,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2198,14 +2198,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 42,
+          "open": 43,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1587,
+          "line": 1590,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2214,7 +2214,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1711,
+          "line": 1714,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2223,7 +2223,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2038,
+          "line": 2041,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2232,7 +2232,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2177,
+          "line": 2180,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2241,7 +2241,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2730,
+          "line": 2733,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2258,7 +2258,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2867,
+          "line": 2870,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2281,7 +2281,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3761,
+          "line": 3764,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"

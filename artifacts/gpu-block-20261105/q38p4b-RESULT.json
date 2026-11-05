@@ -1,0 +1,151 @@
+{
+ "verdict": "PARITY_FAIL",
+ "at": "2026-11-05T18:21:36Z",
+ "median_tok_s": {
+  "L": {
+   "np1": 127.182,
+   "np4": 358.494,
+   "pf2048": 3441.513,
+   "pf8192": 2393.555
+  },
+  "V": {
+   "np1": 86.701,
+   "np4": 302.73,
+   "pf2048": 10579.236,
+   "pf8192": 7770.985
+  }
+ },
+ "ratio_vllm_over_llama": {
+  "np1": 0.6817,
+  "np4": 0.8444,
+  "pf2048": 3.074,
+  "pf8192": 3.2466
+ },
+ "win_threshold": 1.1,
+ "per_launch": {
+  "L1": {
+   "np1": 124.822,
+   "np4": 358.494,
+   "pf2048": 3437.205,
+   "pf8192": 2393.555
+  },
+  "V1": {
+   "np1": 83.086,
+   "np4": 302.855,
+   "pf2048": 10588.681,
+   "pf8192": 7775.168
+  },
+  "L2": {
+   "np1": 127.182,
+   "np4": 361.78,
+   "pf2048": 3441.146,
+   "pf8192": 2371.309
+  },
+  "V2": {
+   "np1": 86.972,
+   "np4": 309.481,
+   "pf2048": 10576.99,
+   "pf8192": 7770.985
+  },
+  "L3": {
+   "np1": 125.03,
+   "np4": 362.174,
+   "pf2048": 3441.513,
+   "pf8192": 2381.902
+  },
+  "V3": {
+   "np1": 87.019,
+   "np4": 294.86,
+   "pf2048": 10555.816,
+   "pf8192": 7762.096
+  },
+  "L4": {
+   "np1": 132.242,
+   "np4": 343.717,
+   "pf2048": 3448.815,
+   "pf8192": 2395.85
+  },
+  "V4": {
+   "np1": 86.251,
+   "np4": 302.73,
+   "pf2048": 10579.236,
+   "pf8192": 7775.11
+  },
+  "L5": {
+   "np1": 134.475,
+   "np4": 339.68,
+   "pf2048": 3443.48,
+   "pf8192": 2394.28
+  },
+  "V5": {
+   "np1": 86.701,
+   "np4": 295.227,
+   "pf2048": 10581.177,
+   "pf8192": 7770.397
+  }
+ },
+ "vram_peak_gib": {
+  "L1": 9.703,
+  "V1": 54.356,
+  "L2": 9.703,
+  "V2": 54.356,
+  "L3": 9.703,
+  "V3": 54.356,
+  "L4": 9.703,
+  "V4": 54.356,
+  "L5": 9.703,
+  "V5": 54.356
+ },
+ "parity": {
+  "basis": "text_chars",
+  "common_prefix": 24,
+  "of": null,
+  "self_consistency": {
+   "L": {
+    "texts_identical_across_launches": true,
+    "ids_present": false
+   },
+   "V": {
+    "texts_identical_across_launches": true,
+    "ids_present": true
+   }
+  },
+  "llama_text": "  `speed_metric` in the `apply` bundle is set to `task_rate`.\n\n- **`tokens/s` (tokens / second, higher-better)** is the **human decision axis** and the only\n  speed metric for decisions where tokens are commensurable across arms (same model, same\n ",
+  "vllm_text": "  `speed_metric` in the claim must be `task_rate`.\n\n- **`tokens/s` (tokens / second, higher-better)** is the **human-verified objective axis**\n  (e.g. `P-GEN-1`, `P-GEN-2`) and the only speed metric for model",
+  "parity_ok": false
+ },
+ "model": "Qwen3-4B-Instruct-2507 8-bit: llama.cpp Q8_0 GGUF vs vLLM INT8 W8A8 (small-model proxy)",
+ "question": "Q38P-4b: at matched 8-bit precision, does vLLM still gain >= 1.10x on any metric? Compare with Q38P-4 bf16.",
+ "bf16_to_int8": {
+  "source": "/mnt/raid0/llm/tmp/q38p4-timing-20261105/out/RESULT.json",
+  "source_verdict": "VLLM_WINS_SOMEWHERE",
+  "definition": "int8_median / bf16_median",
+  "llama_q8_0_over_bf16": {
+   "np1": 1.2967,
+   "np4": 1.5921,
+   "pf2048": 0.9974,
+   "pf8192": 1.0002
+  },
+  "vllm_w8a8_over_bf16": {
+   "np1": 0.6992,
+   "np4": 0.9434,
+   "pf2048": 0.9258,
+   "pf8192": 0.9455
+  },
+  "bf16_median_tok_s": {
+   "L": {
+    "np1": 98.078,
+    "np4": 225.169,
+    "pf2048": 3450.427,
+    "pf8192": 2393.024
+   },
+   "V": {
+    "np1": 124.002,
+    "np4": 320.894,
+    "pf2048": 11426.965,
+    "pf8192": 8219.211
+   }
+  }
+ },
+ "identity_sha256": "dbf00a6587f6d41747b147934abcf0d2422682318da781a8b6a9693f33d8cba4"
+}
