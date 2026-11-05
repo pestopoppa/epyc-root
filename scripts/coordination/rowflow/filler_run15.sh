@@ -156,6 +156,34 @@ CSRC
   fi
   echo "$so"
 }
+# GPU-FENCE-VACUOUS (operator 2026-11-05): under the fence `test-backend-ops -b ROCm0` finds no backend, prints
+# "Backend 1/1: CPU / Skipping", "1/1 backends passed", OK and exits 0 - a pass that tested nothing. After a FENCED job the
+# engine scans its output (tee'd copy + *.log/*.out/*.txt the job wrote under --workdir) for test-backend-ops' own markers
+# (tests/test-backend-ops.cpp console printer): a "Testing N devices" run with no "  Backend <name>: OK|FAIL" status line,
+# "Testing 0 devices", or "  0/0 tests passed". A hit fails the run with rc=$VACUOUS_RC (not 0, not 75).
+VACUOUS_RC=78
+gpu_vacuous_scan() { # files... ; prints the reason and returns 0 on a vacuous GPU test
+  awk '{ gsub(/\033\[[0-9;]*m/, "") }
+       /^Testing [0-9]+ devices/ { if (open && !st) { why = "test-backend-ops tested 0 backends (every backend skipped/not found)" }
+                                   open = 1; st = 0; if ($2 == 0) why = "test-backend-ops: Testing 0 devices" ; next }
+       open && /^  Backend [^ ]+: (OK|FAIL)/ { st++ }
+       open && /^[0-9]+\/[0-9]+ backends passed/ { if (!st && why == "") why = "test-backend-ops tested 0 backends (every backend skipped/not found): " $0; open = 0 }
+       /^ +0\/0 tests passed/ { if (why == "") why = "test-backend-ops ran 0 cases (0/0 tests passed)" }
+       END { if (open && !st && why == "") why = "test-backend-ops tested 0 backends (run ended before any backend status)"
+             if (why != "") { print why; exit 0 } exit 1 }' "$@" 2>/dev/null
+}
+gpu_vacuous_check() { # after a fenced job: 0 = vacuous (VAC_WHY set)
+  [ "${FENCE_ON:-0}" = 1 ] || return 1
+  local files=() f
+  [ -s "$STATE/$ID.fenced-job.out" ] && files+=("$STATE/$ID.fenced-job.out")
+  if [ -n "$WORKDIR" ] && [ "$WORKDIR" != /workspace ] && [ -n "${VAC_STAMP:-}" ]; then
+    while IFS= read -r f; do files+=("$f"); done < <(find "$WORKDIR" -maxdepth 3 -type f \( -name '*.log' -o -name '*.out' -o -name '*.txt' \) \
+        -newer "$VAC_STAMP" -size -64M 2>/dev/null | awk 'NR<=200')
+  fi
+  [ ${#files[@]} -gt 0 ] || return 1
+  VAC_WHY=$(for f in "${files[@]}"; do gpu_vacuous_scan "$f" && { echo " [$f]"; break; }; done | tr -d '\n')
+  [ -n "$VAC_WHY" ]
+}
 holds_gpu_token() { # $1 = grant file; NEEDGPU / GPUQ already set
   [ "${NEEDGPU:-0}" = 1 ] && return 0
   case ${GPUQ:-} in shared|exclusive) return 0;; esac
@@ -165,7 +193,9 @@ holds_gpu_token() { # $1 = grant file; NEEDGPU / GPUQ already set
 FENCE_ENV=()
 set_gpu_fence() { # fills FENCE_ENV (an `env ...` prefix) for a grant without the GPU token; empty otherwise
   FENCE_ENV=()
+  FENCE_ON=0
   if holds_gpu_token "$GRANT"; then export FILLER_GPU_FENCE=0; return; fi
+  FENCE_ON=1; mkdir -p "$STATE"; rm -f "$STATE/$ID.fenced-job.out"; VAC_STAMP=$STATE/$ID.fenced-job.start; : > "$VAC_STAMP"
   local so pre; so=$(gpu_fence_so)
   FENCE_ENV=(env FILLER_GPU_FENCE=1 ROCR_VISIBLE_DEVICES= HIP_VISIBLE_DEVICES=-1 GPU_DEVICE_ORDINAL=-1 CUDA_VISIBLE_DEVICES=-1
              GGML_VK_VISIBLE_DEVICES=-1 HSA_ENABLE_SDMA=0)
@@ -333,8 +363,14 @@ if [ $INNER = 1 ]; then
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
   # The hard end is enforced by the launcher (TERM, wait, KILL on the whole setsid group); the job also honours FILLER_DEADLINE.
-  taskset -c "$FILLER_CPUS" bash -c "$JOBCMD" 8>&- 9>&-
-  rc=$?; echo "job rc=$rc"
+  if [ "${FILLER_GPU_FENCE:-0}" = 1 ]; then   # GPU-FENCE-VACUOUS: keep a copy of the fenced job's output for the scan
+    taskset -c "$FILLER_CPUS" bash -c "$JOBCMD" 8>&- 9>&- 2>&1 | tee -a "$STATE/$ID.fenced-job.out"
+    rc=${PIPESTATUS[0]}
+  else
+    taskset -c "$FILLER_CPUS" bash -c "$JOBCMD" 8>&- 9>&-
+    rc=$?
+  fi
+  echo "job rc=$rc"
   exit $rc
 fi
 
@@ -486,6 +522,14 @@ run_one() {
     log "REFUSED: native cleanup incomplete; grant retained, no .ended or .complete"
     notify_end 70 cleanup-failed
     STARTED_ONE=1; return 70
+  fi
+  if [ "$reason" = exited ] && gpu_vacuous_check; then
+    log "GPU-FENCE-VACUOUS $ID: fenced grant (no GPU token) ran a GPU test that tested nothing (job rc=$rc): $VAC_WHY"
+    printf '{"id":"%s","at":"%s","reason":"gpu-fence-vacuous","job_rc":%s,"why":"%s"}\n' "$ID" "$(ts)" "$rc" \
+      "$(printf '%s' "$VAC_WHY" | tr -d '"\\')" > "$STATE/$ID.gpu-fence-vacuous.json"
+    [ "$DRYRUN" = 1 ] && cp -f "$STATE/$ID.gpu-fence-vacuous.json" "$DR/GPU-FENCE-VACUOUS.json" 2>/dev/null
+    write_ended "$VACUOUS_RC" "gpu-fence-vacuous"
+    STARTED_ONE=1; return 0
   fi
   if is_complete; then mark_complete || return 70; return 20; fi
   if [ "$rc" -eq 0 ]; then rc=75; reason=partial-native-incomplete; fi

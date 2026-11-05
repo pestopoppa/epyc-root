@@ -725,7 +725,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "timing", "gpu_use"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "gpu_fence_override", "timing", "gpu_use"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -746,6 +746,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     envp = check_env_passthrough(launcher)
     if envp:
         row["env_passthrough"] = envp
+    check_gpu_declared(row, o)
     # refinement 1: shape from evidence
     check_shape_evidence(spec, o)
     if o.get("threads"):
@@ -912,7 +913,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override", "timing", "gpu_use"):
+              "fix_ref", "baseline_ref", "shape_override", "gpu_fence_override", "timing", "gpu_use"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1440,24 +1441,95 @@ _KFD = re.compile(r"(?i)\bGGML_HIP\b|\bhipcc\b|build-hip|-DGGML_HIP|\bhip_?build
                   r"(?<![\w-])(?:-ngl|--n-gpu-layers|--gpu-layers)[ =]+['\"]?(?!0\b)\d+|\b(?:HIP|ROCR)_VISIBLE_DEVICES=")
 
 
-def gpu_touch(d, o=None):
-    """GPU EXCLUSIVITY (coordinator 2026-11-05, kvu16g2-ab: 41 GB foreign VRAM under a gpu-quiet EXCLUSIVE grant): the
-    row's job can open /dev/kfd - a GPU-class launcher, mi210 regions, a HIP build, -ngl > 0, --device ROCm,
-    HIP/ROCR_VISIBLE_DEVICES - so it, and its smoke, hold the gpu-quiet token for their whole duration."""
+# GPU-FENCE-VACUOUS (operator 2026-11-05): under the fence a GPU test finds no backend, skips and exits rc0, so GPU-only
+# work must be DECLARED (token) at publish. Superset of _KFD: a backend-op test on ROCm, a HIP test binary, a gpu-class job.
+_SEP = r"(?:[ =]+['\"]?|['\"]?\s*,\s*['\"])"   # shell argv (`-b ROCm0`) or a Python/JSON list (`"-b", "ROCm0"`)
+_GPU_WORK = re.compile(r"(?i)--device" + _SEP + r"rocm|(?<![\w-])(?:-ngl|--n-gpu-layers|--gpu-layers)" + _SEP + r"(?!0\b)\d+|"
+                       r"\b(?:HIP|ROCR)_VISIBLE_DEVICES=(?!-1\b)['\"]?\d|(?<![\w-])(?:-b|--backend)" + _SEP + r"rocm|"
+                       r"\btest-backend-ops\b[^\n]*\brocm|build-hip[^\s'\"]*/bin/test-|\bROCm\d\b")
+# build-only HIP evidence (GGML_HIP, hipcc, build-hip) still takes the token via _KFD but is never refused: compiling is not GPU work
+
+
+def gpu_declared(d, o=None):
+    """The row holds the GPU token by declaration: mi210 regions, a gpu/cpu+gpu launcher, lane gpu, or --gpu-quiet."""
     d, o = d or {}, (_opts(d or {}) if o is None else o)
-    if "mi210" in str(d.get("regions") or "") or o.get("class") in ("gpu", "cpu+gpu") or d.get("lane") == "gpu":
-        return True
-    texts = [o.get("cmd") or ""]
-    for m in re.finditer(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", o.get("cmd") or ""):
+    return ("mi210" in str(d.get("regions") or "") or o.get("class") in ("gpu", "cpu+gpu") or d.get("lane") == "gpu"
+            or o.get("gpu_quiet") in ("shared", "exclusive"))
+
+
+def job_texts(d, o=None):
+    """{path: text} of the launcher, its --cmd, and every job file (.py/.sh) the launcher or cmd runs: absolute paths,
+    $D/<f> references, and bare/relative names resolved against the launcher dir and the --workdir (one level deep)."""
+    d, o = d or {}, (_opts(d or {}) if o is None else o)
+    try:
+        launcher = d["launcher"]["path"]
+    except (KeyError, TypeError):
+        launcher = (d.get("launcher") if isinstance(d.get("launcher"), str) else "") or ""
+    out = {"<cmd>": o.get("cmd") or ""}
+    bases = [b for b in (os.path.dirname(launcher) if launcher else "", o.get("workdir") or "") if b]
+
+    def add(p):
+        if p in out or len(out) > 40 or re.match(r"filler_(?:run\d+|lib)\.sh$", os.path.basename(p)):
+            return   # the engine itself is not the job
         try:
-            texts.append(open(m.group(1), errors="replace").read()[:1 << 20])
+            if os.path.isfile(p) and os.path.getsize(p) < 4 << 20:
+                out[p] = open(p, errors="replace").read()[:1 << 20]
+                return True
         except OSError:
             pass
-    try:
-        texts.append(open(d["launcher"]["path"], errors="replace").read()[:1 << 20])
-    except (OSError, KeyError, TypeError):
-        pass
-    return any(_KFD.search(t) for t in texts)
+
+    if launcher:
+        add(launcher)
+    rx = re.compile(r"(?:\$\{?D\}?/)?([A-Za-z0-9_./-]+\.(?:sh|py|bash))\b")
+    for _ in range(2):
+        for t in list(out.values()):
+            for m in rx.finditer(t):
+                f = m.group(1)
+                if f.startswith("/"):
+                    add(f)
+                else:
+                    for b in bases:
+                        if add(os.path.normpath(os.path.join(b, f))):
+                            break
+    return out
+
+
+def gpu_work_evidence(d, o=None):
+    """[(file, line)] where the row's launcher/cmd/job files run GPU-only work (comment lines ignored)."""
+    hits = []
+    for f, t in job_texts(d, o).items():
+        for ln in t.splitlines():
+            s = ln.strip()
+            if s.startswith("#") or s.startswith("//"):
+                continue
+            if _GPU_WORK.search(ln):
+                hits.append((f, s[:160]))
+                break
+    return hits
+
+
+def _kfd_capable(d, o=None):
+    return any(_KFD.search(t) for t in job_texts(d, o).values())
+
+
+def gpu_touch(d, o=None):
+    """GPU EXCLUSIVITY (coordinator 2026-11-05, kvu16g2-ab: 41 GB foreign VRAM under a gpu-quiet EXCLUSIVE grant): the
+    row's job can open /dev/kfd - a GPU-class launcher, mi210 regions, a HIP build, -ngl > 0, --device ROCm, -b ROCm0,
+    HIP/ROCR_VISIBLE_DEVICES - so it, and its smoke, hold the gpu-quiet token for their whole duration."""
+    d, o = d or {}, (_opts(d or {}) if o is None else o)
+    return gpu_declared(d, o) or bool(gpu_work_evidence(d, o)) or _kfd_capable(d, o)
+
+
+def check_gpu_declared(row, o):
+    """Publish gate (GPU-FENCE-VACUOUS, operator 2026-11-05): GPU work without the GPU token runs fenced and passes vacuously."""
+    if gpu_declared(row, o) or str(row.get("gpu_fence_override") or "").strip():
+        return   # gpu_fence_override "operator|owner: <who> <date>: <why GPU-looking code never runs here>" (static
+                 # evidence is conditional, e.g. a KIND=='gpu' branch); the engine's runtime GPU-FENCE-VACUOUS check still applies
+    ev = gpu_work_evidence(row, o)
+    need(not ev, "GPU-FENCE: this row runs GPU work without the GPU token - under the fence it sees no GPU, a GPU test skips "
+         "and exits 0 (a vacuous PASS). Evidence: " + "; ".join(f"{os.path.basename(f)}: `{l}`" for f, l in ev[:3]) +
+         ". Declare the token (lane gpu, regions mi210_0,..., --class gpu, or --gpu-quiet shared|exclusive), drop the GPU work, or, "
+         "when that code never runs in this row, add gpu_fence_override \"<who> <date>: <why>\" (the runtime check still applies).")
 
 
 def _sub_blocks(within=QUARTERS):
