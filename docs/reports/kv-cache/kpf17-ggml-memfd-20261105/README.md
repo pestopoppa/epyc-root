@@ -1,0 +1,3 @@
+# KPF-17 pinned ggml-base memfd qualification
+
+This model-free prerequisite loads the actual oracle-build `libggml-base.so.0.16.0` identified by SHA-256 `734fb17b9916947695ec0787f4c123f1f63b0cfa90831385a7685415040c900b` into a sealed memfd, checks live mapping device and inode, calls `ggml_version`, and tests owned same-UID child write and shrink refusal against a mutable positive control. The original build receipt is `/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-build-20261104/out/RESULT.json`. Failure or unsupported loader dependencies yield UNKNOWN. Smoke and full result use separate paths. This tests one DSO and owned children only; it does not establish custody of dependencies, unrelated processes, the native oracle, server, or whole chain.

@@ -1,0 +1,8 @@
+{
+ "id":"kvfork17-ggml-memfd-20261105", "owner":"h-kvfork",
+ "launcher":"/mnt/raid0/llm/tmp/kvfork/kpf17-ggml-memfd-20261105/launch.sh", "lane":"cpu", "regions":"any-cpu-quarter",
+ "result_path":"/mnt/raid0/llm/tmp/kvfork/kpf17-ggml-memfd-20261105/out/RESULT.json", "result_format":"json",
+ "decision_rule":"Model-free qualification of pinned libggml-base from the KPF-17 oracle build: require mutable owned-child positive control, hash-pinned DSO loaded from sealed memfd with live map inode/device and matching bytes, owned same-UID child EPERM on write and shrink, unchanged bytes and callable version, and child reaping. Stop UNKNOWN on dependency, source identity, loader, control, STOP or deadline failure. This proves no unrelated-process, other DSO, whole-oracle or server custody.",
+ "estimate_s":300, "handoff_task":"handoffs/active/kv-cache-program.md:KPF-17", "priority_rank":45,
+ "scratch_root":"/mnt/raid0/llm/tmp/kvfork/kpf17-ggml-memfd-20261105", "kind":"compute", "dryrun_native_result":true, "unit_key":"case_count", "keep":["**"], "lineage":"kpf17-ggml-memfd"
+}
