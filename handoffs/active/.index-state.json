@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 213
+      "open": 214
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 487
+      "open": 486
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 269,
+      "closed": 270,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 101,
@@ -1126,11 +1126,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 372,
+      "total": 373,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 126,
+          "closed": 127,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1534,
+          "line": 1538,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1658,
+          "line": 1662,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1985,
+          "line": 1989,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2124,
+          "line": 2128,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2677,
+          "line": 2681,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2814,
+          "line": 2818,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3706,
+          "line": 3710,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 383,
+      "closed": 388,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 101,
+      "open": 100,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 485,
+      "total": 489,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 231,
+          "closed": 236,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 55
+          "open": 54
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1679,
+          "line": 1683,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2091,
+          "line": 2095,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 701,
+          "line": 702,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2617,7 +2617,7 @@
       "closed": 352,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 102,
+      "open": 103,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 456
+      "total": 457
     }
   },
   "row_id_collisions": {},
