@@ -596,6 +596,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(os.path.isfile(eng), f"engine {eng} missing")
     lane = spec["lane"]
     need((lane == "gpu") == (o["class"] in ("gpu", "cpu+gpu")), f"lane {lane} disagrees with engine --class {o['class']}")
+    if spec.get("gpu_use") is not None:
+        need(spec["gpu_use"] == "quiet-only", "gpu_use must be \"quiet-only\" when present")
+        need(o["class"] == "cpu+gpu" and o.get("gpu_quiet") == "exclusive",
+             "gpu_use quiet-only needs engine --class cpu+gpu --gpu-quiet exclusive (the row holds the MI210 idle, never executes on it)")
     est = int(spec["estimate_s"])
     need(est > 0, "estimate_s must be positive seconds")
     result_path = str(spec["result_path"])
@@ -2413,6 +2417,13 @@ def smoke_completion_check(d):
     return True, "no smoke branch; full-job --complete-cmd passes on the job's own artifacts"
 
 
+def gpu_residency_required(d, regions):
+    """A dry run must prove VRAM residency iff the row holds the MI210 AND executes on it. A row that declares
+    gpu_use "quiet-only" (validated at publish: --class cpu+gpu --gpu-quiet exclusive) holds the GPU only to keep it
+    idle; demanding residency from it failed every such CPU census (inf75-c5-w3-halfb-census-c6-20261105, 2026-11-05)."""
+    return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
+
+
 def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
     Operator 2026-11-05: the smoke is a KEEPER-SCHEDULED filler - publish_row queues it, the allocator places it first on
@@ -2480,7 +2491,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     t_lock = None
     cpu_acc, cpu_samples = {}, []
     vram_max = None
-    gpu = "mi210_0" in regions
+    gpu = gpu_residency_required(d, regions)
     first_unit_at = None
     progress = None
     stop_requested = None
