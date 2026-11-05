@@ -118,6 +118,60 @@ fi
 STOP_GRACE=${STOP_GRACE:-${FILLER_STOP_GRACE_S:-60}}
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
+
+# ------------------------------------------------------------------ GPU fence (operator 2026-11-05 "fix it")
+# A grant that does NOT hold the GPU token (no mi210_0 region, no gpu-quiet in holds=, no --gpu-quiet claim) runs its
+# whole process tree fenced off the MI210: device-visibility env hides it from HIP/ROCr, and an LD_PRELOAD shim refuses
+# open(/dev/kfd, /dev/dri/{renderD,card}*) - the env alone still opens KFD (measured: hipGetDeviceCount=0 yet a
+# /sys/class/kfd/kfd/proc/<pid> entry with a per-device context). Origin: codex3-cs8-stt5 r3/r4 (lane cpu) ran the HIP
+# whisper-cli every ~7 s from a Python job and wrecked the exclusive kvu16g2-ab twice; launcher argv cannot see that.
+# HIP builds fall back to CPU (whisper-cli: "no GPU found" -> CPU; llama.cpp: "no ROCm-capable device", 0 GPU devices).
+# Rows WITH the token are unchanged. The keeper's GPU-FENCE-BREACH sampler is the safety net for a bypassed fence.
+FENCE_DIR=${FILLER_FENCE_DIR:-$HERE/state}
+gpu_fence_so() { # prints the path of the compiled shim (cached by source hash); empty when no compiler is available
+  local src h so tmp
+  src=$(cat <<'CSRC'
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <string.h>
+#include <sys/types.h>
+static int fenced(const char *p){ return p && (!strcmp(p,"/dev/kfd") || !strncmp(p,"/dev/dri/renderD",16) || !strncmp(p,"/dev/dri/card",13)); }
+#define W(N, PRE, CALL) int N PRE { static int (*r)(); if(!r) r=(int(*)())dlsym(RTLD_NEXT,#N); mode_t m=0; \
+  if(f&(O_CREAT|O_TMPFILE)){va_list a; va_start(a,f); m=(mode_t)va_arg(a,int); va_end(a);} \
+  if(fenced(p)){errno=EACCES; return -1;} return CALL; }
+W(open, (const char *p, int f, ...), r(p,f,m))
+W(open64, (const char *p, int f, ...), r(p,f,m))
+W(openat, (int d, const char *p, int f, ...), r(d,p,f,m))
+W(openat64, (int d, const char *p, int f, ...), r(d,p,f,m))
+CSRC
+)
+  h=$(printf '%s' "$src" | sha256sum | cut -c1-12); so=$FENCE_DIR/gpu_fence-$h.so
+  if [ ! -s "$so" ]; then
+    command -v gcc >/dev/null 2>&1 || return 0
+    mkdir -p "$FENCE_DIR"; tmp=$so.part.$$
+    printf '%s\n' "$src" | gcc -x c -std=gnu99 -shared -fPIC -O2 -o "$tmp" - -ldl 2>/dev/null && mv -f "$tmp" "$so" || { rm -f "$tmp"; return 0; }
+  fi
+  echo "$so"
+}
+holds_gpu_token() { # $1 = grant file; NEEDGPU / GPUQ already set
+  [ "${NEEDGPU:-0}" = 1 ] && return 0
+  case ${GPUQ:-} in shared|exclusive) return 0;; esac
+  sed -n 's/.*holds=\([^ ]*\).*/\1/p' "$1" 2>/dev/null | tr ',' '\n' | grep -qx 'gpu-quiet'
+}
+FENCE_ENV=()
+set_gpu_fence() { # fills FENCE_ENV (an `env ...` prefix) for a grant without the GPU token; empty otherwise
+  FENCE_ENV=()
+  if holds_gpu_token "$GRANT"; then export FILLER_GPU_FENCE=0; return; fi
+  local so pre; so=$(gpu_fence_so)
+  FENCE_ENV=(env FILLER_GPU_FENCE=1 ROCR_VISIBLE_DEVICES= HIP_VISIBLE_DEVICES=-1 GPU_DEVICE_ORDINAL=-1 CUDA_VISIBLE_DEVICES=-1
+             GGML_VK_VISIBLE_DEVICES=-1 HSA_ENABLE_SDMA=0)
+  if [ -n "$so" ]; then pre="$so${LD_PRELOAD:+ $LD_PRELOAD}"; FENCE_ENV+=(LD_PRELOAD="$pre")
+  else log "WARN gpu-fence: no compiler for the /dev/kfd shim; env fence only (keeper GPU-FENCE-BREACH sampler is the net)"; fi
+  log "GPU-FENCE on: grant holds no GPU token (${so:-env-only})"
+}
 epoch() { date -u -d "$1" +%s 2>/dev/null; }
 listening() { ss -ltn "sport = :$1" 2>/dev/null | grep LISTEN >/dev/null; }
 any_listening() { local p; for p in ${1//,/ }; do listening "$p" && { echo "$p"; return 0; }; done; return 1; }
@@ -388,18 +442,19 @@ run_one() {
   if [ "${SMOKE_NOLOCK:-0}" = 1 ]; then
     if [ "$CLASS" = gpu ]; then rlargs=(--gpu-quiet shared); else rlargs=(); fi
   fi
+  set_gpu_fence
   snapshot_overrun "$regions"
   if [ -n "${FILLER_STUB_CMD:-}" ]; then
-    setsid bash -c "$FILLER_STUB_CMD" 7>&- &
+    "${FENCE_ENV[@]}" setsid bash -c "$FILLER_STUB_CMD" 7>&- &
   elif [ "${SMOKE_NOLOCK:-0}" = 1 ] && [ ${#rlargs[@]} = 0 ]; then
-    setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+    "${FENCE_ENV[@]}" setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   elif [ $SELFCLAIM = 1 ] || [ ${#rlargs[@]} = 0 ]; then   # nothing to lock (gpu row, gpu-quiet none, host threads only): no region-lock call
-    setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+    "${FENCE_ENV[@]}" setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   else
     local rl_to=$(( e - $(date -u +%s) )); [ "$rl_to" -ge 1 ] || rl_to=1   # region-lock: 0 = wait forever; never that
-    setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
+    "${FENCE_ENV[@]}" setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
       /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   fi

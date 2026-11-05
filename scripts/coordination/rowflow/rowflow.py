@@ -3460,6 +3460,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         gwhy = None if dry else gpu_quiet_gate(flags, grants, allrows, log, seen)
     except Exception as e:  # noqa: BLE001 - an unreadable sysfs never stops allocation; it never admits either
         gwhy = f"device occupancy unreadable ({type(e).__name__}: {e})"
+    try:   # GPU fence safety net: a KFD client inside a grant without the GPU token
+        if not dry:
+            gpu_fence_breach(flags, grants, log, seen)
+    except Exception as e:  # noqa: BLE001 - the net never stops allocation
+        log(f"GPU-FENCE sampler failed: {type(e).__name__}: {e}")
     if gwhy:
         held_back = [c for c in cands if c["bench"] and any(GPU in o for o in c["options"])]
         cands = [c for c in cands if c not in held_back]
@@ -3649,6 +3654,45 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen):
                 f"under its EXCLUSIVE grant ({cp})")
             seen.add(f"gpu-contaminated:{g['id']}")
     return None
+
+
+def gpu_fence_breach(flags, grants, log, seen, occ=None):
+    """GPU FENCE safety net (operator 2026-11-05 "fix it"; codex3-cs8-stt5 r3/r4 ran the HIP whisper-cli from a CPU-lane
+    Python job). filler_run15 fences every grant WITHOUT the GPU token off the MI210; each tick, any KFD client
+    (/sys/class/kfd/kfd/proc, host pids) inside such a grant's process tree means the fence was bypassed: log
+    `GPU-FENCE-BREACH <id> <pid>`, alert once per row, mark the row contaminated (dryrun/<id>/CONTAMINATED.json).
+    Returns [(id, pid)]."""
+    occ = gpu_occupancy() if occ is None else occ
+    kfd = set(occ.get("pids") or {})
+    out = []
+    if not kfd:
+        return out
+    for g in grants:
+        if GPU in g["holds"]:
+            continue
+        own = set()
+        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+            if x:
+                try:
+                    own |= tree_pids(int(x)) | {int(x)}
+                except (OSError, ValueError):
+                    pass
+        hit = sorted(kfd & own)
+        for pid in hit:
+            log(f"GPU-FENCE-BREACH {g['id']} {pid}")
+            out.append((g["id"], pid))
+        if not hit:
+            continue
+        seen.add(f"gpu-fence-breach:{g['id']}")
+        cp = os.path.join(dry_dir(flags, g["id"]), "CONTAMINATED.json")
+        if not os.path.exists(cp):
+            os.makedirs(os.path.dirname(cp), exist_ok=True)
+            atomic_json(cp, {"id": g["id"], "at": now_iso(), "reason": "gpu-fence-breach", "kfd_pids": hit[:50],
+                             "vram": sum((occ.get("pids") or {}).get(p, 0) for p in hit)})
+            route_alert("gpu-fence-breach", f"{g['id']}: grant without the GPU token opened the MI210 (KFD pids "
+                        f"{','.join(map(str, hit[:8]))}); fence bypassed, row marked contaminated",
+                        {"row": g["id"], "kfd_pids": hit[:50]}, log)
+    return out
 
 
 IDLE_VIOLATION_TICKS = 2
