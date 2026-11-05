@@ -31,3 +31,7 @@ Linked the already-landed CH-26b map integrity prototype and NeMo request-identi
 ## 00:24Z — Retain source-reviewed C3 request-to-task marker integration
 
 NEMO-PROF-RESEG: consumed independent C3 request-join integration result. The existing r14 instrumentation patch applies cleanly to pinned C3 dcc853b5559bef4e50acf251f4910f7f4e0ba538; source review located its actual task-ID join before submission and the single-result non-stream response echo. Retained the exact patch and integration result under docs/reference/autokernel/nemo-request-producers-20261105/; the patch SHA-256 is 3a6b0e485464038e216b1875db9f5c6072efa19751251fe7415bd1df5d575d7e. The detached review worktree was removed. No build, request, profiler alignment or historical token boundaries are claimed; the pre-existing marker build row remains pending. [belief: cc]
+
+## 00:25Z — Consume C6 CUBLAS route diagnostic publisher smoke
+
+C6-Q4-MMVQ-FIX: consumed publisher PASS for akx-c6-n4-cublas-route-diagnostic-20261105: rc0, four isolated units, 30 seconds, sampled peak VRAM 451,637,248 bytes. The candidate-versus-CUBLAS seed-71 route comparison is ready for its full grant; dryrun_native_result isolates smoke from the full result. No native diagnostic, full-suite correctness, performance or promotion claim follows. [no-belief: publisher smoke only]
