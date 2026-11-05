@@ -1,0 +1,33 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105-source",
+  "targets": [
+    [
+      "chunk_init",
+      "tools/server/server-context.cpp"
+    ],
+    [
+      "chunk_encode",
+      "tools/server/server-context.cpp"
+    ],
+    [
+      "kv_chunks_apply",
+      "tools/server/server-context.cpp"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "8952a0f693fb923918157eb25117641b74766230"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/job.py": "fd0abf2271bcbc254cdd02c3600711a6ff8dd510be2b3e994175736118182bcc",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/launch.sh": "012bd739de9486b9f9d6798752016d5e7ab8eef5a4da7b824b6d431bb5967a7c",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/spec.json": "80d3bbc5b3f5321f7203ffef99e6a9ea4c5d8675cb101adfd2bbb2fbaf2134cb",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/README.md": "26c98ce7ad519b4ffa882ca65c001aa68334f3701995062de04b6fb83c7996bd",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105-source/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105-source/tools/server/server-context.cpp": "7c68370f9085178de2fa57d2c679915d3befb54ff8e6a3377756965c9501b7ba"
+  }
+}

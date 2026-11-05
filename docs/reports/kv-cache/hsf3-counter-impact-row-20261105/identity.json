@@ -1,0 +1,28 @@
+{
+  "head": "c5d1bfe16dc7524e3d38f17b0b8a5bcfb784f27f",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source",
+  "targets": [
+    [
+      "progress",
+      "docs/reports/kv-cache/hsf3-census-r3-row-20261104/census.py"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "c5d1bfe16dc7524e3d38f17b0b8a5bcfb784f27f"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/job.py": "b2e1a6267843f7dbdafa8d92b8badc7ee41001774b63dc9878b07b2ac73994ba",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/launch.sh": "52510df5561815c7f425ed442b6671b2aaef55bb0b53d5f7341c87e0c924159d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/spec.json": "877f0046146124013ce22997e36162284f96291e575dc8a8722ec307fa4dde05",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/README.md": "f2306d756d767f35a20f25e5e870e45b2e6b2d10fc0ec840f7df78324a19646d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/counter-fix.patch": "0e1ef4489ab63665a6217531f389b8c2d06fc10583b82b32c3bb0020a4786be5",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source/docs/reports/kv-cache/hsf3-census-r3-row-20261104/census.py": "41cba0cbcaa7c7342d3d936a3fc39fecc700e4821ebed1371238410a5dda1f7d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source/scripts/gitnexus-analyze.sh": "dacb98191be75abf64f73763d52fa89e8b738f5f3e6eac0e988159abe40d22c3",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source/scripts/gitnexus-writer.py": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105-source/scripts/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d"
+  }
+}
