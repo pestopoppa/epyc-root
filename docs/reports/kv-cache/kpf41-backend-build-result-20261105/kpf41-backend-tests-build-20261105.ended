@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T02:51:49Z reason=complete
+job_id=kpf41-backend-tests-build-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=3600
+started=2026-11-05T02:50:18Z
+regions=24-47

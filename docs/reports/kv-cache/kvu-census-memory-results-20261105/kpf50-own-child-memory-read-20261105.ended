@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T02:49:50Z reason=complete
+job_id=kpf50-own-child-memory-read-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T02:49:47Z
+regions=48-71

@@ -1,0 +1,13 @@
+{
+  "status": "BUILD_PASS",
+  "binary_size_bytes": 1612168,
+  "source_commit": "15caecbbf4cb27452dbd87fa1a68a0e75098388e",
+  "files": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/test-backend-ops": "e8270bb7da61cb9400f2e43ee4647840565c529ceb479026ea5dde7d52b66bfc",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml.so": "85a180a2889e09f8d1c35f163aeabd1c81524ffd107ceaed28e508b114a2b568",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-base.so": "f2b9d75e8cacc0959f26c13cf5701dc9a354a181055f584fce3e170e52dbf572",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-cpu.so": "8be2828fa2ff108ec0275149293a55177476c545eb2868bdecb5849df0cffcec",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-hip.so": "172b3a22d7e41329776347f3e8e64a95baa291e069c3efb1f1143d680fb4e6cb"
+  },
+  "scope": "backend test executable and own ggml linkage build only; no GPU execution or parity"
+}
