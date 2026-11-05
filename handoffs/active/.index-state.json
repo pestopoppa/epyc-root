@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 211
+      "open": 212
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 494
+      "open": 490
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 268,
+      "closed": 269,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 101,
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 371,
+      "total": 372,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1529,
+          "line": 1531,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1653,
+          "line": 1655,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1980,
+          "line": 1982,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2119,
+          "line": 2121,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2672,
+          "line": 2674,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,14 +1202,14 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2809,
+          "line": 2811,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
         },
         {
           "blocked": 1,
-          "closed": 62,
+          "closed": 63,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3701,
+          "line": 3703,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 362,
+      "closed": 373,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 108,
+      "open": 104,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 471,
+      "total": 478,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 223,
+          "closed": 227,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,27 +1332,27 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 61
+          "open": 57
         },
         {
           "blocked": 0,
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 1674,
+          "line": 1676,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 10
         },
         {
           "blocked": 0,
-          "closed": 118,
+          "closed": 125,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2085,
+          "line": 2087,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -2617,7 +2617,7 @@
       "closed": 352,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 100,
+      "open": 101,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 454
+      "total": 455
     }
   },
   "row_id_collisions": {},
