@@ -35,3 +35,7 @@ Started the W5s successor publisher smoke; independent review found draft manife
 ## 03:24Z — Filed the original-C6 versus corrected-image q4_0 paired performance result.
 
 Filed `c6-q40-original-c6-perf-20261105` rc0: 20 paired runs across seven q4_0 shapes, with raw logs and result retained; n=5 corrected time changed −8.222% (descriptive 95% interval −9.665% to −6.780%). Images differ in multiple ways, so no isolated-fix or promotion claim. [belief: cc]
+
+## 03:42Z — Qualified the W5s retention successor census packet with publisher smoke.
+
+Qualified `akagg-w5s-retention-r3-20261105` after the archive manifest readback repair, 4 targeted retention tests, 21 entry/storage tests, source reseal, and publisher smoke PASS. The smoke observes one bounded native request only; full census and P0d acceptance remain pending. Also recovered the exact v39 floor producer from research commit 99301fa; the restore mismatch remains open. [no-belief: preparation and smoke qualification only]
