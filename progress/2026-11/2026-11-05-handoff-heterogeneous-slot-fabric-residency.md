@@ -99,3 +99,7 @@ Filed GPU mechanics r2 inconclusive because outer completion was partial despite
 ## 02:23Z — File synthetic custody and decoder results, prepare historical impact retry
 
 Filed KPF-50 synthetic custody PASS and typed historical decoder 8/8 synthetic PASS, with native target and historical binding still unknown. Filed the historical task/slot impact scan inconclusive after a graph-status abbreviation mismatch and published a source-bound retry; its smoke is partial source-reference progress only.
+
+## 02:27Z — File model-free wrapper STOP controls and publish HSF-4 aggregate census
+
+Filed wrapper STOP v2 PASS for ten model-free controls; no native oracle claim follows. Published the aggregate-only HSF-4 serving/dispatch histogram after four-CPU synthetic smoke; the full census and representativeness remain pending.

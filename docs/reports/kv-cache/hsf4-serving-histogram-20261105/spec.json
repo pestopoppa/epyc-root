@@ -1,0 +1,20 @@
+{
+  "id": "hsf4-serving-histogram-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf4-serving-histogram-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf4-serving-histogram-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Bounded aggregate census joins only uniquely keyed complete successful serving and dispatch records; group direct separately, report unknown and reject unstable, oversized, malformed or incomplete inputs. No inference, fleet representativeness or HSF-4 completion claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-4.SERVING-HISTOGRAM",
+  "priority_rank": 90,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf4-serving-histogram-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "hsf4-serving-histogram"
+}
