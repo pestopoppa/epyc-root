@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 651
+      "open": 650
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 212
+      "open": 213
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 490
+      "open": 488
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1531,
+          "line": 1534,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1655,
+          "line": 1658,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1982,
+          "line": 1985,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2121,
+          "line": 2124,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2674,
+          "line": 2677,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2811,
+          "line": 2814,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3703,
+          "line": 3706,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 373,
+      "closed": 379,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 104,
+      "open": 102,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 478,
+      "total": 482,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 227,
+          "closed": 229,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,27 +1332,27 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 57
+          "open": 55
         },
         {
           "blocked": 0,
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 1676,
+          "line": 1678,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 10
         },
         {
           "blocked": 0,
-          "closed": 125,
+          "closed": 129,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2087,
+          "line": 2089,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 200,
+      "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 18,
+      "open": 17,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1549,13 +1549,13 @@
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
           "line": 1953,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 6
+          "open": 5
         },
         {
           "blocked": 0,
@@ -2617,7 +2617,7 @@
       "closed": 352,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 101,
+      "open": 102,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2626,7 +2626,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 455
+      "total": 456
     }
   },
   "row_id_collisions": {},

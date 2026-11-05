@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T04:09:06Z",
+  "generated_at": "2026-11-05T04:19:21Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1361,14 +1361,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 352,
-      "dispatchable": 101,
+      "dispatchable": 102,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-04",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 103,
+      "open": 104,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1567,15 +1567,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 200,
-      "dispatchable": 18,
+      "closed": 201,
+      "dispatchable": 17,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
-      "open": 20,
+      "open": 19,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1631,11 +1631,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
           "line": 1953,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
         },
         {
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1531,
+          "line": 1534,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1655,
+          "line": 1658,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1982,
+          "line": 1985,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2121,
+          "line": 2124,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2674,
+          "line": 2677,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2811,
+          "line": 2814,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3703,
+          "line": 3706,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3511,15 +3511,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 373,
-      "dispatchable": 104,
+      "closed": 379,
+      "dispatchable": 102,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 105,
+      "open": 103,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3545,7 +3545,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 57,
+          "dispatchable": 55,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3553,14 +3553,14 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 58,
+          "open": 56,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1676,
+          "line": 1678,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 10,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2087,
+          "line": 2089,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
