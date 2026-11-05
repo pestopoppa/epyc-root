@@ -1,0 +1,97 @@
+--- a/tests/test-save-load-state.cpp
++++ b/tests/test-save-load-state.cpp
+@@ -2,6 +2,7 @@
+ #include "common.h"
+ #include "log.h"
+ #include "llama-cpp.h"
++#include "kpf17-mutation-oracle.h"
+ 
+ #include <algorithm>
+ #include <clocale>
+@@ -429,16 +430,33 @@
+         LOG_ERR("Test 6 FAIL: restored mismatch=%g control=%g\n", (double) actual, (double) floor);
+         return false;
+     }
+-    // The same attention prefix but stale recurrent state must not look like the
+-    // control; refusal is also an acceptable detection of this invalid state.
+-    bool mutation_detected = !restore(2, stale);
+-    if (!mutation_detected) {
+-        mutation_detected = !decode_one(ctx.get(), 2, end);
+-        if (!mutation_detected) {
++    // Establish destination 2 in this same context against the A/A floor,
++    // then fully clear it. Generic attention-copy refusal is INVALID. Stale
++    // set/decode refusals after the valid control remain distinct detections.
++    const auto mutation = kpf17_mutation_oracle(
++        [&]() { return restore(2, partial); },
++        [&]() {
++            if (llama_memory_seq_pos_max(mem, 2) != end - 1 ||
++                state(0, LLAMA_STATE_SEQ_FLAGS_NONE) != source_before || !decode_one(ctx.get(), 2, end)) return false;
++            const float valid_diff = max_diff(lref, logits(ctx.get()));
++            return std::isfinite(valid_diff) && valid_diff <= floor &&
++                   state(0, LLAMA_STATE_SEQ_FLAGS_NONE) == source_before;
++        },
++        [&]() {
++            return llama_memory_seq_rm(mem, 2, -1, -1) && llama_memory_seq_pos_max(mem, 2) == -1 &&
++                   state(0, LLAMA_STATE_SEQ_FLAGS_NONE) == source_before;
++        },
++        [&]() { return llama_memory_seq_cp_ext(mem, 0, 2, 0, end, LLAMA_MEMORY_SEQ_CP_FLAGS_ATTN_ONLY); },
++        [&]() { return llama_state_seq_set_data_ext(ctx.get(), stale.data(), stale.size(), 2,
++                   LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY) == stale.size(); },
++        [&]() {
++            if (!decode_one(ctx.get(), 2, end)) return kpf17_mutation_result::stale_decode_failed;
+             const float changed = max_diff(lref, logits(ctx.get()));
+-            mutation_detected = std::isfinite(changed) && changed > floor;
+-        }
+-    }
++            if (!std::isfinite(changed)) return kpf17_mutation_result::stale_nonfinite;
++            return changed > floor ? kpf17_mutation_result::stale_diverged : kpf17_mutation_result::stale_within_floor;
++        });
++    LOG("Test 6 mutation n_rs_seq=%u mechanism=%s\n", n_rs_seq, kpf17_mutation_result_name(mutation));
++    const bool mutation_detected = kpf17_mutation_detected(mutation);
+     if (!mutation_detected || state(0, LLAMA_STATE_SEQ_FLAGS_NONE) != source_before) {
+         LOG_ERR("Test 6 INVALID: stale-state mutation not detected or source changed\n");
+         return false;
+--- /dev/null
++++ b/tests/kpf17-mutation-oracle.h
+@@ -0,0 +1,41 @@
++#pragma once
++
++// Require a valid same-destination control. Generic attention-copy refusal is
++// INVALID; conditional stale set/decode refusal remains a distinct detection.
++enum class kpf17_mutation_result {
++    valid_restore_failed, valid_witness_failed, reset_failed,
++    stale_attention_copy_failed, stale_state_set_rejected,
++    stale_decode_failed, stale_nonfinite, stale_within_floor, stale_diverged
++};
++
++inline const char * kpf17_mutation_result_name(kpf17_mutation_result result) {
++    switch (result) {
++        case kpf17_mutation_result::valid_restore_failed:       return "invalid_valid_restore";
++        case kpf17_mutation_result::valid_witness_failed:       return "invalid_valid_witness";
++        case kpf17_mutation_result::reset_failed:               return "invalid_reset";
++        case kpf17_mutation_result::stale_attention_copy_failed:return "invalid_stale_attention_copy";
++        case kpf17_mutation_result::stale_state_set_rejected:   return "detected_stale_set_refused_after_valid_control";
++        case kpf17_mutation_result::stale_decode_failed:        return "detected_stale_decode_refused_after_valid_control";
++        case kpf17_mutation_result::stale_nonfinite:            return "invalid_stale_nonfinite";
++        case kpf17_mutation_result::stale_within_floor:         return "invalid_stale_within_floor";
++        case kpf17_mutation_result::stale_diverged:             return "detected_stale_logits_above_aa_floor";
++    }
++    return "invalid_unknown";
++}
++
++inline bool kpf17_mutation_detected(kpf17_mutation_result result) {
++    return result == kpf17_mutation_result::stale_state_set_rejected ||
++           result == kpf17_mutation_result::stale_decode_failed ||
++           result == kpf17_mutation_result::stale_diverged;
++}
++
++template<class ValidRestore, class ValidWitness, class Reset, class StaleCopy, class StaleSet, class StaleWitness>
++static kpf17_mutation_result kpf17_mutation_oracle(ValidRestore valid_restore, ValidWitness valid_witness,
++        Reset reset, StaleCopy stale_copy, StaleSet stale_set, StaleWitness stale_witness) {
++    if (!valid_restore()) return kpf17_mutation_result::valid_restore_failed;
++    if (!valid_witness()) return kpf17_mutation_result::valid_witness_failed;
++    if (!reset()) return kpf17_mutation_result::reset_failed;
++    if (!stale_copy()) return kpf17_mutation_result::stale_attention_copy_failed;
++    if (!stale_set()) return kpf17_mutation_result::stale_state_set_rejected;
++    return stale_witness();
++}

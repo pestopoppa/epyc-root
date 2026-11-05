@@ -121,3 +121,7 @@ KVU-19b-gap: corrected multi-clock r3 passed publisher smoke and is grantable; f
 ## 01:59Z — File the clock qualification and publish synthetic trace qualification and TTS diagnostic rebuild.
 
 KVU-19b-gap: multi-clock r3 completed rc0, qualifying three individual model-free witness points and five mutations, without a drift or target-alignment claim. Published trace-analyzer synthetic qualification after its smoke passed. KVU-11c: scratch cleanup mistakenly removed the prior HIP build used in failed mechanics r3; source and original binary digests remain. Published a source-bound diagnostic rebuild after its smoke passed; exact identity requires all five hashes to match. Removed six superseded attempt directories (~186 MiB); retained published-row inputs and source custody.
+
+## 02:08Z — Publish group-3 controls, KPF-17 oracle impact, and the KPF-41 HIP build prerequisite.
+
+KPF-18 group 3: published a sealed model-free qualification of the copied integrated driver cell after four-CPU smoke PASS; full result pending and no native construction or cleanup verdict. KPF-17: published exact-source oracle upstream-impact and verbose skipped-file coverage after partial source-reference smoke PASS; full graph result pending and edits are not cleared. Both rows preserve existing historical results. KPF-41: republished the final sealed Q8 HIP build packet after a concurrent packet edit; its fresh four-CPU actual-object smoke passed. Full build and model-free GPU parity remain pending. Removed the superseded source archive.

@@ -1,0 +1,23 @@
+{
+  "id": "kpf17-oracle-impact-8952-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Exact source-bound upstream impact for test_partial_restore_busy_source_one and full verbose skipped-file coverage on 8952a0f693fb923918157eb25117641b74766230. Stop on answer with native nonpartial impact and coverage; futility-only stop on HIGH/CRITICAL, target ambiguity, source or seal drift, parser or coverage failure, STOP or deadline. Smoke is partial reference only, not edit clearance. New helper/include require manual review.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "notes": "Unpublished preparation; no graph or model run. Smoke separate from full results."
+}
