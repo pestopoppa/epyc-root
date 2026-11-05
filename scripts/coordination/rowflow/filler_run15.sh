@@ -39,11 +39,17 @@
 #   FILLER_STOPFILE FILLER_CPUS FILLER_THREADS(physical cores) FILLER_PORTS FILLER_PIDFILE(append server PIDs we spawned)
 #   FILLER_LIB (source it: fl_wait_own_port PORT PID [maxsecs] proves OUR pid owns the port + /health).
 #   Job must be resumable and honour FILLER_STOPFILE / FILLER_DEADLINE between items.
+# Mid-job STOP (2026-11-05, keeper-friction-review refinement 4): the launcher polls --stop every 3 s while the job runs;
+#   on STOP it TERMs the job's setsid group (region-lock child, inner engine group and every member), KILLs after
+#   --stop-grace S (default ${FILLER_STOP_GRACE_S:-60}; not in a dry run: the keeper's harness owns that stop and its
+#   600 s truncation warning), verifies the groups are gone, writes .ended rc=75 reason=stopped (grant released; the region-lock dies
+#   with its group, so its claim is released) and exits. A STOP present when a grant arrives writes a terminal
+#   .ended rc=75 reason=stopped-before-start (it used to release the grant silently and be re-granted every tick, F4).
 # Test overrides (env): FILLER_RL FILLER_GRANTS_DIR FILLER_FLAGS_DIR FILLERS_MD FILLER_POLL FILLER_STATE_DIR FILLER_STUB_CMD FILLER_GPU_LOCK
 set -uo pipefail
 HERE=$(dirname "$(readlink -f "$0")")
 SELF=$(readlink -f "$0")
-ID=""; CLASS=""; JOBCMD=""; MINWIN=0; STOPFILE=""; COMPLETE_CMD=""; PORTS=""; SCHED_PORTS=""; EXCL_LOCK=""; GPUTHR="184-191"; WORKDIR=/workspace; SELFCLAIM=0; GPUQ=""; ROLE=""; CLAIM_CPUS=""; PRECOND_CMD=""; REPEAT=0; NOFOLD=0; REQUIRES_TOOLS=(); QUAL_INTERPRETER=""
+ID=""; CLASS=""; JOBCMD=""; MINWIN=0; STOPFILE=""; COMPLETE_CMD=""; PORTS=""; SCHED_PORTS=""; EXCL_LOCK=""; GPUTHR="184-191"; WORKDIR=/workspace; SELFCLAIM=0; GPUQ=""; ROLE=""; CLAIM_CPUS=""; PRECOND_CMD=""; STOP_GRACE=""; REPEAT=0; NOFOLD=0; REQUIRES_TOOLS=(); QUAL_INTERPRETER=""
 if [ "${1:-}" = "--inner" ]; then INNER=1; shift; else INNER=0; fi
 while [ $# -gt 0 ]; do
   case $1 in
@@ -52,7 +58,7 @@ while [ $# -gt 0 ]; do
     --sched-port) SCHED_PORTS=$2; shift 2;; --excl-lock) EXCL_LOCK=$2; shift 2;; --gpu-threads) GPUTHR=$2; shift 2;; --self-claim) SELFCLAIM=1; shift;;
     --workdir) WORKDIR=$2; shift 2;;
     --requires-tool) REQUIRES_TOOLS+=("$2"); shift 2;; --qual-interpreter) QUAL_INTERPRETER=$2; shift 2;;
-    --gpu-quiet) GPUQ=$2; shift 2;; --role) ROLE=$2; shift 2;; --claim-cpus) CLAIM_CPUS=$2; shift 2;; --precond-cmd) PRECOND_CMD=$2; shift 2;; --repeat) REPEAT=1; shift;; --no-fold-siblings) NOFOLD=1; shift;; *) echo "unknown arg $1" >&2; exit 64;;
+    --gpu-quiet) GPUQ=$2; shift 2;; --role) ROLE=$2; shift 2;; --claim-cpus) CLAIM_CPUS=$2; shift 2;; --precond-cmd) PRECOND_CMD=$2; shift 2;; --stop-grace) STOP_GRACE=$2; shift 2;; --repeat) REPEAT=1; shift;; --no-fold-siblings) NOFOLD=1; shift;; *) echo "unknown arg $1" >&2; exit 64;;
   esac
 done
 [ -n "$ID" ] && [ -n "$JOBCMD" ] && [ -n "$STOPFILE" ] || { echo "need --id --cmd --stop" >&2; exit 64; }
@@ -68,6 +74,7 @@ case "$GPUQ" in ""|shared|exclusive|none) ;; *) echo "bad --gpu-quiet (shared|ex
 if [ "$CLASS" = gpu ] && [ "$GPUQ" = exclusive ] && [ -z "$CLAIM_CPUS" ] && [ $NOFOLD = 0 ]; then
   echo "filler_run7: --class gpu --gpu-quiet exclusive needs --claim-cpus LIST (whole-host timing jobs: --claim-cpus 0-95) or --no-fold-siblings (GPU-only claim, no CPU region); refusing to default to 0-95" >&2; exit 64
 fi
+[[ ${STOP_GRACE:-0} =~ ^[0-9]+$ ]] || { echo "bad --stop-grace (seconds)" >&2; exit 64; }
 if [ -n "$CLAIM_CPUS" ] && ! [[ $CLAIM_CPUS =~ ^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$ ]]; then echo "bad --claim-cpus" >&2; exit 64; fi
 
 FLAGS=${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}
@@ -99,6 +106,7 @@ if [ "$DRYRUN" = 1 ]; then
     if [ "$CLASS" = gpu ]; then GPUQ=shared; else GPUQ=none; fi
   fi
 fi
+STOP_GRACE=${STOP_GRACE:-${FILLER_STOP_GRACE_S:-60}}
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
 epoch() { date -u -d "$1" +%s 2>/dev/null; }
@@ -172,13 +180,13 @@ notify_end() { # rc reason
 }
 gone() { ! kill -0 -- "-$1" 2>/dev/null; }
 proc_birth() { sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $20}'; }
-kill_group() { # captured pgid + birth: TERM, wait, KILL - only when the leader's birth still matches (no reused pid)
-  local g=$1 birth=$2 i
+kill_group() { # captured pgid + birth [grace s, default 20]: TERM, wait, KILL - only when the leader's birth still matches
+  local g=$1 birth=$2 grace=${3:-20} i
   gone "$g" && return 0
   [ -n "$birth" ] || { log "REFUSED: live group $g has no captured birth"; return 1; }
   [ "$(proc_birth "$g")" = "$birth" ] || { log "group leader $g birth changed (pid reused); not signalling"; return 0; }
   kill -TERM -- "-$g" 2>/dev/null
-  for i in $(seq 20); do gone "$g" && { log "group $g ended after TERM"; return 0; }; sleep 1 7>&- 8>&-; done
+  for i in $(seq "$grace"); do gone "$g" && { log "group $g ended after TERM"; return 0; }; sleep 1 7>&- 8>&-; done
   kill -KILL -- "-$g" 2>/dev/null; sleep 1
   gone "$g" && { log "group $g killed"; return 0; }
   log "REFUSED: group $g survives KILL"; return 1
@@ -186,11 +194,11 @@ kill_group() { # captured pgid + birth: TERM, wait, KILL - only when the leader'
 INNERPG=$STATE/$ID.inner.pgid
 kill_job() { # ws58 2026-11-02: the launcher's setsid group AND the inner engine's group (region_lock_cli may start the inner
   # engine in a session of its own, out of reach of the launcher-group kill); the inner records "pgid birth" at start
-  local r=0 g b
-  kill_group "$CUR" "$CUR_BIRTH" || r=1
+  local r=0 g b grace=${1:-20}
+  kill_group "$CUR" "$CUR_BIRTH" "$grace" || r=1
   if [ -f "$INNERPG" ]; then
     read -r g b < "$INNERPG" || true
-    if [[ ${g:-} =~ ^[0-9]+$ ]] && [ "$g" != "$CUR" ]; then kill_group "$g" "$b" || r=1; fi
+    if [[ ${g:-} =~ ^[0-9]+$ ]] && [ "$g" != "$CUR" ]; then kill_group "$g" "$b" "$grace" || r=1; fi
     [ $r = 1 ] || rm -f "$INNERPG"
   fi
   return $r
@@ -272,7 +280,9 @@ run_one() {
   # 2026-11-03 session review item 7: a STOP file at grant time is RETRYABLE - the grant is released and the id stays
   # usable (the allocator shows the row as `held` and does not re-grant it while the STOP file exists); it used to write
   # .ended, which burned the id and left the poller spinning on "REFUSED: .ended exists" (85k lines).
-  if [ -e "$STOPFILE" ]; then rm -f "$GRANT"; log "STOP present before start: grant released, id kept; fix: rm $STOPFILE"; GRANT_WAIT=$POLL; return 9; fi
+  # 2026-11-05 (keeper-friction-review F4/refinement 4): that silent release was re-granted every tick (1,344 grants in
+  # 16 h of one row whose stop path the keeper could not resolve). A STOP at grant time is now terminal and recorded.
+  if [ -e "$STOPFILE" ]; then write_ended 75 stopped-before-start; log "STOP present before start ($STOPFILE): terminal; publish a new row id to run it"; return 21; fi
   if [ -n "$PRECOND_CMD" ]; then
     local pout prc; pout=$( cd "$WORKDIR" && bash -c "$PRECOND_CMD" 2>&1 ); prc=$?
     if [ $prc -ne 0 ]; then write_ended 5 "build-missing:$(printf '%s' "$pout" | head -n1 | tr -c '[:print:]' ' ' | cut -c1-160)"; return; fi
@@ -350,13 +360,16 @@ run_one() {
   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
   reason=exited
   while kill -0 "$CUR" 2>/dev/null; do
+    if [ "$DRYRUN" != 1 ] && [ -e "$STOPFILE" ]; then
+      reason=stopped; log "STOP seen mid-run ($STOPFILE): TERM job group(s), KILL after ${STOP_GRACE}s"
+      kill_job "$STOP_GRACE" || reason=cleanup-failed; break; fi
     if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_job || reason=cleanup-failed; break; fi
     if [ "$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9)" -lt "${FILLER_DISK_FLOOR_GIB:-150}" ] 2>/dev/null; then
       reason=disk-floor; kill_job || reason=cleanup-failed; break; fi
     sleep 3 7>&- 8>&-
   done
   wait "$CUR" 2>/dev/null; rc=$?
-  case $reason in hard-end|disk-floor) rc=75;; esac
+  case $reason in hard-end|disk-floor|stopped) rc=75;; esac
   local cleanup_bad=0
   kill_job || cleanup_bad=1
   kill_pidfile || cleanup_bad=1
@@ -373,6 +386,8 @@ run_one() {
   [ "$rc" -eq 75 ] || reason="job-rc-$rc:$reason"
   write_ended "$rc" "$reason"
   STARTED_ONE=1
+  [ "$reason" = stopped ] && return 21
+  return 0
 }
 
 # Disabled metadata has no new file dependency or EXIT trap.
@@ -401,6 +416,7 @@ while :; do
   lm_attempt_end "$rc"
   [ "$rc" = 70 ] && exit 70
   [ $rc = 20 ] && exit 0
+  [ "$rc" = 21 ] && { log "row stopped (.ended reason=stopped*); poller exiting"; exit 0; }
   # 2026-11-03: rc=66 means the id is terminal (.ended exists); the grant can never be consumed - release it and exit
   # instead of re-reading it every poll (r3 poller: 85,235 REFUSED lines, ~10% of a core, grant shown as held).
   [ "$rc" = 66 ] && { rm -f "$GRANT"; log "terminal id (.ended exists): grant released, poller exiting; fix: publish a new row id"; exit 66; }

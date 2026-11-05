@@ -56,7 +56,7 @@ def _v3_row(flags_dir, row):
 MARGIN_S = 300
 PRECOND_TIMEOUT_S = 30
 ENGINE_RE = re.compile(r"^filler_run\d*\.sh$")
-VALUE_FLAGS = {"--id", "--class", "--cmd", "--min-window", "--stop", "--complete-cmd", "--port",
+VALUE_FLAGS = {"--id", "--class", "--cmd", "--min-window", "--stop", "--stop-grace", "--complete-cmd", "--port",
                "--sched-port", "--excl-lock", "--gpu-threads", "--workdir", "--gpu-quiet", "--role",
                "--claim-cpus", "--precond-cmd",
                "--requires-tool", "--qual-interpreter"}  # ws58 2026-11-01: engine v14/v15 (D1 canonical) passes repeatable --requires-tool
