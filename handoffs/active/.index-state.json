@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 650
+      "open": 651
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1117,7 +1117,7 @@
       "closed": 271,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 104,
+      "open": 105,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 377,
+      "total": 378,
       "tracks": [
         {
           "blocked": 1,
@@ -1205,7 +1205,7 @@
           "line": 2823,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 12
+          "open": 13
         },
         {
           "blocked": 1,
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3716,
+          "line": 3717,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 56
@@ -1339,7 +1339,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1722,
+          "line": 1726,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2136,
+          "line": 2140,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 43
@@ -2259,7 +2259,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1731,
+          "line": 1732,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 21
@@ -2272,7 +2272,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2998,
+          "line": 2999,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 5
@@ -2282,7 +2282,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3403,
+          "line": 3404,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4
@@ -2292,7 +2292,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3918,
+          "line": 3919,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 4
@@ -2302,7 +2302,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 4029,
+          "line": 4030,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 1
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 705,
+          "line": 706,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14

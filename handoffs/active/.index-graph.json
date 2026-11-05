@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T10:29:14Z",
+  "generated_at": "2026-11-05T10:36:51Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1936,7 +1936,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1731,
+          "line": 1732,
           "name": "agentic-rocm-kernel-authoring",
           "open": 21,
           "readiness": "blocked"
@@ -1951,7 +1951,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2998,
+          "line": 2999,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 5,
           "readiness": "blocked"
@@ -1960,7 +1960,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3403,
+          "line": 3404,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4,
           "readiness": "ready"
@@ -1969,7 +1969,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3918,
+          "line": 3919,
           "name": "frontier-f6-upstream-publication",
           "open": 4,
           "readiness": "ready"
@@ -1978,7 +1978,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4029,
+          "line": 4030,
           "name": "llama-cpp-dsa-contribution",
           "open": 1,
           "readiness": "ready"
@@ -2045,7 +2045,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 705,
+          "line": 706,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2138,14 +2138,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 271,
-      "dispatchable": 104,
+      "dispatchable": 105,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 106,
+      "open": 107,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2242,7 +2242,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 12,
+          "dispatchable": 13,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2250,7 +2250,7 @@
           ],
           "line": 2823,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 12,
+          "open": 13,
           "readiness": "blocked"
         },
         {
@@ -2271,7 +2271,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3716,
+          "line": 3717,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 57,
           "readiness": "blocked"
@@ -3565,7 +3565,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1722,
+          "line": 1726,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3580,7 +3580,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2136,
+          "line": 2140,
           "name": "kv-unified-stack-rollout",
           "open": 43,
           "readiness": "blocked"
