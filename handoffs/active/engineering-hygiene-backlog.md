@@ -1060,6 +1060,9 @@ Queue ownership: INF-26 arm-P2 is complete and its stale rank entry was removed 
 - [ ] **LOOP-11**: keeper must run the arm checks BEFORE starting the launcher; today a refusal leaves orphan pollers. [no-belief: tooling-repair]
 - [ ] **LOOP-12**: process supervision for grant writers and keeper so a session crash does not kill them (10-28 ~11:25Z). systemd-run is unavailable; investigate why the setsid children died, then pick a supervisor. [no-belief: tooling-repair]
 - [ ] **LOOP-13**: workers add `scratch_root` + `keep` to every `ready/*.json` manifest (owner ruling R10, sent to both workers 2026-10-28). [no-belief: tooling-repair] [too-big: worker and grant-writer guarantees need owner reconciliation; canonical publisher alone can be bypassed]
+- [ ] **KEEPER-CLASS-FIX — keeper/placement class fix** (in flight, class-fix agent, deploying via `deploy_rowflow.sh` only): #1 reclaim idle use-holds / release-on-phase; #2 evidence contract; #3 per-row pinned engine dir; #5 single state model; #6 idle SLO with a fixed alarm route. Friction review: `docs/reports/coordination/keeper-friction-review-20261105.md`. (2026-11-05, operator-adhoc-ops-20261105 wrap-up 2). [no-belief: tooling-repair]
+- [ ] **AUTOFILE-OWNER-LIVENESS — map auto_file row owner → session liveness and reconcile the two filing paths** (keeper auto-file vs owner filing) into one. (2026-11-05, operator-adhoc-ops-20261105 wrap-up 2). [no-belief: tooling-repair]
+- [ ] **FILING-OWNER-LESS-REWRITE — replace wholesale rewrites of `filing-owner-less.jsonl` with append/locked single-writer updates.** (2026-11-05, operator-adhoc-ops-20261105 wrap-up 2). [no-belief: tooling-repair]
 
 ## 2026-10-28/29 results-filing mechanism, loop daemons and disk follow-ons (workspace-58)
 
