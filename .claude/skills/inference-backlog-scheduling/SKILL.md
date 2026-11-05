@@ -71,6 +71,12 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
   --class gpu --no-fold-siblings`); region-lock's own `--no-fold-siblings` on an SMT-only list is
   refused ("maps to no regions"). Decide per GPU row: *no-fold* (co-runs with whole-CPU
   correctness) or *folded* (needs q3 empty; keep q3 free while it runs).
+- **q3 COEXIST (2026-11-05, coexist2).** A GPU timing row needs only a quiet q3: book it `gpu-q3` with
+  regions `mi210_0,88-95,184-191`; filler_run15 (GRANT_CPUS) locks `--cpu-list 88-95 --no-fold-siblings`
+  = LOCK_SH GLOBAL.q3 + LOCK_EX per core, never GLOBAL.q3 exclusive (rowflow refuses a gpu-q3 claim
+  folding onto 72-87). Single-worker gitnexus rows on 72-87 (siblings 168-183, never 88-95/184-191)
+  co-run on per-core locks. Coexist applies ONLY beside a GPU-timing hold (`rowflow.coexist_host`),
+  never beside a host / quiet-host row that measures CPU serving (npd1-step5, -t 48 over 0-95).
 - **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
   184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
   channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go

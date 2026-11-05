@@ -19,10 +19,10 @@ def cx_opt(cpus):
     return frozenset(rf.cpu_tokens(cpus))
 
 
-def cand(cid, options, rank=50, shape="quarter", coexist=False, busy=None, est=3000):
-    c = {"id": cid, "kind": "grant", "lane": "cpu", "rank": rank, "lane_count": 0, "gib": 4, "bench": shape == "quiet-host",
+def cand(cid, options, rank=50, shape="quarter", coexist=False, busy=None, est=3000, lane="cpu"):
+    c = {"id": cid, "kind": "grant", "lane": lane, "rank": rank, "lane_count": 0, "gib": 4, "bench": shape == "quiet-host",
          "options": [frozenset(o) for o in options], "shape": shape, "since": time.time(), "window_s": est,
-         "estimate_s": est, "coexist": coexist}
+         "estimate_s": est, "coexist": coexist, "coexist_host": shape == "gpu-q3" or (shape == "quiet-host" and lane == "gpu")}
     if busy is not None:
         c["busy_fraction"] = busy
     return c
@@ -32,7 +32,7 @@ class Plan(unittest.TestCase):
     def test_quiet_host_granted_while_two_coexist_rows_hold_q3(self):
         held = cx_opt("72-73") | cx_opt("74-75")
         free = ALL_TOKENS - held - {"q3"}
-        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host")
+        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host", lane="gpu")
         out, _, _ = rf.plan(free, [npd], 1000, coexist_held=held)
         self.assertEqual([c["id"] for c, _ in out], ["npd1"])
         self.assertIsNone(rf.plan.last_drain)
@@ -58,7 +58,7 @@ class Plan(unittest.TestCase):
     def test_coexist_not_held_back_by_quiet_host_drain(self):
         now = time.time()
         free = ALL_TOKENS - rf.expand({"q0"})   # q0 busy until +2h: the quiet-host row drains
-        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host")
+        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host", lane="gpu")
         gx = cand("gx", [cx_opt("72-73")], rank=55, coexist=True, busy=0.05, est=7200)
         out, _, _ = rf.plan(free, [npd, gx], 1000, now=now, grant_ends=[now + 1800])
         self.assertEqual([c["id"] for c, _ in out], ["gx"])
@@ -69,7 +69,7 @@ class Plan(unittest.TestCase):
         now = time.time()
         held = cx_opt("72-73")   # held by a NON-coexist sub-quarter row
         free = ALL_TOKENS - held - {"q3"}
-        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host")
+        npd = cand("npd1", [QH_OPT], rank=40, shape="quiet-host", lane="gpu")
         out, _, _ = rf.plan(free, [npd], 1000, now=now, grant_ends=[now + 1800])
         self.assertEqual(out, [])
         self.assertEqual(rf.plan.last_drain[0]["id"], "npd1")
@@ -151,6 +151,59 @@ class EvidenceCoexist(unittest.TestCase):
         free = ALL_TOKENS - qh
         out, _, _ = rf.plan(free, [cand("sq3", [cx_opt("74-75")], coexist=True, busy=0.05)], 1000, quiet_held=qh)
         self.assertEqual([c["id"] for c, _ in out], ["sq3"])
+
+
+GPU_THR = {f"t{k}" for k in range(184, 192)}
+
+
+class Coexist2(unittest.TestCase):
+    """coexist2 (2026-11-05): coexist only beside GPU-timing holds; a whole-host CPU quiet-host grant keeps q3."""
+    GPU_ROW = {"id": "hsf5p", "lane": "gpu", "shape": "gpu-q3", "regions": "mi210_0,88-95,184-191"}
+    CPU_QH = {"id": "npd1", "lane": "gpu", "shape": "quiet-host", "regions": "mi210_0,0-95", "declared_threads": 48}
+    CX = [{"id": "sq3a", "lane": "cpu", "regions": "72-73", "busy_fraction": 0.05},
+          {"id": "sq3b", "lane": "cpu", "regions": "84-85", "busy_fraction": 0.05}]
+
+    def _plan(self, host, holds):
+        allrows = {r["id"]: r for r in [host] + self.CX}
+        cx, qh = rf.coexist_holds([{"id": host["id"], "holds": set(holds)}], allrows)
+        free = ALL_TOKENS - set(holds)
+        rows = [cand(r["id"], [cx_opt(r["regions"])], rank=55, coexist=rf.is_coexist(r), busy=0.05) for r in self.CX]
+        return rf.plan(free, rows, 1000, coexist_held=cx, quiet_held=qh)[0]
+
+    def test_coexist_beside_gpu_q3_grant_and_locks_succeed(self):
+        holds = rf.expand(set(rf.GPU_Q3_TOKENS))
+        out = self._plan(self.GPU_ROW, holds)
+        self.assertEqual(sorted(c["id"] for c, _ in out), ["sq3a", "sq3b"])
+        for _, o in out:
+            self.assertFalse(o & GPU_THR)
+            self.assertFalse(o & rf.cpu_tokens("88-95"))
+        # simulate the region-lock tree: GPU row = SH GLOBAL.q3 + EX cores 88-95 (+ gpu-quiet EX); coexist rows = SH
+        # GLOBAL.q3 + SH build.q3 + EX per core. Every coexist lock must be grantable while the GPU row holds its locks.
+        held = {("GLOBAL.q3", "SH"), ("bench.q3", "SH"), ("gpu-quiet", "EX")} | {(f"core.{c}", "EX") for c in rf.gpu_q3_claim_cores(self.GPU_ROW["regions"])}
+        for r in self.CX:
+            a, _, b = r["regions"].partition("-")
+            want = {("GLOBAL.q3", "SH"), ("build.q3", "SH")} | {(f"core.{c}", "EX") for c in range(int(a), int(b or a) + 1)}
+            for lk, mode in want:
+                clash = [m for (l2, m) in held if l2 == lk and "EX" in (m, mode)]
+                self.assertFalse(clash, f"{r['id']} blocks on {lk} {mode}")
+            held |= want
+
+    def test_coexist_not_beside_whole_host_cpu_quiet_host(self):
+        holds = rf.expand(set(rf.REGIONS))
+        self.assertEqual(self._plan(self.CPU_QH, holds), [])
+        self.assertFalse(rf.coexist_host(self.CPU_QH))   # npd1-step5: lane gpu but -t 48 CPU serving
+        self.assertFalse(rf.coexist_host({"lane": "cpu", "shape": "quiet-host"}))
+        self.assertFalse(rf.coexist_host({"lane": "cpu", "shape": "host"}))
+        self.assertTrue(rf.coexist_host({"lane": "gpu", "shape": "quiet-host", "declared_threads": 1}))
+        self.assertTrue(rf.coexist_host(self.GPU_ROW))
+
+    def test_gpu_q3_claim_never_includes_72_87(self):
+        self.assertEqual(rf.gpu_q3_claim_cores("mi210_0,88-95,184-191"), set(range(88, 96)))
+        self.assertTrue(rf.gpu_q3_claim_cores("mi210_0,q3,184-191") & set(range(72, 88)))
+        self.assertTrue(rf.gpu_q3_claim_cores("mi210_0,168-169") & set(range(72, 88)))   # siblings fold
+        self.assertFalse(rf.GPU_HOST_THREADS & set(range(168, 184)))
+        self.assertFalse({f"t{k}" for k in range(184, 192)} & rf.COEXIST_Q3)
+        self.assertFalse(rf.cpu_tokens("88-95") & rf.COEXIST_Q3)
 
 
 if __name__ == "__main__":

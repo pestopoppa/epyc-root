@@ -742,6 +742,11 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
                        f"{row.get('declared_threads') or 'none'}{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}), "
                        f"a baseline_ref naming the decision-grade baseline / production-serving measurement, or "
                        f"shape_override \"operator: <who> <date>: <why>\"; right-sized: {right_size(row.get('declared_threads'), lane, o.get('gpu_quiet', ''))}")
+    if row["shape"] == "gpu-q3":
+        gpu_grant = o.get("class") == "gpu" and "mi210" in str(regions) and engine_grant_cpus(o)
+        bad = gpu_q3_claim_cores(regions if gpu_grant else (o.get("claim_cpus") or regions)) & set(range(72, 88))
+        need(not bad, f"gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (the q3 cores 72-87 stay lockable by "
+                      f"coexist rows; coexist2 2026-11-05): claim folds onto {sorted(bad)}")
     if row.get("busy_fraction") is None and row.get("declared_threads"):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
@@ -1260,6 +1265,18 @@ def grant_cpus(regions):
     return ",".join(out)
 
 
+def gpu_q3_claim_cores(regions):
+    """The physical cores (SMT siblings folded) a GPU grant's region-lock claim touches: filler_run15 GRANT_CPUS locks
+    the grant cpus < 96 with --no-fold-siblings (sub-quarter: LOCK_SH GLOBAL.q3 + LOCK_EX per core); the >= 96 host
+    threads are tasksetted, unlocked. A whole qN region would take GLOBAL.qN exclusive."""
+    out = set()
+    for t in (grant_cpus(regions) or str(regions or "")).split(","):
+        a, _, b = t.partition("-")
+        if a.isdigit():
+            out |= {c % 96 for c in range(int(a), int(b or a) + 1)}
+    return out
+
+
 def tokens_cpus(tokens):
     """The exact cpu list (cores + their SMT siblings) of a sub-quarter option."""
     cs = sorted(int(t[1:]) for t in tokens if re.fullmatch(r"c\d+", t))
@@ -1422,7 +1439,30 @@ DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whos
 
 
 COEXIST_TAG = "gitnexus-q3"
-QUIET_SHAPES = ("quiet-host", "gpu-q3")   # shapes whose q3 hold leaves q3 cores 72-87 to coexist rows
+QUIET_SHAPES = ("quiet-host", "gpu-q3")   # quiet shapes; only a GPU-timing one (coexist_host) admits coexist rows
+
+
+def coexist_host(d):
+    """coexist2 (operator 2026-11-05: a GPU timing run "just needs a quiet q3"): ONLY a GPU-timing hold - the gpu-q3
+    shape, or a gpu-lane quiet-host row that does NOT measure CPU serving (< WHOLE_HOST_THREADS declared threads) -
+    leaves q3 cores 72-87 to coexist rows. A host / quiet-host row that measures CPU serving (npd1-step5: lane gpu,
+    -t 48 over 0-95, GLOBAL.q3 exclusive) keeps q3 exclusive and gets no coexist backfill (11:0xZ: coexist rows granted
+    beside it waited ~950 s on its lock, and would perturb its CPU measurement). Takes a row or a plan candidate."""
+    d = d or {}
+    if "coexist_host" in d:   # plan candidate: precomputed from its row
+        return bool(d["coexist_host"])
+    shape = d.get("shape") or shape_of(d)
+    if shape == "gpu-q3":
+        return True
+    return shape == "quiet-host" and d.get("lane") == "gpu" and int(d.get("declared_threads") or 0) < WHOLE_HOST_THREADS
+
+
+def coexist_holds(grants, allrows):
+    """(coexist_held, quiet_held): tokens held by running coexist grants / GPU-timing (coexist_host) grants."""
+    cx = set().union(*[g["holds"] for g in grants if is_coexist(allrows.get(g["id"]))])
+    qh = set().union(*[g["holds"] for g in grants if g["id"] in allrows
+                       and coexist_host(allrows[g["id"]])])
+    return cx, qh
 COEXIST_MAX_BUSY = 0.1
 GPU_HOST_THREADS = frozenset(range(184, 192))   # filler_run15 GPUTHR default / gpu-quiet reserved MI210 host threads
 # q3 cores whose SMT siblings are NOT the MI210 host threads (72-87 -> siblings 168-183): a sub-quarter grant pins both
@@ -1614,7 +1654,7 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
     holds c (yarn-e1-a2-gpu, rank 7, failed to arm 172 times and held every quiet-host row for 7 h on an idle host)."""
     need = set().union(*c["options"]) if c["options"] else set()
     better = [x for x in pending if x is not c and float(x["rank"]) < float(c["rank"]) and any(o & need for o in x["options"])]
-    if c.get("shape") in QUIET_SHAPES:   # COEXIST: a coexist row never holds a quiet-host drain back
+    if coexist_host(c):   # COEXIST: a coexist row never holds a quiet-host drain back
         better = [x for x in better if not x.get("coexist")]
     if free is not None:
         better = [x for x in better if placeable(x, free, ram, gpu_grant_open, held_ports)]
@@ -1627,7 +1667,7 @@ def _avail(c, free, cx=frozenset(), qh=frozenset()):
     quiet-host row treats coexist-held cores as free, and q3 as free when its only other holders are coexist rows."""
     if c.get("coexist"):
         return set(free) | ((set(qh) & COEXIST_Q3) - set(cx))
-    if c.get("shape") in QUIET_SHAPES and cx:
+    if coexist_host(c) and cx:
         f2 = set(free) | (set(cx) & COEXIST_Q3)
         if expand({"q3"}) - {"q3"} <= f2:
             f2.add("q3")
@@ -1672,7 +1712,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
     for h in pending:
         if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
             continue
-        if c.get("coexist") and h.get("shape") in QUIET_SHAPES:
+        if c.get("coexist") and coexist_host(h):
             continue   # COEXIST: a waiting quiet-host row never reserves q3 against a coexist row
         need = set().union(*h["options"]) if h["options"] else set()
         if not any(o & need for o in c["options"]):
@@ -1766,7 +1806,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         for c in pending:
             late = drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T
             opts = _fits(c, _avail(c, free, cx, qh), ram, gpu_grant_open)
-            if late and c.get("coexist") and drain.get("shape") in QUIET_SHAPES:
+            if late and c.get("coexist") and coexist_host(drain):
                 late = False   # COEXIST: a quiet-host drain never holds a coexist row back
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
@@ -1793,7 +1833,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         if c.get("coexist"):
             cx |= o
-        elif c.get("shape") in QUIET_SHAPES:
+        elif coexist_host(c):
             qh |= o
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
@@ -2783,7 +2823,7 @@ def heal_grants(flags, grants, rl, log, seen, allrows=None):
             seen.add(f"stale-grant:{id_stem(rid)}")
             continue
         foreign = [r for r in g["holds"] if r in REGIONS and r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
-        if allrows and shape_of(allrows.get(rid) or {}) == "quiet-host":   # COEXIST: a coexist row on q3 is no conflict
+        if allrows and coexist_host(allrows.get(rid)):   # COEXIST: a coexist row on q3 is no conflict
             foreign = [r for r in foreign if not (r == "q3" and is_coexist(allrows.get(rl[r][1][len("filler-"):])))]
         if foreign:
             holder = ",".join(f"{r}={rl[r][1]}" for r in foreign)
@@ -3006,8 +3046,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     place_smokes(flags, free, log, dry=dry, reserved=COEXIST_Q3 if quiet_open else frozenset())
     gpu_open = any(GPU in g["holds"] for g in grants)
     # COEXIST (operator 2026-11-05): tokens held by running coexist / quiet-host grants
-    coexist_held = set().union(*[g["holds"] for g in grants if is_coexist(allrows.get(g["id"]))])
-    quiet_held = set().union(*[g["holds"] for g in grants if g["id"] in allrows and shape_of(allrows[g["id"]]) in QUIET_SHAPES])
+    coexist_held, quiet_held = coexist_holds(grants, allrows)
     if GPU in free and not dry and start_gpu_batch(flags, log):
         free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     counts = lane_counts(flags, allrows)
@@ -3025,7 +3064,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
-                      "busy_fraction": d.get("busy_fraction"), "coexist": is_coexist(d)})
+                      "busy_fraction": d.get("busy_fraction"), "coexist": is_coexist(d), "coexist_host": coexist_host(d)})
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}

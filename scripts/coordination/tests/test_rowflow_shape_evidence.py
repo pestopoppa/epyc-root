@@ -115,7 +115,13 @@ class GpuQ3(Fx):
         return rf.publish(self.spec(rid, lp, lane="gpu", regions="mi210_0,0-95"), self.flags)
 
     def test_gpu_timing_without_evidence_maps_to_gpu_q3(self):
-        row = self.npd_like()
+        # coexist2 2026-11-05: a wide-claim timing row maps to gpu-q3 but its region-lock claim would fold onto
+        # q3 cores 72-87 (GLOBAL.q3 exclusive): refused at publish; the explicit gpu-q3 form below is admitted
+        with self.assertRaises(rf.Refused) as e:
+            self.npd_like()
+        self.assertIn("72-87 stay lockable", str(e.exception))
+        lp = self.launcher("g3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95")
+        row = rf.publish(self.spec("g3", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
         self.assertEqual(row["shape"], "gpu-q3")
         opts, bench = rf.row_shape(row)
         self.assertEqual(len(opts), 1)
