@@ -67,3 +67,7 @@ KVU-11c: the r2 completion validator raises KeyError without FILLER_STOPFILE and
 ## 01:06Z — Repair outer completion environment and submit KVU-11c GPU mechanics successor
 
 KVU-11c: the r2 completion validator raises KeyError without FILLER_STOPFILE and accepts the retained result with it set; the original outer environment was not captured, so its rc75 remains inconclusive. Prepared sealed isolated r3 with outer STOPFILE and FILLER_END-derived deadline, separate smoke and native output. Publisher queued the GPU smoke because the GPU was busy; no PASS or published row is claimed. A subagent ran a model-free validator replay outside the publisher smoke restriction; it is diagnostic only.
+
+## 01:09Z — Publish source-bound KPF-60 observer build successor
+
+KPF-60.GPU-X: published kpf60-gpux-observer-build-20261105-r3 after the four-CPU object-compile publisher smoke passed. The fresh detached source reconstructs candidate 8952a0f693fb923918157eb25117641b74766230 and the retained combined patch; r2 had stopped at the 150 GiB disk floor, now cleared. Full linked build, own ggml linkage and model-free store test remain pending; smoke ended rc75 after first progress and establishes no writer equivalence, native bytes or crossover. The separate native fixture has HIGH llama_kv_cache impact and remains stopped for source edits.
