@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T01:26:05Z reason=complete
+job_id=kpf60-checked-extended-20261105-r2
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T01:26:02Z
+regions=72-95

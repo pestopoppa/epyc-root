@@ -91,3 +91,7 @@ Wrap-up retry after retaining the copied transport source compressed: the PII ho
 ## 01:29Z — Land the filed qualifications and published rows
 
 Wrap-up retry after retaining the copied transport source compressed: the PII hook flagged two code constants in its uncompressed copy. The runnable sealed scratch packet is unchanged. The prior entry records the qualification results and published row IDs.
+
+## 01:33Z — Repair multi-clock qualification and file completed controls
+
+KVU-19b-gap: original GPU smoke failed rc1: verifier refused the observed 1 GHz HSA frequency due to an unsupported 400 MHz ceiling, before the remaining checks; original evidence retained in docs/reports/kv-cache/kvu19b-multi-clock-failed-smoke-20261105. Prepared r2 with positive uint64 and same-frequency bracket checks; publisher queued its GPU smoke because the GPU was busy. No PASS or ready row claimed; ready/failure events registered. KPF-13.1-FINDSLOT-OBSERVER r3 rc0: both arms hit twice, expected fixture outcomes, pinned before/after executable and five DSO identities, and cleanup passed. KPF-18-G3-SLOTS-QUAL r2 rc0: 11 model-free controls passed. KPF-60 extended checked arithmetic fixture rc0 passed within its model-free scope. These records are retained in docs/reports/kv-cache/kvfork-qualified-results-0130-20261105; no historical physical-layout, native cancellation or native byte-count claim follows.

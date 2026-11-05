@@ -1,0 +1,17 @@
+{
+  "schema": "kvu19b.multi-clock.v1",
+  "status": "INVALID",
+  "error": "verify rc=1",
+  "model": null,
+  "files": {
+    "dispatch.csv": "9dd501fea73df30de9d6d74639ca54e19ce08b57005a1f8b677718fe33765c1d",
+    "build.log": "881077b0ca109b3dac4e4dfe4a66cbe5be4c18240605f400b3872a66fa06bba9",
+    "witness.log": "15d6599c2c22e05a36226bb8f8d7597de95cbdf0a9ea14b6a1b534e47d3e1d13",
+    "clock": "e172e60850db391c205ecc355cd84e82bcd4b959323753fe0d0026e59b599256",
+    "after.json": "35c97cf6efb34d7fd4e259a92434a906af137c1e33cec8c898ed0659a8bfff02",
+    "verify.log": "9b608f19c1586bb0608a6172900fc551e16155ff298bfccc4e8c41c7629fb4a0",
+    "after.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.json": "36ca2d9cb273ce1af3d4c4f877b4d6d5d567680fb5c3314bb261b3e8ba6be0aa",
+    "before.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

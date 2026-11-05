@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T01:27:22Z reason=complete
+job_id=kvfork-kpf131-findslot-observer-r3-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T01:27:19Z
+regions=24-47
