@@ -1,0 +1,75 @@
+{
+  "id": "kpf50-own-child-map-acquisition-20261105",
+  "mode": "smoke",
+  "status": "SMOKE_REFUSAL_OBSERVED",
+  "scientific_validity": "UNKNOWN",
+  "records": [
+    {
+      "case": "malformed-bound",
+      "record": {
+        "schema": "epyc.kpf50.own-child-map-acquisition.v1",
+        "status": "UNKNOWN",
+        "scientific_validity": "UNKNOWN",
+        "clock": "CLOCK_MONOTONIC_RAW",
+        "begin_ns": 1963280256994165,
+        "supervisor_pid": 2875567,
+        "mappings": [],
+        "reason": "ValueError: invalid read bound",
+        "end_ns": 1963280257002385
+      }
+    },
+    {
+      "case": "honest",
+      "record": {
+        "schema": "epyc.kpf50.own-child-map-acquisition.v1",
+        "status": "UNKNOWN",
+        "scientific_validity": "UNKNOWN",
+        "clock": "CLOCK_MONOTONIC_RAW",
+        "begin_ns": 1963280257026365,
+        "supervisor_pid": 2875567,
+        "mappings": [
+          {
+            "range": "00420000-00763000",
+            "file_offset": 131072,
+            "map_dev": "00:2d",
+            "map_inode": 76972514,
+            "pathname_observed": "/usr/bin/python3.13",
+            "permissions": "r-xp",
+            "begin_ns": 1963280257193645,
+            "status": "UNKNOWN"
+          }
+        ],
+        "before": {
+          "pid": 2875569,
+          "ppid": 2875567,
+          "birth_ticks": 196329508,
+          "state": "S",
+          "stat_sha256": "dc7f9f707740713c278f1d1bcea21b3af2403bf234e2ecbcc980fa37c50b89e5"
+        },
+        "exe_link": "/usr/bin/python3.13",
+        "maps_raw": "00400000-00420000 r--p 00000000 00:2d 76972514                           /usr/bin/python3.13\n00420000-00763000 r-xp 00020000 00:2d 76972514                           /usr/bin/python3.13\n00763000-00a02000 r--p 00363000 00:2d 76972514                           /usr/bin/python3.13\n00a02000-00a03000 r--p 00601000 00:2d 76972514                           /usr/bin/python3.13\n00a03000-00a94000 rw-p 00602000 00:2d 76972514                           /usr/bin/python3.13\n00a94000-00b08000 rw-p 00000000 00:00 0 \n2f264000-2f39e000 rw-p 00000000 00:00 0                                  [heap]\n72d4068ac000-72d4068bd000 r--p 00000000 09:7f 194823026                  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b/libggml-qualification-private.so\n72d4068bd000-72d406948000 r-xp 00011000 09:7f 194823026                  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b/libggml-qualification-private.so\n72d406948000-72d4069b7000 r--p 0009c000 09:7f 194823026                  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b/libggml-qualification-private.so\n72d4069b7000-72d4069b8000 r--p 0010a000 09:7f 194823026                  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b/libggml-qualification-private.so\n72d4069b8000-72d4069b9000 rw-p 0010b000 09:7f 194823026                  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b/libggml-qualification-private.so\n72d4069b9000-72d406aec000 rw-p 00000000 00:00 0 \n72d406aec000-72d406aee000 r--p 00000000 00:2d 76973636                   /usr/lib/x86_64-linux-gnu/libffi.so.8.2.0\n72d406aee000-72d406af5000 r-xp 00002000 00:2d 76973636                   /usr/lib/x86_64-linux-gnu/libffi.so.8.2.0\n72d406af5000-72d406af7000 r--p 00009000 00:2d 76973636                   /usr/lib/x86_64-linux-gnu/libffi.so.8.2.0\n72d406af7000-72d406af8000 r--p 0000a000 00:2d 76973636                   /usr/lib/x86_64-linux-gnu/libffi.so.8.2.0\n72d406af8000-72d406af9000 rw-p 0000b000 00:2d 76973636                   /usr/lib/x86_64-linux-gnu/libffi.so.8.2.0\n72d406afd000-72d406b04000 r--p 00000000 00:2d 76973806                   /usr/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so\n72d406b04000-72d406b19000 r-xp 00007000 00:2d 76973806                   /usr/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so\n72d406b19000-72d406b20000 r--p 0001c000 00:2d 76973806                   /usr/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so\n72d406b20000-72d406b21000 r--p 00022000 00:2d 76973806                   /usr/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so\n72d406b21000-72d406b24000 rw-p 00023000 00:2d 76973806                   /usr/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so\n72d406b24000-72d406d8a000 rw-p 00000000 00:00 0 \n72d406d8a000-72d406d91000 r--s 00000000 00:2d 66225866                   /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache\n72d406d91000-72d406deb000 r--p 00000000 00:2d 66207335                   /usr/lib/locale/C.utf8/LC_CTYPE\n72d406deb000-72d406ded000 rw-p 00000000 00:00 0 \n72d406ded000-72d406e15000 r--p 00000000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6\n72d406e15000-72d406fae000 r-xp 00028000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6\n72d406fae000-72d40701d000 r--p 001c1000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6\n72d40701d000-72d407021000 r--p 0022f000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6\n72d407021000-72d407023000 rw-p 00233000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6\n72d407023000-72d407030000 rw-p 00000000 00:00 0 \n72d407030000-72d407034000 r--p 00000000 00:2d 76971620                   /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\n72d407034000-72d407052000 r-xp 00004000 00:2d 76971620                   /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\n72d407052000-72d40705a000 r--p 00022000 00:2d 76971620                   /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\n72d40705a000-72d40705c000 r--p 0002a000 00:2d 76971620                   /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\n72d40705c000-72d40705d000 rw-p 0002c000 00:2d 76971620                   /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\n72d40705d000-72d407060000 r--p 00000000 00:2d 66225992                   /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\n72d407060000-72d407073000 r-xp 00003000 00:2d 66225992                   /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\n72d407073000-72d40707b000 r--p 00016000 00:2d 66225992                   /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\n72d40707b000-72d40707c000 r--p 0001d000 00:2d 66225992                   /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\n72d40707c000-72d40707d000 rw-p 0001e000 00:2d 66225992                   /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\n72d40707d000-72d40708e000 r--p 00000000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6\n72d40708e000-72d407119000 r-xp 00011000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6\n72d407119000-72d407188000 r--p 0009c000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6\n72d407188000-72d407189000 r--p 0010a000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6\n72d407189000-72d40718a000 rw-p 0010b000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6\n72d40718c000-72d40718d000 rw-p 00000000 00:00 0 \n72d40718d000-72d40718e000 rw-p 00000000 00:00 0 \n72d40718e000-72d407190000 rw-p 00000000 00:00 0 \n72d407190000-72d407192000 r--p 00000000 00:00 0                          [vvar]\n72d407192000-72d407194000 r--p 00000000 00:00 0                          [vvar_vclock]\n72d407194000-72d407196000 r-xp 00000000 00:00 0                          [vdso]\n72d407196000-72d407197000 r--p 00000000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\n72d407197000-72d4071c5000 r-xp 00001000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\n72d4071c5000-72d4071d3000 r--p 0002f000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\n72d4071d3000-72d4071d5000 r--p 0003d000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\n72d4071d5000-72d4071d6000 rw-p 0003f000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\n72d4071d6000-72d4071d7000 rw-p 00000000 00:00 0 \n7ffcaa390000-7ffcaa3b1000 rw-p 00000000 00:00 0                          [stack]\nffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]\n",
+        "maps_sha256": "2e75a783e952fc39a99cdcef90ab67b542a1f8c7ae2c3b4a67caec40a65cb044",
+        "reason": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/2875569/map_files/00420000-00763000'",
+        "end_ns": 1963280257258485
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 2875569,
+      "birth_ticks": 196329508,
+      "returncode": -15,
+      "captured_process_absent": true,
+      "descendants_verified": false
+    }
+  ],
+  "root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-map-acquisition-20261105/out/smoke/9ac90ac3303746e9862aa14266b7da4b",
+  "affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "reason": "Native map_files unavailable; no synthetic substitute; stopped after original honest attempt.",
+  "end_monotonic_raw_ns": 1963280258521864
+}
