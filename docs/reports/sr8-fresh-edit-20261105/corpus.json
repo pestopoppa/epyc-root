@@ -1,0 +1,458 @@
+[
+  {
+    "id": "fresh_shipping",
+    "prompt": "Edit both existing files. In fees.py, preserve base_fee and add shipping_total(weight, surcharge) with the behavior shown by its name and the task description. In invoice.py, replace placeholder with invoice_total(weight, surcharge) which delegates to shipping_total. The shipping total is the base fee plus surcharge. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+    "files": {
+      "fees.py": "def base_fee(weight):\n    return weight * 3\n",
+      "invoice.py": "from fees import base_fee\n\ndef placeholder():\n    return 0\n"
+    },
+    "expected_files": [
+      "fees.py",
+      "invoice.py"
+    ],
+    "checks": [
+      {
+        "module": "invoice",
+        "function": "invoice_total",
+        "args": [
+          2,
+          5
+        ],
+        "expected": 11
+      },
+      {
+        "module": "invoice",
+        "function": "invoice_total",
+        "args": [
+          0,
+          7
+        ],
+        "expected": 7
+      },
+      {
+        "module": "invoice",
+        "function": "invoice_total",
+        "args": [
+          8,
+          -2
+        ],
+        "expected": 22
+      },
+      {
+        "module": "fees",
+        "function": "shipping_total",
+        "args": [
+          2,
+          5
+        ],
+        "expected": 11
+      },
+      {
+        "module": "fees",
+        "function": "shipping_total",
+        "args": [
+          0,
+          7
+        ],
+        "expected": 7
+      },
+      {
+        "module": "fees",
+        "function": "shipping_total",
+        "args": [
+          8,
+          -2
+        ],
+        "expected": 22
+      },
+      {
+        "module": "fees",
+        "function": "base_fee",
+        "args": [
+          2
+        ],
+        "expected": 6
+      },
+      {
+        "module": "fees",
+        "function": "base_fee",
+        "args": [
+          5
+        ],
+        "expected": 15
+      }
+    ],
+    "reference_files": {
+      "fees.py": "def base_fee(weight):\n    return weight * 3\n\ndef shipping_total(weight, surcharge):\n    return base_fee(weight) + surcharge\n",
+      "invoice.py": "from fees import shipping_total\n\ndef invoice_total(weight, surcharge):\n    return shipping_total(weight, surcharge)\n"
+    }
+  },
+  {
+    "id": "fresh_time",
+    "prompt": "Edit both existing files. In clock.py, preserve to_minutes and add duration(hours, minutes) with the behavior shown by its name and the task description. In agenda.py, replace placeholder with meeting_minutes(hours, minutes) which delegates to duration. Duration is hours converted to minutes plus extra minutes. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+    "files": {
+      "clock.py": "def to_minutes(hours):\n    return hours * 60\n",
+      "agenda.py": "from clock import to_minutes\n\ndef placeholder():\n    return 0\n"
+    },
+    "expected_files": [
+      "clock.py",
+      "agenda.py"
+    ],
+    "checks": [
+      {
+        "module": "agenda",
+        "function": "meeting_minutes",
+        "args": [
+          2,
+          15
+        ],
+        "expected": 135
+      },
+      {
+        "module": "agenda",
+        "function": "meeting_minutes",
+        "args": [
+          0,
+          45
+        ],
+        "expected": 45
+      },
+      {
+        "module": "agenda",
+        "function": "meeting_minutes",
+        "args": [
+          3,
+          0
+        ],
+        "expected": 180
+      },
+      {
+        "module": "clock",
+        "function": "duration",
+        "args": [
+          2,
+          15
+        ],
+        "expected": 135
+      },
+      {
+        "module": "clock",
+        "function": "duration",
+        "args": [
+          0,
+          45
+        ],
+        "expected": 45
+      },
+      {
+        "module": "clock",
+        "function": "duration",
+        "args": [
+          3,
+          0
+        ],
+        "expected": 180
+      },
+      {
+        "module": "clock",
+        "function": "to_minutes",
+        "args": [
+          2
+        ],
+        "expected": 120
+      },
+      {
+        "module": "clock",
+        "function": "to_minutes",
+        "args": [
+          5
+        ],
+        "expected": 300
+      }
+    ],
+    "reference_files": {
+      "clock.py": "def to_minutes(hours):\n    return hours * 60\n\ndef duration(hours, minutes):\n    return to_minutes(hours) + minutes\n",
+      "agenda.py": "from clock import duration\n\ndef meeting_minutes(hours, minutes):\n    return duration(hours, minutes)\n"
+    }
+  },
+  {
+    "id": "fresh_inventory",
+    "prompt": "Edit both existing files. In stock.py, preserve remaining and add available(total, sold, reserved) with the behavior shown by its name and the task description. In warehouse.py, replace placeholder with sellable(total, sold, reserved) which delegates to available. Available inventory is total minus sold minus reserved. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+    "files": {
+      "stock.py": "def remaining(total, sold):\n    return total - sold\n",
+      "warehouse.py": "from stock import remaining\n\ndef placeholder():\n    return 0\n"
+    },
+    "expected_files": [
+      "stock.py",
+      "warehouse.py"
+    ],
+    "checks": [
+      {
+        "module": "warehouse",
+        "function": "sellable",
+        "args": [
+          20,
+          4,
+          3
+        ],
+        "expected": 13
+      },
+      {
+        "module": "warehouse",
+        "function": "sellable",
+        "args": [
+          5,
+          5,
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "module": "warehouse",
+        "function": "sellable",
+        "args": [
+          10,
+          1,
+          2
+        ],
+        "expected": 7
+      },
+      {
+        "module": "stock",
+        "function": "available",
+        "args": [
+          20,
+          4,
+          3
+        ],
+        "expected": 13
+      },
+      {
+        "module": "stock",
+        "function": "available",
+        "args": [
+          5,
+          5,
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "module": "stock",
+        "function": "available",
+        "args": [
+          10,
+          1,
+          2
+        ],
+        "expected": 7
+      },
+      {
+        "module": "stock",
+        "function": "remaining",
+        "args": [
+          10,
+          3
+        ],
+        "expected": 7
+      },
+      {
+        "module": "stock",
+        "function": "remaining",
+        "args": [
+          4,
+          1
+        ],
+        "expected": 3
+      }
+    ],
+    "reference_files": {
+      "stock.py": "def remaining(total, sold):\n    return total - sold\n\ndef available(total, sold, reserved):\n    return remaining(total, sold) - reserved\n",
+      "warehouse.py": "from stock import available\n\ndef sellable(total, sold, reserved):\n    return available(total, sold, reserved)\n"
+    }
+  },
+  {
+    "id": "fresh_pricing",
+    "prompt": "Edit both existing files. In prices.py, preserve subtotal and add after_coupon(price, count, coupon) with the behavior shown by its name and the task description. In checkout.py, replace placeholder with checkout_total(price, count, coupon) which delegates to after_coupon. The price after coupon is subtotal minus coupon. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+    "files": {
+      "prices.py": "def subtotal(price, count):\n    return price * count\n",
+      "checkout.py": "from prices import subtotal\n\ndef placeholder():\n    return 0\n"
+    },
+    "expected_files": [
+      "prices.py",
+      "checkout.py"
+    ],
+    "checks": [
+      {
+        "module": "checkout",
+        "function": "checkout_total",
+        "args": [
+          10,
+          3,
+          5
+        ],
+        "expected": 25
+      },
+      {
+        "module": "checkout",
+        "function": "checkout_total",
+        "args": [
+          7,
+          1,
+          0
+        ],
+        "expected": 7
+      },
+      {
+        "module": "checkout",
+        "function": "checkout_total",
+        "args": [
+          4,
+          5,
+          2
+        ],
+        "expected": 18
+      },
+      {
+        "module": "prices",
+        "function": "after_coupon",
+        "args": [
+          10,
+          3,
+          5
+        ],
+        "expected": 25
+      },
+      {
+        "module": "prices",
+        "function": "after_coupon",
+        "args": [
+          7,
+          1,
+          0
+        ],
+        "expected": 7
+      },
+      {
+        "module": "prices",
+        "function": "after_coupon",
+        "args": [
+          4,
+          5,
+          2
+        ],
+        "expected": 18
+      },
+      {
+        "module": "prices",
+        "function": "subtotal",
+        "args": [
+          4,
+          3
+        ],
+        "expected": 12
+      },
+      {
+        "module": "prices",
+        "function": "subtotal",
+        "args": [
+          5,
+          2
+        ],
+        "expected": 10
+      }
+    ],
+    "reference_files": {
+      "prices.py": "def subtotal(price, count):\n    return price * count\n\ndef after_coupon(price, count, coupon):\n    return subtotal(price, count) - coupon\n",
+      "checkout.py": "from prices import after_coupon\n\ndef checkout_total(price, count, coupon):\n    return after_coupon(price, count, coupon)\n"
+    }
+  },
+  {
+    "id": "fresh_measurement",
+    "prompt": "Edit both existing files. In measure.py, preserve centimeters and add total_cm(meters, extra_cm) with the behavior shown by its name and the task description. In display.py, replace placeholder with display_cm(meters, extra_cm) which delegates to total_cm. The total length in centimeters is meters converted to centimeters plus extra centimeters. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+    "files": {
+      "measure.py": "def centimeters(meters):\n    return meters * 100\n",
+      "display.py": "from measure import centimeters\n\ndef placeholder():\n    return 0\n"
+    },
+    "expected_files": [
+      "measure.py",
+      "display.py"
+    ],
+    "checks": [
+      {
+        "module": "display",
+        "function": "display_cm",
+        "args": [
+          2,
+          14
+        ],
+        "expected": 214
+      },
+      {
+        "module": "display",
+        "function": "display_cm",
+        "args": [
+          0,
+          9
+        ],
+        "expected": 9
+      },
+      {
+        "module": "display",
+        "function": "display_cm",
+        "args": [
+          5,
+          0
+        ],
+        "expected": 500
+      },
+      {
+        "module": "measure",
+        "function": "total_cm",
+        "args": [
+          2,
+          14
+        ],
+        "expected": 214
+      },
+      {
+        "module": "measure",
+        "function": "total_cm",
+        "args": [
+          0,
+          9
+        ],
+        "expected": 9
+      },
+      {
+        "module": "measure",
+        "function": "total_cm",
+        "args": [
+          5,
+          0
+        ],
+        "expected": 500
+      },
+      {
+        "module": "measure",
+        "function": "centimeters",
+        "args": [
+          2
+        ],
+        "expected": 200
+      },
+      {
+        "module": "measure",
+        "function": "centimeters",
+        "args": [
+          5
+        ],
+        "expected": 500
+      }
+    ],
+    "reference_files": {
+      "measure.py": "def centimeters(meters):\n    return meters * 100\n\ndef total_cm(meters, extra_cm):\n    return centimeters(meters) + extra_cm\n",
+      "display.py": "from measure import total_cm\n\ndef display_cm(meters, extra_cm):\n    return total_cm(meters, extra_cm)\n"
+    }
+  }
+]
