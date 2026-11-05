@@ -137,3 +137,7 @@ KPF-62.3 byte alignment: full r2 rc0 exploratory complete, retained inventories 
 ## 02:25Z — Ready the corrected source-bound native vocabulary census row.
 
 KPF-62.3: published kpf623-census-r2-20261105 after the four-CPU publisher smoke passed. The corrected completion predicate binds its literal row ID, and its sealed packet retains the explicit producer-mapping, stat-only model custody and compiler-descendant cleanup limits. Full census and tokenizer alignment remain pending. The previously landed cleanup removed superseded KPF-41, KPF-17.4d and KPF-27d attempts; remaining large scratch trees contain unended row inputs or unique evidence and were retained.
+
+## 02:29Z — Prepare KPF-41 GPU parity publication and remove superseded test scratch
+
+KPF-41: started the existing r4 publisher; its initial invocation has not returned a smoke outcome, so no readiness or parity result is claimed. Removed eight superseded KPF-18 output-control test directories. Rowflow reports KPF-64 impact r3, KVU-12.6 impact r2, and KPF-62.3 census r2 grantable despite the dispatcher reporting no open rows; retained their inputs and unique evidence. KVU-11c startup control r1 had already completed under another owner; its terminal ID cannot be republished.
