@@ -100,7 +100,6 @@ def test_idle_gate_is_not_vacuous(tmp_path, monkeypatch):
         plan.grants = [g for g in plan.grants if not g.cores & rf.QUARTERS[3] and g.gpu == "none"]
         return plan
     monkeypatch.setattr(rf, "admit", reserving)
-    monkeypatch.setattr(rf, "HOLD_BUDGET_QH", float("inf"))   # dropped grants are invisible to the oracle; keep holds binding
     sim = run_day(tmp_path, 20261105)
     assert sim.idle_q > IDLE_BUDGET_QH and sim.idle_gpu > IDLE_BUDGET_GPUH, (sim.idle_q, sim.idle_gpu)
 
