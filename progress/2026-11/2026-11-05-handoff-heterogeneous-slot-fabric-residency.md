@@ -139,3 +139,7 @@ Filed kpf623-byte-alignment-exploratory-20261105 under its own decision rule; br
 ## 03:12Z — File inherited-FD and KPF-41 supervisor evidence and publish group-3 entry qualification
 
 Filed the KPF-50 inherited-FD acquisition qualified for owned-child file-backed ranges; actual map_files and residency remain unproved and descendant verification is false. Filed KPF-41 r3 synthetic supervisor UNSAFE because its suffix marker was accepted, and r4 PASS on cleanup and all four exact-marker controls. Published the bounded KPF-18 group-3 receipt-backed entry qualification after its four-CPU smoke passed; full controls and actual receipt verification, native lifecycle and GPU admission remain pending.
+
+## 03:21Z — File map-files refusal and partial impact; ready receipt-entry composition
+
+Filed KPF-50 map-files r2 inconclusive: EPERM stopped the honest executable mapping before private-DSO and nondumpable controls; the captured child was absent and descendant verification remained false. Filed KPF-18.2 component impact inconclusive after only partial references; native risk and skipped-file coverage remain unknown. Published the seven-case model-free receipt-entry composition after its separate four-CPU publisher smoke passed. A delegate also ran a direct four-CPU check outside the requested publisher-only boundary; it is not qualification. Prepared a KPF-41 GPU backend-ops packet; its smoke was queued because GPU was busy, so it is not yet ready.
