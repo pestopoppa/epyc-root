@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 49,
+      "blocked": 48,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 648
+      "open": 649
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1339,7 +1339,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1739,
+          "line": 1740,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 7
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2161,
+          "line": 2162,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 42
@@ -1492,7 +1492,7 @@
       ]
     },
     "mi210-serving-program.md": {
-      "blocked": 1,
+      "blocked": 0,
       "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-11-05",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 205,
+      "total": 204,
       "tracks": [
         {
           "blocked": 0,
@@ -1548,7 +1548,7 @@
           "open": 0
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 16,
           "gates": [],
           "guarded": 0,
@@ -1562,7 +1562,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2196,
+          "line": 2195,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2806,
+          "line": 2805,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
@@ -2228,7 +2228,7 @@
       "closed": 334,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 75,
+      "open": 76,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2237,7 +2237,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 409,
+      "total": 410,
       "tracks": [
         {
           "blocked": 0,
@@ -2305,7 +2305,7 @@
           "line": 4030,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 1
+          "open": 2
         }
       ]
     },
