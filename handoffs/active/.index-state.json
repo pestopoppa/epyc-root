@@ -4,7 +4,7 @@
       "blocked": 48,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 663
+      "open": 664
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1561,
+          "line": 1563,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1685,
+          "line": 1687,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2012,
+          "line": 2014,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2151,
+          "line": 2153,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2704,
+          "line": 2706,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2841,
+          "line": 2843,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3735,
+          "line": 3737,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 60
@@ -1496,7 +1496,7 @@
       "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 4,
+      "open": 5,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 205,
+      "total": 206,
       "tracks": [
         {
           "blocked": 0,
@@ -1555,14 +1555,14 @@
           "line": 1930,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2197,
+          "line": 2198,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2807,
+          "line": 2808,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0

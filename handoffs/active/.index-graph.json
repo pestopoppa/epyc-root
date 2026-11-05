@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T13:13:36Z",
+  "generated_at": "2026-11-05T13:18:24Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1580,14 +1580,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 201,
-      "dispatchable": 4,
+      "dispatchable": 5,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 4,
+      "open": 5,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1643,18 +1643,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [],
           "line": 1930,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2197,
+          "line": 2198,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1673,7 +1673,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2807,
+          "line": 2808,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
@@ -2200,7 +2200,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1561,
+          "line": 1563,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1685,
+          "line": 1687,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2218,7 +2218,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2012,
+          "line": 2014,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2227,7 +2227,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2151,
+          "line": 2153,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2236,7 +2236,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2704,
+          "line": 2706,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2253,7 +2253,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2841,
+          "line": 2843,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2276,7 +2276,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3735,
+          "line": 3737,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
