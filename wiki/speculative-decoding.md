@@ -3161,3 +3161,10 @@ The R3 recovery verified retained C5 artifacts and a CPU architecture test, but 
 - BRF EXP09: the mechanism did not fire (REVISE). The answer-budget repair row is published.
 
 Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [spec-decoding handoff](../handoffs/active/speculative-decoding.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)
+
+## Compiled Update — 2026-11-05 (operator wiki sweep 2)
+
+- **SR-8 successor.** The prior held-out protocol terminated UNKNOWN and forbids extension, and the named BEP corpus has no unexposed existing-file tasks, so a new independent synthetic diagnostic was prepared: five two-file tasks, a restricted AST verifier with positive and negative controls, pre-rendered tokenized prompts, v10 store binding, fresh-server interleaved arms and prospectively specified zero-proposal accounting. Smoke passed with one complete DFlash request. On the operator takeover the full run was filed as a fail (0.381 against a 1.5 bar); it remains a diagnostic, not a serving decision.
+- Production server (v10 `ffc1bac82`) logging is identical across arms so initialization is visible even when no tokens are proposed; startup logging can perturb timing, so the paired comparison is limited to that capture configuration.
+
+Sources: [MTP progress](../progress/2026-11/2026-11-05-handoff-speculative-decoding-mtp.md) · [MTP 11-04](../progress/2026-11/2026-11-04-handoff-speculative-decoding-mtp.md) · [SR-8 predeclared](../docs/reports/sr8-fresh-edit-20261105/PREDECLARED.md) · [SR-8 corpus](../docs/reports/sr8-fresh-edit-20261105/CORPUS.md) · [SR-8 store provenance](../docs/reports/sr8-fresh-edit-20261105/store-provenance.md) · [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)

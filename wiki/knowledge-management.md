@@ -4417,3 +4417,11 @@ Sources: [live captures](../docs/reference/vidya-live-captures-20261104.md) · [
 - Long-context recall/spec-guard builds (LSA) completed model-free; a CPU phase-timing request exceeded its cap and was filed inconclusive.
 
 Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [long-context](../handoffs/active/long-context-program.md) · [progress](../progress/2026-11/2026-11-04-inf22.md)
+
+## Compiled Update — 2026-11-05 (operator wiki sweep 2)
+
+- **GitNexus compute-claim admission (operator decisions 2026-11-05).** The ROOT guard now receives the exact analyze argv; a single `--workers 1` analyze is admitted on one CPU quarter ("Change the rule: 1 quarter"), and a third route admits it on a q3 sub-quarter, scheduled through rowflow COEXIST so GPU timing runs leave spare threads for GitNexus without disturbing the independent quarters. Admission remains point-in-time and the canonical index stays untrusted.
+- **GitNexus 1.6.8 double-free** blocked the hsf3 adjacency/counter and kpf30 reruns; owner source review substituted for HIGH-impact rows (gitnexus is a helper, not a blocker).
+- **Micron-import triage.** Two operator imports (a pip pool r35 revival and the YaRN s1/s2 rows) verified byte-exact but were not runnable: their pin manifests assert files since reaped from raid0 (1,052 digests with 39 missing; 33 forensic files plus an un-imported python313 closure), so no successor was published. Lesson: pinned-input sets must outlive the scratch reaper or be re-pinned with a reviewed manifest bump.
+
+Sources: [compute-claim admission](../docs/reference/gitnexus-compute-claims.md) · [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [knowledge pipelines](../handoffs/active/knowledge-pipelines.md) · [long-context program](../handoffs/active/long-context-program.md) · [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [context economy](../handoffs/active/context-and-token-economy.md) · [harness program](../handoffs/active/harness-program.md) · [memory program](../handoffs/active/memory-program.md) · [speech and multimodal](../handoffs/active/speech-and-multimodal.md)
