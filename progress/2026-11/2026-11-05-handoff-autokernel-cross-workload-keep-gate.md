@@ -151,3 +151,7 @@ Filed `c6-q4k-matched-perf-20261105` rc0 against its descriptive rule; 20 matche
 ## 03:23Z — Build and qualify an owned-task scheduler trace normalizer diagnostic
 
 Implemented the bounded scheduler trace normalizer, verified six synthetic controls and replayed four retained owned-child samples. Published the independent live decoder diagnostic after publisher smoke PASS; it does not establish continuous coverage or an admissible C5 noise floor. Two GPU diagnostic smokes are queued while the GPU is busy.
+
+## 03:27Z — Qualify prospective known-graph profiler diagnostic
+
+The prospective `nemo-known-graph-trace-markers-20261105` GPU smoke passed; its full run remains pending. Smoke produced no marker CSV, so marker schema and clock alignment remain unverified and no historical token boundaries are recovered. The C6 matched MoE comparison is granted. Added scheduler interval and fixture clock-join prototypes; both passed six synthetic controls and retain their admission and alignment limitations.
