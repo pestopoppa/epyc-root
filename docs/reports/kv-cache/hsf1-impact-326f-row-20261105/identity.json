@@ -1,0 +1,41 @@
+{
+  "head": "326f502759986c9846027f8187972969139c0089",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source",
+  "targets": [
+    [
+      "start_server",
+      "scripts/server/orchestrator_stack.py"
+    ],
+    [
+      "write_launch_banner",
+      "scripts/server/stack_log_banner.py"
+    ],
+    [
+      "write_launch_pid",
+      "scripts/server/stack_log_banner.py"
+    ],
+    [
+      "argv_sha256",
+      "scripts/server/stack_log_banner.py"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "326f502759986c9846027f8187972969139c0089"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/job.py": "42245f6e6975df30f28703461dbdd35299c2983a42c69827c913c2f3743c8e64",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/spec.json": "0a130347822a2276d420ae94edfa274eef7d3d3cdc0ae237dc87c8dda46b7daf",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/README.md": "294f0def36dbcd973df9ef64717bd99f3712ffd9be04b9c88480fc5dc0e93396",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/launch.sh": "ef243f0613deaab33b28e00edc320150ae09dbddad78742b64d2a2008ac829d8",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/gitnexus-analyze.sh": "4772a8ac245e4fdb20521a17ddb48b9b7bdff6438afbebd069e70e4eb42fba89",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/gitnexus-writer.py": "bb835219d807309ad469361fa2403dde37cbb9a5a2a46941353d00ed32d17a13",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/gitnexus-guard.py": "0da1b0e511180bff218ad4448558e60ce6e08b2f1b795437e12bd98ffd80e3b6",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/gitnexus-quarter.cjs": "5fb41080fcea4f67cba70b4bd3067266896a31ac7b1663b296d07e08af35c724",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/server/orchestrator_stack.py": "c4475d8759c742e1900bb1e615dfba4928746a05d64e693bf65e354530bb8ffe",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105-source/scripts/server/stack_log_banner.py": "70daa945b70e0d74962016aac85c21fda4c56e4c44d02fa6621cc5cdcf2d2ef5"
+  }
+}

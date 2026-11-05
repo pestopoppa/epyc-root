@@ -1,0 +1,32 @@
+{
+  "id": "hsf1-impact-326f-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached orchestrator 326f502759986c9846027f8187972969139c0089 capture four native upstream impacts on launch/argv custody candidates and full verbose skipped-file coverage. Stop on HIGH/CRITICAL with owner warning, source drift, ambiguous or missing graph binding, parser failure, STOP or deadline. Source-reference smoke is partial only; success requires all four and scan_complete partial=false. No inference, edit-safety claim for skipped files, or shadow-window result. Native complete result requires byDepthCounts/impactedCount matching all returned byDepth records, verified native analyze completion and count-matched full verbose skip lists; unknown schemas/skip classes fail closed. Capture and clean every owned descendant on STOP and command exit using birth-bound pidfds.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-1",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-impact-326f-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "HSF-1-source-bound-impact",
+  "kind": "compute",
+  "notes": "HSF-1 integration prerequisite only; not duplicate receipt unit fixture. Full disk floor 150 GiB. Four-CPU partial source-reference smoke must write separate FILLER_DRYRUN_RESULT_PATH; no graph compute in smoke. No receipt, inference, or safety claim for skipped files."
+}

@@ -7,3 +7,7 @@ Corrected the initial PASS filing for kvu-kpf131-old-native-findslot-20261104 to
 ## 00:11Z — Prepare source-bound KPF-27d impact and HSF-3 incremental census successors and file the invalid incremental result.
 
 KPF-27d's prior impact grant was already filed inconclusive after the disk floor. Published kpf27d-impact-326f-successor-20261105 after its four-CPU partial source-reference smoke; the full six-impact and verbose coverage result is pending. Filed kvu-hsf3-incremental-20261104 inconclusive: rc1 and no native result. Its sealed prior includes a 69,820,239-byte frontier exceeding the old 64 MiB cap; no traceback establishes the exact failure cause. Published hsf3-incremental-r2-20261105 after its synthetic smoke, with a 128 MiB file bound and separate smoke output. Full incremental counts and the HSF-3 gap distribution remain pending.
+
+## 00:15Z — Prepare HSF-1 source-bound launch and argv impact prerequisite after the KPF-41 interrupted event.
+
+KPF-41 r4 was previously filed inconclusive after its disk-floor end; r5 is already armed. Published hsf1-impact-326f-20261105 after its four-CPU source-reference smoke on pinned detached source 326f502759986c9846027f8187972969139c0089. Full four-symbol native impacts, verbose skipped-file coverage, receipt integration and production measurements remain pending. The already-armed kvfork17-timeout-qual-20261104 covers the missing GDB timeout cleanup; no duplicate row was published.
