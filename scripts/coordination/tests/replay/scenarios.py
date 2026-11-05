@@ -283,6 +283,49 @@ SUBJECT = {
 }
 
 
+# ---------------------------------------------------------------------------------------------- PUBLISH-path scenarios
+# The allocation replay never runs rowflow.publish; these run the candidate's publish() on a temp tree.
+NPD1_STEP5_JOB = '''import subprocess
+SMOKE = False
+THREADS = "48" if not SMOKE else "4"
+CPUS = "0-95"
+def launch(port):
+    return subprocess.Popen(["taskset", "-c", CPUS, "numactl", "--interleave=all", "llama-server", "-t", THREADS, "--port", str(port)])
+'''
+
+
+def pub_npd1_step5(root):
+    """keeper-hotfix D14: npd1-step5's spec (cpu+gpu, gpu-quiet exclusive, claim 0-95, role bench, -t THREADS = 48,
+    numactl --interleave=all) is whole-host CPU serving and MUST be accepted at publish (8fbe18182 refused it)."""
+    d = os.path.join(root, "npd1-step5-20261105")
+    os.makedirs(d, exist_ok=True)
+    eng = os.path.join(root, "filler_run15.sh")
+    open(eng, "w").write("#!/bin/bash\n")
+    open(os.path.join(d, "job.py"), "w").write(NPD1_STEP5_JOB)
+    lp = os.path.join(d, "launch.sh")
+    open(lp, "w").write(f"#!/bin/bash\nset -euo pipefail\nD={d}\ncd \"$D\"\nexec /bin/bash {eng} --id npd1-step5-20261105 "
+                        "--class cpu+gpu --gpu-quiet exclusive --claim-cpus 0-95 --role bench --min-window 3600 "
+                        "--cmd \"/usr/bin/python3 -I $D/job.py\" --complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
+    spec = {"id": "npd1-step5-20261105", "owner": "ws58", "launcher": lp, "lane": "gpu", "regions": "mi210_0,0-95",
+            "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/mi210-serving-program.md:NPD1-STEP5", "ram_gib": 130,
+            "first_progress_s": 900, "priority_rank": 40}
+
+    def check(row, err):
+        if err is not None:
+            return [f"npd1-step5 refused at publish: {err}"]
+        out = []
+        if row.get("shape") not in ("quiet-host", "host"):
+            out.append(f"npd1-step5 published as {row.get('shape')}, not whole-host")
+        if row.get("declared_threads") != 48:
+            out.append(f"npd1-step5 threads {row.get('declared_threads')} != 48 (-t THREADS not resolved)")
+        return out
+    return spec, check
+
+
+PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5}
+
+
 def build_all(out_dir):
     os.makedirs(out_dir, exist_ok=True)
     return {name: fn(os.path.join(out_dir, name + ".trace.jsonl")) for name, fn in SCENARIOS.items()}

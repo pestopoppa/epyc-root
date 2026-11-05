@@ -78,3 +78,28 @@ def test_day_replay_blocking_invariants(work):
     bad = {k: v for k, v in inv.items() if v and k in RA.DAY_BLOCKING}
     print("idle metrics", RL.idle_metrics(dec))
     assert not bad, "\n".join(f"{k}: {v[0]}" for k, v in bad.items())
+
+
+# ------------------------------------------------------------------ deploy-blocking: PUBLISH-path scenarios
+@pytest.mark.parametrize("name", sorted(SC.PUBLISH_SCENARIOS))
+def test_publish_scenario(name, tmp_path):
+    import importlib.util
+    spec_ = importlib.util.spec_from_file_location("rowflow_cand_publish", os.path.join(CAND, "rowflow.py"))
+    sys.path.insert(0, CAND)
+    try:
+        rf = importlib.util.module_from_spec(spec_)
+        spec_.loader.exec_module(rf)
+    finally:
+        sys.path.remove(CAND)
+    root = str(tmp_path)
+    flags = os.path.join(root, "compute-flags")
+    os.makedirs(os.path.join(flags, "ready")); os.makedirs(os.path.join(flags, "grants"))
+    rf.TMP = root + "/"
+    spec, check = SC.PUBLISH_SCENARIOS[name](root)
+    row, err = None, None
+    try:
+        row = rf.publish(spec, flags)
+    except rf.Refused as e:
+        err = str(e)
+    v = check(row, err)
+    assert not v, "\n".join(v)
