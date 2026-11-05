@@ -1,0 +1,13 @@
+# KPF50 synthetic custody qualification (PREPARED, UNTESTED)
+
+launch.sh uses the canonical filler_run15 engine, a real CPU grant and >=300s reservation. Publisher smoke must grant exactly four CPUs; full requires at least four inherited granted CPUs. No self-claim, targets, model reads, GPU access, live ledger writes, or execution occurred in preparation. No publication or result claim.
+
+The exact retained supervisor.py is copied unchanged and hash-bound, then imported by worker.py. Its actual main, durable writer, ledger reservation, execute, boundary, capture and cleanup functions run. Explicit qualification-only hooks set D to a new fixture and replace model_admission with sealed synthetic-input admission. Fixture plan markers permit synthetic adapters; they do not qualify real native validators. The original packet remains disabled and unchanged.
+
+Normal full/mask/mask/full synthetic producers emit command/row-bound receipts; supervisor writes durable reservations and accepted receipts. A second invocation with a new row ID must refuse the same ledger without changing exposures. Full adds STOP after an actual descendant birth receipt and proves it absent, and a wrong-row receipt fault that must leave exactly one reserved exposure and no COMPLETE. Smoke runs only normal/no-redraw under the unique parent of FILLER_DRYRUN_RESULT_PATH, inaccessible to full-results. Captured worker PID/birth and supervisor root birth receipts retain custody; no name or group kill is used.
+
+Runtime fixture creation is O_EXCL at the result-root boundary: no automatic rerun/redraw. Each scenario has its own synthetic lineage; none points to target-exposure-ledger. The suite is bounded, stops on first failure and never implies target inference qualification. Outer STOP/deadline sends TERM to the owned supervisor and allows its actual cleanup handler to drain descendants. Failure to drain invalidates the row. Inputs and engine are SHA256-bound; source commit is retained packet provenance, not a fresh git/build attestation.
+
+Runnable entry: bash launch.sh under rowflow grant. Full result: full-results/RESULT.json. Publisher smoke result: FILLER_DRYRUN_RESULT_PATH. Smoke fixtures live in its unique parent/kpf50-custody-smoke-attempt; full-results remains fixed. Each attempt root must be absent before launch. Smoke completion cannot satisfy the full completion predicate. Preparation only: no tests, smoke, compute, publish, shared edits or commit.
+
+Publisher smoke additionally writes its fresh external FILLER_DRYRUN_RESULT_PATH (required, O_EXCL); complete.py reads that path only in smoke. Full completion checks exact row identity and smoke=false.

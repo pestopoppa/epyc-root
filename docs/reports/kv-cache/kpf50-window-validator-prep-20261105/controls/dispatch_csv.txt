@@ -1,0 +1,2 @@
+KernelName,BeginNs,EndNs
+synthetic_attention,220,380

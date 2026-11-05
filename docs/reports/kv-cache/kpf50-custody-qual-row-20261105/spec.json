@@ -1,0 +1,32 @@
+{
+  "id": "kpf50-custody-qualification-20261105",
+  "kind": "compute",
+  "ready": false,
+  "published": false,
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "estimate_s": 300,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/full-results/RESULT.json",
+  "result_format": "json",
+  "first_progress_s": 60,
+  "model": null,
+  "gpu_required": false,
+  "question": "Does the retained KPF50 supervisor preserve synthetic writer, STOP cleanup and no-redraw custody?",
+  "smoke": "same canonical engine, four CPU taskset by publisher, isolated fresh fixture under unique FILLER_DRYRUN_RESULT_PATH parent; normal/no-redraw only",
+  "limitations": [
+    "UNTESTED; not CLOCK-QUAL",
+    "Qualification hooks bypass model admission and qualified-target refusal gates solely in fresh synthetic fixture",
+    "Does not qualify native target receipt validator, models, HIP, kernels or inference"
+  ],
+  "source_commit": "1e8a6d5da9836a27e8f1d2010a02e6cebd95abdc",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.CUSTODY-QUAL",
+  "priority_rank": 50,
+  "decision_rule": "One synthetic custody suite only. Require normal producer/writer complete, changed-row no-redraw refusal with unchanged durable exposures, STOP descendant absence and bad-binding refusal; fail on seals, STOP, deadline or cleanup defect. Smoke runs only normal/no-redraw and writes external FILLER_DRYRUN_RESULT_PATH, never full verdict.",
+  "ram_gib": 1,
+  "dryrun_native_result": true,
+  "dryrun_timeout_s": 120,
+  "unit_key": "case"
+}

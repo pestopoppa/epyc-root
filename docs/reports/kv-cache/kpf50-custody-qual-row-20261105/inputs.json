@@ -1,0 +1,13 @@
+{
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-supervisor-20261105/supervisor.py": "9cbafeb60ce6b749fc0390d7d1666391c5d95968d9218a6cd427e5bf3105f0af",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-supervisor-20261105/plan.json": "2adb373bb9250f685d10a16c85e8a7d06c5cff95e6b3b80434600a368828bc86",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-supervisor-20261105/seals.json": "6867c224b2742daf798c51cd5f4851644367883f533826fa7e4e0cbd8f0095c2",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-supervisor-review-done-20261105.json": "0c38c2606c4d593e190df701d622ea29fb8c1af9b435462e719a14a8f4c78af1",
+  "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/supervisor.py": "9cbafeb60ce6b749fc0390d7d1666391c5d95968d9218a6cd427e5bf3105f0af",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/stub.py": "1ba38cc298745e0da8d4fb421cdf20f9e96fcb998b08de52bef1f7730f57bf19",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/worker.py": "494a570a23591f3c59d878b695f807b0fb44cc8941e388842138ac975e539b42",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/qualify.py": "0d9902c1e28f5565992731288b266555d6152c0dcdce67cc14453eb56979007f",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/complete.py": "521a2ec17df961735691da50db9780c9ed561762dc7cf7d138f60f4d57ddfd98",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-custody-qualification-20261105/launch.sh": "c3e04e02cfcf2564d4f8c96c4aef40241a28f852cd5858e4da2541b2f4da98ec"
+}
