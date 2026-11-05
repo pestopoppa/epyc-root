@@ -55,3 +55,11 @@ Consumed the KVU-11c GPU preparation and KPF-50 supervisor review. The former wa
 ## 01:22Z — File the KPF-RS-1 seven-symbol native impact scan and ready its source-bound follow-up
 
 Filed kpf-rs1-impact-8952-20261104-r6 PASS for seven LOW native source-bound impacts and nonpartial completion at candidate 8952a0f693fb923918157eb25117641b74766230. Retained raw impact and capped-coverage evidence; omitted files are not covered by a zero-impact claim. The implementation and CPU/GPU conformance remain open. Published kpf-rs1-observer-impact-20261105 for twelve additional capture and synchronization integration surfaces; publisher smoke passed with partial source references only. Full native scan remains pending.
+
+## 01:26Z — File the native vocabulary census and ready its bounded next analysis
+
+Filed kpf623-native-vocab-census-20261105 inconclusive: native RESULT reports complete 151,936-piece sequential vocabularies, while outer rc75 and missing independent custody/exit receipts leave the specified full decision unproven. Retained both TSVs, markers, maps and logs before filing; no alignment or quality PASS follows. Published the byte-piece decomposition exploration with a four-CPU smoke over 256 pieces. Full classification, actual tokenizer/span compatibility and budget admission remain open.
+
+## 01:27Z — File the native vocabulary census and ready its bounded next analysis
+
+Filed kpf623-native-vocab-census-20261105 inconclusive: native RESULT reports complete 151,936-piece sequential vocabularies, while outer rc75 and missing independent custody/exit receipts leave the specified full decision unproven. Retained both TSVs, markers, maps and logs before filing; no alignment or quality PASS follows. Published the byte-piece decomposition exploration with a four-CPU smoke over 256 pieces. Full classification, actual tokenizer/span compatibility and budget admission remain open.

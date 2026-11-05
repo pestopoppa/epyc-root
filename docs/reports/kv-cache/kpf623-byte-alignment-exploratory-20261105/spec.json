@@ -1,0 +1,42 @@
+{
+  "schema": "epyc.preparation.v1",
+  "id": "kpf623-byte-alignment-exploratory-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 2,
+  "gib": 2,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "window_s": 660,
+  "smoke_timeout_s": 300,
+  "first_progress_s": 300,
+  "priority_rank": 45,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-62.3.BYTE-ALIGN",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105",
+  "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105",
+  "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105/STOP",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "ready": false,
+  "published": false,
+  "kind": "compute",
+  "unit_key": "counts",
+  "lineage": "kpf623-byte-alignment-exploratory",
+  "question": "Exploratory only: which retained target byte pieces admit zero, one, or multiple decompositions over nonempty auxiliary byte pieces?",
+  "decision_rule": "EXPLORATORY_COMPLETE requires unchanged retained inputs before/after, sequential full inventory IDs, all target pieces classified, exact reconstruction of every unique decomposition, and separate sealed records. No census PASS, tokenizer compatibility, span alignment, selector quality, budget readmission or G3 acceptance.",
+  "controls": "Distinct external smoke result limited to first 256 target pieces; same retained inventories, no model loading or tokenizer calls. Literal row ID in completion predicate avoids FILLER_ID scope issue. Existing outputs refused. STOP/deadline checks per target.",
+  "limitations": [
+    "PREPARATION ONLY: script not run, syntax not exercised, no smoke/publication; owner review and rowflow qualification required.",
+    "Original native census is inconclusive. Missing independent native exit/check/rlimit/PID evidence and outer environment cannot be reconstructed.",
+    "Byte segmentation does not establish actual tokenizer encoding, contextual spans, special-token meaning, quality, or budget admission.",
+    "Ambiguity counts saturate at two; empty auxiliary pieces excluded to avoid infinite decompositions. Empty targets explicit.",
+    "No resource measurement: reservation provisional. Full target segmentation can encounter long pieces; adjust admission only prospectively."
+  ]
+}
