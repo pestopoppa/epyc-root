@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T14:28:54Z",
+  "generated_at": "2026-11-05T14:33:31Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2062,14 +2062,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 101,
-      "dispatchable": 36,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-04",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 36,
+      "open": 37,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2091,20 +2091,20 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 24,
+          "dispatchable": 25,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 24,
+          "open": 25,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 579,
+          "line": 581,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -2113,7 +2113,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 950,
+          "line": 952,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2122,7 +2122,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1566,
+          "line": 1568,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -2131,7 +2131,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1713,
+          "line": 1715,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2143,14 +2143,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 275,
-      "dispatchable": 119,
+      "dispatchable": 122,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 121,
+      "open": 124,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2184,7 +2184,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 40,
+          "dispatchable": 43,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2193,14 +2193,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 41,
+          "open": 44,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1573,
+          "line": 1576,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1697,
+          "line": 1700,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2218,7 +2218,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2024,
+          "line": 2027,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2227,7 +2227,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2163,
+          "line": 2166,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2236,7 +2236,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2716,
+          "line": 2719,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2253,7 +2253,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2853,
+          "line": 2856,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2276,7 +2276,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3747,
+          "line": 3750,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
@@ -2419,7 +2419,7 @@
     },
     {
       "age_days": 2,
-      "blocked": 40,
+      "blocked": 41,
       "blocked_by": [],
       "closed": 120,
       "dispatchable": 30,
@@ -2429,7 +2429,7 @@
       "id": "INF-79",
       "last_advanced": "2026-11-03",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 70,
+      "open": 71,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -2453,14 +2453,14 @@
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 65,
+          "open": 66,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 984,
+          "line": 985,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3160,14 +3160,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 99,
+      "dispatchable": 102,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-02",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 99,
+      "open": 102,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3187,18 +3187,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 52,
+          "dispatchable": 55,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 52,
+          "open": 55,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1141,
+          "line": 1145,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3207,7 +3207,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1180,
+          "line": 1184,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3216,7 +3216,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1287,
+          "line": 1291,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3225,7 +3225,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1387,
+          "line": 1391,
           "name": "loop-state-offraid-backup",
           "open": 5,
           "readiness": "ready"
@@ -3234,7 +3234,7 @@
           "blocked_by": [],
           "dispatchable": 35,
           "gates": [],
-          "line": 1433,
+          "line": 1437,
           "name": "refactoring-multirepo-2026-10",
           "open": 35,
           "readiness": "ready"
@@ -3243,7 +3243,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2006,
+          "line": 2010,
           "name": "repo-readiness-scorer",
           "open": 4,
           "readiness": "ready"

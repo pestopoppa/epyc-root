@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 48,
+      "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 666
+      "open": 670
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 490
+      "open": 493
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -733,7 +733,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 99,
+      "open": 102,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -742,7 +742,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 338,
+      "total": 341,
       "tracks": [
         {
           "blocked": 0,
@@ -752,14 +752,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 52
+          "open": 55
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1141,
+          "line": 1145,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -769,7 +769,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1180,
+          "line": 1184,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -779,7 +779,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1287,
+          "line": 1291,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -789,7 +789,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1387,
+          "line": 1391,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 5
@@ -799,7 +799,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1433,
+          "line": 1437,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -809,7 +809,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 2006,
+          "line": 2010,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 4
@@ -1117,7 +1117,7 @@
       "closed": 275,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 119,
+      "open": 122,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 396,
+      "total": 399,
       "tracks": [
         {
           "blocked": 1,
@@ -1141,14 +1141,14 @@
           "line": 9,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 40
+          "open": 43
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1573,
+          "line": 1576,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1697,
+          "line": 1700,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2024,
+          "line": 2027,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2163,
+          "line": 2166,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2716,
+          "line": 2719,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2853,
+          "line": 2856,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3747,
+          "line": 3750,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 60
@@ -1364,7 +1364,7 @@
       "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 36,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 137,
+      "total": 138,
       "tracks": [
         {
           "blocked": 0,
@@ -1385,14 +1385,14 @@
           "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 24
+          "open": 25
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 579,
+          "line": 581,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1402,7 +1402,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 950,
+          "line": 952,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1412,7 +1412,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1566,
+          "line": 1568,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1422,7 +1422,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1713,
+          "line": 1715,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 6
@@ -2461,7 +2461,7 @@
       ]
     },
     "speech-and-multimodal.md": {
-      "blocked": 40,
+      "blocked": 41,
       "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-03",
@@ -2474,10 +2474,10 @@
       },
       "row_id": "INF-79",
       "state": "active",
-      "total": 190,
+      "total": 191,
       "tracks": [
         {
-          "blocked": 40,
+          "blocked": 41,
           "closed": 75,
           "gates": null,
           "guarded": 0,
@@ -2491,7 +2491,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 984,
+          "line": 985,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5

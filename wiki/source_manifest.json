@@ -9,10 +9,23 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T11:10:01Z",
-  "mode": "touch",
-  "scan_time": "2026-11-05T11:10:01Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-11-05T14:33:32Z",
+    "scope_paths": [
+      "docs/reports/coordination/keeper-friction-review-20261105.md",
+      "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-05T14:33:32Z",
   "schema_version": 1,
-  "source_set_hash": "41891ede71d6870b8df1eacfe8cb0792593587bf618b066af9279a96c68cb8a6",
+  "source_set_hash": "5b6cfe816a6d6f7b44e7b60adf6879fdb0a812f7c6d8a6c8deac54a055ef13c4",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16031,10 +16044,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b25c5d0a05a897faf6258c008ab4bf6dd15985c52dbae5fd279875af1be891a6",
-      "modified": "2026-11-05T11:06:33Z",
+      "content_hash": "2f9bd3dc1903198ef7e155c5d40c2de1ef5c141cc76389f8f2e1c84b723252c1",
+      "modified": "2026-11-05T14:31:42Z",
       "path": "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md",
-      "size": 3037,
+      "size": 9602,
       "title": "2026-11-05 \u2014 operator ad-hoc ops (operator-adhoc-ops-20261105)",
       "type": "progress"
     },
@@ -18607,10 +18620,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "834395325fda8b9477bc92e4532bbca3b3a0743f80972bb5b59098875335beee",
-      "modified": "2026-11-05T11:06:33Z",
+      "content_hash": "06e6371e90f1629a9c388f5cec862f7fc7ff9970c5ba721665cf237e82821553",
+      "modified": "2026-11-05T14:30:34Z",
       "path": "docs/reports/coordination/keeper-friction-review-20261105.md",
-      "size": 44620,
+      "size": 92333,
       "title": "Keeper friction review \u2014 2026-11-05",
       "type": "docs"
     },
