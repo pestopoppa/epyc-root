@@ -956,3 +956,66 @@ measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
   `tests/hooks/test_commit_hygiene_row_tick.py::test_checkbox_flip_citing_row_without_filed_is_refused` and
   `::test_flip_after_file_result_admitted`; regression: today's `4eee3159f` + `grants/npd1-step5-20261105.ended` →
   reconciler files it, `auto_file.py` no longer lists it owner-less.
+
+## P2.12 D13 — The filler's grant-WAIT loop ignores the STOP file (current `filler_run15.sh` too)
+
+- **Verified.** `dryrun/codex-ifbench-cj6a-27b-v4-20261104/stop` was touched at 12:00Z — the exact path the engine
+  logged as `stop=` at 15:30:03Z yesterday. Engine pid 3114437 (pre-`2134ef303` script) kept `sleep 5`-looping on the
+  main grants dir for 6+ minutes afterwards. **The current script has the same gap**: the main loop on `origin/main`
+  (`filler_run15.sh` ~L408-425) is
+  `while :; do … if [ ! -e "$GRANT" ]; then sleep_poll "$POLL"; continue; fi …` — `$STOPFILE` is read only in
+  `run_one` at grant time (`:285`, `stopped-before-start`) and mid-run (`:362-364`). A poller with no grant never
+  reaches either. So STOP has three phases and two are covered: *mid-run* (`2134ef303`), *at grant* (`62bcc3eb5` +
+  `2134ef303`), **not *waiting***. Every armed-but-never-granted poller (and every withdrawn ARMED row, P2.3 #2) is
+  therefore un-stoppable except by pid.
+- **Fix.** `filler_run15.sh` main loop: before the grant test,
+  `if [ -e "$STOPFILE" ]; then write_ended 75 stopped-while-waiting; log "STOP seen while waiting for a grant ($STOPFILE): releasing claim, exiting"; release_claim; exit 21; fi`
+  — `release_claim` removes any `.grant` addressed to this id that has not been consumed (so the keeper sees a terminal
+  `.ended` and never re-grants; this is the record F4 lacked) and, in a dry run, removes `RUNNING.json` so the keeper
+  frees the cpus the same tick (D9). Poll interval for the STOP check is `$POLL` (5 s); no grace is needed because no
+  job is running. `rowflow.py withdraw` and `supersede` then stop an ARMED predecessor in ≤ 5 s instead of leaving its
+  poller alive forever.
+- **Tests.** `test_filler_stop_midrun.py::test_stop_while_waiting_for_grant_exits_21_and_writes_ended`
+  (start the engine with no grant, touch STOP, assert exit within 2 polls, `.ended rc=75 reason=stopped-while-waiting`,
+  no `.grant` left); `::test_stop_while_waiting_in_dryrun_removes_running_json`;
+  `test_rowflow_supersede.py::test_withdraw_armed_row_stops_its_poller` (poller pid gone within 10 s).
+
+## P2.13 D14 — The new GPU-shape publish check (`8fbe18182`, 12:06Z) refuses legitimate whole-host CPU serving; and fixed-core sub-quarter rows
+
+- **Verified.** `8fbe18182` adds `gpu_lane_overreach()` (`rowflow.py:1657`): a row is GPU-lane if `lane == gpu` **or**
+  `mi210` in regions **or** launcher `--class gpu|cpu+gpu`; cpus beyond q3+siblings are refused unless
+  `whole_host_evidence()` (`:1564`: `declared_threads ≥ 48`, `baseline_ref`, or `shape_override`). A dry run reports
+  27 live rows refused, including `npd1-step2..5`. `npd1-step5` is legitimate whole-host CPU serving: `--class cpu+gpu
+  --gpu-quiet exclusive --claim-cpus 0-95 --role bench`, job `taskset -c 0-95 numactl --interleave=all llama-server …
+  -t THREADS` (`job.py:43,157`). Its manifest has `declared_threads: null`, `baseline_ref: null` — because **the thread
+  count is a Python variable (`"-t", THREADS`), not a literal**, so `parse_launcher`'s argv extraction cannot see 48.
+  The check is wrong on two counts:
+  1. **Lane is decided by `--class`, not by GPU *use*.** `cpu+gpu` with `--gpu-quiet exclusive` and a 0-95 claim is a
+     CPU timing row that needs the GPU *quiet* (purpose `gpu-quiet: quiet`, `q0-q3: use`); it is not GPU work and q3
+     is not its "overreach". `c61a7430e` (11:49) already introduced the right signal — `gpu_use: "quiet-only"` (rows
+     that skip the VRAM residency check). **Exact condition:** in `gpu_lane_overreach`, return `set()` when
+     `row.get("gpu_use") == "quiet-only"` or (`o.get("gpu_quiet") == "exclusive"` and `o.get("class") == "cpu+gpu"`
+     and the smoke's `PASS.json vram_used_max_bytes < 1 GiB`); i.e. `lane = gpu` iff the row *uses* the GPU. Then
+     `npd1-step*` fall under the ordinary host/quiet-host evidence gate of `71d92b3e9`, which is where they belong.
+  2. **Evidence is read from a literal argv only.** `whole_host_evidence` must accept **measured** evidence:
+     `max(declared_threads, PASS.json measured_threads) ≥ 48` — the smoke ran the server with `THREADS` and measured
+     it. And a `--check`/dry-run sweep over *existing* rows must evaluate against the stored `PASS.json`, never refuse a
+     row whose smoke already measured ≥ 48 threads, and never retro-refuse a row published before the field existed
+     (`declared_threads` absent ≠ `0`; today `int(None or 0)` makes absence a refusal).
+  3. Fallback for variables: when `-t`/`--threads` is followed by an identifier, resolve a single `NAME = "<int>"` /
+     `NAME = <int>` assignment in the job file (same idiom `resolve_stop_path` uses for `D=`); otherwise record
+     `declared_threads: unknown` and defer to measurement.
+- **Tests.** `test_rowflow_shape_evidence.py::test_cpu_plus_gpu_quiet_exclusive_is_not_gpu_lane` (npd1-step5
+  launcher fixture → `gpu_lane_overreach == set()`); `::test_measured_threads_48_is_whole_host_evidence`
+  (`declared None`, `PASS.json measured_threads 48` → admitted); `::test_absent_declared_threads_is_unknown_not_zero`;
+  `::test_python_variable_threads_resolved_from_job_file` (`THREADS = "48"` → 48);
+  `::test_check_sweep_over_live_rows_refuses_zero_of_npd1_rows` (fixture: the four npd1 manifests + PASS.json).
+
+- **kpf30-sq3 pinned to fixed cores.** `ready/kpf30-impact-8952-20261104-r9-sq3.json`: `regions: 72-73`, `shape:
+  quarter`. A sub-quarter row that names *specific* cores can be placed only when exactly those two are free, so it
+  RANK-SKIPs (3× today) while c74-c75/c78-c79/c84-c87 sat free. The Contract (#2) should express sub-quarter width,
+  not identity: `regions: any-2-of q3` (or `width: 2, within: q3`), and `grant_regions` picks the free pair and writes
+  the concrete list into the grant (it already does this for `any-cpu-quarter` → `cpu_list(q)`). Publishing a concrete
+  sub-quarter list stays allowed only with `pin_cores: true` and a reason (NUMA/L3 experiments).
+  Test: `test_rowflow_contract.py::test_any_2_of_q3_places_on_free_pair` (free `c74,c75` → grant `74-75`);
+  `::test_concrete_pair_without_pin_reason_rewritten_to_width`.
