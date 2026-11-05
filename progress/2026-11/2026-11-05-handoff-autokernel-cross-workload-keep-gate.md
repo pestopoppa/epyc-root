@@ -111,3 +111,7 @@ C6 census is running and CH-26b r3 is grantable. NEMO server marker-build lineag
 ## 02:29Z — File C6 paired support census and publish scoped paired performance diagnostic
 
 Filed c6-support-census-r2-20261105 rc0 as a descriptive matched support census; retained result and logs before receipt. Two q4_K n=4 failures became passes, while 326 MUL_MAT and 2229 attention cases were unsupported on both images. Added source-based support classification with four passing controls. Prepared a 20-pair seven-shape synthetic timing row: its initial smoke refused missing nested unit counts; corrected and resealed packet passed smoke and was published. No full correctness or promotion claim.
+
+## 02:32Z — Reconcile inference prerequisites and assess the single C5 calibration window
+
+C6 performance row c6-q4k-perf-paired-20261105 is running; CH-26b boundary qualification ch26-c5-boundary-functional-r3-20261105 is grantable after smoke PASS. Neither is a verdict. NEMO-PROF-RESEG requires historical events absent from the captures, and its marker-server lineage is parked. CH-27a still needs safe one-window and shared registry custody before a calibration can be readied. No new row was published or box completed in this turn. GitNexus reindex was refused by CPU admission.
