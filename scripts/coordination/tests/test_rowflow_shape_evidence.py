@@ -172,11 +172,14 @@ class Supersede(Fx):
         self.assertTrue(os.path.exists(os.path.join(self.root, "row-r1", "row-r1.STOP")))
 
     def test_running_predecessor_not_killed_but_pending(self):
+        # keeper-hotfix 2026-11-05: a RUNNING predecessor finishes - its STOP file is NOT touched (the engine's mid-run
+        # STOP poll would kill it within seconds); only queued/armed predecessors are stopped
         self.pub("run-r1")
         g = os.path.join(self.flags, "grants", "run-r1.grant")
         open(g, "w").write("regions=0-23 holds=q0\n")
         r2 = self.pub("run-r2", supersedes=["run-r1"])
         self.assertEqual(rf.supersede(self.flags, r2, log=lambda *_: None), {"run-r1": "PENDING"})
+        self.assertFalse(os.path.exists(os.path.join(self.root, "run-r1", "run-r1.STOP")), "running predecessor would be killed")
         self.assertTrue(os.path.exists(rf.ready_path(self.flags, "run-r1")))
         self.assertFalse(os.path.exists(os.path.join(self.flags, "grants", "run-r1.ended")))
         os.remove(g)

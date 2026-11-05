@@ -91,7 +91,16 @@ PIDFILE=$STATE/$ID.pids
 GRANT=$GRANTS/$ID.grant; ENDED=$GRANTS/$ID.ended; COMPLETE=$GRANTS/$ID.complete
 DRYRUN=${FILLER_DRYRUN:-0}
 if [ "$DRYRUN" = 1 ]; then
-  DR=${FILLER_DRYRUN_DIR:?FILLER_DRYRUN=1 needs FILLER_DRYRUN_DIR}; mkdir -p "$DR/state"
+  # keeper-hotfix 2026-11-05 (D10): a dry run derives its whole world from FILLER_DRYRUN_DIR (the one name that survives a
+  # `sudo --preserve-env` list); it can never fall back to the MAIN grants dir and poll it forever.
+  DR=${FILLER_DRYRUN_DIR:-}
+  [ -n "$DR" ] || { echo "REFUSED: FILLER_DRYRUN=1 needs FILLER_DRYRUN_DIR (dryrun-env-incomplete)" >&2; exit 64; }
+  GRANTS=$DR/grants; FLAGS=$(dirname "$(dirname "$DR")"); GRANT=$GRANTS/$ID.grant
+  if [ ! -d "$GRANTS" ]; then
+    printf 'rc=64 time=%s reason=dryrun-env-incomplete\n' "$(date -u +%FT%TZ)" > "$DR/ended" 2>/dev/null
+    echo "REFUSED: dry-run grants dir $GRANTS absent (dryrun-env-incomplete)" >&2; exit 64
+  fi
+  mkdir -p "$DR/state"
   ENDED=$DR/ended; COMPLETE=$DR/complete; STOPFILE=$DR/stop; STATE=$DR/state; REPEAT=0
   LAUNCHER_LOCK=$STATE/$ID.launcher.lock; RUNNER_LOCK=$STATE/$ID.runner.lock; PIDFILE=$STATE/$ID.pids
   # allocator 2026-11-01: a multi-quarter row is dry-run on ONE quarter - the region-lock claim is the grant's own cpus
@@ -178,7 +187,10 @@ notify_end() { # rc reason
     --rc "$1" --reason "$2" ${FILLER_OWNER:+--owner "$FILLER_OWNER"} "${ef[@]}" </dev/null 7>&- 8>&- || log "WARN: notify rc=$?"
   return 0
 }
-gone() { ! kill -0 -- "-$1" 2>/dev/null; }
+# keeper-hotfix 2026-11-05: liveness by ps//proc (kill -0 is blind in this sandbox); a zombie is dead
+alive_pid() { local st; st=$(ps -o stat= -p "$1" 2>/dev/null) || return 1; [ -n "$st" ] && [[ $st != Z* ]]; }
+group_pids() { [[ ${1:-} =~ ^[0-9]+$ ]] || return 0; ps -eo pid=,pgid=,sid=,stat= 2>/dev/null | awk -v g="$1" '($2==g || $3==g) && $4 !~ /^Z/ {print $1}'; }
+gone() { [ -z "$(group_pids "$1")" ]; }
 proc_birth() { sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $20}'; }
 kill_group() { # captured pgid + birth [grace s, default 20]: TERM, wait, KILL - only when the leader's birth still matches
   local g=$1 birth=$2 grace=${3:-20} i
@@ -192,16 +204,45 @@ kill_group() { # captured pgid + birth [grace s, default 20]: TERM, wait, KILL -
   log "REFUSED: group $g survives KILL"; return 1
 }
 INNERPG=$STATE/$ID.inner.pgid
-kill_job() { # ws58 2026-11-02: the launcher's setsid group AND the inner engine's group (region_lock_cli may start the inner
-  # engine in a session of its own, out of reach of the launcher-group kill); the inner records "pgid birth" at start
-  local r=0 g b grace=${1:-20}
-  kill_group "$CUR" "$CUR_BIRTH" "$grace" || r=1
-  if [ -f "$INNERPG" ]; then
-    read -r g b < "$INNERPG" || true
-    if [[ ${g:-} =~ ^[0-9]+$ ]] && [ "$g" != "$CUR" ]; then kill_group "$g" "$b" "$grace" || r=1; fi
-    [ $r = 1 ] || rm -f "$INNERPG"
-  fi
-  return $r
+descendants() { # every live descendant of the given pids (and the pids themselves), from one ps snapshot
+  ps -eo pid=,ppid=,stat= 2>/dev/null | awk -v roots="$*" '
+    BEGIN { n = split(roots, r, " "); for (i = 1; i <= n; i++) if (r[i] != "") want[r[i]] = 1 }
+    $3 !~ /^Z/ { par[$1] = $2; all[++m] = $1 }
+    END { do { ch = 0; for (i = 1; i <= m; i++) { p = all[i]; if (!(p in want) && (par[p] in want)) { want[p] = 1; ch = 1 } } } while (ch)
+          for (p in want) if (p in par) print p }'
+}
+tagged_pids() { # orphans of THIS run (reparented away from the tree) still carry its FILLER_ID + FILLER_STOPFILE
+  local f p e
+  for f in /proc/[0-9]*/environ; do
+    p=${f#/proc/}; p=${p%/environ}
+    [ "$p" = $$ ] && continue
+    e=$'\n'$(tr '\0' '\n' < "$f" 2>/dev/null)$'\n' || continue   # no pipes into grep -q (pipefail false results)
+    [[ $e == *$'\n'"FILLER_ID=$ID"$'\n'* && $e == *$'\n'"FILLER_STOPFILE=$STOPFILE"$'\n'* ]] && echo "$p"
+  done
+}
+job_pids() { # keeper-hotfix 2026-11-05: the launcher's setsid group, the inner engine's group, every descendant
+  # (setsid/nohup grandchildren included) and orphans tagged with this run's env - never this launcher itself
+  local roots="" g b
+  [ -n "$CUR" ] && roots="$(group_pids "$CUR") $CUR"
+  if [ -f "$INNERPG" ]; then read -r g b < "$INNERPG" || true; roots="$roots $(group_pids "${g:-}")"; fi
+  roots="$roots $(tagged_pids)"
+  [ -n "${roots// /}" ] || return 0
+  descendants $roots | grep -vx "$$" | sort -un
+}
+kill_job() { # TERM the whole run, wait up to the grace, KILL, verify by ps; returns 1 if anything survives
+  local grace=${1:-20} i pids
+  pids=$(job_pids)
+  [ -n "$pids" ] || { rm -f "$INNERPG"; return 0; }
+  kill -TERM $pids 2>/dev/null
+  for i in $(seq "$grace"); do
+    pids=$(job_pids); [ -n "$pids" ] || { log "run ended after TERM"; rm -f "$INNERPG"; return 0; }
+    kill -TERM $pids 2>/dev/null; sleep 1 7>&- 8>&-
+  done
+  kill -KILL $pids 2>/dev/null; sleep 1
+  pids=$(job_pids); [ -n "$pids" ] || { log "run killed"; rm -f "$INNERPG"; return 0; }
+  kill -KILL $pids 2>/dev/null; sleep 1
+  pids=$(job_pids); [ -n "$pids" ] || { log "run killed"; rm -f "$INNERPG"; return 0; }
+  log "REFUSED: pids survive KILL: $(echo $pids)"; return 1
 }
 kill_pidfile() { # pids the job registered (fl_register_pid); TERM then KILL; never a pid that is already gone
   local p
@@ -359,7 +400,7 @@ run_one() {
   OV_STARTED=$(ts)
   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
   reason=exited
-  while kill -0 "$CUR" 2>/dev/null; do
+  while alive_pid "$CUR"; do
     if [ "$DRYRUN" != 1 ] && [ -e "$STOPFILE" ]; then
       reason=stopped; log "STOP seen mid-run ($STOPFILE): TERM job group(s), KILL after ${STOP_GRACE}s"
       kill_job "$STOP_GRACE" || reason=cleanup-failed; break; fi
@@ -409,7 +450,16 @@ log "launcher up pid=$$ class=$CLASS poll=${POLL}s grants=$GRANTS stop=$STOPFILE
 if is_complete; then mark_complete || exit 70; exit 0; fi
 while :; do
   [ -e "$COMPLETE" ] && { log "complete marker present; exiting"; exit 0; }
-  if [ ! -e "$GRANT" ]; then sleep_poll "$POLL"; continue; fi
+  if [ ! -e "$GRANT" ]; then
+    # keeper-hotfix 2026-11-05 (D13): STOP is honoured while WAITING for a grant too - terminal record, release, exit
+    if [ -e "$STOPFILE" ]; then
+      log "STOP seen while waiting for a grant ($STOPFILE): releasing claim, exiting"
+      [ -e "$ENDED" ] || write_ended 75 stopped-while-waiting
+      [ "$DRYRUN" = 1 ] && rm -f "$DR/RUNNING.json"
+      exit 0
+    fi
+    sleep_poll "$POLL"; continue
+  fi
   GRANT_WAIT=""
   lm_attempt_begin
   run_one; rc=$?

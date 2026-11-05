@@ -413,6 +413,12 @@
       "owning_handoff": "handoffs/active/coordination-and-churn-pipeline.md",
       "task_marker": "OBS-CHURN-UP",
       "notes": "Identifies pipeline loops by pidfile pid + argv marker and by exact installed-path argv element over /proc/*/cmdline (never a name pattern). A blind read (unreadable /proc) reports DOWN, not dead-forever: it never relaunch-loops (one-shot command, and it refuses a duplicate when any exact-path argv match exists). Adopt observer_guard.sh three-valued state under OBS-CHURN-UP."
+    },
+    {
+      "id": "rowflow_filler_run15_kill_job",
+      "script": "scripts/coordination/rowflow/filler_run15.sh",
+      "contract": "exempt",
+      "reason": "keeper-hotfix 2026-11-05: the engine observes only processes of its OWN run - its captured setsid group/session (pgid/sid from ps), their ps descendants, and orphans whose /proc environ carries BOTH this run's FILLER_ID and FILLER_STOPFILE (exported by the engine itself). It never matches a process name or argv pattern, never watches a foreign daemon, and verifies death by ps (zombie = dead). Not a watchdog: the observation exists only to stop the run it launched."
     }
   ]
 }

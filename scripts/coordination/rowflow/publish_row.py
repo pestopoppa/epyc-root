@@ -267,7 +267,11 @@ def run_queued_smoke(flags, rid, regions):
                 rf.supersede(flags, row)
                 file_if_complete(flags, rid, row)
         except Exception as e:  # noqa: BLE001
-            v, msg = "FAIL", f"{type(e).__name__}: {e}"
+            # keeper-hotfix 2026-11-05: a harness exception is not the row's verdict - WAIT (requeued, bounded), never FAIL
+            v, msg = "WAIT", f"harness exception {type(e).__name__}: {e}"
+        if v == "WAIT":   # bounded retry: the SMOKE_MAX_WAITS-th WAIT becomes FAIL reason=never-started
+            row = rf.load_json(rf.ready_path(flags, rid)) or rf.load_json(unpublished_path(flags, rid))
+            v = rf.smoke_wait_or_fail(flags, rid, row, msg[:200], log=print)
         print(f"SMOKE {v} {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')})")
         if v != "WAIT" and os.path.exists(q):
             os.remove(q)

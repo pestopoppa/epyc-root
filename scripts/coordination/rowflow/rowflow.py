@@ -717,7 +717,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "timing"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "timing", "gpu_use"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -735,6 +735,9 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     if spec.get("fix_ref") is not None:
         need(isinstance(spec["fix_ref"], str) and spec["fix_ref"].strip(), "fix_ref must name the fix (commit or path)")
     check_engine_not_sealed(launcher, eng)
+    envp = check_env_passthrough(launcher)
+    if envp:
+        row["env_passthrough"] = envp
     # refinement 1: shape from evidence
     check_shape_evidence(spec, o)
     if o.get("threads"):
@@ -788,8 +791,10 @@ def withdrawn_dir(flags): return os.path.join(flags, "ready", ".withdrawn")
 def withdraw(flags, rid, reason, log=print):
     """Refinement 5: end a row that will never run. Not running: ready/<id>.json -> ready/.withdrawn/<id>.json, a
     terminal grants/<id>.ended `rc=75 reason=<reason>` (status/queue_status/backlog_gen/dashboard read it as closed),
-    and its STOP file touched (an armed poller never starts). Running (open grant): STOP touched, a pending record
-    written; the keeper finishes the withdrawal once the grant ends. Nothing is killed or deleted.
+    and its STOP file touched (an armed poller exits within one poll: filler_run15 honours STOP while waiting).
+    Running (open grant): a RUNNING predecessor FINISHES - its STOP file is NOT touched (since 2134ef303 the engine polls
+    STOP mid-run and would kill it); only a pending record is written and the keeper finishes the withdrawal once the
+    grant ends (keeper-hotfix 2026-11-05). Nothing is killed or deleted.
     Returns WITHDRAWN | PENDING | ABSENT | TERMINAL."""
     reason = re.sub(r"\s+", "_", str(reason).strip()) or "withdrawn"
     G = os.path.join(flags, "grants")
@@ -800,6 +805,11 @@ def withdraw(flags, rid, reason, log=print):
     d = load_json(rp)
     if not d:
         return "ABSENT"
+    os.makedirs(withdrawn_dir(flags), exist_ok=True)
+    if os.path.exists(os.path.join(G, rid + ".grant")):
+        atomic_json(os.path.join(withdrawn_dir(flags), rid + ".pending.json"), {"id": rid, "reason": reason, "at": now_iso()})
+        log(f"SUPERSEDE-PENDING {rid}: running; it finishes (STOP not touched), withdrawn when its grant ends (reason={reason})")
+        return "PENDING"
     sf = resolve_stop_path(d)
     if sf:
         try:
@@ -807,11 +817,6 @@ def withdraw(flags, rid, reason, log=print):
             open(sf, "a").close()
         except OSError as e:
             log(f"WITHDRAW {rid}: could not touch STOP {sf}: {e}")
-    os.makedirs(withdrawn_dir(flags), exist_ok=True)
-    if os.path.exists(os.path.join(G, rid + ".grant")):
-        atomic_json(os.path.join(withdrawn_dir(flags), rid + ".pending.json"), {"id": rid, "reason": reason, "at": now_iso()})
-        log(f"SUPERSEDE-PENDING {rid}: running; STOP touched, withdrawn when its grant ends (reason={reason})")
-        return "PENDING"
     os.makedirs(G, exist_ok=True)
     with open(os.path.join(G, rid + ".ended"), "w") as f:
         f.write(f"rc=75 reason={reason} at={now_iso()}\n")
@@ -901,7 +906,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override", "timing"):
+              "fix_ref", "baseline_ref", "shape_override", "timing", "gpu_use"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1482,7 +1487,8 @@ def coexist_host(d):
     shape = d.get("shape") or shape_of(d)
     if shape == "gpu-q3":
         return True
-    return shape == "quiet-host" and d.get("lane") == "gpu" and int(d.get("declared_threads") or 0) < WHOLE_HOST_THREADS
+    n = row_threads(d)   # keeper-hotfix (D14): unknown threads on a quiet-host row is not "< 48"
+    return shape == "quiet-host" and d.get("lane") == "gpu" and n is not None and n < WHOLE_HOST_THREADS
 
 
 def coexist_holds(grants, allrows):
@@ -1561,16 +1567,73 @@ def check_busy_fraction(spec):
          f"omit it when unknown (= 1.0)")
 
 
+def row_threads(d, flags=None):
+    """max(declared_threads, the smoke's PASS.json measured_threads); None when neither is known (unknown != 0)."""
+    vals = []
+    for v in ((d or {}).get("declared_threads"), (d or {}).get("measured_threads")):
+        try:
+            if v is not None:
+                vals.append(int(v))
+        except (TypeError, ValueError):
+            pass
+    rid = (d or {}).get("id")
+    if rid and "measured_threads" not in (d or {}):
+        try:
+            mt = (load_json(pass_path(flags or FLAGS, str(rid))) or {}).get("measured_threads")
+            if mt is not None:
+                vals.append(int(mt))
+        except (TypeError, ValueError, OSError):
+            pass
+    return max(vals) if vals else None
+
+
+def gpu_quiet_only(row, o, flags=None):
+    """keeper-hotfix 2026-11-05 (D14): the row holds the MI210 quiet but does not USE it - gpu_use "quiet-only", or
+    --class cpu+gpu --gpu-quiet exclusive whose smoke measured < 1 GiB VRAM. Such a row is CPU work, not GPU lane."""
+    if (row or {}).get("gpu_use") == "quiet-only":
+        return True
+    o = o or {}
+    if o.get("gpu_quiet") == "exclusive" and o.get("class") == "cpu+gpu" and (row or {}).get("id"):
+        v = (load_json(pass_path(flags or FLAGS, str(row["id"]))) or {}).get("vram_used_max_bytes")
+        return isinstance(v, (int, float)) and v < (1 << 30)
+    return False
+
+
 def whole_host_evidence(d):
     """Refinement 1: what earns a host / quiet-host shape - >= WHOLE_HOST_THREADS declared threads, a baseline_ref naming
     the decision-grade baseline / production-serving measurement it reproduces, or an operator shape_override."""
     d = d or {}
-    try:
-        if int(d.get("declared_threads") or 0) >= WHOLE_HOST_THREADS:
-            return True
-    except (TypeError, ValueError):
-        pass
+    # keeper-hotfix 2026-11-05 (D14): measured evidence counts - max(declared_threads, PASS.json measured_threads); an
+    # absent declared_threads is UNKNOWN, never 0 (rows published before the field existed are not retro-refused)
+    n = row_threads(d)
+    if n is not None and n >= WHOLE_HOST_THREADS:
+        return True
     return bool(str(d.get("baseline_ref") or "").strip()) or bool(str(d.get("shape_override") or "").strip())
+
+
+# keeper-hotfix 2026-11-05 (D10): the dry-run env a launcher must carry across a privilege wrapper. The engine derives
+# FILLER_GRANTS_DIR / FILLER_STATE_DIR from FILLER_DRYRUN_DIR, so these are the only names it cannot reconstruct.
+DRYRUN_REQUIRED_ENV = ("FILLER_DRYRUN", "FILLER_DRYRUN_DIR", "FILLER_DRYRUN_ONE_QUARTER", "FILLER_SMOKE", "WS58_REGIONS")
+
+
+def check_env_passthrough(launcher):
+    """Refuse a `sudo ... --preserve-env=LIST` wrapper whose LIST omits a required dry-run name (the cj6a launch.sh:33
+    line dropped FILLER_GRANTS_DIR and its dry run polled the MAIN grants dir for 20 h). Returns the env_passthrough list."""
+    try:
+        text = re.sub(r"\\\n", " ", open(launcher, errors="replace").read())
+    except OSError:
+        return None
+    lists = []
+    for line in text.splitlines():
+        if line.lstrip().startswith("#") or not re.search(r"\bsudo\b", line):
+            continue
+        for m in re.finditer(r"--preserve-env=(\S+)", line):
+            lists.append([x for x in m.group(1).strip("'\"").split(",") if x])
+    for lst in lists:
+        miss = [n for n in DRYRUN_REQUIRED_ENV if n not in lst]
+        need(not miss, f"sudo --preserve-env list omits {','.join(miss)}: the dry run would lose its world across sudo; use "
+                       f"--preserve-env={','.join(dict.fromkeys(lst + list(DRYRUN_REQUIRED_ENV)))}")
+    return sorted(set().union(*map(set, lists))) if lists else None
 
 
 def check_engine_not_sealed(launcher, eng):
@@ -1660,6 +1723,8 @@ def gpu_lane_overreach(row, regions, o):
     declared shape - the declared `shape: gpu` on regions mi210_0,0-95 was exactly the bypass."""
     regs = str(regions or "")
     if not (row.get("lane") == "gpu" or "mi210" in regs or (o or {}).get("class") in ("gpu", "cpu+gpu")):
+        return set()
+    if gpu_quiet_only(row, o):   # keeper-hotfix (D14): lane gpu iff the row USES the GPU
         return set()
     if regs == "any-cpu-quarter" or regs.startswith("any-of"):
         cpus = set()
@@ -2424,6 +2489,19 @@ def write_escalation(flags, rid, allrows):
         f.write("\n".join(L))
 
 
+def dryrun_grant_holds(regions):
+    """keeper-hotfix 2026-11-05 (A): a dry-run grant books the EXACT core + SMT-sibling tokens of its regions; a whole
+    quarter only when the regions name one (a 4-core smoke on 4-7 holds c4-c7,t100-t103, never q0)."""
+    regs = str(regions or "")
+    if "mi210" in regs:   # GPU dry runs keep their existing holds (out of this hotfix's scope)
+        return quarters_of(regs) | {GPU}
+    gpu = set()
+    cpu = ",".join(t for t in regs.split(",") if t.strip() and not t.strip().startswith("mi210"))
+    toks = cpu_tokens(ws58_cpus(cpu)) if cpu else set()
+    whole = {q for q in QUARTERS if expand({q}) - {q} <= toks | {q}} if toks else set()
+    return (toks - expand(whole)) | whole | gpu
+
+
 def dryrun_grant_text(rid, admission_class, regions, holds, start, end):
     """Serialize the allocator's synthetic grant with backward-compatible fields plus rowflow identity/class."""
     if admission_class is not None:
@@ -2572,14 +2650,18 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
         write_escalation(flags, rid, allrows)
         return "FAIL", reason
     with open(grant, "w") as f:
-        f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, holds, start, end))
+        f.write(dryrun_grant_text(rid, d.get("admission_class"), regions, dryrun_grant_holds(regions), start, end))
     out = open(os.path.join(dd, "launcher.out"), "a")
     out.write(f"\n==== dry run {now_iso()} regions={regions} launcher_sha={lsha} units_before={units0}\n"); out.flush()
     lout = os.path.join(dd, "launcher.out")
     out_lines0 = len(tail(lout, 10**6))  # counted BEFORE the launch: a region-lock line the job prints at once is this run's
     p = subprocess.Popen(["bash", lp], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
     tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
-    atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
+    # keeper-hotfix 2026-11-05 (D9): the dry-run grant's end= is a HARD deadline, carried in RUNNING.json so the keeper
+    # (reconcile_dryruns) enforces it even when this harness is gone
+    deadline = end.strftime("%Y-%m-%dT%H:%M:%SZ")
+    atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha,
+                                           "grant": grant, "deadline": deadline, "harness_pid": os.getpid()})
     t0 = time.time()
     t_lock = None
     cpu_acc, cpu_samples = {}, []
@@ -2654,6 +2736,12 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {warning}"
+                break
+            if time.time() >= end.timestamp() and verdict is None:
+                # keeper-hotfix (D9): the grant's end is a hard deadline; never-started = WAIT (bounded), started = FAIL
+                verdict, reason = (("WAIT", f"deadline: the engine never reached START before the dry-run grant end {deadline}; "
+                                            "requeued (bounded retry)") if t_lock is None else
+                                   ("FAIL", f"deadline: dry-run grant end {deadline} passed after engine START without a clean stop"))
                 break
             if first_unit_at is None and t_lock is not None and time.time() - t_lock > timeout:
                 verdict, reason = "FAIL", f"no first progress within {timeout} s of engine START; {probe.what()}; {probe.fix(timeout)}"
@@ -3127,6 +3215,179 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
     return placed
 
 
+# ---------------------------------------------------------------- keeper-hotfix 2026-11-05 (D9 + 4th facet): dry-run reconcile
+SMOKE_MAX_WAITS = 3          # a smoke whose engine never reaches START is WAIT at most this many times, then FAIL never-started
+DRYRUN_DEADLINE_GRACE_S = 120  # the harness enforces the deadline itself; the keeper steps in only after this grace
+
+
+def proc_alive(pid):
+    """/proc-based liveness (kill -0 is blind on this host; a zombie is dead)."""
+    try:
+        return bool(pid) and _proc_stat(int(pid)) is not None
+    except (TypeError, ValueError):
+        return False
+
+
+def tree_pids(pgid):
+    """Every live pid in process group / session `pgid` plus all their descendants (setsid'd grandchildren included)."""
+    kids, members = {}, set()
+    for q in os.listdir("/proc"):
+        if not q.isdigit():
+            continue
+        try:
+            f = open(f"/proc/{q}/stat").read().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        if f[0] == "Z":
+            continue
+        pid, ppid, pg, sid = int(q), int(f[1]), int(f[2]), int(f[3])
+        kids.setdefault(ppid, []).append(pid)
+        if pg == pgid or sid == pgid or pid == pgid:
+            members.add(pid)
+    out, todo = set(), list(members)
+    while todo:
+        x = todo.pop()
+        if x not in out:
+            out.add(x)
+            todo.extend(kids.get(x, []))
+    out.discard(os.getpid())
+    return out
+
+
+def kill_tree(pgid, grace=10):
+    """TERM the group/session/descendants, wait, KILL, verify by /proc. Returns the pids still alive (empty = dead)."""
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        pids = tree_pids(pgid)
+        for x in pids:
+            try:
+                os.kill(x, sig)
+            except (ProcessLookupError, PermissionError):
+                pass
+        for _ in range(grace if sig == signal.SIGTERM else 3):
+            if not any(proc_alive(x) for x in pids):
+                break
+            time.sleep(1)
+    return {x for x in tree_pids(pgid) if proc_alive(x)}
+
+
+def _rm(path):
+    try:
+        os.remove(path)
+        return True
+    except OSError:
+        return False
+
+
+def smoke_wait_or_fail(flags, rid, d, why, log=print):
+    """Count a never-started WAIT against the queued smoke; the SMOKE_MAX_WAITS-th one is FAIL reason=never-started.
+    Returns WAIT | FAIL."""
+    q = smoke_queued_path(flags, rid)
+    qd = load_json(q) or {}
+    n = int(qd.get("waits") or 0) + 1
+    if n >= SMOKE_MAX_WAITS:
+        if d:
+            record_fail(flags, rid, d, f"never-started: {n} smoke attempts never reached engine START ({why})",
+                        {"kind": "never-started", "waits": n})
+        _rm(q)
+        log(f"SMOKE-FAIL {rid}: never-started after {n} WAITs ({why})")
+        return "FAIL"
+    if qd or os.path.exists(q):
+        qd["waits"] = n
+        qd["last_wait"] = {"at": now_iso(), "why": why[:200]}
+        atomic_json(q, qd)
+    log(f"SMOKE-WAIT {rid}: {why}; requeued ({n}/{SMOKE_MAX_WAITS})")
+    return "WAIT"
+
+
+def reconcile_dryruns(flags, log=print, now=None, allrows=None):
+    """Each keeper tick: every dryrun/<id>/RUNNING.json whose process is dead (by /proc, never kill -0) is reaped -
+    RUNNING.json and the private dry-run grant removed, so its holds return to the free list the same tick; one whose
+    dry-run grant deadline passed (+grace) and whose harness is gone or stuck is killed (group + descendants), then
+    reaped with WAIT (never reached START; bounded retry) or FAIL (post-START). Returns [(rid, action)]."""
+    now = time.time() if now is None else now
+    allrows = rows(flags) if allrows is None else allrows
+    out = []
+    for rp in glob.glob(os.path.join(flags, "dryrun", "*", "RUNNING.json")):
+        rid = os.path.basename(os.path.dirname(rp))
+        r = load_json(rp) or {}
+        dd = os.path.dirname(rp)
+        grant = r.get("grant") or os.path.join(dd, "grants", rid + ".grant")
+        pid = r.get("pid")
+        dl = iso_epoch(r.get("deadline")) if r.get("deadline") else None
+        if dl is None and os.path.exists(grant):
+            dl = iso_epoch(dict(re.findall(r"(\w+)=(\S+)", head1(grant) or "")).get("end"))
+        if dl is None and r.get("started"):   # pre-hotfix RUNNING.json with its grant already gone: the window dryrun_run used
+            row = allrows.get(rid) or {}
+            win = max(int(row.get("min_window_s") or 0) + 300,
+                      int(row.get("first_progress_s") or FIRST_PROGRESS_S) + STOP_GRACE_S + 300) if row else 6 * 3600
+            st0 = iso_epoch(r["started"])
+            dl = st0 + win if st0 else None
+        if dl is None and r.get("started"):   # pre-hotfix RUNNING.json with its grant already gone: the window dryrun_run used
+            row = allrows.get(rid) or {}
+            win = max(int(row.get("min_window_s") or 0) + 300,
+                      int(row.get("first_progress_s") or FIRST_PROGRESS_S) + STOP_GRACE_S + 300) if row else 6 * 3600
+            st0 = iso_epoch(r["started"])
+            dl = st0 + win if st0 else None
+        started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400)[-200:])
+        if proc_alive(pid):
+            if dl is None or now < dl + DRYRUN_DEADLINE_GRACE_S:
+                continue
+            try:
+                open(os.path.join(dd, "stop"), "a").close()   # the engine exits on STOP while waiting, too
+            except OSError:
+                pass
+            surv = kill_tree(int(r.get("pgid") or pid))
+            if surv:
+                log(f"ALERT DRYRUN-DEADLINE {rid}: past deadline {r.get('deadline')}; pids {sorted(surv)} survive TERM+KILL; holds kept")
+                out.append((rid, "unkillable")); continue
+            phase = "post-START" if started else "pre-START"
+            log(f"DRYRUN-DEADLINE {rid}: killed pgid {r.get('pgid') or pid} ({phase}, deadline {r.get('deadline')})")
+            action = "deadline"
+        else:
+            phase = "post-START" if started else "pre-START"
+            action = "reaped"
+            log(f"DRYRUN-REAP {rid}: pid {pid} is dead; RUNNING.json and the private grant removed, holds released")
+        _rm(rp); _rm(grant)
+        sp = smoke_placed_path(flags, rid)
+        if not proc_alive((load_json(sp) or {}).get("pid")):
+            _rm(sp)
+        d = allrows.get(rid) or load_json(ready_path(flags, rid)) or load_json(os.path.join(dd, "unpublished.json"))
+        if action == "deadline" and phase == "post-START" and d:
+            record_fail(flags, rid, d, f"deadline: dry-run grant end {r.get('deadline')} passed after engine START", {"kind": "deadline", "phase": phase})
+            _rm(smoke_queued_path(flags, rid))
+            out.append((rid, "FAIL")); continue
+        if phase == "pre-START" and os.path.exists(smoke_queued_path(flags, rid)):
+            out.append((rid, smoke_wait_or_fail(flags, rid, d, f"dry run {action} before engine START", log))); continue
+        out.append((rid, action))
+    return out
+
+
+def idle_partial_quarters(flags, free, busy, grants, holders):
+    """IDLE-WHY for CPU quarters that are not whole-free but not held by a whole-quarter holder either: name the cores
+    that keep each one off the free list and who holds them (grant / smoke / '?'), so a stuck hold is visible."""
+    owners = {}
+    for g in grants:
+        for t in g["holds"]:
+            owners.setdefault(t, set()).add(g["id"])
+    for pat in ("RUNNING.json", "SMOKE-PLACED.json"):
+        for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
+            r = load_json(p) or {}
+            tag = f"smoke {os.path.basename(os.path.dirname(p))}" + ("" if proc_alive(r.get("pid")) else f" (pid {r.get('pid')} dead)")
+            for t in cpu_tokens(ws58_cpus(r.get("regions") or "")):
+                owners.setdefault(t, set()).add(tag)
+    out = {}
+    for q in QUARTERS:
+        if q in free or q in holders:
+            continue
+        toks = sorted((expand({q}) & busy) - {q}, key=lambda t: (t[0], int(t[1:]) if t[1:].isdigit() else 0))
+        if not toks:
+            continue
+        who = sorted(set().union(*[owners.get(t, {"?"}) for t in toks]))
+        nfree = len([c for c in qcores(q) if c in free])
+        out[q] = f"not whole-free: {','.join(compress(set(toks)))} held by {', '.join(who)}; {nfree} cores free"
+    return out
+
+
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
     keeper_log = keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")
@@ -3139,6 +3400,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"WITHDRAW-FINISH failed: {type(e).__name__}: {e}")
     allrows = rows(flags)
+    if not dry:
+        try:   # keeper-hotfix 2026-11-05 (D9): dead / past-deadline dry runs release their holds this tick
+            reconcile_dryruns(flags, log, allrows=allrows)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"DRYRUN-RECONCILE failed: {type(e).__name__}: {e}")
     rl = rl_status()
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
     gids = {g["id"] for g in grants}
@@ -3246,6 +3512,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             break
         log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
     for r, why in idle.items():
+        log(f"IDLE-WHY {r}: {why}")
+    for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # keeper-hotfix: idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
     left = plan_free - expand(set().union(*[o for _, o in assigned])) if assigned else plan_free
     for c in pending:
