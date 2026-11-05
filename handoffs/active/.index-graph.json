@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T09:19:11Z",
+  "generated_at": "2026-11-05T10:17:04Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1567,15 +1567,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 202,
-      "dispatchable": 18,
+      "closed": 207,
+      "dispatchable": 12,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
-      "open": 20,
+      "open": 14,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1595,18 +1595,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 7,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 681,
+          "line": 682,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 2,
           "readiness": "no_open"
@@ -1615,7 +1615,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1040,
+          "line": 1041,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1,
           "readiness": "ready"
@@ -1624,37 +1624,36 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1318,
+          "line": 1319,
           "name": "gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
-          "line": 1953,
+          "line": 1954,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 6,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 2265,
+          "line": 2270,
           "name": "qwen38-27b-replace-qwen36",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [
             "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
             "INF-22#mi210-big-model-and-acceleration-roadmap",
-            "INF-22#mi210-serving-program",
-            "INF-22#qwen38-27b-replace-qwen36"
+            "INF-22#mi210-serving-program"
           ],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1663,9 +1662,9 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2875,
+          "line": 2880,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 3,
+          "open": 1,
           "readiness": "blocked"
         }
       ]
@@ -2040,7 +2039,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 703,
+          "line": 704,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2052,14 +2051,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 101,
-      "dispatchable": 35,
+      "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-04",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 35,
+      "open": 36,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2119,11 +2118,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 6,
           "gates": [],
           "line": 1709,
           "name": "triattention-kv-selection",
-          "open": 5,
+          "open": 6,
           "readiness": "ready"
         }
       ]
@@ -2132,15 +2131,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 270,
-      "dispatchable": 103,
+      "closed": 271,
+      "dispatchable": 104,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 105,
+      "open": 106,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2174,7 +2173,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 29,
+          "dispatchable": 30,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2183,14 +2182,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 30,
+          "open": 31,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1541,
+          "line": 1543,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2198,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1665,
+          "line": 1667,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2207,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1992,
+          "line": 1994,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2216,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2131,
+          "line": 2133,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2225,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2684,
+          "line": 2686,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2242,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2821,
+          "line": 2823,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2265,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3714,
+          "line": 3716,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 57,
           "readiness": "blocked"
@@ -3511,7 +3510,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 388,
+      "closed": 389,
       "dispatchable": 106,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3560,7 +3559,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1697,
+          "line": 1707,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3575,7 +3574,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2111,
+          "line": 2121,
           "name": "kv-unified-stack-rollout",
           "open": 43,
           "readiness": "blocked"

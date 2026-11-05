@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 653
+      "open": 649
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1114,10 +1114,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 270,
+      "closed": 271,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 103,
+      "open": 104,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 375,
+      "total": 377,
       "tracks": [
         {
           "blocked": 1,
@@ -1141,14 +1141,14 @@
           "line": 9,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 29
+          "open": 30
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1541,
+          "line": 1543,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1665,
+          "line": 1667,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1992,
+          "line": 1994,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2131,
+          "line": 2133,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2684,
+          "line": 2686,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,14 +1202,14 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2821,
+          "line": 2823,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
         },
         {
           "blocked": 1,
-          "closed": 63,
+          "closed": 64,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3714,
+          "line": 3716,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 56
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 388,
+      "closed": 389,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 106,
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 495,
+      "total": 496,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 236,
+          "closed": 237,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1339,7 +1339,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1697,
+          "line": 1707,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2111,
+          "line": 2121,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 43
@@ -1364,7 +1364,7 @@
       "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 35,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1373,7 +1373,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 136,
+      "total": 137,
       "tracks": [
         {
           "blocked": 0,
@@ -1425,7 +1425,7 @@
           "line": 1709,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 5
+          "open": 6
         }
       ]
     },
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 2,
-      "closed": 202,
+      "closed": 207,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 18,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 222,
+      "total": 221,
       "tracks": [
         {
           "blocked": 0,
@@ -1515,14 +1515,14 @@
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 7
+          "open": 6
         },
         {
           "blocked": 2,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 681,
+          "line": 682,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1040,
+          "line": 1041,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1
@@ -1542,34 +1542,34 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1318,
+          "line": 1319,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 20,
+          "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 1953,
+          "line": 1954,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 6
+          "open": 4
         },
         {
           "blocked": 0,
-          "closed": 30,
+          "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2265,
+          "line": 2270,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
-          "closed": 4,
+          "closed": 7,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1579,10 +1579,10 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2875,
+          "line": 2880,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 3
+          "open": 1
         }
       ]
     },
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 703,
+          "line": 704,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
