@@ -39,3 +39,7 @@ KPF-50 clock r6 was previously filed QUALIFIED at model-free witness scope; no t
 ## 00:56Z — Prepare KPF-50 window validator synthetic refusal qualification.
 
 KPF-17 GDB continuation r2 was already filed INCONCLUSIVE because its declared timeout cleanup case is absent; the separate timeout qualification is armed. Published kpf50-window-validator-qual-20261105 after its four-CPU publisher smoke completed the synthetic positive, missing-log refusal and native-unproved UNKNOWN controls. The full 44-case qualification remains pending and cannot establish native physical provenance or performance. Prepared untested raw maps and raw residency verifier components; they explicitly return UNKNOWN without authenticated acquisition and GPU queue provenance. No target window was exposed.
+
+## 01:01Z — Prepare model-free raw mapping and residency evidence refusal qualifications.
+
+HSF-3 incremental 20261104 was already filed INCONCLUSIVE after rc1 and no native result; its bounded successor is ready. Published kpf50-raw-maps-qual-20261105 and kpf50-raw-residency-qual-20261105 after separate four-CPU three-case smokes; each completed its declared synthetic positive, negative and native-UNKNOWN control. Full 20-case mapping and ten-case residency qualifications remain pending. Neither offline verifier authenticates native capture provenance or active KFD queue participation; no target window, GPU profile, mapping or residency claim follows.

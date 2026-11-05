@@ -1,0 +1,33 @@
+{
+  "schema": "epyc.filler-spec.v1",
+  "id": "kpf50-raw-maps-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "priority_rank": 50,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-maps-qual-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-maps-qual-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-maps-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_timeout_s": 90,
+  "keep": [
+    "**"
+  ],
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.RAW-MAPS-QUAL",
+  "decision_rule": "20 sealed model-free cases execute actual retained verify_raw_maps.py; positive rc0 SYNTHETIC_CONTROL_ONLY, 18 distinct malformed cases rc3 UNKNOWN/REFUSED with exact expected reason, native-labelled consistent carrier rc3 UNKNOWN. All gate verdicts UNRESOLVED; physical provenance and residency UNKNOWN. No native truth or gate outcome.",
+  "lineage": "lineage.json",
+  "input_seals": "seals.json",
+  "reservation_rationale": "300 seconds admission reservation for 20 serial subprocesses with <=5 seconds each plus source/seal validation, JSON result persistence and captured-PID cleanup; total job cap 180 seconds. Conservative budget, no padding, sleeping or repetition; stop immediately on answer or first discrepancy.",
+  "stop_on_answer": "All full cases satisfy predeclared outcomes; terminate immediately.",
+  "stop_on_futility": "First unexpected outcome, missing seal/input, drift, STOP, deadline or cleanup failure.",
+  "gate_class": "futility-only",
+  "published": false,
+  "ready": false,
+  "notes": "Prepared only; no job, smoke, verifier, tests or compute executed. Publisher supplies real CPU claim. Three-case smoke requires separate FILLER_DRYRUN_RESULT_PATH outside out. Source is read only; job reads only retained fixture bytes, no model/GPU/target access.",
+  "unit_key": "cases"
+}

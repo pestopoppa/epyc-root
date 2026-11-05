@@ -1,0 +1,62 @@
+[
+  {
+    "name": "positive",
+    "candidate": true,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "after-step",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "straddle-step",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "same-capture",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "wrong-birth",
+    "candidate": false,
+    "refusal": true,
+    "synthetic": true
+  },
+  {
+    "name": "wrong-bdf",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "missing-kfd",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "unsupported-clock",
+    "candidate": false,
+    "refusal": true,
+    "synthetic": true
+  },
+  {
+    "name": "missing-sample",
+    "candidate": false,
+    "refusal": false,
+    "synthetic": true
+  },
+  {
+    "name": "untrusted-native",
+    "candidate": true,
+    "refusal": false,
+    "synthetic": false
+  }
+]

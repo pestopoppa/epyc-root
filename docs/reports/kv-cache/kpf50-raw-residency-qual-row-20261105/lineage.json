@@ -1,0 +1,6 @@
+{
+  "source": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-residency-20261105",
+  "source_verifier_sha256": "c2163664d08c9c283db9c6e2f419cc272414704f8d67024429e47e734982989d",
+  "purpose": "Distinct model-free execution qualification of actual retained raw-residency verifier; native remains UNKNOWN",
+  "executed": false
+}

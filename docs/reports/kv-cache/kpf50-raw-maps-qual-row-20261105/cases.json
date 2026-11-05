@@ -1,0 +1,162 @@
+[
+  {
+    "name": "positive",
+    "expected_rc": 0,
+    "status": "SYNTHETIC_CONTROL_ONLY",
+    "custody_checks": "consistent",
+    "reason": null,
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "native-label",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "consistent",
+    "reason": null,
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "PID-reuse",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "after PID lifetime",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "late-attempt",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "prospective attempt/window",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "missing-during",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "no during-window maps",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "inode-mismatch",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "mapped inode/device mismatch",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "wrong-library",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "mapped content mismatch",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "missing-receipt",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "'candidate_receipt'",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "path-escape",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "bundle escape",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "wrong-source",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "candidate source",
+    "policy_sha256": "6e5dc4203a5804f9cba7b04a338af9dc6b21fd0bc9775dc87689858eb8cb9f87"
+  },
+  {
+    "name": "policy-seal-mismatch",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "external policy seal",
+    "policy_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "name": "stat-hash-mismatch",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "artifact hash: proc-stat.txt",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "boot-change",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "boot changed",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "missing-hip-witness",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "missing mapped-file witness",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "wrong-open-source",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "map_files source",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "missing-before",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "window not bracketed",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "missing-after",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "window not bracketed",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "wrong-clock",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "unsupported time domain",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "deleted-mapping",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "deleted/anonymous mapping",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  },
+  {
+    "name": "reordered-captures",
+    "expected_rc": 3,
+    "status": "UNKNOWN",
+    "custody_checks": "REFUSED",
+    "reason": "capture order",
+    "policy_sha256": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294"
+  }
+]
