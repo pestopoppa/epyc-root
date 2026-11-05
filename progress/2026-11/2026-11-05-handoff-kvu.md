@@ -1,0 +1,5 @@
+# 2026-11-05 — handoff kvu
+
+## 00:08Z — Publish the old-image allocator entry observer qualification
+
+Published kvu-kpf131-findslot-observer-20261104 after its four-CPU publisher smoke passed. The row tests two old-image find_slot breakpoint entries per model-free honest and skip-apply fixture, pinned executable and five mapped DSOs. The fixture independently detects the mutation; the observer does not prove placement mutation, physical layout or task binding. Full attempt pending. Also prepared a standalone prospective KPF-17.4 input guard with seven model-free tests; it is not wired to a launcher and changes no historical verdict. Prepared a disabled KPF-18 group-3 GPU hook successor: custody verified 201 entries, normal entry refused rc78, and three existing model-free sampler tests passed. No actual driver, GPU or inference qualification. Correction to previous filing: the prior native allocator fixture result was INVALID due to missing required child exit and executable identity evidence and unsealed runner; R2 is published separately. Observer results must not assume fixture qualification.

@@ -11,3 +11,7 @@ Scratch packet `/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/` contains compiled f
 ## Full-attempt result
 
 The row completed rc 0 on 2026-11-04 with `FIXTURE_PASS`: the honest second placement was 2,3 and the skip-apply mutant returned 0,1 and was detected. Both arms retained matching before/after snapshots of the five pinned DSOs. The [result](RESULT.json) records the identities and observations. This qualifies only the model-free fixture; it establishes no historical control, live layout, task binding or continuous custody.
+
+## Correction
+
+The full attempt above is INVALID under its decision rule: the result omitted child exit codes and before/after executable identity snapshots, and the retained runner was not sealed to the attempt. The earlier FIXTURE_PASS assertion was incorrect. See [the corrected evidence](../../../docs/reports/kv-cache/kpf131-native-findslot-result-20261104/README.md); the R2 qualification is pending.
