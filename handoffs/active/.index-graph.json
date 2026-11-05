@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T11:50:41Z",
+  "generated_at": "2026-11-05T11:53:16Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2137,14 +2137,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 274,
-      "dispatchable": 109,
+      "dispatchable": 113,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 111,
+      "open": 115,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2178,7 +2178,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 30,
+          "dispatchable": 34,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2187,14 +2187,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 31,
+          "open": 35,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1545,
+          "line": 1552,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2203,7 +2203,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1669,
+          "line": 1676,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2212,7 +2212,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1996,
+          "line": 2003,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2221,7 +2221,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2135,
+          "line": 2142,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2230,7 +2230,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2688,
+          "line": 2695,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2247,7 +2247,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2825,
+          "line": 2832,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2270,7 +2270,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3719,
+          "line": 3726,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
@@ -3245,7 +3245,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 340,
@@ -3254,7 +3254,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-05",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
       "open": 50,
       "priority": 0.711,
@@ -3396,7 +3396,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3405,7 +3405,7 @@
       "guarded": 0,
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-05",
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "open": 30,
       "priority": 0.1387,
