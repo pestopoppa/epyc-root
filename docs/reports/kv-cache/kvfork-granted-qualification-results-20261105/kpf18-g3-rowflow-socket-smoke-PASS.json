@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf18-g3-rowflow-socket-qual-20261105/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=0 time=2026-11-05T00:23:47Z reason=complete",
+ "engine_sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf18-g3-rowflow-socket-qual-20261105/native-attempts/attempt-arhk2fks/native-result.json (measurement field)",
+ "first_progress_s": 30,
+ "first_unit_at": "2026-11-05T00:23:49Z",
+ "id": "kpf18-g3-rowflow-socket-qual-20261105",
+ "job_complete": false,
+ "job_complete_reason": "dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts",
+ "launcher_sha256": "64dd097685b243f0123fc6bd2268c1b7f4617572ed709f0d723d58ce26fbd4fa",
+ "passed_at": "2026-11-05T00:23:49Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf18-g3-rowflow-socket-qual-20261105/native-attempts/attempt-arhk2fks/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

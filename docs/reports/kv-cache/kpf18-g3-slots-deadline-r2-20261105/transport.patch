@@ -1,0 +1,37 @@
+--- /mnt/raid0/llm/tmp/kvfork/g3-rowflow-prep-20261104/candidate/vendor/cancel_seed_transport.py
++++ /mnt/raid0/llm/tmp/kvfork/g3-slots-deadline-qual-20261105/cancel_seed_transport.py
+@@ -16,6 +16,7 @@
+ from urllib.parse import urlsplit
+ 
+ from socket_deadline import SocketDeadline
++from slots_transport import bounded_slots
+ from cancel_seed_stream import capture
+ from native_block import TraceSlice
+ from native_task_log import SLOT,CANCEL,canceled_task
+@@ -82,7 +83,7 @@
+             raise gate.Abort('canceled seed must use exact own local server')
+         if srv.proc is None or srv.proc.poll() is not None or not pid_owns_port(srv.proc.pid,address.port):
+             raise gate.Abort('own native server identity lost')
+-        before={s['id']:s for s in ctx.client.slots()}[slot]
++        before={s['id']:s for s in bounded_slots(ctx)}[slot]
+         if before.get('is_processing') or before.get('n_prompt_tokens')!=0 or (before.get('kv_cells') or {}).get('private')!=0:
+             raise gate.Abort('canceled seed slot not independently empty')
+         directory=ctx.out/'construction'/f'Cmask{control}-attempt{attempt}'
+@@ -112,7 +113,7 @@
+         def bind_task(event):
+             nonlocal identity,binding
+             ctx.check_boundary()
+-            current={s['id']:s for s in ctx.client.slots()}[slot]
++            current={s['id']:s for s in bounded_slots(ctx)}[slot]
+             if not current.get('is_processing') or type(current.get('id_task')) is not int:
+                 raise gate.Abort('no current seed native task')
+             identity=current['id_task'];binding=current
+@@ -151,7 +152,7 @@
+         until=time.monotonic()+10.;after=None
+         while time.monotonic()<until:
+             ctx.check_boundary()
+-            after={s['id']:s for s in ctx.client.slots()}[slot]
++            after={s['id']:s for s in bounded_slots(ctx, deadline=until)}[slot]
+             if identity is not None and after.get('id_task')==identity and not after.get('is_processing'):break
+             time.sleep(.05)
+         else:

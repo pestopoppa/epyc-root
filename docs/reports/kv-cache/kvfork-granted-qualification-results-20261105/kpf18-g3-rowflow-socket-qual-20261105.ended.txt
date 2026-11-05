@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T00:57:32Z reason=complete
+job_id=kpf18-g3-rowflow-socket-qual-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T00:57:29Z
+regions=72-95

@@ -1,0 +1,7 @@
+{
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+}

@@ -79,3 +79,15 @@ KPF-64.3: published kpf64-impact-4f4f-20261104-r3 for the whole-host source-boun
 ## 01:20Z — File the immutable-plan and GDB timeout qualifications
 
 KPF-17.4-PLAN-QUAL: kpf174-plan-bound-integration-20261105 completed rc 0; exact native equality, honest and flag-on PASS, both mutations DETECTED, ten structural refusals before native entry, unchanged source seals and child cleanup passed. This qualifies only the synthetic adapter, not historical cells or layout equivalence. KPF-17: kvfork17-timeout-qual-20261104 completed rc 0; debugger and inferior timeout cleanup passed with PID/birth capture, pidfd, subreaper, no survivors or adopted children. The separate full oracle and custody remain open. Results retained under docs/reports/kv-cache/kpf174-plan-qual-result-20261105 and kpf17-timeout-result-20261105; original receipts filed.
+
+## 01:26Z — File socket qualifications and publish slot-query successor
+
+KPF-18-G3-ROWFLOW-SOCKET-QUAL: granted row rc 0, six real socket controls passed; publisher smoke recorded four-CPU affinity. KPF-18-G3-SLOTS-QUAL: original rc75 partial-native-incomplete conflicts with native 11/11 PASS and remains inconclusive. Its inline completion command loses Python quote delimiters; suppressed stderr leaves that cause unconfirmed. Published kpf18-g3-slots-deadline-qual-r2-20261105 with standalone sealed validator after four-CPU smoke PASS; full qualification pending. KPF-17 synthetic same-UID custody found writes after the final check visible (UNSAFE), and synthetic STOP wrapper qualification completed ten cases; neither establishes native oracle safety. Retained granted results and end receipts in docs/reports/kv-cache/kvfork-granted-qualification-results-20261105. KPF-13.1 observer initial smoke failed: GDB start discarded fixture arm, exit 20; R2 reached both cases but outer rc75 and no recognized progress; R3 repaired smoke result selection and per-record progress and published after four-CPU smoke PASS. Full qualification remains pending; publisher assigned 48 GiB despite packet intent of 1 GiB.
+
+## 01:28Z — Land the filed qualifications and published rows
+
+Wrap-up retry after retaining the copied transport source compressed: the PII hook flagged two code constants in its uncompressed copy. The runnable sealed scratch packet is unchanged. The prior entry records the qualification results and published row IDs.
+
+## 01:29Z — Land the filed qualifications and published rows
+
+Wrap-up retry after retaining the copied transport source compressed: the PII hook flagged two code constants in its uncompressed copy. The runnable sealed scratch packet is unchanged. The prior entry records the qualification results and published row IDs.
