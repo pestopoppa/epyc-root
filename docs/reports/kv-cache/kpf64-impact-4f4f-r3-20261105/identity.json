@@ -1,0 +1,15 @@
+{
+  "head": "4f4f1443dba949c9d83d98cd37fe31210b6fb087",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104-r2/r3/source",
+  "sha256": {
+    "job.py": "e07746471fd0aaf903a64af6a02bc263c644877d07fb9512f1f0f7f1e2a1fd8a",
+    "source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "spec.json": "0af60c7d100c5348010b224687c1058d57412233eca0dd41f92a1f302bf11804",
+    "README.md": "ae36668fdcd40555cb1c2a0df09f8d6b068973d707a8f41862bf0723d49bea0e",
+    "source/scripts/gitnexus-analyze.sh": "45b7b921ac66b10e9ea2235d2b6ddd766531849d67eeb09d45658e2ba91d86ed",
+    "source/scripts/benchmark/kpf64_replay/cohort_audit.py": "2576f5c24ff8cc81b1869967df925ea256e050bd0a7126f32331fa80d1c1364d",
+    "smoke_predicate.py": "a58dd04f0ec9745deb67a40769c7674a74ad360f65d4707292a1298e92a2920c"
+  }
+}
