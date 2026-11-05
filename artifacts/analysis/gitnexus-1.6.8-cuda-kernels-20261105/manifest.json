@@ -1,0 +1,14 @@
+{
+  "package": "gitnexus",
+  "version": "1.6.8",
+  "files": {
+    "dist/core/tree-sitter/safe-parse.js": {
+      "original_sha256": "1ed74490d64faff7894b53bb6b62f27bf47aa504144df5131ef82ade90b8e29f",
+      "candidate_sha256": "5fd1a389786f8eba8e1743d4bd7297c446e6264d984b303c78f706c0b170c0b0"
+    },
+    "dist/core/ingestion/languages/cpp/query.js": {
+      "original_sha256": "e40cc902d0c1467a5acffd43957283e0c525e62b4ea5b3c966654c3c26c1814e",
+      "candidate_sha256": "d47f3857f77b6fbd0c8b1fc0cbcb4493b0e95249479bd00f899360c3453c129c"
+    }
+  }
+}

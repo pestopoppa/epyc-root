@@ -1,0 +1,20 @@
+All preimage hashes verified
+checking file dist/core/ingestion/languages/cpp/query.js
+checking file dist/core/tree-sitter/safe-parse.js
+patching file dist/core/ingestion/languages/cpp/query.js
+patching file dist/core/tree-sitter/safe-parse.js
+All postimage hashes verified
+apply rc=0
+Already in apply state; nothing to do
+apply rc=0
+All preimage hashes verified
+checking file dist/core/ingestion/languages/cpp/query.js
+checking file dist/core/tree-sitter/safe-parse.js
+patching file dist/core/ingestion/languages/cpp/query.js
+patching file dist/core/tree-sitter/safe-parse.js
+All postimage hashes verified
+rollback rc=0
+Already in rollback state; nothing to do
+rollback rc=0
+preimage mismatch: dist/core/ingestion/languages/cpp/query.js: ac3f3fc49aaaaf8dd4a19b59c94283b59bef62e710011543a39a1ee70d76c87f
+wrong-preimage apply rc=1

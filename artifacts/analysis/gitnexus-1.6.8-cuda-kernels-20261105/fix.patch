@@ -1,0 +1,88 @@
+diff -ruN a/dist/core/ingestion/languages/cpp/query.js b/dist/core/ingestion/languages/cpp/query.js
+--- a/dist/core/ingestion/languages/cpp/query.js	2026-11-05 17:44:53.491788718 +0000
++++ b/dist/core/ingestion/languages/cpp/query.js	2026-11-05 17:44:53.492741969 +0000
+@@ -599,6 +599,21 @@
+ ;; Note: Ns::func<T>() is parsed as qualified_identifier by tree-sitter-cpp,
+ ;; already captured by the qualified calls pattern above.
+ 
++;; EPYC local patch (HYG-GITNEXUS-CUDA-KERNEL-IMPACT): a template function
++;; named as a value is a function-pointer / kernel-handle reference; record it
++;; as a call from the enclosing function so impact sees kernel launch sites
++;; that go through a handle (fattn_kernel_t k = kern<D>; launch(k),
++;; launch(kern<D>, ...), k = kern<D>;).
++(init_declarator
++  value: (template_function
++    name: (identifier) @reference.name) @reference.call.free)
++(argument_list
++  (template_function
++    name: (identifier) @reference.name) @reference.call.free)
++(assignment_expression
++  right: (template_function
++    name: (identifier) @reference.name) @reference.call.free)
++
+ ;; ─── References — field reads ───────────────────────────────────────
+ (field_expression
+   argument: (_) @reference.receiver
+diff -ruN a/dist/core/tree-sitter/safe-parse.js b/dist/core/tree-sitter/safe-parse.js
+--- a/dist/core/tree-sitter/safe-parse.js	2026-11-05 17:44:53.493675939 +0000
++++ b/dist/core/tree-sitter/safe-parse.js	2026-11-05 17:41:32.998161801 +0000
+@@ -178,7 +178,59 @@
+  * @param label optional context (e.g. file path) attached to timeout errors
+  *   and degraded-parse logs. Non-breaking trailing param.
+  */
++/**
++ * EPYC local patch (HYG-GITNEXUS-CUDA-KERNEL-IMPACT): tree-sitter-cpp has no
++ * CUDA grammar. `__launch_bounds__(...)` before a declarator makes the
++ * attribute parse as the function name, and `k<<<grid, block>>>(args)` parses
++ * as shift expressions, so the launch carries no CALLS edge. Mask these CUDA
++ * extensions with spaces (length- and newline-preserving, so every node offset
++ * and row/column still maps onto the original text) before parsing. A launch
++ * then parses as the ordinary call `k(args)`.
++ */
++const CUDA_MARKER_RE = /__global__|__device__|__host__|__launch_bounds__|__forceinline__|__noinline__|<<</;
++export function maskCudaSyntax(text) {
++    if (typeof text !== 'string' || !CUDA_MARKER_RE.test(text))
++        return text;
++    const out = text.split('');
++    const blank = (from, to) => {
++        for (let i = from; i < to; i++)
++            if (out[i] !== '\n' && out[i] !== '\r')
++                out[i] = ' ';
++    };
++    let m;
++    const lb = /\b__launch_bounds__\s*\(/g;
++    while ((m = lb.exec(text)) !== null) {
++        let depth = 0, i = m.index + m[0].length - 1;
++        for (; i < text.length; i++) {
++            if (text[i] === '(')
++                depth++;
++            else if (text[i] === ')' && --depth === 0)
++                break;
++        }
++        if (i >= text.length)
++            break;
++        blank(m.index, i + 1);
++        lb.lastIndex = i + 1;
++    }
++    const kw = /\b(?:__global__|__device__|__host__|__forceinline__|__noinline__)\b/g;
++    while ((m = kw.exec(text)) !== null)
++        blank(m.index, m.index + m[0].length);
++    let from = 0;
++    for (;;) {
++        const open = text.indexOf('<<<', from);
++        if (open < 0)
++            break;
++        const close = text.indexOf('>>>', open + 3);
++        if (close < 0)
++            break;
++        if (!/[;{}]/.test(text.slice(open + 3, close)))
++            blank(open, close + 3);
++        from = open + 3;
++    }
++    return out.join('');
++}
+ export function parseSourceSafe(parser, sourceText, oldTree, options, label) {
++    sourceText = maskCudaSyntax(sourceText);
+     const budgetMs = resolveParseTimeoutMs();
+     const armed = armParseBudget(parser, budgetMs);
+     let tree;
