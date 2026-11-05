@@ -159,7 +159,8 @@ CSRC
 holds_gpu_token() { # $1 = grant file; NEEDGPU / GPUQ already set
   [ "${NEEDGPU:-0}" = 1 ] && return 0
   case ${GPUQ:-} in shared|exclusive) return 0;; esac
-  sed -n 's/.*holds=\([^ ]*\).*/\1/p' "$1" 2>/dev/null | tr ',' '\n' | grep -qx 'gpu-quiet'
+  local h; h=$(sed -n 's/.*holds=\([^ ]*\).*/\1/p' "$1" 2>/dev/null) || true
+  [[ ",$h," == *",gpu-quiet,"* ]]
 }
 FENCE_ENV=()
 set_gpu_fence() { # fills FENCE_ENV (an `env ...` prefix) for a grant without the GPU token; empty otherwise
