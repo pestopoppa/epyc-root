@@ -109,3 +109,7 @@ KPF-50 synthetic qualifications: full rows rc0; window-validator 44/44 controls,
 ## 01:44Z — File five synthetic KPF-50 qualifications and repair incomplete byte alignment.
 
 Wrap-up retry: original synthetic evidence is retained in a compressed native archive after the account-number hook flagged numeric attempt-directory identifiers; the five qualification boxes were already ticked by the first wrap-up attempt.
+
+## 01:50Z — File FD mapping and inconclusive clock results; prepare corrected GPU clock successor.
+
+KVU-19b-gap: kvu19b-multi-clock-qual-r2-20261105 rc0 but INCONCLUSIVE: the two host-start gaps were 6.000532113 s and 6.000193865 s, exceeding the declared 6 s maximum; verifier accepted up to 9 s. Retained native evidence; no continuous drift, inference or attribution conclusion. Removed six superseded scratch attempts while preserving worktrees and currently referenced row inputs. KPF-50.FD-MAP-QUAL full r3 rc0: own child file-backed ranges and permission-refusal controls qualified; descendant verification false. Map-files r1/r2 returned UNKNOWN (ENOENT/EPERM), denied controls incomplete. GPU clock successor r3 smoke is queued because GPU was busy; it is not yet ready.
