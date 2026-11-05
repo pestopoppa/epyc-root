@@ -159,3 +159,7 @@ The prospective `nemo-known-graph-trace-markers-20261105` GPU smoke passed; its 
 ## 03:36Z — Qualify source-bound target-layout build and two diagnostic successors
 
 Published `c6-targetshape-dual-build-20261105` after baseline test-object compiler smoke, `ch26-cpu-sched-chain-20261105` after repaired four-CPU scheduler smoke, and `nemo-sdk-roctx-marker-compare-r2-20261105` after GPU paired-fixture smoke. Preserved the failed predecessor evidence and limitations; none establishes candidate promotion, an admissible floor, clock identity or historical token boundaries.
+
+## 03:39Z — File completed C6 MoE comparison and profiler fixture diagnostics
+
+C6-Q4-MMVQ-FIX: filed c6-q4k-moe-matched-perf-20261105 rc0, 20 paired synthetic Q4_K MoE comparisons; mean corrected time changes at n=1,4,8,32 were +0.083%, +0.205%, −0.374%, +0.278%; all descriptive intervals span zero. Raw log hashes matched and own-PID VRAM witnesses had at least 90 positive samples. Different HIP libraries and incomplete build closure prevent attribution or a keep claim. Retained packet /mnt/raid0/llm/tmp/akagg/c6-q4k-moe-matched-perf-retained-20261105/. NEMO-PROF-RESEG: filed two rc0 prospective fixture results, including 80 SDK marker pairs; neither supplies historical token boundaries. Retained /mnt/raid0/llm/tmp/akagg/filing-20261105/. [belief: cc] Targetshape dual build and CH-26b scheduler diagnostics remain grantable; successor performance requires the completed build.
