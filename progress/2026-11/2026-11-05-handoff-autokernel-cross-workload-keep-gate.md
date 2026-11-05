@@ -187,3 +187,7 @@ Filed c6-targetshape-dual-build-20261105 rc0 as build-only with retained images,
 ## 04:11Z — Clean superseded scratch and harden disabled C5 supervisor delivery
 
 Removed two superseded drafts (~182 MiB), retaining live and published row scratch for keeper reclamation. A disabled CH-26b supervisor copy now checks a 74-file seal and selected import bytes; five end-to-end tamper controls passed. Launcher/interpreter trust, remaining dependencies, placement and live qualification remain open; no row or floor follows. The C6 target-shape comparison remains running.
+
+## 04:17Z — File C6 and CH-26 results, clean superseded scratch, and ready C6 floor build
+
+Filed C6 target-shape comparison inconclusive after rc1 and eight of 20 pairs; the retained pair-08 output reproduces a rounded-time floor refusal but original traceback was not retained. Filed CH-26 scheduler diagnostic pass for 24 functional windows only, without a noise-floor claim. Removed approximately 7.6 GiB superseded scratch with retained evidence. Prepared the C6 paired build successor with a two-second opt-in host-elapsed loop; publisher smoke is in progress and no readiness is claimed.
