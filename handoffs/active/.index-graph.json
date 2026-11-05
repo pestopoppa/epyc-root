@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T13:24:39Z",
+  "generated_at": "2026-11-05T14:20:18Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1579,15 +1579,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 201,
-      "dispatchable": 5,
+      "closed": 202,
+      "dispatchable": 4,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 5,
+      "open": 4,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1643,18 +1643,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 1930,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2198,
+          "line": 2199,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1673,7 +1673,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2808,
+          "line": 2809,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
@@ -2104,7 +2104,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 578,
+          "line": 579,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -2113,7 +2113,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 949,
+          "line": 950,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2122,7 +2122,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1565,
+          "line": 1566,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -2131,7 +2131,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1712,
+          "line": 1713,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2200,7 +2200,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1566,
+          "line": 1573,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1690,
+          "line": 1697,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2218,7 +2218,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2017,
+          "line": 2024,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2227,7 +2227,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2156,
+          "line": 2163,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2236,7 +2236,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2709,
+          "line": 2716,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2253,7 +2253,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2846,
+          "line": 2853,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2276,7 +2276,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3740,
+          "line": 3747,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
@@ -2460,7 +2460,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 983,
+          "line": 984,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3570,7 +3570,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1743,
+          "line": 1744,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3585,7 +3585,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2166,
+          "line": 2167,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
@@ -3593,18 +3593,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 18,
       "blocked_by": [],
-      "closed": 230,
-      "dispatchable": 77,
+      "closed": 231,
+      "dispatchable": 76,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 95,
+      "open": 94,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3676,13 +3676,13 @@
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 1525,
           "name": "harness-improvement-loop",
-          "open": 13,
+          "open": 12,
           "readiness": "blocked"
         },
         {
@@ -3693,7 +3693,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2186,
+          "line": 2187,
           "name": "opencode-shell-integration",
           "open": 1,
           "readiness": "blocked"
@@ -3714,7 +3714,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2265,
+          "line": 2266,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3729,7 +3729,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2712,
+          "line": 2713,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

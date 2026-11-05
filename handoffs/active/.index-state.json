@@ -4,7 +4,7 @@
       "blocked": 48,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 666
+      "open": 665
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -34,7 +34,7 @@
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 84
+      "open": 83
     }
   },
   "duplicates": {},
@@ -1004,10 +1004,10 @@
     },
     "harness-program.md": {
       "blocked": 18,
-      "closed": 230,
+      "closed": 231,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
-      "open": 77,
+      "last_advanced": "2026-11-05",
+      "open": 76,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1059,7 +1059,7 @@
         },
         {
           "blocked": 4,
-          "closed": 37,
+          "closed": 38,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
@@ -1067,7 +1067,7 @@
           "line": 1525,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 9
+          "open": 8
         },
         {
           "blocked": 0,
@@ -1076,7 +1076,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2186,
+          "line": 2187,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 1
@@ -1092,7 +1092,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2265,
+          "line": 2266,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2712,
+          "line": 2713,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1566,
+          "line": 1573,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1690,
+          "line": 1697,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2017,
+          "line": 2024,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2156,
+          "line": 2163,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2709,
+          "line": 2716,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2846,
+          "line": 2853,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3740,
+          "line": 3747,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 60
@@ -1339,7 +1339,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1743,
+          "line": 1744,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2166,
+          "line": 2167,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1392,7 +1392,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 578,
+          "line": 579,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1402,7 +1402,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 949,
+          "line": 950,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1412,7 +1412,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1565,
+          "line": 1566,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1422,7 +1422,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1712,
+          "line": 1713,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 6
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 0,
-      "closed": 201,
+      "closed": 202,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 5,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1549,20 +1549,20 @@
         },
         {
           "blocked": 0,
-          "closed": 16,
+          "closed": 17,
           "gates": [],
           "guarded": 0,
           "line": 1930,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2198,
+          "line": 2199,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2808,
+          "line": 2809,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
@@ -2491,7 +2491,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 983,
+          "line": 984,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5
