@@ -404,6 +404,52 @@ def sc_pass_is_terminal(path):
     return write(path, [({rid: r}, {})] * 4), check
 
 
+def sc_gpu_blocked_whole_rows_free_smokes(path):
+    """CLASSFIX (2026-11-05 14:55Z keeper log): rock-aiter-build holds q3 + the MI210 host threads; three queued GPU rows that also need a
+    whole CPU quarter cannot run, so they reserve nothing - the queued smokes are placed on the free quarters."""
+    g1 = row("gpu-whole-a", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=3600,
+                             role="bench", extra="llama-server -t 8")
+    g2 = row("gpu-whole-b", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=3600,
+                             role="bench", extra="llama-server -t 8")
+    g3 = row("gpu-whole-c", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=3600,
+                             role="bench", extra="llama-server -t 8")
+    s1 = row("smoke-x", passed=False, extra="python3 x.py --workers 2")
+    s1["smoke_queued"] = {"id": "smoke-x", "queued_at": _iso(T0), "cpus": 4}
+    s2 = row("smoke-y", passed=False, extra="python3 y.py --workers 2")
+    s2["smoke_queued"] = {"id": "smoke-y", "queued_at": _iso(T0), "cpus": 4}
+    world = {"foreign": {"q3": "rock-aiter-build", "q1": "hil15b-heavy"}}
+    rows = {"gpu-whole-a": g1, "gpu-whole-b": g2, "gpu-whole-c": g3, "smoke-x": s1, "smoke-y": s2}
+    ticks = [(rows, world)] * 3
+
+    def check(d):
+        out = []
+        if any(_granted(d, r) for r in ("gpu-whole-a", "gpu-whole-b", "gpu-whole-c")):
+            out.append("fixture: a GPU row was granted (GPU not held)")
+        for sid in ("smoke-x", "smoke-y"):
+            if not any(l.startswith(f"SMOKE-PLACE {sid}") or l.startswith(f"PLAN smoke {sid}") for x in d for l in x["lines"]):
+                out.append(f"{sid} starved by whole-quarter rows blocked on the held GPU")
+        return out
+    return write(path, ticks), check
+
+
+def sc_cpu_whole_row_reservation_holds(path):
+    """CLASSFIX counter-case: a CPU whole-quarter row runnable NOW keeps its reservation; with q2 + q3 foreign and two
+    such rows, the smoke must not break q0/q1."""
+    r1 = row("cpu-whole-a", extra="make -j 16", est=3600)
+    r2 = row("cpu-whole-b", extra="make -j 16", est=3600)
+    s = row("smoke-z", passed=False, extra="python3 z.py --workers 2")
+    s["smoke_queued"] = {"id": "smoke-z", "queued_at": _iso(T0), "cpus": 4}
+    world = {"foreign": {"q2": "foreign-c", "q3": "foreign-d"}}
+
+    def check(d):
+        out = [f"whole-quarter row {rid} not granted on tick 0" for rid in ("cpu-whole-a", "cpu-whole-b")
+               if not _granted(d, rid) or _granted(d, rid)[0][0] > 0]
+        if any(l.startswith("SMOKE-PLACE smoke-z") for x in d[:1] for l in x["lines"]):
+            out.append("smoke broke a whole quarter a runnable CPU row needed")
+        return out
+    return write(path, [({"cpu-whole-a": r1, "cpu-whole-b": r2, "smoke-z": s}, world)] * 3), check
+
+
 SCENARIOS = {
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
@@ -422,6 +468,8 @@ SCENARIOS = {
     "gpu-exclusive-admits-no-kfd-holder": sc_gpu_exclusive_no_kfd,
     "gpu-foreign-vram-blocks-exclusive": sc_gpu_foreign_vram,
     "smoke-pass-is-terminal": sc_pass_is_terminal,
+    "gpu-blocked-whole-rows-free-smokes": sc_gpu_blocked_whole_rows_free_smokes,
+    "cpu-whole-row-reservation-holds": sc_cpu_whole_row_reservation_holds,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)

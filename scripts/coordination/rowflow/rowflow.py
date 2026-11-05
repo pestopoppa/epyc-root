@@ -3247,6 +3247,22 @@ def pick_smoke_cpus(free, n=SMOKE_CPUS, keep_whole=0):
     return cpu_ranges(best[1]) if best else None
 
 
+def whole_quarter_reservation(cands, free, ram_gib):
+    """Whole quarters queued whole-quarter rows may keep away from smokes (classfix, operator 2026-11-05 "fix it"): a row
+    counts only when one of its options is wholly free now (its quarters AND every other token: gpu-quiet, the MI210 host
+    threads) and its RAM fits - a row blocked on a held GPU or a busy quarter reserves nothing. Capped at the whole quarters free this tick."""
+    want = 0
+    for c in cands:
+        if not c["options"] or not all(any(t in QUARTERS for t in o) for o in c["options"]):
+            continue
+        if float(ram_gib) - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
+            continue
+        nq = [sum(1 for t in o if t in QUARTERS) for o in c["options"] if expand(set(o)) <= free]
+        if nq:
+            want += max(1, min(nq))
+    return min(want, sum(1 for q in QUARTERS if q in free))
+
+
 def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), keep_whole=0):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
     detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
@@ -3544,7 +3560,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
             for c in held_back:
                 log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
-    wholeq = sum(1 for c in cands if c["options"] and all(any(t in QUARTERS for t in o) for o in c["options"]))
+    wholeq = whole_quarter_reservation(cands, free, mem_available_gib())
     place_smokes(flags, free, log, dry=dry, reserved=frozenset(quiet_held), keep_whole=wholeq)
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
