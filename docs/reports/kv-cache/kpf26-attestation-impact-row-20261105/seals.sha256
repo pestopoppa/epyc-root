@@ -1,0 +1,13 @@
+3a4001dc872edee1f11858cec24d5f3f4e6f8d8ce662e20897209831990aff7e  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/job.py
+4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/source_integrity.py
+d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/gitnexus-guard.py
+ae3a226aa89bcb8a31b8da807a6b92fbb271a37539fa04c90a75093b8a060aa6  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/spec.json
+1d0fd91e4afc648035fc345636c297329d99b246d133f600b5af19748f5c236c  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/README.md
+0b9988a3d976a60f21361870cc50d92ca8400507c5daad0bf3857cf07cb01289  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/launch.sh
+4772a8ac245e4fdb20521a17ddb48b9b7bdff6438afbebd069e70e4eb42fba89  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/scripts/gitnexus-analyze.sh
+bb835219d807309ad469361fa2403dde37cbb9a5a2a46941353d00ed32d17a13  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/scripts/gitnexus-writer.py
+0da1b0e511180bff218ad4448558e60ce6e08b2f1b795437e12bd98ffd80e3b6  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/scripts/gitnexus-guard.py
+5fb41080fcea4f67cba70b4bd3067266896a31ac7b1663b296d07e08af35c724  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/scripts/gitnexus-quarter.cjs
+ca261ed90f73e53fd6eda53b93e192c1241e15cfabe1a27a94408965494be5ef  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/src/scheduling/kv_pool_admission.py
+035ce54711ed4b7f0314767413804c20ffab47a67a9998c47dc945fc7e71acea  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105-source/src/api/routes/chat_pipeline/scout_stage.py
+198788e40475289083ac5923b53296851eeb1a44f63e77a7f8646fe973b693ad  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/identity.json

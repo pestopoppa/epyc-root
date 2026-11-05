@@ -1,0 +1,32 @@
+{
+  "id": "kpf26-attestation-impact-8682-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "On exact retained KPF26 diagnostic orchestrator 868275acb64ef3d490ecac6952518ae187fe74d3 capture six source-bound native upstream impacts for actual worker flag/checkpoint and scout request attribution. Require complete nonpartial impacts and verbose skipped-file coverage. Stop and write OWNER_WARNING on HIGH/CRITICAL. Missing/ambiguous graph binding, source drift, STOP, deadline or cleanup failure refuse. Separate four-CPU reference smoke is partial only; no inference or edit clearance follows.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-26",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf26-attestation-impact-8682-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "kpf26-attestation-impact-8682-20261105",
+  "kind": "compute",
+  "notes": "Unpublished, untested preparation. Whole host full scan; four-CPU smoke isolated by FILLER_DRYRUN_RESULT_PATH. Existing KPF27d scan targets a different commit and different shadow symbols, so this is not that row. No model load."
+}
