@@ -1,0 +1,21 @@
+// Proposed insertion inside the request handler after server_task creation and
+// before task submission. This fragment is source-preparation only; it is not
+// compiled or validated against a checkout here.
+const bool nemo_join = nemo_profile::enabled() && data.contains("nemo_request_id");
+const std::string nemo_request_id = nemo_join ? data.at("nemo_request_id").get<std::string>() : "";
+if (nemo_join && (nemo_request_id.empty() || nemo_request_id.size() > 128 ||
+                  !prompt.is_string() || json_value(data, "stream", false) ||
+                  json_value(data, "n", 1) != 1 || res_type != TASK_RESPONSE_TYPE_NONE)) {
+    throw std::runtime_error("NEMO request identity requires one native non-stream completion");
+}
+// After task.id is assigned, before queue submission:
+if (nemo_join) {
+    if (inputs.size() != 1 || i != 0 || task.params.n_cmpl != 1)
+        throw std::runtime_error("NEMO requires exactly one input and one completion");
+    nemo_profile::emit("request_join", json({{"request_id", nemo_request_id},
+                                               {"task_id", task.id}}).dump());
+}
+// At the single-result non-stream response assembly site:
+if (nemo_profile::enabled() && data.contains("nemo_request_id")) {
+    arr[0]["nemo_request_id"] = data.at("nemo_request_id");
+}

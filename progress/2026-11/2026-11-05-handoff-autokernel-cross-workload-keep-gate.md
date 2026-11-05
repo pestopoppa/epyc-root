@@ -15,3 +15,9 @@ C6-Q4-MMVQ-FIX: corrected our earlier r34 inconclusive filing. Its predeclared r
 ## 00:11Z — Advance NeMo request identity producer integration and validation
 
 NEMO-PROF-RESEG: consumed the independent uncompiled request-identity producer packet at /mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/nemo-request-producers-20261105/. It contains proposed client capture, request/task join fragment and structural validators; no real server, native compilation, token-boundary or historical-trace conclusion follows. Independent offline validation and C3 source integration review were dispatched; their result paths are registered for the dispatcher. Existing r14 marker build remains the pending build prerequisite; no duplicate row was published. [no-belief: unqualified preparation only]
+
+## 00:17Z — Harden C5 map integrity and validate NeMo request producers
+
+CH-26b: the earlier point-in-time C5 map prototype bound hashes only to device/inode and could accept an in-place change after hashing. Added an independent reference successor in docs/reference/autokernel/ch26-map-integrity-20261105/ that also checks file size, mtime and ctime, preserves complete mapping-set refusal and rejects old receipts without metadata. Eight model-free tests pass, including same-inode same-size mutation with restored mtime and partial mapping refusal. The check is point-in-time, does not eliminate races or privileged manipulation, and is not integrated into a row or evidence of a DS41 floor. [belief: cc]
+
+NEMO-PROF-RESEG: retained independent client/join source preparation under docs/reference/autokernel/nemo-request-producers-20261105/. Five mocked publication/transport tests pass; a worker reported 26 prior fixture tests and pinned C3 patch apply-check pass. No build, server request, profiler alignment or historical boundary conclusion follows. [no-belief: offline preparation only]
