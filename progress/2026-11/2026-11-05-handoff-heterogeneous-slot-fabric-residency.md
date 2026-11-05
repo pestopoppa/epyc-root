@@ -75,3 +75,7 @@ Filed kvu-kpf131-old-native-findslot-r2-20261104 PASS: the handoff already recor
 ## 01:48Z — File the find-slot observer and qualify typed snapshot decoding
 
 Filed kvu-kpf131-findslot-observer-20261104 PASS for the model-free observer fixture; both arms retain two pinned breakpoint events and zero child exits. Independent fixture mutation detection does not prove observer mutation detection or historical layout/task binding. Published corrected typed snapshot decoder qualification after four-CPU smoke rc0; eight synthetic controls include boolean and negative sequence ID refusals. Full controls and native layout remain pending.
+
+## 01:54Z — File the group-3 socket controls and ready distinct slot-query qualification
+
+Filed kpf18-g3-rowflow-socket-qual-20261105 PASS: the full run completed six socket controls on CPUs 72–95; the independent publisher smoke ran on four CPUs. Neither establishes native cancellation, model/GPU behavior or historical layout. Published later task-binding and postcancel-idle slot-query qualification; its four-CPU software smoke completed rc0. Full controls and native release remain pending.
