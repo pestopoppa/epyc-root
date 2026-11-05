@@ -47,3 +47,7 @@ Published CPU f32 GDN one-hot oracle successor after publisher smoke; full three
 ## 03:59Z — Reconciled and retained the filed BF16 GPU oracle pass; qualified CPU BF16 successor.
 
 Reconciled the filed GPU BF16 three-arm oracle pass: baseline exactly matched 27,262,976 values, both mutants were detected, and all arms had own-PID GPU evidence. Retained result, logs, samples and smoke qualification. Published the CPU BF16 successor after smoke; full CPU and parent verdict remain pending. [belief: cc]
+
+## 04:33Z — Repaired the C6 SDK prototype declaration include, hardened target-shape timing validation, and published the independent n=4 trace diagnostic.
+
+Corrected the uncompiled C6 SDK prototype registration include and refreshed its source seals; eight receipt tests passed. Three build qualifications failed and the lineage remains parked. Hardened the unbound target-shape packet to enforce its declared timing floor; 17 controls passed, with binding pending the completed dual-build receipt. Published the separate n=4 profiler diagnostic after smoke; raw trace loss and operation attribution remain unknown. [no-belief: source repair, tests and smoke only]

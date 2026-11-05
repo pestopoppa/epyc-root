@@ -1,5 +1,6 @@
 // Research prototype, uncompiled/unqualified. Captures its own SDK buffer only.
 #include <rocprofiler-sdk/rocprofiler.h>
+#include <rocprofiler-sdk/registration.h>
 #include <openssl/evp.h>
 #include <unistd.h>
 #include <fcntl.h>
