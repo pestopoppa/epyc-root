@@ -249,6 +249,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   - Speech is DOWN from ~16:4xZ 2026-10-03 on operator instruction. The package can be prepared now; its live
     proof waits for the next speech start, which the operator asks for.
 
+- [ ] **REG-KVFA-COMMENT — apply the registry KV-FA warning comment.** Apply registry KV-FA warning comment (`/mnt/raid0/llm/tmp/registry-kv-fa-comment-20261105.patch`, epyc-orchestrator `orchestration/model_registry.yaml`) after next full-stack bring-up regenerates contention matrix; commit must pass pre-commit (no --no-verify). [no-belief: pending-stack]
+
 ## Dependency Graph
 
 - W1 blocks W2/W3 because consumers need a declared precedence model.
