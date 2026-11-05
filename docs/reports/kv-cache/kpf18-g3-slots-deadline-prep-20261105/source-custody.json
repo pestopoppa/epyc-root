@@ -1,0 +1,7 @@
+{
+  "source": "/mnt/raid0/llm/tmp/kvfork/g3-rowflow-prep-20261104/candidate/vendor/cancel_seed_transport.py",
+  "source_sha256": "baf70be554d79fa6b5b488d73b9947667a58a3094e06ed4510b74746d4f57a71",
+  "patched": "/mnt/raid0/llm/tmp/kvfork/g3-slots-deadline-qual-20261105/cancel_seed_transport.py",
+  "patched_sha256": "a961ad85add9fd0cc2af659aa3717b0d40ef31b07a15584f494e89f0a8a1d757",
+  "scope": "isolated copied source only; predecessor not modified"
+}

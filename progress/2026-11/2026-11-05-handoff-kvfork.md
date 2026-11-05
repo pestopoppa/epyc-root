@@ -27,3 +27,15 @@ KPF-17.4-PLAN-QUAL: adopted the sealed model-free native-judge adapter into this
 ## 00:35Z — Repair the sealed plan-adapter packet and publish its qualification row
 
 KPF-17.4-PLAN-QUAL: the first publisher smoke failed before job entry because the adapted spec digest did not match SHA256SUMS; all other sealed members matched. Preserved the failure and repaired only that digest. The four-CPU publisher smoke then passed and published kpf174-plan-bound-integration-20261105. Smoke established synthetic native equality, missing-launch refusal and owned PID cleanup only; the full qualification and historical rejudgment remain open.
+
+## 00:41Z — Prepare bounded slot-query transport and submit its qualification
+
+KPF-18-G3-SLOTS-QUAL: prepared an isolated bounded slot-query transport and submitted its model-free publisher smoke; no publisher outcome or full qualification is claimed. Eleven direct private fixture controls ran before clarification of the in-turn compute restriction; six exercise the initial actual SeedControl entry, while remaining call-site wiring is structural. Other slot paths, native cancellation/release, supervisor memory envelope and full lifecycle remain unqualified. Registered publisher ready and failure events.
+
+## 00:43Z — Publish bounded slot-query qualification
+
+KPF-18-G3-SLOTS-QUAL: publisher smoke passed and published kpf18-g3-slots-deadline-qual-20261105. The full qualification and native lifecycle remain open.
+
+## 00:46Z — Publish bounded slot-query qualification
+
+KPF-18-G3-SLOTS-QUAL: publisher smoke passed and published kpf18-g3-slots-deadline-qual-20261105. The full qualification and native lifecycle remain open.
