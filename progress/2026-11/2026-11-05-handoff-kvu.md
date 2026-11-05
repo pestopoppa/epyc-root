@@ -59,3 +59,7 @@ An isolated fresh-production CH-18 merge trial (upstream 4e201388c into v10 ffc1
 ## 03:41Z — Resolve dispatched inference work against existing prerequisite rows
 
 The dispatched KPF-13.1 CPU legs were already decided; the remaining historical GPU judgment depends on layout-matched controls. The KPF-17.4 historical impact r3 and r4 rows and the KPF-18 item-4 raw build and group-3 admission, supervisor and cancellation qualifications are already grantable with smoke passed. The KPF-18 item-2 A/A arm is implemented and measured. The dispatcher state reporting no open rows is inconsistent with rowflow; no duplicate row was published, and no new inference verdict is claimed. GitNexus index was unavailable; reanalysis was refused by CPU admission. Other handoff work has not been established to be entirely blocked.
+
+## 03:46Z — Publish sealed ELF loader custody control and KVU-19b target-mark parser qualification
+
+Published `kvu-kpf17-sealed-elf-loader-20261105` after four-CPU smoke PASS: a private ELF loaded through sealed memfd, with live mapping and same-process alias refusal. Published `kvu19b-target-marks-qual-20261105` after four-CPU smoke PASS: source-bound synthetic parser controls for the r5 target marks. Both full runs remain pending; neither establishes ggml custody, live clock alignment or attribution. Prepared the HSF-4 historical CPU save-inclusive aggregate; publisher lint reads main-view handoff before this lane’s stop rule lands, so that packet has not smoked or published. Its aggregate is not pure copy or restore bandwidth.

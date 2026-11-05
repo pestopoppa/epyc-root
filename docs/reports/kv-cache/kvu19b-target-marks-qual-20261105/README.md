@@ -1,0 +1,3 @@
+# KVU-19b target clock mark parser qualification
+
+This model-free packet qualifies a strict parser for the exact diagnostic mark format of the r5 target build. The source and binary are pinned to its completed build receipt. Two synthetic tests include ten malformed or inconsistent mark controls. No target process, GPU, clock-domain alignment, drift, kernel attribution or inference conclusion follows. The model-free witnesses and analyzer previously qualified do not establish target alignment; a future integrated native collector still needs target-process witness, trace and residency custody and a validated drift bound.
