@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 650
+      "open": 651
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 488
+      "open": 489
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1473,
+          "line": 1474,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1597,
+          "line": 1598,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1924,
+          "line": 1925,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2063,
+          "line": 2064,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2616,
+          "line": 2617,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2753,
+          "line": 2754,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3643,
+          "line": 3644,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 285,
+      "closed": 290,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 102,
+      "open": 103,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 388,
+      "total": 394,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 159,
+          "closed": 164,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 57
+          "open": 58
         },
         {
           "blocked": 0,
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 1561,
+          "line": 1567,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1959,
+          "line": 1965,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
@@ -1495,8 +1495,8 @@
       "blocked": 2,
       "closed": 200,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
-      "open": 17,
+      "last_advanced": "2026-11-05",
+      "open": 18,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 219,
+      "total": 220,
       "tracks": [
         {
           "blocked": 0,
@@ -1582,7 +1582,7 @@
           "line": 2874,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 2
+          "open": 3
         }
       ]
     },

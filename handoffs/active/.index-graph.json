@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T01:21:35Z",
+  "generated_at": "2026-11-05T01:32:10Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1564,18 +1564,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 200,
-      "dispatchable": 17,
+      "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
-      "open": 19,
+      "open": 20,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1654,7 +1654,7 @@
             "INF-22#mi210-serving-program",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "dispatchable": 2,
+          "dispatchable": 3,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1665,7 +1665,7 @@
           ],
           "line": 2874,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 2,
+          "open": 3,
           "readiness": "blocked"
         }
       ]
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1473,
+          "line": 1474,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1597,
+          "line": 1598,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1924,
+          "line": 1925,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2063,
+          "line": 2064,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2616,
+          "line": 2617,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2753,
+          "line": 2754,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2266,7 +2266,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3643,
+          "line": 3644,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -3511,15 +3511,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 285,
-      "dispatchable": 102,
+      "closed": 290,
+      "dispatchable": 103,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 103,
+      "open": 104,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3545,7 +3545,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 57,
+          "dispatchable": 58,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3553,14 +3553,14 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 58,
+          "open": 59,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1561,
+          "line": 1567,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8,
           "readiness": "ready"
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 1959,
+          "line": 1965,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
