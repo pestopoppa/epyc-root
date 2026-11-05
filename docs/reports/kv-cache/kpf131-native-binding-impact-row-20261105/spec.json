@@ -1,0 +1,32 @@
+{
+  "id": "kpf131-native-binding-impact-a1f0-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-native-binding-impact-a1f0-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-native-binding-impact-a1f0-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "On detached historical a1f0c8cf9 capture native upstream impacts for process_single_task and update_slots and full skipped-file coverage before implementing native task/slot/batch association. Both complete impacts and scan_complete required. Stop on source drift, HIGH/CRITICAL, missing/ambiguous target, parser/partial/coverage failure, STOP or deadline; gate-class futility-only. No model, runtime-binding, ABI-validation or historical rejudgement claim.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+  "priority_rank": 40,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-native-binding-impact-a1f0-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "KPF-17.4d-historical-a1f0-native-task-slot-batch-association-impact-20261105",
+  "kind": "compute",
+  "notes": "Distinct historical request/task/slot/batch association prerequisite. UNQUALIFIED: no tests, smoke or compute run. Owner must enroll and qualify via separate four-CPU smoke before publication. No model weights accessed or hashed."
+}

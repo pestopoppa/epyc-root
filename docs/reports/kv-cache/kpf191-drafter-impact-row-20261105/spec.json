@@ -1,0 +1,32 @@
+{
+  "id": "kpf191-drafter-impact-8952-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached integrated candidate 8952a0f693fb923918157eb25117641b74766230 capture complete native upstream impacts for common_prompt_checkpoint update_dft and load_dft in common/common.cpp, with exact graph binding and verbose skipped-file coverage, before designing explicit drafter save/restore flags for KPF-19.1. Stop on HIGH/CRITICAL, missing or ambiguous target, source drift, parser/coverage failure, STOP or deadline. Require both impacts and nonpartial scan_complete. No runtime correctness, acceptance, historical adjudication or edit clearance.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-19.1",
+  "priority_rank": 46,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "KPF-19.1-explicit-drafter-restore-source-impact",
+  "kind": "compute",
+  "notes": "New preparation for KPF-19.1 explicit drafter-state restore prerequisite. Exact update_dft/load_dft symbols absent from ready JSON at preparation. UNQUALIFIED: no smoke, tests or graph run. Owner reviews scope and rechecks duplicates before separate same-launcher four-CPU source-reference smoke and publication."
+}

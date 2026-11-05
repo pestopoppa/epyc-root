@@ -23,3 +23,7 @@ KVU-19b clock build r5 was already filed as a scoped build-only PASS; no calibra
 ## 00:31Z — Prepare exact-source HSF-3 counter and KPF-62.5 server-wiring impact prerequisites.
 
 HSF-3 census r3 was previously filed inconclusive: the aggregate JSON counter never increments, despite rc0; separate partial observations remain scoped and no HSF-3 closure follows. Published hsf3-counter-impact-c5d1-20261105 after a four-CPU source-reference smoke, binding progress() to the original committed census SHA before any counter fix. Published kpf625-server-impact-8952-20261105 after a four-CPU source-reference smoke on the exact candidate. Both full native impacts and skipped-file coverage remain pending; no fix, inference or gate verdict follows.
+
+## 00:35Z — Prepare source-bound historical task-binding and current drafter-state impact prerequisites.
+
+KVU-11c HIP build r2 was previously filed PASS at build-only scope; GPU validation and promotion remain open. Published kpf131-native-binding-impact-a1f0-20261105 after four-CPU reference smoke on historical source, and kpf191-drafter-impact-8952-20261105 after a separate four-CPU reference smoke on the integrated candidate. Full native impacts and skipped-file coverage remain pending; neither proves runtime binding, historical layout, drafter correctness or edit clearance. Existing KPF-17.4 plan qualification dry-run is owned by another session and was not duplicated.
