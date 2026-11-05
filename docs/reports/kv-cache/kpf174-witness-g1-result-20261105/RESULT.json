@@ -1,0 +1,65 @@
+{
+  "binary_sha256": "f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650",
+  "binding": {
+    "argv_sha256": "acc297a1078a78e25bcd2715cb7105a2eabb35770332a506eac9e12a45a28702",
+    "binary_sha256": "f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650",
+    "build_proof": "6d653699d224fe690ffcd575f22e65007a2ea7546b1a953d4f71422bd6328512",
+    "inputs_sha256": "00aa042d0578eff48f999730b72368b1e696891440001bd5342fd18f07694ec0",
+    "model": {
+      "evidence": "sha256sum before row publication 2026-11-02",
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "schema": "kpf174d-model-identity/v1",
+      "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "stat": {
+        "ctime_ns": 1786727071283192651,
+        "dev": 2431,
+        "ino": 96505457,
+        "mtime_ns": 1786727071030792493,
+        "size": 29047086048
+      }
+    },
+    "schema": "kpf174d-cell-binding/v1",
+    "smoke": true,
+    "sources_sha256": "c0b6742450c600128941e662a4772148a5b740ec2b39bb3ff9f79eb5de5e5126"
+  },
+  "cells": {
+    "g1-S2-B": {
+      "layout": {
+        "same_batch_rows": true,
+        "same_capacity_geometry": true,
+        "same_head": true,
+        "same_occupied_shape": true,
+        "same_physical_prefix": true,
+        "verdict": "MATCHED"
+      },
+      "verdict": "SMOKE_ONLY"
+    }
+  },
+  "cleanup": {
+    "at": "2026-11-05T02:58:55Z",
+    "pid": 110570,
+    "returncode": 0,
+    "sent": [
+      "TERM"
+    ],
+    "verified_dead": true
+  },
+  "historical_verdict_unchanged": true,
+  "model": {
+    "evidence": "sha256sum before row publication 2026-11-02",
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "schema": "kpf174d-model-identity/v1",
+    "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "stat": {
+      "ctime_ns": 1786727071283192651,
+      "dev": 2431,
+      "ino": 96505457,
+      "mtime_ns": 1786727071030792493,
+      "size": 29047086048
+    }
+  },
+  "partial": false,
+  "rc": 0,
+  "schema": "kpf174d-prospective/v1",
+  "smoke": true
+}

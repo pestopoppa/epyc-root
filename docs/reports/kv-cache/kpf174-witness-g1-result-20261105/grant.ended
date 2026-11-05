@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T02:58:58Z reason=complete
+job_id=kvu-kpf174-witness-g1-20261105
+owner=h-kvu
+step=job-run
+estimated_wall_s=3600
+started=2026-11-05T02:58:37Z
+regions=mi210_0,184-187
