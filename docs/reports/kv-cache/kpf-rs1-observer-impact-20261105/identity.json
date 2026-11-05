@@ -1,0 +1,17 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/job.py": "60d44b7a11cdd664c90097109542c47ae81cf7949fef78ebd2a43f54cf924fb4",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/launch.sh": "16f9bc58c0e108d86ccfc8241e52cc4a1bd246a1da62f0186b89c2707154625b",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/spec.json": "766e8d5adc560eee50df38e5abf10942c171529ac4c783780e1549b0bb2415e3",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source/ggml/src/ggml-backend.cpp": "63d227a17377e8efd1aaa2bca04448488c51f54d257e8f3d5e63680a92bbdb6c",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source/src/llama-context.cpp": "550536ded1a68f250ffdc9d49ed8b1900f844c441c5214f3e2ac41ca6d9db61c",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source/src/llama-memory-recurrent.cpp": "4627fcb57f00231466ba45225fd0a8cb40177cc23f5766933a9cbe8234fac0ff",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source/tests/test-recurrent-state-rollback.cpp": "b200438e63d75b051782b4f2face659d1fb62c4b7da45d2266e2096abe22d3e3",
+    "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/source/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "target": {
+    "id": "Method:src/models/delta-net-base.cpp:build_recurrent_attn#9",
+    "name": "build_recurrent_attn",
+    "type": "Method",
+    "filePath": "src/models/delta-net-base.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 4,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 4,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {
+    "1": 4
+  },
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "File:src/models/qwen4exp.cpp",
+        "name": "qwen4exp.cpp",
+        "filePath": "src/models/qwen4exp.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "File:src/models/qwen3next.cpp",
+        "name": "qwen3next.cpp",
+        "filePath": "src/models/qwen3next.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "File:src/models/qwen35moe.cpp",
+        "name": "qwen35moe.cpp",
+        "filePath": "src/models/qwen35moe.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "File:src/models/qwen35.cpp",
+        "name": "qwen35.cpp",
+        "filePath": "src/models/qwen35.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}

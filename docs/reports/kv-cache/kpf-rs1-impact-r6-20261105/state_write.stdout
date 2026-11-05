@@ -1,0 +1,21 @@
+{
+  "target": {
+    "id": "Method:src/llama-memory-recurrent.cpp:state_write#3",
+    "name": "state_write",
+    "type": "Method",
+    "filePath": "src/llama-memory-recurrent.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 0,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {},
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {}
+}
