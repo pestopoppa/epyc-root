@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T11:02:58Z",
+  "generated_at": "2026-11-05T11:24:12Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1573,15 +1573,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 200,
-      "dispatchable": 6,
+      "closed": 202,
+      "dispatchable": 4,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 7,
+      "open": 5,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1601,18 +1601,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 685,
+          "line": 686,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0,
           "readiness": "no_open"
@@ -1621,7 +1621,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1022,
+          "line": 1023,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 0,
           "readiness": "no_open"
@@ -1630,7 +1630,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1300,
+          "line": 1301,
           "name": "gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
@@ -1639,7 +1639,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1935,
+          "line": 1936,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 2,
           "readiness": "ready"
@@ -1648,7 +1648,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2194,
+          "line": 2195,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1658,7 +1658,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#mi210-serving-program"
           ],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1667,10 +1667,10 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2804,
+          "line": 2805,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 1,
-          "readiness": "blocked"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
@@ -2098,7 +2098,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 576,
+          "line": 578,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -2107,7 +2107,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 947,
+          "line": 949,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2116,7 +2116,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1563,
+          "line": 1565,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -2125,7 +2125,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1710,
+          "line": 1712,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2194,7 +2194,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1544,
+          "line": 1545,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2203,7 +2203,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1668,
+          "line": 1669,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2212,7 +2212,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1995,
+          "line": 1996,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2221,7 +2221,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2134,
+          "line": 2135,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2230,7 +2230,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2687,
+          "line": 2688,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2247,7 +2247,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2824,
+          "line": 2825,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2270,7 +2270,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3718,
+          "line": 3719,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 59,
           "readiness": "blocked"
@@ -2581,7 +2581,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 2466,
+          "line": 2467,
           "name": "opendataloader-pipeline-integration",
           "open": 8,
           "readiness": "ready"
@@ -2590,7 +2590,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2574,
+          "line": 2575,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "no_open"
@@ -2599,7 +2599,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2943,
+          "line": 2944,
           "name": "sliders-local-validation",
           "open": 3,
           "readiness": "ready"
@@ -3579,7 +3579,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2151,
+          "line": 2152,
           "name": "kv-unified-stack-rollout",
           "open": 45,
           "readiness": "blocked"

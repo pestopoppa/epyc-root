@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 647
+      "open": 645
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1544,
+          "line": 1545,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1668,
+          "line": 1669,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1995,
+          "line": 1996,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2134,
+          "line": 2135,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2687,
+          "line": 2688,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2824,
+          "line": 2825,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3718,
+          "line": 3719,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 58
@@ -1277,7 +1277,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 2466,
+          "line": 2467,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 8
@@ -1287,7 +1287,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2574,
+          "line": 2575,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 0
@@ -1297,7 +1297,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2943,
+          "line": 2944,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 2
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2151,
+          "line": 2152,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 45
@@ -1392,7 +1392,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 576,
+          "line": 578,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1402,7 +1402,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 947,
+          "line": 949,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1412,7 +1412,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1563,
+          "line": 1565,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1422,7 +1422,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1710,
+          "line": 1712,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 6
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 1,
-      "closed": 200,
+      "closed": 202,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 6,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1509,20 +1509,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 108,
+          "closed": 109,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 685,
+          "line": 686,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1022,
+          "line": 1023,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 0
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1300,
+          "line": 1301,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 0
@@ -1552,7 +1552,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 1935,
+          "line": 1936,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 1
@@ -1562,14 +1562,14 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2194,
+          "line": 2195,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [
             "INF-22#mi210-serving-program",
             "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
@@ -1579,10 +1579,10 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2804,
+          "line": 2805,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
-          "open": 1
+          "open": 0
         }
       ]
     },
