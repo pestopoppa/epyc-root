@@ -601,6 +601,18 @@ def published_line(row, flags):
             f"gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
 
 
+def legacy_handoff_task(m):
+    """The manifest's own handoff_task wins; a bare `<file>.md[:ID]` is normalised to `handoffs/active/<file>.md[:ID]`
+    (the publish lint's form). Only a manifest with no task at all falls back to the legacy FILLERS:<id> marker."""
+    ht = next((str(m[k]).strip() for k in ("handoff_task", "row", "handoff") if isinstance(m.get(k), str) and m[k].strip()), "")
+    if not ht:
+        return "FILLERS:" + str(m.get("id"))
+    head, sep, tail = ht.partition(":")
+    if head.endswith(".md") and "/" not in head:
+        return "handoffs/active/" + head + sep + tail
+    return ht
+
+
 def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     """Mechanical migration of an epyc.ready.v2 / schema-less manifest to a v3 spec. If the launcher pins an older
     engine, a sibling `<name>.v15.sh` with the engine path replaced is written (new file; the original is untouched)."""
@@ -629,9 +641,15 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
         rp = os.path.join(str(m.get("scratch_root") or os.path.dirname(lp)), "RESULT-NEEDS-SPEC.jsonl")
     spec = {"id": m.get("id"), "owner": m.get("owner"), "launcher": lp, "lane": lane, "regions": regs or None,
             "result_path": rp, "decision_rule": m.get("decision_rule") or "MIGRATED: decision_rule missing in legacy manifest; owner to fill",
-            "estimate_s": int(m.get("window_s") or 3600), "handoff_task": m.get("row") or m.get("handoff") or "FILLERS:" + str(m.get("id")),
-            "priority_rank": m.get("priority_rank", 100), "ram_gib": m.get("gib"), "scratch_root": m.get("scratch_root"),
+            "estimate_s": int(m.get("estimate_s") or m.get("window_s") or 3600), "handoff_task": legacy_handoff_task(m),
+            "priority_rank": m.get("priority_rank", 100), "ram_gib": m.get("ram_gib") or m.get("gib"), "scratch_root": m.get("scratch_root"),
             "min_window_s": o["min_window"]}
+    # a ready/<id>.json written by publish() already carries the spec fields a republish needs: keep them
+    # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
+    for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
+              "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes"):
+        if m.get(k) is not None:
+            spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
     if legacy_class is not None:
         spec["admission_class"] = legacy_class
