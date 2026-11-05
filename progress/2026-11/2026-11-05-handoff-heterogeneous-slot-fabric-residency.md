@@ -95,3 +95,7 @@ Filed kvfork17-timeout-qual-20261104 PASS: the deliberate model-free debugger an
 ## 02:19Z — File GPU mechanics result and source-bound diagnostic rebuild
 
 Filed GPU mechanics r2 inconclusive because outer completion was partial despite a successful native request. Diagnostic HIP rebuild completed with thread flag and own linkage, but four of five binary hashes differ from the original; no original-crash or GPU verdict follows. Prepared the no-synthesis GPU control (publisher smoke queued because the GPU is busy) and published the sealed model-free completion comparator.
+
+## 02:23Z — File synthetic custody and decoder results, prepare historical impact retry
+
+Filed KPF-50 synthetic custody PASS and typed historical decoder 8/8 synthetic PASS, with native target and historical binding still unknown. Filed the historical task/slot impact scan inconclusive after a graph-status abbreviation mismatch and published a source-bound retry; its smoke is partial source-reference progress only.
