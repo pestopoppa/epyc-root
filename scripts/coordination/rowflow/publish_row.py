@@ -23,8 +23,10 @@ handoff_task does not resolve to a real open task box (file-only, or not found).
 operator choice, non-inference payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
 fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the smoke still gates every row. The lint
 runs before the smoke, so a refused row costs no compute.
-Smoke = THE dry run (operator 2026-11-02): the launcher runs HERE, in the owner's turn, on 4 cpus no quiet-host grant
-(GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
+Smoke = THE dry run (operator 2026-11-05: a KEEPER-SCHEDULED filler): a CPU row's smoke is QUEUED
+(dryrun/<id>/SMOKE-QUEUED.json) and this tool returns at once; the keeper's allocate places it first, on 4 genuinely
+free cores, in the next free slot. Waiting is never a failure. `--smoke-now` runs it here, at once, on free cores of the
+keeper's snapshot (queued if none). (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
 dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap, or by `rowflow.py gpu-batch` from any
 session; never refused). PASS (operator 2026-11-03) = the job's FIRST REAL PROGRESS within first_progress_s (300; the spec
 may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appears in result_path (rowflow.FirstProgress),
@@ -230,14 +232,51 @@ def check_task_lint(spec, repo=None):
 
 
 def smoke_regions(lane, regions, flags):
-    """Where the smoke runs (operator 2026-11-02: a dry run is minimal and is never held up by inference work): GPU rows
-    on their own regions, CPU rows on 4 cpus of the least-busy quarter. No lock, no refusal, nothing booked."""
+    """Where an immediate (--smoke-now) smoke runs: GPU rows on their own regions, CPU rows on 4 genuinely free cores of
+    the keeper's snapshot (rowflow.host_snapshot: region-lock, open grants, live smokes). None = nothing free now."""
     if lane == "gpu":
         return regions
-    rl = rf.rl_status()
-    qs = sorted(rf.QUARTERS, key=lambda q: rl.get(q, ("free",))[0] != "free")
-    lo = int(qs[0][1]) * 24
-    return f"{lo}-{lo + 3}"
+    _, free, _ = rf.host_snapshot(flags)
+    return rf.pick_smoke_cpus(free)
+
+
+def queue_cpu_smoke(flags, rid, spec, smoke_s, why=""):
+    """Operator 2026-11-05: the smoke is a keeper-scheduled filler. Unpublish until PASS and queue it; the allocator
+    places it in the next free slot. Queued is not a failure."""
+    unpublish(flags, rid)
+    rf.atomic_json(rf.smoke_queued_path(flags, rid), {"id": rid, "smoke_s": smoke_s, "cpus": rf.SMOKE_CPUS, "spec": spec,
+                                                      "queued_at": rf.now_iso()})
+    print(f"queued for smoke{why}; the keeper runs it in the next free slot; your row becomes ready on PASS "
+          f"(status: {rf.dry_dir(flags, rid)}/launcher.out) — move to your next task ({rid})")
+
+
+def run_queued_smoke(flags, rid, regions):
+    """The keeper's detached runner for ONE placed CPU smoke (publish_row.py --run-smoke). PASS/FAIL dequeue; WAIT (lock
+    contention, a held host) leaves it queued for the next tick."""
+    q = rf.smoke_queued_path(flags, rid)
+    qd = rf.load_json(q) or {}
+    try:
+        up = unpublished_path(flags, rid)
+        if os.path.exists(up):
+            os.replace(up, rf.ready_path(flags, rid))
+        try:
+            v, msg = run_smoke(flags, rid, regions, int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+            if v == "PASS":
+                row = rf.load_json(rf.ready_path(flags, rid))
+                rf.need(row is not None, f"queued smoke {rid} lost its ready manifest")
+                rf.supersede(flags, row)
+                file_if_complete(flags, rid, row)
+        except Exception as e:  # noqa: BLE001
+            v, msg = "FAIL", f"{type(e).__name__}: {e}"
+        print(f"SMOKE {v} {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')})")
+        if v != "WAIT" and os.path.exists(q):
+            os.remove(q)
+        return v
+    finally:
+        try:
+            os.remove(rf.smoke_placed_path(flags, rid))
+        except OSError:
+            pass
 
 
 def retire_old_verdicts(flags, rid):
@@ -450,19 +489,26 @@ def resume_complete(flags, rid):
     return 0
 
 
-def publish_smoked(spec, flags, source):
-    """Publish, then THE dry run in the owner's turn (rowflow.dryrun_run writes PASS.json or the FAIL memo); a GPU row
-    whose GPU is busy is QUEUED for the next GPU gap instead (QUEUED is not a failure; returns None)."""
-    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
+def publish_smoked(spec, flags, source, queue_cpu=False):
+    """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
+    operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
+    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too."""
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
     if spec.get("lane") == "gpu" and gpu_busy(flags):
         unpublish(flags, rid)
-        rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": regions, "smoke_s": smoke_s, "spec": spec,
+        rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": spec.get("regions") or "mi210_0,184-191", "smoke_s": smoke_s, "spec": spec,
                                                  "queued_at": rf.now_iso()})
         print(f"GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS — move to your next task ({rid})")
+        return None
+    if spec.get("lane") != "gpu" and queue_cpu:
+        queue_cpu_smoke(flags, rid, spec, smoke_s)
+        return None
+    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
+    if not regions:
+        queue_cpu_smoke(flags, rid, spec, smoke_s, " (no free cores right now)")
         return None
     v, msg = run_smoke(flags, rid, regions, smoke_s)
     if v == "PASS":
@@ -471,6 +517,9 @@ def publish_smoked(spec, flags, source):
         if file_if_complete(flags, rid, row):
             return None
         return row
+    if v == "WAIT" and spec.get("lane") != "gpu":   # waiting for a lock / a held host is never a failure: the keeper retries
+        queue_cpu_smoke(flags, rid, spec, smoke_s, f" (WAIT: {msg[:160]})")
+        return None
     # operator 2026-11-03 design goal: cause + fix in ONE line; the long log stays on disk behind a path
     raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')}; "
                      f"the row is not granted until a smoke PASSes)")
@@ -532,7 +581,15 @@ def main(argv=None):
     ap.add_argument("--resume-complete", metavar="ROW_ID", help="retry terminal filing from an unchanged prior completed PASS; no smoke rerun")
     ap.add_argument("--flags", default=rf.FLAGS)
     ap.add_argument("--run-gpu-queue", action="store_true", help="(allocator, detached) run every queued GPU smoke")
+    ap.add_argument("--smoke-now", action="store_true", help="run the CPU smoke now on free cores of the keeper's snapshot "
+                    "instead of queueing it for the keeper (still queued when nothing is free)")
+    ap.add_argument("--run-smoke", metavar="ROW_ID", help="(allocator, detached) run ONE keeper-placed CPU smoke")
+    ap.add_argument("--regions", help="with --run-smoke: the cpus the keeper assigned")
     a = ap.parse_args(argv)
+    if a.run_smoke:
+        rf.need(a.regions, "--run-smoke needs --regions")
+        v = run_queued_smoke(a.flags, a.run_smoke, a.regions)
+        return 0 if v in ("PASS", "WAIT") else 1
     if a.run_gpu_queue:
         try:
             print(f"GPU-SMOKE-BATCH ran {run_gpu_queue(a.flags)}")
@@ -558,7 +615,7 @@ def main(argv=None):
         check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
-        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec))
+        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now)
         if row:
             print(rf.published_line(row, a.flags))
         return 0

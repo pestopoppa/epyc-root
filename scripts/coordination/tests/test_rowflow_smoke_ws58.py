@@ -56,11 +56,19 @@ class SmokeTests(unittest.TestCase):
         self.assertTrue(os.listdir(os.path.join(self.dd, "superseded")))
 
     def test_fail_or_refusal_leaves_no_manifest(self):
-        for v in ("FAIL", "WAIT", "RAISE"):
+        for v in ("FAIL", "RAISE"):
             ok, _ = self._run(v)
             self.assertFalse(ok, v)
             self.assertFalse(os.path.exists(rf.ready_path(self.flags, self.rid)), v)
             self.assertTrue(os.path.exists(pr.unpublished_path(self.flags, self.rid)), v)
+
+    def test_wait_is_queued_for_the_keeper_not_failed(self):
+        """operator 2026-11-05: an immediate smoke that only WAITed (lock / held host) is queued, never a FAIL."""
+        ok, _ = self._run("WAIT")
+        self.assertTrue(ok)
+        self.assertFalse(os.path.exists(rf.ready_path(self.flags, self.rid)))
+        self.assertTrue(os.path.exists(rf.smoke_queued_path(self.flags, self.rid)))
+        self.assertEqual(rf.fail_paths(self.flags, self.rid), [])
 
     def test_no_whole_host_refusal_or_key(self):
         for name in ("rowflow.py", "publish_row.py"):

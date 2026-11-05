@@ -46,7 +46,11 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               never killed), ALERT on the 3rd repeat (ws58-keeper-alerts.jsonl).
     gpu-batch                 run the queued GPU smokes (publish_row's GPU-busy queue) NOW if the GPU is free; any session
                               may call it, and allocate does the same on every GPU-free tick
-    (the dry run is publish_row.py's smoke: rowflow.dryrun_run in the owner's turn; no CLI, no grant. PASS = the job's
+    smokes (operator 2026-11-05)  publish_row QUEUES a CPU row's smoke (dryrun/<id>/SMOKE-QUEUED.json); allocate places
+                              queued smokes FIRST, each on 4 genuinely free cores of one quarter (never 184-191, never
+                              a quiet-host/gpu-q3 grant's cores), and runs it detached via publish_row --run-smoke. No
+                              free cores = SMOKE-WAIT, never FAIL. The first-progress timer starts at engine START.
+    (the dry run is publish_row.py's smoke: rowflow.dryrun_run, keeper-placed or --smoke-now; no grant. PASS = the job's
      FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | stopped | grantable | armed | running | done
                               (stopped: the launcher's --stop file exists - never granted, never a drain candidate;
@@ -2371,9 +2375,12 @@ def smoke_completion_check(d):
 
 def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
-    Operator 2026-11-02: this is publish_row's pre-publish smoke, run in the owner's turn on 4 cpus (FILLER_SMOKE=1 /
-    FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count). Its admission token lives in the row's private
-    dryrun dir, never in grants/: nothing is scheduled around a dry run.
+    Operator 2026-11-05: the smoke is a KEEPER-SCHEDULED filler - publish_row queues it, the allocator places it first on
+    4 genuinely free cores and runs it here (publish_row --smoke-now runs it at once on the keeper's free snapshot);
+    FILLER_SMOKE=1 / FILLER_SMOKE_UNITS=1 for launchers that can shrink their unit count. Its admission token lives in
+    the row's private dryrun dir, never in grants/; its cpus are visible to the allocator through RUNNING.json.
+    The first-progress timer starts only at engine START (the lock is held); a smoke still waiting for its lock after
+    first_progress_s, or waiting on region-lock contention, ends WAIT (requeued), never FAIL.
     Operator 2026-11-03 (session review §3.1): PASS = FIRST REAL PROGRESS of the job (FirstProgress: smoke_predicate, or
     a new non-placeholder record) within first_progress_s (smoke_s, else the row's first_progress_s, else 300 s), then a
     clean stop (rc 0/75). rc 0/75 with no progress is a FAIL."""
@@ -2430,6 +2437,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
     atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
     t0 = time.time()
+    t_lock = None
     cpu_acc, cpu_samples = {}, []
     vram_max = None
     gpu = "mi210_0" in regions
@@ -2451,13 +2459,17 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                     vram_max = max(vram_max or 0, v)
             # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
             # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
-            waits = lock_waits(tail(lout, 10**6)[out_lines0:], holds)
+            new_lines = tail(lout, 10**6)[out_lines0:]
+            waits = lock_waits(new_lines, holds)
             if waits and (waits[0] - holds or time.time() - t0 > 60):
-                verdict, reason = "FAIL", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the smoke holds "
-                                           f"{','.join(sorted(holds)) or '-'} (a smoke never waits on a held region); fix: make "
-                                           "the job's own region-lock claim use $WS58_REGIONS under FILLER_SMOKE, then re-run "
-                                           "publish_row.py <spec.json>")
+                # operator 2026-11-05: waiting for a slot is never a failure - lock contention is WAIT, the keeper requeues
+                verdict, reason = "WAIT", (f"job waits on region-lock for {','.join(sorted(waits[0]))} while the smoke holds "
+                                           f"{','.join(sorted(holds)) or '-'}; requeued, no FAIL recorded (if this repeats, make "
+                                           "the job's own region-lock claim use $WS58_REGIONS under FILLER_SMOKE)")
                 break
+            if t_lock is None and any("START regions=" in l for l in new_lines):
+                t_lock = time.time()   # the first-progress timer starts only once the engine holds its lock (START)
+                out.write(f"==== engine START at +{int(t_lock - t0)}s; first-progress timer ({timeout} s) starts now\n"); out.flush()
             if first_unit_at is None:
                 hit, why = probe.check()
                 if hit:
@@ -2499,12 +2511,13 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {warning}"
                 break
-            if first_unit_at is None and time.time() - t0 > timeout:
-                started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400))
-                verdict, reason = "FAIL", (f"no first progress within {timeout} s; {probe.what()}; " +
-                                           (probe.fix(timeout) if started else
-                                            "the engine never reached START (admission/precond/port refusal): fix what "
-                                            f"{os.path.join(dd, 'launcher.out')} names, then re-run publish_row.py <spec.json>"))
+            if first_unit_at is None and t_lock is not None and time.time() - t_lock > timeout:
+                verdict, reason = "FAIL", f"no first progress within {timeout} s of engine START; {probe.what()}; {probe.fix(timeout)}"
+                break
+            if t_lock is None and time.time() - t0 > timeout:
+                # still waiting for its lock / a held whole host: not the row's defect (codex3-pareval120 r2, 2026-11-05)
+                verdict, reason = ("WAIT", f"the engine did not reach START within {timeout} s (waiting on its region lock, a "
+                                           f"held host or admission; see {lout}); requeued, no FAIL recorded")
                 break
     finally:
         if p.poll() is None:  # poll(), not ps: an exited-but-unreaped launcher is a zombie that ps still lists
@@ -2869,6 +2882,107 @@ def idle_held(flags, grants, holders, util, log, seen, now=None):
 
 
 # ---------------------------------------------------------------- allocate: ONE snapshot, dry runs + grants together
+def host_snapshot(flags, grants=None, rl=None):
+    """(busy, free, holders) token sets of ONE snapshot: region-lock holds, open grants' holds and live smokes (a smoke
+    holds its cpus by taskset, not region-lock, so only its RUNNING/SMOKE-PLACED record makes it visible)."""
+    grants = open_grants(flags) if grants is None else grants
+    rl = rl_status() if rl is None else rl
+    # a quarter held in region-lock by sub-quarter grants (LOCK_SH + per-core locks) is busy only on those cores
+    subq = {q for g in grants for q in QUARTERS if q not in g["holds"] and g["holds"] & qcores(q)}
+    busy = expand({r for r, (s, _) in rl.items() if s != "free" and r not in subq})
+    gids = {g["id"] for g in grants}
+    for r, (s, t) in rl.items():   # a foreign (non-grant) region-lock hold folds SMT siblings: all 24 of its threads
+        if s != "free" and r in QUARTERS and r not in subq and t[len("filler-"):] not in gids:
+            busy |= qthreads(r, 24)
+    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
+    for g in grants:
+        busy |= g["holds"]
+        for r in g["holds"]:
+            if r in REGIONS:
+                holders.setdefault(r, g["id"])
+    busy |= live_smoke_tokens(flags)
+    busy |= {q for q in QUARTERS if expand({q}) & busy}   # a quarter with any held core/thread is not whole-free
+    free = (set(REGIONS) | set(CORES) | set(THREADS)) - busy
+    return busy, free, holders
+
+
+# ---------------------------------------------------------------- keeper-scheduled smokes (operator 2026-11-05)
+SMOKE_CPUS = 4
+def smoke_queued_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-QUEUED.json")
+def smoke_placed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-PLACED.json")
+
+
+def live_smoke_tokens(flags):
+    """cpu tokens of every live CPU smoke (RUNNING.json from dryrun_run, SMOKE-PLACED.json from the keeper)."""
+    out = set()
+    for pat in ("RUNNING.json", "SMOKE-PLACED.json"):
+        for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
+            r = load_json(p) or {}
+            if r.get("pid") and alive(r["pid"]):
+                out |= cpu_tokens(ws58_cpus(r.get("regions")))
+    return out
+
+
+def cpu_ranges(cs):
+    cs, out = sorted(cs), []
+    for c in cs:
+        if out and c == out[-1][1] + 1:
+            out[-1][1] = c
+        else:
+            out.append([c, c])
+    return ",".join(f"{a}-{b}" if b > a else str(a) for a, b in out)
+
+
+def pick_smoke_cpus(free, n=SMOKE_CPUS):
+    """n physical cores (with their SMT siblings) of ONE quarter, all genuinely free; a partly used quarter first so a
+    whole free quarter stays whole for a row; never the MI210 host threads. None when nothing fits."""
+    best = None
+    for q in QUARTERS:
+        cs = [int(c[1:]) for c in sorted(qcores(q), key=lambda t: int(t[1:]))
+              if c in free and f"t{int(c[1:]) + 96}" in free and int(c[1:]) + 96 not in GPU_HOST_THREADS]
+        if len(cs) < n:
+            continue
+        key = (q in free, q)   # a partly used quarter (q not whole-free) sorts first
+        if best is None or key < best[0]:
+            best = (key, cs[:n])
+    return cpu_ranges(best[1]) if best else None
+
+
+def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset()):
+    """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
+    detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
+    WAIT (logged), never a failure. Returns the placed (rid, cpus)."""
+    placed = []
+    qs = sorted(glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")),
+                key=lambda p: ((load_json(p) or {}).get("queued_at") or "", p))
+    for q in qs:
+        rid = os.path.basename(os.path.dirname(q))
+        pl = load_json(smoke_placed_path(flags, rid)) or {}
+        if pl.get("pid") and alive(pl["pid"]):
+            continue   # running; its cpus are already in busy
+        want = int((load_json(q) or {}).get("cpus") or n)
+        cpus = pick_smoke_cpus(free - reserved, want)
+        if not cpus:
+            log(f"SMOKE-WAIT {rid}: no {want} free cores this tick; stays queued (not a failure)")
+            continue
+        toks = cpu_tokens(cpus)
+        free -= toks
+        free -= {qq for qq in QUARTERS if expand({qq}) & toks}
+        if dry:
+            log(f"PLAN smoke {rid} cpus={cpus}"); placed.append((rid, cpus)); continue
+        try:
+            out = open(os.path.join(dry_dir(flags, rid), "smoke-runner.out"), "a")
+            p = subprocess.Popen([sys.executable, os.path.join(_HERE, "publish_row.py"), "--run-smoke", rid,
+                                  "--regions", cpus, "--flags", flags], stdout=out, stderr=subprocess.STDOUT,
+                                 stdin=subprocess.DEVNULL, start_new_session=True)
+            atomic_json(smoke_placed_path(flags, rid), {"id": rid, "pid": p.pid, "regions": cpus, "at": now_iso()})
+            log(f"SMOKE-PLACE {rid} cpus={cpus} pid={p.pid} (log {os.path.join(dry_dir(flags, rid), 'launcher.out')})")
+            placed.append((rid, cpus))
+        except Exception as e:  # noqa: BLE001 - one smoke never stops the tick
+            log(f"ERROR smoke {rid}: {type(e).__name__}: {e}")
+    return placed
+
+
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
     keeper_log = keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")
@@ -2883,21 +2997,13 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     allrows = rows(flags)
     rl = rl_status()
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
-    # a quarter held in region-lock by sub-quarter grants (LOCK_SH + per-core locks) is busy only on those cores
-    subq = {q for g in grants for q in QUARTERS if q not in g["holds"] and g["holds"] & qcores(q)}
-    busy = expand({r for r, (s, _) in rl.items() if s != "free" and r not in subq})
     gids = {g["id"] for g in grants}
-    for r, (s, t) in rl.items():   # a foreign (non-grant) region-lock hold folds SMT siblings: all 24 of its threads
-        if s != "free" and r in QUARTERS and r not in subq and t[len("filler-"):] not in gids:
-            busy |= qthreads(r, 24)
-    holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
-    for g in grants:
-        busy |= g["holds"]
-        for r in g["holds"]:
-            if r in REGIONS:
-                holders.setdefault(r, g["id"])
-    busy |= {q for q in QUARTERS if expand({q}) & busy}   # a quarter with any held core/thread is not whole-free
-    free = (set(REGIONS) | set(CORES) | set(THREADS)) - busy
+    busy, free, holders = host_snapshot(flags, grants, rl)
+    # keeper-scheduled smokes (operator 2026-11-05 "that's the keeper's ENTIRE point"): placed FIRST, ahead of every row,
+    # the cores they take leave `free` before the plan below sees it
+    # on genuinely free cores only; while a quiet-host / gpu-q3 grant runs, the q3 COEXIST cores stay the coexist rows'
+    quiet_open = any(g["id"] in allrows and shape_of(allrows[g["id"]]) in QUIET_SHAPES for g in grants)
+    place_smokes(flags, free, log, dry=dry, reserved=COEXIST_Q3 if quiet_open else frozenset())
     gpu_open = any(GPU in g["holds"] for g in grants)
     # COEXIST (operator 2026-11-05): tokens held by running coexist / quiet-host grants
     coexist_held = set().union(*[g["holds"] for g in grants if is_coexist(allrows.get(g["id"]))])

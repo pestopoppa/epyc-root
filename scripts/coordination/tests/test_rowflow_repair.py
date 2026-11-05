@@ -61,9 +61,14 @@ class RepairTests(unittest.TestCase):
         sp = os.path.join(d, "spec.json")
         rf.atomic_json(sp, fx.spec(rid, d, result_path=os.path.join(d, "out", "COMPLETE.json"), result_format="json"))
         rc, out = run([sp, "--flags", fx.flags])
-        self.assertEqual(rc, 2, out)  # the job writes results.jsonl, not RESULT.json: the smoke FAILs in the owner's turn
+        self.assertEqual(rc, 0, out)  # operator 2026-11-05: the CLI queues the smoke for the keeper and returns at once
         self.assertIn("LINT result_path=", out)
-        self.assertIn("smoke FAIL for " + rid, out)
+        self.assertIn("queued for smoke", out)
+        self.assertTrue(os.path.exists(rf.smoke_queued_path(fx.flags, rid)))
+        rc, out = run(["--run-smoke", rid, "--regions", "0-3", "--flags", fx.flags])   # the keeper's placed runner
+        self.assertEqual(rc, 1, out)  # the job writes results.jsonl, not RESULT.json: the smoke FAILs
+        self.assertIn("SMOKE FAIL " + rid, out)
+        self.assertFalse(os.path.exists(rf.smoke_queued_path(fx.flags, rid)), "a FAIL dequeues")
         self.assertNotIn(rid, rf.rows(fx.flags))  # ws58: ready/<id>.json survives only a smoke PASS
         self.assertEqual(rf.load_json(pr.unpublished_path(fx.flags, rid))["result_path"], os.path.join(d, "out", "RESULT.json"))
 
@@ -80,14 +85,23 @@ class RepairTests(unittest.TestCase):
         rf.atomic_json(sp, fx.spec(rid, d))
         rc, out = run([sp, "--flags", fx.flags])
         self.assertEqual(rc, 0, out)
+        self.assertIn("queued for smoke", out)
+        self.assertNotIn(rid, rf.rows(fx.flags), "unpublished until the keeper's smoke PASSes")
+        rc, out = run(["--run-smoke", rid, "--regions", "0-3", "--flags", fx.flags])
+        self.assertEqual(rc, 0, out)
         self.assertIn("SMOKE PASS", out)
+        self.assertFalse(os.path.exists(rf.smoke_queued_path(fx.flags, rid)))
         self.assertEqual(rf.status(fx.flags, rid)["state"], "grantable", "a smoke PASS readies the row at once")
         self.assertEqual([g for g in os.listdir(os.path.join(fx.flags, "grants")) if rid in g], [], "no dry-run grant")
         bad = "t-crash-20261102"
         d2 = fx.job(bad, "crash")
         rf.atomic_json(sp, fx.spec(bad, d2))
-        rc, out = run([sp, "--flags", fx.flags])
-        self.assertEqual(rc, 2, out)
+        rc, out = run([sp, "--flags", fx.flags, "--smoke-now"])   # --smoke-now: the old immediate path, still one line
+        if "queued for smoke" in out:   # no free cores on this host right now: the keeper's runner takes it
+            rc, out = run(["--run-smoke", bad, "--regions", "0-3", "--flags", fx.flags])
+            self.assertEqual(rc, 1, out)
+        else:
+            self.assertEqual(rc, 2, out)
         self.assertIn("(log: " + os.path.join(rf.dry_dir(fx.flags, bad), "launcher.out"), out)  # one line; the log stays on disk
         self.assertNotIn("launcher_out_tail", out)
         self.assertNotIn(bad, rf.rows(fx.flags))  # ws58: a failed smoke leaves no ready/ manifest

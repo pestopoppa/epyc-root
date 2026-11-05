@@ -53,7 +53,8 @@ class LockWaitTests(unittest.TestCase):
 
 
 class DryrunLockWaitTests(unittest.TestCase):
-    def test_smoke_fails_in_one_line_when_the_job_waits_on_a_region_it_does_not_hold(self):
+    def test_smoke_waits_never_fails_when_the_job_waits_on_a_region_lock(self):
+        """operator 2026-11-05: lock contention is WAIT (requeued by the keeper), never FAIL."""
         fx = Fixture()
         try:
             rid = "t-lockwait"
@@ -75,10 +76,11 @@ class DryrunLockWaitTests(unittest.TestCase):
                     mock.patch.object(rf.subprocess, "Popen", side_effect=launch), \
                     mock.patch.object(rf.time, "sleep", return_value=None):
                 v, msg = rf.dryrun_run(fx.flags, rid, "48-51", True, smoke_s=300)
-            self.assertEqual(v, "FAIL", msg)
+            self.assertEqual(v, "WAIT", msg)
             self.assertTrue(msg.startswith("job waits on region-lock for gpu-quiet,q0,q1 while the smoke holds"), msg)
-            self.assertIn("fix: ", msg)
+            self.assertIn("no FAIL recorded", msg)
             self.assertNotIn("\n", msg)
+            self.assertEqual(rf.fail_paths(fx.flags, rid), [])
         finally:
             fx.cleanup()
 
