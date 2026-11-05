@@ -71,9 +71,116 @@ import notify as rf_notify  # noqa: E402  - the inference mailbox (operator 2026
 VERSION = "hs-dispatcher-v3"
 FLAGS = bg.FLAGS_DEFAULT
 ROOT = "/workspace"
-USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit", re.I)
+USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit|limit reached", re.I)
 ADV_RX = re.compile(r"^- \[(blocked|needs-launcher|needs-qualification)\] ", re.M)  # JEV-3 deferred: used only by work_state()
 PAUSE_S = 30 * 60
+BACKOFF_S = (30 * 60, 2 * 3600, 6 * 3600)  # unknown reset time: 30 min -> 2 h -> 6 h (cap)
+_MONTHS = {m: i + 1 for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
+
+
+def _iso(ts):
+    return _dt.datetime.fromtimestamp(ts, _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def parse_reset(text, now):
+    """Reset time (epoch seconds) from an engine's usage-limit text, or None. Shapes: Codex 'try again at Nov 11th, 2026
+    7:36 AM' / 'try again in 3 hours 20 minutes'; Claude 'limit reached|<epoch>' / 'resets 3pm (America/New_York)'.
+    Naive wall times are host-local (the pane prints local time). Implausible results (past, >40 d out) are None."""
+    text = (text or "").replace("\\u202f", " ").replace("\u202f", " ").replace("\xa0", " ")
+    cand = None
+    m = re.search(r"limit reached\s*\|\s*(\d{9,11})\b", text, re.I)
+    if m:
+        cand = float(m.group(1))
+    if cand is None:
+        m = re.search(r"(?:try again|resets?|available again)\s*(?:at|on)?\s*(?:on\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(?:(\d{4}),?\s*(?:at\s*)?)?(\d{1,2}):(\d{2})\s*([AaPp][Mm])?", text)
+        if m and m.group(1)[:3].lower() in _MONTHS:
+            h, mi = int(m.group(4)), int(m.group(5))
+            if m.group(6):
+                h = h % 12 + (12 if m.group(6).lower() == "pm" else 0)
+            y = int(m.group(3)) if m.group(3) else _dt.datetime.fromtimestamp(now).year
+            try:
+                cand = time.mktime(_dt.datetime(y, _MONTHS[m.group(1)[:3].lower()], int(m.group(2)), h, mi).timetuple())
+                if not m.group(3) and cand < now:
+                    cand = time.mktime(_dt.datetime(y + 1, _MONTHS[m.group(1)[:3].lower()], int(m.group(2)), h, mi).timetuple())
+            except (ValueError, OverflowError):
+                cand = None
+    if cand is None:
+        m = re.search(r"in\s+((?:\d+\s*(?:days?|d|hours?|hrs?|h|minutes?|mins?|m)\b[\s,]*(?:and\s+)?)+)", text, re.I)
+        if m:
+            tot = 0
+            for n, u in re.findall(r"(\d+)\s*(days?|d|hours?|hrs?|h|minutes?|mins?|m)\b", m.group(1), re.I):
+                tot += int(n) * (86400 if u[0].lower() == "d" else 3600 if u[0].lower() == "h" else 60)
+            cand = now + tot if tot else None
+    if cand is None:
+        m = re.search(r"resets?\s*(?:at\s*)?(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])(?:\s*\(([A-Za-z_/+-]+)\))?", text)
+        if m:
+            h = int(m.group(1)) % 12 + (12 if m.group(3).lower() == "pm" else 0)
+            mi = int(m.group(2) or 0)
+            try:
+                import zoneinfo
+                tz = zoneinfo.ZoneInfo(m.group(4)) if m.group(4) else None
+            except Exception:
+                tz = None
+            t = _dt.datetime.fromtimestamp(now, tz).replace(hour=h, minute=mi, second=0, microsecond=0)
+            if t.timestamp() <= now:
+                t += _dt.timedelta(days=1)
+            cand = t.timestamp()
+    if cand is None or cand < now - 60 or cand > now + 40 * 86400:
+        return None
+    return max(cand, now + 60)
+
+
+def engine_paused(reg, engine, now):
+    return _parse(((reg.get("engine_pause") or {}).get(engine) or {}).get("until") or "") > now
+
+
+def record_usage_limit(flags, reg, engine, text, now):
+    """Pause ONE engine until its quota resets (parsed), else exponential backoff; one alert per pause (idempotent)."""
+    ep = reg.setdefault("engine_pause", {}).setdefault(engine, {})
+    last = float(ep.get("last_hit_ts") or 0)
+    if now - last > 24 * 3600:
+        ep["streak"], ep["streak_start"] = 0, _iso(now)
+    if now - last > 120:  # several sessions dying in one pass are one hit
+        ep["streak"] = int(ep.get("streak", 0)) + 1
+    ep["last_hit_ts"] = now
+    reset = parse_reset(text, now)
+    if reset is not None:
+        until, kind, known = reset, ("weekly" if reset - now > 12 * 3600 else "5h"), True
+    else:
+        until, kind, known = now + BACKOFF_S[min(max(int(ep["streak"]), 1) - 1, len(BACKOFF_S) - 1)], "unknown", False
+    until = max(until, _parse(ep.get("until") or ""))
+    ep.update({"until": _iso(until), "kind": kind, "reset_known": known})
+    disc = f"{engine}-{ep['until']}" if known else f"{engine}-unknown-{ep.get('streak_start')}"
+    summary = (f"{engine} usage limit ({kind}): resets {ep['until']}; {engine} sessions paused until then, other engines unaffected"
+               if known else f"{engine} usage limit, reset time not parseable: backing off to {ep['until']} (streak {ep['streak']}); "
+               f"other engines unaffected")
+    try:
+        rf_notify.emit(flags, "quota", "", disc, summary, "critical", owner="", detail={"engine": engine, "until": ep["until"], "kind": kind})
+    except Exception as ex:  # an alert failure must never stop the dispatcher
+        log(flags, f"QUOTA-ALERT-FAILED {engine}: {ex!r}")
+    return ep["until"]
+
+
+def compile_ok(path):
+    """py_compile `path`; (ok, message). The dispatcher never execs or reloads a copy that does not compile."""
+    import py_compile
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        try:
+            py_compile.compile(path, cfile=os.path.join(td, "x.pyc"), doraise=True)
+            return True, ""
+        except (py_compile.PyCompileError, OSError, SyntaxError) as ex:
+            return False, str(ex)
+
+
+def preflight(path=None):
+    """Compile this script and the sibling modules it imports; SystemExit(3) on failure."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for f in (path or os.path.abspath(__file__), os.path.join(here, "backlog_gen.py"), os.path.join(here, "rowflow", "notify.py")):
+        ok, msg = compile_ok(f)
+        if not ok:
+            print(f"REFUSING TO START: {f} does not compile: {msg}", file=sys.stderr)
+            raise SystemExit(3)
 ENGINES = ("codex", "claude", "opencode")
 # `WRAPPED <sha>` is the boundary line (2026-11-01 ruling); `WRAPUP: <sha>` is the v1 form, still accepted.
 FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
@@ -1203,6 +1310,23 @@ def inference_next(e) -> bool:
     return why.startswith("next=inference") or why.startswith("making-ready")
 
 
+def quota_transfer_plan(reg, S, now):
+    """Opt-in (registry `quota_transfer`: true, default OFF): idle sessions on a quota-paused engine whose next step is
+    NOT inference move to the first engine that is not paused, through the existing `transfer` verb."""
+    if not reg.get("quota_transfer"):
+        return []
+    out = []
+    for slug, e in S.items():
+        eng = e.get("engine", "codex")
+        if (e.get("status") in ("done", "retired") or alive(e.get("pid")) or not engine_paused(reg, eng, now)
+                or (e.get("_work") or ("",))[0] != "continue" or inference_next(e) or is_generalist(e)):
+            continue
+        alt = next((x for x in ENGINES if x != eng and not engine_paused(reg, x, now)), None)
+        if alt:
+            out.append((slug, alt))
+    return out
+
+
 def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=None, keeper_log=None):
     now = now or time.time()
     repo = repo or ROOT
@@ -1233,8 +1357,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 e["session_id"] = session_id_from(out, e.get("engine", "codex"))
             errs = [ln for ln in tailtxt.splitlines() if re.search(r'"type":\s*"(error|turn\.failed)"|^Error|API Error', ln)]
             if any(USAGE_RX.search(ln) for ln in errs):
-                reg["paused_until"] = _dt.datetime.fromtimestamp(now + PAUSE_S, _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                log(flags, f"USAGE-LIMIT {slug}: dispatcher paused until {reg['paused_until']} (work not dropped; re-queued)")
+                eng = e.get("engine", "codex")
+                until = record_usage_limit(flags, reg, eng, "\n".join(errs) + "\n" + tailtxt, now)
+                log(flags, f"USAGE-LIMIT {slug}: engine {eng} paused until {until} (other engines keep running; work not dropped; re-queued)")
                 if e.get("pending_event"):
                     st.setdefault("queue", []).insert(0, e["pending_event"])
             rep = turn_report(flags, slug, e)  # DSH-1: structured record first, transcript regex as the fallback
@@ -1395,6 +1520,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             e = S.get(ev["slug"])
             if not e or e.get("status") in ("done", "retired"):
                 continue
+            if engine_paused(reg, e.get("engine", "codex"), now):  # quota gates RESUME only; filing by script never waits for it
+                if ev.get("kind") != "awaiting" and ev.get("rid") and "script_filed" not in ev and not filed(flags, ev["rid"]):
+                    rc, out = file_result(flags, ev["rid"], e.get("cwd") or lane_dir(ev["slug"]))
+                    ev["script_filed"] = rc
+                    log(flags, f"FILED-WHILE-QUOTA-PAUSED {ev['rid']} rc={rc} (engine {e.get('engine', 'codex')} paused; owner resumes later)")
+                rest.append(ev)
+                continue
             if alive(e.get("pid")) or ev["slug"] in launched or live >= cap + FILING_SLOTS or not e.get("session_id"):  # DSH-4
                 rest.append(ev)
                 continue
@@ -1420,12 +1552,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         # never stop readying inference); backlog-priority order holds within each tier. Ordering only, no preemption.
         work = [((0 if inference_next(e) else 1, rank(e.get("handoff"), slug, 0)), slug, None) for slug, e in S.items()
                 if e.get("status") not in ("done", "retired") and not alive(e.get("pid")) and slug not in launched
+                and not engine_paused(reg, e.get("engine", "codex"), now)
                 and not any(ev["slug"] == slug for ev in rest)
                 and ((e.get("_work") or ("",))[0] == "continue" or ((e.get("_work") or ("",))[0] == "pause" and not wrapped(e, lcache)))]
         for slug, e in S.items():  # unacked CRITICAL row alerts wake a non-running owner (operator 2026-11-05)
             if slug in launched or any(w[1] == slug for w in work) or any(ev["slug"] == slug for ev in rest):
                 continue
-            if alert_wake(flags, slug, e, now):
+            if not engine_paused(reg, e.get("engine", "codex"), now) and alert_wake(flags, slug, e, now):
                 e["_work"], e["alert_wake_at"] = ("continue", "handle the UNHANDLED ROW ALERTS above first, ack each"), now_iso()
                 log(flags, f"ALERT-WAKE {slug}: unacked critical row alert(s)")
                 work.append(((-1, (-1, 0)), slug, None))
@@ -1439,7 +1572,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
-                new = start_handoff(flags, reg, h, runner, st, live, cap) if live < cap else None
+                new = start_handoff(flags, reg, h, runner, st, live, cap) if live < cap and not engine_paused(reg, reg.get("default_engine", "codex"), now) else None
                 if new:
                     for ev in (st.get("unowned") or {}).pop(hkey(h["handoff"]), []):
                         st.setdefault("queue", []).append(dict(ev, slug=new))  # delivered to the new owner next pass
@@ -1461,12 +1594,20 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             for slug in started:
                 write_backlog_for(flags, slug, None, priority, keeper_log, repo)
         S = reg["sessions"]
+    moves = quota_transfer_plan(reg, S, now)
     for e in S.values():
         e.pop("_work", None)
     st["seen"] = sorted(seen)
-    reg["dispatcher"] = {"version": VERSION, "last_pass": now_iso(), "live": live, "paused": paused}
+    reg["dispatcher"] = {"version": VERSION, "last_pass": now_iso(), "live": live, "paused": paused,
+                         "engines_paused": sorted(k for k in (reg.get("engine_pause") or {}) if engine_paused(reg, k, now))}
     save(reg_path(flags), reg)
     save(state_path(flags), st)
+    for slug, eng in moves:  # transfer() reloads the registry from disk, so it runs after the save
+        try:
+            transfer(flags, slug, eng)
+            log(flags, f"QUOTA-TRANSFER {slug} -> {eng} (its engine is quota-paused; next step is not inference)")
+        except Exception as ex:
+            log(flags, f"QUOTA-TRANSFER-FAILED {slug} -> {eng}: {ex!r}")
     return reg, st
 
 
@@ -1730,7 +1871,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status"])
+    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -1741,6 +1882,10 @@ def main(argv=None):
     ap.add_argument("--priority", default=None, help="backlog-priority.json for the auto-start ranking (default: backlog_gen's)")
     ap.add_argument("--keeper-log", default=None)
     a = ap.parse_args(argv)
+    if a.cmd == "compile-check":  # churn_up.sh: `handoff_sessions.py compile-check <installed copy>` before exec
+        ok, msg = compile_ok(a.slug or os.path.abspath(__file__))
+        print("OK" if ok else f"SYNTAX-FAIL: {msg}")
+        return 0 if ok else 3
     if a.cmd == "pretty":
         pretty()
         return 0
@@ -1781,6 +1926,9 @@ def main(argv=None):
         save(reg_path(a.flags), reg)
         print(bp, e.get("pid") or "")
         return 0
+    preflight()
+    me = os.path.abspath(__file__)
+    born = os.stat(me).st_mtime
     while True:
         try:
             dispatch_once(a.flags, seed=a.seed, priority=a.priority, keeper_log=a.keeper_log)
@@ -1789,6 +1937,17 @@ def main(argv=None):
         if not a.loop:
             return 0
         time.sleep(a.interval)
+        try:
+            changed = os.stat(me).st_mtime != born
+        except OSError:
+            changed = False
+        if changed:  # reload onto a changed script only if it compiles; otherwise keep running the loaded code
+            ok, msg = compile_ok(me)
+            if ok:
+                log(a.flags, "RELOAD: script changed and compiles; re-exec")
+                os.execv(sys.executable, [sys.executable, "-I", me] + sys.argv[1:])
+            born = os.stat(me).st_mtime
+            log(a.flags, f"RELOAD-REFUSED: changed script does not compile ({msg[:200]}); continuing on loaded code")
 
 
 if __name__ == "__main__":
