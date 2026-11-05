@@ -1,0 +1,29 @@
+{
+  "head": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105-source",
+  "targets": [
+    [
+      "process_single_task",
+      "tools/server/server-context.cpp"
+    ],
+    [
+      "update_slots",
+      "tools/server/server-context.cpp"
+    ]
+  ],
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/job.py": "781e141765f98625b7dddb83cfd89611dee3067aa31d3a869006c3f6a79501bc",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/tool_seal.py": "629ba4e86be0589fbf835e35582e94277304a56a0abc91a54d1b3191db32652a",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/launch.sh": "d8e7d429410b87a9079def107cc85ce03721acdb23b7544deaeac9d1983dc454",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/spec.json": "b108d5e79d6f98ab51d1dd6380a640b48c6301dd42f53f74deeb91ec76e04e3a",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/README.md": "6d95cefe7980d11763ec6e175af6c05215e3808755c551183d8957d3a65e8d78",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/bin/gitnexus": "04f2b08507b8d00ad803b082d9997414b05274a4d8c71a1b270f5c670f2ac994",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105/tool-manifest.json": "c6f13b4afc677dc87fea0619813dcb0f547bfc2ad91243fa215615a0d97f2e7d",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105-source/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/tmp/kvu/kpf131-impact-r4-20261105-source/tools/server/server-context.cpp": "880c382aa2d474bab5d80b6de5905f1278ec6ab4c470d415c5d26f7e9e94e2c0",
+    "/usr/local/bin/node": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+    "/usr/bin/git": "3446b26047255f16d588eda4527aeedf02bd173449382d93bfe8a141257876c9"
+  }
+}

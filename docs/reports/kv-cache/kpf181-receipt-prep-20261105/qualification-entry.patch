@@ -1,0 +1,48 @@
+--- qualification_entry.py
++++ qualification_entry.REVIEW.py
+@@ -6,11 +6,16 @@
+ """
+ import hashlib,json,os,pathlib,signal,subprocess,sys,time
+ from native_event_bridge import Refused,load_canonical,write_exclusive
++from model_receipt import verify as verify_model_receipt
+ D=pathlib.Path(__file__).resolve().parent
+ OLD=pathlib.Path('/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3')
+ TARGET='/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf'
+ DRAFT='/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf'
+ EXPECTED_MODELS={TARGET:'a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348',DRAFT:'7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751'}
++# Review gate: receipt bytes do not yet exist; bind the actual digest in source
++# after out-of-grant prepare, before this candidate can ever be enabled.
++RECEIPT_PATH = pathlib.Path('/mnt/raid0/llm/tmp/kvu/kpf181-model-receipt-20261105.json')
++RECEIPT_SHA256 = None
+ CUSTODY_PROVIDER=None  # no existing all-writer participant: cannot claim one
+ HALT=False
+ 
+@@ -75,8 +80,9 @@
+  finally:sys.path.pop(0)
+  m=q.load_manifest(pathlib.Path(env['WS58_MANIFEST_PATH']))
+  require_admission(m,q)
+- for p,h in EXPECTED_MODELS.items():
+-  if sha(p)!=h:raise Refused('full model identity mismatch: '+p)
++ if RECEIPT_SHA256 is None:raise Refused('pre-grant receipt digest has not been source-pinned')
++ try:verify_model_receipt(RECEIPT_PATH, RECEIPT_SHA256)
++ except (OSError,ValueError,KeyError,TypeError) as e:raise Refused('pre-grant model receipt failed: '+str(e))
+  out=pathlib.Path(env['FILLER_RESULTS_DIR']);out.mkdir(parents=True,exist_ok=True)
+  # qdir is chosen by the keeper; require result files to be new within it.
+  phase=env['FILLER_QUAL_PHASE'];runout=out/('kpf181-'+phase)
+@@ -98,6 +104,8 @@
+     child.terminate()
+     try:child.wait(timeout=8)
+     except subprocess.TimeoutExpired:child.kill();child.wait(timeout=8)
++ try:verify_model_receipt(RECEIPT_PATH, RECEIPT_SHA256)
++ except (OSError,ValueError,KeyError,TypeError) as e:raise Refused('post-run model identity failed: '+str(e))
+  rc=child.returncode;first=json.loads((out/('first-'+phase+'.json')).read_text())
+  if not validate(m,first):raise Refused('first request no longer validates')
+  proof={'id':m['id'],'nonce':env['WS58_QUAL_NONCE'],'phase':phase,'first_request':first,'observed_cpus':sorted(os.sched_getaffinity(0)),'disk':{'job_floor_gib':m['job_floor_gib']}}
+@@ -114,5 +122,7 @@
+  return 0 if phase=='normal' else 75
+ 
+ if __name__=='__main__':
++ print('REFUSED: isolated receipt integration is disabled pending writer custody and qualification',file=sys.stderr)
++ sys.exit(78)
+  try:sys.exit(run())
+  except (Refused,OSError,KeyError,ValueError,TypeError) as e:print('REFUSED: '+str(e),file=sys.stderr);sys.exit(78)
