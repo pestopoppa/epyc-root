@@ -1,0 +1,6 @@
+f3197ac64d1befac04d8d4adee6938b91dfedb35c8028f47682c651aa1e6a949  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/check.py
+b2fc1fdd67317b1f7c20854c01526685359b95316f60b6185302614272df73e0  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/supervise.py
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/verify_ggml_linkage.sh
+ac4b07d3b3705cab3d0a34d9af02b3f7092421ea41aeb9dd4005a65b47b6d3b4  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/job.sh
+cc5d2a14885c8905d795d518051cecd5a179ca2d5228b6ee4ea09c864ecc5271  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/proof.py
+366bf28b5a65cf572b04f521c3cec51f2ce3f1de4db7aec64d0fd675345a7cef  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/complete.py

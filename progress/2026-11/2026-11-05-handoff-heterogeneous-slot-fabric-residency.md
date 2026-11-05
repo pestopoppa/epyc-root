@@ -119,3 +119,7 @@ Filed same-UID custody qualification COMPLETE with UNSAFE post-final-check mutat
 ## 02:43Z — File synthetic raw maps and publish own-child virtual-memory controls
 
 Filed KPF-50 raw maps 20/20 synthetic controls; native provenance remains UNKNOWN. Published a bounded private own-child process_vm_readv qualification after its four-CPU smoke; the full controls remain pending and do not prove GPU or physical-page provenance.
+
+## 02:50Z — File synthetic residency, prefix integration and GPU direct parity; ready backend build
+
+Filed 10/10 synthetic residency controls with native UNKNOWN, six model-free prefix integration controls, and narrow D64 F16/Q8 GPU parity. Published the source-bound backend-ops build after its four-CPU object smoke; linked build and GPU tests remain pending.

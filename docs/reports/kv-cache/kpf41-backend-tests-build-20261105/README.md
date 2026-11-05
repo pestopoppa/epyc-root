@@ -1,0 +1,1 @@
+Source-bound gfx90a HIP build of existing test-backend-ops from detached candidate 15caecbbf; publisher smoke compiles only its source object on four CPUs. Full result is linked executable, own-library linkage and digests; no GPU execution, backend parity or production conclusion.
