@@ -51,3 +51,7 @@ KPF-17: prepared private STOP-precedence successor with captured-PID cleanup, te
 ## 00:58Z — Repair and publish STOP-precedence qualification
 
 KPF-17: original STOP successor publisher smoke failed after ten synthetic cases because its result had no recognized numeric progress and its completion predicate used the full-run path. Published kvfork17-wrapper-stop-successor-v2-20261105 after four-CPU smoke PASS, with ten validated case_count observations and an isolated smoke completion path. Full qualification, native oracle and same-UID race safety remain open. Retained original failure and ungranted direct fixture disclosure.
+
+## 01:00Z — Publish corrected GPU mechanics qualification
+
+KVU-11c: kvu11c-gpu-mechanics-smoke-r2-20261105 publisher smoke PASS and row published; the model-free GPU witness reached first progress with 488,624,128 bytes sampled VRAM. The granted TTS request, thread-option behavior, audio and promotion remain open.
