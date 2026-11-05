@@ -131,3 +131,7 @@ Filed the original map_files acquisition as inconclusive after padded-range ENOE
 ## 02:59Z — File slots and source-census controls; publish skip-candidate census
 
 Filed eleven model-free G3 slot controls; this is not native cancellation. Filed sixteen synthetic zero-skip parser controls and the direct-only HSF-4 aggregate; native impact coverage and fleet representativeness remain unknown. Published a source-bound skip-candidate census after four-CPU smoke, without asserting it identifies the historical skipped files.
+
+## 03:06Z — File native vocabulary census and ready bounded tokenizer observation
+
+Filed kpf623-byte-alignment-exploratory-20261105 under its own decision rule; broader empty-auxiliary enumeration was independently completed by r2. Filed the fresh kpf623-census-r2 native inventory: both 151,936-piece output hashes match the exploratory inputs. Mapping evidence is producer-reported and in-run model custody is stat-only. Published a source-bound, vocabulary-only auxiliary tokenizer observation over 256 uniquely decomposable target pieces after its four-CPU model-free smoke passed; full observation and contextual alignment remain open.

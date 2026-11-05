@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.preparation.v1",
+  "id": "kpf623-tokenizer-roundtrip-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 2,
+  "gib": 2,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "window_s": 660,
+  "smoke_timeout_s": 300,
+  "first_progress_s": 300,
+  "priority_rank": 45,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-62.3.TOKENIZER-ROUNDTRIP",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-tokenizer-roundtrip-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-tokenizer-roundtrip-20261105/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-tokenizer-roundtrip-20261105",
+  "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-tokenizer-roundtrip-20261105",
+  "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-tokenizer-roundtrip-20261105/STOP",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "ready": false,
+  "published": false,
+  "kind": "compute",
+  "unit_key": "case_count",
+  "lineage": "kpf623-tokenizer-roundtrip-20261105",
+  "question": "For the 256 uniquely decomposable target pieces, does auxiliary native tokenization reproduce the exact bytes and the unique auxiliary ID decomposition?",
+  "decision_rule": "OBSERVED only if exact sealed source headers, libraries, executable, case inputs and model stat identities remain unchanged, all 256 predeclared cases have ordered observations with bounded native tokenizer output, both native processes exit zero and owned direct children are absent. Report exact IDs, differing IDs, differing bytes, and unknown independently; no tokenizer compatibility, contextual span, selector quality, budget re-admission or G3 acceptance claim. Smoke compiles the actual helper and executes model-free smoke only.",
+  "controls": "Fixed add_special=false and parse_special=false; auxiliary vocab_only load without inference or model weight hashing; 256 nonempty unique cases preselected from sealed full byte census and exploratory records. Snapshot model stats before and after; capture native self-reported maps and child cleanup; refuse STOP, drift, time and output bounds.",
+  "limitations": [
+    "Producer-reported mappings and stat-only in-run model custody; compiler descendant cleanup not independently established.",
+    "256 unique pieces only, not ambiguous pieces, contextual tokenization, semantics, admission or quality."
+  ]
+}
