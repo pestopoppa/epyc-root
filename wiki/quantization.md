@@ -1261,3 +1261,11 @@ Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-f
 - **The C6 port35186 serving −4.75% "FAIL" was not significant** (CI −7.6%..+0.9%); a 24-pair re-measure is queued. The 27B identity mismatch was a harness sort-order bug (lexicographic arm serialization).
 
 Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)
+
+## Compiled Update — 2026-11-05 (operator wiki sweep 3, main-inf22): Q8_0 CPU prefill default and the q4_K unsupported-case rule
+
+- **CPU Q8_0 prefill.** The iqk Q8_0 prefill GEMM present in C6 but env-gated off gives 2.03x pp2048 / 1.56x pp8192 when made the compiled default (quality screen passed, decode check pending); see [hardware-optimization](hardware-optimization.md). At the served precision C6 still decodes about 2x faster than vLLM INT8 on one CPU quarter, so the gap is prefill only.
+- **GPU int8.** On gfx90a int8 MFMA has the same rate as bf16 (1024 ops/clk/CU), so int8 MMQ on MI210 saves bytes and dequant work, never MFMA time; the MI300 doubled-K int8 MFMAs re-express as two `16x16x16i8`.
+- **C6 q4_K MMVQ/MMQ fix.** The qualification candidate's unsupported-case set equals C5/v10 (operator-ratified rule), the full suite has 0 failures on the supported subset, and q4_K n=1..4 timing is within +5% after the per-lane fix (`f9f872ebc`, isum `9e9d7f291`).
+
+Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [portability report](../artifacts/analysis/mi300-to-mi210-portability-20261105.md)
