@@ -1,0 +1,12 @@
+ui-source: git diff c061d0a12 c061d0a12 -- tools/ui tools/server is EMPTY
+image-roots base: src=/mnt/raid0/llm/worktrees/kernels/champion-llg-fold-20261105 build=/mnt/raid0/llm/kernels/builds/cpu-20261105-c061d0a12-nollg prefix-maps=2 build-info=['10423', 'c061d0a', 'c061d0a12', 'c061d0a126dbd13a81062030e48e95993e77c9e1']
+image-roots new: src=/mnt/raid0/llm/worktrees/kernels/champion-llg-fold-20261105 build=/mnt/raid0/llm/kernels/builds/cpu-20261105-c061d0a12-llg prefix-maps=2 build-info=['10423', 'c061d0a', 'c061d0a12', 'c061d0a126dbd13a81062030e48e95993e77c9e1']
+  UNEXPLAINED libllama-common.so.0.0.10423
+      section set differs: ['.debug_abbrev', '.debug_aranges', '.debug_info', '.debug_line', '.debug_ranges', '.debug_str', '.note.gnu.property', '.plt.sec', '.tdata']
+  EXPLAINED   libllama-server-impl.so
+      note .note.gnu.build-id: differs (free)
+      note .rela.plt: layout-derived content shift
+      note .strtab: layout-derived content shift
+      note .symtab: layout-derived content shift
+(b) byte-identical=6 explained=1 explained-path=0 explained-ui=0 expected=0 unexplained/code-diff/missing=1
+(b) FAIL
