@@ -1114,9 +1114,9 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 261,
+      "closed": 265,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "open": 101,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1126,11 +1126,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 364,
+      "total": 368,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 123,
+          "closed": 125,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1452,
+          "line": 1453,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1576,
+          "line": 1577,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1903,
+          "line": 1904,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2042,
+          "line": 2043,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,28 +1188,28 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2595,
+          "line": 2596,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 37,
+          "closed": 38,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2732,
+          "line": 2733,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
         },
         {
           "blocked": 1,
-          "closed": 60,
+          "closed": 61,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3620,
+          "line": 3623,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 265,
+      "closed": 266,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 92,
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 358,
+      "total": 359,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 142,
+          "closed": 143,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1339,7 +1339,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1521,
+          "line": 1524,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1914,
+          "line": 1917,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
