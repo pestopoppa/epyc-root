@@ -1,0 +1,278 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -1,4 +1,5 @@
+ #include "server-context.h"
++#include "nemo-profile.h"
+ #include "server-chat.h"
+ #include "server-common.h"
+ #include "server-http.h"
+@@ -252,6 +253,7 @@
+ 
+ struct server_slot {
+     int id;
++    uint64_t nemo_last_decode_id = 0; // zero means no captured target decode
+ 
+     llama_context * ctx_tgt = nullptr;
+     llama_context * ctx_dft = nullptr;
+@@ -2073,6 +2075,13 @@
+ 
+         SLT_DBG(slot, "n_decoded = %d, n_remaining = %d, next token: %5d '%s'\n", slot.n_decoded, slot.n_remaining, result.tok, token_str.c_str());
+ 
++        if (nemo_profile::enabled()) {
++            nemo_profile::emit("token_processed", json({{"task_id", slot.task->id}, {"slot_id", slot.id},
++                {"target_decode_id", slot.nemo_last_decode_id}, {"token_id", result.tok},
++                {"native_decoded_total", slot.n_decoded}, {"native_accepted_draft_total", slot.n_draft_accepted},
++                {"continue", slot.has_next_token}, {"emitted_tokens", nullptr},
++                {"count_semantics", "native_decoded_includes_eos_and_stop_tokens_not_transport_emission"}}).dump());
++        }
+         return slot.has_next_token; // continue
+     }
+ 
+@@ -2214,6 +2223,12 @@
+     }
+ 
+     void send_final_response(server_slot & slot) {
++        if (nemo_profile::enabled()) {
++            nemo_profile::emit("final_summary", json({{"task_id", slot.task->id}, {"slot_id", slot.id},
++                {"native_decoded_total", slot.n_decoded}, {"native_accepted_draft_total", slot.n_draft_accepted},
++                {"native_draft_total", slot.n_draft_total}, {"emitted_tokens", nullptr},
++                {"stop_type", (int)slot.stop}, {"truncated", slot.truncated}}).dump());
++        }
+         auto res = std::make_unique<server_task_result_cmpl_final>();
+ 
+         res->id      = slot.task->id;
+@@ -4155,6 +4170,42 @@
+         }
+     }
+ 
++    // Prospective diagnostic only: explicit synchronization perturbs timing.
++    // Capture every target decode call in this file, including serial/exact replay.
++    // Drafter calls elsewhere are intentionally not covered or attributed.
++    int nemo_profile_decode(llama_context * ctx, llama_batch & view, const char * purpose) {
++        if (!nemo_profile::enabled()) return llama_decode(ctx, view);
++        const uint64_t id = nemo_profile::allocate();
++        json bindings = json::array();
++        for (auto & slot : slots) {
++            if (!slot.task) continue;
++            json rows = json::array();
++            for (int32_t row = 0; row < view.n_tokens; ++row) {
++                if (!view.n_seq_id || !view.seq_id || !view.seq_id[row]) {
++                    throw std::runtime_error("NEMO refuses target batch with missing sequence identity");
++                }
++                for (int32_t j = 0; j < view.n_seq_id[row]; ++j) {
++                    if (view.seq_id[row][j] == slot.id) { rows.push_back(row); break; }
++                }
++            }
++            if (rows.empty()) continue;
++            slot.nemo_last_decode_id = id;
++            bindings.push_back({{"task_id", slot.task->id}, {"slot_id", slot.id},
++                {"native_decoded_before", slot.n_decoded}, {"batch_rows", rows},
++                {"phase", slot.state == SLOT_STATE_GENERATING ?
++                    (slot.spec_draft.empty() ? "decode" : "verify") : "prefill_or_transition"}});
++        }
++        nemo_profile::emit("decode_begin", json({{"decode_id", id}, {"purpose", purpose},
++            {"input_rows", view.n_tokens}, {"context_identity", (uint64_t)(uintptr_t)ctx},
++            {"slot_bindings", bindings}, {"emitted_tokens", nullptr},
++            {"scope", "target_only_synchronized_diagnostic"}}).dump());
++        nemo_profile::decode_range range(id);
++        const int rc = llama_decode(ctx, view);
++        if (rc == 0) llama_synchronize(ctx);
++        range.finish(rc);
++        return rc;
++    }
++
+     // returns true = success ; false = retry with smaller batch size
+     // throw std::runtime_error on fatal error
+     bool decode(int32_t & n_batch, int32_t off, llama_batch & batch_view) {
+@@ -4200,7 +4251,7 @@
+                     n_verification_rows, batch_view.n_tokens, rowexact_verify ? "true" : "false");
+         }
+ 
+-        const int ret = llama_decode(ctx_tgt, batch_view);
++        const int ret = nemo_profile_decode(ctx_tgt, batch_view, "main_target");
+         if (reset_rowexact.active) {
+             llama_set_rowexact(ctx_tgt, false);
+             reset_rowexact.active = false;
+@@ -4338,7 +4389,7 @@
+             GGML_ASSERT(add_ok);
+             serial_batch.render();
+ 
+-            const int ret = llama_decode(slot.ctx_tgt, serial_batch.batch);
++            const int ret = nemo_profile_decode(slot.ctx_tgt, serial_batch.batch, "serial_target_verify");
+             metrics.on_decoded(slots);
+             if (ret != 0) {
+                 throw std::runtime_error(string_format(
+@@ -4395,7 +4446,7 @@
+ 
+         auto decode = [&](server_batch & sb, const char * what) {
+             sb.render();
+-            const int ret = llama_decode(slot.ctx_tgt, sb.batch);
++            const int ret = nemo_profile_decode(slot.ctx_tgt, sb.batch, "exact_target_replay");
+             metrics.on_decoded(slots);
+             if (ret != 0) {
+                 throw std::runtime_error(string_format("LLAMA_SPEC_EXACT %s decode failed: llama_decode returned %d", what, ret));
+@@ -4711,6 +4762,13 @@
+ 
+             // update how many tokens out of those tested were accepted
+             slot.n_draft_accepted += ids.size() - 1;
++            if (nemo_profile::enabled()) {
++                nemo_profile::emit("verification_result", json({{"task_id", slot.task->id}, {"slot_id", slot.id},
++                    {"target_decode_id", slot.nemo_last_decode_id}, {"accepted_drafts_this_round", ids.size()-1},
++                    {"verified_drafts_this_round", n_draft}, {"sampled_candidates", ids.size()},
++                    {"native_accepted_draft_total", slot.n_draft_accepted},
++                    {"count_semantics", "native_acceptance_before_stop_processing"}}).dump());
++            }
+             slot.n_draft_verif_steps += 1;
+ 
+             if (slot.n_accepted_per_pos.empty()) {
+@@ -4928,6 +4986,13 @@
+         std::vector<server_task> tasks;
+ 
+         const auto & prompt = data.at("prompt");
++        const bool nemo_join = nemo_profile::enabled() && data.contains("nemo_request_id");
++        const std::string nemo_request_id = nemo_join ? data.at("nemo_request_id").get<std::string>() : "";
++        if (nemo_join && (nemo_request_id.empty() || nemo_request_id.size() > 128 ||
++                          !prompt.is_string() || json_value(data, "stream", false) ||
++                          json_value(data, "n", 1) != 1 || res_type != TASK_RESPONSE_TYPE_NONE)) {
++            throw std::runtime_error("NEMO request identity requires one native non-stream completion");
++        }
+         // TODO: this log can become very long, put it behind a flag or think about a more compact format
+         //SRV_DBG("Prompt: %s\n", prompt.is_string() ? prompt.get<std::string>().c_str() : prompt.dump(2).c_str());
+ 
+@@ -4979,6 +5044,10 @@
+                     meta->logit_bias_eog,
+                     data);
+ 
++            if (nemo_join) {
++                if (inputs.size() != 1 || i != 0 || task.params.n_cmpl != 1) throw std::runtime_error("NEMO requires exactly one input and one completion");
++                nemo_profile::emit("request_join", json({{"request_id", nemo_request_id}, {"task_id", task.id}}).dump());
++            }
+             task.params.message_spans = task.tokens.find_message_spans(delimiters);
+ 
+             task.id_slot = json_value(data, "id_slot", -1);
+@@ -5025,6 +5094,9 @@
+             GGML_ASSERT(!arr.empty() && "empty results");
+             if (arr.size() == 1) {
+                 // if single request, return single object instead of array
++                if (nemo_profile::enabled() && data.contains("nemo_request_id")) {
++                    arr[0]["nemo_request_id"] = data.at("nemo_request_id");
++                }
+                 res->ok(arr[0]);
+             } else if (res_type == TASK_RESPONSE_TYPE_OAI_CHAT || res_type == TASK_RESPONSE_TYPE_OAI_CMPL) {
+                 // if multiple results in OAI format, we need to re-format them
+--- a/tools/server/CMakeLists.txt
++++ b/tools/server/CMakeLists.txt
+@@ -25,6 +25,16 @@
+ 
+ if (BUILD_SHARED_LIBS)
+     set_target_properties(${TARGET} PROPERTIES POSITION_INDEPENDENT_CODE ON)
++endif()
++
++option(LLAMA_NEMO_BOUNDARY_PROFILE "Build prospective synchronized NEMO diagnostic markers" OFF)
++if(LLAMA_NEMO_BOUNDARY_PROFILE)
++    if(NOT EXISTS "${LLAMA_NEMO_ROCTX_INCLUDE}/roctx.h" OR NOT EXISTS "${LLAMA_NEMO_ROCTX_LIBRARY}")
++        message(FATAL_ERROR "NEMO instrument requires exact ROCTX include directory and library")
++    endif()
++    target_compile_definitions(${TARGET} PRIVATE LLAMA_NEMO_BOUNDARY_PROFILE=1)
++    target_include_directories(${TARGET} PRIVATE "${LLAMA_NEMO_ROCTX_INCLUDE}")
++    target_link_libraries(${TARGET} PUBLIC "${LLAMA_NEMO_ROCTX_LIBRARY}")
+ endif()
+ 
+ target_include_directories(${TARGET} PRIVATE ../mtmd)
+--- /dev/null
++++ b/tools/server/nemo-profile.h
+@@ -0,0 +1,94 @@
++#pragma once
++// Diagnostic timestamp/correlation instrument. Disabled builds retain normal decode.
++// Counts keep native meanings: n_decoded includes EOS/stops, not SSE emitted tokens.
++#include <atomic>
++#include <cstdint>
++#include <cstdio>
++#include <cstdlib>
++#include <mutex>
++#include <stdexcept>
++#include <string>
++#include <time.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++#include <roctx.h>
++#endif
++namespace nemo_profile {
++static constexpr const char * signature = "NEMO_SERVER_BOUNDARY_V1_C3_SYNCHRONIZED_DIAGNOSTIC";
++inline uint64_t now_ns() {
++    timespec t{};
++    if (clock_gettime(CLOCK_MONOTONIC, &t)) throw std::runtime_error("NEMO monotonic clock failed");
++    return uint64_t(t.tv_sec)*1000000000ULL + uint64_t(t.tv_nsec);
++}
++inline bool enabled() {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++    const char * path = std::getenv("LLAMA_NEMO_BOUNDARY_JSONL");
++    return path && *path;
++#else
++    return false;
++#endif
++}
++inline uint64_t allocate() { static std::atomic<uint64_t> next{0}; return ++next; }
++inline void emit(const char * kind, const std::string & payload) {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++    if (!enabled()) return;
++    static FILE * out = [] {
++        FILE * f = std::fopen(std::getenv("LLAMA_NEMO_BOUNDARY_JSONL"), "wx");
++        if (!f) throw std::runtime_error("NEMO output must be a new writable file");
++        return f;
++    }();
++    static std::mutex lock;
++    std::lock_guard<std::mutex> guard(lock);
++    const int rc = std::fprintf(out,
++        "{\"schema\":\"epyc.nemo.server-boundary.v1\",\"instrument\":\"%s\",\"kind\":\"%s\","
++        "\"clock_domain\":\"CLOCK_MONOTONIC\",\"observed_ns\":%llu,\"pid\":%ld,\"tid\":%ld,\"data\":%s}\n",
++        signature, kind, (unsigned long long)now_ns(), (long)getpid(),
++        (long)syscall(SYS_gettid), payload.c_str());
++    if (rc < 0 || std::fflush(out)) throw std::runtime_error("NEMO JSONL write failed");
++#else
++    (void) kind; (void) payload;
++#endif
++}
++inline void fiducial(uint64_t id, const char * edge) {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++    const std::string label = std::string(signature) + ":clock_sync:" + std::to_string(id) + ":" + edge;
++    const auto before = now_ns(); roctxMarkA(label.c_str()); const auto after = now_ns();
++    emit("clock_sync", "{\"marker\":\"" + label + "\",\"before_ns\":" + std::to_string(before) +
++        ",\"after_ns\":" + std::to_string(after) + "}");
++#else
++    (void) id; (void) edge;
++#endif
++}
++class decode_range {
++    uint64_t id_, begin_ = 0, range_ = 0;
++    bool done_ = false;
++public:
++    explicit decode_range(uint64_t id): id_(id) {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++        fiducial(id_, "before");
++        const std::string label = std::string(signature) + ":decode:" + std::to_string(id_);
++        begin_ = now_ns(); range_ = roctxRangeStartA(label.c_str());
++#endif
++    }
++    decode_range(const decode_range &) = delete;
++    ~decode_range() {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++        if (!done_) { roctxRangeStop(range_); emit("decode_incomplete", "{\"decode_id\":" + std::to_string(id_) + "}"); }
++#endif
++    }
++    void finish(int rc) {
++#ifdef LLAMA_NEMO_BOUNDARY_PROFILE
++        const auto end = now_ns(); roctxRangeStop(range_); done_ = true;
++        emit("decode_end", "{\"decode_id\":" + std::to_string(id_) + ",\"start_ns\":" +
++            std::to_string(begin_) + ",\"completion_ns\":" + std::to_string(end) +
++            ",\"llama_decode_rc\":" + std::to_string(rc) +
++            ",\"completion_semantics\":\"host_after_llama_synchronize_on_success\",\"synchronized\":" +
++            (rc == 0 ? "true" : "false") + "}");
++        fiducial(id_, "after");
++#else
++        (void) rc;
++#endif
++    }
++};
++} // namespace nemo_profile

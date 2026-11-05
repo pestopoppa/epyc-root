@@ -58,3 +58,13 @@ The reference packet also includes two mocked-transport checks: exact request
 and response bytes retain the same request ID, while bad echoes and unsupported
 request shapes fail closed without issuing an invalid request. These tests do
 not run a server or establish marker-to-token correlation.
+
+## Pinned C3 integration
+
+`c3-instrument.patch` is the existing r14 marker patch, including the native
+request-to-task join and single-result echo. `INTEGRATION.json` records its
+source review and successful apply check against C3
+`dcc853b5559bef4e50acf251f4910f7f4e0ba538`. The source review found that the
+join uses the assigned task ID before queue submission and applies only to one
+non-streaming completion. The checked source worktree was removed. The patch
+has not been compiled or validated against a live request or profiler capture.

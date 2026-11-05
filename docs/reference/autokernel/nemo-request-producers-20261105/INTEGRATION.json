@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.nemo.request-join-integration.v1",
+  "date": "2026-11-05",
+  "source_commit": "dcc853b5559bef4e50acf251f4910f7f4e0ba538",
+  "source_worktree": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/source-request-join",
+  "patch_artifact": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/nemo-server-marker-request-join/instrument.patch",
+  "patch_sha256": "3a6b0e485464038e216b1875db9f5c6072efa19751251fe7415bd1df5d575d7e",
+  "patch_status": "existing r14 instrumentation patch; already contains the request_join fragment and response echo; reused without creating or filing another r14 event",
+  "apply_check": "PASS against detached C3 worktree; patch then applied in scratch worktree; git diff --check PASS",
+  "api_scope_review": {
+    "handler": "server_routes::handle_completions_impl (tools/server/server-context.cpp)",
+    "accepted_case": "profiling enabled, explicit request ID, string prompt, non-streaming, n=1, TASK_RESPONSE_TYPE_NONE; exactly one tokenized input and one completion",
+    "join": "emitted after task.id assignment and before rd.post_tasks, with that actual task.id",
+    "echo": "added only to the single-result non-stream response object",
+    "limits": [
+      "no streaming response echo",
+      "does not establish token boundary/profiler alignment or emitted-token reconciliation",
+      "cannot qualify historical traces"
+    ]
+  },
+  "compute": "none; no build, server/client request, or compute row",
+  "historical_event": "none invented or reassigned",
+  "r14": "no duplicate run, row, filing, or event",
+  "source_worktree_cleanup": "removed; git worktree list confirms the temporary detached worktree is absent"
+}
