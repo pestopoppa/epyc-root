@@ -4,15 +4,28 @@
     "handoff-active": 30,
     "handoff-blocked": 1,
     "handoff-completed": 372,
-    "progress": 1329,
+    "progress": 1330,
     "research": 278
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-04T23:40:50Z",
-  "mode": "touch",
-  "scan_time": "2026-11-04T23:40:50Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-11-05T11:04:35Z",
+    "scope_paths": [
+      "handoffs/active/mi210-serving-program.md",
+      "progress/2026-11/2026-11-05-inf22.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-05T11:04:35Z",
   "schema_version": 1,
-  "source_set_hash": "55354dcf216426cec2c4db69193d761f89cec1ff6cdcfae87cae3d650612d940",
+  "source_set_hash": "5075ea373eb520965eddba0c44769094be4aa51c81ec6a04c7308c85b4b2045b",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -151,10 +164,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1181d4d56c095c06722a94f72862ffda4f175e2be54b15db704d0c0862f0456b",
-      "modified": "2026-11-04T23:36:16Z",
+      "content_hash": "1fac1df525f07feb6ef851cf1b9bab6b9f745515dff1e0ec0f7f6d384e6f2ffd",
+      "modified": "2026-11-05T11:02:51Z",
       "path": "handoffs/active/mi210-serving-program.md",
-      "size": 645519,
+      "size": 645521,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -15959,6 +15972,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "e81c36a69c783a279b94e6816dc38e794560e045b25bf748a8d07b8faf599e7a",
+      "modified": "2026-11-05T11:03:39Z",
+      "path": "progress/2026-11/2026-11-05-inf22.md",
+      "size": 4070,
+      "title": "2026-11-05 \u2014 INF-22 (MI210 serving tie-in), main-inf22",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-04T23:36:16Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -19343,7 +19364,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2416,
+  "total_new": 2417,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
