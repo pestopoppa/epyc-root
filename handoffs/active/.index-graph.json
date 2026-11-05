@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T09:02:34Z",
+  "generated_at": "2026-11-05T09:13:03Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1567,15 +1567,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 201,
-      "dispatchable": 17,
+      "closed": 202,
+      "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
-      "open": 19,
+      "open": 20,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1631,18 +1631,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 6,
           "gates": [],
           "line": 1953,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 5,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2264,
+          "line": 2265,
           "name": "qwen38-27b-replace-qwen36",
           "open": 1,
           "readiness": "ready"
@@ -1663,7 +1663,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2874,
+          "line": 2875,
           "name": "numa-prefill-decode-disaggregation",
           "open": 3,
           "readiness": "blocked"
