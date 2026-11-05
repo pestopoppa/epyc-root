@@ -1,0 +1,52 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "FIXTURE_PASS iff honest old-image find_slot selects 0,1 then 2,3 following apply_ubatch, skip-apply mutant selects 0,1 and is detected, both own-child processes exit 0 with executable and all five mapped ggml/llama DSO pin/identity snapshots agreeing before and after. Missing data, changed mapping or any other outcome INVALID. No historical control or layout conclusion.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-13.1-NATIVE-FINDSLOT",
+ "id": "kvu-kpf131-old-native-findslot-20261104",
+ "keep": [
+  "fixture",
+  "run.py",
+  "map_identity.py",
+  "pins.json",
+  "launch.sh",
+  "spec.json",
+  "out/**",
+  "fixture.cpp",
+  "build-manifest.json",
+  "complete.py",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/launch.sh",
+  "sha256": "03dc2c43c2ba0885d4fe404378362f49353edfd9860c779a8d951964be2c98bc"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 30.0,
+ "publish_warnings": [
+  "kv-cache-program.md:393: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "kv-cache-program.md:393: untestable prose prerequisite: 'require honest `find_slot` placement before and after `apply_ubatch` and detect a skip-apply mutation, with executable a'"
+ ],
+ "published_at": "2026-11-04T23:40:34Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/STOP",
+ "unit_key": "answer",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1"
+}

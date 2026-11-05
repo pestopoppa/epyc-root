@@ -1,0 +1,12 @@
+{
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/run.py": "172cb91b29af5bdbd862d6ac377f995565869980e954362b6e16fe433d5b6686",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/validate.py": "c2bf9ed29eb224f5b63b1ab6018f02e121bce372ef1dfb22238fb6970add16e4",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/complete.py": "e94ce63992d1753129e0e7a5140d5eb8b23de926785495307a9d52f41c71fa8d",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/map_identity.py": "90aab639b65530823fc087e0aae1499f02c6a655ad8aca5a522d2f197e58ae1c",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/pins.json": "29179bfc74e51053fad1c02bd997cf484ab9e9c67c74a04422d42c319bb6b022",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/fixture": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/fixture.cpp": "086b7f9bb76087bd841b65b4d9f40ea5b8dda880b70204140222fd9078921fed",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/build-manifest.json": "9237c44d954878d660b97298c89675a8d3ad26478401b974db8b4a9ee7d212ab",
+  "/mnt/raid0/llm/tmp/kvu/find-slot-native-r2-20261104/spec.json": "2461409bfedc246106557c58a94d3abd6856af1dc91d3729b36d5b28e457ef88",
+  "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+}
