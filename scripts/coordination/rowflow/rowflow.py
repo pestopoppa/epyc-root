@@ -582,6 +582,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
         row["snapshot"] = spec["snapshot"]
+    # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
+    row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
               "smoke_predicate", "unit_key", "scratch_inputs"):
         if spec.get(k) is not None:
@@ -2528,6 +2530,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                             {"rows_blocked": blocked[:50]}, log)
         except Exception as e:  # noqa: BLE001 - an alerting fault must not stop allocation
             log(f"DISK-FLOOR check failed: {type(e).__name__}: {e}")
+        try:  # inference mailbox: a CRITICAL alert unacked for ROWFLOW_ALERT_ESCALATE_S -> operator alarm, exactly once
+            if notify.is_live(flags):
+                notify.escalate_stale(flags, lambda k, m, ev: route_alert(f"{k}-{ev['key']}", m, ev, log), log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"ALERT-UNACKED check failed: {type(e).__name__}: {e}")
         idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
@@ -2686,7 +2693,26 @@ def main(argv=None):
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
     sub.add_parser("gpu-batch", help="run the queued GPU smokes now if the GPU is free (any session; the allocator does the same every tick)")
+    s = sub.add_parser("alerts", help="read the inference mailbox (<flags>/notify/inbox/inference.jsonl); --ack <key> marks one handled")
+    s.add_argument("--since", help="ISO time, e.g. 2026-11-05T07:00:00Z"); s.add_argument("--row", help="row-id glob")
+    s.add_argument("--unacked", action="store_true"); s.add_argument("--json", action="store_true")
+    s.add_argument("--ack", metavar="KEY"); s.add_argument("--by"); s.add_argument("--note")
     a = ap.parse_args(argv)
+    if a.cmd == "alerts":
+        if a.ack:
+            if not notify.ack(a.flags, a.ack, a.by, a.note):
+                print(f"REFUSED: no alert with key {a.ack} in {notify.inbox_path(a.flags)}")
+                return 2
+            print(f"ACKED {a.ack}")
+            return 0
+        acks = notify.acked_keys(a.flags)
+        for r in notify.read_inbox(a.flags, a.since, a.row, a.unacked):
+            if a.json:
+                print(json.dumps(dict(r, acked=r.get("key") in acks), sort_keys=True))
+            else:
+                print(f"{r.get('ts')} {'ACKED ' if r.get('key') in acks else 'OPEN  '}{str(r.get('severity')):8} {r.get('key')} "
+                      f"{r.get('row_id') or '-'} owner={r.get('owner') or '-'} {r.get('summary')}")
+        return 0
     try:
         if a.cmd == "publish":
             spec = load_json(a.spec)

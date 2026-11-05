@@ -80,12 +80,170 @@ def severity_of(reason):
     return "critical" if any(r.startswith(h) for h in NON_COMPLETE_HIGHLIGHT) else "warning"
 
 
-def row_owner(flags, rid, fallback=None):
+def row_meta(flags, rid):
     try:
         with open(os.path.join(flags, "ready", rid + ".json")) as f:
-            return str(json.load(f).get("owner") or fallback or "")
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
     except (OSError, ValueError):
-        return str(fallback or "")
+        return {}
+
+
+def row_owner(flags, rid, fallback=None):
+    return str(row_meta(flags, rid).get("owner") or fallback or "")
+
+
+PUBLISHER_ID_ENV = ("EPYC_AGENT_ID", "WRAPUP_AGENT_ID", "SESSION_BUS_AGENT")
+PUBLISHER_SESSION_ENV = ("CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID", "CODEX_SESSION_ID", "CLAUDE_SESSION_ID")
+
+
+def publisher_info(env=None):
+    """Who published a row - INFORMATION ONLY (routing stays owner -> `inference` mailbox). First non-empty roster-id env,
+    first non-empty session-token env, the OS user and the time."""
+    env = os.environ if env is None else env
+    pick = lambda names: next(((n, env[n]) for n in names if env.get(n)), (None, None))
+    idv, sv = pick(PUBLISHER_ID_ENV), pick(PUBLISHER_SESSION_ENV)
+    try:
+        import getpass  # noqa: PLC0415
+        user = getpass.getuser()
+    except Exception:  # noqa: BLE001
+        user = env.get("USER") or ""
+    return {"agent_id": idv[1], "agent_id_env": idv[0], "session": sv[1], "session_env": sv[0], "user": user, "at": _now()}
+
+
+# ------------------------------------------------------------------ the inference mailbox (operator 2026-11-05)
+# <flags>/notify/inbox/inference.jsonl: one line per alert (same key as rowflow-alerts.jsonl), append-only.
+# <flags>/notify/inbox/inference.acks.jsonl: one line per handled key, append-only. unacked = keys without an ack line.
+INBOX = "inference"
+ESCALATE_AFTER_S = int(os.environ.get("ROWFLOW_ALERT_ESCALATE_S", 30 * 60))
+
+
+def inbox_path(flags):
+    return os.path.join(flags, "notify", "inbox", INBOX + ".jsonl")
+
+
+def acks_path(flags):
+    return os.path.join(flags, "notify", "inbox", INBOX + ".acks.jsonl")
+
+
+def _append_line(path, rec):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a") as f:
+        f.write(json.dumps(rec, sort_keys=True) + "\n")
+
+
+def _read_jsonl(path):
+    out = []
+    try:
+        with open(path) as f:
+            for ln in f:
+                try:
+                    d = json.loads(ln)
+                except ValueError:
+                    continue
+                if isinstance(d, dict):
+                    out.append(d)
+    except OSError:
+        pass
+    return out
+
+
+def inbox_record(rec):
+    d = rec.get("detail") or {}
+    return {"schema": "rowflow.inbox.v1", "key": rec["key"], "ts": rec["ts"], "kind": rec["kind"], "severity": rec["severity"],
+            "row_id": rec.get("row_id"), "owner": rec.get("row_owner"), "handoff_task": rec.get("handoff_task"),
+            "publisher": rec.get("publisher"), "reason": d.get("reason") or rec["kind"], "summary": rec["summary"]}
+
+
+def acked_keys(flags):
+    return {str(a.get("key")) for a in _read_jsonl(acks_path(flags))}
+
+
+def read_inbox(flags, since=None, row_glob=None, unacked=False):
+    import fnmatch  # noqa: PLC0415
+    acks = acked_keys(flags) if unacked else set()
+    seen, out = set(), []
+    for r in _read_jsonl(inbox_path(flags)):
+        k = str(r.get("key"))
+        if k in seen or (unacked and k in acks) or (since and str(r.get("ts") or "") < since):
+            continue
+        if row_glob and not fnmatch.fnmatch(str(r.get("row_id") or ""), row_glob):
+            continue
+        seen.add(k)
+        out.append(r)
+    return out
+
+
+def ack(flags, key, by=None, note=None):
+    """Append one ack line; idempotent (a key already acked is not re-appended). Returns False for an unknown key."""
+    if key not in {str(r.get("key")) for r in _read_jsonl(inbox_path(flags))}:
+        return False
+    if key not in acked_keys(flags):
+        _append_line(acks_path(flags), {"key": key, "ts": _now(), "by": by or (publisher_info().get("agent_id")
+                     or publisher_info().get("session") or ""), "note": note})
+    return True
+
+
+def _norm(x):
+    return os.path.basename(str(x or "")).removesuffix(".md").lower()
+
+
+def alerts_for(flags, slug="", handoff="", rows=(), session_ids=()):
+    """Unacked inbox alerts that belong to one dispatcher session: row owner == slug/handoff, handoff_task names the
+    handoff, the row is one of its rows, or the publisher session is one of its session ids."""
+    names = {n for n in (_norm(slug), _norm(handoff)) if n}
+    rows, sids = set(rows or ()), {s for s in session_ids or () if s}
+    out = []
+    for r in read_inbox(flags, unacked=True):
+        ht = str(r.get("handoff_task") or "")
+        pub = r.get("publisher") or {}
+        if (_norm(r.get("owner")) in names or (r.get("row_id") in rows) or (pub.get("session") in sids)
+                or any(n and n in ht.lower() for n in names)):
+            out.append(r)
+    return out
+
+
+def alerts_block(alerts, flags):
+    if not alerts:
+        return ""
+    lines = [f"- [{a.get('severity')}] {a.get('summary')} (key {a.get('key')})" for a in alerts[:10]]
+    more = f"\n- ... {len(alerts) - 10} more: rowflow.py alerts --unacked" if len(alerts) > 10 else ""
+    return (f"UNHANDLED ROW ALERTS (inference mailbox {inbox_path(flags)}): handle each, then ack it with "
+            f"`python3 {os.path.join(_HERE, 'rowflow.py')} alerts --ack <key>`:\n" + "\n".join(lines) + more + "\n")
+
+
+def escalate_stale(flags, route, now=None, after_s=None, log=print):
+    """Keeper tick: a CRITICAL inbox alert still unacked after `after_s` -> route(kind, message, evidence) exactly once
+    (marker <flags>/notify/escalated/<key>.json, O_EXCL) plus one line in rowflow-alerts.jsonl kind=alert-unacked."""
+    after_s = ESCALATE_AFTER_S if after_s is None else after_s
+    now = dt.datetime.now(dt.timezone.utc) if now is None else now
+    done = []
+    for r in read_inbox(flags, unacked=True):
+        if r.get("severity") != "critical":
+            continue
+        try:
+            t = dt.datetime.strptime(str(r.get("ts")), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
+        except ValueError:
+            continue
+        if (now - t).total_seconds() < after_s:
+            continue
+        m = os.path.join(flags, "notify", "escalated", str(r["key"]) + ".json")
+        try:
+            os.makedirs(os.path.dirname(m), exist_ok=True)
+            os.close(os.open(m, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        except FileExistsError:
+            continue
+        msg = (f"UNACKED {int((now - t).total_seconds() // 60)} min: {r.get('summary')} (owner {r.get('owner')}; "
+               f"ack: rowflow.py alerts --ack {r['key']})")
+        ok = route("alert-unacked", msg, {"key": r["key"], "row_id": r.get("row_id"), "owner": r.get("owner")})
+        _write_json(m, {"key": r["key"], "at": _now(), "routed": bool(ok)})
+        with open(os.path.join(flags, "rowflow-alerts.jsonl"), "a") as f:
+            f.write(json.dumps({"schema": SCHEMA, "key": "esc-" + str(r["key"]), "ts": _now(), "kind": "alert-unacked",
+                                "severity": "critical", "row_id": r.get("row_id"), "row_owner": r.get("owner"),
+                                "summary": msg, "detail": {"routed": bool(ok)}}, sort_keys=True) + "\n")
+        log(f"ALERT-UNACKED {r['key']} {r.get('row_id') or '-'} escalated routed={bool(ok)}")
+        done.append(r["key"])
+    return done
 
 
 def _roster(bus_root):
@@ -152,7 +310,7 @@ def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
     return f"sent:{assignee}:{msg['id']}"
 
 
-def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, action=True):
+def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, action=True, meta=None):
     """One idempotent notification. Returns the alert record (or the stored marker on a repeat)."""
     key = event_key(kind, rid, disc)
     mpath = _marker(flags, key)
@@ -164,6 +322,11 @@ def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, actio
     if mark is None:
         rec = {"schema": SCHEMA, "key": key, "ts": _now(), "kind": kind, "severity": severity, "row_id": rid or None,
                "row_owner": owner or None, "summary": summary, "detail": detail or {}}
+        meta = meta if meta is not None else (row_meta(flags, rid) if rid else {})
+        if meta.get("handoff_task"):
+            rec["handoff_task"] = meta["handoff_task"]
+        if meta.get("publisher"):
+            rec["publisher"] = meta["publisher"]
         try:
             # O_EXCL on a claim file: two writers racing on one event produce one alerts line
             os.makedirs(os.path.dirname(mpath), exist_ok=True)
@@ -176,9 +339,17 @@ def emit(flags, kind, rid, disc, summary, severity, owner="", detail=None, actio
             return None
         with open(os.path.join(flags, "rowflow-alerts.jsonl"), "a") as f:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
-        mark = {"record": rec, "bus": None}
+        mark = {"record": rec, "bus": None, "inbox": None}
         _write_json(mpath, mark)
         os.unlink(mpath + ".claim")
+    if "inbox" in mark and mark["inbox"] is not True:  # pre-mailbox markers stay as they were; the inference mailbox: independent of the bus, retried like it
+        try:
+            _append_line(inbox_path(flags), inbox_record(mark["record"]))
+            mark["inbox"] = True
+        except OSError as e:
+            mark["inbox"] = f"failed: {e}"
+            _log(f"{kind} {rid}: inbox append failed: {e}")
+        _write_json(mpath, mark)
     if not str(mark.get("bus") or "").startswith(("sent:", "skipped:")):
         mark["bus"] = _bus_send(mark["record"], owner or mark["record"].get("row_owner") or "", action, flags)
         _write_json(mpath, mark)

@@ -65,6 +65,8 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_gen as bg  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowflow"))
+import notify as rf_notify  # noqa: E402  - the inference mailbox (operator 2026-11-05)
 
 VERSION = "hs-dispatcher-v3"
 FLAGS = bg.FLAGS_DEFAULT
@@ -1420,6 +1422,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 if e.get("status") not in ("done", "retired") and not alive(e.get("pid")) and slug not in launched
                 and not any(ev["slug"] == slug for ev in rest)
                 and ((e.get("_work") or ("",))[0] == "continue" or ((e.get("_work") or ("",))[0] == "pause" and not wrapped(e, lcache)))]
+        for slug, e in S.items():  # unacked CRITICAL row alerts wake a non-running owner (operator 2026-11-05)
+            if slug in launched or any(w[1] == slug for w in work) or any(ev["slug"] == slug for ev in rest):
+                continue
+            if alert_wake(flags, slug, e, now):
+                e["_work"], e["alert_wake_at"] = ("continue", "handle the UNHANDLED ROW ALERTS above first, ack each"), now_iso()
+                log(flags, f"ALERT-WAKE {slug}: unacked critical row alert(s)")
+                work.append(((-1, (-1, 0)), slug, None))
         unowned = st.get("unowned") or {}
         if reg.get("auto_start", True) or unowned:
             have = {hkey(h["handoff"]) for h in cands}
@@ -1664,7 +1673,30 @@ def cleanup_scratch(flags, slug, e, repo=None, run=subprocess.run) -> None:
         log(flags, f"SCRATCH-CLEANUP {slug} FAILED {' '.join(args)}: {exc!r}")
 
 
+ALERT_WAKE_GAP_S = 30 * 60  # one alert wake per session per this gap; the max_live cap still applies
+
+
+def session_alerts(flags, slug, e):
+    """Unacked inference-mailbox alerts that belong to this session (owner / handoff_task / its rows / publisher session)."""
+    rows = list((e.get("auto_start") or {}).get("rows") or []) + [e.get("row_id")]
+    try:
+        return rf_notify.alerts_for(flags, slug, e.get("handoff") or "", [r for r in rows if r], [e.get("session_id")])
+    except Exception:  # noqa: BLE001 - a mailbox fault never blocks a launch
+        return []
+
+
+def alert_wake(flags, slug, e, now) -> bool:
+    """A non-running owner with an unacked CRITICAL alert gets woken (rate-limited); the dispatcher never acks."""
+    if e.get("status") in ("done", "retired") or alive(e.get("pid")) or now - _parse(e.get("alert_wake_at") or "") < ALERT_WAKE_GAP_S:
+        return False
+    return any(a.get("severity") == "critical" for a in session_alerts(flags, slug, e))
+
+
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
+    alerts = session_alerts(flags, slug, e)
+    if alerts:  # every launch/resume carries the owner's unhandled row alerts; acked only by the owner's own ack line
+        prompt = rf_notify.alerts_block(alerts, flags) + prompt
+        e["alerts_injected"] = [a["key"] for a in alerts]
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
     try:
