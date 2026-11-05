@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T11:01:07Z",
+  "generated_at": "2026-11-05T11:02:58Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1580,7 +1580,7 @@
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
-      "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
+      "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
       "open": 7,
       "priority": 0.9884,
       "priority_basis": {

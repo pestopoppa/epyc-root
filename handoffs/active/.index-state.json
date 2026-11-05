@@ -2703,7 +2703,7 @@
       "id": "INF-22",
       "index": "inference-research-index.md",
       "line": 21,
-      "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
+      "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
       "track": "gpu serving tie in program"
     },
     "INF-33": {
