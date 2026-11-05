@@ -42,7 +42,7 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 749,
+      "closed": 750,
       "guarded": 0,
       "last_advanced": "2026-11-04",
       "open": 139,
@@ -54,11 +54,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 889,
+      "total": 890,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 302,
+          "closed": 303,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -76,7 +76,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5827,
+          "line": 5829,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5907,
+          "line": 5909,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6204,
+          "line": 6206,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9419,
+          "line": 9421,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13769,
+          "line": 13771,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 13981,
+          "line": 13983,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
