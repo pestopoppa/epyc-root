@@ -653,7 +653,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T13:18:24Z",
+  "generated_at": "2026-11-05T13:24:39Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2143,14 +2143,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 275,
-      "dispatchable": 117,
+      "dispatchable": 119,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 119,
+      "open": 121,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2184,7 +2184,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 38,
+          "dispatchable": 40,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2193,14 +2193,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 39,
+          "open": 41,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1563,
+          "line": 1566,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1687,
+          "line": 1690,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2218,7 +2218,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2014,
+          "line": 2017,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2227,7 +2227,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2153,
+          "line": 2156,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2236,7 +2236,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2706,
+          "line": 2709,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2253,7 +2253,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2843,
+          "line": 2846,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2276,7 +2276,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3737,
+          "line": 3740,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
