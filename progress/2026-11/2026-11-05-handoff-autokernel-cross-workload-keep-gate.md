@@ -171,3 +171,7 @@ C6-Q4-MMVQ-FIX: prepared target-layout successor in /mnt/raid0/llm/tmp/autokerne
 ## 03:56Z — Harden profiler evidence and prepare SDK loss receipt
 
 C6-Q4-MMVQ-FIX: implemented and independently reviewed a proposed n=3/4/5 dispatch-profile packet; disabled it after measurement review found an informative screen may take under the 300-second row minimum and the trace does not identify operation boundaries. Thirteen independent negative controls passed. Verified the retained pre-b4 source manifest binds the benchmark source, whose warmup and repeated graph execution make naive per-run trace normalization biased. Prepared an uncompiled SDK callback/drop/flush receipt prototype and eight model-free receipt controls at docs/reference/autokernel/c6-sdk-loss-producer-20261105/; it is not a GPU qualification or a rocprofv3 custody proof. The dual build and both CH-26b scheduler diagnostics were already armed at inspection; no new row was published. NEMO historical boundary criterion still needs the operator decision requested previously. [belief: cc]
+
+## 03:58Z — Resolve next inference prerequisites
+
+C6-Q4-MMVQ-FIX target-shape successor awaits the running c6-targetshape-dual-build-20261105 receipt before binding. NEMO-PROF-RESEG historical captures lack required boundaries and its marker-build lineage is parked after three failed qualifications. CH-26b already has ch26-cpu-sched-chain-20261105 grantable after smoke PASS; no duplicate was published and no floor is established. GitNexus re-index was refused by CPU admission.
