@@ -11,3 +11,7 @@ NPD1-STEP2: r2 ABBA ratios cross the idle reject threshold (A1/A0 1.645, 1.600),
 ## 03:55Z — Prepare NPD1-STEP3 idle decode comparison
 
 Prepared NPD1-STEP3 CPU-only store comparison for Q38FN: matched t48 and batch settings, four ABBA launches, native decode timing and bounded smoke. Both stores identify source 181483cfc; checked server and CPU-library digests against build manifests. The two formerly routed PF1 and M4 rows were dropped or cancelled by the operator.
+
+## 04:01Z — Prepare ROCm spec-off decode comparison
+
+Prepared Q38P-3a speculation-off same-frame ABBA diagnostic on the Qwen3.8-27B Q8_0, comparing C5 ROCm 6.2 with its ROCm 10.1 build. The comparison is exploratory and profiling follows only if its futility rule permits; no promotion verdict is claimed.
