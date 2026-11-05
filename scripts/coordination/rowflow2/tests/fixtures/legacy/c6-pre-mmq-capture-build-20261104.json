@@ -1,0 +1,20 @@
+{
+ "decision_rule": "Build only test-backend-ops after reconstructing the pre-MMQ combined candidate from the exact base commit and sealed combined patch, plus the capture-only inst",
+ "estimate_s": 1800,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:C6-Q4-MMVQ-FIX",
+ "id": "c6-pre-mmq-capture-build-20261104",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg/c6-pre-mmq-capture-build-prep-20261104/launch.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "handoff-autokernel-cross-workload-keep-gate",
+ "priority_rank": 0.05,
+ "published_at": "2026-11-04T20:24:31Z",
+ "regions": "184-191",
+ "schema": "epyc.row.v3",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg/c6-pre-mmq-capture-build-prep-20261104/BUILD-STOP",
+ "window_s": 2460
+}

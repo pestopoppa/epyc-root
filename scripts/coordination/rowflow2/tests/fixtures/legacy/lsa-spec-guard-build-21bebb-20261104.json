@@ -1,0 +1,20 @@
+{
+ "decision_rule": "One champion-derived HIP-enabled libllama build from 21bebb748; verify all 448 donor objects, recompile only llama-lsa-graph.cpp.o, relink, record exact graph o",
+ "estimate_s": 900,
+ "gib": 16,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-spec-guard-build-21bebb-20261104",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/launch.sh"
+ },
+ "min_window_s": 600,
+ "owner": "lsa-screen",
+ "priority_rank": 10.0,
+ "published_at": "2026-11-04T18:37:48Z",
+ "regions": "q0",
+ "schema": "epyc.row.v3",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/BUILD-STOP",
+ "window_s": 1380
+}

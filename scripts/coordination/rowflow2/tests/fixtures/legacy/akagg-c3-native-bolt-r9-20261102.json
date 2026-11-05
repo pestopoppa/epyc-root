@@ -1,0 +1,22 @@
+{
+ "decision_rule": "Original B Bolt per-op native trace: report GPU busy milliseconds per step versus observed wall-clock as diagnostic attribution only; exact original L prerequis",
+ "estimate_s": 3600,
+ "gib": 64,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md: C3 r4 rowflow inherited-lock source repair",
+ "id": "akagg-c3-native-bolt-r9-20261102",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg/c3-canonical-v9/launch-v2.v15.sh"
+ },
+ "lineage": "refactor-c3-native-bolt-profile",
+ "min_window_s": 2400,
+ "owner": "akagg",
+ "priority_rank": 3.0,
+ "published_at": "2026-11-02T11:12:41Z",
+ "regions": "mi210_0,184-191",
+ "schema": "epyc.row.v3",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg/c3-canonical-v9/STOP",
+ "supersedes": "refactor-c3-native-bolt-profile-r4-20261101",
+ "window_s": 4620
+}

@@ -1,0 +1,26 @@
+{
+ "budget_gib": 1.0,
+ "busy_fraction": 0.05,
+ "decision_rule": "At exact full experimental candidate source commit 8952a0f693fb923918157eb25117641b74766230, after verifying tree 8772563484cd449f15188aaf6db89e84bdb6b025 and c",
+ "declared_threads": 1,
+ "estimate_s": 7200,
+ "fix_ref": "0dd38919e",
+ "gib": 4,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41",
+ "id": "kpf41-direct-vec-impact-8952a0f-20261105-r8-q2-sq3",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvfork/kpf41-impact-r8-20261105-q2-sq3/launch.sh"
+ },
+ "lineage": "kpf41-direct-vec-impact-8952a0f-20261105-r8-q2-sq3",
+ "min_window_s": 7200,
+ "owner": "operator-adhoc-takeover-20261105",
+ "priority_rank": 55.0,
+ "published_at": "2026-11-05T14:43:13Z",
+ "regions": "78-79",
+ "schema": "epyc.row.v3",
+ "shape": "sub-quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf41-impact-r8-20261105-q2-sq3/STOP",
+ "supersedes": "kpf41-direct-vec-impact-8952a0f-20261105-r7-q2-sq3",
+ "window_s": 8940
+}

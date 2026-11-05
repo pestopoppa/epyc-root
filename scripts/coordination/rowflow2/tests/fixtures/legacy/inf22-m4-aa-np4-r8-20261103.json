@@ -1,0 +1,22 @@
+{
+ "admission_class": "block-timing-pairable",
+ "decision_rule": "descriptive same-source A/A np4/65536: report throughput A2/A1; no acceptance floor, no decision-grade or promotion claim",
+ "estimate_s": 1800,
+ "gib": 64,
+ "handoff_task": "mi210-serving-program.md:M4-GPU-AA-NP4",
+ "id": "inf22-m4-aa-np4-r8-20261103",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/launch.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "codex-inf22",
+ "priority_rank": 3.0,
+ "published_at": "2026-11-03T17:37:05Z",
+ "regions": "mi210_0,184-191",
+ "schema": "epyc.row.v3",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/STOP",
+ "supersedes": "inf22-m4-aa-np4-r7-20261103",
+ "window_s": 2460
+}

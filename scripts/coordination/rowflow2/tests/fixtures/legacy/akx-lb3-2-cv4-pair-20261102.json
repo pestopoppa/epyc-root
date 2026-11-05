@@ -1,0 +1,21 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "One fixed GM and MG pair under one whole-host GPU-quiet grant. Accept LANE_LARGE, LANE_SMALL or SPLIT_UNRESOLVED only when both runs pass the predeclared overhe",
+ "estimate_s": 7200,
+ "gib": 110,
+ "handoff_task": "kernel-champion-and-promotion.md:AKX-ALL-LB3.2b",
+ "id": "akx-lb3-2-cv4-pair-20261102",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/lb32-pair-successor/launch.sh"
+ },
+ "min_window_s": 6900,
+ "owner": "handoff-autokernel-all-devices-all-dimensions",
+ "priority_rank": 21.0,
+ "published_at": "2026-11-02T11:55:20Z",
+ "regions": "0-95",
+ "schema": "epyc.row.v3",
+ "shape": "quiet-host",
+ "stop_file": "$D/STOP.pair",
+ "window_s": 8940
+}

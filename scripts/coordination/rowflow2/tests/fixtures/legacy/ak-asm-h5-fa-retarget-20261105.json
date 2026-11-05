@@ -1,0 +1,21 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "AK-ASM-H5. Question: does AITER's gfx942 FA-v3 fwd hd128 bf16 asm (aiter 3ba5ff7be, fwd_hd128_bf16_{causal_,}rtne.co), retargeted offline to gfx90a (MFMA rename",
+ "estimate_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/autokernel-loop.md:AK-ASM-H5",
+ "id": "ak-asm-h5-fa-retarget-20261105",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/ak-asm-h5-fa-retarget-20261105/launch.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "main-inf22",
+ "priority_rank": 50.0,
+ "published_at": "2026-11-05T14:08:53Z",
+ "regions": "mi210_0,184-191",
+ "schema": "epyc.row.v3",
+ "shape": "gpu-q3",
+ "stop_file": "/mnt/raid0/llm/tmp/ak-asm-h5-fa-retarget-20261105/STOP",
+ "window_s": 2100
+}

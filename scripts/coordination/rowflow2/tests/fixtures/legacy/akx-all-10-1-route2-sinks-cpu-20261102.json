@@ -1,0 +1,21 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "One missing grouped-GQA route-2 CPU correctness family only: D512, Hq64, Hkv2, GQA32, nk4096, F16 K/V, F32 Q and nonzero distinct per-head F32 sinks. OFF/refere",
+ "estimate_s": 120,
+ "gib": 4,
+ "handoff_task": "kernel-champion-and-promotion.md:AKX-ALL-10.1",
+ "id": "akx-all-10-1-route2-sinks-cpu-20261102",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/next-cpu/launcher.sh"
+ },
+ "min_window_s": 120,
+ "owner": "handoff-autokernel-all-devices-all-dimensions",
+ "priority_rank": 9.0,
+ "published_at": "2026-11-02T11:21:02Z",
+ "regions": "0-95",
+ "schema": "epyc.row.v3",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/next-cpu/STOP",
+ "window_s": 480
+}

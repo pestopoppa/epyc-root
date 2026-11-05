@@ -1,0 +1,20 @@
+{
+ "decision_rule": "Functional ABI diagnostic only: PASS if rc=0 and result status=functional-only reports 1-4 self-owned child-scoped sched_switch sessions, each with matching eve",
+ "estimate_s": 120,
+ "gib": 1,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md: CH-26b - re-measure the DS41-1017 noise floor on 49550eda5",
+ "id": "akagg-ch26b-mmap-abi-20261102",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg/ch26-mmap-probe/launcher.sh"
+ },
+ "min_window_s": 120,
+ "owner": "handoff-akagg",
+ "priority_rank": 20.0,
+ "published_at": "2026-11-02T11:23:00Z",
+ "regions": "0-3",
+ "schema": "epyc.row.v3",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg/ch26-mmap-probe/STOP",
+ "window_s": 480
+}

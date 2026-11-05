@@ -1,0 +1,15 @@
+{
+ "decision_rule": "Build-only: COMPLETE_BUILD_ONLY requires exact 729 source/tree/recipe/native identity, 29 target artifacts and sealed SHA256SUMS. No kernel correctness, HIP res",
+ "gib": 32,
+ "handoff_task": "engineering-hygiene-backlog.md",
+ "id": "refactor-c6-cpu-build-729599d69-20261030",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/launch-cpu-calendar-729.sh"
+ },
+ "min_window_s": 1080,
+ "owner": "refactor",
+ "priority_rank": 0,
+ "regions": "any-cpu-quarter",
+ "schema": "c6.store-build-calendar-row.proposal.v1",
+ "window_s": 7200
+}

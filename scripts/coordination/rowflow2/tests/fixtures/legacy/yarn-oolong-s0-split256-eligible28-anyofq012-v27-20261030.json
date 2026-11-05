@@ -1,0 +1,19 @@
+{
+ "decision_rule": "Partial diagnostic: higher completed matching-pair coverage is better. Retain the original 120-pair denominator; two ambiguous s0 A0 candidates remain unknown. ",
+ "estimate_s": 43200,
+ "gib": 180,
+ "handoff_task": "FILLERS:yarn-oolong-s0-split256-eligible28-anyofq012-v27-20261030",
+ "id": "yarn-oolong-s0-split256-eligible28-anyofq012-v27-20261030",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/launch.sh"
+ },
+ "min_window_s": 42000,
+ "owner": "codex-refactor-01a16fc3",
+ "priority_rank": 30.0,
+ "published_at": "2026-11-01T17:09:13Z",
+ "regions": "any-of q0,q1,q2",
+ "schema": "epyc.row.v3",
+ "stop_file": "/mnt/raid0/llm/tmp/yarn-oolong-s0-split-storage-v27-20261030/STOP",
+ "window_s": 52140
+}

@@ -1,0 +1,20 @@
+{
+ "decision_rule": "Controlled synthetic diagnostic, not a floor or C5 serving claim: 24 alternating matched off/on pairs, each arm running a single pinned synthetic process for 16",
+ "estimate_s": 1800,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-26b",
+ "id": "akagg-ch26-compact-observer-overhead-r2-20261104",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg/ch26-observer-overhead-r2-20261104/launch.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "handoff-autokernel-cross-workload-keep-gate",
+ "priority_rank": 0.2,
+ "published_at": "2026-11-04T22:00:35Z",
+ "regions": "0-95",
+ "schema": "epyc.row.v3",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg/ch26-observer-overhead-r2-20261104/STOP",
+ "window_s": 2460
+}
