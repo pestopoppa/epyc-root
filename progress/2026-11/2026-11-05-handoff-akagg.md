@@ -23,3 +23,7 @@ Floor v39 result REFUSED after 24 anchor and 24 candidate main-surface units; no
 ## 02:58Z — File two-case forced cuBLAS comparison
 
 Two retained-input seed-71 cases: candidate MMVQ failed tolerance while forced CUBLAS passed both. Route markers, own-PID KFD and VRAM, matching inputs and child drain were recorded. This is a scoped diagnostic with no full correctness or promotion claim; result retained at /mnt/raid0/llm/tmp/akagg/retained-c6-cublas-pair-20261105/RESULT.json.
+
+## 03:17Z — File matched C6 q4_K timing diagnostic
+
+Twenty matched q4_K synthetic pairs completed with all seven sizes per arm. For n=4, corrected minus baseline mean time was +79.595 us, approximate paired 95% t interval ±1.847 us; lower time is better. Toolchain/header and build-path differences prevent sole-source attribution; no keep or promotion follows. Result and verified logs retained at /mnt/raid0/llm/tmp/akagg/retained-c6-q4k-matched-perf-20261105.
