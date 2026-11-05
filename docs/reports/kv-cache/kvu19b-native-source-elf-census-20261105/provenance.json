@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/ROCm/rocprofiler",
+  "tag": "rocm-6.2.0",
+  "commit": "c3404b802301815f359bcc686d55f04b4a352601",
+  "files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/source/src/util/hsa_rsrc_factory.cpp",
+      "url": "https://raw.githubusercontent.com/ROCm/rocprofiler/c3404b802301815f359bcc686d55f04b4a352601/src/util/hsa_rsrc_factory.cpp",
+      "sha256": "40a5ac021b397bdfae61a63fed6d554df5aa88a8201f1c033889f45bb60abfbb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/source/src/core/intercept_queue.h",
+      "url": "https://raw.githubusercontent.com/ROCm/rocprofiler/c3404b802301815f359bcc686d55f04b4a352601/src/core/intercept_queue.h",
+      "sha256": "845b9a0c8cbb75a73ef05a410da5299701d9b8172726e847bf2483aed5d1388e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/source/src/util/hsa_rsrc_factory.h",
+      "url": "https://raw.githubusercontent.com/ROCm/rocprofiler/c3404b802301815f359bcc686d55f04b4a352601/src/util/hsa_rsrc_factory.h",
+      "sha256": "88cff4c643186ff7738fcfdfd132d3c1ab722912412d285a87dcc5b2ff1ddc73"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/source/src/tools/tool.cpp",
+      "url": "https://raw.githubusercontent.com/ROCm/rocprofiler/c3404b802301815f359bcc686d55f04b4a352601/src/tools/tool.cpp",
+      "sha256": "182a2227e0e7b385bc22b278dcdc9d9f4376cab289428b631bafb49d23382d4a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/source/LICENSE",
+      "url": "https://raw.githubusercontent.com/ROCm/rocprofiler/c3404b802301815f359bcc686d55f04b4a352601/LICENSE",
+      "sha256": "fc89146a54647e0ba209e356f871912db3c090a5c54f5fca4054702318cf08cb"
+    }
+  ],
+  "qualification": "upstream candidate; no installed binary provenance inferred"
+}

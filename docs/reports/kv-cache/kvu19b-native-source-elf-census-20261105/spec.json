@@ -1,0 +1,29 @@
+{
+  "schema": "epyc.filler-spec.v1",
+  "id": "kvu19b-native-source-elf-census-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "priority_rank": 50,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-source-elf-census-20261105/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_timeout_s": 90,
+  "keep": [
+    "**"
+  ],
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+  "decision_rule": "CPU-only source and installed-ELF census, model-free, no GPU work. Record candidate source hashes and URLs, exact ELF hashes, symbols, strings and build notes. Missing inputs, changed ELF or failed tools yield UNKNOWN; serializer source, binary/source equivalence and profiler GPU ID to BDF always UNKNOWN. Stop on completed inventory or first STOP/deadline; no inference or device mapping.",
+  "reservation_rationale": "300 seconds admission for four source hashes and two ELF digests and six bounded tools, each 20 seconds maximum.",
+  "stop_on_answer": "Finish once both ELFs and source files have been inventoried, or record UNKNOWN for unavailable inputs.",
+  "stop_on_futility": "STOP, deadline, input seal failure, source or ELF ambiguity; no retries.",
+  "gate_class": "futility-only",
+  "notes": "Candidate upstream source is pinned but not asserted to produce installed binaries. Serializer source not established. No model, GPU or target.",
+  "unit_key": "elfs"
+}

@@ -1,0 +1,7 @@
+rc=3 time=2026-11-05T03:51:27Z reason=job-rc-3:exited
+job_id=kpf-rs1-observer-impact-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=7200
+started=2026-11-05T03:22:35Z
+regions=0-95
