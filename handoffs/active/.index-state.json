@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 496
+      "open": 498
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -422,9 +422,9 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 149,
+      "closed": 150,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 191,
+      "total": 192,
       "tracks": [
         {
           "blocked": 0,
@@ -508,7 +508,7 @@
         },
         {
           "blocked": 0,
-          "closed": 54,
+          "closed": 55,
           "gates": [],
           "guarded": 0,
           "line": 2930,
@@ -1309,7 +1309,7 @@
       "closed": 389,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 106,
+      "open": 108,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 496,
+      "total": 498,
       "tracks": [
         {
           "blocked": 1,
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 54
+          "open": 56
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1707,
+          "line": 1712,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2121,
+          "line": 2126,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 43
@@ -1522,7 +1522,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 682,
+          "line": 683,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1041,
+          "line": 1042,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1319,
+          "line": 1320,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 0
@@ -1552,7 +1552,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 1954,
+          "line": 1955,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 4
@@ -1562,7 +1562,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2270,
+          "line": 2219,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2880,
+          "line": 2829,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
