@@ -1019,3 +1019,228 @@ measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
   sub-quarter list stays allowed only with `pin_cores: true` and a reason (NUMA/L3 experiments).
   Test: `test_rowflow_contract.py::test_any_2_of_q3_places_on_free_pair` (free `c74,c75` → grant `74-75`);
   `::test_concrete_pair_without_pin_reason_rewritten_to_width`.
+
+
+---
+---
+
+# Pass 3 — simplification audit (2026-11-05, 16:00Z)
+
+**Operator order:** "review/audit the pipeline for overcomplications." Read-only against the live system; code read
+from `origin/main` (`eae8228a3`, two commits past `75e930e05`), keeper log 12:00–15:57Z. Pass 1 and 2 argued for
+*adding* a Contract and a reconciler. Pass 3 says the opposite half out loud: **most of what exists must be deleted
+first**, because the last six hours prove that adding rules to this allocator produces regressions faster than it
+removes defects.
+
+## P3.1 The six-hour experiment, measured
+
+| | 10:00Z | 12:00Z (pass 2) | 16:00Z (now) |
+|---|---|---|---|
+| `rowflow.py` lines | 3,395 | 3,395 | **4,088** (+693) |
+| top-level defs / tunables | 155 / 52 | 155 / 52 | **189 / 62** (85 with `_`-prefixed) |
+| commits to `rowflow.py` today | 11 | 11 | **19** (66 in 5 days) |
+| redeploys of `rowflow.py` since 12:00 | — | — | **7** (12:06, 12:44, 14:09, 14:28, 14:48, 15:09, 15:15); 17 `.bak-*` today |
+| ways a row's width is stated | 4 | 4 | **5** (`regions`, `shape`, launcher `-t`, `shape_override`, + `contract_of`) |
+| spec keys `publish()` reads / fields it derives | — | — | **35 / 13** (manifests carry 44 keys) |
+| new keeper log tags since 12:00 | — | — | `WAIT`, `NO-DRAIN`, `DRYRUN-REAP`, `DRYRUN-DEADLINE`; gone: `DRAIN-HELD`, `IDLE-VIOLATION`, `UNDERUSED` |
+| idle 12:00–15:57 | — | — | **~6.9 quarter-hours + ~2.0 gpu-quiet-hours** (vs 0.8 + 0.94 in 10:40–11:57) |
+| `SMOKE-WAIT` lines | 2 (whole morning) | — | **117** ("no 4 free cores outside the whole quarters 3 queued row(s) need" ×112) |
+
+Idle **went up** after the machinery meant to reduce it. The regressions are verified in P3.2; every one of them is
+caused by code that did not exist at noon.
+
+## P3.2 Today's self-inflicted regressions — verified
+
+| Regression | Evidence | Cause (file:line on `eae8228a3`; `pre:` = `75e930e05`) | Status |
+|---|---|---|---|
+| **Every multi-core CPU row shrunk to 4 cores**, including explicit `regions: q2` + `shape_override: "operator: … needs one whole quarter"` | `iqk-q8-prefill-ab-r3`: `ARMED.json regions=q2`, `GRANTED.json regions=80-83,176-179`; keeper wrote **two GRANT lines for the same pid 242433** at 15:51:06Z (72-75 and 80-83, `claim_regions=q3`, manifest said q2); `-ab`, `-ab-r2`, `-step0` same; `inf75 census r2` offered 4 cores against a declared 2-quarter claim (`refuse rc=13 … missing q2`); yarn v38 ×2 and STT5 r5 shrunk at *publish* (`declared_threads=1` → `sub-quarter`). 8 GRANTs on 7 rows. **No `SHAPE-DOWNSIZE` line was ever logged** | `contract_of` `pre:1547-1640`: `row_threads` = max(declared, **PASS.json measured_threads**) — a 4-core smoke measuring 2.2 threads became "threads 2"; `pre:1598` `pinned` is true only for *concrete* cpu lists, so `q2` is not pinned; `pre:1603` `threads <= SUB_CORES → "sub-quarter", _sub_blocks()` enumerates 4-core blocks of **all** quarters, ignoring `regions`; `shape_override` feeds only `evidence` (`pre:1573`), which only decides `whole` | `eae8228a3` drops measured_threads and adds a `declared_shape` floor; **still open**: `q2` regions still non-pinned (`:1679`), `shape_override` still reaches only `evidence` (`:1654,1659`) — an override on a < 24-thread row without `spec.shape` still shrinks |
+| **CPU-declared rows given `gpu-quiet`**, GPU idle behind them | STT5 r5 GRANT 15:30:49 `holds=c72-75,gpu-quiet,…` (`lclass=cpu`), held 12.7 min at 0 %; also `iqk-q8-prefill-build` 15:14, `-step0` 15:30; at 15:43:41 **eight** EXCLUSIVE GPU rows logged `WAIT … device quiet 1/2 samples` | `pre:1579` `gpu_tok = {GPU} if (gpu_row or gq=="exclusive" or gpu_touch(d,o))`; `gpu_touch` → `_kfd_capable` regex `_KFD` (`:1508`) matches the string `build-hip` in job text → whisper-cli path → token added to every CPU option (`pre:1633`) | `eae8228a3` adds `cpu_declared()`; the regex inference remains |
+| **Rank-100 quiet-host row drains the host over higher-ranked GPU rows** | In-window only `c6-port35186-remeasure` `DRAIN (quiet-host) until 2026-11-06T07:14Z` ×4 ticks (15.6 h horizon = STT5 r5's own end; its ready manifest is gone so rank is unverifiable). GPU rows' actual wait was on gpu-quiet (row above). **Partial** | `plan()` `:2078-2092`: `plan_order:1934` keys on `min(rank, URGENT_RANK)` so every rank ≥ 10 **ties**, then `lane_count` puts the starved CPU lane first; `:2080` promotes *any* quiet-host row regardless of age; `drain_blocker:1947-1958` keeps only better-ranked rows **placeable this tick**, and EXCLUSIVE GPU rows are removed from `cands` by the quiet gate (`:3645`) → no blocker → `T = max(grant ends)`; quiet-host options reserve `gpu-quiet` idle until T | **unfixed** |
+| **GPU-blocked whole-quarter rows reserve quarters, starving smokes** | 117 `SMOKE-WAIT`, 112 of them the reservation template; yarn v38 ×2, STT5 r5, iqk build waited 14:30–15:14 | `whole_quarter_reservation` (fdb7348fe) reserved for any queued whole row | `75e930e05`: reserve only for rows placeable now |
+| **Smoke that wrote outputs marked COMPLETE** | `c6-features-cpu`: SMOKE-PLACE 13:26:24 → PASS 13:26:30 → GRANT 13:26:34 → `.complete` 13:27:02 (28 s into a 1,200 s window); `c6-kp1-longctx` same; 26 `.complete` since 12:00 | `publish_row.file_if_complete` (`:399-430`) → `smoke_completion_check`; the smoke runs the real job, the job writes its summary, `--complete-cmd` sees it | in flight |
+| **2-sample GPU-quiet check delays every GPU grant** | `WAIT` tag born 14:15:05; 52 `device quiet 1/2 samples`; median WAIT→GRANT 101 s (one tick); 9 GPU grants before 14:15 had zero WAIT | `GPU_QUIET_SAMPLES=2` (`:3761`), one sample per 120 s tick (`gpu_quiet_gate:3800`) | by design; costs ~2 min × every GPU grant |
+| **`file_result` prints TICK lines it never writes** | `grep -c TICK filing-watch.log` → **0 ever** in 4,048 lines; three sampled boxes were ticked **by hand** (`f0d4879a2`, `92be684d9`, `987c99809`) | `file_result.py:264,280` unreachable from the auto path | **unfixed**; the D12 two-paths defect in practice |
+| **The replay gate passed all of these** | `DEPLOYED.json` gate "unit+replay PASS" at 15:09 | see P3.6 | — |
+
+## P3.3 Where it is overcomplicated — the diagnosis in one sentence
+
+**The keeper tries to *infer* what a row needs from five partial declarations plus regexes over job text, and then
+tries to *optimise* placement (drains, reservations, coexist, packing, smoke-as-filler) on top of those guesses.**
+Inference is where every regression today was born (`measured_threads` → shrink; `_KFD` regex → gpu-quiet on a CPU
+row; `min(rank,10)` → rank ties → wrong drain). Optimisation is where the guesses turn into idle hours (reservations
+starving smokes, quiet-host drains holding the GPU, 2-sample waits). Neither is needed for the actual workload: ~40
+grants/day on 5 bins. A 5-bin, 40-item/day scheduler does not need a planner; it needs a correct *admission* test and
+a correct *release*.
+
+### Mechanism inventory and verdict
+
+| Mechanism (fns / lines / tunables) | Verdict | Why |
+|---|---|---|
+| launcher parsing + declared-threads inference (7 / 210) | **DELETE inference; keep arg parsing for `--class/--stop/--claim-cpus`** | the owner states threads; `_scan_threads`, `_job_chain`, Python-list argv scanning, `OMP` heuristics all guess |
+| shape derivation `contract_of`/`shape_of`/`row_threads`/`_sub_blocks` (8 / 147 / 10) | **DELETE** | shape = declared cpus; there is nothing to derive once `cpus` is a required field |
+| evidence gates `gpu_touch`/`_kfd_capable`/`gpu_lane_overreach`/`gpu_timing_row`/`check_engine_not_sealed`/vacuous-GPU test (15 / 171) | **DELETE all but one** | replaced by one admission test + measured-busy feedback (P3.5); the engine-seal check is on the wrong side (pass 2); the vacuous-test scanner is a job-correctness concern, not the scheduler's |
+| coexist (`COEXIST_Q3`, `coexist_holds`, logic inside `contract_of`/`_avail`) | **DELETE** | with `quiet:` a per-row boolean and tokens per core, "coexist" is just two rows whose token sets do not intersect |
+| drains + `rank_reservation` + `own_block` + `drain_blocker` + `URGENT_RANK` + `DRAIN_*` ×5 (11 / 260 / 6) | **DELETE drains; replace with one rule** | *strict priority with a hold*: the top-ranked runnable row that does not fit **holds** the bins it needs as they free (no backfill into them longer than its own ETA); nothing else. No promotion, no ties, no `min(rank,10)` |
+| packing / `whole_quarter_reservation` / `_avail` / smoke-as-filler `place_smokes` (11 / 211) | **DELETE** | smokes run on a **fixed, permanent 4-core smoke lane** (c20-23 + siblings, never granted to rows); no reservation logic at all. Cost: 4 of 96 cores. Benefit: 117 SMOKE-WAITs → 0 and 200 lines gone |
+| GPU fence (env + LD_PRELOAD shim) + `GPU-FENCE-BREACH` + vacuous detection (11 / 172) | **KEEP the fence, DELETE the inference around it** | the fence is the one *enforcement* added today — a CPU row cannot touch the GPU, by construction. That is the model: enforce, don't infer. The `gpu_fence_override` and job-text scanning go |
+| 2-sample `gpu_quiet_gate` | **REPLACE** with the KFD process count (already measured for the fence): `gpu free ⇔ no KFD pid outside token grants`. Zero wait |
+| dry-run harness (12 / 421) | **SHRINK** to: run the job on the smoke lane with a deadline; PASS = first progress; FAIL otherwise; never COMPLETE (a smoke's outputs are discarded — `scratch_root/smoke/`) |
+| supersede/withdraw/lineage (7 / 99) | **KEEP**, simplify: withdraw = STOP + `.ended`; lineage counts FAILs since `fix_ref` only |
+| heal / idle_held / underused / alerts (7 / 150) | **COLLAPSE** into one `reconcile()`: measured vs held per token; release `use` holds idle 2 samples; alert once; fix the missing `alarm_channel.py` |
+| host_snapshot / measurement (14 / 179) | **KEEP** — this is the only ground truth |
+| status / CLI / util | KEEP |
+| `publish()` 213-line function reading 35 keys | **REPLACE** with a 12-key schema + `jsonschema` validation |
+
+Outside `rowflow.py`: **delete** FILLERS.md as a read source (7 readers → `rowflow.py status --json`), `filing-due.jsonl`,
+the dashboard's `_rows` derivation, `filing_watch.sh` (folded into the keeper tick), `scratch_cleanup.py`'s overlap with
+the keeper reaper, keeper `v2…v11` copies, 17 `.bak` copies in `bin/`, `grant_ok_launcher.py`, `run_direct.sh`
+(duplicate of `publish_row --run-smoke`), `ws58-calendar-keeper-v11.sh`.
+
+## P3.4 The minimal model
+
+**Resources are tokens.** `c0..c95` (cores; siblings follow their core, never separate tokens), `gpu` (the MI210 with
+184-191 — the host threads are part of the GPU token, not CPU tokens), `ram` (GiB, counted), `disk` (GiB, counted).
+That is the whole bin set: 96 + 1 + 2 counters. No `qN` tokens (a quarter is a 24-core *shorthand* in the spec, expanded
+at publish), no `t`-tokens, no `gpu-quiet` token.
+
+**A row declares what it needs** (the schema, complete):
+
+```json
+{ "id": "…", "owner": "…", "handoff_task": "handoffs/active/x.md:ROW",
+  "launcher": "/abs/launch.sh", "stop_file": "/abs/STOP",
+  "cpus": 24 | "48-71" | "q2" | "any-quarter" | "any-2-of-q3",
+  "threads": 24,
+  "gpu": "none" | "shared" | "exclusive",
+  "quiet": false | true,
+  "ram_gib": 48, "disk_gib": 20, "estimate_s": 3600, "min_window_s": 1800,
+  "decision_rule": "rc == 0 and …", "priority_rank": 50 }
+```
+
+Twelve fields; five are new or renamed (`cpus`, `threads`, `gpu`, `quiet`, `disk_gib`); the rest exist. **No
+`shape`, no `regions`+`claim_cpus`, no `busy_fraction`, no `lane`, no `class`, no `gpu_use`, no `timing`, no
+`admission_class`, no `baseline_ref`, no `shape_override`, no `coexist_*`, no `declared_threads`.**
+
+Semantics, each one line: `cpus` is the set the job may run on (the filler `taskset`s exactly it); `threads ≤ |cpus|`
+or publish refuses; `gpu: exclusive` = no other GPU row at the same time, `shared` = any number, `none` = fenced off
+(the LD_PRELOAD fence is the enforcement); `quiet: true` = no other row anywhere on the host while it runs (the
+*only* way to get a quiet host, and it needs `priority_rank < 10` or an operator string in `quiet_reason`); a `quiet`
+row with `gpu: none` still takes the `gpu` token (quiet means quiet).
+
+**A grant is the row's declaration stamped with a window**: `{id, cpus, gpu, ram_gib, start, end}`. Nothing is
+"derived" into it. `holds=` disappears: the grant *is* the holds.
+
+**The keeper does three things per tick, in order**, ~300 lines total:
+
+1. **reconcile()** — for every open grant: measured busy per core (`/proc/stat`), KFD pids, VRAM. A `gpu: exclusive`
+   grant with no KFD pid of its own tree for 2 samples → `gpu` released (the row keeps running; CPU post-processing
+   continues on its cores). A core at 0 % for 2 samples under a non-`quiet` grant → released. A grant past
+   `1.5 × estimate_s` → alert once. A dry run past its deadline → killed by pgid, cores released. Dead poller →
+   grant removed. (This replaces `heal_grants`, `idle_held`, `underused`, `reconcile_dryruns`, `gpu_quiet_gate`.)
+2. **admit()** — walk rows by `priority_rank` (ties by publish time). For the first row that *does not fit*, mark its
+   needed tokens **held-for** it (no new grant longer than `now + its ETA` may take them). For every row that fits the
+   remaining free tokens → grant. That is the whole planner. Smokes are not in this loop: they run on the fixed smoke
+   lane, FIFO, one at a time, with a deadline.
+3. **file()** — for every `.ended` without `.FILED`: machine `decision_rule` → file; else claim/route (pass 2 D11/D12).
+
+**Where the old mechanisms went:** drains → the hold in step 2; coexist → disjoint token sets; gpu-q3 → `gpu:
+exclusive` on a row whose `cpus` names q3's cores or not (the owner says); quiet-host → `quiet: true`; busy_fraction
+→ measured in step 1; over-declaration → refused at publish when `threads > |cpus|`, and corrected after the fact by
+`reconcile()` releasing idle cores plus one `OVER-DECLARED <id> declared 24 measured 1` line that becomes the row's
+next-version lint. **The keeper never guesses a row's footprint; it validates the declaration and releases what is
+not used.**
+
+## P3.5 "Refuse over-declaration via feedback, not inference"
+
+Publish-time checks (all O(1), no job-text scanning): `threads ≤ |cpus|`; `|cpus| ≥ 24` requires `threads ≥ 12`;
+`quiet` requires `priority_rank < 10` or `quiet_reason`; `gpu: exclusive` requires `estimate_s ≤ 7200` or
+`quiet_reason`; `stop_file` absolute; `launcher` exists and its `--stop` equals `stop_file`; `decision_rule` parses or
+`owner` resolves (D11). That is the complete admission test — seven lines.
+
+Run-time feedback (the only "evidence"): after each run, `reconcile()` writes `measured: {threads_p95, busy_p95,
+gpu_used, ram_peak}` into the `.ended`. `publish` of a successor (`-rN`, `supersedes`) **refuses** when the predecessor
+measured `busy_p95 < 0.25` of its declared `cpus` and the successor declares the same or more — unless the spec
+carries `measured_ack: "<who>: <why>"`. Over-declaration therefore costs the owner one refused republish, with the
+numbers printed, instead of costing the host a quarter for two hours. Nothing is inferred from argv, `OMP`, Python
+lists, or `build-hip` strings ever again.
+
+## P3.6 Why the replay gate passed everything — and how to make it catch the class
+
+The gate (`deploy_rowflow.sh` → `tests/replay/test_replay_gate.py`, harness `replay_lib.run_replay`) replays **314
+reconstructed ticks (00:00–12:32Z) through `rf.allocate()` only**, with `admit`/`arm_one`/`gpu_occupancy`/`rl_status`
+stubbed. Its eleven invariants (`INV-NO-CRASH, STOP, REGRANT, 1THREAD, EVIDENCE, GPU-TIMING-Q3, LOCKSET,
+DRYRUN-DEADLINE, DEADPID-RELEASE, IDLE-NAMED, IDLE-WHY-ALL`; only four day-blocking) are all **upper bounds on
+width** written from the *morning's* defects. Specifically:
+
+| Regression | Gap |
+|---|---|
+| 4-core shrink | no invariant says *granted ⊇ declared* (every invariant bounds from above); fixture has no row with quarter regions + small threads and no `measured_threads` in `pass` blobs |
+| CPU row holds gpu-quiet | no invariant says *holds ⊆ declared tokens*; fixture `files` empty so `_kfd_capable` never fires |
+| rank-100 drain | no priority invariant at all; `DRAIN`/`RANK-*` lines are captured and never asserted |
+| reservation starving smokes | smokes are not candidates; no smoke invariant |
+| smoke marked COMPLETE | `publish_row.file_if_complete` and the filler stop path are not executed in replay |
+| 2-min GPU delay | the wait emits a *named* IDLE-WHY, so IDLE invariants pass; `idle_gpu_hours` is printed, not gated |
+
+**Fix the design, not the list.** Three changes:
+
+1. **Invariants are a two-sided contract between declaration and grant, stated once:** (i) `grant.cpus == row.cpus`
+   when `row.cpus` is concrete, `|grant.cpus| == width(row.cpus)` and `⊆ allowed` when it is a class
+   (`any-quarter`, `any-2-of-q3`); (ii) `grant.gpu == row.gpu`; (iii) no two open grants share a token; (iv) for any
+   tick, if a row of rank r is granted while a row of rank < r that fit the same tokens was pending ≥ 1 tick → fail;
+   (v) `idle_token_hours ≤ budget` (gated, not printed: 0.5 q-h and 0.25 gpu-h per replayed day); (vi) every
+   `.ended` has a reason from the closed set and every COMPLETE came from a *grant*, never from a smoke. Six
+   invariants, all **properties of the (spec, grant) pair**, none of them a transcription of yesterday's bug.
+2. **Fixture = generated, not reconstructed.** A property-based generator (`hypothesis`) emits random specs over the
+   12-field schema (including explicit regions + 1 thread, `quiet` with low rank, `gpu: none` rows whose job text says
+   `build-hip`, 8 rows per tick) and random measured-use traces; each day's real trace is *added* as one more case,
+   never the only one. Today's fixture had 0 `shape_override`, 8 `declared_threads` (all 1), 0 `kfd` ticks — it
+   could not express the inputs that broke.
+3. **Replay the whole tick, not `allocate()`:** `reconcile → admit → file` plus `publish_row` for every new row and a
+   fake filler that writes `.ended`/`.complete` — so filing and completion are inside the gate.
+
+## P3.7 Size and migration
+
+**Target `rowflow.py`: ~900 lines** (util 130, token algebra 60, schema+publish 120, reconcile 120, admit 80, smoke
+lane 80, file 60, supersede 60, status/CLI 120, measurement 70) — from 4,088. Tunables: 8 (`SMOKE_CORES`,
+`IDLE_SAMPLES=2`, `IDLE_PCT`, `SMOKE_DEADLINE_S`, `OVERRUN_FACTOR=1.5`, `QUIET_MAX_RANK=10`, `FILE_OWNERLESS_S`,
+`CLAIM_TTL_S`) — from 62. `filler_run15.sh` → ~350 lines (keep: grant consume, taskset, fence, STOP in all three phases,
+`.ended` writing; drop: class/region parsing, `--gpu-quiet`, `--claim-cpus`, `--role`, FILLERS.md lookups).
+`publish_row.py` → ~200.
+
+**Migration (one week, no big-bang):**
+
+1. *Day 0 (today):* freeze `rowflow.py` — no new rules; only P3.2's two open items (`q2` pinned; override honoured) as
+   the last hotfix. Switch deploys to require the six two-sided invariants (P3.6.1) on the existing replay; they will
+   fail on current code — mark them `xfail` with the issue, so the gate at least *reports*.
+2. *Day 1:* add `cpus/threads/gpu/quiet` to the schema; `publish` fills them **from the existing fields** for old rows
+   (`regions`→`cpus`, `declared_threads`→`threads`, `gpu_quiet exclusive`→`gpu: exclusive` + `quiet: true`, class
+   gpu→`gpu: exclusive`, else `none`) and refuses *new* rows that omit them. Every manifest now carries both forms.
+3. *Day 2–3:* write `rowflow2.py` (reconcile/admit/file over the new fields, fixed smoke lane) beside the old one;
+   run it in **shadow** on the live snapshot each tick, logging `SHADOW-GRANT` lines; the replay gate runs both.
+   Differences are the review list.
+4. *Day 4:* cut over (one deploy, grants in flight honoured by both because the grant format is the same minus
+   `holds=`); delete the mechanisms in P3.3 in one commit; delete FILLERS.md readers, `filing-due.jsonl`, the dashboard
+   derivation, 17 `.bak`, keeper v2…v11.
+5. *Day 5–7:* owners re-publish rows that fail the new admission (the refusal prints the corrected spec); measured
+   `OVER-DECLARED` lines from the first days feed the republish lint.
+
+## P3.8 Stop doing — for every agent operating this pipeline, this session included
+
+1. **Stop adding a rule per incident.** If a fix is an `if` on a row attribute inside `plan()`/`contract_of`, it is
+   the wrong fix. Today: 19 commits, 7 deploys, +693 lines, idle up 8×.
+2. **Stop inferring.** No regex over job text (`_KFD`, `build-hip`), no Python-list argv scanning, no `OMP` heuristics,
+   no `measured_threads` from a 4-core smoke feeding a width decision. Owners declare; the keeper validates and
+   measures.
+3. **Stop deploying under live grants** and more than once per day. Seven redeploys in four hours produced the engine-
+   seal incident class and made every regression impossible to attribute from the log.
+4. **Stop writing invariants that transcribe yesterday's bug.** Write properties of `(spec, grant)`; generate inputs.
+5. **Stop treating the replay gate's PASS as evidence** until it replays the whole tick with generated fixtures and
+   gates idle hours. Today it passed seven regressions.
+6. **Stop filing by hand-editing checkboxes** and stop printing TICK lines nothing writes. One path: `file_result.py`.
+7. **Stop publishing `shape:`/`regions:`+`claim_cpus`/`busy_fraction`/`shape_override` combinations** and asking the
+   keeper to reconcile them. One row = one `cpus`, one `threads`, one `gpu`, one `quiet`.
+8. **Stop running smokes as fillers in the production bins.** A fixed 4-core smoke lane costs 4 % of the host and
+   deletes 200 lines plus 117 SMOKE-WAITs a day.
+9. **Stop reporting "fixed" without the keeper log showing the symptom gone for one full cycle** (this report's own
+   standard: every claim above carries a timestamp or a line number).
+10. **Stop this report growing.** Pass 3 is the last pass that adds analysis; the next artefact is `rowflow2.py` in
+    shadow mode and a one-page diff of SHADOW-GRANT vs GRANT.
