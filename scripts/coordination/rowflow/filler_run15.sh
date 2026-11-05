@@ -301,7 +301,7 @@ tagged_pids() { # orphans of THIS run (reparented away from the tree) still carr
   for f in /proc/[0-9]*/environ; do
     p=${f#/proc/}; p=${p%/environ}
     [ "$p" = $$ ] && continue
-    e=$'\n'$(tr '\0' '\n' < "$f" 2>/dev/null)$'\n' || continue   # no pipes into grep -q (pipefail false results)
+    e=$'\n'$(tr '\0' '\n' 2>/dev/null < "$f")$'\n' || continue   # 2> before < (a denied /proc/N/environ spammed ~2000 lines per run into job logs: yarn OUTPUT-PAUSE 2026-11-05); no pipes into grep -q
     [[ $e == *$'\n'"FILLER_ID=$ID"$'\n'* && $e == *$'\n'"FILLER_STOPFILE=$STOPFILE"$'\n'* ]] && echo "$p"
   done
 }

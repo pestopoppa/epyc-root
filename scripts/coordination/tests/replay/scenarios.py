@@ -559,8 +559,107 @@ def pub_inf75_helper_omp(root):
     return spec, check
 
 
+YARN_JOB_SIDE = """import os, subprocess
+def job(port):
+    env = os.environ
+    if env.get('FILLER_THREADS') != '24' or len(os.sched_getaffinity(0)) != 48:
+        raise ValueError("affinity")
+    procenv = {'PATH': '/usr/bin:/bin', 'OMP_NUM_THREADS': '24', 'OMP_PROC_BIND': 'spread'}
+    return subprocess.run(['llama-server', '--port', str(port)], env=procenv).returncode
+def smoke():
+    procenv = {'PATH': '/usr/bin:/bin', 'OMP_NUM_THREADS': '1'}
+    return subprocess.run(['python3', '-c', 'pass'], env=procenv).returncode
+"""
+
+
+def pub_yarn_job_side_threads(root):
+    """yarn-oolong-s1/s2-import-eligible29-v38 (2026-11-05): launch.sh's blanket `export OMP_NUM_THREADS=1` was the
+    only evidence read; the compute process (job_side.py, imported by boot.py) runs llama-server with OMP 24 and
+    refuses FILLER_THREADS != 24 -> contract sub-quarter, granted 4 cores. The compute process's declared threads win."""
+    rid = "yarn-like-job-side-24t"
+    d = os.path.join(root, rid)
+    os.makedirs(d, exist_ok=True)
+    eng = os.path.join(root, "filler_run15.sh")
+    open(eng, "w").write("#!/bin/bash\n")
+    open(os.path.join(d, "job_side.py"), "w").write(YARN_JOB_SIDE)
+    open(os.path.join(d, "boot.py"), "w").write("import sys\nimport job_side\nraise SystemExit(job_side.job(19412))\n")
+    open(os.path.join(d, "job.sh"), "w").write(f"#!/bin/bash\nD={d}\nexport PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 "
+                                                "OPENBLAS_NUM_THREADS=1\nexec taskset -c \"${FILLER_CPUS:?}\" python3 \"$D/boot.py\"\n")
+    lp = os.path.join(d, "launch.sh")
+    open(lp, "w").write(f"#!/bin/bash\nset -euo pipefail\nD={d}\nexec /bin/bash {eng} --id {rid} --class cpu --role build "
+                        f"--min-window 3600 --cmd 'bash {d}/job.sh --job' --complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
+    spec = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "regions": "any-cpu-quarter",
+            "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:YARN", "first_progress_s": 900}
+
+    def check(row, err):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        bad = []
+        if row.get("declared_threads") != 24:
+            bad.append(f"threads {row.get('declared_threads')} != 24 (wrapper OMP 1 taken over the compute process's 24)")
+        if row.get("shape") != "quarter":
+            bad.append(f"shape {row.get('shape')} != quarter")
+        return bad
+    return spec, check
+
+
+def _mk_cpu_row(root, rid, job, cmd_extra=""):
+    d = os.path.join(root, rid)
+    os.makedirs(d, exist_ok=True)
+    eng = os.path.join(root, "filler_run15.sh")
+    open(eng, "w").write("#!/bin/bash\n")
+    open(os.path.join(d, "job.py"), "w").write(job)
+    lp = os.path.join(d, "launch.sh")
+    open(lp, "w").write(f"#!/bin/bash\nset -euo pipefail\nD={d}\nexport OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1\n"
+                        f"exec /bin/bash {eng} --id {rid} --class cpu --role build --min-window 900 "
+                        f"--cmd \"/usr/bin/python3 -B $D/job.py{cmd_extra}\" --complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
+    return d, lp
+
+
+def _quarter_only(row, err, rf, want_gpu=False):
+    if err is not None:
+        return [f"refused at publish: {err[:200]}"]
+    c = rf.contract_of(row)
+    bad = [] if c["shape"] == "quarter" else [f"shape {c['shape']} != quarter"]
+    if any(rf.GPU in x for x in c["options"]) != want_gpu:
+        bad.append(f"gpu-quiet in options {c['options'][:1]}")
+    return bad
+
+
+def pub_stt5_cpu_declared_no_gpu(root):
+    """STT5 r5 (2026-11-05): --class cpu, device cpu, whisper-cli -ng whose path sits under a HIP-capable tree, -t =
+    affinity width; granted holds=c72..c75,gpu-quiet: 4 cores AND the GPU token. A cpu-declared row never holds it."""
+    rid = "stt5-like-cpu-declared"
+    d, lp = _mk_cpu_row(root, rid, "import os\nBIN='/mnt/raid0/llm/whisper.cpp/build-hip/bin/whisper-cli'\n"
+                                    "cmd=[BIN,'-ng','-t',str(len(os.sched_getaffinity(0)))]\n")
+    spec = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "regions": "any-cpu-quarter", "device": "cpu",
+            "shape": "quarter", "gpu_fence_override": "owner: t 2026-11-05: -ng, HIP_VISIBLE_DEVICES=-1",
+            "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:STT5", "first_progress_s": 600}
+    return spec, lambda row, err, rf: _quarter_only(row, err, rf)
+
+
+def pub_iqk_declared_quarter_floor(root):
+    """iqk-q8-prefill-ab/-step0 (2026-11-05): declared shape quarter (CPU timing), smoke measured ~2 threads on its 4
+    cpus -> granted 72-75 + 168-171, jobs refused rc 8 "not a whole quarter". A declared quarter is never shrunk."""
+    rid = "iqk-like-declared-quarter"
+    d, lp = _mk_cpu_row(root, rid, "import os\nassert len(os.sched_getaffinity(0)) == 48, 'not a whole quarter'\n")
+    os.makedirs(os.path.join(root, "compute-flags", "dryrun", rid), exist_ok=True)
+    spec = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "regions": "any-cpu-quarter", "shape": "quarter",
+            "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:IQK", "first_progress_s": 600}
+
+    def check(row, err, rf):
+        return _quarter_only(dict(row or {}, measured_threads=2.2), err, rf)
+    return spec, check
+
+
 PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5,
-                     "publish-helper-omp-not-thread-evidence": pub_inf75_helper_omp}
+                     "publish-helper-omp-not-thread-evidence": pub_inf75_helper_omp,
+                     "publish-yarn-compute-process-threads-win": pub_yarn_job_side_threads,
+                     "publish-stt5-cpu-declared-never-gpu-quiet": pub_stt5_cpu_declared_no_gpu,
+                     "publish-iqk-declared-quarter-never-shrunk": pub_iqk_declared_quarter_floor}
 
 
 def build_all(out_dir):

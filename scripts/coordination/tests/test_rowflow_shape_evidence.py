@@ -96,6 +96,54 @@ class ShapeEvidence(Fx):
         lp = self.launcher("bx", cmd="python3 job.py")
         self.assertNotIn("busy_fraction", rf.publish(self.spec("bx", lp, regions="any-cpu-quarter"), self.flags))
 
+    def test_preflight_only_smoke_never_shrinks_contract(self):
+        """keeper classfix 2026-11-05 (yarn v38): a PASS with units 0 / measured_threads 0.099 is no thread evidence."""
+        flags = self.flags
+        os.makedirs(os.path.join(flags, "dryrun", "pf"), exist_ok=True)
+        json.dump({"measured_threads": 0.099, "units": 0}, open(rf.pass_path(flags, "pf"), "w"))
+        self.assertIsNone(rf.row_threads({"id": "pf"}, flags))
+        self.assertEqual(rf.row_threads({"id": "pf", "declared_threads": 24}, flags), 24)
+        json.dump({"measured_threads": 3.6, "units": 2}, open(rf.pass_path(flags, "pf"), "w"))
+        self.assertIsNone(rf.row_threads({"id": "pf"}, flags))   # a smoke's footprint is never width evidence
+        self.assertEqual(rf.row_threads({"id": "pf", "declared_threads": 24}, flags), 24)
+        self.assertIsNone(rf.row_threads({"id": "x", "measured_threads": 0.4}, flags))
+
+    def test_declared_quarter_never_shrunk_by_smoke(self):
+        """iqk-q8-prefill-ab/-step0 2026-11-05: declared quarter, 4-core smoke measured ~2 threads, granted 4 cores."""
+        os.makedirs(os.path.join(self.flags, "dryrun", "iq"), exist_ok=True)
+        json.dump({"measured_threads": 2.2, "units": 1}, open(rf.pass_path(self.flags, "iq"), "w"))
+        lp = self.launcher("iq", cmd="python3 job.py")
+        row = rf.publish(self.spec("iq", lp, regions="any-cpu-quarter", shape="quarter"), self.flags)
+        self.assertEqual(row["shape"], "quarter")
+        c = rf.contract_of(row, None, self.flags)
+        self.assertEqual(c["shape"], "quarter")
+        self.assertTrue(all(len(x) == 1 and next(iter(x)) in rf.QUARTERS for x in c["options"]))
+        lp = self.launcher("iq1", cmd="OMP_NUM_THREADS=1 python3 job.py")
+        row = rf.publish(self.spec("iq1", lp, regions="any-cpu-quarter", shape="quarter"), self.flags)
+        self.assertEqual(rf.contract_of(row, None, self.flags)["shape"], "quarter")
+
+    def test_cpu_declared_row_never_holds_gpu_quiet(self):
+        """STT5 r5 2026-11-05: --class cpu, device cpu, a HIP path in its job files -> granted gpu-quiet idle."""
+        d = os.path.join(self.root, "stt")
+        os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, "job.py"), "w").write("BIN='/mnt/raid0/llm/whisper.cpp/build-hip/bin/whisper-cli'\n")
+        lp = self.launcher("stt", cmd=f"python3 {d}/job.py -t 8", extra="")
+        row = rf.publish(self.spec("stt", lp, regions="any-cpu-quarter", device="cpu", shape="quarter",
+                                   gpu_fence_override="owner: t 2026-11-05: cpu-only branch"), self.flags)
+        c = rf.contract_of(row, None, self.flags)
+        self.assertFalse(any(rf.GPU in x for x in c["options"]), c["options"])
+        self.assertFalse(rf.gpu_touch(row))
+
+    def test_python_env_and_required_width_are_thread_evidence(self):
+        d = os.path.join(self.root, "yj")
+        os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, "side.py"), "w").write("env={'OMP_NUM_THREADS':'24'}\nif os.environ.get('FILLER_THREADS')!='24':raise ValueError\n")
+        open(os.path.join(d, "boot.py"), "w").write("import side\n")
+        open(os.path.join(d, "j.sh"), "w").write(f"export OMP_NUM_THREADS=1 X=1\nexec python3 {d}/boot.py\n")
+        o = rf.parse_launcher(self.launcher("yj", cmd=f"bash {d}/j.sh"))
+        self.assertEqual(o["threads"], 24)
+        self.assertIn("FILLER_THREADS 24", o["threads_evidence"])
+
     def test_measured_busy_and_flag(self):
         samples = [(t, 0.05 * t) for t in range(0, 120, 5)]
         th, bf = rf.measured_busy(samples, 24)

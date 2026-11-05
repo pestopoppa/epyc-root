@@ -101,5 +101,6 @@ def test_publish_scenario(name, tmp_path):
         row = rf.publish(spec, flags)
     except rf.Refused as e:
         err = str(e)
-    v = check(row, err)
+    import inspect
+    v = check(row, err, rf) if len(inspect.signature(check).parameters) >= 3 else check(row, err)
     assert not v, "\n".join(v)

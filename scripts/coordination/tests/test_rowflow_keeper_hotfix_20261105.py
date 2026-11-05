@@ -62,8 +62,10 @@ class D14GpuShape(Fx):
         finally:
             shutil.rmtree(rf.dry_dir(rf.FLAGS, "kh-vram"), ignore_errors=True)
 
-    def test_measured_threads_48_is_whole_host_evidence(self):
-        self.assertTrue(rf.whole_host_evidence({"declared_threads": None, "measured_threads": 48}))
+    def test_measured_threads_is_never_width_evidence(self):
+        # keeper classfix 2026-11-05: a smoke's footprint is never evidence for the row's width (either direction)
+        self.assertFalse(rf.whole_host_evidence({"declared_threads": None, "measured_threads": 48}))
+        self.assertTrue(rf.whole_host_evidence({"declared_threads": 48}))
         self.assertFalse(rf.whole_host_evidence({"declared_threads": None}))
 
     def test_absent_declared_threads_is_unknown_not_zero(self):

@@ -298,22 +298,79 @@ def count_cpus(cpus):
     return len(n)
 
 
+_PY_OMP = re.compile(r"""['"]OMP_NUM_THREADS['"]\s*[:,]\s*['"]?(\d+)\b""")   # {'OMP_NUM_THREADS': '24'} / env['..'] style
+_FILLER_THREADS_REQ = re.compile(r"""FILLER_THREADS['"]?\s*\)?\s*(?:!=|==)\s*['"](\d+)['"]""")   # a job that requires its width
+_PY_IMPORT = re.compile(r"^\s*(?:import\s+([\w, ]+)|from\s+(\w+)\s+import\b)", re.M)
+_SCRIPT_REF = re.compile(r"(?:\$\{?D\}?/)?([A-Za-z0-9_./-]+\.(?:sh|py|bash))\b")
+
+
+def _job_chain(cmd, max_files=32):
+    """[(path, text)] of the job files --cmd runs and, transitively, the scripts they name (absolute, $D/-relative or
+    relative to the file's dir / its own D=) and the sibling Python modules they import - where a job's compute process
+    actually sets its threads (a wrapper's env is not its worker's)."""
+    seen, out, todo = set(), [], []
+
+    def add(f):
+        f = os.path.normpath(f)
+        if f in seen or len(seen) >= max_files or not os.path.isfile(f):
+            return False
+        seen.add(f)
+        todo.append(f)
+        return True
+    for m in re.finditer(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", cmd or ""):
+        add(m.group(1))
+    while todo:
+        f = todo.pop(0)
+        try:
+            t = open(f, errors="replace").read()[:1 << 20]
+        except OSError:
+            continue
+        out.append((f, t))
+        bases = [os.path.dirname(f)] + [v.strip("\"'") for v in re.findall(r"^[ \t]*(?:export\s+)?D=(\S+)", t, re.M)
+                                         if v.strip("\"'").startswith("/")]
+        for m in _SCRIPT_REF.finditer(t):
+            r = m.group(1)
+            if r.startswith("/"):
+                add(r)
+            else:
+                for b in bases:
+                    if add(os.path.join(b, r)):
+                        break
+        if f.endswith(".py"):
+            for m in _PY_IMPORT.finditer(t):
+                for name in (m.group(1) or m.group(2) or "").split(","):
+                    name = name.strip().split(" ")[0]
+                    if re.fullmatch(r"\w+", name or ""):
+                        add(os.path.join(os.path.dirname(f), name + ".py"))
+    return out
+
+
 def launcher_threads(text, assigns, o):
     """Refinement 1 (keeper-friction review 2026-11-05): the threads the job declares in its argv - -t/--threads N,
     --workers N, OMP_NUM_THREADS=N, taskset -c LIST - in the launcher and in the job file its --cmd names (.sh/.py).
     Variables assigned in the launcher (and ${X:-N} defaults) are expanded. Returns (max threads or None, [evidence])."""
-    texts = [text]
-    for m in re.finditer(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", o.get("cmd") or ""):
-        try:
-            texts.append(open(m.group(1), errors="replace").read()[:1 << 20])
-        except OSError:
-            pass
+    chain = _job_chain(o.get("cmd") or "")
+    direct = re.findall(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", o.get("cmd") or "")
+    texts = [text] + [t for f, t in chain if f in {os.path.normpath(x) for x in direct}]
+    deep = [t for f, t in chain if f not in {os.path.normpath(x) for x in direct}]
 
     def ex(t):
         for _ in range(3):
             t = re.sub(r"\$\{([A-Za-z_]\w*):-([^}]*)\}", lambda m: assigns.get(m.group(1), m.group(2)), t)
             t = re.sub(r"\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)", lambda m: assigns.get(m.group(1) or m.group(2), m.group(0)), t)
         return t
+    v, ev = _scan_threads(texts, ex)
+    if v is not None:
+        # files the job reaches transitively (scripts it runs, modules it imports) and the Python-env / required-width
+        # forms only ever RAISE a known width: smoke branches (taskset 124,125 / -t 2) and helper envs must not shrink
+        # an unknown row (keeper classfix 2026-11-05)
+        dv, dev = _scan_threads(texts + deep, ex, py=True)
+        if dv is not None and dv > v:
+            v, ev = dv, sorted(set(ev) | set(dev))
+    return v, ev
+
+
+def _scan_threads(texts, ex, py=False):
     best, tsk, omp, ev = None, None, None, []
     for t in texts:
         # python argv lists (["-t", THREADS] / ["taskset", "-c", CPUS]): the first literal a NAME = "..." assignment
@@ -343,6 +400,17 @@ def launcher_threads(text, assigns, o):
                             omp = max(omp or 0, n)
                         else:
                             best = max(best or 0, n)
+            # the compute process's own env / required width in Python (keeper classfix 2026-11-05, yarn-oolong v38:
+            # job_side.py ran llama-server with {'OMP_NUM_THREADS':'24'} and refused FILLER_THREADS != '24', while
+            # launch.sh's blanket `export OMP_NUM_THREADS=1` was the only evidence read -> 4-core grant)
+            for m in (_PY_OMP.finditer(line) if py else ()):
+                n = int(m.group(1))
+                if 0 < n <= 192:
+                    ev.append(f"OMP_NUM_THREADS {n}"); omp = max(omp or 0, n)
+            for m in (_FILLER_THREADS_REQ.finditer(line) if py else ()):
+                n = int(m.group(1))
+                if 0 < n <= 192:
+                    ev.append(f"FILLER_THREADS {n}"); best = max(best or 0, n)
             for m in _TASKSET.finditer(line):
                 n = count_cpus(m.group(1))
                 if n:
@@ -755,6 +823,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # keeper class fix 2026-11-05 (operator "fix it"): the contract is derived from evidence only; the spec's shape and
     # regions are advisory and a declaration that books >= SHAPE_TOLERANCE_CORES more than the contract needs is
     # refused unless the spec carries shape_override "operator: <who> <date>: <why>" (logged in the row)
+    if str(spec.get("shape") or "").strip():
+        row["declared_shape"] = str(spec["shape"]).strip()   # honoured as a width floor by contract_of
+    if spec.get("device"):
+        row["device"] = str(spec["device"])
     c = contract_of(row, o, flags)
     row["shape"] = c["shape"]
     decl = str(spec.get("shape") or "").strip()
@@ -1399,22 +1471,18 @@ def gpu_timing_row(row, o):
 
 
 def row_threads(d, flags=None):
-    """max(declared_threads, the smoke's PASS.json measured_threads); None when neither is known (unknown != 0)."""
+    """declared_threads (>= 1); None when unknown (unknown != 0). Smoke measured_threads is never width evidence."""
     vals = []
-    for v in ((d or {}).get("declared_threads"), (d or {}).get("measured_threads")):
+    for v in ((d or {}).get("declared_threads"),):
         try:
             if v is not None:
                 vals.append(int(v))
         except (TypeError, ValueError):
             pass
-    rid = (d or {}).get("id")
-    if rid and "measured_threads" not in (d or {}):
-        try:
-            mt = (load_json(pass_path(flags or FLAGS, str(rid))) or {}).get("measured_threads")
-            if mt is not None:
-                vals.append(int(mt))
-        except (TypeError, ValueError, OSError):
-            pass
+    # keeper classfix 2026-11-05 (yarn-oolong v38, iqk-q8-prefill, STT5 r5): a smoke's footprint is NEVER evidence
+    # for the row's width - the smoke runs on 4 cpus (often only a preflight), so its measured_threads (0.099, 1.9,
+    # 2.2) shrank quarter rows to 4-core grants their jobs refused. PASS.json measured_threads stays a busy signal only.
+    vals = [v for v in vals if v >= 1]   # < 1 thread is not a width (int(0.099) == 0 read as a 0-thread row)
     return max(vals) if vals else None
 
 
@@ -1517,7 +1585,20 @@ def gpu_touch(d, o=None):
     row's job can open /dev/kfd - a GPU-class launcher, mi210 regions, a HIP build, -ngl > 0, --device ROCm, -b ROCm0,
     HIP/ROCR_VISIBLE_DEVICES - so it, and its smoke, hold the gpu-quiet token for their whole duration."""
     d, o = d or {}, (_opts(d or {}) if o is None else o)
+    if cpu_declared(d, o):
+        return False
     return gpu_declared(d, o) or bool(gpu_work_evidence(d, o)) or _kfd_capable(d, o)
+
+
+def cpu_declared(d, o):
+    """keeper classfix 2026-11-05 (STT5 r5 held gpu-quiet idle on 4 cores, blocking 7 GPU rows): a row whose launcher
+    says --class cpu with no --gpu-quiet, on a CPU lane / non-mi210 regions (or spec device: cpu), is CPU work. A HIP
+    path in its job files is not GPU evidence - the GPU fence covers it - so it never holds the GPU token."""
+    d, o = d or {}, o or {}
+    if str(d.get("device") or "").lower() == "cpu" and o.get("class") != "gpu" and o.get("gpu_quiet", "") in ("", "none"):
+        return True
+    return (o.get("class") == "cpu" and o.get("gpu_quiet", "") in ("", "none") and d.get("lane") != "gpu"
+            and "mi210" not in str(d.get("regions") or ""))
 
 
 def check_gpu_declared(row, o):
@@ -1576,8 +1657,8 @@ def contract_of(d, o=None, flags=None):
     abstract = regs == "any-cpu-quarter" or regs.startswith("any-of")
     decl_cpus = "" if abstract else ws58_cpus(regs)
     whole = len(quarters_of(cc or decl_cpus, fold=True)) >= 4 and (evidence or gib > 3 * QUARTER_RAM_GIB)
-    gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) else set()
-    lends, lock_tokens = frozenset(), set()
+    gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) and not cpu_declared(d, o) else set()
+    lends, lock_tokens, floored = frozenset(), set(), False
     if gpu_use and not whole:
         # GPU work: gpu-quiet + its host threads; a GPU-timing row also keeps q3 quiet (gpu-q3); q0-q2 only with evidence
         grant_cpus_engine = cls == "gpu" and (nofold or engine_grant_cpus(o) or not cc)
@@ -1602,7 +1683,14 @@ def contract_of(d, o=None, flags=None):
             shape, opts = "sub-quarter", [frozenset(cpu_tokens(decl_cpus) | (cpu_tokens(cc) if legacy else set()))]
         elif threads is not None and legacy <= (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24)):
             n = max(-(-threads // 24), nq_ram)
-            if threads <= SUB_CORES and nq_ram <= 1:
+            # a declared quarter / multi-quarter / timing shape is honoured, never shrunk below it (iqk-q8-prefill
+            # 2026-11-05: declared quarter, granted 4 cores, job refused rc 8 "not a whole quarter")
+            fl = re.fullmatch(r"multi-quarter\(([23])\)", str(d.get("declared_shape") or d.get("shape") or ""))
+            floor = int(fl.group(1)) if fl else (1 if str(d.get("declared_shape") or d.get("shape") or "") == "quarter"
+                                                 or d.get("timing") or d.get("admission_class") in GPU_TIMING_CLASSES else 0)
+            floored = floor > max(-(-threads // 24), nq_ram) or (floor and threads <= SUB_CORES)
+            n = max(n, floor)
+            if threads <= SUB_CORES and nq_ram <= 1 and not floor:
                 shape, opts = "sub-quarter", _sub_blocks()
             elif n <= 1:
                 shape, opts = "quarter", [frozenset({q}) for q in QUARTERS]
@@ -1632,7 +1720,7 @@ def contract_of(d, o=None, flags=None):
         opts = [frozenset(x | gpu_tok) for x in opts]
     opts = [frozenset(compress(expand(x))) for x in opts if x] or [frozenset({q} | gpu_tok) for q in QUARTERS]
     held = max((len({t for t in expand(x) if t in CORES}) for x in opts), default=0)
-    need_cores = held if (whole or gpu_use or threads is None) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
+    need_cores = held if (whole or gpu_use or threads is None or floored) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
     return {"shape": shape, "options": opts, "bench": gq == "exclusive", "threads": threads, "gpu_use": gpu_use,
             "timing": timing, "evidence": evidence, "lock": honours, "lends": lends, "need": need_cores, "held": held,
             "claim": cc if cls != "gpu" else "",
