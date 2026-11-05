@@ -404,3 +404,7 @@ Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/active/mi210-serving-program.
 - The Jet-Long 2048-token short-framing diagnostic was filed DIAGNOSTIC-RESULT/pass: exactly 2,048 evaluated tokens, zero cached, no truncation.
 
 Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [long-context program](../handoffs/active/long-context-program.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)
+
+## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
+
+- **YaRN E1-MEM chain PASS:** one unbroken A1 chain on one server (E1 image `9a3f1392a`, Qwen3.8-27B Q8_0, YaRN 524k), 128k→240k→400k→500k. The continuous own-PID peak was **47.63 GiB**, within the 55 GiB bar and identical to the split replay, which closes YARN-E1-MEM. Source: [mi210-serving-program.md:372-375](../handoffs/active/mi210-serving-program.md).

@@ -1637,3 +1637,8 @@ Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-f
 - Process lesson: a smoke result written to the full-run result path is contamination; require same-attempt binding before filing a PASS.
 
 Sources: [KV program](../handoffs/active/kv-cache-program.md) · [KVFORK progress](../progress/2026-11/2026-11-04-handoff-kvfork.md) · [KVU progress](../progress/2026-11/2026-11-04-handoff-kvu.md)
+
+## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
+
+- **KVU-16g: no first-use tax.** On the :8083 shape (np4, -ub 2048, build 181483cfc, HIP residency proven), the first-request tax was −0.063 s at 1k and −0.043/−0.076 s for size-first at 8k/32k, missing the max(0.25 s, 3x SD) and 5 % bars. x4 TTFT is serialised prefill plus slot queueing. Recommendation: no post-launch warm-up request. Source: [mi210-serving-program.md:367-368](../handoffs/active/mi210-serving-program.md).
+- **PB-QCOST quadratic prefill term confirmed out of sample:** on the 11-04 KVU-16g run (solo prefill, -ub 2048, lbt build, n=7), prompt_ms = a·ceil(Q/2048) + b·Q + k·Q²/2 gives **k = 1.95e-5 ± 1.6e-6 ms/tok² (t 12.3)**, R² 0.99996, LOO MAPE 5.5 %. A linear-only fit leaves ±1.3 s residuals. This agrees with the confirm-R refit. The target-ms rule is unchanged (TPOT target − 210.7 ms, n=4 P99), and the box stays open for the KVU-16g-2 live A/B. Source: [mi210-serving-program.md:505](../handoffs/active/mi210-serving-program.md), `/mnt/raid0/llm/tmp/pb-qcost-1-20261105/REPORT.md`, commit `9418c7ea1`.

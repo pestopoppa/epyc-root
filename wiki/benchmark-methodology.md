@@ -7711,3 +7711,8 @@ Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md) · [C
 - **Sizing**: IFBench pinned corpus 421,499 bytes; LiveCodeBench lite test6.jsonl 134,303,240 bytes (payload metadata, not a local measurement or proof of a post-cutoff slice).
 
 Sources: [codex-gen shard](../progress/2026-11/2026-11-04-handoff-codex-gen.md) · [judge-suite shard](../progress/2026-11/2026-11-04-handoff-canonical-judge-suite-revamp.md) · [judge-suite 11-02](../progress/2026-11/2026-11-02-handoff-canonical-judge-suite-revamp.md) · [DCP 11-02](../progress/2026-11/2026-11-02-handoff-delegation-context-preassembly.md) · [DCP shard](../progress/2026-11/2026-11-04-handoff-delegation-context-preassembly.md)
+
+## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
+
+- **GPU A/A noise floor** (4 same-build A/A pairs + r8; C5, np4, 65536 ctx, 27B Q8 + DFlash2, fresh server per arm): A2/A1 has n=5 mean 0.968, **SD 0.025**, range 0.945-1.010. The second arm is biased about 3 % low, so GPU A/B **must use ABBA ordering**. Source: [mi210-serving-program.md:65-66](../handoffs/active/mi210-serving-program.md).
+- **Comparisons across runs or builds are invalid.** Two incidents on 2026-11-05: (1) the NPD1-STEP4 "2.3x 8k TTFT" compared a C6 run against a STEP2 number from another build and day, and was withdrawn, with STEP5 re-running it in one run; (2) the C5-vs-C6 slowdown read had no clean same-run evidence. Only same-run, same-session, ABBA comparisons support a ratio claim. Source: [mi210-serving-program.md:2894-2895](../handoffs/active/mi210-serving-program.md), `progress/2026-11/2026-11-05-inf22.md`.
