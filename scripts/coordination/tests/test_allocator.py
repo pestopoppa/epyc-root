@@ -53,6 +53,12 @@ def random_state(rng):
     return free, cands, rng.randint(60, 1100), rng.random() < 0.5
 
 
+def tokens(free):
+    """plan()'s token view of an abstract (regions-only) free set since e40203894 / fa37667a2: a free quarter frees its
+    24 core tokens + 16 sibling threads, a free gpu-quiet frees the MI210 host threads t184..t191."""
+    return rf.expand(free) | ({f"t{k}" for k in range(184, 192)} if rf.GPU in free else set())
+
+
 def fits(c, free, ram, gpu_open):
     """A candidate is placeable iff some option is within `free`, survives the bench/q3 rule and the RAM margin holds."""
     if ram - float(c["gib"]) < rf.RAM_MARGIN_GIB:
@@ -76,12 +82,16 @@ class PlanProperties(unittest.TestCase):
             free, cands, ram_gib, gpu_open = random_state(rng)
             snapshot = json.dumps([sorted(free), [{**c, "options": [sorted(o) for o in c["options"]]} for c in cands], ram_gib, gpu_open])
             assigned, idle, pending = rf.plan(set(free), [dict(c) for c in cands], ram_gib, gpu_open)
-            # (i) no double booking
+            # e40203894 (sub-quarter packing): plan() works on core/thread tokens and returns token-expanded options
+            free = tokens(free)
+            # (i) no double booking. The returned option is in grant/log form (rf.compress); book its expansion.
             used = set()
             for c, o in assigned:
+                self.assertIn(o, [frozenset(rf.compress(x)) for x in c["options"]],
+                              f"state {n}: {c['id']} assigned an option it never offered\n{snapshot}")
+                o = frozenset(rf.expand(o))
                 self.assertTrue(o <= free, f"state {n}: {c['id']} got {sorted(o)} outside free {sorted(free)}\n{snapshot}")
                 self.assertFalse(used & o, f"state {n}: region handed twice: {sorted(used & o)}\n{snapshot}")
-                self.assertIn(o, c["options"], f"state {n}: {c['id']} assigned an option it never offered\n{snapshot}")
                 used |= o
             remaining = free - used
             # (iii) cumulative RAM budget
@@ -93,10 +103,10 @@ class PlanProperties(unittest.TestCase):
             ids_assigned = {c["id"] for c, _ in assigned}
             self.assertEqual(ids_assigned | {c["id"] for c in pending}, {c["id"] for c in cands}, f"state {n}: a candidate vanished\n{snapshot}")
             for c in pending:
-                self.assertFalse(fits(c, remaining, ram, gpu_open),
+                self.assertFalse(fits(dict(c, options=[frozenset(rf.expand(o)) for o in c["options"]]), remaining, ram, gpu_open),
                                  f"state {n}: {c['id']} fits remaining free {sorted(remaining)} (ram {ram}) but was left pending\n{snapshot}")
             # (v) idle dict
-            self.assertEqual(set(idle), remaining, f"state {n}: idle keys != remaining free\n{snapshot}")
+            self.assertEqual(set(idle), {r for r in remaining if r in rf.REGIONS}, f"state {n}: idle keys != remaining free\n{snapshot}")
             for r, why in idle.items():
                 self.assertIsInstance(why, str)
                 self.assertTrue(why.strip(), f"state {n}: empty idle reason for {r}\n{snapshot}")
@@ -116,12 +126,17 @@ class PlanProperties(unittest.TestCase):
 
     def test_starved_lane_first_then_rank_then_grant(self):
         # (iv) starved lane: lower lane_count wins the single free region
-        a = cand("a", lane="cpu", lane_count=3, rank=1, options=[{"q1"}])
+        # rank 10, not 1: since 47d40629a a rank < URGENT_RANK (10) beats lane starvation (asserted below)
+        a = cand("a", lane="cpu", lane_count=3, rank=rf.URGENT_RANK, options=[{"q1"}])
         b = cand("b", lane="gpu", lane_count=0, rank=200, options=[{"q1"}])
         assigned, idle, pending = rf.plan({"q1"}, [a, b], 1000)
         self.assertEqual([c["id"] for c, _ in assigned], ["b"])
         self.assertEqual([c["id"] for c in pending], ["a"])
         self.assertEqual(idle, {})
+        # 47d40629a: an operator-urgent rank (< URGENT_RANK) beats the starved lane
+        a = cand("a", lane="cpu", lane_count=3, rank=1, options=[{"q1"}])
+        assigned, _, _ = rf.plan({"q1"}, [a, b], 1000)
+        self.assertEqual([c["id"] for c, _ in assigned], ["a"])
         # equal lane_count: lower rank wins
         a = cand("a", lane_count=1, rank=50, options=[{"q1"}])
         b = cand("b", lane_count=1, rank=10, options=[{"q1"}])
@@ -190,11 +205,13 @@ class Incident20261101(unittest.TestCase):
         self.assertFalse(bench)
         self.assertEqual(rf.grant_regions(d, frozenset(Q)), "0-95")
         self.assertEqual(rf.grant_regions({"regions": "any-cpu-quarter"}, frozenset({"q1"})), "24-47")
-        # GPU exclusive row claiming the whole host: dry-run shape is GPU + q3 only
+        # GPU exclusive row claiming the whole host: since fa37667a2 a GPU row books gpu-quiet + only the host threads its
+        # regions name; --claim-cpus books cpus only while the engine still region-locks the claim, and filler_run15.sh
+        # carries GRANT_CPUS (it locks only the grant's own cpus), so the claim books nothing. bench stays True.
         lp = self.gpu_launcher("gpu-excl", "--class gpu --gpu-quiet exclusive --claim-cpus 0-95")
         gd = {"regions": "mi210_0,184-191", "launcher": {"path": lp}}
         opts, bench = rf.row_shape(gd)
-        self.assertEqual(opts, [frozenset({rf.GPU} | Q)])
+        self.assertEqual(opts, [frozenset({rf.GPU} | {f"t{k}" for k in range(184, 192)})])
         self.assertTrue(bench)
         self.assertEqual(rf.grant_regions(gd, opts[0]), "mi210_0,184-191")
 
@@ -207,7 +224,9 @@ class Incident20261101(unittest.TestCase):
         o2 = rf.parse_launcher(lp2)
         self.assertTrue(o2["nofold"])
         opts, _ = rf.row_shape({"regions": "mi210_0,184-191", "launcher": {"path": lp2}})
-        self.assertEqual(opts, [frozenset({rf.GPU})], "q3 must stay usable for correctness rows")
+        # fa37667a2: gpu-quiet + the MI210 host threads t184..t191 only; q3 itself stays usable
+        self.assertEqual(opts, [frozenset({rf.GPU} | {f"t{k}" for k in range(184, 192)})], "q3 must stay usable for correctness rows")
+        self.assertNotIn("q3", opts[0])
 
     def test_fetch_only_row_held_a_quarter_underused(self):
         cpus = list(range(48, 72)) + list(range(144, 168))
@@ -267,7 +286,9 @@ class Incident20261101(unittest.TestCase):
         grants = rf.open_grants(self.flags)
         self.assertEqual([g["id"] for g in grants], ["z"])
         self.assertTrue(grants[0]["started"])
-        self.assertEqual(grants[0]["holds"], {"q2"})
+        # e40203894/fa37667a2: open_grants books the token expansion (q2 + its 24 cores + 16 sibling threads)
+        self.assertEqual(grants[0]["holds"], rf.expand({"q2"}))
+        self.assertEqual(rf.compress(grants[0]["holds"]), ["q2"])
         kept = rf.heal_grants(self.flags, grants, {"q2": ("HELD", "filler-other")}, log.append, seen)
         self.assertEqual([g["id"] for g in kept], ["z"])
         self.assertTrue(os.path.exists(os.path.join(G, "z.grant")))
@@ -336,7 +357,9 @@ class DrainNeverPreempt(unittest.TestCase):
         grant_ends = [now + 1200]
         for tick in range(60):
             t = now + tick * 120
-            stream = [self._cand(f"q-{tick}-{i}", [{q} for q in rf.QUARTERS], rank=1, window=3600, since=t) for i in range(6)]
+            # equal rank (100), not rank 1: since 47d40629a a strictly better-ranked placeable row holds the drain
+            # (drain_blocker; asserted in test_better_ranked_stream_holds_the_drain)
+            stream = [self._cand(f"q-{tick}-{i}", [{q} for q in rf.QUARTERS], rank=100, window=3600, since=t) for i in range(6)]
             assigned, idle, pending = rf.plan(free, stream + [host], 1000, now=t, grant_ends=grant_ends)
             ids = {c["id"] for c, _ in assigned}
             if "host-row" in ids:
@@ -353,12 +376,25 @@ class DrainNeverPreempt(unittest.TestCase):
                 grant_ends = []
         self.assertTrue(placed_host, "host row starved")
 
+    def test_better_ranked_stream_holds_the_drain(self):
+        """47d40629a (operator, 21:25Z 2026-11-02): an aged host row is neither promoted nor drained for while a strictly
+        better-ranked placeable row wants its regions; plan.drain_held names it. Never preempts either way."""
+        now = 1_000_000
+        host = self._cand("host-row", [set(rf.QUARTERS)], rank=100, shape="host", since=now - rf.DRAIN_AFTER_S, window=7200)
+        stream = [self._cand(f"q{i}", [{q} for q in rf.QUARTERS], rank=1, window=3600, since=now) for i in range(6)]
+        assigned, _, pending = rf.plan({"q1", "q2", "q3"}, stream + [host], 1000, now=now, grant_ends=[now + 1200])
+        self.assertIsNone(rf.plan.last_drain)
+        self.assertIn("host-row", [h["id"] for h, _ in rf.plan.drain_held])
+        self.assertEqual(len(assigned), 3)
+        self.assertIn("host-row", [c["id"] for c in pending])
+
     def test_backfill_never_delays_T_and_no_double_booking_during_drain(self):
         now = 5_000_000
         quiet = self._cand("quiet", [set(rf.REGIONS)], rank=10, shape="quiet-host", since=now, window=7200)
         T = now + 1800
         short = [self._cand(f"s{i}", [{q} for q in rf.QUARTERS], rank=20, window=900, since=now) for i in range(5)]
-        long_ = [self._cand(f"l{i}", [{q} for q in rf.QUARTERS], rank=1, window=3600, since=now) for i in range(5)]
+        # rank 30 (worse than quiet's 10), not 1: since 47d40629a a better-ranked placeable row holds the drain
+        long_ = [self._cand(f"l{i}", [{q} for q in rf.QUARTERS], rank=30, window=3600, since=now) for i in range(5)]
         free = {"q0", "q1", "q2", rf.GPU}   # q3 runs until T
         assigned, idle, pending = rf.plan(free, short + long_ + [quiet], 1000, now=now, grant_ends=[T])
         self.assertEqual(rf.plan.last_drain[0]["id"], "quiet")

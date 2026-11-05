@@ -1331,8 +1331,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         free = expand(free) | ({f"t{k}" for k in range(184, 192)} if GPU in free else set())
     else:   # token-level caller: a quarter is free for a whole-quarter row only when every core/thread it runs on is
         free = {t for t in free if t not in QUARTERS or expand({t}) <= free}
-    for c in cands:   # ws58 sub-quarter: a whole quarter also holds its core tokens
-        c["options"] = [frozenset(expand(o)) for o in c["options"]]
+    # ws58 sub-quarter: a whole quarter also holds its core tokens. PURE: expand into shallow copies, never the
+    # caller's dicts (e40203894 rewrote c["options"] in place; the returned assigned/pending carry the copies).
+    cands = [dict(c, options=[frozenset(expand(o)) for o in c["options"]]) for c in cands]
     pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
