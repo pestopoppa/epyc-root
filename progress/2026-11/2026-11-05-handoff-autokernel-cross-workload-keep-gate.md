@@ -107,3 +107,7 @@ Filed NEMO HIP trace feasibility rc0 as scoped prospective correlation; filed NE
 ## 02:22Z — Prepare an independent known-graph fixture and identify its execution admission conflict
 
 C6 census is running and CH-26b r3 is grantable. NEMO server marker-build lineage has three failed full qualifications and was parked. Preserved and checked the standalone fixture source and smoke-built binary; publisher refused its honest 180 s build estimate under the five-minute row minimum. The brief allows only publisher smoke compute, so no admissible direct short build exists under current instructions. The prospective GPU trace remains unqualified pending marker-clock and same-PID residency checks.
+
+## 02:29Z — File C6 paired support census and publish scoped paired performance diagnostic
+
+Filed c6-support-census-r2-20261105 rc0 as a descriptive matched support census; retained result and logs before receipt. Two q4_K n=4 failures became passes, while 326 MUL_MAT and 2229 attention cases were unsupported on both images. Added source-based support classification with four passing controls. Prepared a 20-pair seven-shape synthetic timing row: its initial smoke refused missing nested unit counts; corrected and resealed packet passed smoke and was published. No full correctness or promotion claim.
