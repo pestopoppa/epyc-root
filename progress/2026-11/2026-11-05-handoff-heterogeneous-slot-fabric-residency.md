@@ -115,3 +115,7 @@ Filed the historical ABI inventory and targeted allocator ELF capture: 16 images
 ## 02:40Z — File same-UID mutation result and publish private seal control
 
 Filed same-UID custody qualification COMPLETE with UNSAFE post-final-check mutation visibility; pre-revalidation mutation was refused. Published model-free same-process memfd sealing controls after four-CPU smoke; no native loader or full-chain safety claim.
+
+## 02:43Z — File synthetic raw maps and publish own-child virtual-memory controls
+
+Filed KPF-50 raw maps 20/20 synthetic controls; native provenance remains UNKNOWN. Published a bounded private own-child process_vm_readv qualification after its four-CPU smoke; the full controls remain pending and do not prove GPU or physical-page provenance.
