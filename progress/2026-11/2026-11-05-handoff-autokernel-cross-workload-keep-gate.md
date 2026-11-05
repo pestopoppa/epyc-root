@@ -179,3 +179,7 @@ C6-Q4-MMVQ-FIX target-shape successor awaits the running c6-targetshape-dual-bui
 ## 04:02Z — Assess runnable qualification after C6 build dependency
 
 C6 target-shape successor remains dependent on the running dual-image build receipt. Existing C6 suites and paired performance diagnostics and the grantable CH-26b scheduler diagnostic should not be duplicated. CH-27a's strict C5 recipe mismatch is explained and its native plan was actionable; shared-writer custody and floor-record admission remain unproved. CH-31's next native adapter is unbuilt and lacks Q8 route controls and an established qualifying runtime. No row published and no new measurement claimed.
+
+## 04:06Z — File paired target-shape image build and qualify GPU comparison
+
+Filed c6-targetshape-dual-build-20261105 rc0 as build-only with retained images, logs and inventories; result SHA-256 dbb5084bbf97faa772f9f321d58720f64dbd41229bbdb25b014262e32c7cdbcf. Published bound c6-targetshape-perf-successor-20261105 after publisher smoke; no GPU performance or correctness verdict follows.
