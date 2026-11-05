@@ -4425,3 +4425,9 @@ Sources: [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) �
 - **Micron-import triage.** Two operator imports (a pip pool r35 revival and the YaRN s1/s2 rows) verified byte-exact but were not runnable: their pin manifests assert files since reaped from raid0 (1,052 digests with 39 missing; 33 forensic files plus an un-imported python313 closure), so no successor was published. Lesson: pinned-input sets must outlive the scratch reaper or be re-pinned with a reviewed manifest bump.
 
 Sources: [compute-claim admission](../docs/reference/gitnexus-compute-claims.md) · [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [knowledge pipelines](../handoffs/active/knowledge-pipelines.md) · [long-context program](../handoffs/active/long-context-program.md) · [Vidya program](../handoffs/active/vidya-belief-substrate-program.md) · [context economy](../handoffs/active/context-and-token-economy.md) · [harness program](../handoffs/active/harness-program.md) · [memory program](../handoffs/active/memory-program.md) · [speech and multimodal](../handoffs/active/speech-and-multimodal.md)
+
+## Compiled Update — 2026-11-05 (operator /wrap-up 5): gitnexus CUDA impact fixed
+
+- **gitnexus 1.6.8 mis-parsed CUDA `__global__` kernels** preceded by `__launch_bounds__(...)` and drew no `<<<>>>` launch edges, so impact on a kernel came back vacuously LOW. Patched (f9d1d46a3, plus a parse-cache version bump so stale CUDA parses are not replayed); KPF-41 impact r10 then PASSED with all four targets LOW on real edges. Pushing a new branch still bypasses the push lock because `serialized_push.py` cannot publish one (box SERIALIZED-PUSH-NEW-BRANCH).
+
+Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [gitnexus compute claims](../docs/reference/gitnexus-compute-claims.md) · [kv-cache program](../handoffs/active/kv-cache-program.md)

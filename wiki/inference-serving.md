@@ -3247,3 +3247,17 @@ Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.m
 - **Process lessons:** CPU rows must not open the GPU (keeper GPU fence); GPU timing rows need a quiet-device check before and during; a timing quarter includes its SMT siblings.
 
 Sources: [MI210 serving program (completed)](../handoffs/completed/mi210-serving-program.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [MI300-to-MI210 portability](../artifacts/analysis/mi300-to-mi210-portability-20261105.md) · [stack lifecycle program](../handoffs/active/stack-lifecycle-program.md)
+
+## Compiled Update — 2026-11-05 (operator /wrap-up 5, operator-adhoc-ops-20261105): keeper grant loop, GPU rank rule, q3 narrowing, C6 MMVQ
+
+**Confidence: verified** for test counts and filed verdicts; rules marked operator are rulings.
+
+- **A STOP file present before start can make the keeper re-grant forever.** The armed launcher saw `oracle-build.STOP`, released the grant and exited without `.ended`/`.complete`; frozen rowflow did not count that exit as an arming failure, so `allocate` re-granted `lsa-oracle-reference-build-f6dddb7-20261104` every 120 s (~1166 grants). Row withdrawn; rowflow2 must skip a row whose resolved stop file exists at grant time (fixture box ROWFLOW2-STOP-PRESENT-FIXTURE; design note 5fc9f5379).
+- **rowflow2 holds: plain backfill-if-fits, no hold budget** (operator: the daily budget was overengineering; 59f09b81e replaced 3ee751108's budget, kept its SMT-sibling and timing-row rules). rowflow2 runs in shadow beside frozen rowflow (deploy freeze enforced, d40bb65bb).
+- **Rank ties let a GPU correctness suite starve timing rows**: suites held the GPU exclusively at ~2% busy. Rule: a GPU correctness suite ranks strictly above every waiting GPU timing row and >=60 (e555b6211).
+- **gpu-q3 narrowing (operator emergency deploy):** a GPU timing grant holds gpu-quiet + cores 88-95 + threads 184-191, never 72-87, so CPU rows keep the rest of q3 (9b69b7131; 308 unit + 34 replay tests, old-rule negative control fails as required).
+- **C6 q4_K MMVQ fix qualifies by storing the q8 block's integer sum once at quantization** (llama.cpp 9e9d7f291): 0 failures, unsupported set a subset of C5's, n=1-4 within +5% of C6; the n=8 secondary clause vs f9f872ebc is non-gating by operator ruling.
+- **C6 no-prefetch mmap knob is proven by a syscall witness, not residency:** the CPU loader touches every page, so cold-cache residency (r3) cannot separate arms; an LD_PRELOAD MAP_POPULATE shim (r4) did.
+- **HIP FA f16 head sizes 192/320/512/576 are unsupported outside the GQA-optimised path and SHELVED** ([hip-fa-unsupported-shapes](../docs/reference/hip-fa-unsupported-shapes.md); fix parked on `experimental/c6-hip-fa-f16-hs-20261105`). Qwen3.6-35B-A3B (hs 256, GQA 8) is unaffected; new-model and change-topology now check it.
+
+Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [q3 narrow](../progress/2026-11/2026-11-05-rowflow-gpu-q3-narrow.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [engineering hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)

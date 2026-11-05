@@ -4,15 +4,31 @@
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1339,
+    "progress": 1340,
     "research": 278
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
-  "mode": "touch",
-  "scan_time": "2026-11-05T19:33:25Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 4,
+      "removed": 0
+    },
+    "at": "2026-11-05T20:49:41Z",
+    "scope_paths": [
+      "docs/design/rowflow2-20261105.md",
+      "docs/reference/gitnexus-compute-claims.md",
+      "handoffs/active/engineering-hygiene-backlog.md",
+      "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md",
+      "progress/2026-11/2026-11-05-rowflow-gpu-q3-narrow.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-05T20:49:41Z",
   "schema_version": 1,
-  "source_set_hash": "ab1bf42f9adf0e4981efd2a4191ce56cfffb79e3665e23319f3c75280e48bbd7",
+  "source_set_hash": "b548ee99bb3d5602f3e491e43bba24f445b2b4e75ecd1815daaadb39980c21a9",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -79,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "993bdc4c93931b687980012daf26b6941bc30e6b49a0b7b722a7c685a03b2970",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "f3afc527cef0431f5c3ed1ac1595ed7c18f02f81c32ee8a8da2c7ae48d3abf74",
+      "modified": "2026-11-05T20:47:57Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 423722,
+      "size": 426209,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -16031,11 +16047,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "e6f03dd3b8906fb3996e3cbd8ff9e2983728ee7afcae045511af279a40633d18",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "5a919da5a39862adfe983df6afe16d6aefcb677cfa13db3ffdcc723692dbcc7d",
+      "modified": "2026-11-05T20:48:11Z",
       "path": "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md",
-      "size": 12169,
+      "size": 15010,
       "title": "2026-11-05 \u2014 operator ad-hoc ops (operator-adhoc-ops-20261105)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0bb3b226252468a598c98f1fff0113cb97ec88c868c61347876572fc537b786a",
+      "modified": "2026-11-05T20:47:20Z",
+      "path": "progress/2026-11/2026-11-05-rowflow-gpu-q3-narrow.md",
+      "size": 1486,
+      "title": "2026-11-05 \u2014 rowflow gpu-q3 NARROW (operator: \"Narrow + emergency deploy\")",
       "type": "progress"
     },
     {
@@ -17063,10 +17087,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "01a1cf239728c92c0fb16b3d2c4fceba9077d2e09628b665fac899376f0662d5",
-      "modified": "2026-11-05T19:30:49Z",
+      "content_hash": "121544bb75445acce640c10086c0a22b34b346165415dcc8351bae3c5a5e2489",
+      "modified": "2026-11-05T20:47:20Z",
       "path": "docs/design/rowflow2-20261105.md",
-      "size": 7913,
+      "size": 9063,
       "title": "rowflow2 \u2014 minimal keeper, shadow week and cutover (2026-11-05)",
       "type": "docs"
     },
@@ -17791,10 +17815,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "6d75b6a41055b9f24c51318cbb6021529a7e5469ea162587e7d844910642bbd5",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "f60ec572fa2ffa5eda4962ba6743a80ed557adfaf7bd09748a8f8693496fd03b",
+      "modified": "2026-11-05T20:47:20Z",
       "path": "docs/reference/gitnexus-compute-claims.md",
-      "size": 6980,
+      "size": 7705,
       "title": "GitNexus compute-claim admission",
       "type": "docs"
     },
@@ -19639,7 +19663,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2453,
+  "total_new": 2454,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
