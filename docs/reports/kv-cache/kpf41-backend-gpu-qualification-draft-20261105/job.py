@@ -126,7 +126,7 @@ def smoke_test():
 def gpu_smoke():
  if os.environ.get('FILLER_SMOKE')!='1' or os.environ.get('FILLER_NEEDGPU')!='1':raise RuntimeError('GPU witness requires publisher GPU smoke grant')
  exe=D/'clock-smoke'
- if sha(exe)!='729cf9f6040ba151bc24680fdfb319efcf859d6c7720a92563a767581e03acad':raise RuntimeError('witness binary drift')
+ if sha(exe)!='c79d3f6069abd42c334b0203b1e621dc175582779b5c33e8c49018f22cb17076':raise RuntimeError('witness binary drift')
  stop=pathlib.Path(os.environ['FILLER_STOPFILE']);deadline=min(float(os.environ['FILLER_DEADLINE'])-5,time.time()+90)
  if STOP or stop.exists() or time.time()>=deadline:raise RuntimeError('STOP/deadline')
  env={'PATH':'/usr/bin:/bin','HOME':os.environ.get('HOME','/tmp'),'LD_LIBRARY_PATH':'/opt/rocm/lib','HIP_VISIBLE_DEVICES':'0','ROCR_VISIBLE_DEVICES':'0'}
