@@ -111,3 +111,7 @@ Filed KPF-50 44/44 synthetic window controls and rebuilt TTS startup/cleanup PAS
 ## 02:37Z — File historical ELF inventory and prepare allocator displacement census
 
 Filed the historical ABI inventory and targeted allocator ELF capture: 16 images, 80 tool calls, and three allocator bodies with custody; native offsets and historical binding remain unknown. Published the bounded syntactic operand census after a four-CPU smoke.
+
+## 02:40Z — File same-UID mutation result and publish private seal control
+
+Filed same-UID custody qualification COMPLETE with UNSAFE post-final-check mutation visibility; pre-revalidation mutation was refused. Published model-free same-process memfd sealing controls after four-CPU smoke; no native loader or full-chain safety claim.

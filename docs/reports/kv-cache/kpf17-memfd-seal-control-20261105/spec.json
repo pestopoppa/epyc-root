@@ -1,0 +1,20 @@
+{
+  "id": "kpf17-memfd-seal-control-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-memfd-seal-control-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-memfd-seal-control-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Model-free private non-ELF memfd control only: require unsealed mapped write visibility, sealed same-process alias overwrite refusal with unchanged mapping, truncation refusal and seal-change refusal. Stop on mismatch, STOP or deadline. No native loader, build identity, cross-process threat or whole custody-chain claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.MEMFD-SEAL-QUAL",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-memfd-seal-control-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf17-memfd-seal-control"
+}

@@ -1,0 +1,54 @@
+{
+  "attempt_nonce": "ce60c234e25e6f0e8446c00d462488a56a69c3f04e26839e",
+  "case_count": 2,
+  "cases": [
+    {
+      "after_sha256": "725bcd6c66d02acf6ebeab9c92410e010ea22e336876256aaf05a211f4ce1902",
+      "baseline_library_count": 5,
+      "before_sha256": "6896d9ea3f73a4434f5832bc65714e7d066f177373f36f34dc8a6f735daa41b1",
+      "events": [
+        "retained_validate_maps_accepted",
+        "same_uid_alias_inplace_write_complete",
+        "retained_validate_maps_refused"
+      ],
+      "hardlink_count": 2,
+      "mapped_mutation_visible": true,
+      "owner_uid": 1000,
+      "reason": "unattested mapped library: /mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105/out/ce60c234e25e6f0e8446c00d462488a56a69c3f04e26839e/before-revalidation-q42wilx2/libggml.so",
+      "same_inode": true,
+      "validator_response": "REFUSED",
+      "window": "before-revalidation",
+      "writer_uid": 1000
+    },
+    {
+      "after_sha256": "725bcd6c66d02acf6ebeab9c92410e010ea22e336876256aaf05a211f4ce1902",
+      "baseline_library_count": 5,
+      "before_sha256": "6896d9ea3f73a4434f5832bc65714e7d066f177373f36f34dc8a6f735daa41b1",
+      "events": [
+        "retained_validate_maps_accepted",
+        "same_uid_alias_inplace_write_complete",
+        "mapped_fixture_read_mutated_bytes_without_revalidation"
+      ],
+      "hardlink_count": 2,
+      "mapped_mutation_visible": true,
+      "owner_uid": 1000,
+      "reason": "final accepted check precedes the synchronized write",
+      "same_inode": true,
+      "validator_response": "NO_CHECK_AFTER_MUTATION",
+      "window": "after-final-check",
+      "writer_uid": 1000
+    }
+  ],
+  "context_sha256": "c608f8658f570be0e55f76b583531a0184e8e6fc935e3a436fc38cd6824fb5c8",
+  "custody_source_sha256": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+  "evidence_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105/out/ce60c234e25e6f0e8446c00d462488a56a69c3f04e26839e/cases.json",
+  "evidence_sha256": "042e737ccba4086ec55c287b4c044f31efa434a078f24875ea8633035d920715",
+  "limits": "Actual retained validate_maps only, synthetic proc-map lines and non-ELF fixture mmap; no build_identity, native loading, model, inference, or whole-chain safety claim. UNSAFE means same-UID hardlink writes remain visible after the final accepted check.",
+  "packet_seal_sha256": "21b1018f0fdcbb03dfb3bf41c66e20f98f112811405de57d9cd3353461f988ad",
+  "qualification_status": "COMPLETE",
+  "result_kind": "full",
+  "row_id": "kvfork17-sameuid-custody-qual-20261105",
+  "schema": "kpf17.sameuid-custody-qualification.v1",
+  "status": "UNSAFE",
+  "unit_key": "case_count"
+}
