@@ -277,12 +277,6 @@
     {
       "from": "INF-22",
       "kind": "ref",
-      "to": "INF-33",
-      "weight": 4
-    },
-    {
-      "from": "INF-22",
-      "kind": "ref",
       "to": "INF-50",
       "weight": 3
     },
@@ -387,6 +381,12 @@
       "kind": "ref",
       "to": "EVL-47",
       "weight": 8
+    },
+    {
+      "from": "INF-65",
+      "kind": "ref",
+      "to": "INF-33",
+      "weight": 2
     },
     {
       "from": "INF-65",
@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T10:53:51Z",
+  "generated_at": "2026-11-05T11:01:07Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1410,14 +1410,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 749,
-      "dispatchable": 128,
+      "dispatchable": 129,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-04",
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
-      "open": 129,
+      "open": 130,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1546,7 +1546,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 14,
+          "dispatchable": 15,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1564,24 +1564,24 @@
           ],
           "line": 13969,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 14,
+          "open": 15,
           "readiness": "blocked"
         }
       ]
     },
     {
       "age_days": 0,
-      "blocked": 3,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 207,
-      "dispatchable": 12,
+      "closed": 200,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File Q38P-3 stage-1 (ROCm 6.2 vs 10.1) and NPD1-STEP2 (A1 op-offload) rows into the v11 candidate promotion runbook",
-      "open": 15,
+      "open": 7,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1601,61 +1601,60 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 4,
           "gates": [],
           "line": 23,
           "name": "mi210-serving-program",
-          "open": 6,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 683,
+          "line": 685,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
-          "open": 2,
+          "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 1042,
+          "line": 1022,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1320,
+          "line": 1300,
           "name": "gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 1,
           "gates": [],
-          "line": 1955,
+          "line": 1935,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 5,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2222,
+          "line": 2194,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [
-            "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#mi210-serving-program"
           ],
@@ -1668,7 +1667,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2832,
+          "line": 2804,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1,
           "readiness": "blocked"
@@ -2099,7 +2098,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 575,
+          "line": 576,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -2108,7 +2107,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 946,
+          "line": 947,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2117,7 +2116,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1562,
+          "line": 1563,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -2126,7 +2125,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1709,
+          "line": 1710,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2138,14 +2137,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 271,
-      "dispatchable": 105,
+      "dispatchable": 107,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 107,
+      "open": 109,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2195,7 +2194,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1543,
+          "line": 1544,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2204,7 +2203,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1667,
+          "line": 1668,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2213,7 +2212,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1994,
+          "line": 1995,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2222,7 +2221,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2133,
+          "line": 2134,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2231,7 +2230,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2686,
+          "line": 2687,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2248,7 +2247,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2823,
+          "line": 2824,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2262,7 +2261,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 56,
+          "dispatchable": 58,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -2271,9 +2270,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3717,
+          "line": 3718,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 57,
+          "open": 59,
           "readiness": "blocked"
         }
       ]
