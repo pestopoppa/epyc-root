@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 497
+      "open": 496
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -729,10 +729,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 241,
+      "closed": 242,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 106,
+      "open": 105,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -805,13 +805,13 @@
         },
         {
           "blocked": 0,
-          "closed": 9,
+          "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 2018,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 5
+          "open": 4
         }
       ]
     },
@@ -1305,10 +1305,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 9,
-      "closed": 409,
+      "closed": 410,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 97,
+      "open": 96,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1321,7 +1321,7 @@
       "tracks": [
         {
           "blocked": 8,
-          "closed": 249,
+          "closed": 250,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1331,7 +1331,7 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 48
+          "open": 47
         },
         {
           "blocked": 1,
@@ -2405,7 +2405,7 @@
       "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 29,
+      "open": 30,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2414,7 +2414,7 @@
       },
       "row_id": "RTG-36",
       "state": "active",
-      "total": 151,
+      "total": 152,
       "tracks": [
         {
           "blocked": 0,
@@ -2424,14 +2424,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 10
+          "open": 11
         },
         {
           "blocked": 1,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 371,
+          "line": 373,
           "markers": 1,
           "name": "capability-registry-and-promotion",
           "open": 2
@@ -2441,7 +2441,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 519,
+          "line": 521,
           "markers": 1,
           "name": "model-artifact-integrity",
           "open": 5
@@ -2451,7 +2451,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 689,
+          "line": 691,
           "markers": 1,
           "name": "model-exec-containment",
           "open": 4
@@ -2461,7 +2461,7 @@
           "closed": 48,
           "gates": [],
           "guarded": 0,
-          "line": 795,
+          "line": 797,
           "markers": 1,
           "name": "model-stack-single-source-update-pipeline",
           "open": 4
@@ -2471,7 +2471,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1358,
+          "line": 1360,
           "markers": 1,
           "name": "model-stack-update-pipeline-audit",
           "open": 2
@@ -2481,7 +2481,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2019,
+          "line": 2021,
           "markers": 1,
           "name": "standardized-stack-update-pipeline-finalization",
           "open": 1
@@ -2491,7 +2491,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 2364,
+          "line": 2366,
           "markers": 1,
           "name": "wp12-fleet-layer-design",
           "open": 1

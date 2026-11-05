@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T20:31:53Z",
+  "generated_at": "2026-11-05T20:45:08Z",
   "nodes": [
     {
       "age_days": 2,
@@ -3006,15 +3006,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 241,
-      "dispatchable": 106,
+      "closed": 242,
+      "dispatchable": 105,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-05",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 106,
+      "open": 105,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3088,11 +3088,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 2018,
           "name": "repo-readiness-scorer",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         }
       ]
@@ -3253,14 +3253,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
-      "dispatchable": 29,
+      "dispatchable": 30,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "last_advanced": "2026-11-05",
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
-      "open": 30,
+      "open": 31,
       "priority": 0.1387,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM \u2014 `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
@@ -3292,18 +3292,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 11,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 371,
+          "line": 373,
           "name": "capability-registry-and-promotion",
           "open": 3,
           "readiness": "ready"
@@ -3312,7 +3312,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 519,
+          "line": 521,
           "name": "model-artifact-integrity",
           "open": 5,
           "readiness": "ready"
@@ -3321,7 +3321,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 689,
+          "line": 691,
           "name": "model-exec-containment",
           "open": 4,
           "readiness": "ready"
@@ -3330,7 +3330,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 795,
+          "line": 797,
           "name": "model-stack-single-source-update-pipeline",
           "open": 4,
           "readiness": "ready"
@@ -3339,7 +3339,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1358,
+          "line": 1360,
           "name": "model-stack-update-pipeline-audit",
           "open": 2,
           "readiness": "ready"
@@ -3348,7 +3348,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2019,
+          "line": 2021,
           "name": "standardized-stack-update-pipeline-finalization",
           "open": 1,
           "readiness": "ready"
@@ -3357,7 +3357,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2364,
+          "line": 2366,
           "name": "wp12-fleet-layer-design",
           "open": 1,
           "readiness": "ready"
@@ -3368,15 +3368,15 @@
       "age_days": 0,
       "blocked": 9,
       "blocked_by": [],
-      "closed": 409,
-      "dispatchable": 97,
+      "closed": 410,
+      "dispatchable": 96,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 106,
+      "open": 105,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3402,7 +3402,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 48,
+          "dispatchable": 47,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3410,7 +3410,7 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 56,
+          "open": 55,
           "readiness": "blocked"
         },
         {
