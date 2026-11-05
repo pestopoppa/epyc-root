@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 483
+      "open": 485
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 303,
+      "closed": 306,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 97,
+      "open": 99,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 401,
+      "total": 406,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 177,
+          "closed": 178,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,17 +1332,17 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 52
+          "open": 53
         },
         {
           "blocked": 0,
-          "closed": 14,
+          "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1586,
+          "line": 1589,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
-          "open": 8
+          "open": 9
         },
         {
           "blocked": 0,
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 1984,
+          "line": 1990,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 37
