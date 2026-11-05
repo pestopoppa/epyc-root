@@ -1,0 +1,6 @@
+{
+  "source_receipt": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-row-20261104/binding.json",
+  "source_receipt_sha256": "9430c23d4da86633a6e28dc9d465a6ee6da2564cd3ac2aaa0915b2ba8fe142a1",
+  "status": "UNTESTED_COMPONENT_ONLY",
+  "target_exposed": false
+}

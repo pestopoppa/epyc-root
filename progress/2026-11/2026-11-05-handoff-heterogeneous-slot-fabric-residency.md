@@ -27,3 +27,7 @@ HSF-3 census r3 was previously filed inconclusive: the aggregate JSON counter ne
 ## 00:35Z — Prepare source-bound historical task-binding and current drafter-state impact prerequisites.
 
 KVU-11c HIP build r2 was previously filed PASS at build-only scope; GPU validation and promotion remain open. Published kpf131-native-binding-impact-a1f0-20261105 after four-CPU reference smoke on historical source, and kpf191-drafter-impact-8952-20261105 after a separate four-CPU reference smoke on the integrated candidate. Full native impacts and skipped-file coverage remain pending; neither proves runtime binding, historical layout, drafter correctness or edit clearance. Existing KPF-17.4 plan qualification dry-run is owned by another session and was not duplicated.
+
+## 00:44Z — Prepare native two-vocabulary census and KPF-50 stat-only model admission.
+
+Original kvu-kpf131-old-native-findslot-20261104 was already corrected to INCONCLUSIVE: native child exit and executable snapshot requirements were absent. Its explicit-custody r2 successor remains armed. Published kpf623-native-vocab-census-20261105 after four-CPU vocab-only smoke enumerated 256 pieces per vocab using native in-lifetime library maps; full inventories, cross-vocabulary alignment and budget re-admission remain pending. Prepared an untested KPF-50 stat-only model admission component and isolated supervisor/runtime materials; no profile window was exposed. Registered follow-up adapter and supervisor review completion files.
