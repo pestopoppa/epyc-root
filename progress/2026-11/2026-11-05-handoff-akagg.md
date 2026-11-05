@@ -27,3 +27,7 @@ Two retained-input seed-71 cases: candidate MMVQ failed tolerance while forced C
 ## 03:17Z — File matched C6 q4_K timing diagnostic
 
 Twenty matched q4_K synthetic pairs completed with all seven sizes per arm. For n=4, corrected minus baseline mean time was +79.595 us, approximate paired 95% t interval ±1.847 us; lower time is better. Toolchain/header and build-path differences prevent sole-source attribution; no keep or promotion follows. Result and verified logs retained at /mnt/raid0/llm/tmp/akagg/retained-c6-q4k-matched-perf-20261105.
+
+## 03:21Z — Started W5s successor publisher smoke; independent packet review identified stale draft manifests and prior qualification receipts requiring reconciliation.
+
+Started the W5s successor publisher smoke; independent review found draft manifests still refer to r7 and earlier receipts do not qualify r3. Await the smoke terminal evidence and reconcile packet custody before treating the row as ready. No census claim. [no-belief: preparation only]
