@@ -107,3 +107,7 @@ Filed wrapper STOP v2 PASS for ten model-free controls; no native oracle claim f
 ## 02:32Z — File synthetic window and startup controls; prepare coverage parser qualification
 
 Filed KPF-50 44/44 synthetic window controls and rebuilt TTS startup/cleanup PASS with no synthesis. The HSF-1 native source impact is inconclusive with nonzero skipped telemetry; published a separate fail-closed zero-telemetry control after a repaired four-CPU smoke. Native impact and coverage remain unresolved.
+
+## 02:37Z — File historical ELF inventory and prepare allocator displacement census
+
+Filed the historical ABI inventory and targeted allocator ELF capture: 16 images, 80 tool calls, and three allocator bodies with custody; native offsets and historical binding remain unknown. Published the bounded syntactic operand census after a four-CPU smoke.
