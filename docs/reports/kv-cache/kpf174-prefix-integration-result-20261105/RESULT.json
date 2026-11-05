@@ -1,0 +1,87 @@
+{
+  "classification": "MODEL_FREE_QUALIFICATION",
+  "rc": 0,
+  "failure": null,
+  "own_pid_dead": true,
+  "elapsed_s": 0.7290357351303101,
+  "workload_limit_s": 120,
+  "cleanup_budget_s": 7,
+  "run_dir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-prefix-request-integration-20261105/out/full-20261105T020705Z-8ab2307b2b6f4b94abc3617c2eb0fa9d",
+  "inference": false,
+  "pre_seal": {
+    "manifest_sha256": "fdb1b38440e7fd5648c2f6c0b238b86dc3343db3b1684f962f5089da97cf6613",
+    "files": {
+      "README.md": "9cb53d66b6fe1994c50c3d1f6d48da605d8a4c6df7ddcf0b00bb40d022fda943",
+      "SOURCE-IDENTITIES.json": "171a3654b0c6b37009dfd96003d96e404a10dd2b84dde0366a3107271fe4c9a9",
+      "STATIC-GLOBAL-REVIEW.json": "8ed73bc1d7054e75ab7464219e4fae759c3ec4a99f9cd7825e5948c02ccb96d5",
+      "adapter.py": "060c5d1de8c32add0d2a3c4380854896019ce3ab7aca014400323f6479e056f4",
+      "complete.py": "698b15c160f4f41a5af15c79d379acb23ecd13efe32dca0bbd087f0a407118eb",
+      "launch.sh": "07935c546a257d8dc475355b7ab432ec22f20b9ccb9752c04f259d1662569cd2",
+      "layout_witness.py": "5e4fca7ee37c7e9e3279e6e7cb4162c2d8f8e068f02a906a0ac1deb400bff1f5",
+      "retained_control.py": "5bbc610caac215103cd8d884a680848156a39377eb14a22285f57216e55fc0ac",
+      "smoke.py": "72a4986bc418e7a41f6e5f81d83f4b4d58b7f70e6f62140dda71d612fc1ac3ed",
+      "spec.json": "1abffed0046904432cd859aa743414cc0b9722c57bb5d623b7c0659120c819c9"
+    }
+  },
+  "post_seal": {
+    "manifest_sha256": "fdb1b38440e7fd5648c2f6c0b238b86dc3343db3b1684f962f5089da97cf6613",
+    "files": {
+      "README.md": "9cb53d66b6fe1994c50c3d1f6d48da605d8a4c6df7ddcf0b00bb40d022fda943",
+      "SOURCE-IDENTITIES.json": "171a3654b0c6b37009dfd96003d96e404a10dd2b84dde0366a3107271fe4c9a9",
+      "STATIC-GLOBAL-REVIEW.json": "8ed73bc1d7054e75ab7464219e4fae759c3ec4a99f9cd7825e5948c02ccb96d5",
+      "adapter.py": "060c5d1de8c32add0d2a3c4380854896019ce3ab7aca014400323f6479e056f4",
+      "complete.py": "698b15c160f4f41a5af15c79d379acb23ecd13efe32dca0bbd087f0a407118eb",
+      "launch.sh": "07935c546a257d8dc475355b7ab432ec22f20b9ccb9752c04f259d1662569cd2",
+      "layout_witness.py": "5e4fca7ee37c7e9e3279e6e7cb4162c2d8f8e068f02a906a0ac1deb400bff1f5",
+      "retained_control.py": "5bbc610caac215103cd8d884a680848156a39377eb14a22285f57216e55fc0ac",
+      "smoke.py": "72a4986bc418e7a41f6e5f81d83f4b4d58b7f70e6f62140dda71d612fc1ac3ed",
+      "spec.json": "1abffed0046904432cd859aa743414cc0b9722c57bb5d623b7c0659120c819c9"
+    }
+  },
+  "status": "PASS",
+  "native_equality": false,
+  "cases": [
+    {
+      "case": "positive",
+      "refused": false,
+      "entries": [
+        "compare"
+      ],
+      "boundary": [
+        1,
+        10
+      ]
+    },
+    {
+      "case": "duplicate",
+      "refused": true,
+      "judge_entries": [],
+      "reason": "expected exactly one bound prefix snapshot"
+    },
+    {
+      "case": "multi_layout",
+      "refused": true,
+      "judge_entries": [],
+      "reason": "ambiguous multi-layout target batch"
+    },
+    {
+      "case": "foreign_task",
+      "refused": true,
+      "judge_entries": [],
+      "reason": "request does not bind one native task to target slot"
+    },
+    {
+      "case": "foreign_slot",
+      "refused": true,
+      "judge_entries": [],
+      "reason": "request interval includes foreign task or slot"
+    },
+    {
+      "case": "truncated",
+      "refused": true,
+      "judge_entries": [],
+      "reason": "truncated trace"
+    }
+  ],
+  "launch_verdicts": {}
+}
