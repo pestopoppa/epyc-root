@@ -43,3 +43,7 @@ Qualified `akagg-w5s-retention-r3-20261105` after the archive manifest readback 
 ## 03:52Z — Qualified independent CPU f32 GDN oracle successor and prepared C6 target-shape GPU receipt binding.
 
 Published CPU f32 GDN one-hot oracle successor after publisher smoke; full three-arm baseline and mutant verdict remains pending. Prepared C6 target-shape GPU successor with nine binding controls; it awaits the dual-image build receipt. [no-belief: preparation and smoke only]
+
+## 03:59Z — Reconciled and retained the filed BF16 GPU oracle pass; qualified CPU BF16 successor.
+
+Reconciled the filed GPU BF16 three-arm oracle pass: baseline exactly matched 27,262,976 values, both mutants were detected, and all arms had own-PID GPU evidence. Retained result, logs, samples and smoke qualification. Published the CPU BF16 successor after smoke; full CPU and parent verdict remain pending. [belief: cc]
