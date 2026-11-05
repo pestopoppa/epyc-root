@@ -133,7 +133,7 @@ def dev_inode(identity):
     dev, ino = identity
     return (os.major(dev), os.minor(dev), ino)
 
-def valid_payload(data, owner, expected_region):
+def valid_payload(data, owner, expected_region, regions=QUADRANTS):
     try:
         p = json.loads(data.decode("utf-8"))
     except Exception:
@@ -146,13 +146,109 @@ def valid_payload(data, owner, expected_region):
     started = p.get("started_at")
     if (p.get("schema_version") != 1 or p.get("pid") != owner or
         p.get("role") != "build" or p.get("region") != expected_region or
-        p.get("regions") != list(QUADRANTS) or
+        p.get("regions") != list(regions) or
         not isinstance(p.get("request_tag"), str) or not p["request_tag"].strip() or
         isinstance(started, bool) or not isinstance(started, (int, float)) or
         not math.isfinite(started) or started <= 0 or started > time.time() + 60):
         deny("build lock attribution mismatch")
 
-def admit():
+def analyze_workers(args):
+    """Return 1 only for one unambiguous `--workers 1`; otherwise None.
+
+    Operator decision 2026-11-05 ("Change the rule: 1 quarter"): a pinned
+    single-worker analyze may run on ONE CPU quarter. Anything absent,
+    repeated, malformed or not exactly 1 keeps the four-quarter rule.
+    """
+    values = []
+    i = 0
+    while i < len(args):
+        item = args[i]
+        if item == "--":
+            return None  # positional tail is ambiguous: fail closed
+        if item == "--workers":
+            if i + 1 >= len(args):
+                return None
+            values.append(args[i + 1])
+            i += 2
+            continue
+        if item.startswith("--workers="):
+            values.append(item.split("=", 1)[1])
+        elif item.startswith("--worker"):
+            return None  # unknown spelling (e.g. --workers-max) is ambiguous
+        i += 1
+    if len(values) != 1 or values[0] != "1":
+        return None
+    if os.environ.get("GITNEXUS_WORKER_POOL_SIZE", "1") != "1":
+        return None  # environment channel disagrees with the pinned CLI
+    return 1
+
+def admit(analyze_args=None):
+    if analyze_args is not None and analyze_workers(analyze_args) == 1:
+        try:
+            return admit_one_quarter()
+        except Refusal as quarter_refusal:
+            # A full four-quarter claim also covers a single worker.
+            try:
+                return admit_whole_host()
+            except Refusal:
+                raise quarter_refusal
+    return admit_whole_host()
+
+def admit_one_quarter():
+    """Single-worker analyze: GLOBAL+build write flocks on one same quarter."""
+    global EXPECTED_ROOT
+    EXPECTED_ROOT = safe_root()
+    if os.environ.get("ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT", "").strip().lower() not in {"1", "true", "yes", "on"}:
+        deny("cross-role global region locks are not enabled")
+    anc = ancestors()
+    current_uid = os.getuid()
+    kernel = proc_lock_owners()
+    held = {}
+    for q in QUADRANTS:
+        pair = []
+        for role in ("GLOBAL", "build"):
+            path = os.path.join(LOCK_ROOT, f"cpu_region.{role}.{q}.lock")
+            ident, payload = open_identity(path)
+            candidates = kernel.get(dev_inode(ident), set()).intersection(anc)
+            if len(candidates) > 1:
+                deny(f"{role}/{q} has ambiguous ancestor write flocks")
+            pair.append((role, path, ident, next(iter(candidates)) if candidates else None, payload))
+        owners = [entry[3] for entry in pair]
+        if owners[0] is None and owners[1] is None:
+            continue
+        if owners[0] is None or owners[1] is None:
+            deny(f"{q} needs both GLOBAL and build write flocks on the same quarter")
+        held[q] = pair
+    if len(held) != 1:
+        deny("single-worker admission needs exactly one GLOBAL/build quarter pair")
+    q, pair = next(iter(held.items()))
+    owner_set = {entry[3] for entry in pair}
+    if len(owner_set) != 1:
+        deny("quarter locks do not share one ancestor owner")
+    owner = next(iter(owner_set))
+    if owner == os.getpid():
+        deny("guard itself cannot be the claim owner")
+    if anc[owner][1] != current_uid:
+        deny("claim owner uid differs")
+    if pair[0][2] == pair[1][2]:
+        deny("CPU claims do not have two distinct inode identities")
+    valid_payload(pair[1][4], owner, q, (q,))
+    ppid_start_uid = proc_stat(owner)
+    anc2 = ancestors()
+    if owner not in anc2 or ppid_start_uid[1] != anc[owner][0] or anc2[owner] != anc[owner] or ppid_start_uid[2] != current_uid:
+        deny("claim owner changed")
+    kernel2 = proc_lock_owners()
+    for role, path, prior, _owner, _payload in pair:
+        now, payload = open_identity(path)
+        if now != prior:
+            deny("lock identity changed during admission")
+        if owner not in kernel2.get(dev_inode(now), set()):
+            deny("write flock disappeared during admission")
+        if role == "build":
+            valid_payload(payload, owner, q, (q,))
+    return owner
+
+def admit_whole_host():
     global EXPECTED_ROOT
     EXPECTED_ROOT = safe_root()
     if os.environ.get("ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT", "").strip().lower() not in {"1", "true", "yes", "on"}:
@@ -205,9 +301,15 @@ def admit():
 
 def main():
     try:
-        if len(sys.argv) != 3 or sys.argv[1] != "--repo" or sys.argv[2] not in {"root", "app"}:
-            deny("usage: gitnexus-guard.py --repo root|app")
-        admit()
+        argv = sys.argv[1:]
+        if len(argv) < 2 or argv[0] != "--repo" or argv[1] not in {"root", "app"}:
+            deny("usage: gitnexus-guard.py --repo root|app [-- analyze arguments]")
+        if len(argv) == 2:
+            admit()
+        elif argv[2] == "--":
+            admit(argv[3:])
+        else:
+            deny("usage: gitnexus-guard.py --repo root|app [-- analyze arguments]")
         return 0
     except Exception as exc:
         print(f"gitnexus guard: denied: {exc}", file=sys.stderr)
