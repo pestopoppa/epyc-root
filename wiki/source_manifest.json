@@ -12,20 +12,23 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 2,
+      "changed": 5,
       "removed": 0
     },
-    "at": "2026-11-05T14:33:32Z",
+    "at": "2026-11-05T16:59:32Z",
     "scope_paths": [
+      "docs/guides/agent-workflows/compute-fillers.md",
       "docs/reports/coordination/keeper-friction-review-20261105.md",
+      "handoffs/active/coordination-and-churn-pipeline.md",
+      "handoffs/active/engineering-hygiene-backlog.md",
       "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-05T14:33:32Z",
+  "scan_time": "2026-11-05T16:59:32Z",
   "schema_version": 1,
-  "source_set_hash": "5b6cfe816a6d6f7b44e7b60adf6879fdb0a812f7c6d8a6c8deac54a055ef13c4",
+  "source_set_hash": "02d0c2a6fb8acf21f519a3ef5fd60530689519af0a84462e5a246c3199627ced",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -68,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5ec7044dd7b78939aa4e671359c75abcdbe0141dcdd21dccdff92172b5a0807d",
-      "modified": "2026-11-05T11:06:33Z",
+      "content_hash": "fa0c34ee73e45692d4acfe091987370eead54d9f32984cc77a08a3914e2b9106",
+      "modified": "2026-11-05T16:57:14Z",
       "path": "handoffs/active/coordination-and-churn-pipeline.md",
-      "size": 584525,
+      "size": 585698,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -92,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "85b44a0a5d4b8858685bddbd132da521343ac1240bb1f8aa927737d3e7ca828c",
-      "modified": "2026-11-05T11:06:33Z",
+      "content_hash": "14edfa595289d2ae827b6035dfa897fed01c322e15dda77f3ec0bb80a271d543",
+      "modified": "2026-11-05T16:58:33Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 417239,
+      "size": 422811,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -16044,10 +16047,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2f9bd3dc1903198ef7e155c5d40c2de1ef5c141cc76389f8f2e1c84b723252c1",
-      "modified": "2026-11-05T14:31:42Z",
+      "content_hash": "e6f03dd3b8906fb3996e3cbd8ff9e2983728ee7afcae045511af279a40633d18",
+      "modified": "2026-11-05T16:57:27Z",
       "path": "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md",
-      "size": 9602,
+      "size": 12169,
       "title": "2026-11-05 \u2014 operator ad-hoc ops (operator-adhoc-ops-20261105)",
       "type": "progress"
     },
@@ -17260,10 +17263,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "d1b6e4e282e9f4c2dcb37f95c0815355b39e38b4412af058ddf23af5228da897",
-      "modified": "2026-11-05T11:06:33Z",
+      "content_hash": "cbcfcdae06d13100c340a841d34aff7ed9efe31186a315e6463a6d3db36f8779",
+      "modified": "2026-11-05T16:55:58Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 34007,
+      "size": 36883,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -18620,10 +18623,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "06e6371e90f1629a9c388f5cec862f7fc7ff9970c5ba721665cf237e82821553",
-      "modified": "2026-11-05T14:30:34Z",
+      "content_hash": "1b068cf2ebc03685bec465d62bde929f91ce96f90f6b8b440dfbc86e2a275d23",
+      "modified": "2026-11-05T16:55:58Z",
       "path": "docs/reports/coordination/keeper-friction-review-20261105.md",
-      "size": 92333,
+      "size": 114570,
       "title": "Keeper friction review \u2014 2026-11-05",
       "type": "docs"
     },
