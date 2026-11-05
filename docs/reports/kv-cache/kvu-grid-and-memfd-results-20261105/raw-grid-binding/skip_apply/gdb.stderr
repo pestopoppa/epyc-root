@@ -1,0 +1,15 @@
+llama_kv_cache: size =    0.00 MiB (     8 cells,   0 layers,  1/1 seqs), K (f16):    0.00 MiB, V (f16):    0.00 MiB
+llama_kv_cache: attn_rot_k = 0, n_embd_head_k_all = 0
+llama_kv_cache: attn_rot_v = 0, n_embd_head_k_all = 0
+KPF_GRID_ENTRY_1
+find_slot: stream[0], n =     0, used =     0, head =     0, size =     8, n_swa =     0
+
+........
+
+.    .    .    .    .    .    .    .    
+KPF_GRID_ENTRY_2
+find_slot: stream[0], n =     0, used =     0, head =     0, size =     8, n_swa =     0
+
+........
+
+.    .    .    .    .    .    .    .    
