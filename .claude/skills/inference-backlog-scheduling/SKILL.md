@@ -61,6 +61,18 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 
 ## 2. Compatibility rules (what may share a bin)
 
+- **GPU rows never need the whole host (operator, 2026-11-05).** Size every row by what it actually
+  runs (threads, `OMP_NUM_THREADS`, `--workers`, measured busy), never by what it declares.
+  - **GPU timing/bench/profile/AK-keep row** → shape `gpu-q3`: gpu-quiet + a quiet q3 (its management
+    threads 184-191 and their siblings 88-95). q0-q2 keep running CPU work. Light non-GPU-thread q3
+    backfill (e.g. single-worker gitnexus on 72-87) may co-run; 184-191 are never touched.
+  - **Any other GPU row (correctness, builds, qualification) and production** → shape `gpu`: the GPU +
+    its own threads 184-191 only. q3 cores stay grantable to CPU work in parallel (measured: GPU at 100%
+    while 88-95 sit ~1%; co-residency cost below).
+  - **Whole host** only for rows that measure whole-host CPU serving (e.g. -t 48 interleaved over 0-95,
+    npd1-step5), cite a decision-grade baseline, or carry an explicit operator override. A 1-thread job
+    gets a quarter at most.
+  - Idle host with queued rows → read the keeper's `DRAIN` / `IDLE-WHY` lines and fix the over-booked row.
 - **Quiet host** (gpu-quiet exclusive + all of 0-95, nothing else running) is earned only by
   decision-grade baselines and AK keep gates. Indicative timing shares with a labelled GPU job (and
   the GPU-on/off difference is itself a wanted measurement). Correctness shares with anything but
