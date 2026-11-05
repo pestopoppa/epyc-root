@@ -59,3 +59,11 @@ KVU-11c: kvu11c-gpu-mechanics-smoke-r2-20261105 publisher smoke PASS and row pub
 ## 01:01Z — File conflicting GPU mechanics result
 
 KVU-11c: correction to the earlier readiness entry: the granted run did execute one native TTS request. RESULT reports HTTP 200, 2.72 s mono 24 kHz audio, four positive own-server VRAM samples, mapped candidate libraries and owned-child drain; the outer receipt ended rc75 partial-native-incomplete. Filed inconclusive; the mismatch requires investigation and the parent gate stays open. Native result bytes and end receipt preserved in docs/reports/kv-cache/kvu11c-gpu-mechanics-r2-result-20261105.
+
+## 01:04Z — Repair outer completion environment and submit KVU-11c GPU mechanics successor
+
+KVU-11c: the r2 completion validator raises KeyError without FILLER_STOPFILE and accepts the retained result with it set; the original outer environment was not captured, so its rc75 remains inconclusive. Prepared sealed isolated r3 with outer STOPFILE and FILLER_END-derived deadline, separate smoke and native output. Publisher queued the GPU smoke because the GPU was busy; no PASS or published row is claimed. A subagent ran a model-free validator replay outside the publisher smoke restriction; it is diagnostic only.
+
+## 01:06Z — Repair outer completion environment and submit KVU-11c GPU mechanics successor
+
+KVU-11c: the r2 completion validator raises KeyError without FILLER_STOPFILE and accepts the retained result with it set; the original outer environment was not captured, so its rc75 remains inconclusive. Prepared sealed isolated r3 with outer STOPFILE and FILLER_END-derived deadline, separate smoke and native output. Publisher queued the GPU smoke because the GPU was busy; no PASS or published row is claimed. A subagent ran a model-free validator replay outside the publisher smoke restriction; it is diagnostic only.

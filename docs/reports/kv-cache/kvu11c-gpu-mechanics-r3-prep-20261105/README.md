@@ -1,0 +1,3 @@
+# KVU-11c GPU mechanics r3 preparation
+
+R2 produced a native result but its outer engine ended rc75: the completion predicate accessed FILLER_STOPFILE, which is exported only inside the engine's inner job. Replaying the validator without that variable reproduces the KeyError; with it set, the retained result passes. The r2 verdict remains inconclusive. This fresh packet exports the appropriate outer STOP path, derives the deadline from the engine grant end when the inner deadline is unavailable, and validates publisher-smoke evidence separately from the native result. It has not been published or run. Model identity is preverified outside the grant; no model weights are hashed by the launcher or job.
