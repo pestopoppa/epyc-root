@@ -87,3 +87,7 @@ Filed hsf3-incremental-r2-20261105 PASS for its scoped scan: 124 matched prior p
 ## 02:07Z — File plan-bound model-free qualification and advance its next prerequisite
 
 Filed kpf174-plan-bound-integration-20261105 PASS: native equality, honest and flag_on PASS, both mutants DETECTED, ten pre-entry refusals, unchanged seals and captured-child cleanup. This model-free result does not rejudge historical cells or demonstrate live layout. Published isolated conservative request-boundary and RAM-helper qualifications. Prefix smoke provided partial first progress, outer rc75; RAM-helper smoke completed rc0 after declaring its control records. Neither qualifies live layout, host admission or a historical result.
+
+## 02:12Z — File model-free GDB timeout cleanup and advance the next qualification
+
+Filed kvfork17-timeout-qual-20261104 PASS: the deliberate model-free debugger and inferior timeout recorded captured PID/birth identities, pidfd-bound cleanup, verified subreaper and no survivors. This does not establish model, oracle or library custody. Published the standalone G3 residency correlation qualification for synthetic identity and status controls; no live residency claim.
