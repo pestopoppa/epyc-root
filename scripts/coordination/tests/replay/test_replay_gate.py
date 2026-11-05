@@ -69,6 +69,31 @@ def test_scenario(name, work):
     assert not viol, "\n".join(viol[:10])
 
 
+# ------------------------------------------------------------------ negative control: the rule gpu-q3 NARROW replaces
+OLD_GPU_Q3_LINE = 'GPU_Q3_TOKENS = frozenset({GPU, "q3"} | {f"t{k}" for k in range(184, 192)})   # OLD: whole q3\n'
+
+
+def test_negative_control_old_gpu_q3_rule_refuses_timing_beside_q3_build(work):
+    """operator 2026-11-05 (NARROW): a copy of the candidate with the pre-NARROW gpu-q3 option (gpu-quiet + ALL of q3 +
+    184-191) must fail the concurrency scenario - proving the scenario detects the q38p4b-int8 refusal, not a tautology."""
+    import re
+    import shutil
+    old = os.path.join(work, "old-gpu-q3-cand")
+    shutil.copytree(CAND, old, ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
+    src = os.path.join(old, "rowflow.py")
+    text = open(src).read()
+    text, n = re.subn(r"^GPU_Q3_TOKENS = .*\n", OLD_GPU_Q3_LINE, text, count=1, flags=re.M)
+    assert n == 1, "GPU_Q3_TOKENS definition not found in the candidate"
+    open(src, "w").write(text)
+    name = "gpu-timing-narrow-q3-concurrent-with-8core-build"
+    tpath, check = SC.SCENARIOS[name](os.path.join(work, name + ".neg.trace.jsonl"))
+    dec, err = RA.worker(old, tpath, os.path.join(work, "out", name + "-old"))
+    assert dec is not None, err
+    viol = list(check(dec))
+    assert viol and any("never granted beside" in v or "not concurrent" in v for v in viol), \
+        f"the old whole-q3 rule should refuse the GPU timing row beside the 8-core q3 build; got {viol}"
+
+
 # ------------------------------------------------------------------ deploy-blocking: the 2026-11-05 day replay
 def test_day_replay_blocking_invariants(work):
     dec, err = RA.worker(CAND, RA.DAY_TRACE, os.path.join(work, "day"))

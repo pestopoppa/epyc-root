@@ -71,9 +71,14 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 
 - **GPU rows never need the whole host (operator, 2026-11-05).** Size every row by what it actually
   runs (threads, `OMP_NUM_THREADS`, `--workers`, measured busy), never by what it declares.
-  - **GPU timing/bench/profile/AK-keep row** → shape `gpu-q3`: gpu-quiet + a quiet q3 (its management
-    threads 184-191 and their siblings 88-95). q0-q2 keep running CPU work. Light non-GPU-thread q3
-    backfill (e.g. single-worker gitnexus on 72-87) may co-run; 184-191 are never touched.
+  - **GPU timing/bench/profile/AK-keep row** → shape `gpu-q3` **NARROW (operator 2026-11-05, "Narrow +
+    emergency deploy")**: gpu-quiet + its host threads 184-191 + their SMT-sibling physical cores 88-95 —
+    and **never the rest of q3**. Cores 72-87 (siblings 168-183) stay grantable to ANY CPU row beside a
+    GPU timing run (not only ≤4-thread coexist rows); q0-q2 keep running CPU work; 184-191 are never
+    touched. This replaces "a GPU timing run holds all of q3" (q38p4b-int8 sat refused "needs
+    gpu-quiet,q3,t184..t191: q3 busy" while an 8-core AITER build held 80-87/176-183). A timing row
+    that really needs a quieter neighbourhood declares it: explicit regions (e.g. `mi210_0,72-95,184-191`)
+    plus `shape_override "operator: <who> <date>: <why>"`; the keeper honours them verbatim.
   - **Any other GPU row (correctness, builds, qualification) and production** → shape `gpu`: the GPU +
     its own threads 184-191 only. q3 cores stay grantable to CPU work in parallel (measured: GPU at 100%
     while 88-95 sit ~1%; co-residency cost below).
@@ -91,17 +96,21 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
   --class gpu --no-fold-siblings`); region-lock's own `--no-fold-siblings` on an SMT-only list is
   refused ("maps to no regions"). Decide per GPU row: *no-fold* (co-runs with whole-CPU
   correctness) or *folded* (needs q3 empty; keep q3 free while it runs).
-- **q3 COEXIST (2026-11-05, coexist2).** A GPU timing row needs only a quiet q3: book it `gpu-q3` with
-  regions `mi210_0,88-95,184-191`; filler_run15 (GRANT_CPUS) locks `--cpu-list 88-95 --no-fold-siblings`
-  = LOCK_SH GLOBAL.q3 + LOCK_EX per core, never GLOBAL.q3 exclusive (rowflow refuses a gpu-q3 claim
-  folding onto 72-87). Single-worker gitnexus rows on 72-87 (siblings 168-183, never 88-95/184-191)
-  co-run on per-core locks. Coexist applies ONLY beside a GPU-timing hold (`rowflow.coexist_host`),
-  never beside a host / quiet-host row that measures CPU serving (npd1-step5, -t 48 over 0-95).
+- **q3 beside a GPU timing row (2026-11-05, coexist2 → NARROW).** Book a GPU timing row `gpu-q3` with
+  regions `mi210_0,88-95,184-191` (or the default `mi210_0,184-191`; the contract adds 88-95 either way);
+  filler_run15 (GRANT_CPUS) locks `--cpu-list 88-95 --no-fold-siblings` = LOCK_SH GLOBAL.q3 + LOCK_EX per
+  core, never GLOBAL.q3 exclusive (rowflow refuses a gpu-q3 claim folding onto 72-87). Since NARROW the
+  keeper books only gpu-quiet + c88-95 + t184-191 for it, so 72-87 are plainly free: any CPU row that
+  fits there (an 8-core build, single-worker gitnexus, ...) is granted beside it on per-core locks — the
+  old "lends/coexist ≤4 threads" carve-out is inert. A whole-q3 CPU row still waits (88-95 are held), and
+  a CPU timing row keeps off q3 while a GPU grant is open (SMT-sibling rule below). Nothing co-runs beside
+  a host / quiet-host row that measures CPU serving (npd1-step5, -t 48 over 0-95).
 - **Interim, frozen keeper (until rowflow2 cutover).**
   - **Timing rows: publish on q0-q2, or on q3 only with gpu-quiet declared.** A whole-q3 CPU timing grant
     does not hold siblings 168-191, and 184-191 are the MI210 host lane: iqk-q8-prefill-ab-r6 (q3) shared
     8 of 24 decode cores with c6-gpu-27b-identity's 27B reload, requests 20-70% slow (main-inf22,
-    2026-11-05). rowflow2 enforces this (`timing: true`, design doc decision 7).
+    2026-11-05). rowflow2 enforces this (`timing: true`, design doc decision 7); the mirror rule for GPU
+    timing rows (gpu exclusive ⇒ + cores 88-95, never 72-87) is decision 8.
   - **GPU correctness suites (test-backend-ops etc.) rank BELOW every waiting GPU timing row, or batch
     them into one row**: lower rank NUMBER = higher priority and a tie can go to the suite, so give the
     suite a rank number STRICTLY GREATER than every waiting GPU timing row's (use >= 60; c6q4isum-gpu-suite

@@ -25,6 +25,11 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                     on q3: the quiet-host row treats q3 as free when its only holders are coexist rows, and a coexist row
                     may take COEXIST_Q3 cores while a quiet-host grant holds q3 (never 184-191, never another coexist
                     row's cores); drains and rank holds of a quiet-host row never hold a coexist row back.
+    gpu-q3 NARROW (operator 2026-11-05 "Narrow + emergency deploy"): a GPU grant holds gpu-quiet + its host threads
+                    t184-191; a GPU TIMING grant also holds their SMT-sibling cores 88-95 and NEVER the rest of q3 -
+                    cores 72-87 (siblings 168-183) stay grantable to any CPU row beside a GPU timing run. Replaces the
+                    rule that a GPU timing run holds all of q3 (q38p4b-int8 refused "q3 busy" by an 8-core build on
+                    80-87). A quieter neighbourhood is declared explicitly (regions + shape_override).
 
     SNAPSHOT RULE   OPT-IN (operator 2026-11-03): only with `"snapshot": true` is the launcher's directory, and every
                     engine/job file under worktrees/ or /workspace (or a /workspace/repos/<x> target), copied at publish
@@ -833,7 +838,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(not decl or decl in SHAPES or re.fullmatch(r"multi-quarter\([2-3]\)", decl), f"shape must be one of {SHAPES} or multi-quarter(n)")
     m = re.fullmatch(r"multi-quarter\((\d)\)", decl)
     decl_cores = (24 * int(m.group(1)) if m else {"sub-quarter": SUB_CORES, "quarter": 24, "host": 96, "quiet-host": 96, "gpu": 0,
-                  "gpu-q3": 24}[decl]) if decl else (24 if regions == "any-cpu-quarter" or regions.startswith("any-of")
+                  "gpu-q3": 8}[decl]) if decl else (24 if regions == "any-cpu-quarter" or regions.startswith("any-of")
                                                     else len({x % 96 for x in _cpu_set(ws58_cpus(regions)) if x < 96}))
     over = max(decl_cores - c["need"], c["held"] - c["need"])
     if not str(row.get("shape_override") or "").strip():
@@ -855,8 +860,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              "with non-timing GPU work; use the plain gpu shape (regions mi210_0,184-191, --class gpu --no-fold-siblings). A "
              f"timing row declares it: --role bench, admission_class {'|'.join(GPU_TIMING_CLASSES)}, or timing: "
              f"{'|'.join(GPU_TIMING_KINDS)}; else shape_override")
-        need(c["shape"] != "gpu-q3" or c["lends"] == COEXIST_Q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + "
-             "184-191 (q3 cores 72-87 stay lockable by small rows beside a GPU timing run)")
+        held_q3 = {t for x in c["options"] for t in expand(x)} & GPU_TIMING_NEVER_HELD
+        need(c["shape"] != "gpu-q3" or not held_q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (operator "
+             f"2026-11-05 NARROW: a GPU timing grant never holds q3 cores 72-87, found {','.join(compress(held_q3))}; they stay "
+             "grantable to CPU rows beside a GPU timing run); a quieter neighbourhood needs explicit regions + shape_override")
     if row.get("busy_fraction") is None and row.get("declared_threads"):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
@@ -1421,10 +1428,16 @@ def open_grants(flags):
 
 SHAPES = ("sub-quarter", "quarter", "multi-quarter", "host", "quiet-host", "gpu", "gpu-q3")
 WHOLE_HOST_THREADS = 48   # operator 2026-11-05: production CPU serving across all NUMA nodes (npd1-step5: -t 48 over 0-95)
-GPU_Q3_TOKENS = frozenset({GPU, "q3"} | {f"t{k}" for k in range(184, 192)})   # gpu-quiet + q3 cores + 184-191
+# gpu-q3 NARROW (operator 2026-11-05 "Narrow + emergency deploy"; q38p4b-int8 refused "needs gpu-quiet,q3,t184..t191: q3
+# busy" while an 8-core AITER build sat on 80-87/176-183): a GPU TIMING grant holds gpu-quiet + its host threads 184-191
+# + their SMT-sibling physical cores 88-95 - NEVER the rest of q3. Cores 72-87 (siblings 168-183) stay grantable to CPU
+# rows beside a GPU timing run. This REPLACES the rule that a GPU timing run holds all of q3; a timing row that really
+# needs a quieter neighbourhood declares it (explicit regions, or shape_override).
+GPU_Q3_TOKENS = frozenset({GPU} | {f"c{k}" for k in range(88, 96)} | {f"t{k}" for k in range(184, 192)})   # gpu-quiet + 88-95 + 184-191
+GPU_TIMING_NEVER_HELD = frozenset({"q3"} | {f"c{n}" for n in range(72, 88)} | {f"t{n}" for n in range(168, 184)})   # q3 cores 72-87 + siblings
 QUARTER_RAM_GIB = 256   # a quarter's share of the bookable RAM (1069 GiB / 4, rounded): a bigger model is multi-quarter
 SUB_CORES = 4           # a <= SUB_CORES-thread job is a SUB_CORES-core row (any aligned block of one quarter)
-COEXIST_MAX_THREADS = 4  # a CPU row this small (evidence) may run on the q3 cores a GPU-timing grant keeps quiet
+COEXIST_MAX_THREADS = 4  # a CPU row this small (evidence) may take tokens a grant lends (inert since gpu-q3 NARROW: nothing lends)
 CONTRACT_LOCK_MARKER = "CONTRACT_LOCK"   # an engine containing it locks the grant's lock= cpus instead of --claim-cpus
 SHAPE_TOLERANCE_CORES = 24   # publish refuses a declaration that books >= a quarter more than the contract needs
 GPU_Q3_ALLOWED_CPUS = frozenset(range(72, 96)) | frozenset(range(168, 192))   # q3 cores + their SMT siblings (incl. 184-191)
@@ -1464,7 +1477,7 @@ def engine_contract_lock(d, o, flags=None):
 
 
 def gpu_timing_row(row, o):
-    """A GPU row that measures time on the GPU (keeps q3 quiet): launcher --role bench, a timing admission_class, or an
+    """A GPU row that measures time on the GPU (holds 88-95 beside its host threads, never 72-87): launcher --role bench, a timing admission_class, or an
     explicit spec `timing` kind (bench | profile | ak-keep-gate)."""
     return ((o or {}).get("launch_role") == "bench" or (row or {}).get("admission_class") in GPU_TIMING_CLASSES
             or str((row or {}).get("timing") or "") in GPU_TIMING_KINDS)
@@ -1635,8 +1648,9 @@ def contract_of(d, o=None, flags=None):
       lock     True: the engine locks exactly the granted cpus (CONTRACT_LOCK); False: it locks --claim-cpus, so the
                options cover the claim (an honest hold, never a fake co-run)
       need     cores the evidence needs; held = cores of the widest option (held - need >= tolerance: over-booked)
-      coexist  a small non-timing CPU row (threads <= COEXIST_MAX_THREADS) that may take cores a GPU-timing grant lends
-      lends    tokens a hold keeps quiet but does not lock (GPU timing: q3 cores 72-87 minus its own lock)"""
+      coexist  a small non-timing CPU row (threads <= COEXIST_MAX_THREADS) that may take cores a grant lends
+      lends    tokens a hold keeps quiet but does not lock - always empty since gpu-q3 NARROW (operator 2026-11-05):
+               a GPU timing grant holds gpu-quiet + 88-95 + 184-191 and q3 cores 72-87 are plainly free, not lent"""
     d = d or {}
     o = _opts(d) if o is None else o
     regs = str(d.get("regions") or "")
@@ -1662,15 +1676,15 @@ def contract_of(d, o=None, flags=None):
     gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) and not cpu_declared(d, o) else set()
     lends, lock_tokens, floored = frozenset(), set(), False
     if gpu_use and not whole:
-        # GPU work: gpu-quiet + its host threads; a GPU-timing row also keeps q3 quiet (gpu-q3); q0-q2 only with evidence
+        # GPU work: gpu-quiet + its host threads; a GPU-timing row also holds the host threads' SMT-sibling cores 88-95
+        # (gpu-q3 NARROW, operator 2026-11-05: never the rest of q3 - 72-87 stay grantable); q0-q2 only with evidence
         grant_cpus_engine = cls == "gpu" and (nofold or engine_grant_cpus(o) or not cc)
         src = decl_cpus if grant_cpus_engine else cc
         lock_tokens = cpu_tokens(src, gpu_threads=True) if src else set()
         if (grant_cpus_engine or honours) and not (evidence or _cpu_set(src) <= GPU_Q3_ALLOWED_CPUS):
             lock_tokens = {f"t{k}" for k in GPU_HOST_THREADS}   # declared cpus beyond q3: the contract clips them
         if timing:
-            shape, base = "gpu-q3", set(GPU_Q3_TOKENS)
-            lends = frozenset(COEXIST_Q3 - expand(lock_tokens))
+            shape, base = "gpu-q3", set(GPU_Q3_TOKENS)   # lends nothing: 72-87 are simply not held (lends stays empty)
         else:
             shape, base = "gpu", {GPU} | (lock_tokens or {f"t{k}" for k in GPU_HOST_THREADS})
         opts = [frozenset(base | lock_tokens)]

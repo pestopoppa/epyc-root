@@ -39,10 +39,35 @@ def could_fit(s, free, grants, ram_cap=rf.RAM_BOOKABLE_GIB, smoke_busy=False):
         return False
     if sum(g.ram_gib for g in grants) + s["ram_gib"] > ram_cap:
         return False
-    need = rf.parse_cpus(s["cpus"])
+    need = oracle_need(s)
+    if need is None:
+        return False
     if need.options is not None:
         return any(o <= set(free) for o in need.options)
-    return len(need.pool & set(free)) >= need.width
+    return need.fixed <= set(free) and len((need.pool & set(free)) - need.fixed) >= need.width
+
+
+def oracle_need(s):
+    """The oracle's own reading of what a grant for s must hold (independent of rf.grant_need): the declared cpus,
+    minus 88-95 for a timing row without the gpu exclusive, PLUS 88-95 for a gpu-exclusive non-quiet row
+    (gpu-q3 NARROW, operator 2026-11-05) - and never any other q3 core the row did not declare."""
+    need = rf.parse_cpus(s["cpus"])
+    sib = frozenset(range(88, 96))
+    if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
+        if need.options is not None:
+            opts = tuple(o for o in need.options if not (o & sib))
+            if not opts:
+                return None
+            need = rf.Need(opts, need.pool - sib, None)
+        else:
+            if len(need.pool - sib) < need.width:
+                return None
+            need = rf.Need(None, need.pool - sib, need.width)
+    if s["gpu"] == "exclusive" and not s["quiet"]:
+        if need.options is not None:
+            return rf.Need(tuple(dict.fromkeys(o | sib for o in need.options)), need.pool | sib, None)
+        return rf.Need(None, need.pool - sib, need.width, sib)
+    return need
 
 
 def check_plan(pending, grants, plan, now, smoke_busy=False):
@@ -58,14 +83,21 @@ def check_plan(pending, grants, plan, now, smoke_busy=False):
     for g in plan.grants:
         s = by[g.id]
         assert not (g.cores & rf.SMOKE_CORES), f"{g.id} granted smoke-lane cores"
-        need = rf.parse_cpus(s["cpus"])
+        need = oracle_need(s)
         if s["quiet"]:
             assert g.cores == rf.ROW_CORES and g.gpu == "exclusive" and g.quiet
         else:
-            assert rf.fits_need(need, g.cores), f"{g.id}: grant {sorted(g.cores)} does not satisfy cpus={s['cpus']}"
+            assert need is not None, f"{g.id}: granted although the timing SMT rule leaves it no cores"
+            assert rf.fits_need(need, g.cores), f"{g.id}: grant {sorted(g.cores)} does not satisfy cpus={s['cpus']} (gpu {s['gpu']})"
             if need.options is not None and len(need.options) == 1:
                 assert g.cores == need.options[0]
             assert g.gpu == s["gpu"], f"{g.id}: grant gpu {g.gpu} != declared {s['gpu']}"
+            declared = rf.parse_cpus(s["cpus"]).allowed()
+            if s["gpu"] == "exclusive":   # gpu-q3 NARROW: 88-95 held with the gpu, never the rest of q3 undeclared
+                assert frozenset(range(88, 96)) <= g.cores, f"{g.id}: gpu exclusive grant without SMT-sibling cores 88-95"
+                assert not ((g.cores - declared) & frozenset(range(72, 88))), f"{g.id}: gpu grant holds undeclared q3 cores 72-87"
+            else:
+                assert not ((g.cores - declared) & rf.QUARTERS[3]), f"{g.id}: holds undeclared q3 cores {sorted(g.cores - declared)}"
     allg = list(grants) + plan.grants
     gx = [g for g in allg if g.gpu == "exclusive"]
     assert len(gx) <= 1 and (not gx or not any(g.gpu == "shared" for g in allg)), "exclusive gpu shared"

@@ -26,7 +26,9 @@ def test_2_gpu_none_row_with_build_hip_text_gets_no_gpu_token(tmp_path):
     """STT5 r5 / iqk-q8-prefill-build held gpu-quiet because `build-hip` appeared in job text. Text is never read."""
     sim = Sim(tmp_path)
     hip = "#!/bin/bash\ncmake -B build-hip -DGGML_HIP=ON && hipcc x.cpp && llama-bench --device ROCm0 -ngl 99\n"
-    sim.publish(spec("stt5-r5", cpus="q3", threads=24, rank=20), launcher_text=hip)
+    # q2, not q3: since gpu-q3 NARROW (decision 8) a gpu-exclusive row holds 88-95, so a whole-q3 CPU row and a GPU
+    # timing row conflict by design (test_8); this test is about job text never granting a gpu token
+    sim.publish(spec("stt5-r5", cpus="q2", threads=24, rank=20), launcher_text=hip)
     sim.publish(spec("gpu-timing", cpus=0, threads=8, gpu="exclusive", rank=40))
     for _ in range(6):
         sim.step()
@@ -134,3 +136,41 @@ def test_7_q3_timing_grant_must_hold_smt_siblings_184_191():
     assert [g.cores for g in plan.grants] == [rf.QUARTERS[3]]
     # gitnexus-q3 coexist shape (cores 72-87, never 184-191) stays legal for a timing row without the gpu
     assert rf.validate(spec("gx", cpus="72-87", threads=16, timing=True), launcher_exists=yes) == []
+
+
+def test_8_gpu_timing_grant_holds_88_95_never_the_rest_of_q3():
+    """gpu-q3 NARROW (operator 2026-11-05 "Narrow + emergency deploy"): q38p4b-int8-20261105 (GPU timing) was refused
+    "needs gpu-quiet,q3,t184..t191: q3 busy" by the frozen keeper while an 8-core AITER build sat on 80-87/176-183. A
+    gpu-exclusive (timing) grant holds the gpu + cores 88-95 (the SMT siblings of host threads 184-191) and NEVER q3
+    cores 72-87; shared (correctness) GPU rows hold the gpu alone. Same rule as rowflow GPU_Q3_TOKENS."""
+    sib = frozenset(range(88, 96))
+    build = rf.Grant("rock-aiter-prebuild-r4", frozenset(range(80, 88)), "none", False, 8, 1, T0, T0 + 7200, 3600)
+    busy = [rf.Grant(f"b{i}", rf.QUARTERS[i], "none", False, 8, 1, T0, T0 + 3600, 1800) for i in (0, 1, 2)]
+    # the live refusal: GPU timing row (cpus 0 = host threads only) beside the 8-core q3 build -> granted, holds gpu + 88-95
+    plan = rf.admit([spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50)], [build] + busy, T0)
+    assert [g.id for g in plan.grants] == ["q38p4b-int8"], plan.skipped
+    g = plan.grants[0]
+    assert g.gpu == "exclusive" and g.cores == sib, sorted(g.cores)
+    assert not (g.cores & frozenset(range(72, 88)))
+    # the other way round: the GPU timing grant is open, the 8-core q3 build is granted beside it
+    plan = rf.admit([spec("rock-aiter-prebuild-r4", cpus="80-87", threads=8, rank=60)], [g] + busy, T0)
+    assert [x.cores for x in plan.grants] == [frozenset(range(80, 88))], plan.skipped
+    # ... and a whole-q3 row is NOT (88-95 are held): the GPU timing run keeps its sibling cores quiet
+    plan = rf.admit([spec("q3-whole", cpus="q3", threads=24, rank=60)], [g] + busy, T0)
+    assert not plan.grants and "cpus busy" in plan.skipped["q3-whole"]
+    # negative control (the rule this replaces): had the timing grant booked all of q3 the build could not be placed
+    old = rf.Grant("q38p4b-old", rf.QUARTERS[3], "exclusive", False, 8, 1, T0, T0 + 7200, 3600)
+    plan = rf.admit([spec("rock-aiter-prebuild-r4", cpus="80-87", threads=8, rank=60)], [old] + busy, T0)
+    assert not plan.grants
+    # correctness / production GPU rows: gpu shared, no cores at all (unchanged)
+    plan = rf.admit([spec("c6-gpu-suite", cpus=0, threads=8, gpu="shared", rank=70)], [build] + busy, T0)
+    assert [(x.gpu, x.cores) for x in plan.grants] == [("shared", frozenset())]
+    # a timing row that wants a quieter neighbourhood declares it: explicit cpus 72-87 + gpu exclusive = all of q3
+    plan = rf.admit([spec("quiet-q3-timing", cpus="72-87", threads=16, gpu="exclusive", rank=50)], busy, T0)
+    assert [x.cores for x in plan.grants] == [rf.QUARTERS[3]]
+    # grant_need is the single rule: option and width needs both gain exactly 88-95
+    assert rf.grant_need(spec("a", cpus="q0", threads=24, gpu="exclusive")).options == (rf.QUARTERS[0] | sib,)
+    w = rf.grant_need(spec("b", cpus=4, threads=4, gpu="exclusive"))
+    assert w.fixed == sib and not (w.pool & sib) and w.width == 4
+    assert rf.fits_need(w, frozenset(range(0, 4)) | sib) and not rf.fits_need(w, frozenset(range(0, 4)))
+    assert rf.grant_need(spec("c", cpus=4, threads=4, gpu="shared")).fixed == frozenset()

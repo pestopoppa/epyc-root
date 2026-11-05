@@ -178,7 +178,7 @@ class GpuQ3(Fx):
         self.assertEqual(row["shape"], "gpu-q3")
         opts, bench = rf.row_shape(row)
         self.assertEqual(len(opts), 1)
-        self.assertEqual(rf.expand(opts[0]), rf.expand({"gpu-quiet", "q3"}) | GPU_THR)
+        self.assertEqual(rf.expand(opts[0]), rf.expand(rf.GPU_Q3_TOKENS))   # gpu-q3 NARROW: gpu-quiet + 88-95 + 184-191, never 72-87
         self.assertTrue(bench)
 
     def test_q0_q2_free_under_gpu_q3(self):
@@ -334,7 +334,10 @@ class GpuQ3OnlyForTiming(Fx):
         lp = self.launcher("tg", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191 --role bench")
         row = rf.publish(self.spec("tg", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
         opts, _ = rf.row_shape(row)
-        self.assertTrue({f"c{n}" for n in range(72, 96)} <= rf.expand(opts[0]))
+        # gpu-q3 NARROW (operator 2026-11-05): holds the host threads' siblings 88-95, never q3 cores 72-87
+        self.assertTrue({f"c{n}" for n in range(88, 96)} <= rf.expand(opts[0]))
+        self.assertFalse({f"c{n}" for n in range(72, 88)} & rf.expand(opts[0]))
+        self.assertNotIn("q3", rf.expand(opts[0]))
 
 
 class LowBusySkipMessage(unittest.TestCase):

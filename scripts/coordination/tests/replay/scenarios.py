@@ -178,6 +178,61 @@ def sc_coexist_lockset(path):
     return write(path, ticks), check
 
 
+def sc_gpu_timing_narrow_q3(path):
+    """gpu-q3 NARROW (operator 2026-11-05 "Narrow + emergency deploy"): q38p4b-int8-20261105 (GPU timing, regions
+    mi210_0,184-191, --role bench) was refused "needs gpu-quiet,q3,t184..t191: q3 busy" while an 8-core AITER build sat on
+    80-87/176-183. An 8-core q3 CPU row and a GPU timing row must be granted CONCURRENTLY: the GPU timing grant holds
+    gpu-quiet + 88-95 + 184-191 and never q3 cores 72-87. q0-q2 are foreign so q3 is the only CPU room."""
+    b = row("rock-aiter-prebuild-r4", regions="80-87", claim="80-87", extra="taskset -c 80-87,176-183 make -j 8", est=7200)
+    g = row("q38p4b-int8", lane="gpu", regions="mi210_0,184-191", cls="gpu", gpu_quiet="exclusive", role="bench",
+            nofold=True, est=7200, extra="llama-bench -t 8", man={"shape": "gpu-q3"})
+    world = {"foreign": {"q0": "foreign-a", "q1": "foreign-b", "q2": "foreign-c"}}
+    # the build first (two lone ticks: an EXCLUSIVE grant needs GPU_QUIET_SAMPLES quiet samples anyway), then the timing row
+    ticks = [({"rock-aiter-prebuild-r4": b}, world)] * 2 + [({"rock-aiter-prebuild-r4": b, "q38p4b-int8": g}, world)] * 4
+
+    def check(d):
+        out = []
+        bg, tg = _granted(d, "rock-aiter-prebuild-r4"), _granted(d, "q38p4b-int8")
+        if not bg:
+            return ["8-core q3 CPU row never granted (scenario precondition)"]
+        if not tg:
+            return ["GPU timing row never granted beside an 8-core q3 CPU grant (the q38p4b-int8 refusal)"]
+        i, g2 = tg[0]
+        if "rock-aiter-prebuild-r4" not in d[i]["open_before"] and bg[0][0] != i:
+            out.append(f"GPU timing row granted at tick {i} only after the q3 CPU grant closed (not concurrent)")
+        held = tokens_to_cores(set(g2["holds"]))
+        if held & set(range(72, 88)) or "q3" in g2["holds"]:
+            out.append(f"GPU timing grant holds q3 cores 72-87: {sorted(g2['holds'])}")
+        if not set(range(88, 96)) <= held or GPU not in g2["holds"]:
+            out.append(f"GPU timing grant does not hold gpu-quiet + 88-95: {sorted(g2['holds'])}")
+        bh = tokens_to_cores(set(bg[0][1]["holds"]))
+        if not bh <= set(range(80, 88)):
+            out.append(f"8-core CPU grant holds more than 80-87: {sorted(bg[0][1]['holds'])}")
+        return out
+    return write(path, ticks), check
+
+
+def sc_gpu_timing_narrow_q3_reverse(path):
+    """Same pair, GPU timing grant first: the 8-core q3 CPU row is granted beside it (72-87 stay grantable)."""
+    g = row("q38p4b-int8", lane="gpu", regions="mi210_0,184-191", cls="gpu", gpu_quiet="exclusive", role="bench",
+            nofold=True, est=7200, extra="llama-bench -t 8", man={"shape": "gpu-q3"})
+    b = row("rock-aiter-prebuild-r4", regions="80-87", claim="80-87", extra="taskset -c 80-87,176-183 make -j 8", est=3600)
+    world = {"foreign": {"q0": "foreign-a", "q1": "foreign-b", "q2": "foreign-c"}}
+    ticks = [({"q38p4b-int8": g}, world)] * 3 + [({"q38p4b-int8": g, "rock-aiter-prebuild-r4": b}, world)] * 3
+
+    def check(d):
+        tg, bg = _granted(d, "q38p4b-int8"), _granted(d, "rock-aiter-prebuild-r4")
+        if not tg:
+            return ["GPU timing row never granted (scenario precondition)"]
+        if not bg:
+            return ["8-core q3 CPU row never granted beside an open GPU timing grant (72-87 must stay grantable)"]
+        i = bg[0][0]
+        if "q38p4b-int8" not in d[i]["open_before"]:
+            return [f"CPU row granted at tick {i} only after the GPU timing grant closed (not concurrent)"]
+        return []
+    return write(path, ticks), check
+
+
 def sc_smoke_whole_host(path):
     """A queued smoke while a whole-host grant runs: SMOKE-WAIT each tick (never FAIL, never an exception), and placed
     within two ticks of the host freeing."""
@@ -470,6 +525,8 @@ SCENARIOS = {
     "smoke-pass-is-terminal": sc_pass_is_terminal,
     "gpu-blocked-whole-rows-free-smokes": sc_gpu_blocked_whole_rows_free_smokes,
     "cpu-whole-row-reservation-holds": sc_cpu_whole_row_reservation_holds,
+    "gpu-timing-narrow-q3-concurrent-with-8core-build": sc_gpu_timing_narrow_q3,
+    "gpu-timing-narrow-q3-build-beside-open-timing": sc_gpu_timing_narrow_q3_reverse,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)
@@ -482,6 +539,8 @@ SUBJECT = {
     "dead-dryrun-releases-in-one-tick": ["INV-DEADPID-RELEASE"],
     "idle-regions-named": ["INV-IDLE-WHY-ALL", "INV-IDLE-NAMED"],
     "declared-shape-no-bypass": ["INV-EVIDENCE"],
+    "gpu-timing-narrow-q3-concurrent-with-8core-build": ["INV-GPU-TIMING-Q3", "INV-LOCKSET"],
+    "gpu-timing-narrow-q3-build-beside-open-timing": ["INV-GPU-TIMING-Q3", "INV-LOCKSET"],
 }
 
 

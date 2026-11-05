@@ -13,7 +13,7 @@ The model, in full:
   * A grant is the declaration stamped with a window. The tick is reconcile() -> admit() -> file(); smokes run FIFO,
     one at a time, on the fixed smoke lane with a deadline, and never produce a COMPLETE.
 
-Pure core (tests drive these): parse_cpus, validate, map_legacy, admit, reconcile, smoke_step, file_decisions.
+Pure core (tests drive these): parse_cpus, grant_need, validate, map_legacy, admit, reconcile, smoke_step, file_decisions.
 IO adapters: load_world, tick (live mode; used only by the tests' temp flags dir), shadow, diff, status, map-report.
 In shadow mode a process-wide audit hook refuses every write-intent filesystem event under the flags dir.
 """
@@ -206,12 +206,13 @@ class Need:
     options: tuple | None   # explicit alternatives (concrete set = 1 option; any-quarter = the quarters)
     pool: frozenset          # for "pick width cores from pool" needs
     width: int | None        # None for option needs (width = |option|)
+    fixed: frozenset = frozenset()   # cores every grant of a width need must also hold (gpu-q3 NARROW: 88-95); never in pool
 
     def min_width(self):
-        return self.width if self.options is None else min(len(o) for o in self.options)
+        return (self.width + len(self.fixed)) if self.options is None else min(len(o) for o in self.options)
 
     def allowed(self):
-        return self.pool if self.options is None else frozenset().union(*self.options)
+        return (self.pool if self.options is None else frozenset().union(*self.options)) | self.fixed
 
 
 def _expand(text):
@@ -278,11 +279,37 @@ def quiet_ok_cores(need):
     return timing_need(need) is not None
 
 
+def gpu_timing_need(need):
+    """gpu-q3 NARROW (operator 2026-11-05 "Narrow + emergency deploy"): a gpu-EXCLUSIVE (timing) row also holds cores
+    88-95 - the SMT siblings of the gpu host threads 184-191 it runs on - and NEVER the rest of q3: 72-87 stay grantable
+    to CPU rows beside it. A gpu-shared row (correctness, production) holds the gpu token alone. Origin: q38p4b-int8
+    (GPU timing) refused "q3 busy" by an 8-core AITER build on 80-87 while the keeper booked all of q3 for it."""
+    if need.options is not None:
+        opts = tuple(dict.fromkeys(o | GPU_SIBLING_CORES for o in need.options))
+        return Need(opts, need.pool | GPU_SIBLING_CORES, None)
+    return Need(None, need.pool - GPU_SIBLING_CORES, need.width, GPU_SIBLING_CORES)
+
+
+def grant_need(s):
+    """The Need admit() grants for spec s: parse_cpus, then the timing SMT rule (no 88-95 without the gpu exclusive;
+    None when nothing is left), then gpu-q3 NARROW (gpu exclusive, not quiet: + 88-95). A quiet row takes every core."""
+    need = parse_cpus(s["cpus"])
+    if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
+        need = timing_need(need)
+        if need is None:
+            return None
+    if s["gpu"] == "exclusive" and not s["quiet"]:
+        need = gpu_timing_need(need)
+    return need
+
+
 def fits_need(need, cores):
     """Two-sided invariant (i): is `cores` a legal grant for `need`?"""
+    cores = frozenset(cores)
     if need.options is not None:
-        return frozenset(cores) in need.options
-    return len(cores) == need.width and frozenset(cores) <= need.pool
+        return cores in need.options
+    rest = cores - need.fixed
+    return need.fixed <= cores and len(rest) == need.width and rest <= need.pool
 
 
 # ============================================================== schema + publish-time admission (P3.5)
@@ -518,15 +545,17 @@ def _order(specs):
 
 def _pick(need, usable):
     """Choose cores for `need` from `usable` (a set), or None."""
+    if not need.fixed <= usable:
+        return None
     if need.options is not None:
         return next((o for o in need.options if o <= usable), None)
-    cand = need.pool & usable
+    cand = (need.pool & usable) - need.fixed
     if len(cand) < need.width:
         return None
     by_q = sorted(((len(q & cand), i) for i, q in enumerate(QUARTERS) if len(q & cand) >= need.width))
     if by_q:   # best fit: the fullest quarter that still holds the whole width (NUMA-local)
-        return frozenset(sorted(QUARTERS[by_q[0][1]] & cand)[:need.width])
-    return frozenset(sorted(cand)[:need.width])
+        return frozenset(sorted(QUARTERS[by_q[0][1]] & cand)[:need.width]) | need.fixed
+    return frozenset(sorted(cand)[:need.width]) | need.fixed
 
 
 def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False):
@@ -534,7 +563,8 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
     that does not fit holds the tokens it needs: a later (worse-ranked) row may take a held token only if its whole
     window ends by the held row's ETA (plain backfilling: no budget, no counter, the top row's
     start is never delayed). `quiet` takes every row token plus the gpu, and waits
-    for an idle smoke lane. A `timing` row never gets cores 88-95 unless it also holds the gpu exclusive (SMT)."""
+    for an idle smoke lane. A `timing` row never gets cores 88-95 unless it also holds the gpu exclusive (SMT); a gpu
+    EXCLUSIVE row holds 88-95 with the gpu and never the rest of q3 (gpu-q3 NARROW, operator 2026-11-05)."""
     plan, seen = Plan(), set()
     busy = set().union(*[g.cores for g in grants]) if grants else set()
     free = set(ROW_CORES) - busy
@@ -557,12 +587,10 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
         if rid in seen:   # one decision per id per tick: a twice-published id can never be granted twice
             continue
         seen.add(rid)
-        need, win = parse_cpus(s["cpus"]), window_s(s)
-        if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
-            need = timing_need(need)
-            if need is None:
-                plan.skipped[rid] = "timing row needs gpu exclusive on cores 88-95"
-                continue
+        need, win = grant_need(s), window_s(s)
+        if need is None:
+            plan.skipped[rid] = "timing row needs gpu exclusive on cores 88-95"
+            continue
         h = plan.hold
         h_ok = h is None or now + win <= h.eta
         usable = free if h_ok else free - h.cores
@@ -619,7 +647,7 @@ def _make_hold(s, need, gpu_need, free_at, gpu_free_at, shared_free_at, now, gra
     elif need.options is not None:
         cores = min(need.options, key=lambda o: (max([free_at[c] for c in o] or [now]), need.options.index(o)))
     else:
-        cores = frozenset(sorted(need.pool, key=lambda c: (free_at[c], c))[:need.width])
+        cores = frozenset(sorted(need.pool, key=lambda c: (free_at[c], c))[:need.width]) | need.fixed
     eta = max([free_at[c] for c in cores] or [now])
     if gpu_need == "exclusive":
         eta = max(eta, gpu_free_at)
@@ -647,7 +675,7 @@ def _idle_why(plan, pending, free, gpu_busy):
         elif not waiting:
             why = "no pending row"
         else:
-            users = [s for s in waiting if s["quiet"] or q & parse_cpus(s["cpus"]).allowed()]
+            users = [s for s in waiting if s["quiet"] or q & (grant_need(s) or parse_cpus(s["cpus"])).allowed()]
             why = (f"best user {users[0]['id']} (rank {users[0]['priority_rank']:g}): {plan.skipped.get(users[0]['id'], '?')}"
                    if users else f"no pending row allows q{i} ({len(waiting)} pending)")
         out.append((f"q{i}", n, why))

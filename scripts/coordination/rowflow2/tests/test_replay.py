@@ -142,7 +142,9 @@ def test_reconcile_releases_idle_cores_and_unused_gpu_then_regrants(tmp_path):
         sim.step()
     assert any("RELEASE fat cores=" in x for x in sim.lines)
     assert any("RELEASE gpux gpu" in x for x in sim.lines)
-    sim.publish(spec("next", cpus="any-4-of-q1", threads=4, gpu="exclusive", est=7000))
+    # gpu shared: gpux keeps its SMT-sibling cores 88-95 (gpu-q3 NARROW, decision 8) until it ends, so the regranted
+    # gpu token is proven by a shared row (an exclusive one would also need 88-95)
+    sim.publish(spec("next", cpus="any-4-of-q1", threads=4, gpu="shared", est=7000))
     for _ in range(6):
         sim.step()
     assert os.path.exists(os.path.join(sim.flags, "grants", "next.grant")), sim.lines[-10:]
