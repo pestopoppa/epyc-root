@@ -367,6 +367,15 @@ run_one() {
     case $gq in exclusive|shared) rlargs=(--gpu-quiet "$gq");; *) rlargs=();; esac   # opt-in only (2026-11-03 item 6)
     [ -n "$gprim" ] && rlargs=(--cpu-list "$gprim" --no-fold-siblings "${rlargs[@]}")
   fi
+  # CONTRACT_LOCK (keeper class fix 2026-11-05): a cpu / cpu+gpu grant carrying lock=LIST is the keeper's evidence
+  # contract; the region-lock claim is exactly that list (it replaces --claim-cpus, which may name the whole host for a
+  # 1-thread job). A grant without lock= keeps the claim above.
+  local glk=""
+  [ "$CLASS" != gpu ] && glk=$(sed -n 's/.* lock=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n')
+  if [ -n "$glk" ] && valid_list "$glk"; then
+    rlargs=(--cpu-list "$glk"); [ -n "$gq" ] && [ "$gq" != none ] && rlargs+=(--gpu-quiet "$gq")
+    CLAIM_CPUS=$glk; export FILLER_CPUS="$glk"
+  fi
   # --no-fold-siblings (2026-10-22): a GPU job's host threads 184-191 must not fold into a whole-q3 claim (MI210 sat idle behind a q3 build)
   # filler_run6 (2026-10-22): region-lock REFUSES --no-fold-siblings for an SMT-only list ("maps to no regions"), so for a
   # GPU job --no-fold-siblings means: claim gpu-quiet ONLY (no CPU region) and let the job taskset its host threads (184-191).

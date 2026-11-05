@@ -435,6 +435,8 @@ class DrainNeverPreempt(unittest.TestCase):
         self.assertEqual(rf.shape_of({"regions": "0-95", "gib": 48, "launcher": {"path": "/nonexistent"}}), "host")
         self.assertEqual(rf.shape_of({"regions": "any-cpu-quarter", "gib": 600, "launcher": {"path": "/nonexistent"}}), "multi-quarter(3)")
         self.assertEqual(rf.shape_of({"regions": "mi210_0,184-191", "gib": 48, "launcher": {"path": "/nonexistent"}}), "gpu")
-        self.assertEqual(rf.shape_of({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}}), "quiet-host")
-        opts, _ = rf.row_shape({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}})
-        self.assertEqual(opts, [frozenset(rf.REGIONS)])
+        # keeper class fix 2026-11-05: the spec shape is advisory; quiet-host comes from launcher evidence (--gpu-quiet)
+        self.assertEqual(rf.shape_of({"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}}), "host")
+        qh = {"regions": "0-95", "shape": "quiet-host", "launcher": {"path": "/nonexistent"}}
+        self.assertEqual(rf.shape_of(qh, {"class": "cpu", "gpu_quiet": "exclusive"}), "quiet-host")
+        self.assertEqual(rf.contract_of(qh, {"class": "cpu", "gpu_quiet": "exclusive"})["options"], [frozenset(rf.REGIONS)])

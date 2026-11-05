@@ -30,7 +30,9 @@ class Fixture(unittest.TestCase):
         for d in ("ready", "grants", "dryrun"):
             os.makedirs(os.path.join(self.flags, d))
         self.saved = {k: getattr(rf, k) for k in ("rl_status", "arm_one", "admit", "mem_available_gib", "start_gpu_batch",
-                                                   "underused", "vram_used_bytes", "row_shape", "measure_util", "route_alert")}
+                                                   "underused", "vram_used_bytes", "row_shape", "measure_util", "route_alert",
+                                                   "contract_of", "gpu_occupancy")}
+        rf.gpu_occupancy = lambda: {"pids": {}, "vram_used": 0}   # never the live host's sysfs
         rf.measure_util = lambda *a, **k: {"q0": 0.0, "q1": 0.0, "q2": 0.0, "q3": 0.0, "gpu": None}
         rf.route_alert = lambda *a, **k: False
         rf.rl_status = lambda: {r: ("free", "") for r in rf.REGIONS}
@@ -77,6 +79,14 @@ class Fixture(unittest.TestCase):
 
     def tick(self):
         rf.row_shape = lambda d: ([frozenset(o) for o in d["_opts"]], False)
+        real = self.saved["contract_of"]
+
+        def fake_contract(d, o=None, flags=None):   # allocate() builds candidates from contract_of: inject the options
+            c = real(d, o, flags)
+            if d and "_opts" in d:
+                c = dict(c, options=[frozenset(x) for x in d["_opts"]], bench=False)
+            return c
+        rf.contract_of = fake_contract
         return rf.allocate(self.flags, log=self.lines.append)
 
     def end(self, rid):

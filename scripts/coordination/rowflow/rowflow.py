@@ -68,6 +68,7 @@ import argparse
 import datetime as dt
 import glob
 import hashlib
+import itertools
 import json
 import os
 import re
@@ -707,9 +708,6 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["admission_class"] = spec["admission_class"]
     if spec.get("busy_fraction") is not None:
         row["busy_fraction"] = float(spec["busy_fraction"])
-    if spec.get("coexist_quiet_host") is not None:
-        check_coexist(spec, o, regions)
-        row["coexist_quiet_host"] = COEXIST_TAG
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
@@ -743,41 +741,39 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     if o.get("threads"):
         row["declared_threads"] = int(o["threads"])
         row["threads_evidence"] = o.get("threads_evidence") or []
-    if spec.get("shape") is not None:
-        need(str(spec["shape"]) in SHAPES or re.fullmatch(r"multi-quarter\([2-3]\)", str(spec["shape"])), f"shape must be one of {SHAPES} or multi-quarter(n)")
-        row["shape"] = str(spec["shape"])
-    row["shape"] = shape_of(row, o)   # recorded: quarter | multi-quarter(n) | host | quiet-host | gpu | gpu-q3
-    if row["shape"] in ("host", "quiet-host") and not whole_host_evidence(row):
-        ram_host = int(row.get("gib") or 0) > 3 * QUARTER_RAM_GIB and row["shape"] == "host" and spec.get("shape") is None
-        need(ram_host, f"shape {row['shape']} needs whole-host evidence: >= {WHOLE_HOST_THREADS} declared threads (found "
-                       f"{row.get('declared_threads') or 'none'}{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}), "
-                       f"a baseline_ref naming the decision-grade baseline / production-serving measurement, or "
-                       f"shape_override \"operator: <who> <date>: <why>\"; right-sized: {right_size(row.get('declared_threads'), lane, o.get('gpu_quiet', ''))}")
-    # gpushape 2026-11-05 (D9-ack: operator 2026-11-05 approved shape-from-evidence + gpu-q3; defect fix - declared shape
-    # bypass): inf34 v15 declared `shape: gpu` with regions mi210_0,0-95 + --claim-cpus 0-95 and booked the whole host for a
-    # GPU qualification. A GPU-lane row whose regions/claim reach beyond q3 (72-95 + siblings 168-191) is refused unless
-    # it carries whole-host evidence; a declared shape never skips this.
-    over = gpu_lane_overreach(row, regions, o)
-    need(not over or whole_host_evidence(row),
-         f"GPU-lane row claims cpus beyond q3 + 184-191 ({compress_cpus(over)}); a GPU run needs gpu-quiet + q3's host "
-         f"threads only (shape gpu-q3: regions mi210_0,88-95,184-191, launcher --class gpu --claim-cpus 88-95,184-191) "
-         f"unless it measures whole-host CPU serving: >= {WHOLE_HOST_THREADS} declared threads (found "
-         f"{row.get('declared_threads') or 'none'}), a baseline_ref, or shape_override \"operator: <who> <date>: <why>\"")
-    # gpushape q3-parallel (operator 2026-11-05: "when not performing timing work on the GPU/CPU and, most importantly, in
-    # production we should totally allow q3 CPU use to take place in parallel with the GPU use"): gpu-q3 (q3 kept quiet)
-    # is ONLY for GPU timing rows; every other GPU row is the plain gpu shape (gpu-quiet + 184-191, no-fold) and may not
-    # book q3 cores, unless it carries an operator shape_override.
-    q3book = gpu_lane_q3_cores(row, regions, o)
-    if (q3book or row["shape"] == "gpu-q3") and not gpu_timing_row(row, o) and not str(row.get("shape_override") or "").strip():
-        need(False, f"non-timing GPU row books q3 ({compress_cpus(q3book) or 'shape gpu-q3'}): q3 CPU use runs in parallel with "
-                    f"non-timing GPU work; use the plain gpu shape (regions mi210_0,184-191, launcher --class gpu "
-                    f"--no-fold-siblings). A timing row declares it: launcher --role bench, admission_class "
-                    f"block-timing-pairable|block-timing-quiet, or timing: {'|'.join(GPU_TIMING_KINDS)}; else shape_override")
-    if row["shape"] == "gpu-q3":
-        gpu_grant = o.get("class") == "gpu" and "mi210" in str(regions) and engine_grant_cpus(o)
-        bad = gpu_q3_claim_cores(regions if gpu_grant else (o.get("claim_cpus") or regions)) & set(range(72, 88))
-        need(not bad, f"gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (the q3 cores 72-87 stay lockable by "
-                      f"coexist rows; coexist2 2026-11-05): claim folds onto {sorted(bad)}")
+    # keeper class fix 2026-11-05 (operator "fix it"): the contract is derived from evidence only; the spec's shape and
+    # regions are advisory and a declaration that books >= SHAPE_TOLERANCE_CORES more than the contract needs is
+    # refused unless the spec carries shape_override "operator: <who> <date>: <why>" (logged in the row)
+    c = contract_of(row, o, flags)
+    row["shape"] = c["shape"]
+    decl = str(spec.get("shape") or "").strip()
+    need(not decl or decl in SHAPES or re.fullmatch(r"multi-quarter\([2-3]\)", decl), f"shape must be one of {SHAPES} or multi-quarter(n)")
+    m = re.fullmatch(r"multi-quarter\((\d)\)", decl)
+    decl_cores = (24 * int(m.group(1)) if m else {"sub-quarter": SUB_CORES, "quarter": 24, "host": 96, "quiet-host": 96, "gpu": 0,
+                  "gpu-q3": 24}[decl]) if decl else (24 if regions == "any-cpu-quarter" or regions.startswith("any-of")
+                                                    else len({x % 96 for x in _cpu_set(ws58_cpus(regions)) if x < 96}))
+    over = max(decl_cores - c["need"], c["held"] - c["need"])
+    if not str(row.get("shape_override") or "").strip():
+        need(c["shape"] not in ("host", "quiet-host") or c["evidence"] or int(row.get("gib") or 0) > 3 * QUARTER_RAM_GIB,
+             f"shape {c['shape']} needs whole-host evidence: >= {WHOLE_HOST_THREADS} threads (found {c['threads'] or 'none'}), a "
+             "baseline_ref naming the decision-grade baseline / production-serving measurement, or shape_override "
+             f"\"operator: <who> <date>: <why>\"; right-sized from its threads: {'declare -t/--threads/--workers/OMP_NUM_THREADS' if c['threads'] is None else ('sub-quarter' if c['threads'] <= SUB_CORES else 'quarter' if c['threads'] <= 24 else 'multi-quarter(' + str(min(3, -(-c['threads'] // 24))) + ')')}")
+        need(over < SHAPE_TOLERANCE_CORES, f"declared {decl or 'regions ' + regions} books {over} cores more than the evidence "
+             f"contract needs ({c['shape']}: {c['need']} cores; threads {c['threads'] or 'unknown'}"
+             f"{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}; engine lock "
+             f"{'= grant' if c['lock'] else '= --claim-cpus ' + (o.get('claim_cpus') or '-')}); republish right-sized "
+             f"(shape {c['shape']}, a claim no wider than it), or add shape_override \"operator: <who> <date>: <why>\"")
+        wide = {int(t[1:]) for x in c["options"] for t in expand(x) if re.fullmatch(r"[ct]\d+", t)} - GPU_Q3_ALLOWED_CPUS
+        need(not (c["gpu_use"] and wide and not c["evidence"]), f"GPU-lane row locks cpus beyond q3 + 184-191 "
+             f"({compress_cpus(wide)}); a GPU run needs gpu-quiet + q3's host threads (shape gpu-q3: regions "
+             "mi210_0,88-95,184-191, --class gpu --no-fold-siblings) unless it carries whole-host evidence")
+        q3 = {t for x in c["options"] for t in expand(x) if t in COEXIST_Q3 or t in qcores("q3")}
+        need(not (c["gpu_use"] and not c["timing"] and q3), "non-timing GPU row books q3 cores: q3 CPU use runs in parallel "
+             "with non-timing GPU work; use the plain gpu shape (regions mi210_0,184-191, --class gpu --no-fold-siblings). A "
+             f"timing row declares it: --role bench, admission_class {'|'.join(GPU_TIMING_CLASSES)}, or timing: "
+             f"{'|'.join(GPU_TIMING_KINDS)}; else shape_override")
+        need(c["shape"] != "gpu-q3" or c["lends"] == COEXIST_Q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + "
+             "184-191 (q3 cores 72-87 stay lockable by small rows beside a GPU timing run)")
     if row.get("busy_fraction") is None and row.get("declared_threads"):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
@@ -1276,15 +1272,6 @@ def cpu_tokens(cpus, gpu_threads=False):
     return out
 
 
-def engine_grant_cpus(o):
-    """True when the row's engine snapshot locks a GPU grant's own cpus (content check, never a path/version guess)."""
-    try:
-        with open(o.get("engine") or "", errors="replace") as f:
-            return GRANT_CPUS_MARKER in f.read()
-    except OSError:
-        return False
-
-
 def grant_cpus(regions):
     """The exact cpu list a grant's regions pin (cpus= field): explicit cpus as given, qN as the engine's a-b,s-(s+15)."""
     out = []
@@ -1349,222 +1336,55 @@ def open_grants(flags):
     return out
 
 
-SHAPES = ("quarter", "multi-quarter", "host", "quiet-host", "gpu", "gpu-q3")
+SHAPES = ("sub-quarter", "quarter", "multi-quarter", "host", "quiet-host", "gpu", "gpu-q3")
 WHOLE_HOST_THREADS = 48   # operator 2026-11-05: production CPU serving across all NUMA nodes (npd1-step5: -t 48 over 0-95)
 GPU_Q3_TOKENS = frozenset({GPU, "q3"} | {f"t{k}" for k in range(184, 192)})   # gpu-quiet + q3 cores + 184-191
 QUARTER_RAM_GIB = 256   # a quarter's share of the bookable RAM (1069 GiB / 4, rounded): a bigger model is multi-quarter
-
-
-def shape_of(d, o=None):
-    """quarter | multi-quarter(n) | host | quiet-host | gpu - the spec's `shape` wins; else derived from the launcher's
-    claim (claim_cpus), ram_gib, gpu_quiet and role/class (operator 2026-11-01: heavy rows and timing baselines that
-    need every quarter plus the GPU idle must be scheduled explicitly, never squeezed onto a quarter)."""
-    sp = str(d.get("shape") or "").strip()
-    if sp:
-        return sp
-    regs = str(d.get("regions") or "")
-    if o is None:
-        try:
-            o = parse_launcher(d["launcher"]["path"])
-        except (Refused, OSError, StopIteration, ValueError, KeyError):
-            o = {}
-    cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
-    if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
-        # refinement 2 (operator 2026-11-05: "a GPU timing run doesn't need a quiet host ... It just needs a quiet q3"):
-        # a gpu-quiet exclusive row whose claim books >= 2 quarters is gpu-q3 unless it carries whole-host evidence
-        cc = o.get("claim_cpus") or ""
-        books_claim = not (cls == "gpu" and "mi210" in regs and (o.get("nofold") or engine_grant_cpus(o)))
-        if o.get("gpu_quiet") == "exclusive" and books_claim and len(quarters_of(cc, fold=True)) >= 2:
-            return "quiet-host" if whole_host_evidence(d) else "gpu-q3"
-        return "gpu"
-    if o.get("gpu_quiet") == "exclusive" and len(quarters_of(o.get("claim_cpus") or "0-95", fold=True)) >= 4:
-        return "quiet-host"   # ws58 2026-11-01: gpu-quiet on a quarter claim = that quarter + GPU idle, not the whole host
-    nq = len(quarters_of(o.get("claim_cpus") or regs, fold=True)) if regs not in ("any-cpu-quarter",) and not regs.startswith("any-of") else 1
-    nq = max(nq, -(-int(d.get("gib") or 0) // QUARTER_RAM_GIB) if int(d.get("gib") or 0) > QUARTER_RAM_GIB else 1)
-    if nq >= 4:
-        return "host"
-    return f"multi-quarter({nq})" if nq >= 2 else "quarter"
-
-
-def row_shape(d):
-    """(options, bench): the alternative region sets (frozensets over q0..q3/gpu-quiet) a row must hold at once, derived
-    from the row's regions AND its launcher's region-lock claim (static parse; the engine's own defaults). bench = a
-    timing row (keeps off q3 while a GPU grant is open). A `host` / `quiet-host` shape books every quarter (+ GPU)."""
-    regs = str(d.get("regions") or "")
-    try:
-        o = parse_launcher(d["launcher"]["path"])
-    except (Refused, OSError, StopIteration, ValueError, KeyError):
-        o = {}
-    if shape_of(d, o) == "gpu-q3":   # refinement 2: gpu-quiet + q3 + 184-191; q0-q2 stay free
-        return [frozenset(compress(expand(set(GPU_Q3_TOKENS))))], True
-    extra = set()
-    cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
-    if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
-        extra.add(GPU)
-    gq, cc, nofold = o.get("gpu_quiet", ""), o.get("claim_cpus", ""), o.get("nofold", False)
-    if gq == "exclusive":
-        extra.add(GPU)
-        if not cc and cls == "gpu":
-            cc = "0-95"
-    gpu_row = cls == "gpu" and "mi210" in regs
-    # ws58 2026-11-02 18:30Z: a GPU row holds gpu-quiet + ONLY the cpus its regions name (184-191 -> threads t184..t191,
-    # free beside a whole-q3 / host row; 0-23 -> q0). Its launcher's --claim-cpus books cpus only while the engine
-    # snapshot still locks that claim (pre-GRANT_CPUS engines; a --no-fold-siblings / claim-less one locks no cpu).
-    legacy_claim = gpu_row and cc and not nofold and not engine_grant_cpus(o)
-    if gpu_row and not legacy_claim:
-        extra |= cpu_tokens(ws58_cpus(regs) or "184-191", gpu_threads=True)
-        cc = ""
-    elif cc and not (nofold and cls == "gpu"):
-        extra |= cpu_tokens(cc)   # ws58 sub-quarter: a claim covering < 24 cores of a quarter holds only those cores
-    if not cc and cls == "cpu" and ws58_cpus(regs) and "mi210" not in regs:
-        rt = cpu_tokens(ws58_cpus(regs))
-        if not (rt & set(QUARTERS)):
-            extra |= rt; cc = ws58_cpus(regs)   # concrete sub-quarter regions (e.g. 0-3): only those cores
-    sub = cc and not (extra & set(QUARTERS)) and any(t in CORES for t in extra)
-    if sub or (cls == "gpu" and "mi210" in regs):
-        bases = [set()]   # the claim pins the cpus: no extra quarter (whole-quarter/host shapes still add theirs below)
-    elif regs == "any-cpu-quarter":
-        bases = [{q} for q in QUARTERS]
-    elif regs.startswith("any-of"):
-        bases = [{x.strip()} for x in regs[len("any-of"):].split(",") if re.fullmatch(r"q[0-3]", x.strip())]
-    else:
-        bases = [quarters_of(regs)]
-    shape = shape_of(d, o)
-    if shape == "quiet-host":
-        extra |= set(REGIONS)
-    elif shape == "host":
-        extra |= set(QUARTERS)
-    elif shape.startswith("multi-quarter("):
-        n = int(shape[len("multi-quarter("):-1] or 2)
-        base_q = set().union(*[b for b in bases]) | {q for q in extra if q in QUARTERS}
-        if len(base_q) < n:   # RAM-derived width: any n quarters, as alternatives
-            bases = [set(c) for c in __import__("itertools").combinations(QUARTERS, n)]
-    opts = []
-    for b in bases:
-        fs = frozenset(compress(expand(b | extra)))
-        if fs and fs not in opts:
-            opts.append(fs)
-    return opts, (gq == "exclusive" or o.get("role") == "bench")
-
-
-def grant_regions(d, option):
-    """The regions= string of a grant for `option`: the row's own regions when concrete, else the chosen quarter."""
-    regs = str(d.get("regions") or "")
-    if "mi210" in regs:
-        return regs
-    qs = sorted(q for q in option if q in QUARTERS)
-    if not qs and any(t in CORES for t in option):
-        return tokens_cpus(option)   # sub-quarter grant: the exact cpu list
-    if regs == "any-cpu-quarter" or regs.startswith("any-of"):
-        return cpu_list(qs[0]) if qs else regs
-    return regs
-
-
-DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
-DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
-DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
-URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
-                          # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
-
-
-DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whose spec says it keeps < half its claim busy
-                          # (a ~4%-busy row) is never promoted to a host/quiet-host drain; it still takes free regions
-
-
-COEXIST_TAG = "gitnexus-q3"
-QUIET_SHAPES = ("quiet-host", "gpu-q3")   # quiet shapes; only a GPU-timing one (coexist_host) admits coexist rows
-
-
-def coexist_host(d):
-    """coexist2 (operator 2026-11-05: a GPU timing run "just needs a quiet q3"): ONLY a GPU-timing hold - the gpu-q3
-    shape, or a gpu-lane quiet-host row that does NOT measure CPU serving (< WHOLE_HOST_THREADS declared threads) -
-    leaves q3 cores 72-87 to coexist rows. A host / quiet-host row that measures CPU serving (npd1-step5: lane gpu,
-    -t 48 over 0-95, GLOBAL.q3 exclusive) keeps q3 exclusive and gets no coexist backfill (11:0xZ: coexist rows granted
-    beside it waited ~950 s on its lock, and would perturb its CPU measurement). Takes a row or a plan candidate."""
-    d = d or {}
-    if "coexist_host" in d:   # plan candidate: precomputed from its row
-        return bool(d["coexist_host"])
-    shape = d.get("shape") or shape_of(d)
-    if shape == "gpu-q3":
-        return True
-    n = row_threads(d)   # keeper-hotfix (D14): unknown threads on a quiet-host row is not "< 48"
-    return shape == "quiet-host" and d.get("lane") == "gpu" and n is not None and n < WHOLE_HOST_THREADS
-
-
-def coexist_holds(grants, allrows):
-    """(coexist_held, quiet_held): tokens held by running coexist grants / GPU-timing (coexist_host) grants."""
-    cx = set().union(*[g["holds"] for g in grants if is_coexist(allrows.get(g["id"]))])
-    qh = set().union(*[g["holds"] for g in grants if g["id"] in allrows
-                       and coexist_host(allrows[g["id"]])])
-    return cx, qh
-COEXIST_MAX_BUSY = 0.1
-GPU_HOST_THREADS = frozenset(range(184, 192))   # filler_run15 GPUTHR default / gpu-quiet reserved MI210 host threads
-# q3 cores whose SMT siblings are NOT the MI210 host threads (72-87 -> siblings 168-183): a sub-quarter grant pins both
+SUB_CORES = 4           # a <= SUB_CORES-thread job is a SUB_CORES-core row (any aligned block of one quarter)
+COEXIST_MAX_THREADS = 4  # a CPU row this small (evidence) may run on the q3 cores a GPU-timing grant keeps quiet
+CONTRACT_LOCK_MARKER = "CONTRACT_LOCK"   # an engine containing it locks the grant's lock= cpus instead of --claim-cpus
+SHAPE_TOLERANCE_CORES = 24   # publish refuses a declaration that books >= a quarter more than the contract needs
+GPU_Q3_ALLOWED_CPUS = frozenset(range(72, 96)) | frozenset(range(168, 192))   # q3 cores + their SMT siblings (incl. 184-191)
+# q3 cores whose SMT siblings are NOT the MI210 host threads (72-87 -> siblings 168-183)
 COEXIST_Q3 = frozenset({f"c{n}" for n in range(72, 88)} | {f"t{n}" for n in range(168, 184)})
+GPU_HOST_THREADS = frozenset(range(184, 192))   # filler_run15 GPUTHR default / gpu-quiet reserved MI210 host threads
+GPU_TIMING_KINDS = ("bench", "profile", "ak-keep-gate")
+GPU_TIMING_CLASSES = ("block-timing-pairable", "block-timing-quiet")
 
 
-def is_coexist(d):
-    """Marked (coexist_quiet_host) OR by evidence (operator 2026-11-05: "as long as gitnexus doesn't touch the GPU's mgmt
-    threads on q3 it can still run on q3 without impacting a timing run on the GPU"): a cpu row whose concrete regions
-    are q3 cores 72-87 only (siblings 168-183, never 184-191) and whose declared busy_fraction <= COEXIST_MAX_BUSY.
-    11:00Z: nine such -sq3 rows published before the marker existed sat grantable beside npd1-step5's quiet-host hold."""
-    d = d or {}
-    if d.get("coexist_quiet_host") == COEXIST_TAG:
-        return True
-    if d.get("lane") != "cpu" or "mi210" in str(d.get("regions") or ""):
-        return False
-    cpus = ws58_cpus(d.get("regions"))
-    if not cpus or cpus != str(d.get("regions") or "").strip():
-        return False
-    bf = d.get("busy_fraction")
-    if not isinstance(bf, (int, float)) or isinstance(bf, bool) or not 0 <= bf <= COEXIST_MAX_BUSY:
-        return False
-    toks = cpu_tokens(cpus)
-    return bool(toks) and toks <= COEXIST_Q3
-
-
-def check_coexist(spec, o, regions):
-    """Publish gate for coexist_quiet_host (operator 2026-11-05): gitnexus single-worker q3 rows only."""
-    need(spec.get("coexist_quiet_host") == COEXIST_TAG, f"coexist_quiet_host must be {COEXIST_TAG!r}")
-    need(spec["lane"] == "cpu" and o["class"] == "cpu", "coexist_quiet_host needs lane cpu / engine --class cpu")
-    bf = spec.get("busy_fraction")
-    need(isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= COEXIST_MAX_BUSY,
-         f"coexist_quiet_host needs busy_fraction <= {COEXIST_MAX_BUSY}")
-    need(o.get("gpu_quiet") in ("", "none") and not o.get("claim_cpus") and not o.get("nofold"),
-         "coexist_quiet_host launcher must claim exactly its granted cpus (no --claim-cpus/--gpu-quiet/--no-fold-siblings)")
-    cpus = ws58_cpus(regions)
-    need(cpus and cpus == str(regions).strip(), "coexist_quiet_host regions must be a concrete cpu list (e.g. 72-73)")
-    raw = set()
-    for t in cpus.split(","):
-        a, b = (t.split("-") + [t])[:2]
-        raw |= set(range(int(a), int(b) + 1))
-    need(not (raw & GPU_HOST_THREADS), "coexist_quiet_host cpus touch the MI210 host threads 184-191")
-    toks = cpu_tokens(cpus)
-    need(toks and toks <= COEXIST_Q3, "coexist_quiet_host cpus must be q3 cores 72-87 (siblings 168-183) only; "
-         "cores 88-95 pin the MI210 host threads 184-191")
-    guard = os.path.join(o.get("workdir") or "", "gitnexus-guard.py")
+def _engine_has(o, marker):
     try:
-        gtext = open(guard, errors="replace").read()
+        with open((o or {}).get("engine") or "", errors="replace") as f:
+            return marker in f.read()
     except OSError:
-        gtext = ""
-    need("admit_subquarter_q3" in gtext and "--workers" in (o.get("cmd") or "") + open(spec["launcher"]).read() + _job_text(o),
-         f"coexist_quiet_host is for single-worker gitnexus rows: {guard} must carry the q3 sub-quarter route and the job --workers 1")
+        return False
 
 
-def _job_text(o):
-    m = re.search(r"(/\S+\.py)", o.get("cmd") or "")
-    try:
-        return open(m.group(1).strip("'\""), errors="replace").read() if m else ""
-    except OSError:
-        return ""
+def engine_grant_cpus(o):
+    """True when the row's engine snapshot locks a GPU grant's own cpus (content check, never a path/version guess)."""
+    return _engine_has(o, GRANT_CPUS_MARKER)
 
 
-def check_busy_fraction(spec):
-    """Publish gate (operator 2026-11-03): optional spec busy_fraction must be a number in 0..1."""
-    bf = spec.get("busy_fraction")
-    need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
-         f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
-         f"omit it when unknown (= 1.0)")
+def engine_contract_lock(d, o, flags=None):
+    """The engine that will run this row locks the grant's lock= cpus: the engine file carries CONTRACT_LOCK and, when a
+    poller is already armed, that poller was armed on this very engine (ARMED.json engine_sha256: a poller armed on an
+    older engine keeps running the old code, whose lock is still --claim-cpus)."""
+    if not _engine_has(o, CONTRACT_LOCK_MARKER):
+        return False
+    a = load_json(armed_path(flags or FLAGS, str(d["id"]))) if (d or {}).get("id") else None
+    if a and alive(a.get("pid")):
+        try:
+            return a.get("engine_sha256") == sha256(o["engine"])
+        except OSError:
+            return False
+    return True
+
+
+def gpu_timing_row(row, o):
+    """A GPU row that measures time on the GPU (keeps q3 quiet): launcher --role bench, a timing admission_class, or an
+    explicit spec `timing` kind (bench | profile | ak-keep-gate)."""
+    return ((o or {}).get("launch_role") == "bench" or (row or {}).get("admission_class") in GPU_TIMING_CLASSES
+            or str((row or {}).get("timing") or "") in GPU_TIMING_KINDS)
 
 
 def row_threads(d, flags=None):
@@ -1599,16 +1419,215 @@ def gpu_quiet_only(row, o, flags=None):
     return False
 
 
-def whole_host_evidence(d):
-    """Refinement 1: what earns a host / quiet-host shape - >= WHOLE_HOST_THREADS declared threads, a baseline_ref naming
-    the decision-grade baseline / production-serving measurement it reproduces, or an operator shape_override."""
-    d = d or {}
-    # keeper-hotfix 2026-11-05 (D14): measured evidence counts - max(declared_threads, PASS.json measured_threads); an
-    # absent declared_threads is UNKNOWN, never 0 (rows published before the field existed are not retro-refused)
-    n = row_threads(d)
-    if n is not None and n >= WHOLE_HOST_THREADS:
+def _opts(d):
+    try:
+        return parse_launcher(d["launcher"]["path"])
+    except (Refused, OSError, StopIteration, ValueError, KeyError, TypeError):
+        return {}
+
+
+_KFD = re.compile(r"(?i)\bGGML_HIP\b|\bhipcc\b|build-hip|-DGGML_HIP|\bhip_?build\b|--device[ =]+['\"]?rocm|"
+                  r"(?<![\w-])(?:-ngl|--n-gpu-layers|--gpu-layers)[ =]+['\"]?(?!0\b)\d+|\b(?:HIP|ROCR)_VISIBLE_DEVICES=")
+
+
+def gpu_touch(d, o=None):
+    """GPU EXCLUSIVITY (coordinator 2026-11-05, kvu16g2-ab: 41 GB foreign VRAM under a gpu-quiet EXCLUSIVE grant): the
+    row's job can open /dev/kfd - a GPU-class launcher, mi210 regions, a HIP build, -ngl > 0, --device ROCm,
+    HIP/ROCR_VISIBLE_DEVICES - so it, and its smoke, hold the gpu-quiet token for their whole duration."""
+    d, o = d or {}, (_opts(d or {}) if o is None else o)
+    if "mi210" in str(d.get("regions") or "") or o.get("class") in ("gpu", "cpu+gpu") or d.get("lane") == "gpu":
         return True
-    return bool(str(d.get("baseline_ref") or "").strip()) or bool(str(d.get("shape_override") or "").strip())
+    texts = [o.get("cmd") or ""]
+    for m in re.finditer(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", o.get("cmd") or ""):
+        try:
+            texts.append(open(m.group(1), errors="replace").read()[:1 << 20])
+        except OSError:
+            pass
+    try:
+        texts.append(open(d["launcher"]["path"], errors="replace").read()[:1 << 20])
+    except (OSError, KeyError, TypeError):
+        pass
+    return any(_KFD.search(t) for t in texts)
+
+
+def _sub_blocks(within=QUARTERS):
+    """Every aligned SUB_CORES-core block (cores + SMT siblings) of the given quarters, never the MI210 host threads."""
+    out = []
+    for q in within:
+        lo = int(q[1]) * 24
+        for a in range(lo, lo + 24, SUB_CORES):
+            cs = range(a, a + SUB_CORES)
+            if not any(c + 96 in GPU_HOST_THREADS for c in cs):
+                out.append(frozenset({f"c{c}" for c in cs} | {f"t{c + 96}" for c in cs}))
+    return out
+
+
+def contract_of(d, o=None, flags=None):
+    """THE resource contract of a row (keeper class fix 2026-11-05, operator "fix it"), derived from evidence only:
+    launcher argv (--class, --claim-cpus, --gpu-quiet, --no-fold-siblings, --role), the job's threads (-t/--threads/
+    --workers/OMP_NUM_THREADS/taskset; Python NAME = "N" resolved), PASS.json measured_threads / vram_used_max_bytes,
+    gpu_use, RAM, and what the engine will actually lock. The spec's shape / regions are advisory (publish compares).
+      shape    sub-quarter | quarter | multi-quarter(n) | host | quiet-host | gpu | gpu-q3 (logs, dashboard)
+      options  alternative token sets to hold = the claim handed to the engine (grant holds= / lock=)
+      lock     True: the engine locks exactly the granted cpus (CONTRACT_LOCK); False: it locks --claim-cpus, so the
+               options cover the claim (an honest hold, never a fake co-run)
+      need     cores the evidence needs; held = cores of the widest option (held - need >= tolerance: over-booked)
+      coexist  a small non-timing CPU row (threads <= COEXIST_MAX_THREADS) that may take cores a GPU-timing grant lends
+      lends    tokens a hold keeps quiet but does not lock (GPU timing: q3 cores 72-87 minus its own lock)"""
+    d = d or {}
+    o = _opts(d) if o is None else o
+    regs = str(d.get("regions") or "")
+    cls = o.get("class") or ("gpu" if "mi210" in regs else "cpu")
+    gq, cc, nofold = o.get("gpu_quiet", ""), o.get("claim_cpus", ""), bool(o.get("nofold"))
+    honours = engine_contract_lock(d, o, flags)
+    if not re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", cc or ""):   # an unresolved claim ($CPUS): a legacy engine may
+        cc = "0-95" if cc and not honours and not re.search(r"WS58_REGIONS|FILLER_CPUS", cc) else ""   # lock anything
+        # (read as the host) unless it names the grant's own cpus; a CONTRACT_LOCK engine's lock= replaces it anyway
+    tv = [x for x in (row_threads(d, flags), o.get("threads")) if x]
+    threads = max(tv) if tv else None
+    gpu_row = "mi210" in regs or cls in ("gpu", "cpu+gpu") or d.get("lane") == "gpu"
+    gpu_use = gpu_row and not gpu_quiet_only(d, o, flags)
+    timing = gpu_timing_row(d, o)
+    evidence = ((threads or 0) >= WHOLE_HOST_THREADS or bool(str(d.get("baseline_ref") or "").strip())
+                or bool(str(d.get("shape_override") or "").strip()))
+    gib = int(d.get("gib") or 0)
+    abstract = regs == "any-cpu-quarter" or regs.startswith("any-of")
+    decl_cpus = "" if abstract else ws58_cpus(regs)
+    whole = len(quarters_of(cc or decl_cpus, fold=True)) >= 4 and (evidence or gib > 3 * QUARTER_RAM_GIB)
+    gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) else set()
+    lends, lock_tokens = frozenset(), set()
+    if gpu_use and not whole:
+        # GPU work: gpu-quiet + its host threads; a GPU-timing row also keeps q3 quiet (gpu-q3); q0-q2 only with evidence
+        grant_cpus_engine = cls == "gpu" and (nofold or engine_grant_cpus(o) or not cc)
+        src = decl_cpus if grant_cpus_engine else cc
+        lock_tokens = cpu_tokens(src, gpu_threads=True) if src else set()
+        if (grant_cpus_engine or honours) and not (evidence or _cpu_set(src) <= GPU_Q3_ALLOWED_CPUS):
+            lock_tokens = {f"t{k}" for k in GPU_HOST_THREADS}   # declared cpus beyond q3: the contract clips them
+        if timing:
+            shape, base = "gpu-q3", set(GPU_Q3_TOKENS)
+            lends = frozenset(COEXIST_Q3 - expand(lock_tokens))
+        else:
+            shape, base = "gpu", {GPU} | (lock_tokens or {f"t{k}" for k in GPU_HOST_THREADS})
+        opts = [frozenset(base | lock_tokens)]
+    elif whole:
+        shape = "quiet-host" if (gq == "exclusive" or gpu_row) else "host"
+        opts = [frozenset(set(QUARTERS) | gpu_tok)]
+    else:
+        pinned = bool(decl_cpus) and not (cpu_tokens(decl_cpus) & set(QUARTERS))   # concrete sub-quarter regions
+        legacy = len(_cpu_set(cc) & set(range(96))) if (cc and not honours) else 0
+        nq_ram = -(-gib // QUARTER_RAM_GIB) if gib > QUARTER_RAM_GIB else 1
+        if pinned:
+            shape, opts = "sub-quarter", [frozenset(cpu_tokens(decl_cpus) | (cpu_tokens(cc) if legacy else set()))]
+        elif threads is not None and legacy <= (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24)):
+            n = max(-(-threads // 24), nq_ram)
+            if threads <= SUB_CORES and nq_ram <= 1:
+                shape, opts = "sub-quarter", _sub_blocks()
+            elif n <= 1:
+                shape, opts = "quarter", [frozenset({q}) for q in QUARTERS]
+            else:
+                n = min(n, 3)
+                shape, opts = f"multi-quarter({n})", [frozenset(c) for c in itertools.combinations(QUARTERS, n)]
+        else:   # threads unknown, or a legacy engine whose claim locks more: the claim is what gets locked
+            qs = quarters_of(cc, fold=True) if cc else (set() if abstract else quarters_of(decl_cpus, fold=True))
+            if cc and not (cpu_tokens(cc) & set(QUARTERS)):
+                shape, opts = "sub-quarter", [frozenset(cpu_tokens(cc))]
+            elif honours and len(qs) >= 2:   # unknown size, lock follows the grant: the declared width, never a whole host
+                dm = re.fullmatch(r"multi-quarter\(([23])\)", str(d.get("shape") or ""))
+                n = int(dm.group(1)) if dm else 1
+                shape = f"multi-quarter({n})" if n > 1 else "quarter"
+                opts = [frozenset(x) for x in itertools.combinations(QUARTERS, n)]
+            elif len(qs) >= 4:   # legacy engine: its claim is what gets locked (publish refuses this without evidence)
+                shape, opts = ("quiet-host" if gq == "exclusive" else "host"), [frozenset(QUARTERS)]
+            elif len(qs) >= 2 or nq_ram >= 2:
+                n = min(max(len(qs), nq_ram), 3)
+                shape = f"multi-quarter({n})"
+                opts = [frozenset(qs)] if len(qs) == n else [frozenset(c) for c in itertools.combinations(QUARTERS, n)]
+            elif qs:
+                shape, opts = "quarter", [frozenset(qs)]
+            else:
+                within = [x.strip() for x in regs[len("any-of"):].split(",")] if regs.startswith("any-of") else QUARTERS
+                shape, opts = "quarter", [frozenset({q}) for q in within if q in QUARTERS]
+        opts = [frozenset(x | gpu_tok) for x in opts]
+    opts = [frozenset(compress(expand(x))) for x in opts if x] or [frozenset({q} | gpu_tok) for q in QUARTERS]
+    held = max((len({t for t in expand(x) if t in CORES}) for x in opts), default=0)
+    need_cores = held if (whole or gpu_use or threads is None) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
+    return {"shape": shape, "options": opts, "bench": gq == "exclusive", "threads": threads, "gpu_use": gpu_use,
+            "timing": timing, "evidence": evidence, "lock": honours, "lends": lends, "need": need_cores, "held": held,
+            "claim": cc if cls != "gpu" else "",
+            "coexist": (not gpu_row and not timing and gq in ("", "none") and threads is not None
+                        and threads <= COEXIST_MAX_THREADS)}
+
+
+def shape_of(d, o=None):
+    return contract_of(d, o)["shape"]
+
+
+def row_shape(d):
+    c = contract_of(d)
+    return c["options"], c["bench"]
+
+
+def whole_host_evidence(d):
+    return contract_of(d)["evidence"]
+
+
+def lock_cpus(option):
+    """The cpu list a CONTRACT_LOCK engine locks for a grant option (whole quarters as the engine's own quarter lists)."""
+    qs = ",".join(sorted(q for q in option if q in QUARTERS))
+    return ",".join(x for x in (grant_cpus(qs), tokens_cpus(option)) if x)
+
+
+def grant_regions(d, option):
+    """The regions= string of a grant for `option`: exactly the cpus the contract holds (a GPU row keeps its regions
+    unless the contract clipped them; a concrete CPU region that matches the option is kept verbatim)."""
+    regs = str(d.get("regions") or "")
+    if "mi210" in regs:
+        cpus = _cpu_set(ws58_cpus(regs))
+        held = {int(t[1:]) for t in expand(option) if re.fullmatch(r"[ct]\d+", t)}
+        if cpus <= held:
+            return regs
+        return "mi210_0," + compress_cpus((cpus & held) or (held & GPU_HOST_THREADS) or GPU_HOST_THREADS)
+    qs = sorted(q for q in option if q in QUARTERS)
+    if not qs and any(t in CORES for t in option):
+        return tokens_cpus(option)   # sub-quarter grant: the exact cpu list
+    if regs == "any-cpu-quarter" or regs.startswith("any-of") or quarters_of(ws58_cpus(regs)) != set(qs):
+        return ",".join(cpu_list(q) for q in qs) if qs else regs
+    return regs
+
+
+DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
+DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
+DRAIN_UNKNOWN_S = 1800    # drain target when the busy regions carry no grant end (foreign hold): backfill <= 30 min
+URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
+                          # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
+
+
+DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whose spec says it keeps < half its claim busy
+                          # (a ~4%-busy row) is never promoted to a host/quiet-host drain; it still takes free regions
+
+
+def coexist_holds(grants, allrows):
+    """(coexist_held, lent): tokens held by running coexist grants / tokens running grants lend (contract lock sets)."""
+    cs = {g["id"]: contract_of(allrows[g["id"]]) for g in grants if g["id"] in allrows}
+    cx = set().union(*[g["holds"] for g in grants if cs.get(g["id"], {}).get("coexist")])
+    lent = set().union(*[cs[g["id"]]["lends"] for g in grants if g["id"] in cs])
+    return cx, lent
+
+
+def _job_text(o):
+    m = re.search(r"(/\S+\.py)", o.get("cmd") or "")
+    try:
+        return open(m.group(1).strip("'\""), errors="replace").read() if m else ""
+    except OSError:
+        return ""
+
+
+def check_busy_fraction(spec):
+    """Publish gate (operator 2026-11-03): optional spec busy_fraction must be a number in 0..1."""
+    bf = spec.get("busy_fraction")
+    need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
+         f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
+         f"omit it when unknown (= 1.0)")
 
 
 # keeper-hotfix 2026-11-05 (D10): the dry-run env a launcher must carry across a privilege wrapper. The engine derives
@@ -1665,9 +1684,6 @@ def check_engine_not_sealed(launcher, eng):
                  "the packet's seals (PASS.json records engine_sha256)")
 
 
-GPU_Q3_ALLOWED_CPUS = frozenset(range(72, 96)) | frozenset(range(168, 192))   # q3 cores + their SMT siblings (incl. 184-191)
-
-
 def _cpu_set(text):
     out = set()
     for t in str(text or "").split(","):
@@ -1694,46 +1710,6 @@ def compress_cpus(cpus):
     return ",".join(out)
 
 
-GPU_TIMING_KINDS = ("bench", "profile", "ak-keep-gate")
-GPU_TIMING_CLASSES = ("block-timing-pairable", "block-timing-quiet")
-
-
-def gpu_timing_row(row, o):
-    """A GPU row that measures time on the GPU (keeps q3 quiet): launcher --role bench, a timing admission_class, or an
-    explicit spec `timing` kind (bench | profile | ak-keep-gate)."""
-    return ((o or {}).get("launch_role") == "bench" or row.get("admission_class") in GPU_TIMING_CLASSES
-            or str(row.get("timing") or "") in GPU_TIMING_KINDS)
-
-
-def gpu_lane_q3_cores(row, regions, o):
-    """The q3 cpus (72-95 and siblings 168-183; the MI210 host threads 184-191 excepted) a GPU-lane row books via its
-    regions or launcher claim; empty for a CPU row."""
-    regs = str(regions or "")
-    if not (row.get("lane") == "gpu" or "mi210" in regs or (o or {}).get("class") in ("gpu", "cpu+gpu")):
-        return set()
-    cpus = set() if regs == "any-cpu-quarter" or regs.startswith("any-of") else \
-        _cpu_set(",".join(t for t in regs.split(",") if not t.strip().startswith("mi210")))
-    cpus |= _cpu_set((o or {}).get("claim_cpus") or "")
-    return cpus & (set(range(72, 96)) | set(range(168, 184)))
-
-
-def gpu_lane_overreach(row, regions, o):
-    """gpushape 2026-11-05: the cpus a GPU-lane row (lane gpu, mi210 in regions, or launcher class gpu / cpu+gpu) names in
-    its regions or its launcher claim (--claim-cpus) beyond q3 + its siblings; empty for a CPU row. Independent of any
-    declared shape - the declared `shape: gpu` on regions mi210_0,0-95 was exactly the bypass."""
-    regs = str(regions or "")
-    if not (row.get("lane") == "gpu" or "mi210" in regs or (o or {}).get("class") in ("gpu", "cpu+gpu")):
-        return set()
-    if gpu_quiet_only(row, o):   # keeper-hotfix (D14): lane gpu iff the row USES the GPU
-        return set()
-    if regs == "any-cpu-quarter" or regs.startswith("any-of"):
-        cpus = set()
-    else:
-        cpus = _cpu_set(",".join(t for t in regs.split(",") if not t.strip().startswith("mi210")))
-    cpus |= _cpu_set((o or {}).get("claim_cpus") or "")
-    return cpus - GPU_Q3_ALLOWED_CPUS
-
-
 def check_shape_evidence(spec, o):
     """Publish gate for the whole-host evidence fields themselves."""
     br = spec.get("baseline_ref")
@@ -1745,15 +1721,6 @@ def check_shape_evidence(spec, o):
     if so is not None:
         need(isinstance(so, str) and re.match(r"^operator:\s*\S+.*\d{4}-\d{2}-\d{2}.*:\s*\S", so),
              "shape_override must read \"operator: <who> <YYYY-MM-DD>: <why>\"")
-
-
-def right_size(threads, lane, gpu_quiet=""):
-    if lane == "gpu" or gpu_quiet == "exclusive":
-        return "gpu-q3"
-    if not threads:
-        return "quarter (declare the job's threads: -t/--threads/--workers/OMP_NUM_THREADS/taskset)"
-    n = -(-int(threads) // 24)
-    return "quarter" if n <= 1 else f"multi-quarter({min(n, 3)})"
 
 
 def claimed_cpus(regions, claim, shape):
@@ -1814,7 +1781,7 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
     holds c (yarn-e1-a2-gpu, rank 7, failed to arm 172 times and held every quiet-host row for 7 h on an idle host)."""
     need = set().union(*c["options"]) if c["options"] else set()
     better = [x for x in pending if x is not c and float(x["rank"]) < float(c["rank"]) and any(o & need for o in x["options"])]
-    if coexist_host(c):   # COEXIST: a coexist row never holds a quiet-host drain back
+    if c.get("lends"):   # COEXIST: a coexist row never holds a lending drain back
         better = [x for x in better if not x.get("coexist")]
     if free is not None:
         better = [x for x in better if placeable(x, free, ram, gpu_grant_open, held_ports)]
@@ -1822,13 +1789,14 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
 
 
 def _avail(c, free, cx=frozenset(), qh=frozenset()):
-    """COEXIST (operator 2026-11-05): the tokens c may take. cx = tokens held by coexist rows, qh = tokens held by
-    quiet-host rows. A coexist row also takes COEXIST_Q3 cores a quiet-host row holds (never another coexist row's); a
-    quiet-host row treats coexist-held cores as free, and q3 as free when its only other holders are coexist rows."""
+    """COEXIST as a lock-set test (keeper class fix 2026-11-05): the tokens c may take. cx = tokens held by coexist rows,
+    qh = tokens running grants lend (held quiet, never locked). A coexist row also takes lent tokens (never another
+    coexist row's); a lending row treats coexist-held tokens it would lend as free, and q3 as free when its only other
+    holders are coexist rows."""
     if c.get("coexist"):
-        return set(free) | ((set(qh) & COEXIST_Q3) - set(cx))
-    if coexist_host(c) and cx:
-        f2 = set(free) | (set(cx) & COEXIST_Q3)
+        return set(free) | (set(qh) - set(cx))
+    if c.get("lends") and cx:
+        f2 = set(free) | (set(cx) & set(c["lends"]))
         if expand({"q3"}) - {"q3"} <= f2:
             f2.add("q3")
         return f2
@@ -1874,7 +1842,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
     for h in pending:
         if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
             continue
-        if c.get("coexist") and coexist_host(h):
+        if c.get("coexist") and h.get("lends"):
             continue   # COEXIST: a waiting quiet-host row never reserves q3 against a coexist row
         need = set().union(*h["options"]) if h["options"] else set()
         if not any(o & need for o in c["options"]):
@@ -1968,7 +1936,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         for c in pending:
             late = drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T
             opts = _fits(c, _avail(c, free, cx, qh), ram, gpu_grant_open)
-            if late and c.get("coexist") and coexist_host(drain):
+            if late and c.get("coexist") and drain.get("lends"):
                 late = False   # COEXIST: a quiet-host drain never holds a coexist row back
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
@@ -1982,11 +1950,18 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 opts = kept
                 if opts:
                     plan.rank_skips += [(c, h, why) for h, why in skips]
+            if opts and not any(t in QUARTERS for x in opts for t in x):
+                # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
+                # whole free quarter only while more are free than the whole-quarter rows that fit now need
+                keep = [x for x in opts if not any(q in free and expand({q}) & x for q in QUARTERS)]
+                wq = sum(1 for x in pending if x is not c and any(t in QUARTERS for o2 in x["options"] for t in o2)
+                         and _fits(x, _avail(x, free, cx, qh), ram, gpu_grant_open))
+                opts = keep or (opts if sum(1 for q in QUARTERS if q in free) > wq else [])
             if not opts:
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
             demand = {r: sum(1 for x in pending if x is not c for o2 in x["options"] if r in o2) for r in free}
-            o = min(opts, key=lambda o: (len(o), sum(demand.get(r, 0) for r in o), sorted(o)))
+            o = min(opts, key=lambda o: (len(o), not (o & qcores("q3")) and not (o & set(QUARTERS)), sum(demand.get(r, 0) for r in o), sorted(o)))
             placed = (c, o)
             break
         if not placed:
@@ -1995,8 +1970,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         if c.get("coexist"):
             cx |= o
-        elif coexist_host(c):
-            qh |= o
+        qh |= set(c.get("lends") or ())
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
     for r in sorted(x for x in free if x in REGIONS):
@@ -2845,6 +2819,13 @@ def lane_counts(flags, allrows):
 
 
 # ---------------------------------------------------------------- arm + grant (the allocator writes grants itself)
+def _engine_sha(d):
+    try:
+        return sha256(_opts(d).get("engine") or d["engine"]["path"])
+    except (OSError, KeyError, TypeError):
+        return None
+
+
 def arm_one(flags, rid, d, regions=None, log=print):
     """Start the row's poller (the exact launcher through its engine, polling grants/<id>.grant). Regions are NOT
     resolved here: the grant the allocator writes later carries them."""
@@ -2872,7 +2853,8 @@ def arm_one(flags, rid, d, regions=None, log=print):
         return None, f"fail: no launcher pid within 30 s ({n} consecutive since the PASS; parked at {MAX_FAILS})"
     with open(os.path.join(flags, "ws58-armed.queue"), "a") as f:   # id|pid|window_s|gib|regions: backlog_gen's pid lookup
         f.write(f"{rid}|{pid}|{d['window_s']}|{d['gib']}|{d['regions']}\n")
-    atomic_json(armed_path(flags, rid), {"id": rid, "pid": pid, "regions": d["regions"], "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"])})
+    atomic_json(armed_path(flags, rid), {"id": rid, "pid": pid, "regions": d["regions"], "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]),
+                                        "engine_sha256": _engine_sha(d)})   # the engine code this poller runs (contract lock)
     return pid, f"ARMED {rid} pid={pid}"
 
 
@@ -2961,7 +2943,7 @@ def disk_budget_refusal(flags, rid, allrows, free_gib=None):
     return None
 
 
-def write_grant(flags, rid, regions, holds, window_s):
+def write_grant(flags, rid, regions, holds, window_s, lock=""):
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=int(window_s))
     cpus = grant_cpus(regions)   # ws58 2026-11-02: the exact cpu list (a GRANT_CPUS engine locks + pins a GPU grant to it)
@@ -2971,7 +2953,7 @@ def write_grant(flags, rid, regions, holds, window_s):
     if cpus == ws58_cpus(regions):
         cpus = ""
     line = (f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}"
-            + (f" cpus={cpus}" if cpus else "") + "\n")
+            + (f" cpus={cpus}" if cpus else "") + (f" lock={lock}" if lock else "") + "\n")
     p = os.path.join(flags, "grants", rid + ".grant")
     with open(p + ".tmp", "w") as f:
         f.write(line)
@@ -3015,8 +2997,8 @@ def heal_grants(flags, grants, rl, log, seen, allrows=None):
             seen.add(f"stale-grant:{id_stem(rid)}")
             continue
         foreign = [r for r in g["holds"] if r in REGIONS and r in rl and rl[r][0] != "free" and rl[r][1] not in ("", f"filler-{rid}")]
-        if allrows and coexist_host(allrows.get(rid)):   # COEXIST: a coexist row on q3 is no conflict
-            foreign = [r for r in foreign if not (r == "q3" and is_coexist(allrows.get(rl[r][1][len("filler-"):])))]
+        if allrows and rid in allrows and contract_of(allrows[rid])["lends"]:   # a lent q3 core's holder is no conflict
+            foreign = [r for r in foreign if not (r == "q3" and contract_of(allrows.get(rl[r][1][len("filler-"):]) or {})["coexist"])]
         if foreign:
             holder = ",".join(f"{r}={rl[r][1]}" for r in foreign)
             if not g["started"] and not g["dryrun"]:
@@ -3151,7 +3133,7 @@ def live_smoke_tokens(flags):
         for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
             r = load_json(p) or {}
             if r.get("pid") and alive(r["pid"]):
-                out |= cpu_tokens(ws58_cpus(r.get("regions")))
+                out |= cpu_tokens(ws58_cpus(r.get("regions"))) | ({GPU} if r.get("gpu") else set())
     return out
 
 
@@ -3165,22 +3147,25 @@ def cpu_ranges(cs):
     return ",".join(f"{a}-{b}" if b > a else str(a) for a, b in out)
 
 
-def pick_smoke_cpus(free, n=SMOKE_CPUS):
+def pick_smoke_cpus(free, n=SMOKE_CPUS, keep_whole=0):
     """n physical cores (with their SMT siblings) of ONE quarter, all genuinely free; a partly used quarter first so a
-    whole free quarter stays whole for a row; never the MI210 host threads. None when nothing fits."""
-    best = None
+    whole free quarter stays whole for a row; never the MI210 host threads; a whole free quarter is broken only while
+    more whole quarters are free than keep_whole (queued whole-quarter rows). None when nothing fits."""
+    best, nwhole = None, sum(1 for q in QUARTERS if q in free)
     for q in QUARTERS:
+        if q in free and nwhole <= keep_whole:
+            continue
         cs = [int(c[1:]) for c in sorted(qcores(q), key=lambda t: int(t[1:]))
               if c in free and f"t{int(c[1:]) + 96}" in free and int(c[1:]) + 96 not in GPU_HOST_THREADS]
         if len(cs) < n:
             continue
-        key = (q in free, q)   # a partly used quarter (q not whole-free) sorts first
+        key = (q in free, q != "q3", q)   # a partly used quarter first, then q3's non-GPU cores
         if best is None or key < best[0]:
             best = (key, cs[:n])
     return cpu_ranges(best[1]) if best else None
 
 
-def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset()):
+def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), keep_whole=0):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
     detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
     WAIT (logged), never a failure. Returns the placed (rid, cpus)."""
@@ -3193,11 +3178,16 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         if pl.get("pid") and alive(pl["pid"]):
             continue   # running; its cpus are already in busy
         want = int((load_json(q) or {}).get("cpus") or n)
-        cpus = pick_smoke_cpus(free - reserved, want)
-        if not cpus:
-            log(f"SMOKE-WAIT {rid}: no {want} free cores this tick; stays queued (not a failure)")
+        gt = gpu_touch(load_json(ready_path(flags, rid)) or {})
+        if gt and GPU not in free:   # a /dev/kfd-capable smoke queues behind every GPU holder (exclusive grants first)
+            log(f"SMOKE-WAIT {rid}: its job can touch the GPU and gpu-quiet is held; stays queued (not a failure)")
             continue
-        toks = cpu_tokens(cpus)
+        cpus = pick_smoke_cpus(free - reserved, want, keep_whole)
+        if not cpus:
+            log(f"SMOKE-WAIT {rid}: no {want} free cores outside the whole quarters {keep_whole} queued row(s) need; "
+                "stays queued (not a failure)")
+            continue
+        toks = cpu_tokens(cpus) | ({GPU} if gt else set())
         free -= toks
         free -= {qq for qq in QUARTERS if expand({qq}) & toks}
         if dry:
@@ -3207,7 +3197,7 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
             p = subprocess.Popen([sys.executable, os.path.join(_HERE, "publish_row.py"), "--run-smoke", rid,
                                   "--regions", cpus, "--flags", flags], stdout=out, stderr=subprocess.STDOUT,
                                  stdin=subprocess.DEVNULL, start_new_session=True)
-            atomic_json(smoke_placed_path(flags, rid), {"id": rid, "pid": p.pid, "regions": cpus, "at": now_iso()})
+            atomic_json(smoke_placed_path(flags, rid), {"id": rid, "pid": p.pid, "regions": cpus, "at": now_iso(), "gpu": gt})
             log(f"SMOKE-PLACE {rid} cpus={cpus} pid={p.pid} (log {os.path.join(dry_dir(flags, rid), 'launcher.out')})")
             placed.append((rid, cpus))
         except Exception as e:  # noqa: BLE001 - one smoke never stops the tick
@@ -3409,11 +3399,6 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
     gids = {g["id"] for g in grants}
     busy, free, holders = host_snapshot(flags, grants, rl)
-    # keeper-scheduled smokes (operator 2026-11-05 "that's the keeper's ENTIRE point"): placed FIRST, ahead of every row,
-    # the cores they take leave `free` before the plan below sees it
-    # on genuinely free cores only; while a quiet-host / gpu-q3 grant runs, the q3 COEXIST cores stay the coexist rows'
-    quiet_open = any(g["id"] in allrows and shape_of(allrows[g["id"]]) in QUIET_SHAPES for g in grants)
-    place_smokes(flags, free, log, dry=dry, reserved=COEXIST_Q3 if quiet_open else frozenset())
     gpu_open = any(GPU in g["holds"] for g in grants)
     # COEXIST (operator 2026-11-05): tokens held by running coexist / quiet-host grants
     coexist_held, quiet_held = coexist_holds(grants, allrows)
@@ -3428,13 +3413,30 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
         kind = "grant"
         # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
-        opts, bench = row_shape(d)
+        k = contract_of(d, flags=flags)
         since = (load_json(pass_path(flags, rid)) or {}).get("passed_at")
         window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
-                      "gib": int(d.get("gib") or 0), "bench": bench, "options": opts, "shape": shape_of(d), "window_s": window,
+                      "gib": int(d.get("gib") or 0), "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": window,
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
-                      "busy_fraction": d.get("busy_fraction"), "coexist": is_coexist(d), "coexist_host": coexist_host(d)})
+                      "busy_fraction": d.get("busy_fraction"), "coexist": k["coexist"], "lends": k["lends"], "lock": k["lock"],
+                      "claim": k["claim"]})
+    # keeper-scheduled smokes (operator 2026-11-05 "that's the keeper's ENTIRE point"): placed ahead of every row on
+    # genuinely free cores, packed onto partly used quarters; never on tokens a running grant lends to small rows, and
+    # never breaking a whole free quarter a queued whole-quarter row would take (placement packing, operator "fix it")
+    try:   # GPU exclusivity (2026-11-05 kvu16g2-ab): host-view occupancy gates and audits EXCLUSIVE gpu-quiet grants
+        gwhy = None if dry else gpu_quiet_gate(flags, grants, allrows, log, seen)
+    except Exception as e:  # noqa: BLE001 - an unreadable sysfs never stops allocation; it never admits either
+        gwhy = f"device occupancy unreadable ({type(e).__name__}: {e})"
+    if gwhy:
+        held_back = [c for c in cands if c["bench"] and any(GPU in o for o in c["options"])]
+        cands = [c for c in cands if c not in held_back]
+        if held_back:
+            log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
+            for c in held_back:
+                log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
+    wholeq = sum(1 for c in cands if c["options"] and all(any(t in QUARTERS for t in o) for o in c["options"]))
+    place_smokes(flags, free, log, dry=dry, reserved=frozenset(quiet_held), keep_whole=wholeq)
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
@@ -3496,7 +3498,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
                     log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
                     failed.append(rid); continue
-                gl = write_grant(flags, rid, regions, opt, d["window_s"])
+                # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
+                gl = write_grant(flags, rid, regions, opt, d["window_s"], lock_cpus(opt) if c.get("lock") and c.get("claim") else "")
                 atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
                 log(f"GRANT {rid} {gl} ({line[:160]})")
                 out.append(("grant", rid, regions))
@@ -3537,6 +3540,83 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
+
+
+# ---------------------------------------------------------------- GPU exclusivity: host-view device occupancy
+KFD_PROC = "/sys/class/kfd/kfd/proc"   # one dir per KFD client, HOST pids, every container (pid=host, privileged)
+GPU_FOREIGN_VRAM_MAX = float(os.environ.get("ROWFLOW_GPU_FOREIGN_VRAM_GIB", "1")) * (1 << 30)
+GPU_QUIET_SAMPLES = 2   # transient KFD clients come and go: two consecutive quiet samples before an exclusive grant
+
+
+def gpu_occupancy():
+    """{pid: vram bytes} of every KFD client on the host (other projects' dev containers included: their MI210 use is
+    invisible to region-lock), plus the device's total VRAM in use from amdgpu sysfs."""
+    pids = {}
+    try:
+        for q in os.listdir(KFD_PROC):
+            if q.isdigit():
+                v = 0
+                for f in glob.glob(os.path.join(KFD_PROC, q, "vram_*")):
+                    try:
+                        v += int(open(f).read().strip() or 0)
+                    except (OSError, ValueError):
+                        pass
+                pids[int(q)] = v
+    except OSError:
+        pass
+    used = None
+    for f in glob.glob("/sys/class/drm/card*/device/mem_info_vram_used"):
+        try:
+            used = max(used or 0, int(open(f).read().strip()))
+        except (OSError, ValueError):
+            pass
+    return {"pids": pids, "vram_used": used}
+
+
+def gpu_foreign(occ, own=frozenset()):
+    """(foreign pids, their VRAM bytes): KFD clients outside `own` (a grant's process tree)."""
+    f = {p: v for p, v in (occ.get("pids") or {}).items() if p not in own}
+    return sorted(f), sum(f.values())
+
+
+def gpu_quiet_gate(flags, grants, allrows, log, seen):
+    """Before an EXCLUSIVE gpu-quiet grant: True only after GPU_QUIET_SAMPLES consecutive samples with no foreign KFD
+    client holding >= GPU_FOREIGN_VRAM_MAX (no GPU grant open: every client is foreign). While an exclusive grant is held:
+    a foreign client above the threshold alarms once and marks the grant contaminated (dryrun/<id>/CONTAMINATED.json)."""
+    occ = gpu_occupancy()
+    sp = os.path.join(state_dir(flags), "gpu_quiet.json")
+    st = load_json(sp) or {}
+    held = [g for g in grants if GPU in g["holds"]]
+    if not held:
+        pids, v = gpu_foreign(occ)
+        n = int(st.get("quiet_n") or 0) + 1 if v < GPU_FOREIGN_VRAM_MAX else 0
+        atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v})
+        why = None if n >= GPU_QUIET_SAMPLES else (
+            f"device not quiet (host view): foreign KFD pids {','.join(map(str, pids[:8])) or '-'} hold {v / (1 << 30):.1f} GiB"
+            if v >= GPU_FOREIGN_VRAM_MAX else f"device quiet {n}/{GPU_QUIET_SAMPLES} samples")
+        return why
+    atomic_json(sp, {"quiet_n": 0, "at": now_iso()})
+    for g in held:
+        d = allrows.get(g["id"]) or {}
+        if not contract_of(d)["bench"]:
+            continue
+        own = set()
+        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+            if x:
+                own |= tree_pids(int(x)) | {int(x)}
+        pids, v = gpu_foreign(occ, own)
+        if v >= GPU_FOREIGN_VRAM_MAX:
+            cp = os.path.join(dry_dir(flags, g["id"]), "CONTAMINATED.json")
+            if not os.path.exists(cp):
+                atomic_json(cp, {"id": g["id"], "at": now_iso(), "foreign_pids": pids[:50], "foreign_vram": v,
+                                 "vram_used": occ.get("vram_used")})
+                route_alert("gpu-contaminated", f"{g['id']}: gpu-quiet EXCLUSIVE grant shares the MI210 with foreign KFD "
+                            f"pids {','.join(map(str, pids[:8]))} ({v / (1 << 30):.1f} GiB); its timing is contaminated",
+                            {"row": g["id"], "foreign_pids": pids[:50], "foreign_vram": v}, log)
+            log(f"GPU-CONTAMINATED {g['id']}: foreign KFD pids {','.join(map(str, pids[:8]))} hold {v / (1 << 30):.1f} GiB "
+                f"under its EXCLUSIVE grant ({cp})")
+            seen.add(f"gpu-contaminated:{g['id']}")
+    return None
 
 
 IDLE_VIOLATION_TICKS = 2

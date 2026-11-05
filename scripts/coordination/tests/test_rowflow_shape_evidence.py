@@ -57,7 +57,9 @@ class ShapeEvidence(Fx):
         lp = self.launcher("gx", cmd="gitnexus analyze --workers 1", extra="--claim-cpus 0-95")
         with self.assertRaises(rf.Refused) as e:
             rf.publish(self.spec("gx", lp, regions="0-95", shape="host"), self.flags)
-        self.assertIn("right-sized: quarter", str(e.exception))
+        # keeper class fix 2026-11-05: refused by the whole-host evidence gate, naming the threads it found
+        self.assertIn("needs whole-host evidence", str(e.exception))
+        self.assertIn("found 1", str(e.exception))
         self.assertFalse(os.path.exists(rf.ready_path(self.flags, "gx")))
 
     def test_omp1_quiet_host_refused(self):
@@ -83,7 +85,10 @@ class ShapeEvidence(Fx):
 
     def test_declared_threads_sets_busy_fraction(self):
         lp = self.launcher("b24", cmd="bench -t 24", extra="--claim-cpus 0-47")
-        row = rf.publish(self.spec("b24", lp, regions="0-47"), self.flags)
+        # keeper class fix 2026-11-05: 0-47 books 24 cores more than -t 24 needs -> refused unless shape_override
+        with self.assertRaises(rf.Refused):
+            rf.publish(self.spec("b24", lp, regions="0-47"), self.flags)
+        row = rf.publish(self.spec("b24", lp, regions="0-47", shape_override="operator: op 2026-11-05: 2-quarter A/B"), self.flags)
         self.assertEqual(row["busy_fraction"], 0.5)
         lp = self.launcher("b1", cmd="gitnexus analyze --workers 1")
         row = rf.publish(self.spec("b1", lp, regions="any-cpu-quarter"), self.flags)
@@ -119,7 +124,7 @@ class GpuQ3(Fx):
         # q3 cores 72-87 (GLOBAL.q3 exclusive): refused at publish; the explicit gpu-q3 form below is admitted
         with self.assertRaises(rf.Refused) as e:
             self.npd_like()
-        self.assertIn("beyond q3", str(e.exception))   # gpushape 2026-11-05: refused by the GPU-lane overreach gate first
+        self.assertRegex(str(e.exception), "gpu-q3 regions must claim only|GPU-lane row locks cpus beyond q3")   # keeper class fix: its claim locks q3 72-87
         lp = self.launcher("g3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95 --role bench")
         row = rf.publish(self.spec("g3", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
         self.assertEqual(row["shape"], "gpu-q3")
@@ -142,10 +147,11 @@ class GpuQ3(Fx):
         cx = {"id": "gx", "kind": "grant", "lane": "cpu", "rank": 50, "lane_count": 0, "gib": 4, "bench": False,
               "options": [frozenset(rf.cpu_tokens("72-73"))], "shape": "quarter", "coexist": True, "busy_fraction": 0.05,
               "since": time.time(), "window_s": 600}
-        out, _, _ = rf.plan(free, [cx], 1000, gpu_grant_open=True, quiet_held=held)
+        lent = rf.COEXIST_Q3   # keeper class fix 2026-11-05: quiet_held = the tokens the gpu-q3 grant LENDS (72-87 + siblings)
+        out, _, _ = rf.plan(free, [cx], 1000, gpu_grant_open=True, quiet_held=lent)
         self.assertEqual([c["id"] for c, _ in out], ["gx"])
         bad = dict(cx, id="gy", options=[frozenset(rf.cpu_tokens("88-89"))])
-        out, _, _ = rf.plan(free, [bad], 1000, gpu_grant_open=True, quiet_held=held)
+        out, _, _ = rf.plan(free, [bad], 1000, gpu_grant_open=True, quiet_held=lent)
         self.assertEqual(out, [])
 
     def test_timing_never_backfills_q3(self):
@@ -216,7 +222,7 @@ class GpuLaneOverreach(Fx):
         lp = self.launcher("v15", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
         with self.assertRaises(rf.Refused) as e:
             rf.publish(self.spec("v15", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu"), self.flags)
-        self.assertIn("beyond q3 + 184-191 (0-71)", str(e.exception))
+        self.assertRegex(str(e.exception), "gpu-q3 regions must claim only|GPU-lane row locks cpus beyond q3")   # keeper class fix: contract gpu-q3, claim 0-95
 
     def test_declared_gpu_q3_shape_never_bypasses(self):
         lp = self.launcher("wq3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 0-23")
@@ -231,7 +237,8 @@ class GpuLaneOverreach(Fx):
 
     def test_whole_host_evidence_admits(self):
         lp = self.launcher("t48", cmd="llama-server -t 48", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
-        self.assertEqual(rf.publish(self.spec("t48", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu"), self.flags)["shape"], "gpu")
+        # keeper class fix 2026-11-05: the declared shape is advisory; 48-thread evidence makes the contract quiet-host
+        self.assertEqual(rf.publish(self.spec("t48", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu"), self.flags)["shape"], "quiet-host")
         lp = self.launcher("br", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
         rf.publish(self.spec("br", lp, lane="gpu", regions="mi210_0,0-95", baseline_ref="artifacts/x/b.json"), self.flags)
         lp = self.launcher("so", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
@@ -239,9 +246,12 @@ class GpuLaneOverreach(Fx):
                              shape_override="operator: op 2026-11-05: whole-host serving A/B"), self.flags)
 
     def test_cpu_row_untouched(self):
-        self.assertEqual(rf.gpu_lane_overreach({"lane": "cpu"}, "0-95", {"class": "cpu", "claim_cpus": "0-95"}), set())
-        self.assertEqual(rf.gpu_lane_overreach({"lane": "gpu"}, "mi210_0,184-191", {"class": "gpu"}), set())
-        self.assertEqual(rf.gpu_lane_overreach({"lane": "gpu"}, "mi210_0,q1", {}), set(range(24, 48)) | set(range(120, 144)))
+        # keeper class fix 2026-11-05: gpu_lane_overreach removed; the contract clips GPU rows, never CPU rows
+        self.assertEqual(rf.contract_of({"lane": "cpu", "regions": "0-95"}, {"class": "cpu", "claim_cpus": "0-95"})["options"],
+                         [frozenset(rf.QUARTERS)])
+        hthr = frozenset({rf.GPU} | GPU_THR)
+        self.assertEqual(rf.contract_of({"lane": "gpu", "regions": "mi210_0,184-191"}, {"class": "gpu"})["options"], [hthr])
+        self.assertEqual(rf.contract_of({"lane": "gpu", "regions": "mi210_0,q1"}, {})["options"], [hthr])   # q1 clipped
 
 
 class GpuQ3OnlyForTiming(Fx):

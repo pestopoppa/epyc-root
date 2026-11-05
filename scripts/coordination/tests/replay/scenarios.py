@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import os
 
-from replay_lib import GPU, QUARTERS, TraceWriter, _iso, contract_lite, qcores, tokens_to_cores  # noqa: F401
+from replay_lib import GPU, QUARTERS, TraceWriter, _iso, contract_lite, cpu_set, qcores, tokens_to_cores  # noqa: F401
 
 T0 = 1793836800.0   # 2026-11-05T00:00:00Z
 TICK = 120
@@ -111,7 +111,8 @@ def sc_gpu_timing_q3(path):
             role="bench", est=7200, extra="rocprof -t 8")
     c = row("cpu-bench-q3", regions="any-of q3", role="bench", gpu_quiet="", extra="llama-bench -t 24", est=1800)
     world = {"foreign": {"q0": "foreign-a", "q1": "foreign-b", "q2": "foreign-c"}}
-    ticks = [({"hsf5p-profile6-q3": g}, world)] + [({"hsf5p-profile6-q3": g, "cpu-bench-q3": c}, world)] * 3
+    # two lone ticks: an EXCLUSIVE grant needs GPU_QUIET_SAMPLES consecutive quiet host-view samples
+    ticks = [({"hsf5p-profile6-q3": g}, world)] * 2 + [({"hsf5p-profile6-q3": g, "cpu-bench-q3": c}, world)] * 3
     def check(d):
         out = []
         tg = _granted(d, "hsf5p-profile6-q3")
@@ -256,6 +257,130 @@ def sc_declared_shape(path):
     return write(path, [({"refactor-inf34-a2-gpu-qual-v15": r}, {})] * 3), check
 
 
+def sc_smoke_packing(path):
+    """PACKING (operator "fix it" 2026-11-05): a 4-core smoke and two whole-quarter rows queued; q2 foreign, q3 partly used
+    by a GPU row's host threads. The smoke must land on q3's non-GPU cores and both whole-quarter rows get q0 + q1 the
+    same tick; with no partly used quarter (variant: q2 + q3 foreign) the smoke waits rather than break a quarter."""
+    gpu = row("kvu-gpu-work", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=7200, extra="llama-server -t 8")
+    r1 = row("whole-q-a", extra="make -j 16", est=3600)
+    r2 = row("whole-q-b", extra="make -j 16", est=3600)
+    s = row("smoke-4c", passed=False, extra="python3 x.py --workers 2")
+    s["smoke_queued"] = {"id": "smoke-4c", "queued_at": _iso(T0), "cpus": 4}
+    world = {"foreign": {"q2": "foreign-c"}}
+    rows = {"kvu-gpu-work": gpu, "whole-q-a": r1, "whole-q-b": r2, "smoke-4c": s}
+    ticks = [({"kvu-gpu-work": gpu}, world)] + [(rows, world)] * 3
+
+    def check(d):
+        out = []
+        for rid in ("whole-q-a", "whole-q-b"):
+            gs = _granted(d, rid)
+            if not gs or gs[0][0] > 1:
+                out.append(f"whole-quarter row {rid} not granted on tick 1 (starved by the smoke?)")
+        pl = [l for x in d for l in x["lines"] if l.startswith("SMOKE-PLACE smoke-4c")]
+        if not pl:
+            out.append("smoke never placed although q3 had 16 free non-GPU cores")
+        else:
+            import re as _re
+            cs = cpu_set(_re.search(r"cpus=(\S+)", pl[0]).group(1))
+            if {c % 96 for c in cs} - set(range(72, 88)):
+                out.append(f"smoke placed on {sorted(cs)[:8]}... outside q3's non-GPU cores")
+        return out
+    return write(path, ticks), check
+
+
+def sc_smoke_waits_for_whole(path):
+    """Variant: q2 + q3 foreign, two whole-quarter rows + a smoke: the smoke never breaks q0/q1 (it waits)."""
+    r1 = row("whole-q-a", extra="make -j 16", est=3600)
+    r2 = row("whole-q-b", extra="make -j 16", est=3600)
+    s = row("smoke-4c", passed=False, extra="python3 x.py --workers 2")
+    s["smoke_queued"] = {"id": "smoke-4c", "queued_at": _iso(T0), "cpus": 4}
+    world = {"foreign": {"q2": "foreign-c", "q3": "foreign-d"}}
+
+    def check(d):
+        return [f"whole-quarter row {rid} not granted on tick 0" for rid in ("whole-q-a", "whole-q-b")
+                if not _granted(d, rid) or _granted(d, rid)[0][0] > 0]
+    return write(path, [({"whole-q-a": r1, "whole-q-b": r2, "smoke-4c": s}, world)] * 3), check
+
+
+def sc_subquarter_free_cores(path):
+    """20 free cores (q0-q2 foreign, a 2-thread row on 4 of q3's cores) + a 4-thread any-cpu-quarter row: the contract
+    says 4 cores, so it is placed on the free q3 cores the same tick - not starved waiting for a whole quarter."""
+    a = row("small-a", extra="python3 a.py --workers 2", est=7200)
+    b = row("small-b", extra="python3 b.py --workers 4", est=3600)
+    world = {"foreign": {"q0": "f0", "q1": "f1", "q2": "f2"}}
+
+    def check(d):
+        out = []
+        ga, gb = _granted(d, "small-a"), _granted(d, "small-b")
+        if not ga:
+            out.append("2-thread row never placed on q3's free cores")
+        if not gb or gb[0][0] > 1:
+            out.append("4-thread row not placed on the 20 free q3 cores on tick 1")
+        for i, g in ga + gb:
+            if _fullq(g["holds"]) or set(g["holds"]) & set(QUARTERS):
+                out.append(f"sub-quarter row {g['id']} held a whole quarter: {g['holds'][:6]}")
+        return out
+    return write(path, [({"small-a": a}, world)] + [({"small-a": a, "small-b": b}, world)] * 3), check
+
+
+def sc_gpu_exclusive_no_kfd(path):
+    """GPU EXCLUSIVITY (kvu16g2-ab-20261105, 12:52Z: 41.17e9 B foreign VRAM + 83 foreign KFD pids under a gpu-quiet
+    EXCLUSIVE grant). While the exclusive grant is open, nothing else that can open /dev/kfd may start: not a cpu-lane HIP
+    build row, not an -ngl > 0 row, not the smoke of either. After the grant ends they run."""
+    ab = row("kvu16g2-ab", lane="gpu", regions="mi210_0,184-191", cls="gpu", gpu_quiet="exclusive", nofold=True,
+             est=TICK * 3, extra="llama-server -ngl 99 -t 8", man={"admission_class": "correctness"})
+    hip = row("llg-build-gpu", extra="cmake -B build-hip -DGGML_HIP=ON && cmake --build build-hip -j 16", est=1200)
+    ngl = row("cpu-lane-ngl", extra="llama-server -ngl 40 -t 8", est=1200)
+    sm = row("hip-smoke", passed=False, extra="hipcc -o t t.cpp && ./t --workers 2")
+    sm["smoke_queued"] = {"id": "hip-smoke", "queued_at": _iso(T0), "cpus": 4}
+    rows = {"kvu16g2-ab": ab, "llg-build-gpu": hip, "cpu-lane-ngl": ngl, "hip-smoke": sm}
+    ticks = [({"kvu16g2-ab": ab}, {})] + [(rows, {})] * 30   # GPU holders serialize: smoke, then each row
+
+    def check(d):
+        gs = _granted(d, "kvu16g2-ab")
+        if not gs:
+            return ["exclusive GPU row never granted (precondition)"]
+        out = []
+        for x in d:
+            if "kvu16g2-ab" not in x["open_before"]:
+                continue
+            for g in x["grants"]:
+                if g["id"] != "kvu16g2-ab":
+                    out.append(f"{g['id']} granted at tick {x['i']} beside the gpu-quiet EXCLUSIVE grant (holds {g['holds'][:4]})")
+            for l in x["lines"]:
+                if l.startswith("SMOKE-PLACE hip-smoke"):
+                    out.append(f"HIP smoke placed at tick {x['i']} beside the gpu-quiet EXCLUSIVE grant")
+        for rid in ("llg-build-gpu", "cpu-lane-ngl"):
+            if not _granted(d, rid):
+                out.append(f"{rid} never granted after the exclusive grant ended (starved)")
+        return out
+    return write(path, ticks), check
+
+
+def sc_gpu_foreign_vram(path):
+    """kvu16g2-ab-20261105: foreign VRAM from ANOTHER container (twyne-root / sangha-root map the MI210; no keeper lock or
+    grant names them). An EXCLUSIVE row is not granted while a foreign KFD client holds >= 1 GiB (IDLE-WHY names it), is
+    granted after two quiet samples, and a foreign client appearing mid-grant raises GPU-CONTAMINATED."""
+    ex = row("kvu16g2-ab", lane="gpu", regions="mi210_0,184-191", cls="gpu", gpu_quiet="exclusive", nofold=True,
+             role="bench", est=TICK * 20, extra="llama-server -ngl 99 -t 8")
+    foreign = {"kfd": {"3449271": 41170000000}, "vram_bytes": 41170000000}
+    ticks = [({"kvu16g2-ab": ex}, foreign)] * 3 + [({"kvu16g2-ab": ex}, {})] * 4 + [({"kvu16g2-ab": ex}, foreign)] * 3
+
+    def check(d):
+        out = []
+        gs = _granted(d, "kvu16g2-ab")
+        if any(i < 3 for i, _ in gs):
+            out.append(f"EXCLUSIVE grant at tick {gs[0][0]} while 41 GB foreign VRAM was resident")
+        if not gs or gs[0][0] > 5:
+            out.append("EXCLUSIVE row not granted within two quiet samples after the foreign VRAM left")
+        if not any(l.startswith("IDLE-WHY gpu-quiet") and "3449271" in l for x in d[:3] for l in x["lines"]):
+            out.append("no IDLE-WHY gpu-quiet naming the foreign KFD pid while it held the device")
+        if not any(l.startswith("GPU-CONTAMINATED kvu16g2-ab") for x in d[7:] for l in x["lines"]):
+            out.append("foreign VRAM under an open EXCLUSIVE grant raised no GPU-CONTAMINATED")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
@@ -268,6 +393,11 @@ SCENARIOS = {
     "dead-dryrun-releases-in-one-tick": sc_deadpid_release,
     "idle-regions-named": sc_idle_named,
     "declared-shape-no-bypass": sc_declared_shape,
+    "smoke-packs-onto-partly-used-q3": sc_smoke_packing,
+    "smoke-never-breaks-needed-whole-quarter": sc_smoke_waits_for_whole,
+    "subquarter-row-on-20-free-cores": sc_subquarter_free_cores,
+    "gpu-exclusive-admits-no-kfd-holder": sc_gpu_exclusive_no_kfd,
+    "gpu-foreign-vram-blocks-exclusive": sc_gpu_foreign_vram,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)

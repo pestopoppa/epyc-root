@@ -47,14 +47,18 @@ class D14GpuShape(Fx):
 
     def test_gpu_use_quiet_only_is_not_gpu_lane(self):
         o = {"class": "cpu+gpu", "gpu_quiet": "exclusive", "claim_cpus": "0-95"}
-        self.assertEqual(rf.gpu_lane_overreach({"lane": "gpu", "gpu_use": "quiet-only"}, "mi210_0,0-95", o), set())
-        self.assertTrue(rf.gpu_lane_overreach({"lane": "gpu"}, "mi210_0,0-95", o))
+        quiet = rf.contract_of({"lane": "gpu", "gpu_use": "quiet-only", "regions": "mi210_0,0-95"}, o)
+        self.assertFalse(quiet["gpu_use"])
+        self.assertEqual(quiet["shape"], "quiet-host")   # CPU work: never the GPU lane
+        self.assertTrue(rf.contract_of({"lane": "gpu", "regions": "mi210_0,0-95"}, o)["gpu_use"])
 
     def test_quiet_exclusive_with_sub_1gib_vram_is_not_gpu_lane(self):
         rf.atomic_json(rf.pass_path(rf.FLAGS, "kh-vram"), {"vram_used_max_bytes": 1 << 20})
         try:
             o = {"class": "cpu+gpu", "gpu_quiet": "exclusive", "claim_cpus": "0-95"}
-            self.assertEqual(rf.gpu_lane_overreach({"id": "kh-vram", "lane": "gpu"}, "mi210_0,0-95", o), set())
+            c = rf.contract_of({"id": "kh-vram", "lane": "gpu", "regions": "mi210_0,0-95"}, o)
+            self.assertFalse(c["gpu_use"])
+            self.assertEqual(c["shape"], "quiet-host")
         finally:
             shutil.rmtree(rf.dry_dir(rf.FLAGS, "kh-vram"), ignore_errors=True)
 
@@ -64,9 +68,10 @@ class D14GpuShape(Fx):
 
     def test_absent_declared_threads_is_unknown_not_zero(self):
         self.assertIsNone(rf.row_threads({"declared_threads": None}))
-        # a quiet-host gpu-lane row published before the field existed is NOT a q3-coexist host
-        self.assertFalse(rf.coexist_host({"shape": "quiet-host", "lane": "gpu", "declared_threads": None}))
-        self.assertTrue(rf.coexist_host({"shape": "quiet-host", "lane": "gpu", "declared_threads": 8}))
+        # unknown threads is never a coexist row (coexist needs KNOWN threads <= COEXIST_MAX_THREADS)
+        o = {"class": "cpu"}
+        self.assertFalse(rf.contract_of({"regions": "any-cpu-quarter", "declared_threads": None}, o)["coexist"])
+        self.assertTrue(rf.contract_of({"regions": "any-cpu-quarter", "declared_threads": 4}, o)["coexist"])
 
 
 # ---------------------------------------------------------------- item 2: supersede never stops a RUNNING predecessor

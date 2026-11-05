@@ -208,6 +208,7 @@ class World:
     def __init__(self):
         self.t = 0.0
         self.alive = set()
+        self.kfd = {}
         self.rl = {}
         self.util = {"q0": 0.0, "q1": 0.0, "q2": 0.0, "q3": 0.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}
         self.mem_gib = 900.0
@@ -321,6 +322,7 @@ def load_candidate(rowflow_dir, flags, tmp):
     patch("measure_util", lambda *a, **k: json.loads(json.dumps(W.util)))
     patch("mem_available_gib", lambda: W.mem_gib)
     patch("vram_used_bytes", lambda: W.vram)
+    patch("gpu_occupancy", lambda: {"pids": {int(k): int(v) for k, v in W.kfd.items()}, "vram_used": W.vram})
     patch("disk_free_gib", lambda *a, **k: W.disk)
     patch("cpu_sample", lambda *a, **k: {})
     patch("armed_engine_ok", lambda pid, rid, proc="/proc": bool(pid) and _int(pid) in W.alive)
@@ -329,7 +331,10 @@ def load_candidate(rowflow_dir, flags, tmp):
 
     def arm_one(flags, rid, d, regions=None, log=print):
         pid = W.pid()
-        rf.atomic_json(rf.armed_path(flags, rid), {"id": rid, "pid": pid, "regions": d.get("regions"), "at": rf.now_iso()})
+        rec = {"id": rid, "pid": pid, "regions": d.get("regions"), "at": rf.now_iso()}
+        if hasattr(rf, "_engine_sha"):   # the real arm_one records the engine code the poller runs
+            rec["engine_sha256"] = rf._engine_sha(d)
+        rf.atomic_json(rf.armed_path(flags, rid), rec)
         return pid, f"ARMED {rid} pid={pid}"
     patch("arm_one", arm_one)
     try:
@@ -395,6 +400,7 @@ class Sandbox:
         self.mat = {}          # rid -> blob hash materialized
         self.sim = {}          # rid -> {start, end, holds, pid, granted_n}
         self.ended = set()     # rids the simulation ended
+        self.engine_src = None    # the candidate's filler_run15.sh
         self.stop_released = {}  # rid -> times its grant was released by the stopped engine without .ended
 
     # -- world -> sandbox
@@ -419,6 +425,10 @@ class Sandbox:
             _write(lp, self.rw(blob.get("launcher_text") or "#!/bin/bash\n"))
             for p, txt in (blob.get("files") or {}).items():
                 _write(self.rw(p), self.rw(txt))
+            # the engine a row runs is the CANDIDATE's engine (deploy ships rowflow.py and filler_run15.sh together)
+            for ep in {man.get("engine", {}).get("path") or ""} | set(re.findall(r"(\S+/filler_run15\.sh)", self.rw(blob.get("launcher_text") or ""))):
+                if ep.startswith(self.fs) and ep.endswith("filler_run15.sh") and self.engine_src and not os.path.exists(ep):
+                    _write(ep, open(self.engine_src).read())
             lsha = _sha(lp)
             man.setdefault("launcher", {})["sha256"] = lsha
             _jdump(os.path.join(self.flags, "ready", rid + ".json"), man)
@@ -537,6 +547,9 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
     if max_ticks:
         ticks = ticks[:max_ticks]
     rf = load_candidate(rowflow_dir, sb.flags, sb.tmp)
+    eng = os.path.join(rowflow_dir, "filler_run15.sh")
+    sb.engine_src = eng if os.path.exists(eng) else None
+    engine_locks = bool(sb.engine_src) and "CONTRACT_LOCK" in open(eng).read()
     decisions = []
     for i, tick in enumerate(ticks):
         W.t = float(tick["t"])
@@ -547,6 +560,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             W.util = tick["util"]
         W.mem_gib = float(tick.get("mem_gib") or 900.0)
         W.vram = int(tick.get("vram_bytes") or 0)
+        W.kfd = dict(tick.get("kfd") or {})   # host-view KFD clients {pid: vram bytes} (foreign containers included)
         W.disk = float(tick.get("disk_free_gib") or 400.0)
         sb.advance(tick)
         sb.materialize(tick, rf)
@@ -567,14 +581,18 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             if not m:
                 continue
             rid, regions, holds = m.group(1), m.group(2), set(m.group(3).split(","))
+            # lock=LIST counts as the engine's claim only when the candidate engine parses it (filler_run15 CONTRACT_LOCK)
+            ml = re.search(r" lock=(\S+)", ln)
+            lock = ml.group(1) if ml and engine_locks else ""
             blob = tick["rows"].get(rid) or {}
             est = float((blob.get("manifest") or {}).get("estimate_s") or (blob.get("manifest") or {}).get("window_s") or 600)
             a = rf.load_json(rf.armed_path(sb.flags, rid)) or {}
-            sb.sim[rid] = {"start": W.t, "end": W.t + est, "holds": sorted(holds), "regions": regions, "pid": a.get("pid")}
+            sb.sim[rid] = {"start": W.t, "end": W.t + est, "holds": sorted(holds), "regions": regions, "pid": a.get("pid"),
+                           "lock": lock}
             # the engine logs START so heal_grants sees a started grant
             _write(os.path.join(sb.flags, "dryrun", rid, "poller.out"), f"START regions={regions}\n")
             os.utime(os.path.join(sb.flags, "dryrun", rid, "poller.out"), (W.t + 1, W.t + 1))
-            grants.append({"id": rid, "regions": regions, "holds": sorted(holds), "ended_before": rid in sb.ended,
+            grants.append({"id": rid, "regions": regions, "holds": sorted(holds), "lock": lock, "ended_before": rid in sb.ended,
                            "stop_released_before": sb.stop_released.get(rid, 0)})
         running = {}
         for p in glob.glob(os.path.join(sb.flags, "dryrun", "*", "RUNNING.json")):
@@ -591,7 +609,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN"))][:400],
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT"))][:400],
             "foreign": tick.get("foreign") or {},
         })
     with open(os.path.join(out_dir, "decisions.jsonl"), "w") as f:
@@ -615,6 +633,15 @@ INVARIANTS = {
     "INV-IDLE-NAMED": f"no free region idle with pending candidates for >= {IDLE_N_TICKS} ticks without a named blocking rule",
     "INV-IDLE-WHY-ALL": "every whole-free region (q0..q3 and gpu-quiet) has an IDLE-WHY line while candidates are pending",
 }
+
+
+def _lock_of(c, g, holds):
+    """(lock cores, exclusive quarters) the engine takes for grant g: its lock= list when the engine honours it, else the
+    oracle's reading of the launcher claim, else the holds."""
+    if g.get("lock"):
+        lc = cpu_set(g["lock"])
+        return lc, full_quarters({x for x in lc if x < 96})
+    return c["lock_cores"] or _cpus_of(holds), c["lock_ex_quarters"]
 
 
 def _rows_at(ticks, i):
@@ -658,10 +685,10 @@ def check_invariants(ticks, decisions, only=None):
                     if gq3 and (c["timing"] or "q3" in hq):
                         v["INV-GPU-TIMING-Q3"].append(f"{stamp} {g['id']} (timing={c['timing']}) granted q3 cores beside GPU-timing {oid}")
                 # lock sets: the new grant vs every grant open before it
-                lc_new = c["lock_cores"] or _cpus_of(holds)
-                lc_old = oc["lock_cores"] or _cpus_of(set(o["holds"]))
-                ex_new = {x + k for q in c["lock_ex_quarters"] for x in qcores(q) for k in (0, 96)}
-                ex_old = {x + k for q in oc["lock_ex_quarters"] for x in qcores(q) for k in (0, 96)}
+                lc_new, xq_new = _lock_of(c, g, holds)
+                lc_old, xq_old = _lock_of(oc, o, set(o["holds"]))
+                ex_new = {x + k for q in xq_new for x in qcores(q) for k in (0, 96)}
+                ex_old = {x + k for q in xq_old for x in qcores(q) for k in (0, 96)}
                 clash = (lc_new & lc_old) | (ex_new & lc_old) | (ex_old & lc_new)
                 if oid != g["id"] and clash:
                     v["INV-LOCKSET"].append(f"{stamp} {g['id']} lock set meets open {oid} on cores "

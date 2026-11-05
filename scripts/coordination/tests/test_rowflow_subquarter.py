@@ -51,9 +51,13 @@ class SubQuarter(unittest.TestCase):
         out, _, pend = rf.plan(free, [w, a, b], 1000)
         placed = {c["id"] for c, _ in out}
         self.assertEqual(placed, {"w"})   # whole q0 free -> top-ranked whole row takes it
-        out, _, pend = rf.plan(free, [dict(a, rank=0), dict(b, rank=0), dict(w, rank=5)], 1000)
-        self.assertEqual({c["id"] for c, _ in out}, {"a", "b"})   # sub rows pack; q0 is no longer free for w
-        self.assertEqual([c["id"] for c in pend], ["w"])
+        # keeper class fix 2026-11-05: a sub-quarter row breaks a whole free quarter only while more whole quarters are
+        # free than whole-quarter rows that fit now -> with q0+q1 free and one whole row, a+b pack q0 and w gets q1
+        out, _, pend = rf.plan({"q0", "q1"}, [dict(a, rank=0), dict(b, rank=0), dict(w, rank=5)], 1000)
+        got = {c["id"]: o for c, o in out}
+        self.assertEqual(set(got), {"a", "b", "w"})   # sub rows pack; q0 is no longer free for w
+        self.assertEqual(got["w"], frozenset({"q1"}))
+        self.assertEqual(pend, [])
 
     def test_overlapping_small_rows_do_not_share(self):
         out, _, pend = rf.plan(ALL, [cand("a", shape("0-3")), cand("b", shape("2-5"))], 1000)
@@ -87,8 +91,10 @@ class GpuHostThreads(unittest.TestCase):
     def test_legacy_engine_keeps_its_claim(self):
         (o,) = gshape(claim="72-95")   # the snapshot engine still region-locks 72-95: booking must match it
         self.assertEqual(o, frozenset({rf.GPU, "q3"}))
-        (o,) = gshape(claim="", gq="exclusive")   # legacy exclusive default claim = 0-95
-        self.assertTrue(set(rf.QUARTERS) <= o)
+        # keeper class fix 2026-11-05: a claimless row is a grant-cpus contract (filler_run15 refuses a claimless
+        # gpu exclusive row; it never defaults to 0-95) -> gpu-quiet + its host threads only
+        (o,) = gshape(claim="", gq="exclusive")
+        self.assertEqual(o, frozenset({rf.GPU} | T(*range(184, 192))))
 
     def test_nofold_or_claimless_legacy_row_locks_no_cpu(self):
         (o,) = gshape(nofold=True)
@@ -97,7 +103,12 @@ class GpuHostThreads(unittest.TestCase):
         self.assertEqual(o, frozenset({rf.GPU} | T(*range(184, 192))))
 
     def test_explicit_cpu_region_claims_cpus(self):
+        # keeper class fix 2026-11-05: declared cpus beyond q3 are clipped without evidence; evidence keeps them
         (o,) = gshape(regions="mi210_0,0-23,184-191", claim="0-23,184-191", engine_text="GRANT_CPUS")
+        self.assertEqual(o, frozenset({rf.GPU} | T(*range(184, 192))))
+        go = {"class": "gpu", "gpu_quiet": "exclusive", "claim_cpus": "0-23,184-191", "engine": "/nonexistent/x.sh"}
+        with mock.patch.object(rf, "engine_grant_cpus", return_value=True):
+            (o,) = rf.contract_of({"regions": "mi210_0,0-23,184-191", "baseline_ref": "r"}, go)["options"]
         self.assertEqual(o, frozenset({rf.GPU, "q0"} | T(*range(184, 192))))
 
     def test_gpu_row_runs_beside_whole_host_row(self):
@@ -150,9 +161,14 @@ class GpuHostThreads(unittest.TestCase):
         opts, _ = rf.row_shape(row)
         self.assertEqual(len(opts), 1)
         self.assertIn("q3", opts[0]); self.assertIn(rf.GPU, opts[0])
-        open(eng, "a").write("# GRANT_CPUS\n")   # a GRANT_CPUS engine books only the declared host threads
-        opts, _ = rf.row_shape(row)
-        self.assertNotIn("q3", opts[0]); self.assertIn(rf.GPU, opts[0]); self.assertIn("t184", opts[0])
+        self.assertEqual(rf.contract_of(row)["lends"], frozenset())   # its legacy engine locks q3: nothing lent
+        # keeper class fix 2026-11-05: a GRANT_CPUS GPU-timing row is gpu-q3 (keeps q3 quiet) but locks only its host
+        # threads, so it LENDS q3 cores 72-87 + siblings to small coexist rows
+        open(eng, "a").write("# GRANT_CPUS\n")
+        c = rf.contract_of(row)
+        self.assertEqual(c["shape"], "gpu-q3")
+        self.assertIn("q3", c["options"][0]); self.assertIn(rf.GPU, c["options"][0])
+        self.assertIn("c72", c["lends"]); self.assertNotIn("t184", rf.expand(c["lends"]))
 
 class FarDrain(unittest.TestCase):
     def test_far_T_still_drains_and_backfills(self):
