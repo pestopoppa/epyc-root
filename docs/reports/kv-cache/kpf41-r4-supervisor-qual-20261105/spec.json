@@ -1,0 +1,22 @@
+{
+  "id": "kpf41-r4-supervisor-qual-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf41-r4-supervisor-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf41-r4-supervisor-qual-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS only if copied r4 actual owned-grandchild pidfd cleanup passes and all four extracted actual marker-expression controls match expected exact type behavior, including rejecting a suffix mutation. Stop on source drift, cleanup failure, STOP or deadline; synthetic only, no GPU or native lifecycle claim.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41",
+  "priority_rank": 35,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "smoke_timeout_s": 120,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf41-r4-supervisor-qual-20261105",
+  "keep": [
+    "**"
+  ],
+  "unit_key": "progress"
+}
