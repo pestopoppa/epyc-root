@@ -145,3 +145,7 @@ KPF-41: started the existing r4 publisher; its initial invocation has not return
 ## 02:30Z — Publish KPF-41 r4 GPU parity row
 
 KPF-41: kpf41-gpu-parity-r4-20261105 passed the four-CPU publisher smoke and is grantable; full GPU parity remains pending. The two independent supervisor rows also passed publisher smoke and are grantable; full synthetic qualification remains pending. Preserved active row inputs and unique evidence in scratch; eight superseded test directories were removed in the preceding boundary.
+
+## 02:34Z — Prepare KPF-64.3 cohort repair and inspect inference readiness
+
+KPF-64.3: assigned cohort eligibility and timing repair for the incomplete F/FB replay; no new row is claimed published. A dispatcher wakeup was registered for the preparation result. Existing published row inputs and unique evidence were retained during scratch cleanup.
