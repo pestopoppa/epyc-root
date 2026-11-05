@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 649
+      "open": 650
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 498
+      "open": 506
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1042,7 +1042,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 390,
+          "line": 391,
           "markers": 1,
           "name": "repl-turn-efficiency",
           "open": 6
@@ -1052,7 +1052,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 759,
+          "line": 761,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 7
@@ -1064,7 +1064,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1523,
+          "line": 1525,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 10
@@ -1076,7 +1076,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2181,
+          "line": 2184,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 1
@@ -1092,7 +1092,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2260,
+          "line": 2263,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2707,
+          "line": 2710,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 389,
+      "closed": 391,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 108,
+      "open": 116,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 498,
+      "total": 508,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 237,
+          "closed": 239,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1332,14 +1332,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 56
+          "open": 64
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1712,
+          "line": 1722,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2126,
+          "line": 2136,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 43
@@ -1460,7 +1460,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 878,
+          "line": 879,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1470,7 +1470,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1332,
+          "line": 1333,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1484,7 +1484,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1789,
+          "line": 1790,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -1496,7 +1496,7 @@
       "closed": 207,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 12,
+      "open": 13,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 221,
+      "total": 222,
       "tracks": [
         {
           "blocked": 0,
@@ -1555,14 +1555,14 @@
           "line": 1955,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2219,
+          "line": 2221,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2829,
+          "line": 2831,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 704,
+          "line": 705,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
