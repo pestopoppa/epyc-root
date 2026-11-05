@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 50,
+      "blocked": 51,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 651
+      "open": 650
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -25,16 +25,16 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 6,
+      "blocked": 15,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 498
+      "open": 489
     },
     "user-facing-harness-index.md": {
-      "blocked": 15,
+      "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 85
+      "open": 84
     }
   },
   "duplicates": {},
@@ -1003,11 +1003,11 @@
       ]
     },
     "harness-program.md": {
-      "blocked": 15,
+      "blocked": 18,
       "closed": 230,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 78,
+      "open": 77,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1016,7 +1016,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 323,
+      "total": 325,
       "tracks": [
         {
           "blocked": 12,
@@ -1058,7 +1058,7 @@
           "open": 7
         },
         {
-          "blocked": 1,
+          "blocked": 4,
           "closed": 37,
           "gates": [
             "UFH-01#harness-selection-and-integration"
@@ -1067,7 +1067,7 @@
           "line": 1525,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 0,
@@ -1076,7 +1076,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2184,
+          "line": 2186,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 1
@@ -1092,7 +1092,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2263,
+          "line": 2265,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1105,7 +1105,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2710,
+          "line": 2712,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1305,11 +1305,11 @@
       ]
     },
     "kv-cache-program.md": {
-      "blocked": 1,
+      "blocked": 10,
       "closed": 401,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 108,
+      "open": 99,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1321,7 +1321,7 @@
       "total": 510,
       "tracks": [
         {
-          "blocked": 1,
+          "blocked": 8,
           "closed": 249,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
@@ -1332,17 +1332,17 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 54
+          "open": 47
         },
         {
-          "blocked": 0,
+          "blocked": 2,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1728,
+          "line": 1735,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
-          "open": 9
+          "open": 7
         },
         {
           "blocked": 0,
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2142,
+          "line": 2151,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 45
@@ -1492,11 +1492,11 @@
       ]
     },
     "mi210-serving-program.md": {
-      "blocked": 2,
+      "blocked": 3,
       "closed": 207,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 13,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1548,21 +1548,21 @@
           "open": 0
         },
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 21,
           "gates": [],
           "guarded": 0,
           "line": 1955,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2221,
+          "line": 2222,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2831,
+          "line": 2832,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1

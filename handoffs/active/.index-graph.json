@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T10:44:20Z",
+  "generated_at": "2026-11-05T10:53:51Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1571,10 +1571,10 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 3,
       "blocked_by": [],
       "closed": 207,
-      "dispatchable": 13,
+      "dispatchable": 12,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
@@ -1637,7 +1637,7 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 1955,
           "name": "mi210-big-model-and-acceleration-roadmap",
@@ -1648,7 +1648,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2221,
+          "line": 2222,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1668,7 +1668,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2831,
+          "line": 2832,
           "name": "numa-prefill-decode-disaggregation",
           "open": 1,
           "readiness": "blocked"
@@ -3514,10 +3514,10 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 10,
       "blocked_by": [],
       "closed": 401,
-      "dispatchable": 108,
+      "dispatchable": 99,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
@@ -3550,7 +3550,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 54,
+          "dispatchable": 47,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3563,9 +3563,9 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 7,
           "gates": [],
-          "line": 1728,
+          "line": 1735,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3580,7 +3580,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2142,
+          "line": 2151,
           "name": "kv-unified-stack-rollout",
           "open": 45,
           "readiness": "blocked"
@@ -3589,17 +3589,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 15,
+      "blocked": 18,
       "blocked_by": [],
       "closed": 230,
-      "dispatchable": 78,
+      "dispatchable": 77,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-04",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 93,
+      "open": 95,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3671,13 +3671,13 @@
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 10,
+          "dispatchable": 9,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 1525,
           "name": "harness-improvement-loop",
-          "open": 11,
+          "open": 13,
           "readiness": "blocked"
         },
         {
@@ -3688,7 +3688,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2184,
+          "line": 2186,
           "name": "opencode-shell-integration",
           "open": 1,
           "readiness": "blocked"
@@ -3709,7 +3709,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2263,
+          "line": 2265,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3724,7 +3724,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2710,
+          "line": 2712,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
