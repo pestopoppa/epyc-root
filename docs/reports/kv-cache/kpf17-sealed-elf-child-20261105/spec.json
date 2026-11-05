@@ -1,0 +1,21 @@
+{
+  "id": "kvu-kpf17-sealed-elf-child-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-child-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-child-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "For an owned same-UID child with inherited descriptors, require positive unsealed write/visibility, private sealed ELF loading with matching live map device and inode, sealed child write and shrink refusal by EPERM, and unchanged ELF bytes and callable value. Stop on all five controls or compiler, loader, identity, custody, cleanup, STOP or deadline failure. No unrelated process, ggml, privileged adversary, build identity or complete custody claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-child-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "unit_key": "case_count",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf17-sealed-elf-child"
+}

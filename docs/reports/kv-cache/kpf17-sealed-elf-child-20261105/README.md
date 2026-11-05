@@ -1,0 +1,3 @@
+# KPF-17 sealed ELF owned-child control
+
+A prospective model-free native loader fixture tests one unsealed positive control and sealed write and shrink refusal from an owned same-UID child with an inherited descriptor, while the private ELF remains mapped and callable. The two sealed actions must report EPERM and unchanged mapped bytes and function. Each bounded child is reaped by subprocess.run. This does not establish resistance to an unrelated process or privileged adversary, ggml loader custody, build identity, or the whole KPF-17 chain. Smoke and full qualification have not run.

@@ -1,0 +1,23 @@
+{
+  "id": "kvu19b-target-marks-qual-r2-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kvu19b-target-marks-qual-r2-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kvu19b-target-marks-qual-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Qualify source-bound synthetic target-mark parser when both tests pass, including a 1 GHz positive case and twelve rejection mutations for missing, duplicate, ordering, step, frequency, timestamp, malformed and clock error. Accept positive uint64 frequencies rather than the prior 400 MHz ceiling. Stop on source drift, control failure, STOP or deadline. No live alignment, drift, GPU, inference or attribution follows.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+  "priority_rank": 40,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kvu19b-target-marks-qual-r2-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu19b-target-marks-qual",
+  "notes": "Corrects an unsupported 400 MHz ceiling; retained MI210 witness reports 1 GHz. Earlier smoke cannot qualify the actual observed frequency. Full native target alignment remains unproved.",
+  "supersedes": "kvu19b-target-marks-qual-20261105"
+}
