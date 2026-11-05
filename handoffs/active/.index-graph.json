@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T04:19:21Z",
+  "generated_at": "2026-11-05T04:29:09Z",
   "nodes": [
     {
       "age_days": 2,
@@ -3511,15 +3511,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 379,
-      "dispatchable": 102,
+      "closed": 383,
+      "dispatchable": 101,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 103,
+      "open": 102,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3558,11 +3558,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 9,
           "gates": [],
-          "line": 1678,
+          "line": 1679,
           "name": "heterogeneous-slot-fabric-residency",
-          "open": 10,
+          "open": 9,
           "readiness": "ready"
         },
         {
@@ -3575,7 +3575,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2089,
+          "line": 2091,
           "name": "kv-unified-stack-rollout",
           "open": 37,
           "readiness": "blocked"
