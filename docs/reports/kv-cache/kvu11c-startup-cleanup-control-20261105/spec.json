@@ -1,0 +1,31 @@
+{
+  "id": "kvu11c-startup-cleanup-control-r1-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Pass only loaded server health, exactly two own-PID positive MI210 KFD samples, candidate base/HIP mappings, unchanged model stat seals, zero registration/synthesis requests, captured-child cleanup exit 0 or SIGTERM and final STOP/deadline checks. Futility on any refusal/error. Rebuilt bytes differ from r3: no attribution to historical crash, parity, quality, speed or promotion verdict.",
+  "estimate_s": 900,
+  "ram_gib": 12,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-11c-STARTUP-CLEANUP",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 180,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu11c-startup-cleanup-control",
+  "runtime_seals": {
+    "job.py": "1f0ced5150718943f181d7929d81a130451a181c3620daa4eac1ed049eafa25c",
+    "pins.json": "e4def906c359e3d2533da02f70ac30da7fc49f28bf2f9fa4e72723e2c283359f",
+    "model-preverify.json": "74cf44448eac10724eb71427707d8194824080e2997e28e2ed44ac33ae0b9d4d",
+    "build-receipt.json": "6a20b41abb07e3efeb9c882420a5246940db90f6e6b44acf388e81e84396d999",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+    "original-build-receipt.json": "01a8f0ff7d2b7423b69b8db7cde214587aafc3f9ded4b5a85dbacffee649862b",
+    "launch.sh": "b70b2abd648edd9a9528b68c5f1f3d31d47ccca5feb8a186921c2c7c22cf54e9"
+  }
+}

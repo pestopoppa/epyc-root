@@ -1,0 +1,32 @@
+{
+  "id": "kvu11c-retained-result-reconcile-r1-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-completion-reconciliation-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-completion-reconciliation-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Offline source-sealed comparison of every original completion assertion and same-attempt end receipt only. Reconciled-inconclusive requires all explicit predicates and retained receipt rc75; original verdict remains inconclusive, historical outer environment unrecorded, no independent execution custody, no replay or promotion. Synthetic publisher smoke is separate and does not inspect original evidence.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-11c-COMPLETION-COMPARATOR",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 180,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-completion-reconciliation-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu11c-gpu-mechanics-reconciliation",
+  "runtime_seals": {
+    "job.py": "3083a4d789663e5dbd9d8669080e22f2f1a1a6dd490ecfd945386dc419067a9f",
+    "custody.json": "669634775337c1aa9fcde17bb0ad2b1700a76530264feba677710afcc871d2b5",
+    "original-job.py": "df1edf33ebd95897311f2cb28653f0bc379184371f2575e388f437158ca90279",
+    "original-result.json": "7a8254c6b44c9eb04b51bb7ed7bcdeaaf8345f4d1164b3feb9365aae86655e91",
+    "original-ended.txt": "37d91fba0f47b28b27e8db6d1b2a3416670472d85ef9cc812b006f1638f31feb",
+    "original-runner.sh": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2",
+    "launch.sh": "fe0db122471d31ff72063e2b319c7d289e6fccb7b1dc0f3bc8a26a7762d07a77"
+  },
+  "notes": "Model-free one-pass comparator; expected useful execution well under 300 seconds. 300 seconds is a reservation cap including scheduler startup/cleanup, never a runtime floor: no sleeps, retries, repeated dummy operations or padding. If publisher rejects short useful work, preserve offline packet instead of replaying inference."
+}

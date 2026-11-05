@@ -1,0 +1,9 @@
+{
+  "scope": "copies collected after execution; not independently sealed execution custody",
+  "files": {
+    "original-job.py": "df1edf33ebd95897311f2cb28653f0bc379184371f2575e388f437158ca90279",
+    "original-result.json": "7a8254c6b44c9eb04b51bb7ed7bcdeaaf8345f4d1164b3feb9365aae86655e91",
+    "original-ended.txt": "37d91fba0f47b28b27e8db6d1b2a3416670472d85ef9cc812b006f1638f31feb",
+    "original-runner.sh": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+  }
+}

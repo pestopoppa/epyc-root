@@ -91,3 +91,7 @@ Filed kpf174-plan-bound-integration-20261105 PASS: native equality, honest and f
 ## 02:12Z — File model-free GDB timeout cleanup and advance the next qualification
 
 Filed kvfork17-timeout-qual-20261104 PASS: the deliberate model-free debugger and inferior timeout recorded captured PID/birth identities, pidfd-bound cleanup, verified subreaper and no survivors. This does not establish model, oracle or library custody. Published the standalone G3 residency correlation qualification for synthetic identity and status controls; no live residency claim.
+
+## 02:19Z — File GPU mechanics result and source-bound diagnostic rebuild
+
+Filed GPU mechanics r2 inconclusive because outer completion was partial despite a successful native request. Diagnostic HIP rebuild completed with thread flag and own linkage, but four of five binary hashes differ from the original; no original-crash or GPU verdict follows. Prepared the no-synthesis GPU control (publisher smoke queued because the GPU is busy) and published the sealed model-free completion comparator.
