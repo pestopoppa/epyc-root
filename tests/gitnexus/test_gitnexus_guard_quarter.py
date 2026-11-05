@@ -41,7 +41,9 @@ class Base(unittest.TestCase):
             regions = self.payload_regions or ((q,) if len({x[1] for x in self.held}) == 1 else G.QUADRANTS)
             return (os.makedev(1, 2), inode), payload(q, regions)
 
-        def owners():
+        def owners(mode="WRITE"):
+            if mode != "WRITE":
+                return {}
             return {(1, 2, 100 + (0 if role == "GLOBAL" else 4) + int(q[1])): {self.owner_of.get((role, q), OWNER)}
                     for role, q in self.held}
 
@@ -51,6 +53,7 @@ class Base(unittest.TestCase):
             patch.object(G, "proc_stat", return_value=(1, 100, UID)),
             patch.object(G, "proc_lock_owners", side_effect=owners),
             patch.object(G, "open_identity", side_effect=identity),
+            patch.object(G, "own_affinity", return_value=set(range(0, 4))),  # off q3: sub-quarter route refuses
             patch.dict(os.environ, {"ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT": "1"}),
         ]:
             item.start()
