@@ -145,3 +145,59 @@ def test_backfill_negative_control_fails_without_fit_check(monkeypatch):
     plan = rf.admit(pending, gs, T0)
     assert "low" in {g.id for g in plan.grants}
     assert T0 + real(pending[1]) > plan.hold.eta       # ... though it really would delay top: the property would fail
+
+
+# ---------------------------------------------------------------- IDLE-HELD warn + rc=75 auto-end (operator 2026-11-05)
+def _expected_idle_acts(samples, step_s):
+    """Independent oracle: samples = [(cores_busy, kfd_present)]; a sample is wholly idle iff neither. Continuous idle runs
+    warn once at >= IDLE_WARN_S and end at >= IDLE_HELD_S from the run's first sample; a busy sample resets."""
+    out, since, warned = [], None, False
+    for i, (busy, kfd) in enumerate(samples):
+        now = T0 + i * step_s
+        if busy or kfd:
+            since, warned = None, False
+            continue
+        since = now if since is None else since
+        idle_s = int(now - since)
+        if idle_s >= rf.IDLE_HELD_S:
+            out.append(("idle-end", i))
+            break            # tick() ends the grant here; the reconcile loop would not see it again
+        if idle_s >= rf.IDLE_WARN_S and not warned:
+            out.append(("idle-warn", i)); warned = True
+    return out
+
+
+@settings(max_examples=300, deadline=None)
+@given(st.lists(st.tuples(st.booleans(), st.booleans()), min_size=1, max_size=14), st.sampled_from([60, 120, 180]),
+       st.sampled_from(["exclusive", "none"]))
+def test_idle_held_warns_once_then_ends_only_after_continuous_idle(samples, step_s, gpu):
+    """A gpu-exclusive (88-95 + MI210) or CPU-quarter grant: wholly idle = every core < IDLE_PCT and (gpu none or own KFD
+    pid set known-empty). The warning comes once per idle run at >= IDLE_WARN_S, the end at >= IDLE_HELD_S, never earlier,
+    and one busy sample resets both. A quiet grant with no tokens and the unmeasured sides never read idle."""
+    cores = frozenset(range(88, 96)) if gpu == "exclusive" else frozenset(rf.QUARTERS[1])
+    g = rf.Grant("a", cores, gpu, False, 0, 0, T0, T0 + 36000, 7200)
+    q = rf.Grant("q", frozenset(), "none", True, 0, 0, T0, T0 + 36000, 7200)    # nothing measurable
+    u = rf.Grant("u", frozenset(range(0, 8)), "exclusive", False, 0, 0, T0, T0 + 36000, 7200)   # KFD side never known
+    state, got = {}, []
+    for i, (busy, kfd) in enumerate(samples):
+        cb = {c: 0.0 for c in range(96)}
+        if busy:
+            cb[min(cores)] = 50.0
+        own = {"a": ({4242} if kfd else set())} if gpu == "exclusive" else {}
+        if gpu == "none" and kfd:      # a CPU grant has no KFD side: 'kfd' then means a busy sibling core instead
+            cb[max(cores)] = 50.0
+        acts, state = rf.reconcile([g, q, u], rf.Measurement(core_busy=cb, own_kfd=own), state, T0 + i * step_s)
+        assert not [a for a in acts if a[1] in ("q", "u") and a[0] in ("idle-warn", "idle-end")], "unmeasurable grant read idle"
+        got += [(a[0], i) for a in acts if a[0] in ("idle-warn", "idle-end") and a[1] == "a"]
+        if any(a[0] == "idle-end" for a in acts):
+            break
+    assert got == _expected_idle_acts(samples, step_s), (got, samples)
+    ends = [i for k, i in got if k == "idle-end"]
+    warns = [i for k, i in got if k == "idle-warn"]
+    assert len(ends) <= 1
+    assert not ends or any(w < ends[0] for w in warns), "an end without a preceding warning"
+    for k, i in got:          # never before the budget, measured from the run's first idle sample
+        run0 = i
+        while run0 > 0 and not any(samples[run0 - 1]):
+            run0 -= 1
+        assert (i - run0) * step_s >= (rf.IDLE_HELD_S if k == "idle-end" else rf.IDLE_WARN_S)

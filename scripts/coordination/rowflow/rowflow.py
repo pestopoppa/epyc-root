@@ -3298,6 +3298,74 @@ def idle_held(flags, grants, holders, util, log, seen, now=None):
     return out
 
 
+# ---------------------------------------------------------------- IDLE-HELD owner warning (operator 2026-11-05, notify-only)
+# rock-aiter-tests-r3-20261105 hung on a stale lock and held gpu-quiet at 0% for ~20 min (21:20-21:41Z) while 7 GPU rows
+# queued; the keeper logged IDLE-HELD every tick and told nobody (the earlier IDLE-HELD q3 under kvu16g3-retune-r3 was the
+# same silent signal). A grant that has read IDLE-HELD continuously for IDLE_WARN_AFTER_S gets ONE [warning] to its owner
+# through notify.emit (the smoke-fail path: rowflow-alerts.jsonl + inference inbox + session bus), then at most one repeat
+# per IDLE_WARN_REPEAT_S. Covers gpu-quiet and CPU-quarter grants alike. NEVER kills, ends or changes a grant (the frozen
+# keeper is notify-only; rowflow2 adds the rc=75 auto-end). Dedupe state: <flags>/ws58-keeper-state/allocator/idle_held_warn.json
+# (first idle tick, last warning, warning count per grant); a tick that reads the grant busy again drops its entry.
+IDLE_WARN_AFTER_S = 300    # continuous IDLE-HELD before the first warning
+IDLE_WARN_REPEAT_S = 900   # at most one repeat warning per grant per this long
+
+
+def idle_warn_state_path(flags):
+    return os.path.join(state_dir(flags), "idle_held_warn.json")
+
+
+def idle_held_notify(flags, idle, grants, log, now=None, emit=None):
+    """idle = idle_held()'s [(region, rid, pct)] for THIS tick; grants = the open grants. Returns the rids warned this
+    tick. Pure bookkeeping + notify.emit; every failure is logged and swallowed (a warning never stops allocation)."""
+    now = time.time() if now is None else now
+    emit = notify.emit if emit is None else emit
+    sp = idle_warn_state_path(flags)
+    st = load_json(sp) or {}
+    open_ids = {g["id"] for g in grants}
+    by_rid = {}
+    for r, rid, v in idle:
+        by_rid.setdefault(rid, []).append((r, v))
+    # a grant that is open but not idle this tick (or gone) resets its clock
+    st = {rid: e for rid, e in st.items() if rid in by_rid and rid in open_ids and isinstance(e, dict)}
+    warned = []
+    for rid in sorted(by_rid):
+        e = st.setdefault(rid, {"idle_since": now, "warned_at": None, "warn_n": 0})
+        idle_s = int(now - float(e.get("idle_since") or now))
+        due = idle_s >= IDLE_WARN_AFTER_S and (e.get("warned_at") is None or now - float(e["warned_at"]) >= IDLE_WARN_REPEAT_S)
+        if not due:
+            continue
+        regions = ",".join(r for r, _ in sorted(by_rid[rid]))
+        pct = max(v for _, v in by_rid[rid])
+        n = int(e.get("warn_n") or 0) + 1
+        g = next((x for x in grants if x["id"] == rid), {})
+        holds = ",".join(compress(g.get("holds") or set())) if g else "?"
+        owner = notify.row_owner(flags, rid)
+        summary = (f"IDLE-HELD {regions} {rid}: measured {pct:.0f}% busy for {idle_s}s (warning {n}); the grant holds "
+                   f"{holds} while rows queue. The keeper never ends it: check the job (stale lock? hung load?), fix or "
+                   f"stop it (its stop file / rowflow.py withdraw); logs {dry_dir(flags, rid)}")
+        try:
+            mark = emit(flags, "idle-held", rid, f"{regions}:{n}", summary, "warning", owner,
+                        {"regions": regions, "busy_pct": round(float(pct), 1), "idle_s": idle_s, "warning_n": n,
+                         "repeat_s": IDLE_WARN_REPEAT_S, "holds": holds, "logs": dry_dir(flags, rid),
+                         "fix_task": f"{rid} holds {holds} at {pct:.0f}% busy for {idle_s}s: unstick or stop the job"})
+        except Exception as ex:  # noqa: BLE001 - notification never blocks allocation
+            log(f"IDLE-HELD-WARN {regions} {rid}: notify failed: {type(ex).__name__}: {ex}")
+            continue
+        key = (mark or {}).get("record", {}).get("key") if isinstance(mark, dict) else None
+        e.update(warned_at=now, warn_n=n)
+        warned.append(rid)
+        log(f"IDLE-HELD-WARN {regions} {rid}: {pct:.0f}% busy for {idle_s}s; warning {n} sent to owner={owner or FALLBACK_OWNER} "
+            f"(repeat >= {IDLE_WARN_REPEAT_S}s) key={key or '-'}; logs {dry_dir(flags, rid)}")
+    try:
+        atomic_json(sp, st)
+    except OSError as ex:
+        log(f"IDLE-HELD-WARN state write failed ({sp}): {ex}")
+    return warned
+
+
+FALLBACK_OWNER = notify.FALLBACK_ASSIGNEE
+
+
 # ---------------------------------------------------------------- allocate: ONE snapshot, dry runs + grants together
 def host_snapshot(flags, grants=None, rl=None):
     """(busy, free, holders) token sets of ONE snapshot: region-lock holds, open grants' holds and live smokes (a smoke
@@ -3689,7 +3757,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
     out, excluded, plan_free, ram = [], set(), set(free), mem_available_gib()
     util = measure_util()
-    idle_held(flags, grants, holders, util, log, seen)
+    idle_now = idle_held(flags, grants, holders, util, log, seen)
+    if not dry:
+        try:   # operator 2026-11-05: IDLE-HELD tells the owner (notify-only; never ends a grant)
+            idle_held_notify(flags, idle_now, grants, log)
+        except Exception as e:  # noqa: BLE001 - a warning never stops allocation
+            log(f"IDLE-HELD-WARN failed: {type(e).__name__}: {e}")
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.

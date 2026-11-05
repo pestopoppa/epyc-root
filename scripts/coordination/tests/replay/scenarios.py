@@ -505,6 +505,75 @@ def sc_cpu_whole_row_reservation_holds(path):
     return write(path, [({"cpu-whole-a": r1, "cpu-whole-b": r2, "smoke-z": s}, world)] * 3), check
 
 
+def _idle_held_rows(util_busy):
+    """One GPU row (rock-aiter-tests-r3 form: gpu lane, mi210_0,184-191, class gpu, 2 h estimate) granted at tick 0 and
+    then measured at util_busy % on the device every tick; q0-q2 foreign so nothing else moves."""
+    g = row("rock-aiter-tests-r3", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=7200,
+            extra="ctest --test-dir build-hip", man={"admission_class": "correctness"})
+    world = {"foreign": {"q0": "foreign-a", "q1": "foreign-b", "q2": "foreign-c"},
+             "util": {"q0": 90.0, "q1": 90.0, "q2": 90.0, "q3": 0.0,
+                      "gpu": {"busy": util_busy, "vram_pct": 0.0 if not util_busy else 40.0, "vram_gib": 0.0, "card": "card2"}}}
+    return {"rock-aiter-tests-r3": g}, world
+
+
+def _warn_lines(d, rid):
+    return [(x["i"], l) for x in d for l in x["lines"] if l.startswith(f"IDLE-HELD-WARN gpu-quiet {rid}:")]
+
+
+def sc_idle_held_warns_once(path):
+    """operator 2026-11-05 (notify-only): rock-aiter-tests-r3-20261105 held gpu-quiet at 0% for ~20 min (21:20-21:41Z,
+    stale lock) and nobody was told. 8 ticks x 120 s: the grant is IDLE-HELD from tick 1 (age > 60 s) and gets EXACTLY
+    ONE IDLE-HELD-WARN (owner notified) once it has been idle >= 300 s - never before, never twice within 15 min - and
+    the grant is never ended."""
+    rows, world = _idle_held_rows(0)
+    ticks = [(rows, world)] * 8
+
+    def check(d):
+        out = []
+        if not _granted(d, "rock-aiter-tests-r3"):
+            return ["fixture: GPU row never granted"]
+        w = _warn_lines(d, "rock-aiter-tests-r3")
+        if len(w) != 1:
+            out.append(f"expected exactly one IDLE-HELD-WARN over 8 ticks (16 min), got {len(w)}: {w}")
+        if w and w[0][0] < 3:
+            out.append(f"warned at tick {w[0][0]} (< 300 s idle)")
+        if not any(l.startswith("IDLE-HELD gpu-quiet rock-aiter-tests-r3") for x in d for l in x["lines"]):
+            out.append("fixture: the grant never read IDLE-HELD")
+        if any(x["open_after"].get("rock-aiter-tests-r3") is None for x in d[1:]):
+            out.append("the grant was ended by the keeper (notify-only: it must never be)")
+        return out
+    return write(path, ticks), check
+
+
+def sc_idle_held_repeats_each_15min(path):
+    """Same grant over 14 ticks (28 min): the second warning comes >= 900 s after the first, and no third."""
+    rows, world = _idle_held_rows(0)
+    ticks = [(rows, world)] * 14
+
+    def check(d):
+        w = _warn_lines(d, "rock-aiter-tests-r3")
+        if len(w) != 2:
+            return [f"expected exactly two IDLE-HELD-WARN over 14 ticks, got {len(w)}: {w}"]
+        if (w[1][0] - w[0][0]) * TICK < 900:
+            return [f"repeat warning after {(w[1][0] - w[0][0]) * TICK}s (< 900 s)"]
+        return []
+    return write(path, ticks), check
+
+
+def sc_idle_held_busy_grant_silent(path):
+    """Control: the same grant measured 95% busy on the device never warns (and never reads IDLE-HELD)."""
+    rows, world = _idle_held_rows(95)
+    ticks = [(rows, world)] * 8
+
+    def check(d):
+        if not _granted(d, "rock-aiter-tests-r3"):
+            return ["fixture: GPU row never granted"]
+        w = _warn_lines(d, "rock-aiter-tests-r3")
+        return [f"a busy grant was warned: {w}"] if w else []
+    return write(path, ticks), check
+
+
+
 SCENARIOS = {
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
@@ -527,6 +596,9 @@ SCENARIOS = {
     "cpu-whole-row-reservation-holds": sc_cpu_whole_row_reservation_holds,
     "gpu-timing-narrow-q3-concurrent-with-8core-build": sc_gpu_timing_narrow_q3,
     "gpu-timing-narrow-q3-build-beside-open-timing": sc_gpu_timing_narrow_q3_reverse,
+    "idle-held-warns-owner-once": sc_idle_held_warns_once,
+    "idle-held-repeat-warning-15min": sc_idle_held_repeats_each_15min,
+    "idle-held-busy-grant-silent": sc_idle_held_busy_grant_silent,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)

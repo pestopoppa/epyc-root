@@ -257,7 +257,9 @@ class _FakeTime(types.ModuleType):
     def __init__(self):
         super().__init__("time_shim")
         for k in dir(_real_time):
-            if not k.startswith("__"):
+            # never copy the real time/sleep/monotonic: an instance attribute shadows the fake methods below (found
+            # 2026-11-05 by the idle-held scenarios: every candidate read the REAL clock, so grant ages were ~22 h)
+            if not k.startswith("__") and k not in ("time", "sleep", "monotonic"):
                 setattr(self, k, getattr(_real_time, k))
 
     def time(self): return W.t

@@ -15,10 +15,13 @@ def errs(**kw):
     return rf.validate(spec("r", **kw), launcher_exists=yes)
 
 
-def test_exactly_eight_tunables_and_every_constant_classified():
-    assert len(rf.TUNABLES) == 8
+def test_exactly_nine_tunables_and_every_constant_classified():
+    # 8 + IDLE_HELD_S (operator 2026-11-05 "auto-end in rowflow2"): the only wall-clock idle budget; its warning (IDLE_WARN_S)
+    # and retry count (IDLE_HELD_RETRY) are derived / fixed FACTS, not tunables
+    assert len(rf.TUNABLES) == 9
     assert set(rf.TUNABLES) == {"SMOKE_CORES", "IDLE_SAMPLES", "IDLE_PCT", "SMOKE_DEADLINE_S", "OVERRUN_FACTOR",
-                                "QUIET_MAX_RANK", "FILE_OWNERLESS_S", "CLAIM_TTL_S"}
+                                "QUIET_MAX_RANK", "FILE_OWNERLESS_S", "CLAIM_TTL_S", "IDLE_HELD_S"}
+    assert rf.IDLE_HELD_S == 900 and rf.IDLE_WARN_S == 300 and rf.IDLE_HELD_RETRY == 1
     upper = {k for k, v in vars(rf).items() if k.isupper() and not k.startswith("_") and not callable(v)}
     assert upper == set(rf.TUNABLES) | set(rf.CONFIG) | set(rf.FACTS), upper ^ (set(rf.TUNABLES) | set(rf.CONFIG) | set(rf.FACTS))
     assert rf.IDLE_SAMPLES == 2 and rf.OVERRUN_FACTOR == 1.5 and rf.QUIET_MAX_RANK == 10

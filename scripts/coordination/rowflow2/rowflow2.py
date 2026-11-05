@@ -40,8 +40,12 @@ OVERRUN_FACTOR = 1.5                     # grant window = factor x max(estimate_
 QUIET_MAX_RANK = 10                      # quiet: true needs priority_rank < this (or an operator quiet_reason)
 FILE_OWNERLESS_S = 1200                  # an unclaimed prose-rule .ended older than this is routed owner-less
 CLAIM_TTL_S = 7200                       # a filing claim older than this without .FILED re-opens the row
+IDLE_HELD_S = 900                        # a grant wholly idle (every core < IDLE_PCT, no own KFD pid) this long ends rc=75 and
+                                         # is re-queued; the owner is warned at IDLE_HELD_S // 3 (operator 2026-11-05,
+                                         # rock-aiter-tests-r3 held the MI210 20 min at 0%). The 9th tunable: the 8 were
+                                         # kept, nothing else expresses a wall-clock idle budget.
 TUNABLES = ("SMOKE_CORES", "IDLE_SAMPLES", "IDLE_PCT", "SMOKE_DEADLINE_S", "OVERRUN_FACTOR", "QUIET_MAX_RANK",
-            "FILE_OWNERLESS_S", "CLAIM_TTL_S")
+            "FILE_OWNERLESS_S", "CLAIM_TTL_S", "IDLE_HELD_S")
 
 # ============================================================== config (paths / env - not tunables)
 FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/" + "tmp/compute-flags")
@@ -61,7 +65,9 @@ ROW_CORES = frozenset(range(NCORES)) - SMOKE_CORES
 SCHEMA = "epyc.row.v4"
 LEGACY_SCHEMA = "epyc.row.v3"
 GPU_MODES = ("none", "shared", "exclusive")
-ENDED_REASONS = ("complete", "exit", "stopped", "superseded", "withdrawn", "dead-poller", "disk-floor", "window-end")
+ENDED_REASONS = ("complete", "exit", "stopped", "superseded", "withdrawn", "dead-poller", "disk-floor", "window-end", "idle-held")
+IDLE_WARN_S = IDLE_HELD_S // 3                  # derived, not a tunable: the owner warning (300 s) precedes the end (900 s)
+IDLE_HELD_RETRY = 1                             # fixed rule: one re-queue after an idle-held end; the second end is terminal
 SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "stop_file": str, "cpus": (int, str),
                "threads": int, "gpu": str, "quiet": bool, "ram_gib": (int, float), "disk_gib": (int, float),
                "estimate_s": (int, float), "min_window_s": (int, float), "decision_rule": str,
@@ -69,7 +75,7 @@ SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "s
 SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, list), "fix_ref": str,
                  "published_at": str, "schema": str, "legacy": dict, "timing": bool}
 FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
-         "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG")
+         "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY")
 
 
 # ============================================================== util
@@ -701,13 +707,18 @@ class Measurement:
 
 def reconcile(grants, meas, state, now):
     """Pure: (actions, new_state). Actions: ('release-cores', id, cores), ('release-gpu', id), ('overrun', id),
-    ('dead-poller', id), ('over-declared', id, declared, measured_busy). Quiet grants never release."""
+    ('dead-poller', id), ('over-declared', id, declared, measured_busy), ('idle-warn', id, idle_s), ('idle-end', id, idle_s).
+    Quiet grants never release cores. IDLE-HELD (operator 2026-11-05): a grant is wholly idle in a sample when every core
+    it holds reads < IDLE_PCT AND (gpu none, or its own KFD pid set is KNOWN and empty); a grant with nothing measurable
+    (no cores, no gpu, or an unmeasured side) is never idle. Continuous idleness >= IDLE_WARN_S warns once, >= IDLE_HELD_S
+    ends; one busy sample resets the clock. No grace field: a load, compile or build phase keeps a core busy, so it never
+    reads idle; the clock cannot predate the grant's first sample, so the first IDLE_HELD_S after start are the grace."""
     acts, new = [], {}
     for g in grants:
         if g.smoke:
             continue
         st = dict(state.get(g.id) or {"idle": {}, "gpu0": 0, "dead": 0, "alerted": False, "busy": [], "worked": False,
-                                      "declared": len(g.cores), "gpu_used": False})
+                                      "declared": len(g.cores), "gpu_used": False, "idle_since": None, "idle_warned": False})
         st["idle"] = dict(st["idle"])
         if meas.core_busy is not None and g.cores:
             nb = sum(1 for c in g.cores if meas.core_busy.get(c, 0.0) >= IDLE_PCT)
@@ -733,6 +744,21 @@ def reconcile(grants, meas, state, now):
                 st["gpu0"] += 1
                 if st["gpu0"] >= IDLE_SAMPLES:
                     acts.append(("release-gpu", g.id))
+        mine = meas.own_kfd.get(g.id) if g.gpu != "none" else None
+        cores_idle = not g.cores or (meas.core_busy is not None and all(meas.core_busy.get(c, 0.0) < IDLE_PCT for c in g.cores))
+        gpu_idle = g.gpu == "none" or (mine is not None and not mine)
+        wholly_idle = bool(g.cores or g.gpu != "none") and cores_idle and gpu_idle   # an unmeasured side is never idle
+        if wholly_idle:
+            if st.get("idle_since") is None:
+                st["idle_since"] = now
+            idle_s = int(now - st["idle_since"])
+            if idle_s >= IDLE_HELD_S:
+                acts.append(("idle-end", g.id, idle_s))
+            elif idle_s >= IDLE_WARN_S and not st.get("idle_warned"):
+                acts.append(("idle-warn", g.id, idle_s))
+                st["idle_warned"] = True
+        else:
+            st["idle_since"], st["idle_warned"] = None, False
         if g.estimate_s and now > g.start + OVERRUN_FACTOR * g.estimate_s and not st["alerted"]:
             acts.append(("overrun", g.id))
             st["alerted"] = True
@@ -1061,6 +1087,24 @@ def tick(flags, now, meas, state, log, runner=None):
             write_text(os.path.join(G, g.id + ".ended"), f"rc=75 reason=dead-poller time={iso(now)}\n")
             byid.pop(g.id)
             log(f"DEAD-POLLER {g.id}: grant removed")
+        elif a[0] == "idle-warn":
+            log(f"IDLE-HELD-WARN {a[1]} idle {a[2]}s (every core < {IDLE_PCT:g}%, no own KFD pid): owner warned; "
+                f"ends rc=75 and re-queues at {IDLE_HELD_S}s")
+        elif a[0] == "idle-end" and g:
+            dd = os.path.join(flags, "dryrun", g.id)
+            n = len(glob.glob(os.path.join(dd, "IDLE-HELD-*.json"))) + 1
+            write_text(os.path.join(dd, f"IDLE-HELD-{n}.json"), json.dumps({"id": g.id, "at": iso(now), "idle_s": a[2], "rc": 75,
+                       "reason": "idle-held", "attempt": n, "cores": cpulist(g.cores), "gpu": g.gpu, "terminal": n > IDLE_HELD_RETRY,
+                       "fix_task": f"{g.id} held {cpulist(g.cores) or '-'} gpu={g.gpu} wholly idle for {a[2]}s: "
+                                   f"unstick the job (stale lock? hung load?) before it runs again"}) + "\n")
+            if n > IDLE_HELD_RETRY:
+                write_text(os.path.join(G, g.id + ".ended"), f"rc=75 reason=idle-held time={iso(now)}\n")
+                log(f"IDLE-END {g.id} rc=75 idle {a[2]}s: terminal after {n} idle-held ends (dryrun/{g.id}/IDLE-HELD-{n}.json)")
+            else:
+                os.remove(os.path.join(G, g.id + ".grant"))
+                log(f"IDLE-END {g.id} rc=75 idle {a[2]}s: grant ended, row re-queued (attempt {n} of {IDLE_HELD_RETRY + 1})")
+            byid.pop(g.id)
+            state_new.pop(g.id, None)   # a re-grant of the same id starts a fresh idle clock
     # measured feedback onto every .ended of a grant we tracked (once)
     for gid, st in list((state.get("grants") or {}).items()):
         if gid not in state_new and _ex(G, gid + ".ended") and gid not in state.get("measured_done", []):
@@ -1181,6 +1225,10 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
             elif a[0] == "release-gpu":
                 byid[a[1]] = replace(byid[a[1]], gpu="none")
                 lines.append(f"{t} SHADOW-RELEASE {a[1]} gpu")
+            elif a[0] in ("idle-warn", "idle-end"):
+                lines.append(f"{t} SHADOW-{a[0].upper()} {a[1]} idle={a[2]}s" + (" rc=75 re-queue" if a[0] == "idle-end" else ""))
+                if a[0] == "idle-end":
+                    byid.pop(a[1], None)
             else:
                 lines.append(f"{t} SHADOW-{a[0].upper()} {a[1]}" + (f" declared {a[2]} measured {a[3]}" if len(a) > 2 else ""))
         w.grants = list(byid.values())

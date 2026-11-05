@@ -116,6 +116,11 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
     suite a rank number STRICTLY GREATER than every waiting GPU timing row's (use >= 60; c6q4isum-gpu-suite
     at 50 beat q38p4b-int8 at 50, 2026-11-05), until rowflow2's correctness-shares-gpu token is live. Each holds exclusive
     gpu-quiet ~40 min at ~2 % busy (c6q4opt2-gpu-suite, 2026-11-05) and four timing rows waited behind it.
+  - **IDLE-HELD grants are told, not tolerated (operator 2026-11-05).** A grant measured under 10 % busy on a held
+    region for 300 s gets ONE `[warning]` to its owner (`rowflow-alerts.jsonl`, inference inbox, session bus; log line
+    `IDLE-HELD-WARN`), then one repeat per 15 min; the frozen keeper never ends it — the owner unsticks or stops the job.
+    rowflow2 ends a wholly idle grant (every core < 2 %, no own KFD pid) at 900 s with `rc=75` and re-queues the row once,
+    then terminal (`design doc decision 9`). Origin: rock-aiter-tests-r3 held the MI210 20 min at 0 % while 7 GPU rows queued.
 - **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
   184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
   channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go

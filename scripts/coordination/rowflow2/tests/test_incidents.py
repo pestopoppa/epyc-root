@@ -2,7 +2,7 @@
 import glob
 import os
 
-from rf2 import T0, Sim, check_plan, rf, spec
+from rf2 import T0, TICK_S, Sim, check_plan, rf, spec
 
 yes = lambda p: True  # noqa: E731
 
@@ -174,3 +174,58 @@ def test_8_gpu_timing_grant_holds_88_95_never_the_rest_of_q3():
     assert w.fixed == sib and not (w.pool & sib) and w.width == 4
     assert rf.fits_need(w, frozenset(range(0, 4)) | sib) and not rf.fits_need(w, frozenset(range(0, 4)))
     assert rf.grant_need(spec("c", cpus=4, threads=4, gpu="shared")).fixed == frozenset()
+
+
+def test_9_rock_aiter_tests_r3_idle_held_gpu_grant_warns_then_ends_rc75_and_requeues(tmp_path):
+    """rock-aiter-tests-r3-20261105 (21:20-21:41Z): hung on a stale lock, held gpu-quiet + 88-95 at 0% for ~20 min while 7
+    GPU rows queued; the frozen keeper logged IDLE-HELD every tick and told nobody. rowflow2: the owner is warned once at
+    300 s of whole-grant idleness, the grant ends rc=75 at 900 s and the row is re-queued (one retry); a second idle end
+    is terminal (.ended rc=75 reason=idle-held) and the next GPU row gets the device."""
+    sim = Sim(tmp_path)
+    assert sim.publish(spec("rock-aiter-tests-r3", cpus=0, threads=8, gpu="exclusive", rank=40, est=7200)) == []
+    G = os.path.join(sim.flags, "grants")
+    gp = os.path.join(G, "rock-aiter-tests-r3.grant")
+    for _ in range(10):               # its smoke (20-300 s) then admission
+        if os.path.exists(gp):
+            break
+        sim.step()
+    assert os.path.exists(gp), "fixture: r3 never granted"
+    # a GPU timing row arrives and queues behind the hung grant (7 did on 2026-11-05)
+    assert sim.publish(spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50, est=3600)) == []
+    for r in sim.runs.values():
+        r["end"] = float("inf")       # the hung job never finishes on its own
+    hung = lambda: rf.Measurement(core_busy={c: 0.0 for c in range(96)},  # noqa: E731
+                                  own_kfd={rid: set() for rid in ("rock-aiter-tests-r3", "q38p4b-int8") if os.path.exists(os.path.join(G, rid + ".grant"))},
+                                  alive={})
+    sim.measurement = hung
+    t_grant = sim.now
+    n0 = len(sim.lines)
+    while os.path.exists(gp) and sim.now - t_grant < 4000:
+        sim.step()
+    lines = sim.lines[n0:]
+    warns = [l for l in lines if " IDLE-HELD-WARN rock-aiter-tests-r3 " in l]
+    ends = [l for l in lines if " IDLE-END rock-aiter-tests-r3 " in l]
+    assert len(warns) == 1 and len(ends) == 1, lines
+    t_warn = rf.parse_iso(warns[0].split(" ")[0]); t_end = rf.parse_iso(ends[0].split(" ")[0])
+    assert rf.IDLE_WARN_S <= t_warn - t_grant < rf.IDLE_HELD_S and t_end - t_grant >= rf.IDLE_HELD_S and t_warn < t_end
+    assert "re-queued (attempt 1 of 2)" in ends[0]
+    assert os.path.exists(os.path.join(sim.flags, "dryrun", "rock-aiter-tests-r3", "IDLE-HELD-1.json"))
+    assert not os.path.exists(os.path.join(G, "rock-aiter-tests-r3.ended")), "a re-queue is not terminal"
+    # the same tick's admit() hands the device to the waiting row; the hung row is pending again (not done, not failed)
+    assert os.path.exists(os.path.join(G, "q38p4b-int8.grant")), "the waiting GPU row did not get the device"
+    assert rf.load_world(sim.flags, sim.now).state["rock-aiter-tests-r3"] == "pending"
+    sim.step()                                         # the filler picks the new grant up ...
+    sim.runs["q38p4b-int8"]["end"] = sim.now           # ... and it finishes; the re-queued row is re-granted, fresh idle clock
+    sim.step()
+    assert os.path.exists(gp), "re-queued row not re-granted"
+    t_regrant, n1 = sim.now - TICK_S, len(sim.lines)
+    while os.path.exists(gp) and sim.now - t_regrant < 4000:
+        sim.step()
+    lines = sim.lines[n1:]
+    ends = [l for l in lines if " IDLE-END rock-aiter-tests-r3 " in l]
+    assert len(ends) == 1 and "terminal after 2 idle-held ends" in ends[0], lines
+    assert len([l for l in lines if " IDLE-HELD-WARN rock-aiter-tests-r3 " in l]) == 1, "the warning is per grant, once"
+    assert rf.parse_iso(ends[0].split(" ")[0]) - t_regrant >= rf.IDLE_HELD_S
+    assert rf.head1(os.path.join(G, "rock-aiter-tests-r3.ended")).startswith("rc=75 reason=idle-held")
+    assert os.path.exists(os.path.join(sim.flags, "dryrun", "rock-aiter-tests-r3", "IDLE-HELD-2.json"))
+    assert rf.load_world(sim.flags, sim.now).state["rock-aiter-tests-r3"] == "done"
