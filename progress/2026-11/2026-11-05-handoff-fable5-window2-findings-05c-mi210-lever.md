@@ -15,3 +15,7 @@ Prepared NPD1-STEP3 CPU-only store comparison for Q38FN: matched t48 and batch s
 ## 04:01Z — Prepare ROCm spec-off decode comparison
 
 Prepared Q38P-3a speculation-off same-frame ABBA diagnostic on the Qwen3.8-27B Q8_0, comparing C5 ROCm 6.2 with its ROCm 10.1 build. The comparison is exploratory and profiling follows only if its futility rule permits; no promotion verdict is claimed.
+
+## 04:16Z — File Q38P-3a result and restore Q38P-4 inputs
+
+Filed q38p3a-specoff-abba-20261105 rc0: four valid launches, B/C ratios 0.98508584 and 0.98815882, geometric mean 0.98662113 below the 1.02 futility threshold; stop the conditional profile. Native records and sources retained at data/mi210/q38p3a-specoff-result-20261105. The producer reported digest checks but did not retain observed digest values per sample. NPD1-STEP2 unchanged-config rerun is not scheduled before armed STEP3 diagnosis; a draft under /mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/npd1-step2-r3 was not smoked or reviewed. Q38P-4 full-token parity remains unready: prior probe compared only prefixes with unmatched sampling settings, its GGUF and pinned vLLM image were reaped. Exact image restoration is running with image-ready/image-failed event registrations. On image arrival, recreate a detached worktree of c72ec82f5417bb2937310326120f149b665e8400 and regenerate BF16 GGUF from /mnt/raid0/llm/models/Qwen3-4B-Instruct-2507, then remove worktree, construct a controlled token-parity packet and pass publish_row.py smoke. No Q38P-4 parity spec has been completed or published.

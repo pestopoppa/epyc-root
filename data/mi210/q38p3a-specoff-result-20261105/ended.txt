@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T04:05:21Z reason=complete
+job_id=q38p3a-specoff-abba-20261105
+owner=ws58
+step=job-run
+estimated_wall_s=3600
+started=2026-11-05T04:01:53Z
+regions=mi210_0,184-191

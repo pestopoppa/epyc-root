@@ -1,0 +1,40 @@
+{
+  "packet": "q38p3-stage1-20261104",
+  "handoff": "handoffs/active/mi210-serving-program.md:Q38P-3",
+  "depends_on": {
+    "result": "/mnt/raid0/llm/tmp/q38p-window-probe-20261104/out/RESULT.json",
+    "verdict": "PASS"
+  },
+  "arms": {
+    "C": {
+      "bin": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+      "ld": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+      "hip_prefix": "/opt/rocm",
+      "env": {},
+      "libggml_hip_sha256": "fcd3bf0cf2d045d4152463b283cf9cdd403db469f9b6d5254c10b4db138c74ee",
+      "toolchain": "ROCm 6.2.0-66",
+      "commit": "c72ec82f5"
+    },
+    "B": {
+      "bin": "/mnt/raid0/llm/rocm-10.1.0-q38p/build-nolto-u600/bin",
+      "ld": "/mnt/raid0/llm/rocm-10.1.0-q38p/build-nolto-u600/bin:/mnt/raid0/llm/rocm-10.1.0-q38p/install/lib",
+      "hip_prefix": "/mnt/raid0/llm/rocm-10.1.0-q38p/install",
+      "env": {},
+      "libggml_hip_sha256": "559677a86746233bc7fd58f54c92548d48387536b9b8dfa9db78b65941e740e2",
+      "toolchain": "TheRock ROCm 10.1.0 gfx90a tarball (sha256 b2abcbab59fe20ce98b5ec176a86cc5e8293ecaa07c1c940202de64bfe5bf4cd), AMD clang 24.0.0git d6f6cb691863, -fno-offload-lto -mllvm --amdgpu-unroll-threshold-local=600",
+      "commit": "c72ec82f5"
+    }
+  },
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "draft": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "chat_template": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+  "record_ref": "v10-era champion on DFlash2: 80.87 tok/s np1 ctx 65536 (kernel-champion-and-promotion.md MTP-27B-1); different harness, cited only",
+  "stage0_audit": "stage0-audit-compare.txt (10.1 vs 6.2 same commit: VGPR-spilling kernels 145 -> 96; FA-MMA spilling 53 -> 2; Q8_0 MMVQ neutral)",
+  "gate": {
+    "decode_min_ratio": 1.05,
+    "prefill_min_ratio": 0.98,
+    "pairs": 5,
+    "futility_after_pairs": 3,
+    "futility_decode_ratio": 1.02
+  }
+}
