@@ -123,3 +123,7 @@ Filed KPF-50 raw maps 20/20 synthetic controls; native provenance remains UNKNOW
 ## 02:50Z — File synthetic residency, prefix integration and GPU direct parity; ready backend build
 
 Filed 10/10 synthetic residency controls with native UNKNOWN, six model-free prefix integration controls, and narrow D64 F16/Q8 GPU parity. Published the source-bound backend-ops build after its four-CPU object smoke; linked build and GPU tests remain pending.
+
+## 02:54Z — File native map-files refusal and qualify stat-only admission controls
+
+Filed the original map_files acquisition as inconclusive after padded-range ENOENT; no native mapping claim follows. Published synthetic stat-admission controls after a four-CPU smoke; the full fixture and model immutability remain unproved.
